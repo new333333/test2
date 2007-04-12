@@ -195,8 +195,8 @@ public interface RepositorySession {
 	 * @param entity
 	 * @throws RepositoryServiceException
 	 */
-	public void delete(Binder binder, DefinableEntity entity) 
-	throws RepositoryServiceException, UncheckedIOException;
+	//public void delete(Binder binder, DefinableEntity entity) 
+	//throws RepositoryServiceException, UncheckedIOException;
 		
 	/**
 	 * Deletes all files that are under the binder. 
@@ -317,8 +317,8 @@ public interface RepositorySession {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	public List<String> getVersionNames(Binder binder, DefinableEntity entity,
-			String relativeFilePath) throws RepositoryServiceException;
+	//public List<String> getVersionNames(Binder binder, DefinableEntity entity,
+	//		String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Checks out the specified file resource. It is illegal to call this method
@@ -462,8 +462,10 @@ public interface RepositorySession {
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
-	public void copy(Binder binder, DefinableEntity entity,
-			String relativeFilePath, Binder destBinder, 
-			DefinableEntity destEntity, String destRelativeFilePath)
-	throws RepositoryServiceException, UncheckedIOException;			
+	//public void copy(Binder binder, DefinableEntity entity,
+	//		String relativeFilePath, Binder destBinder, 
+	//		DefinableEntity destEntity, String destRelativeFilePath)
+	//throws RepositoryServiceException, UncheckedIOException;			
+	
+	public RepositorySessionFactory getFactory();
 }

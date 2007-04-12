@@ -432,6 +432,7 @@
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="rssGenerator"><ref local="rssGenerator"/></property>
 		<property name="icalGenerator"><ref local="icalGenerator"/></property>
+		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
@@ -468,7 +469,7 @@
 
 
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
-		<property name="target"><ref local="folderModuleTarget"/></property>
+		<property name="target"><ref bean="folderModuleTarget"/></property>
 		<!-- addEntry, addReply, modifyEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
@@ -484,10 +485,6 @@
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
-	</bean>
-	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
 	</bean>
 
 	<bean id="profileModule" parent="baseTransactionProxy">
@@ -822,7 +819,7 @@
 	          <ref local="hibernateStatisticsService"/>
 	        </entry>
 	        <entry key="SiteScape:type=Module,name=folderModule">
-	          <ref local="folderModuleTarget"/>
+	          <ref bean="folderModuleTarget"/>
 	        </entry>
 	      </map>
 	    </property>

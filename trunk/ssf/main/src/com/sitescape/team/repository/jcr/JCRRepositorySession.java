@@ -42,18 +42,23 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.repository.jcr.jackrabbit.JCRRepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
 public class JCRRepositorySession implements RepositorySession {
 
+	private JCRRepositorySessionFactory factory;
 	protected String workspaceName;
 	protected Session session;
 	protected FileTypeMap mimeTypes;
 	
-	public JCRRepositorySession(String workspaceName, Session session, FileTypeMap mimeTypes) {
+	public JCRRepositorySession(JCRRepositorySessionFactory factory, 
+			String workspaceName, Session session, FileTypeMap mimeTypes) {
+		this.factory = factory;
 		this.workspaceName = workspaceName;
 		this.session = session;
 		this.mimeTypes = mimeTypes;
@@ -687,5 +692,9 @@ public class JCRRepositorySession implements RepositorySession {
 		public java.lang.String getName() {
 			return relativeFilePath;
 		}
+	}
+
+	public RepositorySessionFactory getFactory() {
+		return factory;
 	}
 }

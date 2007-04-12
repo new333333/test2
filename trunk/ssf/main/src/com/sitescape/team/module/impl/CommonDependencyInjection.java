@@ -17,6 +17,7 @@ import org.quartz.Scheduler;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.fi.connection.ResourceDriverManager;
 import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;
@@ -55,6 +56,7 @@ public abstract class CommonDependencyInjection {
 	protected RssGenerator rssGenerator;
 	protected IcalGenerator icalGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
+	protected ResourceDriverManager resourceDriverManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -134,4 +136,11 @@ public abstract class CommonDependencyInjection {
 	protected WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
 		return workAreaFunctionMembershipManager;
 	}
+	protected ResourceDriverManager getResourceDriverManager() {
+		return resourceDriverManager;
+	}
+	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {
+		this.resourceDriverManager = resourceDriverManager;
+	}
+	
 }

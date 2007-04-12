@@ -10,7 +10,7 @@
  */
 package com.sitescape.team.module.folder.impl;
 
-public interface FolderModuleImplMBean {
+public interface AbstractFolderModuleMBean {
 
 	public void clearStatistics();
 	

@@ -17,11 +17,13 @@ import java.util.Set;
 
 import org.dom4j.Document;
 
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.fi.FIException;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -176,5 +178,14 @@ public interface FolderModule {
     public void unreserveEntry(Long folderId, Long entryId)
 		throws AccessControlException, ReservedByAnotherUserException;
     
-
+	/**
+	 * Synchronize the mirrored folder. 
+	 * This initiates the work and returns immediately without waiting for
+	 * the work to finish, hence working asynchronously. 
+	 * 
+	 * @param folderId this should be a mirrored folder; note that mirrored 
+	 * folder is always a library folder (but not the other way around)
+	 * @throws FIException
+	 */
+	public void synchronize(Long folderId) throws FIException, UncheckedIOException;
 }

@@ -52,6 +52,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -198,6 +199,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        });
 	        sp.end().print();
 	           
+	        if(binder.isMirrored()) {
+		        sp.reset("addBinder_mirrored").begin();
+		        addBinder_mirrored(binder, inputData);
+		        sp.end().print();
+	        }
+	        
 	        sp.reset("addBinder_filterFiles").begin();
 	        //Need to do filter here after binder is saved cause it makes use of
 	        // the id of binder
@@ -297,6 +304,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			entryData.put(ObjectKeys.FIELD_BINDER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_NAME));
    		}
  		EntryBuilder.buildEntry(binder, entryData);
+ 		
+ 		if(parent.isMirrored())
+ 			binder.setMirrored(true);
     }
 
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
@@ -1160,4 +1170,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return EntityIndexUtils.CREATORID_FIELD;
     }
 
+	protected void addBinder_mirrored(Binder binder, InputDataAccessor inputData) {
+		Boolean synchToSource = (Boolean) inputData.getSingleObject("_synchToSource");
+		if(Boolean.TRUE.equals(synchToSource)) {
+			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
+			try {
+				session.makeDirectory();
+			}
+			finally {
+				session.close();
+			}
+		}
+	}
 }

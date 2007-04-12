@@ -28,15 +28,20 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.DatedMultipartFile;
+import com.sitescape.team.util.SpringContextUtil;
 
 public class FolderUtils {
 
 	private static final String[] ITEM_NAMES = {"attachFiles", "graphic", "file", "profileEntryPicture"};
+	
+	private static final String EXTERNAL_FILE_ITEM_NAME = "_externalFile";
 	
 	/**
 	 * Creates a new folder entry with an attachment file.
@@ -50,10 +55,9 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static void createFolderEntry(AllBusinessServicesInjected bs,
-			Folder folder, String fileName, InputStream content, Date modDate)
+	public static Long createFolderEntry(Folder folder, String fileName, InputStream content, Date modDate)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
-		Definition def = getFolderEntryDefinition(bs, folder);
+		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
 			throw new ConfigurationException("There is no folder entry definition to use");
 		
@@ -78,7 +82,7 @@ public class FolderUtils {
 			data.put("_lastModifiedDate", modDate);
 		}
 		
-		bs.getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
 	}
 	
 	/**
@@ -94,12 +98,12 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static void modifyFolderEntry(AllBusinessServicesInjected bs,
-			FolderEntry entry, String fileName, InputStream content, Date modDate) 
+	public static void modifyFolderEntry(FolderEntry entry, String fileName, 
+			InputStream content, Date modDate) 
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Folder folder = entry.getParentFolder();
 		
-		Definition def = getFolderEntryDefinition(bs, folder);
+		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
 			throw new ConfigurationException("There is no folder entry definition to use");
 		
@@ -128,10 +132,10 @@ public class FolderUtils {
 			inputData = new EmptyInputData(); // No non-file input data
 		}
 
-		bs.getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
+		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
 				inputData, fileItems, null, null);
 	}
-
+	
 	/**
 	 * Create a new library folder.
 	 * 
@@ -143,10 +147,9 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static Long createLibraryFolder(AllBusinessServicesInjected bs,
-			Binder parentBinder, String folderName)
+	public static Long createLibraryFolder(Binder parentBinder, String folderName)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
-		Definition def = getFolderDefinition(bs, parentBinder);
+		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
 			throw new ConfigurationException("There is no folder definition to use");
 		
@@ -157,13 +160,93 @@ public class FolderUtils {
 		data.put("library", Boolean.TRUE.toString());
 		
 		if(parentBinder instanceof Workspace)
-			return bs.getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
+			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), new HashMap());
 		else
-			return bs.getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
+			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), new HashMap());
 	}
+	
+	public static Long createMirroredEntry(Folder folder, String fileName, 
+			InputStream content, Date modDate, boolean synchToSource)
+	throws ConfigurationException, AccessControlException, WriteFilesException {
+		Definition def = getFolderEntryDefinition(folder);
+		if(def == null)
+			throw new ConfigurationException("There is no folder entry definition to use");
+		
+		// Wrap the input stream in a datastructure suitable for our business module.
+		MultipartFile mf;
+		if(modDate != null)
+			mf = new DatedMultipartFile(fileName, content, modDate);
+		else
+			mf = new SimpleMultipartFile(fileName, content); 
+		
+		Map fileItems = new HashMap(); // Map of element names to file items	
+		fileItems.put(EXTERNAL_FILE_ITEM_NAME, mf); // single file item
+		
+		Map data = new HashMap(); // Input data
+		data.put("title", fileName);
+		data.put("_synchToSource", Boolean.valueOf(synchToSource));
+		
+		if(modDate != null) {
+			// We need to tell the system to use this client-supplied mod date
+			// for the newly created entry (instead of current time). 
+			data.put("_lastModifiedDate", modDate);
+		}
+		
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
+	}
+	
+	public static void modifyMirroredEntry(FolderEntry entry, String fileName, 
+			InputStream content, Date modDate, boolean synchToSource) 
+	throws ConfigurationException, AccessControlException, WriteFilesException {
+		Folder folder = entry.getParentFolder();
+		
+		// Wrap the input stream in a datastructure suitable for our business module.
+		MultipartFile mf;
+		if(modDate != null)
+			mf = new DatedMultipartFile(fileName, content, modDate);
+		else
+			mf = new SimpleMultipartFile(fileName, content); 
+		
+		Map fileItems = new HashMap(); // Map of names to file items	
+		fileItems.put(EXTERNAL_FILE_ITEM_NAME, mf); // single file item
+		
+		Map data = new HashMap(); // Input data
+		data.put("_synchToSource", Boolean.valueOf(synchToSource));
+		
+		if(modDate != null) {
+			// We need to tell the system to use this client-supplied mod date
+			// for the newly created entry (instead of current time). 
+			data.put("_lastModifiedDate", modDate);
+		}
 
+		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
+				new MapInputData(data), fileItems, null, null);
+	}
+
+	public static Long createMirroredFolder(Binder parentBinder, String folderName, 
+			String resourceDriverName, String resourcePath, boolean synchToSource)
+	throws ConfigurationException, AccessControlException, WriteFilesException {
+		Definition def = getFolderDefinition(parentBinder);
+		if(def == null)
+			throw new ConfigurationException("There is no folder definition to use");
+		
+		Map<String,Object> data = new HashMap<String,Object>(); // Input data
+		data.put("title", folderName); 
+		data.put("mirrored", Boolean.TRUE.toString());
+		data.put("resourceDriverName", resourceDriverName);
+		data.put("resourcePath", resourcePath);
+		data.put("_synchToSource", Boolean.valueOf(synchToSource));
+		
+		if(parentBinder instanceof Workspace)
+			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
+					new MapInputData(data), new HashMap());
+		else
+			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
+					new MapInputData(data), new HashMap());
+	}
+	
 	//Routine to get the name of the element that will store the uploaded file
 	//  This routine searches the definition looking for the first file element
 	private static String getDefaultElementName(Definition definition) {
@@ -197,25 +280,22 @@ public class FolderUtils {
 		}
 	}
 
-	private static Definition getFolderEntryDefinition
-		(AllBusinessServicesInjected bs, Folder folder) {
+	private static Definition getFolderEntryDefinition(Folder folder) {
 		Definition def = folder.getDefaultEntryDef();
 		if(def == null)
-			def = getZoneWideDefaultFolderEntryDefinition(bs);
+			def = getZoneWideDefaultFolderEntryDefinition();
 		return def;
 	}
 	
-	private static Definition getZoneWideDefaultFolderEntryDefinition
-	(AllBusinessServicesInjected bs) {
-		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
+	private static Definition getZoneWideDefaultFolderEntryDefinition() {
+		List defs = getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else
 			return null;
 	}
 	
-	private static Definition getFolderDefinition(AllBusinessServicesInjected bs,
-			Binder parentBinder) {
+	private static Definition getFolderDefinition(Binder parentBinder) {
 		if(parentBinder instanceof Folder) {
 			// If the parent binder in which to create a new library folder
 			// happens to be a folder itself, simply re-use the folder
@@ -225,17 +305,25 @@ public class FolderUtils {
 		}
 		else {
 			// The binder must be a workspace.
-			return getZoneWideDefaultFolderDefinition(bs);
+			return getZoneWideDefaultFolderDefinition();
 		}
 	}
 	
-	private static Definition getZoneWideDefaultFolderDefinition
-	(AllBusinessServicesInjected bs) {
-		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
+	private static Definition getZoneWideDefaultFolderDefinition() {
+		List defs = getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else
 			return null;
 	}
-		
+
+	private static FolderModule getFolderModule() {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+	private static DefinitionModule getDefinitionModule() {
+		return (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+	}
+	private static WorkspaceModule getWorkspaceModule() {
+		return (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
+	}
 }

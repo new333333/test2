@@ -14,6 +14,9 @@
 	<property name="deleted"/>
 	<property name="uniqueTitles"/>
 	<property name="logVersion"/>
+    <property name="mirrored"/>
+    <property name="resourceDriverName" length="64"/>
+    <property name="resourcePath" length="1024"/>
     <many-to-one name="parentBinder"/>
     <many-to-one name="owner" access="field"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
