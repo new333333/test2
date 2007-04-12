@@ -12,7 +12,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/search/search_css.jsp" %>
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
 	<% // Navigation bar %>

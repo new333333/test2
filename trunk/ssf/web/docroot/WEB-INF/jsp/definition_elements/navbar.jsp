@@ -249,16 +249,20 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="search"/>
 			<portlet:param name="newTab" value="1"/>
-			</portlet:actionURL>">
+			</portlet:actionURL>" style="display: inline;">
 		  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="40" 
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-			  <input name="searchText" type="text" class="form-text" style="margin-bottom: -2px" /> 
-			  <a class="ss_linkButton" style="padding: 0px 5px 1px 5px;" href="javascript: ;" 
-			    onClick="document.ss_simpleSearchForm<portlet:namespace/>.submit();return false;"
-			  ><ssf:nlt tag="button.go"/></a>
-			    <input type="hidden" name="searchBtn" value="searchBtn"/>
+			  <input name="searchText" type="text" class="form-text" style="margin-bottom: -2px" />
+			  <a href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();"><img src="<html:imagesPath/>pics/search_icon.gif" class="ss_searchButton"/></a>
+		    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		  </ssHelpSpot>
 		</form>
+		<a class="ss_advanced" href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="advanced_search"/>
+			<portlet:param name="tabTitle" value="SEARCH FORM"/>
+			<portlet:param name="newTab" value="0"/>
+			</portlet:actionURL>"
+			><ssf:nlt tag="navigation.search.advanced"/></a>
 	</div>
   </td>
 </tr>
@@ -443,10 +447,5 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 </div>
 <!-- End of favorites pane -->
 
-<a href="<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="advanced_search"/>
-			<portlet:param name="tabTitle" value="SEARCH FORM"/>
-			<portlet:param name="newTab" value="0"/>
-			</portlet:actionURL>" > ADVANCED SEARCH</a>
 
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
