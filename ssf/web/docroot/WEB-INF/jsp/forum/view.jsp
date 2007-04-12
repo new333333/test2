@@ -47,25 +47,15 @@ function <portlet:namespace/>_getUnseenCounts() {
 <% // Navigation bar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 </c:if>
+<div class="ss_style" style="padding:4px;">
 
-<table width="100%">
-<tr>
-<td align="left">
 <c:if test="${!empty ssFolderList}">
+<div style="padding:5px 0px;">
   <a class="ss_linkButton ss_bold ss_smallprint" 
     href="javascript: ;" onClick="<portlet:namespace/>_getUnseenCounts();return false;"
     ><ssf:nlt tag="portlet.showUnread"/></a>
+</div>
 </c:if>
-</td>
-<td align="right">
-  <a class="ss_linkButton ss_smallprint" 
-    href="<portlet:renderURL 
-      portletMode="edit" 
-      windowState="maximized" />"
-    ><ssf:nlt tag="portlet.configure"/></a>
-</td>
-</tr>
-</table>
 
 <c:if test="${empty ssFolderList}">
 <div style="padding:4px;">
@@ -93,8 +83,16 @@ function <portlet:namespace/>_getUnseenCounts() {
   %>
 </c:forEach>
 </table>
+<div align="right">
+  <a class="ss_linkButton" 
+    href="<portlet:renderURL 
+      portletMode="edit" 
+      windowState="maximized" />"
+    ><ssf:nlt tag="portlet.configure"/></a>
+</div>
 </c:if>
 
+</div>
 </div>
 <form class="ss_portlet_style ss_form" id="<portlet:namespace/>_unseenCountForm" style="display:none;">
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
