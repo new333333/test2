@@ -108,9 +108,11 @@ public class TextOpenOfficeConverter
 	 *  @param timeout Export process timeout in milliseconds.
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public String convert(String ifp, String ofp, long timeout)
+	public String convert(String ifp, long timeout)
 		throws Exception
 	{
+		String ofp = ifp + "._convert_.xml";
+
 		org.dom4j.Document doc = null;
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
@@ -135,11 +137,6 @@ public class TextOpenOfficeConverter
 		ifile = new File(ifp);
 		ofile = new File(ofp);
 
-		String cache = getCachedData(ifile, ofile);
-		if(cache != null) {
-			return cache;
-		}
-		
 		try
 		{
 			// OpenOffice can not conver these types of files. Will cause OpenOffice crash in some cases
@@ -269,6 +266,9 @@ public class TextOpenOfficeConverter
 				// Closing the converted document
 				if (xcomponent != null)
 					xcomponent.dispose();
+			}
+			if(ofile != null && ofile.exists()) {
+				ofile.delete();
 			}
 		}
 	    
