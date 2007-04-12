@@ -391,7 +391,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	
     	//Set the sort order
    		SortField[] fields = new SortField[1];
-   		String sortBy = EntityIndexUtils.SORT_TITLE_FIELD;   		
+   		String sortBy = EntityIndexUtils.NORM_TITLE_FIELD;   		
     	
     	fields[0] = new SortField(sortBy,  SortField.AUTO, true);
     	so.setSortBy(fields);
@@ -415,8 +415,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 
+		QueryBuilder qbFinal = new QueryBuilder(pids);
+    	SearchObject singleBucketSO = qbFinal.buildQuery(queryTreeFinal);
+		
    		Element range = qTreeAndElement.addElement(QueryBuilder.RANGE_ELEMENT);
-   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.SORT_TITLE_FIELD);
+   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.NORM_TITLE_FIELD);
    		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
 		Element start = range.addElement(QueryBuilder.RANGE_START);
 		start.setText(tuple1);
@@ -424,15 +427,14 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		end.setText(tuple2);
 
 		//Create the Lucene query
-    	QueryBuilder qbFinal = new QueryBuilder(pids);
-    	SearchObject soFinal = qbFinal.buildQuery(queryTreeFinal);
+		SearchObject soFinal = qbFinal.buildQuery(queryTreeFinal);
     	if(logger.isDebugEnabled()) {
     		logger.debug("Final query is: " + queryTreeFinal.asXML());
     	}
     	
     	//Set the sort order
    		SortField[] fieldsFinal = new SortField[1];
-   		String sortByFinal = EntityIndexUtils.SORT_TITLE_FIELD;   		
+   		String sortByFinal = EntityIndexUtils.NORM_TITLE_FIELD;   		
     	
     	fieldsFinal[0] = new SortField(sortByFinal,  SortField.AUTO, true);
     	soFinal.setSortBy(fieldsFinal);
@@ -454,9 +456,13 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     				if (skipLength < maxBucketSize) skipLength = maxBucketSize;
     			}
     		}
-	        if (totalHits > skipLength) results = luceneSession.getSortTitles(soQuery, tuple1, tuple2, skipLength);
+	        if (totalHits > skipLength) results = luceneSession.getNormTitles(soQuery, tuple1, tuple2, skipLength);
 	        if (results == null || results.size() <= 1) {
 	        	//We must be at the end of the buckets; now get the real entries
+	        	if ("".equals(tuple1) && "".equals(tuple2)) {
+	            	singleBucketSO.setSortBy(fieldsFinal);
+	            	soQueryFinal = singleBucketSO.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+	        	}
 	        	hits = luceneSession.search(soQueryFinal, soFinal.getSortBy(), 0, -1);
 	        }
         }

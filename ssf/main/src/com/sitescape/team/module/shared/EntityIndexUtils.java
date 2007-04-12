@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -38,6 +36,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
@@ -47,9 +46,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
-import com.sitescape.util.Validator;
 
 /**
  * Index the fields common to all Entry types.
@@ -85,6 +82,7 @@ public class EntityIndexUtils {
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "title";
     public static final String SORT_TITLE_FIELD = "_sortTitle";
+    public static final String NORM_TITLE_FIELD = "_normTitle";
     public static final String TITLE1_FIELD = "_title1";
     public static final String EXTENDED_TITLE_FIELD = "_extendedTitle";
     public static final String NAME_FIELD = "_name";
@@ -143,7 +141,48 @@ public class EntityIndexUtils {
             }
     	}
     }
-    public static void addRating(Document doc, DefinableEntity entry) {
+    
+    public static void addNormTitle(Document doc, DefinableEntity entry, User user) {
+        // Add the title field
+    	String normTitle = "";
+    	if (entry.getTitle() != null) {
+    		String title = entry.getTitle();
+    		title = title.trim();
+            
+            if(title.length() > 0) {
+     	        // set the new "bucket title" for username appropriately
+    	        if (entry.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+    	        	// figure out how to get the user name that owns this user workspace and normalize it... (lastname, firstname, middle)
+    	        		String lastName = user.getLastName();
+    	        		String firstName = user.getFirstName();
+    	        		String middleName = user.getMiddleName();
+    	        		normTitle = (lastName + " " + firstName + " " + middleName).trim();
+    	        } else {
+    	        	normTitle = title.toLowerCase();
+    	        }
+    	        Field bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE_FIELD, normTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	        doc.add(bucketTitleField);
+            }
+    	}
+    }
+    	        
+    public static void addNormTitle(Document doc, DefinableEntity entry) {
+		// Add the title field
+		String normTitle = "";
+		if (entry.getTitle() != null) {
+			String title = entry.getTitle();
+			title = title.trim();
+			if (title.length() > 0) {
+				normTitle = title.toLowerCase();
+				Field bucketTitleField = new Field(
+						EntityIndexUtils.NORM_TITLE_FIELD, normTitle,
+						Field.Store.YES, Field.Index.UN_TOKENIZED);
+				doc.add(bucketTitleField);
+			}
+		}
+	}  	        
+    	        
+   public static void addRating(Document doc, DefinableEntity entry) {
     	//rating may not exist or not be supported
     	try {
         	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);

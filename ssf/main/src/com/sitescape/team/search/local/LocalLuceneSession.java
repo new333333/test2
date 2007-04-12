@@ -604,7 +604,7 @@ public class LocalLuceneSession implements LuceneSession {
 	// i.e. results[0] = {a, c}
 	//      results[1] = {d, g}
 	
-	public ArrayList getSortTitles(Query query, String start, String end, int skipsize)
+	public ArrayList getNormTitles(Query query, String start, String end, int skipsize)
 			throws LuceneException {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
@@ -635,7 +635,7 @@ public class LocalLuceneSession implements LuceneSession {
 						}
 					});
 					
-					String field = EntityIndexUtils.SORT_TITLE_FIELD;
+					String field = EntityIndexUtils.NORM_TITLE_FIELD;
 						TermEnum enumerator = indexReader.terms(new Term(
 								field, start));
 
@@ -675,7 +675,7 @@ public class LocalLuceneSession implements LuceneSession {
 						// the final range, and modify the previous range to include the final
 						// term.
 						int tsize = titles.size();
-						if ((tsize%2 ==1) && (tsize > 2)) {
+						if ((tsize%2 ==1) && (tsize > 1)) {
 							if (lastTerm.equals(titles.get(tsize-1))) {
 								titles.set(tsize-2, lastTerm);
 								titles.remove(tsize-1);
