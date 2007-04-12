@@ -16,6 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.util.NLT;
+import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="workspace" dynamic-update="true"
  * 
@@ -28,13 +31,32 @@ import java.util.Set;
  *
  */
 public class Workspace extends Binder  {
+	protected String searchTitle; //set by hibernate acccess=field
     public Workspace() {
     	setType(EntityIdentifier.EntityType.workspace.name());
     }
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.workspace;
 	}
-    public List getBinders() {
+ 
+	/**
+	 * @hibernate.property length=255
+	 */
+	public String getSearchTitle() {
+	   	Integer type = getDefinitionType();
+	   	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
+    		if (Validator.isNotNull(searchTitle)) return searchTitle;
+    	}
+		return super.getSearchTitle();
+    }
+	public void setSearchTitle(String searchTitle) {
+	   	Integer type = getDefinitionType();
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
+    		this.searchTitle = searchTitle;
+    	} else throw new NotSupportedException(NLT.get("errorcode.notsupported.setTitle"));
+	}
+
+	public List getBinders() {
     	if (binders == null) binders = new ArrayList();
     	return binders;
     }

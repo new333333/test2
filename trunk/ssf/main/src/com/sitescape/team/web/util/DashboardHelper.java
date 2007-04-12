@@ -94,6 +94,8 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	//Component data keys
 	public final static String SearchFormSavedSearchQuery = "__savedSearchQuery";
 	public final static String SearchFormSavedFolderIdList = "__savedFolderIdList";
+	public final static String Users= "users";
+	public final static String Groups= "groups";
 	
 	//Scopes
 	public final static String Local = "local";
@@ -586,22 +588,26 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	    	}
 	    	Map idData = new HashMap();
 	    	beans.put(id, idData);
-	    	Set ids = getIds(data.get("users"));
-	    	if (data.containsKey("groups")) {
-	    	}
+	    	Set ids = getIds(data.get(Users));
 
-	    	if (data.containsKey("groups")) {
+	    	if (data.containsKey(Groups)) {
 	    		if (isConfig) {
 	    			//keep separate for config
-		    		Set gIds = getIds(data.get("groups"));
+		    		Set gIds = getIds(data.get(Groups));
 		    		idData.put(WebKeys.GROUPS, getProfileModule().getGroups(gIds));
 	    		} else {
 	    			//merge into user list if not config
-	    			ids.addAll(getIds(data.get("groups")));
+	    			ids.addAll(getIds(data.get(Groups)));
 	    		}
 	    	}
 			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  	   	}
+	}
+	protected void buddyListToXml(Element parent, Map data) {
+		Element child = parent.addElement(Users);
+		child.setText((String)data.get(Users));
+		child = parent.addElement(Groups);
+		child.setText((String)data.get(Groups));	
 	}
 	
 	private Set getIds(Object ids) {
@@ -661,6 +667,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     	}
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     }
+	protected void workspaceTreeToXml(Element parent, Map data) {
+		Element child = parent.addElement(WebKeys.DASHBOARD_WORKSPACE_TOPID);
+   		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
+   		if (topId != null)
+   		child.setText(topId.toString());
+	}
+
 	
 	protected void getTeamMembersBean(Binder binder, Map ssDashboard, Map model, String id, Map component) {
     	Map data = (Map)component.get(DashboardHelper.Data);
@@ -681,6 +694,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		List users = getBinderModule().getTeamMembers(binder.getId(), true);
 		idData.put(WebKeys.TEAM_MEMBERS, users);
 		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+	}
+	protected void teamMembersToXml(Element parent, Map data) {
+		//nothing to store, determined dynamically
+		return;
 	}
 	
     protected void getWikiHomepageEntryBean(Binder binder, Map ssDashboard, Map model, 
@@ -837,6 +854,39 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		
     }
+    protected void searchResultsToXml(Element parent, Map data) {
+		Element child;
+		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) {
+			child = parent.addElement("property");
+			child.addAttribute("name", DashboardHelper.SearchFormSavedSearchQuery);
+			child.setText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
+		}
+		List savedFolderIds = (List)data.get(SearchFormSavedFolderIdList);
+		if (savedFolderIds != null && savedFolderIds.size() > 0) {
+			child = parent.addElement("property");
+			child.addAttribute("name", DashboardHelper.SearchFormSavedFolderIdList);
+			StringBuffer buf = new StringBuffer();
+			for (int i=0; i<savedFolderIds.size(); ++i) {
+				buf.append((String)savedFolderIds.get(i) + " ");
+			}
+			child.setText(buf.toString());
+		}
+		if (data.containsKey(WebKeys.SEARCH_FORM_MAX_HITS)) {
+			child = parent.addElement("property");
+			child.addAttribute("name", WebKeys.SEARCH_FORM_MAX_HITS);
+			String[] maxHitsStr = (String[])data.get(WebKeys.SEARCH_FORM_MAX_HITS);
+			child.setText(maxHitsStr[0]);
+		}
+		if (data.containsKey(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT)) {
+			child = parent.addElement("property");
+			child.addAttribute("name", WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
+			String[] resultsCount = (String[])data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
+			child.setText(resultsCount[0]);
+		}
+
+
+    }
+    
     public static void setTitle(ActionRequest request, Binder binder, String scope) {
 		Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
 		Map updates = new HashMap();
@@ -947,10 +997,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				} else if (componentMap.get(DashboardHelper.Name).
 						equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					if (componentData.containsKey("users")) {
-						componentData.put("users", FindIdsHelper.getIdsAsString((String[])componentData.get("users")));
+						componentData.put(Users, FindIdsHelper.getIdsAsString((String[])componentData.get("users")));
 					}
 					if (componentData.containsKey("groups")) {
-					componentData.put("groups", FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
+					componentData.put(Groups, FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
 					}
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
@@ -1227,7 +1277,8 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			Map cMap = (Map)me.getValue();
 			if (cMap == null) continue;
 			Element component = d.addElement("component");
-			component.addAttribute("name", me.getKey().toString());
+			component.addAttribute("compenentId", me.getKey().toString());
+			componentToXml(component, cMap);
 		}
 		
 	}
@@ -1243,10 +1294,41 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				Element p=layout.addElement("property");
 				p.addAttribute("name", (String)me.getKey());
 				p.addText(me.getValue().toString());
+				
 			}
 		}		
 	}
-	private void componentToXml(Element parent, Map component, String name) {
+	private void componentToXml(Element parent, Map component) {
+		String componentName = (String)component.get(Name);
+		for (Iterator iter=component.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry prop = (Map.Entry)iter.next();
+			String propName = prop.getKey().toString();
+			
+			if (Data.equals(propName)) {
+				Element data = parent.addElement(Data);
+				Map val = (Map)prop.getValue();
+				if ((val != null) && !val.isEmpty()) {
+					if (componentName.equals(
+						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
+						getInstance().buddyListToXml(data, val); 
+					} else if (componentName.equals(
+						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
+						getInstance().teamMembersToXml(data, val); 
+					} else if (componentName.equals(
+							ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
+						getInstance().workspaceTreeToXml(data, val); 
+					} else {
+						getInstance().searchResultsToXml(data, val);
+					}
+				}
+				
+			} else {
+				Element property = parent.addElement("property");
+				property.addAttribute("name", "propName");
+				String val = prop.getValue().toString();
+				if (Validator.isNotNull(val)) property.setText(val);
+			}
+		}
 		
 	}
 

@@ -101,7 +101,20 @@ public class User extends Principal {
     	if (Validator.isNotNull(val)) tBuf.append(val + " ");
     	val = getLastName();
     	if (Validator.isNotNull(val)) tBuf.append(val + " ");
-    	return tBuf.toString().trim();
+    	return tBuf.toString().trim();   	
+    }
+    public String getSearchTitle() {
+    	//return lastname first
+       	String val;
+    	StringBuffer tBuf = new StringBuffer();
+    	val = getLastName();
+    	if (Validator.isNotNull(val)) tBuf.append(val + ", ");
+    	val = getFirstName();
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
+    	val = getMiddleName();
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
+    	tBuf.append(" (" + getName() + ")");
+    	return tBuf.toString().trim();   	
     	
     }
 	/**

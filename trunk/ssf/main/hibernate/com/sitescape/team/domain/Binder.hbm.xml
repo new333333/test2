@@ -115,6 +115,7 @@
       </component>
     </subclass>
     <subclass name="com.sitescape.team.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
+    	<property name="searchTitle" length="255" access="field"/>
      <subclass name="com.sitescape.team.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
     </subclass>
     <subclass name="com.sitescape.team.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">

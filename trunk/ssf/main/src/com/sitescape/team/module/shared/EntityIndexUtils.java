@@ -143,46 +143,12 @@ public class EntityIndexUtils {
     	}
     }
     
-    public static void addNormTitle(Document doc, DefinableEntity entry, User user) {
-        // Add the title field
-    	String normTitle = "";
-    	if (entry.getTitle() != null) {
-    		String title = entry.getTitle();
-    		title = title.trim();
-            
-            if(title.length() > 0) {
-     	        // set the new "bucket title" for username appropriately
-            	Integer defType = entry.getDefinitionType();
-    	        if ((defType != null) && defType == Definition.USER_WORKSPACE_VIEW) {
-    	        	// figure out how to get the user name that owns this user workspace and normalize it... (lastname, firstname, middle)
-    	        		String lastName = user.getLastName();
-    	        		String firstName = user.getFirstName();
-    	        		String middleName = user.getMiddleName();
-    	        		normTitle = (lastName + ", " + firstName + " " + middleName).trim();
-    	        		if (normTitle.startsWith(",")) 
-    	        			normTitle = normTitle.substring(2);
-    	        		if ("".equals(normTitle)) {
-    	        			// try to use the sortTitle instead
-    	        			normTitle = title;
-    	        		}
-
-    	        } else {
-    	        	normTitle = title;
-    	        }
-    	        Field bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE, normTitle.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	        doc.add(bucketTitleField);
-    	        // now add it without lowercasing
-    	        bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE_FIELD, normTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	        doc.add(bucketTitleField);
-            }
-    	}
-    }
     	        
-    public static void addNormTitle(Document doc, DefinableEntity entry) {
+    public static void addNormTitle(Document doc, Binder entry) {
 		// Add the title field
 		String normTitle = "";
 		if (entry.getTitle() != null) {
-			String title = entry.getTitle();
+			String title = entry.getSearchTitle();
 			title = title.trim();
 			if (title.length() > 0) {
 				normTitle = title;

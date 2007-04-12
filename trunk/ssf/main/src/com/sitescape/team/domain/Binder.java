@@ -94,6 +94,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public boolean isRoot() {
     	return getParentBinder() == null;
     }
+    public String getSearchTitle() {
+    	return getTitle();
+    }
     /**
      * @hibernate.property
      */

@@ -180,6 +180,7 @@ public interface ObjectKeys {
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
+    public static final String FIELD_BINDER_SEARCHTITLE="searchTitle";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";

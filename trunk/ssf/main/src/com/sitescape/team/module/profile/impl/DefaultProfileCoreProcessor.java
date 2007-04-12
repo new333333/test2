@@ -89,6 +89,21 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
       	return ctx;
     }
     
+    //*******************************************************************/
+    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
+    	super.addBinder_fillIn(parent,binder, inputData, entryData);
+    	Integer type = binder.getDefinitionType();
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
+    		Principal u = binder.getOwner();
+    		if (!(u instanceof User)) {
+    			u = getProfileDao().loadPrincipal(u.getId(), u.getZoneId(), false);
+    		}
+    		if (u instanceof User) {
+    			((Workspace)binder).setSearchTitle(((User)u).getSearchTitle());
+    		}
+    	}
+   	
+    }
     //***********************************************************************************************************
             
     //inside write transaction
@@ -134,6 +149,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 				   BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(ws, ws.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 				   Map updates = new HashMap();
 				   updates.put(ObjectKeys.FIELD_ENTITY_TITLE, user.getTitle());
+				   updates.put(ObjectKeys.FIELD_BINDER_SEARCHTITLE, user.getSearchTitle());
 				   try {
 					   processor.modifyBinder(ws, new MapInputData(updates), null, null);
 				   } catch (WriteFilesException wf) {};
@@ -292,9 +308,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		//mark deleted, cause their ids are used all over
        		//profileDao will delete all associations and groups
        		p.setDeleted(true);
-       		Map updatesCtx = new HashMap();
+      		Map updatesCtx = new HashMap();
        		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
-       		p.setTitle(p.getTitle() + " " + NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString());
+       		String newName = NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString();
+       		p.setName(newName); //mark as deleted
+       		p.setTitle(p.getTitle() + " (" + newName + ")");
        		checkUserTitle(p, updatesCtx);
        	}
     	getProfileDao().delete((Principal)entry);   

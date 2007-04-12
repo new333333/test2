@@ -234,10 +234,37 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		addPosting(profiles, stamp);
 	        		addJobProcessor(profiles, stamp); 
 	        		Group group = addAllUserGroup(profiles, stamp);
-	        		addRoles(top, top, user, group);
-	        		addGlobalRoot(top, stamp);		
-	        		addTeamRoot(top, stamp);		
+	        		Workspace globalRoot = addGlobalRoot(top, stamp);		
+	        		Workspace teamRoot = addTeamRoot(top, stamp);
+	        		teamRoot.setFunctionMembershipInherited(false);
+	        		
+	        		Function visitorsRole = addVisitorsRole(top);
+	        		Function participantsRole = addParticipantsRole(top);
+	        		Function teamRole = addTeamRole(top);
+	        		Function binderRole = 	addBinderRole(top);
+	        		Function adminRole = addAdminRole(top);
+	        		Function teamWsRole = addTeamWorkspaceRole(top);
+	        		//setup allUsers access
+	        		List members = new ArrayList();
+	        		members.add(group.getId());
+	        		
+	        		addMembership(top, visitorsRole, top, members);
+	        		addMembership(top, visitorsRole, teamRoot, members);
+	        		addMembership(top, participantsRole, top, members);
+	        		addMembership(top, participantsRole, teamRoot, members);
+	        		addMembership(top, teamWsRole, teamRoot, members);
+	        		
+	        		members.clear();
+	        		members.add(ObjectKeys.OWNER_USER_ID);
+	        		addMembership(top, teamRole, top, members);
+	        		addMembership(top, teamRole, teamRoot, members);
+	        		addMembership(top, binderRole, top, members);
+	        		addMembership(top, binderRole, teamRoot, members);
 			
+	        		members.clear();
+	        		members.add(user.getId());
+	        		addMembership(top, adminRole, top, members);
+	        		
 	        		//use module instead of processor directly so index synchronziation works correctly
 	        		//index flushes entries from session - don't make changes without reload
 	        		getBinderModule().indexTree(top.getId());
@@ -349,7 +376,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		team.setDefinitionsInherited(false);
 		List defs = team.getDefinitions();
 		defs.add(team.getEntryDef());
-		
 		//generate id for top and profiles
 		getCoreDao().save(team);
 		getCoreDao().updateFileName(top, team, null, team.getTitle());
@@ -391,36 +417,19 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		getCoreDao().updateFileName(top, profiles, null, profiles.getTitle());
 		return profiles;
 	}
-	private void addRoles(Workspace top, WorkArea workArea, User user, Group allGroup) {
-		addVisitorsRole(top, workArea, allGroup);
-		addParticipantsRole(top, workArea, allGroup);
-		addTeamRole(top, workArea, allGroup);
-		addBinderRole(top, workArea, user);
-		addAdminRole(top, workArea, user);
-	}
-	private void addVisitorsRole(Workspace top, WorkArea workArea, Group group) {
+	private Function addVisitorsRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(NLT.get("administration.initial.function.visitor", "Visitor"));
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-//		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		
 		//generate functionId
-		getFunctionManager().addFunction(function);
-		
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(group.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);				
+		getFunctionManager().addFunction(function);		
+		return function;
 	}
-	private void addParticipantsRole(Workspace top, WorkArea workArea, Group group) {
+	private Function addParticipantsRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(NLT.get("administration.initial.function.particpant", "Participant"));
@@ -434,18 +443,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
-		
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(group.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);				
+		return function;
 	}
-	private void addTeamRole(Workspace top, WorkArea workArea, Group group) {
+	private Function addTeamRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(NLT.get("administration.initial.function.teammember", "Team member"));
@@ -461,19 +461,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
-		
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-//		members.add(group.getId());
-		members.add(ObjectKeys.OWNER_USER_ID);
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);				
+		return function;
 	}
-	private void addBinderRole(Workspace top, WorkArea workArea, User user) {
+	private Function addBinderRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(NLT.get("administration.initial.function.binderadmin", "Workspace and folder administration"));
@@ -486,19 +476,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
-		
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(user.getId());
-		members.add(ObjectKeys.OWNER_USER_ID);
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);				
+		return function;
 	}
-	private void addAdminRole(Workspace top, WorkArea workArea, User user) {
+	private Function addAdminRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(NLT.get("administration.initial.function.siteadmin", "Site administration"));
@@ -508,14 +488,24 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 //		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
 		//generate functionId
 		getFunctionManager().addFunction(function);
-	
+		return function;
+	}
+	private Function addTeamWorkspaceRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(NLT.get("administration.initial.function.workspacecreator", "Workspace Creator"));
+		function.addOperation(WorkAreaOperation.CREATE_BINDERS);
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
+	private void addMembership(Workspace top, Function function, WorkArea workArea, List ids) {
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(workArea.getWorkAreaId());
 		ms.setWorkAreaType(workArea.getWorkAreaType());
 		ms.setZoneId(top.getId());
 		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(user.getId());
+		Set members = new HashSet(ids);
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);
 		

@@ -16,13 +16,8 @@ import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.User;
-
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.impl.AbstractBinderProcessor;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.util.NLT;
 
@@ -32,6 +27,7 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
         	throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
     	super.moveBinder(source, destination);
      }
+ 
     /*******************************************************************/
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
     	//User workspace - title change may come when userTitle changes,
@@ -42,19 +38,12 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     		if (!entryData.containsKey(ObjectKeys.FIELD_ENTITY_TITLE) && inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) {
     			binder.setTitle(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE));    			
     		}
+    		if (!entryData.containsKey(ObjectKeys.FIELD_BINDER_SEARCHTITLE) && inputData.exists(ObjectKeys.FIELD_BINDER_SEARCHTITLE)) {
+    			((Workspace)binder).setSearchTitle(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_SEARCHTITLE));    			
+    		}
+
     	}
     	super.modifyBinder_postFillIn(binder, inputData, entryData);
     }
     
-    protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
-    		Binder binder) {
-    	EntityIndexUtils.addReadAccess(indexDoc, binder);
-	
-    	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
-
-    	// get the principal so this method can add the correct Normalized name
-    	Principal p = binder.getOwner();
-    	Principal realPrincipal = getProfileDao().loadPrincipal(p.getId(), p.getZoneId(), false);
-    	EntityIndexUtils.addNormTitle(indexDoc, binder, (User)realPrincipal);
-    }
 }

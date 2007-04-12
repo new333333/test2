@@ -16,15 +16,21 @@ import java.util.Map;
 import java.util.Iterator;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserDashboard;
+import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.security.function.OperationAccessControlException;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
 import com.sitescape.util.Validator;
@@ -36,6 +42,13 @@ import com.sitescape.util.Validator;
  *
  */
 public class DashboardModuleImpl extends CommonDependencyInjection implements DashboardModule {
+	protected BinderModule binderModule;
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
 	public Dashboard getDashboard(String id) {
 		return getCoreDao().loadDashboard(id);
 	}
@@ -74,6 +87,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     }
     public void modifyDashboard(String id, Map inputData) {
     	Dashboard d = getCoreDao().loadDashboard(id);
+    	checkAccess(d);
     	for (Iterator iter=inputData.entrySet().iterator(); iter.hasNext();) {
     		Map.Entry me = (Map.Entry)iter.next();
 			try {
@@ -86,11 +100,13 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     }
     public void setProperty(String id, String key, Object value) {
     	Dashboard d = getCoreDao().loadDashboard(id);
+    	checkAccess(d);
    		d.setProperty(key, value);
    	   	
     }
     public String addComponent(String id, String scope, String listName, Map component) {
     	Dashboard d = getCoreDao().loadDashboard(id);
+    	checkAccess(d);
 		
     	Map components = (Map) d.getProperty(Dashboard.Components);
     	if (components == null) {
@@ -117,6 +133,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     }
     public void modifyComponent(String id, String componentId, Map component) {
     	Dashboard d = getCoreDao().loadDashboard(id);
+    	checkAccess(d);
 		
     	Map components = (Map) d.getProperty(Dashboard.Components);
     	if (components == null) {
@@ -128,6 +145,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     
     public void deleteComponent(String id, String listName, String componentId) {
     	Dashboard d = getCoreDao().loadDashboard(id);
+    	checkAccess(d);
 		
     	if (Validator.isNotNull(listName)) {
 			List dashboardList = (List) d.getProperty(listName);
@@ -146,6 +164,28 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 			components.remove(componentId);
 		}
   	
+    }
+    private void checkAccess(Dashboard d)  {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	if (!(d instanceof EntityDashboard)) return;
+    	//this is either a binder or user entity dashoard
+    	EntityDashboard e = (EntityDashboard)d;
+    	EntityIdentifier id = e.getOwnerIdentifier();
+    	//only user can modify 
+    	if (EntityIdentifier.EntityType.user.equals(id.getEntityType())) {
+    		if (user.getId().equals(id.getEntityId())) return ;
+    		User entity = getProfileDao().loadUser(id.getEntityId(), user.getZoneId());
+  			AccessUtils.modifyCheck(user, entity);  			     		   				
+    	} else {
+    		//must be a binder 
+    		Binder binder = getCoreDao().loadBinder(id.getEntityId(), user.getZoneId());
+    		if (binder instanceof TemplateBinder) {
+       			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+    		} else {
+       			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+    		}
+    	}
+    	
     }
 
 }
