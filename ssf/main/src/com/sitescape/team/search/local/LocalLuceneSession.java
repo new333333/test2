@@ -635,7 +635,7 @@ public class LocalLuceneSession implements LuceneSession {
 						}
 					});
 					
-					String field = EntityIndexUtils.NORM_TITLE_FIELD;
+					String field = EntityIndexUtils.NORM_TITLE;
 						TermEnum enumerator = indexReader.terms(new Term(
 								field, start));
 
