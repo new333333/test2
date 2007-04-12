@@ -36,28 +36,13 @@ public abstract class TextConverter
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
 	
-	public abstract String convert(String ifp, String ofp, long timeout)
+	public abstract String convert(String ifp, long timeout)
 		throws Exception;
 	
-	public String convert(File ifp, File ofp, long timeout)
+	public String convert(File ifp, long timeout)
 		throws Exception
 	{
-		return convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
-	}
-	
-	/**
-	 *  Run the conversion using the given input path, output path.
-	 *  Default the timeout to 0.
-	 *
-	 *  @param ifp     Input path.
-	 *  @param ofp     Output path.
-	 */
-
-	public void convert(String ifp, String ofp)
-		throws Exception
-	{
-		// default the timeout value to 0
-		convert(ifp,ofp,0);
+		return convert(ifp.getAbsolutePath(),timeout);
 	}
 	
 	protected org.dom4j.Document getDomDocument(File textFile) {
@@ -126,28 +111,6 @@ public abstract class TextConverter
         	Log logger = LogFactory.getLog(getClass());
         	logger.error("DocConverter, transform file error: " + e.getLocalizedMessage());
         }
-		return null;
-	}
-	
-	protected String getCachedData(File ifile, File ofile)
-	{
-		
-		if (ofile != null
-		&& ofile.exists()
-		&& ofile.lastModified() >= ifile.lastModified())
-		{
-			try
-			{
-				char[] cbuf = new char[2048];
-				StringBuffer buffer = new StringBuffer("");
-				FileReader fr = new FileReader(ofile);
-				while (fr.read(cbuf, 0, cbuf.length) > -1)
-					buffer.append(cbuf);
-				 return buffer.toString().trim();
-			 }
-			 catch (IOException io) {}
-		}
-
 		return null;
 	}
 }

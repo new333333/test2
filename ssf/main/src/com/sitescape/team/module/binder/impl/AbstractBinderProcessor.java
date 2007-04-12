@@ -13,6 +13,7 @@ package com.sitescape.team.module.binder.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -895,7 +896,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			bbuf = new byte[is.available()];
 			is.read(bbuf);
 			filePath = FilePathUtil.getFilePath(binder, entity, TEXT_SUBDIR, relativeFilePath);
-			fos = new FileOutputStream(cacheFileStore.getFile(filePath));
+			fos = new FileOutputStream(textfile);
 			fos.write(bbuf);
 			fos.flush();
 			
@@ -905,8 +906,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			
 			// If the output text file already exists and the last modification time is >= to incoming file
 			// we can use the cached version of the file (no conversion since it is already done)
-			if (!outFp.exists() || outFp.lastModified() <= fa.getModification().getDate().getTime())
-				text = converter.convert(textfile.getAbsolutePath(), outFile, 20000);
+			if (!outFp.exists() || outFp.lastModified() <= fa.getModification().getDate().getTime()) {
+				text = converter.convert(textfile.getAbsolutePath(), 20000);
+				FileWriter fw = new FileWriter(outFp);
+				try {
+					fw.write(text, 0, text.length());
+				} catch(Exception io) {
+				} finally {
+					fw.close();
+				}
+			}
 			else
 			{
 				StringBuffer b = new StringBuffer("");
@@ -952,7 +961,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				{
 					fr.close();
 				} catch (Exception io) {}
-			}	
+			}
+			if(textfile != null && textfile.exists()) {
+				textfile.delete();
+			}
 		}
 
         
