@@ -111,7 +111,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_helpSystemRequestInProgress = 0;
 	var ss_helpSystemPanelMarginOffset = 4;
 	
-	var ss_favoritesPaneTopOffset = 0;
+	var ss_favoritesPaneTopOffset = -10;
 	var ss_favoritesPaneLeftOffset = 4;
 	var ss_favoritesMarginW = 4;
 	var ss_favoritesMarginH = 6;
@@ -3037,7 +3037,6 @@ function ss_showFavoritesPane(namespace) {
 	ss_setOpacity(fObj, 100)
 	//fObj.style.display = "none";
 	fObj.style.display = "block";
-	var fObj2 = self.document.getElementById("ss_favorites_table" + namespace)
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom" + namespace) + ss_favoritesPaneTopOffset))
 	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + namespace)))
