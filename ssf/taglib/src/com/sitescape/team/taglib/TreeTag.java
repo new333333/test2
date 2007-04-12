@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletURL;
@@ -290,11 +292,6 @@ public class TreeTag extends TagSupport {
 			//0 or 1 to indicate that there are no more elements in the list
 			String s_ls = e.attributeValue("treeLS");
 	
-			//Text
-			String s_text = Html.formatTo(e.attributeValue("title"));
-			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
-			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
-	
 			//id
 			String s_id = e.attributeValue("id", "");
 			String s_binderId = s_id;
@@ -313,6 +310,17 @@ public class TreeTag extends TagSupport {
 			} else {
 				if (!className.equals("")) titleClass = "class=\""+className+"\"";
 			}
+	
+			//Text
+			String s_text = Html.formatTo(e.attributeValue("title"));
+			if (!s_tuple.equals("")) {
+				//This title is a range field; format it appropriately
+				s_text = getBucketDisplay(Html.formatTo(e.attributeValue("tuple1")));
+				s_text += " <img src=\"" + getImage("/icons/range_arrows.gif") + "\"/> ";
+				s_text += getBucketDisplay(Html.formatTo(e.attributeValue("tuple2")));
+			}
+			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
+			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
@@ -874,6 +882,16 @@ public class TreeTag extends TagSupport {
 		} else {
 			return (this.imagesOpen.containsKey(image)) ? this.commonImg + (String)this.imagesOpen.get(image) : getImage(image);
 		}
+	}
+	
+	private String getBucketDisplay(String text) {
+		String result = text;
+		Pattern p = Pattern.compile("(\\w*)\\W");
+		Matcher m = p.matcher(text);
+		if (m.find()) {
+			result = m.group(1);
+		}
+		return "<span onMouseOver=\"ss_showBucketText(this, '" + text + "');\" >" + result + "</span>";
 	}
 }
 

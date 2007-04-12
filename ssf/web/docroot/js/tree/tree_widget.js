@@ -327,4 +327,39 @@ function ss_save(item) {
 	//alert(item.group.element.id)
 }
 
+//Routines to show and hide a tool tip at an object
+function ss_showBucketText(obj, text) {
+	//ss_debug('ss_showTip: '+text)
+	var tipObj = document.getElementById('ss_treeBucketTextDiv')
+	if (tipObj == null) {
+		//Build a new tip div
+		tipObj = document.createElement("div");
+	    tipObj.setAttribute("id", "ss_treeBucketTextDiv");
+	    tipObj.style.visibility = "hidden";
+	    tipObj.className = "ss_tree_bucket_text_div";
+	    tipObj.style.display = "none";
+
+		// Link into the document tree
+		document.getElementsByTagName("body").item(0).appendChild(tipObj);
+	}
+	tipObj.innerHTML = text;
+	tipObj.style.visibility = "visible";
+	tipObj.style.display = "block";
+	tipObj.style.fontSize = obj.style.fontSize;
+	tipObj.style.fontFamily = obj.style.fontFamily;
+	var x = dojo.html.getAbsolutePosition(obj, true).x
+	var y = dojo.html.getAbsolutePosition(obj, true).y
+    ss_setObjectTop(tipObj, y + "px");
+    ss_setObjectLeft(tipObj, x + "px");
+}
+function ss_hideBucketText() {
+	var tipObj = document.getElementById('ss_treeBucketTextDiv')
+	if (tipObj != null) {
+	    tipObj.style.visibility = "hidden";
+	    tipObj.style.display = "none";
+	}
+}
+
+
+
 
