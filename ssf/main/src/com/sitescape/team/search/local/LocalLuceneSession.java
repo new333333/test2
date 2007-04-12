@@ -708,4 +708,25 @@ public class LocalLuceneSession implements LuceneSession {
 
 		}
 	}
+	
+	/**
+	 * Clear the index, only used at Zone creation
+	 * 
+	 * @return
+	 * @throws LuceneException
+	 */
+	public void clearIndex() {
+		IndexWriter indexWriter = null;
+		try {
+			indexWriter = LuceneUtil.getWriter(indexPath, true);
+		} catch (IOException e) {
+			throw new LuceneException(
+					"Could not open writer on the index [" + this.indexPath
+							+ "]", e);
+		}
+		try {
+			indexWriter.close();
+		} catch (Exception e) {}
+	}
+
 }
