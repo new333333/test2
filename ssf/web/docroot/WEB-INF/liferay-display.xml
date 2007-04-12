@@ -3,6 +3,7 @@
 
 <display>
 	<category name="category.sitescape">
+		<portlet id="ss_welcome" />
 		<portlet id="ss_forum" />
 		<portlet id="ss_administration" />
 		<portlet id="ss_workspacetree" />
