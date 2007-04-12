@@ -151,12 +151,20 @@ public class EntityIndexUtils {
             
             if(title.length() > 0) {
      	        // set the new "bucket title" for username appropriately
-    	        if (entry.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+            	Integer defType = entry.getDefinitionType();
+    	        if ((defType != null) && defType == Definition.USER_WORKSPACE_VIEW) {
     	        	// figure out how to get the user name that owns this user workspace and normalize it... (lastname, firstname, middle)
     	        		String lastName = user.getLastName();
     	        		String firstName = user.getFirstName();
     	        		String middleName = user.getMiddleName();
-    	        		normTitle = (lastName + " " + firstName + " " + middleName).trim();
+    	        		normTitle = (lastName + ", " + firstName + " " + middleName).trim();
+    	        		if (normTitle.startsWith(",")) 
+    	        			normTitle = normTitle.substring(2);
+    	        		if ("".equals(normTitle)) {
+    	        			// try to use the sortTitle instead
+    	        			normTitle = title.toLowerCase();
+    	        		}
+
     	        } else {
     	        	normTitle = title.toLowerCase();
     	        }
