@@ -202,11 +202,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 		//this method check in model(SearchAdditionalOptions) which data are necessary to set search filters defined by user 
 		prepareAdditionalFiltersData(model);
 		
-		// for test only
-		model.put("query", query.asXML());
-		model.put("options", options);
-		model.put("results", results);
-		
 		// SearchUtils.filterEntryAttachmentResults(results);
 		prepareRatingsAndFolders(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
 

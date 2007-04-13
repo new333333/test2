@@ -195,7 +195,7 @@ public class Tabs {
 		//Look for this tab
 		for (int i = 0; i < tabList.size(); i++) {
 			Map tab = (Map)tabList.get(i);
-			if (tab != null && tab.get(TYPE)!=null && tab.get(TYPE).equals(QUERY) && tab.containsKey(QUERY_DOC) && 
+			if (tab != null && tab.get(TYPE)!=null && query != null && tab.get(TYPE).equals(QUERY) && tab.containsKey(QUERY_DOC) && 
 					((Document)tab.get(QUERY_DOC)).asXML().equals(query.asXML())) {
 				tabId = ((Integer)tab.get(TAB_ID)).intValue();
 				break;
