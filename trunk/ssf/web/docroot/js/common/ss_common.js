@@ -3518,7 +3518,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
             imgid = "ppgpresoff"+ssNamespace
         }
     }
-    m += '<td class="ss_bglightgray" valign=top><img border="0" src="" alt="" id=' +imgid +'></td>';
+    m += '<td class="ss_bglightgray" valign=top><img border="0" alt="" id=' +imgid +'></td>';
     m += '<td><span>' + userTitle;
     m += ostatus;
     if (status >= 0) {
@@ -3528,7 +3528,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     if (screenName != '') {
         if (current == '') {
             m += '<tr>';
-            m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgimsg'+ssNamespace+'"></td>';
+            m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimsg'+ssNamespace+'"></td>';
             if (status == 0) {
                 m += '<td class="ss_fineprint ss_gray">'+ss_ostatus_sendIm+'</td>';
             } else {
@@ -3537,32 +3537,32 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
             m += '</tr>';
         }
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgimtg'+ssNamespace+'"></td>';
+        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimtg'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '">'+ss_ostatus_startIm+'</a></td></tr>';
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgsched'+ssNamespace+'"></td>';
+        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgsched'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_ostatus_schedule_meeting_url + '&users=' + userId + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
         m += '<tr>';
         if (ssPresenceZonBridge == 'enabled') {
-        	m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgphone'+ssNamespace+'"></td>';
+        	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgphone'+ssNamespace+'"></td>';
         	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_ostatus_schedule_meeting_url + '&users=' + userId + '\');">'+ss_ostatus_call+'</a></td></tr>';
         }
 	}
 	if (userId != '' && current == '') {
         if (email != '') {
             m += '<tr>';
-            m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgmail'+ssNamespace+'"></td>';
+            m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgmail'+ssNamespace+'"></td>';
             bodyText = escape(window.location.href);
             m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
         }
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgvcard'+ssNamespace+'"></td>';
+        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';	
     }
 
 	if (userId != '') {
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgclipboard'+ssNamespace+'"></td>';
+        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgclipboard'+ssNamespace+'"></td>';
         m += '<td id="addToClipboardTD' + screenName + '"><a class="ss_graymenu" href="javascript: // ;" onclick="ss_muster.addUsersToClipboard([' + userId + ']' + (divId != ''?', function () {$(\'addToClipboardTD'+screenName+'\').innerHTML=\'OK\'}':'') + ');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
 	}	
 	
