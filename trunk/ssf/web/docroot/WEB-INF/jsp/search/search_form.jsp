@@ -14,6 +14,7 @@
 
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
+<div class="ss_style ss_portlet_style">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
@@ -21,28 +22,28 @@
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 	<div class="ss_clear"></div>
 
-<div id="ss_tabs_container">
-	<ul class="ss_actions_bar ss_actions_bar1"></ul>
-	<div class="ss_clear"></div>
-
-  <div id="ss_tab_content">
-	<div class="ss_searchContainer">
-		<div id="ss_searchForm_spacer"></div>
-
-		<div id="ss_content">
-		<c:if test="${quickSearch}">
-			<!-- Quick search form -->
-			<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
-		</c:if>
-		<c:if test="${!quickSearch}">
-			<!-- Advanced search form -->
-			<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
-		</c:if>
+	<div id="ss_tabs_container">
+		<ul class="ss_actions_bar ss_actions_bar1"></ul>
+		<div class="ss_clear"></div>
+	
+	  <div id="ss_tab_content">
+		<div class="ss_searchContainer">
+			<div id="ss_searchForm_spacer"></div>
+	
+			<div id="ss_content">
+			<c:if test="${quickSearch}">
+				<!-- Quick search form -->
+				<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
+			</c:if>
+			<c:if test="${!quickSearch}">
+				<!-- Advanced search form -->
+				<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
+			</c:if>
+			</div>
 		</div>
+	  </div>
 	</div>
-  </div>
 </div>
-
 <script type="text/javascript">
 // Init empty additional options
 function init() {
