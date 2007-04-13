@@ -13,6 +13,8 @@ package com.sitescape.team.util;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -21,6 +23,8 @@ import org.springframework.util.FileCopyUtils;
  */
 public class FileHelper {
 	
+	private static Log logger = LogFactory.getLog(FileHelper.class);
+
     /**
      * Creates directory.
      * 
@@ -121,6 +125,8 @@ public class FileHelper {
         try {
         	delete(file);
         }
-        catch(IOException ignore) {}
+        catch(IOException e) {
+        	logger.error(e);
+        }
     }		
 }
