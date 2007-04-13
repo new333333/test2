@@ -299,6 +299,15 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			}
 		}
 		
+		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
+		try {
+			cacheFileStore.deleteDirectory(entityPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the entry's cache directory [" +
+					cacheFileStore.getAbsolutePath(entityPath) + "]", e);
+		}
+		
 		if(!updateMetadata) {
 			// Since there was no in-line transaction for updating metadata,
 			// we must run a separate transaction to record the change logs. 
@@ -475,9 +484,16 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				generateHtmlFile(url, binder, entry, fa);
 				// Process Character file
 				is = new FileInputStream(htmlFile);
-				byte[] bbuf = new byte[is.available()];
-				is.read(bbuf);
-				out.write(bbuf);
+				// JK Close the stream. This is just a temporary fix for issue#352 
+				// until Joe checks in his real fix.
+				try {
+					byte[] bbuf = new byte[is.available()];
+					is.read(bbuf);
+					out.write(bbuf);
+				}
+				finally {
+					is.close();
+				}
 			}
 		}
 		catch(FileNotFoundException e) {
