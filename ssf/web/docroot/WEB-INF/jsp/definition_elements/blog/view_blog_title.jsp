@@ -58,7 +58,7 @@
 <span class="ss_header_bar_title_text">
 	<%= docNumber %>
 	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
-	folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
+	binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
 	imageId='menuimg_${ssDefinitionEntry.id}_${ss_namespace}_${ssDefinitionEntry.id}' 
     menuDivId="ss_emd_${ss_namespace}_${ssDefinitionEntry.id}"
 	linkMenuObjIdx="${ss_namespace}_${ssDefinitionEntry.id}" 

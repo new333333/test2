@@ -282,8 +282,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
 	<ssf:menuLink 
-		displayDiv="false" entryId="${entry1._docId}" 
-		folderId="${ssFolder.id}" binderId="${ssBinder.id}" 
+		displayDiv="false" entryId="${entry1._docId}" binderId="${ssBinder.id}" 
 		entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
 		menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 		namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no">
@@ -296,7 +295,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		    	(<ssf:nlt tag="entry.noTitle"/>)
 		    </c:if>
 	    	<c:out value="${entry1.title}"/>
-	</ssf:menuLink>
+	</ssf:menuLink> 
   </ssf:slidingTableColumn>
  </c:if>
   
