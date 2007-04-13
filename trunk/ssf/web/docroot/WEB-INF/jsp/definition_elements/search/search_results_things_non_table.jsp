@@ -333,8 +333,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	      </c:if>
 	      
 			<ssf:menuLink 
-				displayDiv="false" entryId="${entry1._docId}" 
-				folderId="${entry1._binderId}" binderId="${entry1._binderId}" 
+				displayDiv="false" entryId="${entry1._docId}" binderId="${entry1._binderId}" 
 				entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
 		    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 				namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 

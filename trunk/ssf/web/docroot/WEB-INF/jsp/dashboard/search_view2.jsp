@@ -94,8 +94,7 @@
 
 				<span class="ss_entryTitle ss_underline">
 				<ssf:menuLink 
-					displayDiv="false" entryId="${fileEntry._docId}" 
-					folderId="${fileEntry._binderId}" binderId="${fileEntry._binderId}" 
+					displayDiv="false" entryId="${fileEntry._docId}" binderId="${fileEntry._binderId}" 
 					entityType="${fileEntry._entityType}" imageId='menuimg_${fileEntry._docId}_${ss_namespace}' 
 			    	menuDivId="ss_emd_${ss_namespace}" linkMenuObjIdx="${ss_namespace}" 
 					namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="yes"

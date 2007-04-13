@@ -27,7 +27,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
 	</c:if>
 		<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
-		folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
+		binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
 		imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}_${ssDefinitionEntry.id}' 
 	    menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}"
 		linkMenuObjIdx="${renderResponse.namespace}_${ssDefinitionEntry.id}" 

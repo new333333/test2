@@ -31,7 +31,6 @@ if ("false".equals(adapter)) {
 	blnAdapter = false;
 }
 String entryId = ParamUtil.get(request, "entryId", "");
-String folderId = ParamUtil.get(request, "folderId", "");
 String binderId = ParamUtil.get(request, "binderId", "");
 String entityType = ParamUtil.get(request, "entityType", "");
 String seenStyle = ParamUtil.get(request, "seenStyle", "");

@@ -641,12 +641,6 @@
 		</attribute>
 
 		<attribute>
-			<name>folderId</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-
-		<attribute>
 			<name>binderId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

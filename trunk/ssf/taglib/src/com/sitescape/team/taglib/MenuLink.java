@@ -33,7 +33,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String action = "";
 	private Boolean adapter = Boolean.TRUE;
 	private String entryId = "";
-	private String folderId = "";
 	private String binderId = "";
 	private String entityType = "";
 	private String displayDiv = "false";
@@ -81,7 +80,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	
 				_params.put("adapter", new String[] {strAdapterValue});
 				_params.put("entryId", new String[] {this.entryId});
-				_params.put("folderId", new String[] {this.folderId});
 				_params.put("binderId", new String[] {this.binderId});
 				_params.put("entityType", new String[] {this.entityType});
 				_params.put("seenStyle", new String[] {this.seenStyle});
@@ -127,7 +125,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			action = "";
 			adapter= Boolean.TRUE;
 			entryId = "";
-			folderId = "";
 			binderId = "";
 			entityType = "";
 			displayDiv = "false";
@@ -180,10 +177,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	
 	public void setEntryId(String entryId) {
 	    this.entryId = entryId;
-	}
-	
-	public void setFolderId(String folderId) {
-	    this.folderId = folderId;
 	}
 	
 	public void setBinderId(String binderId) {
