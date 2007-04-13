@@ -72,4 +72,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	
 	public ArrayList getNormTitles(String indexName, Query query, String start, String end,
 			int skipsize) throws RemoteException;
+	
+	public void clearIndex(String indexname) throws RemoteException;
 }
