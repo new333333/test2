@@ -1268,9 +1268,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				errors.addProblem(new FilesErrors.Problem
 						(repositoryName, relativeFilePath, 
 								FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
-				// If failed to delete primary file, it's not worth trying to
-				// delete generated files. Stop here and return.
-				return null;				
+				// Even if we failed to delete the primary file, we still proceed
+				// to deleting generated files. 
 			}
 
 			// Currently file module does not maintain metadata about "generated"
@@ -1295,48 +1294,12 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				// let's not the failure to delete generated file to abort the
 				// entire operation. So we proceed. 
 			}
-			// Try deleting scaled file if exists in the repository
-			// TODO - This code exists only for temporary fixup - to be removed
-			try {
-				String scaledFileName = makeScaledFileNameInRepository(relativeFilePath);
-				if (session.fileInfo(binder, entry, scaledFileName) 
-						!= RepositorySession.NON_EXISTING_FILE) {
-					session.delete(binder, entry, scaledFileName);
-				}
-			}
-			catch(Exception e) {
-				logger.error("Error deleting scaled copy of " + relativeFilePath, e);
-				errors.addProblem(new FilesErrors.Problem
-						(repositoryName, relativeFilePath, 
-								FilesErrors.Problem.PROBLEM_DELETING_SCALED_FILE, e));
-				// Since we successfully deleted the primary file above (which
-				// indicates that at least the repository seems up and running),
-				// let's not the failure to delete generated file to abort the
-				// entire operation. So we proceed. 
-			}
 
 			// Try deleting thumbnail file if exists
 			try {
 				String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fAtt.getFileItem().getName());
 				if(cacheFileStore.fileExists(filePath)) {
 					cacheFileStore.deleteFile(filePath);
-				}
-			}
-			catch(Exception e) {
-				logger.error("Error deleting thumbnail copy of " + relativeFilePath, e);
-				errors.addProblem(new FilesErrors.Problem
-						(repositoryName, relativeFilePath, 
-								FilesErrors.Problem.PROBLEM_DELETING_THUMBNAIL_FILE, e));
-				// We proceed and update metadata.
-			}
-
-			// Try deleting thumbnail file if exists in the repository
-			// TODO - This code exists only for temporary fixup - to be removed
-			try {
-				String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
-				if (session.fileInfo(binder, entry, thumbnailFileName) 
-						!= RepositorySession.NON_EXISTING_FILE) {
-					session.delete(binder, entry, thumbnailFileName);
 				}
 			}
 			catch(Exception e) {
