@@ -313,9 +313,49 @@
 							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
 						</div>
 		    </c:when>
+		    <c:when test="${entry._entityType == 'profiles'}">
+						<div class="ss_thumbnail">
+							<c:if test="${!empty entry._fileID}"><img src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
+												<ssf:param name="fileId" value="${entry._fileID}"/>
+											    <ssf:param name="viewType" value="thumbnail"/>
+											    </ssf:url>" />
+							</c:if>
+							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+								<ssf:menuLink 
+									displayDiv="false" entryId="${entry._docId}" 
+									folderId="${entry._binderId}" binderId="${entry._binderId}" 
+									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
+									useBinderFunction="no">
+									<ssf:param name="url" useBody="true">
+										<ssf:url folderId="${entry._docId}" binderId="${entry._docId}" action="view_profile_listing" />
+									</ssf:param>
+									<c:out value="${entry.title}"/>
+								</ssf:menuLink>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+									${entry._desc}
+								</ssf:textFormat>
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						</div>
+		    </c:when>
 		    <c:otherwise>
-				  other type: ${entry._entityType}
-				  entry details: ${entry}
+			<!--	  other type: ${entry._entityType}
+				  entry details: ${entry} -->
 		    </c:otherwise>
 			</c:choose>	
 			</li>
