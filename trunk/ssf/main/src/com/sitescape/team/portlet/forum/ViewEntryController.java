@@ -221,7 +221,7 @@ public class ViewEntryController extends  SAbstractController {
 		NEW FUNCTIONALITY: 04/12/2007: 
 		IF newTab == 1, always create a new tab
 		ELSE IF newTab == 2, always create a new tab
-		ELSE IF newTab == 3, always use current tab
+		ELSE IF newTab == 3, always use current tab (Clear the current tab and set the new entry)
 		ELSE IF a valid tabId is passed in, then we will open it in that specific tab 
 		ELSE IF a valid tab is not passed in, then we will check if the current tab is a search tab
 		IF current tab is a search tab, then we will NOT use the current tab, 
@@ -240,26 +240,28 @@ public class ViewEntryController extends  SAbstractController {
 		*
 		*/
 		if (newTab.equals("1")) {
-			//tabs.setCurrentTab(tabs.findTab(binder, true));
 			tabs.setCurrentTab(tabs.addTab(folderEntry));
 		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(folderEntry));
 		} else if (newTab.equals("3")) {
-			//tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
-			tabs.setCurrentTab(tabs.setTab(folderEntry));
-			
+			tabs.setCurrentTab(tabs.setTab(folderEntry, true));
 		} else if (tabId != null) {
 			//Do not set the page number to zero
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), folderEntry));
 		} else {
 			//Change the tab only if not using the adaptor url
 			if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-				// Indicates that the request is being served by the adapter framework.
-				//Don't overwrite a search tab
+				//Indicates that the request is being served by the adapter framework.
+				//Don't overwrite a search tab, when not explicitly asked to do so. 
+				//Overwriting the current tab even if it is a search tab will happen only
+				//when the newTab value is set to 3. If the tabId value is not specified 
+				//and if the newTab value is also not set (1, 2 or 3), then we will check
+				//if the current tab is a search tab, if so we will not overwrite it
+				//if the current tab is not a search tab, then we will overwrite it
 				if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
 					tabs.setCurrentTab(tabs.findTab(folderEntry));
 				} else {
-					tabs.setCurrentTab(tabs.setTab(folderEntry));
+					tabs.setCurrentTab(tabs.setTab(folderEntry, true));
 				}
 			}
 		}	
