@@ -240,6 +240,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 	
 	<c:set var="ss_generic_border_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_generic_border_shadow_color" value="#666666" scope="request"/>
 
 	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
@@ -2588,15 +2589,15 @@ div.ss_search_results_pane {
 .ss_search_results_selection_inactive {
 }
 div.ss_findUserList {
-	position:absolute;
-	margin:2px;
-	padding:0px 15px;
-	border-top:     solid #CCCCCC 1px; 
-	border-left:    solid #CCCCCC 1px; 
-	border-right:   solid #666666 1px; 
-	border-bottom:  solid #666666 1px; 
-	background:${ss_style_background_color};
-	z-index:500;
+	position: absolute;
+	margin: 2px;
+	padding: 0px 15px;
+	border-top:    solid 1px ${ss_generic_border_color}; 
+	border-left:   solid 1px ${ss_generic_border_color}; 
+	border-right:  solid 1px ${ss_generic_border_shadow_color}; 
+	border-bottom: solid 1px ${ss_generic_border_shadow_color}; 
+	background: ${ss_style_background_color};
+	z-index: 500;
 }
 .ss_findUserList div ul {
 	list-style-type:none;
