@@ -3651,12 +3651,12 @@ div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_l
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
 img.ss_searchButton {vertical-align:top;}
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
-	color: #000099;
+	color: #0000FF;
 	text-decoration:underline;
 	margin:0px 0px 0px 6px;
 }
 a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a.ss_parentPointer:active {
-	color: #000099;
+	color: #0000ff;
 	text-decoration:underline;
 	margin:0px 0px 0px 0px;
 }
