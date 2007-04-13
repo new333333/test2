@@ -30,19 +30,11 @@
 									useBinderFunction="no">
 				
 									<ssf:param name="url" useBody="true">
-										<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-										action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" >
-											<ssf:param name="entityType" value="${entry._entityType}" />
-											<ssf:param name="newTab" value="1"/>
-										</ssf:url>
+										<ssf:url folderId="${entry._binderId}" entryId="${entry._docId}" action="view_folder_entry"/>
 									</ssf:param>
 									<c:out value="${entry.title}"/>
 								</ssf:menuLink>
 
-			    					<!-- a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="folderEntry" /><ssf:param name="newTab" value="1"/></ssf:url>"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${renderResponse.namespace}');">
-									<c:out value="${entry.title}"/>
-									</a -->
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
@@ -62,11 +54,8 @@
 							</c:if>
 							<c:if test="${!empty entry.binderTitle}">
 								<ssf:nlt tag="searchResult.label.binder" />: 
-								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"	binderId="${entry._binderId}">
-						    	<ssf:param name="entityType" value="folder" />
-				    	    	<ssf:param name="newTab" value="1"/></ssf:url>" 
-								class="ss_parentPointer"
-								onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${renderResponse.namespace}');">
+								<a href="<ssf:url folderId="${entry._binderId}" action="view_folder_listing" />" 
+								class="ss_parentPointer">
 								${entry.binderTitle}
 								</a>
 							</c:if>
@@ -85,7 +74,7 @@
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="permalink">
+									useBinderFunction="no">
 									
 									<ssf:param name="url" useBody="true">
 										<ssf:url webPath="viewFile" binderId="${entry._binderId}">
@@ -95,10 +84,6 @@
 									</ssf:param>
 									<c:out value="${entry._fileName}"/>
 								</ssf:menuLink>
-			    					<!-- a href="<ssf:url webPath="viewFile" binderId="${entry._binderId}"><ssf:param name="entryId" value="${entry._docId}"/><ssf:param name="fileId" value="${entry._fileID}"/></ssf:url>"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${renderResponse.namespace}');">
-									<c:out value="${entry._fileName}"/>
-									</a -->
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
@@ -109,12 +94,19 @@
 							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
 							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
 							<p><ssf:nlt tag="searchResult.label.entry" />:
-								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="folderEntry" /><ssf:param name="newTab" value="1"/></ssf:url>"
-									class="ss_parentPointer"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${renderResponse.namespace}');">
+								<a href="<ssf:url folderId="${entry._binderId}" entryId="${entry._docId}" action="view_folder_entry"/>"
+									class="ss_parentPointer">
 									<c:out value="${entry.title}"/>
 								</a>
 							</p>
+							<c:if test="${!empty entry.binderTitle}">
+								<ssf:nlt tag="searchResult.label.binder" />: 
+								<a href="<ssf:url folderId="${entry._binderId}" action="view_folder_listing" />" 
+								class="ss_parentPointer">
+								${entry.binderTitle}
+								</a>
+							</c:if>
+							
 						</div>
 		    </c:when>
 
@@ -139,11 +131,7 @@
 									useBinderFunction="permalink">
 									
 									<ssf:param name="url" useBody="true">
-												<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"
-													binderId="${entry._principal.workspaceId}">
-													<ssf:param name="entityType" value="${entry._entityType}" />
-										    	    <ssf:param name="newTab" value="1"/>
-												</ssf:url>
+										<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>
 									</ssf:param>
 									<c:out value="${entry.title}"/>
 								</ssf:menuLink>
@@ -176,7 +164,7 @@
 									entityType="${entry._entityType}" imageId="menuimg_${entry._docId}_${entry._fileID}_${renderResponse.namespace}" 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="yes">
+									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
 										<ssf:url webPath="viewFile" binderId="${entry._binderId}">
 											<ssf:param name="entryId" value="${entry._docId}"/>
@@ -221,17 +209,13 @@
 									entityType="${entry._entityType}" imageId="menuimg_${entry._docId}_${renderResponse.namespace}" 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="yes">
+									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
 								    	<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" entryId="${entry._docId}" 
 					      					action="view_group" actionUrl="true" />
 									</ssf:param>
 									<c:out value="${entry.title}"/>
 								</ssf:menuLink>
-									<!-- a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"	binderId="${entry._principal.workspaceId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>" 
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${renderResponse.namespace}');">
-									<c:out value="${entry.title}"/>
-									</a -->
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
@@ -267,24 +251,12 @@
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="yes">
+									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
-											<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" 
-									          action="view_folder_listing"  actionUrl="true" >
-										    	  <ssf:param name="binderId" value="${entry._docId}"/>
-										    	  <ssf:param name="newTab" value="1"/>
-									    	  </ssf:url>
-				    	  					</ssf:param>
+										<ssf:url folderId="${entry._docId}" action="view_folder_listing" />
+									</ssf:param>
 									<c:out value="${entry.title}"/>
 								</ssf:menuLink>
-						     <!-- a href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" 
-						          action="view_folder_listing"  actionUrl="true" >
-						    	  <ssf:param name="binderId" value="${entry._docId}"/>
-						    	  <ssf:param name="newTab" value="1"/>
-						    	  </ssf:url>" 
-						        onClick="return ss_loadBinder(this, '${entry._docId}', '${entry._entityType}');" >
-															<c:out value="${entry.title}"/>
-															</a -->
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
@@ -319,20 +291,12 @@
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="yes">
+									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
-										<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" action="view_ws_listing" actionUrl="true">
-											<ssf:param name="binderId" value="${entry._docId}"/>
-											<ssf:param name="newTab" value="1"/>
-										</ssf:url>
+										<ssf:url folderId="${entry._docId}" action="view_ws_listing" />
 									</ssf:param>
 									<c:out value="${entry.title}"/>
 								</ssf:menuLink>
-									<!-- a href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" action="view_ws_listing" actionUrl="true" >
-							    		<ssf:param name="binderId" value="${entry._docId}"/><ssf:param name="newTab" value="1"/></ssf:url>" 
-								    	onClick="return ss_loadBinder(this, '${entry._docId}', '${entry._entityType}');" >
-										<c:out value="${entry.title}"/>
-									</a -->
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
