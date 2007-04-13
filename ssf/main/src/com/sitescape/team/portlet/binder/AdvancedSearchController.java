@@ -88,19 +88,23 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-        
+        model.put(WebKeys.LOCALE, getUserLocale());
         if (op.equals(WebKeys.SEARCH_RESULTS)) {
-        	model = prepareSearchResultData(request);
+        	model.putAll(prepareSearchResultData(request));
         	return new ModelAndView("search/search_result", model);
         } else if (op.equals(WebKeys.SEARCH_VIEW_PAGE)) {
-        	model = prepareSearchResultPage(request);
+        	model.putAll(prepareSearchResultPage(request));
         	return new ModelAndView("search/search_result", model);
         } else {
-        	model = prepareSearchFormData(request);
+        	model.putAll(prepareSearchFormData(request));
         	return new ModelAndView("search/search_form", model);
         }
 	}
-	
+		
+	private String getUserLocale() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return user.getLocale().getLanguage();
+	}
 	
 	private Map prepareSearchResultPage(RenderRequest request) throws PortletRequestBindingException {
 		Map model = new HashMap();

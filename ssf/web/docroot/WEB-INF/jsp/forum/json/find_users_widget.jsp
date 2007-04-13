@@ -13,8 +13,19 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
-{
+[
+	<c:if test="${!empty ssPagePrevious || !empty ssPageNext}">	
+		{
+		<c:if test="${!empty ssPagePrevious}">
+			_prev: {text: "[prev]", pgStr: "${ssPagePrevious.start};${ssPagePrevious.end}"}
+		</c:if>
+		<c:if test="${!empty ssPageNext}">
+			<c:if test="${!empty ssPagePrevious}">,</c:if>
+			_next: {text: "[next]", pgStr: "${ssPageNext.start};${ssPageNext.end}"}
+		</c:if>
+		},
+	</c:if>
 <c:forEach var="user" items="${ssUsers}" varStatus="status">
-	"<ssf:escapeJavaScript value="${user._docId}"/>":"<ssf:escapeJavaScript value="${user.title}"/>"<c:if test="${!status.last}">,</c:if>
+	["<ssf:escapeJavaScript value="${user.title}"/>", "<ssf:escapeJavaScript value="${user._docId}"/>"]<c:if test="${!status.last}">,</c:if>
 </c:forEach>
-}
+]
