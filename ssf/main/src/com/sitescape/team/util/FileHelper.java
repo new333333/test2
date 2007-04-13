@@ -59,7 +59,7 @@ public class FileHelper {
 				return;
 		
 			try {
-				Thread.sleep(1);
+				Thread.sleep(10);
 			} 
 			catch (InterruptedException e) {}
 			
@@ -118,6 +118,9 @@ public class FileHelper {
         }
     
         // We can now safely delete it.
-        file.delete();
+        try {
+        	delete(file);
+        }
+        catch(IOException ignore) {}
     }		
 }
