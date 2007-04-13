@@ -270,8 +270,8 @@ public class RepositoryUtil {
 	}
 	
 	/**
-	 * Returns binder path. The returned path does not contain root path and
-	 * it always ends with a separator character.  
+	 * Returns a logical binder path. The returned path does not contain root 
+	 * path and it always ends with a separator character.  
 	 * 
 	 * @param binder
 	 * @param separator
@@ -287,8 +287,8 @@ public class RepositoryUtil {
 	}
 	
 	/**
-	 * Returns entity path. The returned path does not contain root path and
-	 * it always ends with a separator character.  
+	 * Returns a logical entity path. The returned path does not contain root 
+	 * path and it always ends with a separator character.  
 	 * 
 	 * @param binder
 	 * @param entry

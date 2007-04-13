@@ -41,6 +41,7 @@ import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileHelper;
+import com.sitescape.team.util.FilePathUtil;
 
 public class FileRepositorySession implements RepositorySession {
 
@@ -759,12 +760,18 @@ public class FileRepositorySession implements RepositorySession {
 		return file.getParentFile();
 	}
 	
+	/*
+	 * Return a physical path for the binder
+	 */
 	private String getBinderDirPath(Binder binder) {
-		return repositoryRootDir + RepositoryUtil.getBinderPath(binder, File.separator);
+		return repositoryRootDir + FilePathUtil.getBinderDirPath(binder);
 	}
 	
+	/*
+	 * Return a physical path for the entity
+	 */
 	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
-		return repositoryRootDir + RepositoryUtil.getEntityPath(binder, entry, File.separator);
+		return repositoryRootDir + FilePathUtil.getEntityDirPath(binder, entry); 
 	}
 	
 	private File getFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
