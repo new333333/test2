@@ -1904,7 +1904,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
 	width: 4px;
 	height: 45px;
 	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.jpg) no-repeat;	
-	margin: 0 10px 0 10px;	
+	margin: 0 5px 0 5px;	
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
@@ -1954,16 +1954,16 @@ div.ss_global_toolbar table td {
 
 
 .ss_global_toolbar_myworkspace div, .ss_global_toolbar_favs div {
-	padding: 25px 10px 10px 10px;
+	padding: 25px 5px 10px 5px;
 	vertical-align: middle;
 }
 
 .ss_global_toolbar_favs div {
-	background:url(<html:imagesPath/>icons/toolbar_favorites.png) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
 	width: 45px;
 }
 .ss_global_toolbar_myworkspace div {
-	background:url(<html:imagesPath/>icons/toolbar_myworkspace.png) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
 	width: 73px;
 }
 
@@ -1990,6 +1990,7 @@ div.ss_global_toolbar_help {
 	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat top center;
 	width: 30px;
 	padding-right: 4px;
+	margin-top: 5px;
 	text-align: center;
 }
 .ss_global_toolbar_findUser {
@@ -2022,13 +2023,15 @@ div.ss_global_toolbar_findUser_text span {
 .ss_global_toolbar_search {
 	margin-top: 0px;
 	background: transparent;
+	vertical-align: bottom;
 }
 .ss_global_toolbar_search form {
 	background:transparent;
 }
-.ss_global_toolbar_search .form-text {
+.ss_global_toolbar_quick input {
 	width: 150px;
 	background: #FFFFFF;
+	border: 1px solid #7F9DB9;
 }
 div.ss_global_toolbar_search_text {
     width:100px;
@@ -2039,9 +2042,7 @@ div.ss_global_toolbar_search_text {
 div.ss_global_toolbar_search_text span {
 	background:inherit !important;
 }
-.ss_global_toolbar_search a {
-	background:inherit !important;
-}
+
 
 
 
@@ -3649,7 +3650,24 @@ div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_l
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
 #ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
-img.ss_searchButton {vertical-align:top;}
+
+a.ss_searchButton img {
+	width: 22px;
+	height: 17px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
+	background: transparent url(<html:imagesPath/>pics/search_icons.gif) no-repeat top left; 
+}
+
+a.ss_searchButton:hover img {
+	background-position: left -17px; 
+}
+
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
 	color: #0000FF;
 	text-decoration:underline;

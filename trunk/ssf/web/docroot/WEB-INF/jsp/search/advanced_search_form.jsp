@@ -38,7 +38,7 @@
 								<option value="50" <c:if test="${ssMaxHits == 50}">selected="selected"</c:if>>50</option>
 								<option value="100" <c:if test="${ssMaxHits == 100}">selected="selected"</c:if>>100</option>								
 							</select>
-							<a href="javascript: ss_search();"><img src="<html:imagesPath/>pics/search_icon.gif" class="ss_searchButton"/></a>
+							<a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
 							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 						</td>
 					</tr>
