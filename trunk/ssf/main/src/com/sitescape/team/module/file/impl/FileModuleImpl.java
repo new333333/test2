@@ -40,6 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -468,33 +469,16 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			filePath = filePath.substring(0, filePath.lastIndexOf('.')) + HTML_FILE_SUFFIX;
 			htmlFile = cacheFileStore.getFile(filePath);
 			
-			if (htmlFile != null
-			&& htmlFile.exists()
-			&& htmlFile.lastModified() >= fa.getModification().getDate().getTime())
-			{
-				// Process Character file
-				is = new FileInputStream(htmlFile);
-				byte[] bbuf = new byte[is.available()];
-				is.read(bbuf);
-				out.write(bbuf);
-				return;
-			}
-			else
+			if (htmlFile == null
+			|| !htmlFile.exists()
+			|| htmlFile.lastModified() < fa.getModification().getDate().getTime())
 			{
 				generateHtmlFile(url, binder, entry, fa);
-				// Process Character file
-				is = new FileInputStream(htmlFile);
-				// JK Close the stream. This is just a temporary fix for issue#352 
-				// until Joe checks in his real fix.
-				try {
-					byte[] bbuf = new byte[is.available()];
-					is.read(bbuf);
-					out.write(bbuf);
-				}
-				finally {
-					is.close();
-				}
 			}
+			// Process Character file
+			is = new FileInputStream(htmlFile);
+			FileCopyUtils.copy(is, out);
+			return;
 		}
 		catch(FileNotFoundException e) {
 			throw new UncheckedIOException(e);
@@ -538,9 +522,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			urlFile = cacheFileStore.getFile(filePath);
 						
 			is = new FileInputStream(urlFile);
-			bbuf = new byte[is.available()];
-			is.read(bbuf);
-			out.write(bbuf);
+			FileCopyUtils.copy(is, out);
 		}
 		catch(FileNotFoundException e) {
 			throw new UncheckedIOException(e);
@@ -648,14 +630,11 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				parentDir.mkdirs();
 			
 			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
-			byte[] bbuf = new byte[is.available()];
-			is.read(bbuf);
 			filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fa.getFileItem().getName());
 			originalFile = cacheFileStore.getFile(filePath);
 			fos = new FileOutputStream(originalFile);
-			fos.write(bbuf);
-			fos.flush();
-			
+			FileCopyUtils.copy(is, fos);
+		
 			outFile = scaledfile.getAbsolutePath();			
 			generateAndStoreScaledFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, maxWidth, maxHeight);
 		}
@@ -718,13 +697,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				parentDir.mkdirs();
 			
 			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
-			byte[] bbuf = new byte[is.available()];
-			is.read(bbuf);
 			filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fa.getFileItem().getName());
 			originalFile = cacheFileStore.getFile(filePath);
 			fos = new FileOutputStream(originalFile);
-			fos.write(bbuf);
-			fos.flush();
+			FileCopyUtils.copy(is, fos);
 			
 			outFile = thumbfile.getAbsolutePath();			
 			generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, maxWidth, maxHeight);
@@ -805,13 +781,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				try
 				{
 					is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
-					byte[] bbuf = new byte[is.available()];
-					is.read(bbuf);
 					filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + relativeFilePath);
 					originalFile = cacheFileStore.getFile(filePath);
 					fos = new FileOutputStream(originalFile);
-					fos.write(bbuf);
-					fos.flush();
+					FileCopyUtils.copy(is, fos);
 				}
 				catch(Exception e)
 				{

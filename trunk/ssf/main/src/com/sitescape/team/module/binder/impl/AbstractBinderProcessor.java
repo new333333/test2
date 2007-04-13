@@ -33,6 +33,7 @@ import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
@@ -901,15 +902,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		
 		try
 		{
-			// Write the file to cache file store we can not be sure that item is an actual file in Repository
-			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
-			bbuf = new byte[is.available()];
-			is.read(bbuf);
-			filePath = FilePathUtil.getFilePath(binder, entity, TEXT_SUBDIR, relativeFilePath);
-			fos = new FileOutputStream(textfile);
-			fos.write(bbuf);
-			fos.flush();
-			
 			outFile = textfile.getAbsolutePath();
 			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + TXT_EXT;
 			outFp = new File(outFile);
@@ -917,6 +909,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			// If the output text file already exists and the last modification time is >= to incoming file
 			// we can use the cached version of the file (no conversion since it is already done)
 			if (!outFp.exists() || outFp.lastModified() <= fa.getModification().getDate().getTime()) {
+				// Write the file to cache file store we can not be sure that item is an actual file in Repository
+				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
+				fos = new FileOutputStream(textfile);
+				FileCopyUtils.copy(is, fos);
+				
 				text = converter.convert(textfile.getAbsolutePath(), 20000);
 				FileWriter fw = new FileWriter(outFp);
 				try {

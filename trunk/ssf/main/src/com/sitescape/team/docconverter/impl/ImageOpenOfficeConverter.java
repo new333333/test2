@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.docconverter.IImageConverterManager;
@@ -131,15 +132,12 @@ public class ImageOpenOfficeConverter
 			|| ifp.toLowerCase().endsWith(".jpeg"))
 			{
 				is = new FileInputStream(ifp);
-				inputData = new byte[is.available()];
-				is.read(inputData);
 			}
 			else
 			{
 				is = new FileInputStream(_defaultImage);
-				inputData = new byte[is.available()];
-				is.read(inputData);			
 			}
+			inputData = FileCopyUtils.copyToByteArray(is);
 			
 			baos = new ByteArrayOutputStream();
 			if (maxHeight == 0) {
