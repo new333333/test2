@@ -99,6 +99,12 @@ public class FileStore {
 		FileHelper.delete(file);
 	}
 	
+	public void deleteDirectory(String dirRelativePath) throws IOException {
+		File dir = getFile(dirRelativePath);
+		
+		FileHelper.deleteRecursively(dir);
+	}
+	
 	public boolean fileExists(String fileRelativePath) {
 		return getFile(fileRelativePath).exists();
 	}
@@ -125,10 +131,9 @@ public class FileStore {
 	 * @param fileRelativePath
 	 * @return
 	 */
-	/*
 	public String getAbsolutePath(String fileRelativePath) {
 		return getFile(fileRelativePath).getAbsolutePath();
-	}*/
+	}
 	
 	private File getFileMkdir(String fileRelativePath) {
 		File file = getFile(fileRelativePath);
