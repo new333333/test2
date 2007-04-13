@@ -41,7 +41,8 @@ import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.definition.notify.Notify;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -55,6 +56,7 @@ import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
+import com.sitescape.util.Validator;
 
 /**
  * POJO implementation of Facade interface.
@@ -431,19 +433,21 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		catch(IOException e) {}
 	}
 	
-	private void addCustomElements(Element entryElem, com.sitescape.team.domain.Entry entry) {
-		// This is a kludge (hack) that uses the implementation of the existing 
-		// email notification mechanism to quickly demonstrate the concept only.
-		// TODO To be rewritten
+	private void addCustomElements(final Element entryElem, final com.sitescape.team.domain.Entry entry) {
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entryElement, Element flagElement, Map args)
+			{
+                if (flagElement.attributeValue("apply").equals("true")) {
+                	String fieldBuilder = flagElement.attributeValue("elementBuilder");
+					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+                	ElementBuilderUtil.buildElement(entryElem, entry, nameValue, fieldBuilder);
+                }
+			}
+			public String getFlagElementName() { return "webService"; }
+		};
 		
-		Notify notify = new Notify();
-		notify.setFull(true);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Locale locale = user.getLocale();
-		notify.setLocale(locale);
-		notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
-		
-		getDefinitionModule().getNotifyElementForEntity(entryElem, notify, entry);
+		getDefinitionModule().walkDefinition(entry, visitor);
 		
 	}
 	

@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -49,7 +48,6 @@ import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.definition.index.FieldBuilderUtil;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -1449,70 +1447,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId(), type);
     	return defs;
     }
-	public void getIndexFieldsForEntity(
-            org.apache.lucene.document.Document indexDoc,
-            DefinableEntity entry) {
-		//access check not needed = assumed okay from entry
-
-        Definition def = entry.getEntryDef();
-        if (def != null) {
-	        Field[] fields;
-	
-	        Document definitionTree = def.getDefinition();
-	        if (definitionTree != null) {
-	            Element root = definitionTree.getRootElement();
-	
-	            //Get a list of all of the items in the definition
-				Element entryFormItem = (Element) 
-					root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
-	            if (entryFormItem != null) {
-	                Iterator itItems = entryFormItem.selectNodes("//item")
-	                        .listIterator();
-	                if (itItems != null) {
-	                    while (itItems.hasNext()) {
-	                        Element nextItem = (Element) itItems.next();
-	
-							String itemName = (String) nextItem.attributeValue("name", "");
-							
-							//Find the item in the base configuration definition to see if it is a data item
-							Element configItem = (Element) this.configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
-							if (configItem != null) {
-								//Get the form element name (property name)
-								String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
-								if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
-	
-                                Element indexingElem = (Element) nextItem.selectSingleNode("./index");
-	                            if (indexingElem == null) {
-	                                // The current item in the entry definition does not contain
-	                                // indexing information. Check the corresponding item in the default
-	                                // config definition to see if it has it.
-	                                // This two level mechanism allows entry definition (more specific
-	                                // one) to override the settings in the default config definition
-	                                // (more general one). This overriding works in its entirity only, 
-	                            	// that is, partial overriding is not supported.
-	                                indexingElem = (Element) configItem.selectSingleNode("./index");
-	                            }
-	
-	                            if (indexingElem == null) continue;
-	                            if (indexingElem.attributeValue("apply").equals("true")) {
-	                            	String fieldBuilder = indexingElem.attributeValue("fieldBuilder");
-	                            	Map indexingArgs = getOptionalArgs(indexingElem);
-	                            	fields = FieldBuilderUtil.buildField(entry,
-	                                     nameValue, fieldBuilder, indexingArgs);
-	                            	if (fields != null) {
-	                            		for (int i = 0; i < fields.length; i++) {
-	                            			indexDoc.add(fields[i]);
-	                            		}
-	                                }
-	                            }
-	                        }
-	                    }
-	                }
-	            }
-	        }
-        }
-    }
-
     private Map getOptionalArgs(Element indexingElem) {
         Map map = new HashMap();
         for (Iterator it = indexingElem.selectNodes("./args/arg")
@@ -1543,89 +1477,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
         return map;
     }
-	public void getNotifyElementForEntity(Element element, Notify notifyDef, 
-			DefinableEntity entry) {
-		//access check not needed = assumed okay from entry
-        Definition def = entry.getEntryDef();
 
-        Document definitionTree = def.getDefinition();
-        if (definitionTree != null) {
-            Element root = definitionTree.getRootElement();
-
-            //Get a list of all of the items in the definition
-			Element entryFormItem = (Element) 
-				root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
-            if (entryFormItem != null) {
-                Iterator itItems = entryFormItem.selectNodes("//item")
-                        .listIterator();
-                if (itItems != null) {
-                    while (itItems.hasNext()) {
-                        Element nextItem = (Element) itItems.next();
-						String itemName = (String) nextItem.attributeValue("name", "");
-						
-						//Find the item in the base configuration definition to see if it is a data item
-						Element configItem = (Element) this.configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
-						if (configItem != null) {
-							//Get the form element name (property name)
-							String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
-							if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
-
-                            boolean applyNotify = false;
-
-                            // to verify the entry is empty or not (some condition)
-                            Element notifyElem = (Element) nextItem.selectSingleNode("./notify");
-                            if (notifyElem == null) {
-                                // The current item in the entry definition does not contain
-                                // indexing information. Check the corresponding item in the default
-                                // config definition to see if it has it.
-                                // This two level mechanism allows entry definition (more specific
-                                // one) to override the settings in the default config definition
-                                // (more general one). This overriding works in its 
-                                // entirity only, that is, partial overriding is not supported.
-                                notifyElem = (Element) configItem.selectSingleNode("./notify");
-                            }
-
-                            if (notifyElem == null) continue;
-
-                            if (notifyDef.isFull() && notifyElem.attributeValue("full").equals("true"))
-                                applyNotify = true;
-                            else if (notifyDef.isSummary() && notifyElem.attributeValue("summary").equals("true"))
-                                applyNotify = true;
-
-                            if (!applyNotify) continue;
-
-                            String fieldBuilder = notifyElem.attributeValue("notifyBuilder");
-                            Map notifyArgs = getOptionalArgs(notifyElem);
-                            String captionValue;
-                            if (!notifyArgs.containsKey("caption")) {
-                                captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");
-                               	if (Validator.isNull(captionValue)) {
-                                    	captionValue = nextItem.attributeValue("caption");
-                                }
-                            } else {
-                               	captionValue = (String) notifyArgs.get("caption");
-                            }
-                          
-                            notifyArgs.put("_caption", NLT.getDef(captionValue, notifyDef.getLocale()));
-                            notifyArgs.put("_itemName", itemName);
-                            NotifyBuilderUtil.buildElement(element, notifyDef, entry,
-                                            nameValue, fieldBuilder, notifyArgs);
-                        }
-                    }
-                }
-            }
-        }
-    }
-       
-/*
-    private boolean matchCategory(String value, String[] categories) {
-    	for(int i = 0; i < categories.length; i++) {
-    		if(categories[i].equals(value))
-    			return true; // match
-    	}
-    	return false; // no match
-    }
-*/
 	//Routine to get the data elements for use in search queries
     public Map getEntryDefinitionElements(String id) {
 		//Get a map for the results
@@ -1763,5 +1615,56 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		
 		return;
+    }
+
+	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor) {
+		//access check not needed = assumed okay from entry
+        Definition def = entry.getEntryDef();
+        String flagElementPath = "./" + visitor.getFlagElementName();
+        Document definitionTree = def.getDefinition();
+        if (definitionTree != null) {
+            Element root = definitionTree.getRootElement();
+
+            //Get a list of all of the items in the definition
+			Element entryFormItem = (Element) 
+				root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
+            if (entryFormItem != null) {
+                Iterator itItems = entryFormItem.selectNodes("//item")
+                        .listIterator();
+                if (itItems != null) {
+                    while (itItems.hasNext()) {
+                        Element nextItem = (Element) itItems.next();
+						String itemName = (String) nextItem.attributeValue("name", "");
+						
+						//Find the item in the base configuration definition to see if it is a data item
+						Element configItem = (Element) this.configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+						if (configItem != null) {
+							//Get the form element name (property name)
+							String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
+							if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
+
+
+                            // to verify the entry is empty or not (some condition)
+                            Element flagElem = (Element) nextItem.selectSingleNode(flagElementPath);
+                            if (flagElem == null) {
+                                // The current item in the entry definition does not contain
+                                // the flag element. Check the corresponding item in the default
+                                // config definition to see if it has it.
+                                // This two level mechanism allows entry definition (more specific
+                                // one) to override the settings in the default config definition
+                                // (more general one). This overriding works in its 
+                                // entirity only, that is, partial overriding is not supported.
+                                flagElem = (Element) configItem.selectSingleNode(flagElementPath);
+                            }
+
+                            if (flagElem != null) {
+                                Map args = getOptionalArgs(flagElem);
+                            	visitor.visit(nextItem, flagElem, args);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
