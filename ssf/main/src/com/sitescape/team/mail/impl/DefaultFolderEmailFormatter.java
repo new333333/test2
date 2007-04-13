@@ -76,7 +76,10 @@ import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
+import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
+import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.MapInputData;
@@ -398,7 +401,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 
 	}
 
-	protected void doEntry(Element element, FolderEntry entry, Notify notifyDef, boolean hasChanges) {
+	protected void doEntry(final Element element, final FolderEntry entry, final Notify notifyDef, boolean hasChanges) {
 		HistoryStamp stamp;
 		if (hasChanges) {
 			//style sheet will translate these tags
@@ -438,7 +441,37 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
 		element.addAttribute("href", adapterUrl.toString());
-		definitionModule.getNotifyElementForEntity(element, notifyDef, entry);	
+		
+		final String fullOrSummaryAttribute = (notifyDef.isFull()?"full":"summary");
+		
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entryElement, Element flagElement, Map args)
+			{
+				if(flagElement.attributeValue(fullOrSummaryAttribute).equals("true")) {
+					String fieldBuilder = flagElement.attributeValue("notifyBuilder");
+					String itemName = entryElement.attributeValue("name");
+					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = itemName;}
+                    String captionValue;
+                    if (!args.containsKey("caption")) {
+                        captionValue = DefinitionUtils.getPropertyValue(entryElement, "caption");
+                       	if (Validator.isNull(captionValue)) {
+                            	captionValue = entryElement.attributeValue("caption");
+                        }
+                    } else {
+                       	captionValue = (String) args.get("caption");
+                    }
+                  
+                    args.put("_caption", NLT.getDef(captionValue, notifyDef.getLocale()));
+                    args.put("_itemName", itemName);
+                    NotifyBuilderUtil.buildElement(element, notifyDef, entry,
+                                    			   nameValue, fieldBuilder, args);
+                }
+			}
+			public String getFlagElementName() { return "notify"; }
+		};
+
+		definitionModule.walkDefinition(entry, visitor);	
 	}
 	// get cached template.  If not cached yet,load it
 	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {

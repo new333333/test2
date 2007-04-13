@@ -65,8 +65,6 @@ public interface DefinitionModule {
 	 */
 	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
 	public Map getEntryDefinitionElements(String id);
-	public void getIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
-	public void getNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	public Map getWorkflowDefinitionStates(String id);
 
 	public void modifyDefinitionName(String id, String name, String caption);
@@ -80,6 +78,11 @@ public interface DefinitionModule {
 
   	public boolean testAccess(int type, String operation);
 	
+  	public void walkDefinition(DefinableEntity entry, DefinitionModule.DefinitionVisitor visitor);
 	
-
+  	interface DefinitionVisitor
+  	{
+  		abstract public void visit(Element entryElement, Element flagElement, Map args);
+  		abstract public String getFlagElementName();
+  	}
 }

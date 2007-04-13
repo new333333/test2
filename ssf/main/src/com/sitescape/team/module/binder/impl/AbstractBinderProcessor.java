@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
@@ -58,6 +59,8 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.definition.index.FieldBuilderUtil;
+import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
@@ -1021,8 +1024,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param binder
      * @param entry
      */
-    protected void fillInIndexDocWithCommonPart(org.apache.lucene.document.Document indexDoc, 
-    		Binder binder, DefinableEntity entity) {
+    protected void fillInIndexDocWithCommonPart(final org.apache.lucene.document.Document indexDoc, 
+    		Binder binder, final DefinableEntity entity) {
         // Add uid
         BasicIndexUtils.addUid(indexDoc, entity.getIndexDocumentUid());
 
@@ -1063,7 +1066,25 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //EntityIndexUtils.addAttachedFileIds(indexDoc, entity);
  
         // Add data fields driven by the entry's definition object. 
-        getDefinitionModule().getIndexFieldsForEntity(indexDoc, entity);
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entryElement, Element flagElement, Map args)
+			{
+                if (flagElement.attributeValue("apply").equals("true")) {
+                	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
+					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+                	Field[] fields = FieldBuilderUtil.buildField(entity,
+                         nameValue, fieldBuilder, args);
+                	if (fields != null) {
+                		for (int i = 0; i < fields.length; i++) {
+                			indexDoc.add(fields[i]);
+                		}
+                    }
+                }
+			}
+			public String getFlagElementName() { return "index"; }
+		};
+        getDefinitionModule().walkDefinition(entity, visitor);
         
     }
     	

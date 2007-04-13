@@ -89,6 +89,7 @@
 		</jsps>
 		<help>__help_title_field</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
 	</item>
 
 <!-- shared view items ie)no category -->
@@ -221,6 +222,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
 	<item name="event" caption="__event" type="data" category="entryData">
@@ -240,6 +242,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
+	    <webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEvent" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
 	</item>
 <!-- folder entry view -->
@@ -457,6 +460,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 <!-- Folder view	-->
 	
@@ -735,6 +739,7 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
 	</item>
 	
 	<item name="profileTimeZone" caption="__preferred_timeZone" type="data" 
@@ -766,6 +771,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 
 	<item name="profileLastName" caption="__lastName" type="data" 
@@ -783,6 +789,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMiddleName" caption="__middleName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
@@ -799,6 +806,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	
 	<item name="profileOrganization" caption="__organization" type="data" 
@@ -816,6 +824,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEmailAddress" caption="__emailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
@@ -832,6 +841,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileZonName" caption="__zonName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
@@ -848,6 +858,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profilePhone" caption="__phone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
@@ -864,6 +875,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData">
@@ -888,6 +900,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" />
 		</jsps>
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
@@ -1071,6 +1084,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
@@ -1185,6 +1199,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
 	</item>
 	
@@ -1208,6 +1223,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
 	</item>
 	
@@ -1227,6 +1243,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
@@ -1253,6 +1270,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
@@ -1291,6 +1309,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 	
@@ -1326,6 +1345,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderCheck" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderCheck" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
@@ -1352,6 +1372,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
 		</jsps>
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
@@ -1379,6 +1400,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderAttachments" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments" />
 	</item>
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData">
@@ -1397,6 +1419,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
@@ -1421,6 +1444,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
 		</jsps>
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderFile" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
 	</item>
 	
@@ -1442,6 +1466,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" />
 	</item>
 	
@@ -1463,7 +1488,8 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserList" />
+	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
 	</item>
 <!-- Entry layout items -->
 	<item name="form" caption="__form" category="entryLayout">
