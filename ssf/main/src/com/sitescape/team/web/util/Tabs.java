@@ -318,10 +318,20 @@ public class Tabs {
 	public int setTab(Entry entry) {
 		return setTab(getCurrentTab(), entry, new HashMap());
 	}
+	public int setTab(Entry entry, boolean blnClearTab) {
+		return setTab(getCurrentTab(), entry, new HashMap(), blnClearTab);
+	}
 	public int setTab(Entry entry, Map options) {
 		return setTab(getCurrentTab(), entry, options);
 	}
+	
 	public int setTab(int tabId, Entry entry, Map options) {
+		boolean blnClearTab = false;
+		return setTab(tabId, entry, options, blnClearTab);
+	}
+	
+	public int setTab(int tabId, Entry entry, Map options, boolean blnClearTab) {
+		if (blnClearTab) clearTabInfo(tabId);
 		List tabList = getTabList();
 		if (checkTabId(tabId) != tabId) tabId = addTab();
 		int tabNumber = findTabNumber(tabId);

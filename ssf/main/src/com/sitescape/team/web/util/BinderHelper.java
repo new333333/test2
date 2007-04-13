@@ -1010,5 +1010,62 @@ public class BinderHelper {
 		return changeList;
 	}
 	
+	public static Tabs initTabs(RenderRequest request, Binder binder) throws Exception {
+		//Set up the tabs
+		Tabs tabs = new Tabs(request);
+		
+		Integer tabId = null;
+		try {
+			tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		} catch(Exception e) {}
+		
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		
+		//What do the newTab values mean?
+		/*
+		NEW FUNCTIONALITY: 04/12/2007: 
+		IF newTab == 1, always create a new tab
+		ELSE IF newTab == 2, always create a new tab
+		ELSE IF newTab == 3, always use current tab
+		ELSE IF a valid tabId is passed in, then we will open it in that specific tab 
+		ELSE IF a valid tab is not passed in, then we will check if the current tab is a search tab
+		IF current tab is a search tab, then we will NOT use the current tab, 
+			we will check to see if there is another tab with same entry/folder and 
+				if so, we will use it
+				if not, we will create a new tab
+		IF current tab is not a search tab,
+			we will check to see if there is another tab with same entry/folder and
+				if so, we will use it
+				if not, we will use the current tab
+		
+		//IGNORE: OLD FUNCTIONALITY: 04/12/2007 
+		//newTab == 1 means if the Tab already exists use it, if not create another one
+		//newTab == 2 means create a new Tab always
+		//newTab == 3 If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
+		*
+		*/
+		if (newTab.equals("1")) {
+			//tabs.setCurrentTab(tabs.findTab(binder, true));
+			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (newTab.equals("2")) {
+			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (newTab.equals("3")) {
+			//tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
+			tabs.setCurrentTab(tabs.setTab(binder, true));
+		} else if (tabId != null) {
+			//Do not set the page number to zero
+			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
+		} else {
+			//Don't overwrite a search tab
+			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+				tabs.setCurrentTab(tabs.findTab(binder, true));				
+			} else {
+				tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
+			}
+		}	
+		return tabs;
+	}
 
+	
+	
 }
