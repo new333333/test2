@@ -3678,18 +3678,18 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 #ss_searchResult_numbers {float:left;}
 #ss_paginator {float:right;}
 
-div.ss_thumbnail {float: left; width:62px; text-align:center;vertical-align:left;}
-div.ss_thumbnail img {width:50px;height:50px;padding:0px margin:0px;}
+div.ss_thumbnail {float: left; width:62px; text-align:center;}
+div.ss_thumbnail img {width:50px;height:50px;padding:0px; margin:0px;}
 div.ss_entry {float: left; width:418px;}
 h3.ss_entryTitle {float:left;margin:0px;}
-h3.ss_entryTitle a:link, ss_entryTitle a:hover, ss_entryTitle a:visited, ss_entryTitle a:active, ss_entryTitle a {
-	color: #000099;
+h3.ss_entryTitle a:link, h3.ss_entryTitle a:hover, h3.ss_entryTitle a:visited, h3.ss_entryTitle a:active, h3.ss_entryTitle a {
+	color: #0000FF;
 	text-decoration:underline;
 }
 div.ss_more {text-align:right;}
 div.ss_entryDetails {  padding:6px;}
 div.ss_entryDetails p {margin:0px 0px 6px 0px;}
-img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px margin:0px;}
+img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
 
 .ss_rating_box {
