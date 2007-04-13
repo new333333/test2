@@ -11,6 +11,7 @@
 //Routines to display an expandable/contractable tree
 //
 function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
+	ss_hideBucketText()
 	if (page == null) page = "";
 	if (ss_treeDisplayStyle && ss_treeDisplayStyle == 'accessible') {
 		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey);
@@ -196,6 +197,7 @@ function ss_positionAccessibleIframe(treeName, id) {
 }
 
 function ss_postTreeDivRequest(obj) {
+	ss_hideBucketText()
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_treeNotLoggedInMsg); 
@@ -205,6 +207,7 @@ function ss_postTreeDivRequest(obj) {
 }
 
 function ss_treeOpen(treeName, id, parentId, bottom, type) {
+    ss_hideBucketText()
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
@@ -249,6 +252,7 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
 }
 
 function ss_treeToggleAll(treeName, id, parentId, bottom, type, page, indentKey) {
+	ss_hideBucketText()
 	if (page == null) page = "";
     var tObj = self.document.getElementById(treeName + "div" + id);
     if (tObj == null) {
@@ -302,29 +306,6 @@ function ssTree_defineBasicIcons(imageBase) {
 	ss_treeIconsClosed['sxw'] = imageBase + "/trees/file_types/sxw.gif";
 	ss_treeIconsClosed['txt'] = imageBase + "/trees/file_types/txt.gif";
 	ss_treeIconsClosed['xls'] = imageBase + "/trees/file_types/xls.gif";
-}
-
-//var dragsort = ss_ToolMan.dragsort()
-function ss_setSortable(treeName) {
-	//Sorting turned off because it doesn't work in IE - pmh
-	//dragsort.makeListSortable(document.getElementById(treeName), ss_verticalOnly, ss_saveTreeOrder)
-}
-
-function ss_verticalOnly(item) {
-	//item.ss_ToolManDragGroup.verticalOnly()
-}
-
-function ss_saveTreeOrder(item) {
-	//var group = item.ss_ToolManDragGroup
-	//group.register('dragend', ss_save)
-	//group.setThreshold(4)
-	//var list = group.element.parentNode
-	//var id = list.getAttribute("id")
-	//if (id == null) return
-}
-
-function ss_save(item) {
-	//alert(item.group.element.id)
 }
 
 //Routines to show and hide a tool tip at an object
