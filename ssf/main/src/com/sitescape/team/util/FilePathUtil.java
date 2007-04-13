@@ -48,6 +48,19 @@ public class FilePathUtil {
 	}
 	
 	/**
+	 * Returns relative file system path representing the specified binder.
+	 * The returned directory path does not begin with a file separator 
+	 * character, but ends with a file separator. 
+	 * (eg. liferay.com/294/)
+	 *
+	 * @param binder
+	 * @return
+	 */
+	public static String getBinderDirPath(Binder binder) {
+		return getBinderDirPathInternal(binder).toString();
+	}
+	
+	/**
 	 * Returns relative file system path representing the specified entity.
 	 * The returned directory path does not begin with a file separator 
 	 * character, but ends with a file separator. 
@@ -84,13 +97,22 @@ public class FilePathUtil {
 		append(File.separatorChar);
 	}
 	
-	private static StringBuffer getEntityDirPathInternal(Binder binder, DefinableEntity entity) {
+	private static StringBuffer getBinderDirPathInternal(Binder binder) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		
+		// For better scalability, each binder is represented as two-level 
+		// directories on the file system, where the binders are grouped
+		// into chunks of size 1000.
 		return new StringBuffer(zoneName).
 			append(File.separator).
-			append(binder.getId()).
+			append(binder.getId()/1000).		
 			append(File.separator).
+			append(binder.getId()).
+			append(File.separator);
+	}
+	
+	private static StringBuffer getEntityDirPathInternal(Binder binder, DefinableEntity entity) {
+		return getBinderDirPathInternal(binder).
 			append(entity.getTypedId()).
 			append(File.separator);
 	}
@@ -105,4 +127,20 @@ public class FilePathUtil {
 		return getEntitySubdirPathInternal(binder, entity, subdirName).append(fileName);
 	}
 	
+	
+	public static void main(String[] args) {
+		System.out.println("-1001: " + (-1001/1000));
+		System.out.println("-1000: " + (-1000/1000));
+		System.out.println("-999: " + (-999/1000));
+		System.out.println("-1: " + (-1/1000));
+		System.out.println("0: " + (0/1000));
+		System.out.println("1: " + (1/1000));
+		System.out.println("2: " + (2/1000));
+		System.out.println("999: " + (999/1000));
+		System.out.println("1000: " + (1000/1000));
+		System.out.println("1001: " + (1001/1000));
+		System.out.println("1999: " + (1999/1000));
+		System.out.println("2000: " + (2000/1000));
+		System.out.println("2001: " + (2001/1000));
+	}
 }
