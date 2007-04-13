@@ -28,11 +28,11 @@
 			</div>
 			<div id="ss_paginator"> 
 				<c:if test="${ss_pageNumber > 1}">
-					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" onClick="goToPage(${ss_pageNumber-1});" />
+					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
 				</c:if>
 				<span class="ss_pageNumber">${ss_pageNumber}</span>
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
-					<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" onClick="goToPage(${ss_pageNumber+1});" />
+					<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
 				</c:if>
 			</div>
 			<div class="ss_clear"></div>

@@ -4549,3 +4549,21 @@ function ss_launchFindUserWindow(elementId) {
 	ss_launchFindUserWindowElement = elementId;
 	alert('Not implemented yet. Entry user id directly into text box on the left.')
 }
+
+// Rountine submits form when ENTER pressed, 
+// Use: attache event onkeypress="return ss_submitViaEnter(event)" to form fields
+function ss_submitViaEnter(evt) {
+    evt = (evt) ? evt : event;
+    var target = (evt.target) ? evt.target : evt.srcElement;
+    var form = target.form;
+    var charCode = (evt.charCode) ? evt.charCode :
+        ((evt.which) ? evt.which : evt.keyCode);
+    if (charCode == 13) {
+            form.submit();
+            return false;
+    }
+    return true;
+}
+
+
+

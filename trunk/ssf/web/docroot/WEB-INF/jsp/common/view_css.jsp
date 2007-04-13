@@ -34,7 +34,8 @@ boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 // Dojo configuration
 djConfig = { 
 	isDebug: false,
-	parseWidgets: false, // make dojo startup a little bit faster
+	extraLocale: ['en', 'de', 'fr'], // dojo avaible locale
+	parseWidgets: false, // make dojo startup a little bit faster?
 	searchIds: []
 };
 </script>

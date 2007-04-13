@@ -14,7 +14,7 @@
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value=""/>
 					<portlet:param name="newTab" value="1"/>
-					</portlet:actionURL>" method="post" onSubmit="return prepareAdditionalOptions();" id="advSearchForm">
+					</portlet:actionURL>" method="post" onSubmit="return ss_prepareAdditionalSearchOptions();" id="advSearchForm">
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">

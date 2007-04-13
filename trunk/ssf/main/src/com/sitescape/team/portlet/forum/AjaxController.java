@@ -58,6 +58,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.search.SearchEntryFilter;
 import com.sitescape.team.search.SearchFilter;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.SPropsUtil;
@@ -326,7 +327,60 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		List users = (List) ((Map)getProfileModule().getUsers(currentUser.getParentBinder().getId())).get("search_entries");
+		String search = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
+
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+		
+		int startPageNo = 1;
+		int endPageNo = 10;
+		if (!pagerText.equals("")) {
+			String[] pagesNos = pagerText.split(";");
+			startPageNo = Integer.parseInt(pagesNos[0]);
+			endPageNo = Integer.parseInt(pagesNos[1]);
+		}
+
+		options.put(ObjectKeys.SEARCH_MAX_HITS, (endPageNo - startPageNo) + 1);
+		options.put(ObjectKeys.SEARCH_OFFSET, startPageNo - 1);
+		
+		if (!search.equals("")) {
+			SearchFilter searchTermFilter = new SearchFilter();
+			search += "*";
+			
+			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, search);
+			searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, search);
+						
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+		}
+		
+		Map entries = getProfileModule().getUsers(currentUser.getParentBinder().getId(), options);
+		List users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+	
+		
+		int searchCountTotal = ((Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		int totalSearchRecordsReturned = ((Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).intValue();
+		
+		
+		if (startPageNo + totalSearchRecordsReturned < searchCountTotal) {
+			Map next = new HashMap();
+			next.put("start", startPageNo + totalSearchRecordsReturned);
+			if (startPageNo + totalSearchRecordsReturned + 10 < searchCountTotal) {
+				next.put("end",  startPageNo + totalSearchRecordsReturned + 10);
+			} else {
+				next.put("end",  searchCountTotal);
+			}
+			model.put(WebKeys.PAGE_NEXT, next);
+		}
+
+		if (startPageNo > 1) {
+			Map prev = new HashMap();
+			prev.put("start", startPageNo - 10);
+			prev.put("end", startPageNo - 1);
+			model.put(WebKeys.PAGE_PREVIOUS, prev);
+		}
+		
 		model.put(WebKeys.USERS, users);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_users_widget", model);
@@ -372,13 +426,49 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxGetTags(RenderRequest request, RenderResponse response) {
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "tags");
+		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
+		
+		int startPageNo = 1;
+		int endPageNo = 10;
+		if (!pagerText.equals("")) {
+			String[] pagesNos = pagerText.split(";");
+			startPageNo = Integer.parseInt(pagesNos[0]);
+			endPageNo = Integer.parseInt(pagesNos[1]);
+		}
+		
 		String wordRoot = searchText;
 		int i = wordRoot.indexOf("*");
 		if (i > 0) wordRoot = wordRoot.substring(0, i);
 		
 		List tags = getBinderModule().getSearchTags(wordRoot, findType);
+		int searchCountTotal = tags.size();
+		
+		if (tags.size() > startPageNo) {
+			if (tags.size() < endPageNo) endPageNo = tags.size();
+			tags = tags.subList(startPageNo, endPageNo);
+		}
+		
 		Map model = new HashMap();
 		model.put(WebKeys.TAGS, tags);
+		
+		if (endPageNo < searchCountTotal) {
+			Map next = new HashMap();
+			next.put("start", endPageNo + 1);
+			if (endPageNo + 10 < searchCountTotal) {
+				next.put("end",  endPageNo + 10);
+			} else {
+				next.put("end",  searchCountTotal);
+			}
+			model.put(WebKeys.PAGE_NEXT, next);
+		}
+
+		if (startPageNo > 1) {
+			Map prev = new HashMap();
+			prev.put("start", startPageNo - 10);
+			prev.put("end", startPageNo - 1);
+			model.put(WebKeys.PAGE_PREVIOUS, prev);
+		}
+			
 		
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_tags_widget", model);
@@ -408,32 +498,6 @@ public class AjaxController  extends SAbstractController {
 		   		getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
 		   	}
 		}
-	}
-	
-	private void ajaxStartMeeting(ActionRequest request, ActionResponse response, int[] meetingType) throws Exception {
-		Map model = new HashMap();
-		
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		
-		Set<Long> memberIds = new HashSet();
-		memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request
-				.getParameterValues("users")));
-				
-		Binder binder = null;
-		if (binderId != null) {
-			binder = getBinderModule().getBinder(binderId);
-		}
-		Entry entry = null;
-		if (Validator.isNotNull(entryId)) {
-			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
-		}
-		
-		String meetingToken = getIcBroker().addMeeting(memberIds,
-				binder, entry, "", -1, "", meetingType);
-
-		model.put(WebKeys.MEETING_TOKEN, meetingToken);
-			
 	}
 	
 	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) throws Exception {
@@ -774,7 +838,7 @@ public class AjaxController  extends SAbstractController {
 
 	private ModelAndView ajaxFindUserSearch(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model = new HashMap();;
+		Map model = new HashMap();
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
 		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");

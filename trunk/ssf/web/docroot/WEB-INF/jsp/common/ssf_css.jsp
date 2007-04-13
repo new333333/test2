@@ -1545,7 +1545,7 @@ div.ss_dashboardProtoDropTarget {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
   }
-
+  
 .ss_tree_bucket_text_div {
   position:absolute;
   border:1px solid black;
@@ -1988,7 +1988,7 @@ div.ss_global_toolbar_hide_portal {
 }
 div.ss_global_toolbar_help {
 	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat top center;
-	width: 42px;
+	width: 30px;
 	padding-right: 4px;
 	text-align: center;
 }
@@ -2589,15 +2589,15 @@ div.ss_search_results_pane {
 .ss_search_results_selection_inactive {
 }
 div.ss_findUserList {
-	position: absolute;
-	margin: 2px;
-	padding: 0px 15px;
+	position:absolute;
+	margin:2px;
+	padding:0px 15px;
 	border-top:    solid 1px ${ss_generic_border_color}; 
 	border-left:   solid 1px ${ss_generic_border_color}; 
 	border-right:  solid 1px ${ss_generic_border_shadow_color}; 
 	border-bottom: solid 1px ${ss_generic_border_shadow_color}; 
-	background: ${ss_style_background_color};
-	z-index: 500;
+	background:${ss_style_background_color};
+	z-index:500;
 }
 .ss_findUserList div ul {
 	list-style-type:none;

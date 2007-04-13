@@ -11,9 +11,9 @@
  */
 %>
 <div class="ss_style ss_portlet_style">
-	<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-	<%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
+<%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
@@ -22,49 +22,50 @@
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 	<div class="ss_clear"></div>
 
-	<div id="ss_tabs_container">
-		<ssf:toolbar style="ss_actions_bar ss_actions_bar1"/>
+<div id="ss_tabs_container">
+	<ssf:toolbar style="ss_actions_bar ss_actions_bar1"/>
+	
+	<div class="ss_clear"></div>
+
+  <div id="ss_tab_content">
+	<div id="ss_rankings">
+		<!-- Places rating - Moved to the new file -->
+		<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
+
+		<!-- People rating - Moved to the new file -->
+		<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
+
+		<!-- Tags -->
+		<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
 		
-		<div class="ss_clear"></div>
-	
-	  <div id="ss_tab_content">
-		<div id="ss_rankings">
-			<!-- Places rating - Moved to the new file -->
-			<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
-	
-			<!-- People rating - Moved to the new file -->
-			<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
-	
-			<!-- Tags -->
-			<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
-			
-			<!-- Saved searches -->
-			<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
-			
-		</div>
-		<div id="ss_content_container" class="ss_searchContainer">			<div id="ss_searchForm_spacer"></div>
-	
-			<div id="ss_content">
-			<c:if test="${quickSearch}">
-				<!-- Quick search form -->
-				<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
-			</c:if>
-			<c:if test="${!quickSearch}">
-				<!-- Advanced search form -->
-				<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
-			</c:if>		
-	
-			<!-- Search result header -->
-			<%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
+		<!-- Saved searches -->
+		<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
 		
-			<!-- Search result list -->
-			<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
-			</div>
-		</div>
-		<div class="ss_clear"></div>
-	  </div>
 	</div>
+	<div id="ss_content_container" class="ss_searchContainer">		<div id="ss_searchForm_spacer"></div>
+
+		<div id="ss_content">
+		<c:if test="${quickSearch}">
+			<!-- Quick search form -->
+			<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
+		</c:if>
+		<c:if test="${!quickSearch}">
+			<!-- Advanced search form -->
+			<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
+		</c:if>		
+
+		<!-- Search result header -->
+		<%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
+	
+		<!-- Search result list -->
+		<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
+		</div>
+	</div>
+	<div class="ss_clear"></div>
+  </div>
 </div>
+</div>
+
 
 
 <script type="text/javascript">
@@ -111,7 +112,7 @@ ss_fillMask("searchTags", "<ssf:escapeJavaScript value="${filterMap.searchTags}"
 
 
 function init() {
-  if (!initialized) {
+  if (!ss_searchMoreInitialized) {
 	<c:if test="${! empty filterMap.additionalFilters}">
 		<c:if test="${!empty filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${filterMap.additionalFilters.workflow}">
@@ -166,7 +167,7 @@ function init() {
 		
 	</c:if>
   }
-  initialized = true;
+  ss_searchMoreInitialized = true;
 }
 
 dojo.addOnLoad(function() {

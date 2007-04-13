@@ -16,12 +16,15 @@ dojo.require('dojo.widget.*');
 <script type="text/javascript" src="<html:rootPath/>js/widget/WorkflowSelect.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/widget/EntrySelect.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/widget/FieldSelect.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPagable.js"></script>
 <script type="text/javascript">
+
+
 
 // TODO move this stuff to js file when ready
 var ss_userOptionsCounter = 0;
 var ss_optionsArray = new Array();
-var initialized = false;
+var ss_searchMoreInitialized = false;
 function ss_addOption(type) {
 	ss_optionsArray[ss_userOptionsCounter]=type;
 	switch (type){
@@ -47,11 +50,11 @@ function ss_addOption(type) {
 	}
 	ss_userOptionsCounter++;
 }
-function ss_callRemove(orderNo) { 
+function ss_callRemoveSearchOption(orderNo) { 
 	return function(evt) {ss_removeOption(orderNo);};
 }
 
-var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
+var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 
 function ss_addInitializedWorkflow(wfIdValue, stepsValue) {
 	ss_optionsArray[ss_userOptionsCounter]='workflow';
@@ -91,7 +94,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
-	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.workflow"/>: "));
@@ -105,7 +108,8 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
-	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:baseUrl+"&operation=get_workflows_widget", nestedUrl:baseUrl+"&operation=get_workflow_step_widget", stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo};
+	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_workflows_widget", nestedUrl:ss_AjaxBaseUrl+"&operation=get_workflow_step_widget", stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
+								maxListLength : 10,	autoComplete: false};
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
 	if (wfIdValue!=null && wfIdValue!=""){
@@ -117,7 +121,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
-	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.entry"/>: "));
@@ -131,7 +135,8 @@ function ss_addEntry(orderNo, entryId, fieldName, value) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_entries_options').appendChild(div);
 
-	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:baseUrl+"&operation=get_entry_types_widget", nestedUrl:baseUrl+"&operation=get_entry_fields_widget", widgetContainer:sDiv, searchFieldIndex:orderNo};
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_entry_types_widget", nestedUrl:ss_AjaxBaseUrl+"&operation=get_entry_fields_widget", widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
+								maxListLength : 10,	autoComplete: false};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
 		entryWidget.setDefaultValue(entryId, entries[entryId], fieldName, fields[entryId+"-"+fieldName], value, fieldsTypes[entryId+"-"+fieldName]);
@@ -141,7 +146,7 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
-	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
 	div.appendChild(remover);
 
@@ -156,11 +161,17 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	div.appendChild(pDiv);
 	document.getElementById('ss_tags_options').appendChild(div);
 	
-	var url = baseUrl + "&operation=get_tags_widget";
-	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", id:"searchCommunityTags"+orderNo+"", dataUrl:url+"&findType=communityTags"};
-	var propertiesPersonal = {name:"searchPersonalTags"+orderNo+"", id:"searchPersonalTags"+orderNo+"", dataUrl:url+"&findType=personalTags"};
-	var communityTagWidget = dojo.widget.createWidget("Select", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
-	var personalTagWidget = dojo.widget.createWidget("Select", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
+	var url = ss_AjaxBaseUrl + "&operation=get_tags_widget&searchText=%{searchString}&pager=%{pagerString}";
+	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", 
+								id:"searchCommunityTags"+orderNo+"", 
+								dataUrl:url+"&findType=communityTags", 								
+								maxListLength : 12,	autoComplete: false};
+	var propertiesPersonal = {name:"searchPersonalTags"+orderNo+"", 
+								id:"searchPersonalTags"+orderNo+"", 
+								dataUrl:url+"&findType=personalTags", 
+								maxListLength : 12,	autoComplete: false};
+	var communityTagWidget = dojo.widget.createWidget("SelectPagable", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
+	var personalTagWidget = dojo.widget.createWidget("SelectPagable", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
 	if (communityTagValue && communityTagValue != "") {
 		communityTagWidget.setValue(communityTagValue);
 		communityTagWidget.setLabel(communityTagValue);
@@ -175,7 +186,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
-	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
 	div.appendChild(remover);
 
@@ -186,9 +197,13 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	div.appendChild(aDiv);
 	document.getElementById('ss_authors_options').appendChild(div);
 	
-	var url = baseUrl + "&operation=get_users_widget";
-	var props = {name:"searchAuthors"+orderNo+"", id:"searchAuthors"+orderNo+"", dataUrl:url};
-	var usersWidget = dojo.widget.createWidget("Select", props, document.getElementById("placeholderAuthor"+orderNo+""));
+	var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+	var props = {name : "searchAuthors"+orderNo+"", 
+					id : "searchAuthors"+orderNo+"", 
+					dataUrl:url,
+					maxListLength : 12,
+					autoComplete: false};
+	var usersWidget = dojo.widget.createWidget("SelectPagable", props, document.getElementById("placeholderAuthor"+orderNo+""));
 	if (authorId && authorName && authorId!="" && authorName!="") {
 		usersWidget.setValue(authorId);
 		usersWidget.setLabel(authorName);
@@ -199,7 +214,7 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
-	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.date"/>: "));
@@ -213,16 +228,19 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	
 	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
 	else document.getElementById('ss_modificationDates_options').appendChild(div);
-	
 	if (startDate) 
-		dojo.widget.createWidget("DropDownDatePicker", {value:startDate, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
+		dojo.widget.createWidget("DropDownDatePicker", {value:startDate, lang: ss_user_locale, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo,
+								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderStartDate"+orderNo+""));
 	else 
-		dojo.widget.createWidget("DropDownDatePicker", {value:'', id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
+		dojo.widget.createWidget("DropDownDatePicker", {value:'', lang: ss_user_locale, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo,
+								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderStartDate"+orderNo+""));
 
 	if (endDate)
-		dojo.widget.createWidget("DropDownDatePicker", {value:endDate, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
+		dojo.widget.createWidget("DropDownDatePicker", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 	else 
-		dojo.widget.createWidget("DropDownDatePicker", {value:'today', id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
+		dojo.widget.createWidget("DropDownDatePicker", {value:'today', lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 	
 }
 
@@ -232,7 +250,7 @@ function ss_removeOption(orderNo) {
 	parent.removeChild(document.getElementById('block'+orderNo));
 }
 
-function prepareAdditionalOptions() {
+function ss_prepareAdditionalSearchOptions() {
 	var numbers = new Array();
 	var types = new Array();
 	for (var i=0; i<ss_userOptionsCounter; i++) {
@@ -246,7 +264,7 @@ function prepareAdditionalOptions() {
 	return true;
 }
 function ss_search() {
-	prepareAdditionalOptions();
+	ss_prepareAdditionalSearchOptions();
 	document.getElementById('advSearchForm').submit();
 }
 
@@ -266,7 +284,7 @@ function ss_showHide(objId){
 
 function ss_showAdditionalOptions(objId) {
 	ss_showHide(objId);
-	if (!initialized) init();
+	if (!ss_searchMoreInitialized) init();
 }
 
 function ss_showHideDetails(ind){
@@ -284,8 +302,8 @@ function ss_showHideRatingBox(id, imgObj) {
 	}
 }
 
-function goToPage(ind) {
-	url="<portlet:actionURL windowState="maximized" portletMode="view">
+function ss_goToSearchResultPage(ind) {
+	var url="<portlet:actionURL windowState="maximized" portletMode="view">
 				<portlet:param name="action" value="advanced_search"/>
 				<portlet:param name="tabId" value="${tabId}"/>
 				<portlet:param name="operation" value="viewPage"/>
