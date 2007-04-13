@@ -319,8 +319,7 @@
 							<div class="ss_entryHeader">
 								<h3 class="ss_entryTitle">
 								<ssf:menuLink 
-									displayDiv="false" entryId="${entry._docId}" 
-									folderId="${entry._binderId}" binderId="${entry._binderId}" 
+									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
