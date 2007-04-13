@@ -41,8 +41,7 @@ public class SessionWrappedInputStream extends InputStream {
 	}
 
 	public int available() throws IOException {
-		// Never do this.  We can't count on Repositories being able to return this value!
-		throw new UnsupportedOperationException("available() cannot be used in this application");
+		return target.available();
 	}
 
 	public void close() throws IOException {
