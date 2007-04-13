@@ -14,6 +14,7 @@
 <c:if test="${empty ss_portletInitialization}">
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
   <div class="ss_portlet_style ss_portlet">
+  <div class="ss_style">
     <c:out value="${releaseInfo}"/>
 	<table border="0" width="100%">
 	<tr>
@@ -53,6 +54,7 @@
 		</td>
 	</tr>
 	</table>
+  </div>
   </div>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 </c:if>
