@@ -2591,7 +2591,10 @@ div.ss_findUserList {
 	position:absolute;
 	margin:2px;
 	padding:0px 15px;
-	border:solid black 1px; 
+	border-top:     solid #CCCCCC 1px; 
+	border-left:    solid #CCCCCC 1px; 
+	border-right:   solid #666666 1px; 
+	border-bottom:  solid #666666 1px; 
 	background:${ss_style_background_color};
 	z-index:500;
 }
