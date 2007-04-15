@@ -32,16 +32,12 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 
 
+<input type="hidden" name="<%= userListElementName %>" id="ss_usersListInput${prefix}"/>		
 <table class="ss_style" cellspacing="0px" cellpadding="0px" style="padding-bottom:5px;">
 <tbody>
 <tr>
 <td valign="top">
-
-<input type="hidden" name="<%= userListElementName %>" id="ss_usersListInput${prefix}"/>		
-
-
 <img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>');  <c:forEach var="item" items="${userList}" varStatus="status"> ss_addUserIdToFormElement('${prefix}', '<c:out value="${item.id}"/>');</c:forEach>" />
-
   <ssf:find formName="" 
     formElement="searchText" 
     type="${list_type}"
@@ -56,7 +52,6 @@
     <c:if test="${list_type == 'group'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
     </c:if>
-
 </td>
 <td valign="top" style="padding-left:10px;">
 <div style="float: left;">
@@ -72,7 +67,7 @@
     </ul>    
   </div>  
 </div>
-
+<div class="ss_clear"></div>
 </td>
 </tr>
 </tbody>
