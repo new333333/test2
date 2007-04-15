@@ -8,13 +8,13 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.module.file.impl;
+package com.sitescape.team.repository.archive.impl;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.VersionAttachment;
-import com.sitescape.team.module.file.ArchiveStore;
+import com.sitescape.team.repository.archive.ArchiveStore;
 
 public class NullArchiveStore implements ArchiveStore {
 

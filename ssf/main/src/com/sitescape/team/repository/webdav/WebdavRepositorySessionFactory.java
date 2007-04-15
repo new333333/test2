@@ -17,14 +17,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.repository.AbstractRepositorySessionFactory;
 import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
-import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class WebdavRepositorySessionFactory implements ExclusiveRepositorySessionFactory,
-WebdavRepositorySessionFactoryMBean {
+public class WebdavRepositorySessionFactory extends AbstractRepositorySessionFactory
+implements ExclusiveRepositorySessionFactory, WebdavRepositorySessionFactoryMBean {
 
 	protected Log logger = LogFactory.getLog(getClass());
 

@@ -14,7 +14,7 @@
 
 	<!-- ============================== Services ============================= -->
 
-	<bean id="archiveStore" class="com.sitescape.team.module.file.impl.NullArchiveStore">
+	<bean id="archiveStore" class="com.sitescape.team.repository.archive.impl.NullArchiveStore">
 	</bean>
 	
 	<!-- ============================== Document Converter ============================ -->

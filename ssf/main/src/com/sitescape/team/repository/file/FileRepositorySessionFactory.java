@@ -11,14 +11,14 @@
 package com.sitescape.team.repository.file;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.repository.AbstractRepositorySessionFactory;
 import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
-import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class FileRepositorySessionFactory implements ExclusiveRepositorySessionFactory,
-FileRepositorySessionFactoryMBean {
+public class FileRepositorySessionFactory extends AbstractRepositorySessionFactory 
+implements ExclusiveRepositorySessionFactory, FileRepositorySessionFactoryMBean {
 
 	private String repositoryRootDir;
 

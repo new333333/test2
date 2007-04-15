@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.module.file;
+package com.sitescape.team.repository.archive;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;

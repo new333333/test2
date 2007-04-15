@@ -28,16 +28,16 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.repository.AbstractRepositorySessionFactory;
 import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
-import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.jcr.JCRRepositorySession;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 
-public class JCRRepositorySessionFactory implements ExclusiveRepositorySessionFactory,
-JCRRepositorySessionFactoryMBean {
+public class JCRRepositorySessionFactory extends AbstractRepositorySessionFactory
+implements ExclusiveRepositorySessionFactory, JCRRepositorySessionFactoryMBean {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
