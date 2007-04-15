@@ -12,6 +12,7 @@
 %>
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
@@ -450,6 +451,3 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 </div>
 <!-- End of favorites pane -->
-
-
-<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />

@@ -2791,6 +2791,16 @@ div.ss_thumbnail_big img {
     width: 150px;
     height: 150px;
 }
+div.ss_thumbnail_medium div {
+    width: 102px;
+    height: 132px;
+    margin-left:   10px;
+    margin-right:  10px;
+}
+div.ss_thumbnail_medium img {
+    width: 100px;
+    height: 100px;
+}
 div.ss_thumbnail_gallery div {
     float: left;
     margin-top:    0px;

@@ -556,6 +556,10 @@ public class ListFolderController extends  SAbstractController {
 				buildBlogBeans(response, folder, options, model, folderEntries);
 				buildWikiBeans(response, folder, options, model, folderEntries);
 			}
+			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+				//Get the list of all entries to build the archive list
+				buildBlogBeans(response, folder, options, model, folderEntries);
+			}
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));
@@ -1153,16 +1157,20 @@ public class ListFolderController extends  SAbstractController {
 		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				(viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals(Definition.VIEW_STYLE_BLOG) 
-				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) || viewType.equals(Definition.VIEW_STYLE_SEARCH) || 
-				viewType.equals(""))) {
+				(viewType.equals(Definition.VIEW_STYLE_DEFAULT) 
+				|| viewType.equals(Definition.VIEW_STYLE_BLOG) 
+				|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
+				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
+				|| viewType.equals(Definition.VIEW_STYLE_SEARCH) 
+				|| viewType.equals(""))) {
 			//Only show these options if in the folder table style and not in accessible mode
 			entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
 
 			
 			//Do not display - Show entries at bottom for the Blog, Guestbook and Search View
 			if (!viewType.equals(Definition.VIEW_STYLE_BLOG) && !viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
-					&& !viewType.equals(Definition.VIEW_STYLE_SEARCH)) {
+					 && !viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
+					 && !viewType.equals(Definition.VIEW_STYLE_SEARCH)) {
 			
 			//vertical
 			qualifiers = new HashMap();

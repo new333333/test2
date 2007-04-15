@@ -13,7 +13,9 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ssf_help_files_loaded}">
 <c:set var="ssf_support_help_loaded" value="1" scope="request"/>
-
+<c:if test="${!empty ss_windowState && ss_windowState == 'maximized'}">
+<div style="visibility:hidden; display:none;" id="ss_helpMenuAnchor"></div>
+</c:if>
 <script type="text/javascript">
 var ss_helpWelcomeText = "<ssf:nlt tag="help.welcome"/>";
 var ss_helpTocText = "<ssf:nlt tag="help.toc"/>";
@@ -28,5 +30,4 @@ ss_helpSystem.outputHelpWelcomeHtml();
 var ss_helpSpotGifSrc = "<html:imagesPath/>icons/toolbar_help.gif";
 
 </script>
-
 </c:if>
