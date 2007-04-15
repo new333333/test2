@@ -18,11 +18,24 @@
 <script type="text/javascript">
 var ss_columnCount = 0;
 function ss_loadEntry(obj,id) {
-	ss_highlightLineById('folderLine_' + id);
-	var iframeDiv = document.getElementById('ss_photoIframe<portlet:namespace/>')
-	iframeDiv.src = obj.href;
+	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
 }
+
+//Routine called when "find photo" is clicked
+function ss_loadPhotoEntryId<portlet:namespace/>(id) {
+	var url = "<ssf:url     
+	    adapter="true" 
+	    portletName="ss_forum" 
+	    folderId="${ssBinder.id}" 
+	    action="view_folder_entry" 
+	    entryId="ss_entryIdPlaceholder" 
+	    actionUrl="true" />";
+	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
+	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
+	return false;
+}
+
 var ss_photoIframeOffset = 20;
 function ss_setPhotoIframeSize<portlet:namespace/>() {
 	var targetDiv = document.getElementById('ss_photoEntryDiv<portlet:namespace/>')

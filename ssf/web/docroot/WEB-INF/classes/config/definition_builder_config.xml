@@ -1558,8 +1558,7 @@
 <!-- General layout form items -->
 	<item name="box" caption="__box" category="generalLayout">
 		<properties>
-			<property name="style" caption="__box_style" type="selectbox" default="rounded">
-				<option name="rounded" caption="__box_rounded" />
+			<property name="style" caption="__box_style" type="selectbox" default="square">
 				<option name="square" caption="__box_square" />
 				<option name="squareNoBorder" caption="__box_square_no_border" />
 			</property>

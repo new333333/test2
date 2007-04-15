@@ -1798,12 +1798,23 @@ var ss_helpSystem = {
 	    
 		ss_moveDivToBody('ss_help_welcome');
 		var welcomeDiv = document.getElementById('ss_help_welcome');
+		var helpMenuAnchorDiv = document.getElementById('ss_helpMenuAnchor');
 		if (welcomeDiv) {
 	    	welcomeDiv.style.visibility = "visible";
 	    	welcomeDiv.style.zIndex = ssHelpWelcomeZ;
 	    	welcomeDiv.style.display = "block";
 	        welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
+	        if (helpMenuAnchorDiv != null) {
+	        	helpMenuAnchorDiv.style.visibility = "visible";
+	        	helpMenuAnchorDiv.style.display = "block";
+	        	ss_setObjectHeight(helpMenuAnchorDiv, ss_getObjectHeight(welcomeDiv));
+	        	var offsetT = -2;
+	        	if (isIE) offsetT = 6;
+	        	welcomeDiv.style.top = parseInt(ss_getObjectTopAbs(helpMenuAnchorDiv) - offsetT) + "px";
+	        	var offsetL = parseInt((ss_getObjectWidth(helpMenuAnchorDiv) - ss_getObjectWidth(welcomeDiv)) / 2);
+	        	welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
+	        }
 	    	dojo.html.setOpacity(welcomeDiv, 0);
 	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
 		}
@@ -1818,6 +1829,11 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.visibility = "hidden";
 	    	welcomeDiv.style.display = "none";
 		}
+		var helpMenuAnchorDiv = document.getElementById('ss_helpMenuAnchor');
+        if (helpMenuAnchorDiv != null) {
+        	helpMenuAnchorDiv.style.visibility = "hidden";
+        	helpMenuAnchorDiv.style.display = "none";
+        }
 		if (lightBox.style.visibility && lightBox.style.visibility == 'visible') {
     		for (var i = 1; i < ss_helpSystemNextNodeId; i++) {
     			//Delete all of the help spots that were added during the help session

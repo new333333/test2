@@ -83,7 +83,7 @@
 		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
 		    formElement="searchTitle" 
 		    type="entries"
-		    width="70px" 
+		    width="140px" 
 		    binderId="${ssBinder.id}"
 		    searchSubFolders="false"
 		    singleItem="true"
