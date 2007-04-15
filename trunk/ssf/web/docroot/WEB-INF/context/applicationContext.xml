@@ -622,7 +622,6 @@
 		<property name="failedFilterFile"><value>DELETE</value></property>
 		<!-- valid values are CONTINUE and ABORT -->
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
-		<property name="archiveStore"><ref bean="archiveStore"/></property>
 		<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
 		<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
 	</bean>
@@ -722,6 +721,7 @@
 	<bean id="simpleFileRepository" class="com.sitescape.team.repository.file.FileRepositorySessionFactory" 
 		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
 		<property name="repositoryRootDir"><value>${data.root.dir}/filerepository</value></property>
+		<property name="archiveStore"><ref bean="archiveStore"/></property>
 	</bean>
 
 	<bean id="jackrabbitRepository" class="com.sitescape.team.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
@@ -734,6 +734,7 @@
 		<property name="username"><value>none</value></property>
 		<property name="password"><value>none</value></property>
 		<property name="versionDeletionAllowed"><value>true</value></property>
+		<property name="archiveStore"><ref bean="archiveStore"/></property>
 	</bean>
 	
 	<!-- Uncomment this to use Slide-based WebDAV server as a repository -->
@@ -745,6 +746,7 @@
 		<property name="username"><value>${webdav.repository.username}</value></property>
 		<property name="password"><value>${webdav.repository.password}</value></property>
 		<property name="versionDeletionAllowed"><value>false</value></property>
+		<property name="archiveStore"><ref bean="archiveStore"/></property>
 	</bean>-->
 	
 	<!-- ================================ Presence Service =============================== -->

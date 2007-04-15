@@ -11,6 +11,7 @@
 package com.sitescape.team.repository;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.repository.archive.ArchiveStore;
 
 public interface RepositorySessionFactory {
 
@@ -60,4 +61,6 @@ public interface RepositorySessionFactory {
 	 * @return
 	 */
 	public boolean supportSmartCheckin();
+	
+	public ArchiveStore getArchiveStore();
 }

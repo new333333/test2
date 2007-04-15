@@ -67,7 +67,6 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.FileAttachment.FileLock;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.file.ArchiveStore;
 import com.sitescape.team.module.file.ContentFilter;
 import com.sitescape.team.module.file.DeleteVersionException;
 import com.sitescape.team.module.file.FileModule;
@@ -82,6 +81,7 @@ import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositorySessionFactoryUtil;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.repository.archive.ArchiveStore;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.LuceneSessionFactory;
@@ -148,7 +148,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
 	private FileStore cacheFileStore;
-	private ArchiveStore archiveStore;
 	private IHtmlConverterManager htmlConverterManager;
 	private IImageConverterManager imageConverterManager;
 	
@@ -255,14 +254,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 					" defaults to " + FAILED_FILTER_TRANSACTION_DEFAULT);
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_DEFAULT;
 		}
-	}
-
-	public void setArchiveStore(ArchiveStore archiveStore) {
-		this.archiveStore = archiveStore;
-	}
-	
-	protected ArchiveStore getArchiveStore() {
-		return archiveStore;
 	}
 		
 	public void afterPropertiesSet() throws Exception {
@@ -1226,22 +1217,25 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
 		// Archive the contents of the file. We archive all versions of the file.
 		List<KeyValuePair> archiveURIs = new ArrayList<KeyValuePair>();
-		for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
-			VersionAttachment v = (VersionAttachment) i.next();
-			try {
-				String archiveURI = archiveStore.write(binder, entry, v);
-				
-				if(archiveURI != null)
-					archiveURIs.add(new KeyValuePair(String.valueOf(v.getVersionNumber()), archiveURI));
-			}
-			catch(Exception e) {
-				logger.error("Error archiving file " + relativeFilePath + " version " + v.getVersionNumber(), e);
-				errors.addProblem(new FilesErrors.Problem
-						(repositoryName, relativeFilePath,
-								FilesErrors.Problem.PROBLEM_ARCHIVING, e));
-				// If we fail to archive we stop here, since we can't afford to
-				// delete without successfully archiving it first. 
-				return null;
+		ArchiveStore archiveStore = RepositorySessionFactoryUtil.getArchiveStore(repositoryName);
+		if(archiveStore != null) {
+			for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
+				VersionAttachment v = (VersionAttachment) i.next();
+				try {
+					String archiveURI = archiveStore.write(binder, entry, v);
+					
+					if(archiveURI != null)
+						archiveURIs.add(new KeyValuePair(String.valueOf(v.getVersionNumber()), archiveURI));
+				}
+				catch(Exception e) {
+					logger.error("Error archiving file " + relativeFilePath + " version " + v.getVersionNumber(), e);
+					errors.addProblem(new FilesErrors.Problem
+							(repositoryName, relativeFilePath,
+									FilesErrors.Problem.PROBLEM_ARCHIVING, e));
+					// If we fail to archive we stop here, since we can't afford to
+					// delete without successfully archiving it first. 
+					return null;
+				}
 			}
 		}
 		

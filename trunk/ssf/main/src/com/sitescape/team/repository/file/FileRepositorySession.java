@@ -39,7 +39,6 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
-import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.FilePathUtil;
 
