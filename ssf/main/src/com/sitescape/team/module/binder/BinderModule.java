@@ -48,6 +48,13 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public List deleteBinder(Long binderId) throws AccessControlException;
+	
+	/**
+	 * delete all the entries in the index that are descended from the list of id's.
+	 * @param ids
+	 */
+	public void deleteIndexTree(List<Long> ids);
+	
 	/**
 	 * Stop receiveing notifications that you have explicity requested.
 	 * @param binderId
