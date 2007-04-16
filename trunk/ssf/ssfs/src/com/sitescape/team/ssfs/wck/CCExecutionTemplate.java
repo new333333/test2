@@ -55,10 +55,10 @@ public class CCExecutionTemplate {
 			return returnObj; // This may be null since not all operations return something.
 		}
 		catch(ServletException e) {
-			throw new CCClientException(e.getMessage());
+			throw new CCClientException(e.getLocalizedMessage());
 		} 
 		catch (IOException e) {
-			throw new CCClientException(e.getMessage());
+			throw new CCClientException(e.getLocalizedMessage());
 		}		
 	}
 	
@@ -90,10 +90,10 @@ public class CCExecutionTemplate {
 			return returnObj; // This may be null since not all operations return something.
 		}
 		catch(ServletException e) {
-			throw new CCClientException(e.getMessage());
+			throw new CCClientException(e.getLocalizedMessage());
 		} 
 		catch (IOException e) {
-			throw new CCClientException(e.getMessage());
+			throw new CCClientException(e.getLocalizedMessage());
 		}		
 	}
 	

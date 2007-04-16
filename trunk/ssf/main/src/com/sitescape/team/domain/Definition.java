@@ -156,7 +156,7 @@ public class Definition extends PersistentTimestampObject  {
     		doc = xIn.read(ois);   
     		ois.close();
     	} catch (Exception fe) {
-    		logger.error(fe.getMessage(), fe);
+    		logger.error(fe.getLocalizedMessage(), fe);
     	}
         return doc;
     }
@@ -169,7 +169,7 @@ public class Definition extends PersistentTimestampObject  {
     		xOut.close();
     		xmlencoding = baos.toByteArray(); 
     	} catch (Exception fe) {
-    		logger.error(fe.getMessage(), fe);
+    		logger.error(fe.getLocalizedMessage(), fe);
     	}
     	this.doc = doc;
     }

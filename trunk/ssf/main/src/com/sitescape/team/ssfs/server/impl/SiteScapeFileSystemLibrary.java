@@ -715,13 +715,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			FolderUtils.createFolderEntry(folder, fileName, content, modDate);
 		}
 		catch(ConfigurationException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -732,13 +732,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			FolderUtils.modifyFolderEntry(entry, fileName, content, modDate);
 		}
 		catch(ConfigurationException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -800,13 +800,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			return FolderUtils.createLibraryFolder(parentBinder, folderName);
 		}
 		catch(ConfigurationException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -881,7 +881,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		} 
 	}
 	
@@ -907,7 +907,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -926,7 +926,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	

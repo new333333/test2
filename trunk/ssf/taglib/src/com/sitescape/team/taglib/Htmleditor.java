@@ -103,7 +103,7 @@ public class Htmleditor extends BodyTagSupport {
 			return EVAL_PAGE;
 		}
 		catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
 			this.height = "";

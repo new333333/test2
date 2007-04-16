@@ -141,7 +141,7 @@ public class BasicLoginModule implements LoginModule {
 			// If still here, the authentication was successful.
 			return new String[] { username, password };
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error(e.getLocalizedMessage());
 		}
 
 		return null;

@@ -74,7 +74,7 @@ public class RepositoryUtil {
 				try {
 					is.close();
 				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 				}
 			}
 		} catch (IOException e) {
@@ -115,7 +115,7 @@ public class RepositoryUtil {
 				try {
 					is.close();
 				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 				}
 			}
 		} catch (IOException e) {

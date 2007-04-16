@@ -319,11 +319,11 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 				try {
 					getAdminModule().addTemplate(element);
 				} catch (Exception ex) {
-					logger.error("Cannot add template:" + ex.getMessage());
+					logger.error("Cannot add template:" + ex.getLocalizedMessage());
 				}
 			}
 		} catch (Exception ex) {
-			logger.error("Cannot read startup configuration:" + ex.getMessage());
+			logger.error("Cannot read startup configuration:" + ex.getLocalizedMessage());
 		}
 	}
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {

@@ -53,7 +53,7 @@ public class DSConnectionProvider implements ConnectionProvider {
 			_ds = (DataSource)JNDIUtil.lookup(new InitialContext(), location);
 		}
 		catch (Exception e) {
-			throw new HibernateException(e.getMessage());
+			throw new HibernateException(e.getLocalizedMessage());
 		}
 	}
 

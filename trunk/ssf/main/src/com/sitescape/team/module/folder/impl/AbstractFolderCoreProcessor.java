@@ -390,7 +390,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 								try {
 									getFileModule().deleteFiles(folder, entry, null);
 								} catch (Exception ex) {
-									logger.error("Error delete files: " + ex.getMessage());
+									logger.error("Error delete files: " + ex.getLocalizedMessage());
 								}
 								entries.add(entry);
 								//after 100 entries - commit transaction
@@ -406,7 +406,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 							try {
 								getFileModule().deleteFiles(folder, folder, null);
 							} catch (Exception ex) {
-								logger.error("Error delete files: " + ex.getMessage());
+								logger.error("Error delete files: " + ex.getLocalizedMessage());
 							}
 							//remove anything that is left
 							getFolderDao().deleteEntries(folder);

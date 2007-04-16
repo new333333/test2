@@ -645,7 +645,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 				}
 			}
 			if (fos != null)
@@ -656,7 +656,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 				}
 			}
 		}
@@ -712,7 +712,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 				}
 			}
 			if (fos != null)
@@ -723,7 +723,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 				}
 			}
 		}
@@ -1993,7 +1993,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 		catch (Exception e)
 		{
-			throw new IOException(e.getMessage());
+			throw new IOException(e.getLocalizedMessage());
 		}
 		
 		return;
@@ -2011,7 +2011,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 		catch (Exception e)
 		{
-			throw new IOException(e.getMessage());
+			throw new IOException(e.getLocalizedMessage());
 		}
 		
 		return;
@@ -2054,7 +2054,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 		catch (Exception e)
 		{
-			throw new IOException(e.getMessage());
+			throw new IOException(e.getLocalizedMessage());
 		}
 	}
     

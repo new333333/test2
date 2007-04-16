@@ -142,7 +142,7 @@ public class ViewFileController extends SAbstractController {
 					String url = WebUrlUtil.getServletRootURL(request, false);
 					url += "errorHandler";
 					
-					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value='" + e.getMessage() + "'></input></form></body></html>";
+					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value='" + e.getLocalizedMessage() + "'></input></form></body></html>";
 					
 					response.getOutputStream().print(output);
 					response.getOutputStream().flush();
@@ -171,7 +171,7 @@ public class ViewFileController extends SAbstractController {
 					}
 				}
 				catch(Exception e) {
-					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 				}
 				
 				response.getOutputStream().flush();
@@ -213,7 +213,7 @@ public class ViewFileController extends SAbstractController {
 							getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 						}
 						catch(Exception e) {
-							response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+							response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 						}
 					}
 				} else if (viewType.equals("thumbnail")) {
@@ -222,14 +222,14 @@ public class ViewFileController extends SAbstractController {
 						getFileModule().readThumbnailFile(parent, entity, fa, response.getOutputStream());
 					}
 					catch(Exception e) {
-						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				} else {
 					try {
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 					}
 					catch(Exception e) {
-						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				}
 	
@@ -274,7 +274,7 @@ public class ViewFileController extends SAbstractController {
 			zipOut.finish();
 		}
 		catch(Exception e) {
-			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 		}
 
 		response.getOutputStream().flush();

@@ -1109,7 +1109,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			try {
     				fui.delete();
     			} catch (IOException e) {
-    				logger.error(e.getMessage(), e);
+    				logger.error(e.getLocalizedMessage(), e);
     			}
     		}
     			

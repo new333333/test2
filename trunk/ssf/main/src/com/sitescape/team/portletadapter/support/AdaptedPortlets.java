@@ -92,7 +92,7 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
         try {
 			doc = reader.read(getServletContext().getResourceAsStream("/WEB-INF/portlet.xml"));
 		} catch (DocumentException e) {
-			logger.error(e.getMessage(), e);
+			logger.error(e.getLocalizedMessage(), e);
 			throw new ServletException(e);
 		}
 
@@ -121,7 +121,7 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
 				try {
 					portlets.put(portletName, new PortletInfo(portletName, portletClassName, portletConfig, mimeTypes));
 				} catch (Exception e) {
-					logger.error(e.getMessage(), e);
+					logger.error(e.getLocalizedMessage(), e);
 					throw new ServletException(e);
 				}
 			}

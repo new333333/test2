@@ -97,13 +97,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			return(!objectInfo(uri, m).equals(OBJECT_INFO_NON_EXISTING));
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 	
@@ -117,13 +117,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			return(objectInfo(uri, m).equals(OBJECT_INFO_DIRECTORY));
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 
@@ -137,13 +137,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			return(objectInfo(uri, m).equals(OBJECT_INFO_FILE));
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 
@@ -160,13 +160,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				client.createFolder(uri, m);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch(AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
@@ -174,7 +174,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		catch(TypeMismatchException e) {
 			// This indicates that the folder uri is already used in the system
 			// to refer to a file (ie, non-folder type object). 
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 
@@ -189,20 +189,20 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				client.createResource(uri, m);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
 		}		
 		catch(TypeMismatchException e) {
 			// The position refers to a folder
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 
@@ -218,13 +218,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				client.setResource(uri, m, content); // we don't use contentType and characterEncoding
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "store");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "store");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "store");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "store");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -246,20 +246,20 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				client.createAndSetResource(uri, m, content); // Discard contentType and characterEncoding
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "create");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
 		}		
 		catch(TypeMismatchException e) {
 			// The position refers to a folder
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 
@@ -274,13 +274,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				return client.getLastModified(uri, m);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -298,13 +298,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				return client.getCreationDate(uri, m);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -339,13 +339,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			}
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(folderUri, e.getMessage(), "read");
+			throw new AccessDeniedException(folderUri, e.getLocalizedMessage(), "read");
 		} 
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(folderUri, e.getMessage(), "read");
+			throw new AccessDeniedException(folderUri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(folderUri);
@@ -368,13 +368,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				return client.getResource(uri, m); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -395,13 +395,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				return client.getResourceLength(uri, m); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -432,13 +432,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			}			
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "delete");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "delete");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "delete");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "delete");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -467,13 +467,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			}
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "read");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}	
 	}
 
@@ -524,13 +524,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				client.lockResource(uri, m, new SimpleLock(lockId, subject, expiration, owner)); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. Although WebDAV specification
@@ -567,13 +567,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				client.unlockResource(uri, m, lockId); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. This means nothing to 
@@ -597,13 +597,13 @@ public class WebdavSiteScape implements BasicWebdavStore,
 				return client.getLockInfo(uri, m); 
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}		
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(uri, e.getMessage(), "lock");
+			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. 
@@ -624,14 +624,14 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			tm = parseUri(targetUri);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		
 		try {
 			client.removeObject(targetUri, tm);
 		}
 		catch(NoAccessException e) {
-			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		catch(NoSuchObjectException e) {
 			throw new ObjectNotFoundException(targetUri);		
@@ -650,24 +650,24 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			sm = parseUri(sourceUri);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(sourceUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(sourceUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		
 		try {
 			tm = parseUri(targetUri);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}		
 		
 		try {
 			client.copyObject(sourceUri, sm, targetUri, tm, overwrite, recursive);
 		}
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(sourceUri);
@@ -677,7 +677,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}		
 		catch(TypeMismatchException e) {
 			// Perhaps we should throw AccessDeniedException instead?
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 
@@ -691,24 +691,24 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			sm = parseUri(sourceUri);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(sourceUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(sourceUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		
 		try {
 			tm = parseUri(targetUri);
 		}
 		catch(ZoneMismatchException e) {
-			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}		
 		
 		try {
 			client.moveObject(sourceUri, sm, targetUri, tm, overwrite);
 		}
 		catch (NoAccessException e) {
-			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(sourceUri);
@@ -718,7 +718,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		}		
 		catch(TypeMismatchException e) {
 			// Perhaps we should throw AccessDeniedException instead?
-			throw new ServiceAccessException(service, e.getMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage());
 		}
 	}
 

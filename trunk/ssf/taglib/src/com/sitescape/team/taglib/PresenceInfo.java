@@ -119,7 +119,7 @@ public class PresenceInfo extends BodyTagSupport {
 			}
 		}
 	    catch(Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 	    }
 		finally {
 			userStatus = -1;

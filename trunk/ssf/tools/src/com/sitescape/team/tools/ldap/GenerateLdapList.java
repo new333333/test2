@@ -79,7 +79,7 @@ public class GenerateLdapList {
         	document = reader.read(fIn);
  
         } catch (Exception ex) {
-        	System.out.println("Cannot read XML file " + inUrl + ":error is: " + ex.getMessage());
+        	System.out.println("Cannot read XML file " + inUrl + ":error is: " + ex.getLocalizedMessage());
         	throw ex;
         } finally {
         	if (fIn != null) {
@@ -108,7 +108,7 @@ public class GenerateLdapList {
             xOut.write(profileDoc);
     		xOut.flush();
 	    } catch (Exception ex) {
-	    	System.out.println("Can't write XML file " + outFile + ":error is: " + ex.getMessage());
+	    	System.out.println("Can't write XML file " + outFile + ":error is: " + ex.getLocalizedMessage());
 	    	throw(ex);
 	    } finally {
 	    	if (xOut != null) xOut.close();

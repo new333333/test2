@@ -78,7 +78,7 @@ public class SearchFormTag extends BodyTagSupport implements ParamAncestorTag {
 			return EVAL_PAGE;
 		}
 		catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
 			_form = "";

@@ -497,7 +497,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			trans.setParameter("TOC", Boolean.valueOf(oneEntry).toString());
 			trans.transform(new DocumentSource(document), result);
 		} catch (Exception ex) {
-			return ex.getMessage();
+			return ex.getLocalizedMessage();
 		}
 		return result.getWriter().toString();
 	}
@@ -845,7 +845,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			}
 			catch (Exception ex) {
 				logger.error("Could not transfer to file", ex);
-				throw new IOException("Could not transfer to file: " + ex.getMessage());
+				throw new IOException("Could not transfer to file: " + ex.getLocalizedMessage());
 			}
 		}
 	}

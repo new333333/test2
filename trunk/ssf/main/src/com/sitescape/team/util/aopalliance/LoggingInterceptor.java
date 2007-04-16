@@ -24,7 +24,7 @@ public class LoggingInterceptor implements MethodInterceptor {
 			return invocation.proceed();
 		}
 		catch(Throwable t) {
-			logger.error(t.getMessage(), t);
+			logger.error(t.getLocalizedMessage(), t);
 			throw t;
 		}
 	}

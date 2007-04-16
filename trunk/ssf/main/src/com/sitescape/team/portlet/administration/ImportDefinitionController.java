@@ -48,7 +48,7 @@ public class ImportDefinitionController extends  SAbstractController {
 		    		getDefinitionModule().addDefinition(doc, true);
 		    	} catch (Exception fe) {
 //		    		errorMap.put(entry.getKey(), fe.getLocalizedMessage());	
-		    		logger.error(fe.getMessage(), fe);
+		    		logger.error(fe.getLocalizedMessage(), fe);
 		    	}
 			}
 		
