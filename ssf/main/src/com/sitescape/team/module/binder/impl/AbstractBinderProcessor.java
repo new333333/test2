@@ -229,6 +229,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        addBinder_indexAdd(parent, binder, inputData, fileUploadItems, ctx);
 	        sp.stop("addBinder_indexAdd");
 	        
+	    	sp.print();
+
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
 	    		throw new WriteFilesException(filesErrors);
@@ -416,6 +418,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex, ctx);
 		    sp.stop("modifyBinder_indexAdd");
 		    
+		    sp.print();
+		    
 	    	if (filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
 	    		throw new WriteFilesException(filesErrors);
@@ -571,7 +575,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.start("deleteBinder_indexDel");
         deleteBinder_indexDel(binder, ctx);
         sp.stop("deleteBinder_indexDel");
-        
+     
+        sp.print();
     }
     protected Map deleteBinder_setCtx(Binder binder, Map ctx) {
     	return ctx;

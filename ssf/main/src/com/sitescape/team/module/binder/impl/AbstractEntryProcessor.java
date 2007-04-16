@@ -166,6 +166,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	addEntry_done(binder, entry, inputData, ctx);
         	sp.stop("addEntry_done");
         	
+        	sp.print();
+        	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
         		throw new WriteFilesException(filesErrors);
@@ -462,7 +464,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	sp.start("modifyEntry_done");
 	    	modifyEntry_done(binder, entry, inputData,ctx);
 	    	sp.stop("modifyEntry_done");
-	    		    
+	    		   
+	    	sp.print();
+	    	
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
 	    		throw new WriteFilesException(filesErrors);
@@ -686,6 +690,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.start("deleteEntry_indexDel");
         deleteEntry_indexDel(parentBinder, entry, ctx);
         sp.stop("deleteEntry_indexDel");
+        
+        sp.print();
     }
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	return ctx;

@@ -47,6 +47,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.util.LuceneUtil;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 
 /**
@@ -86,6 +87,7 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void addDocument(Document doc) {
+		SimpleProfiler.startProfiler("LocalLuceneSession.addDocument");
 		IndexWriter indexWriter;
 		if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
 			throw new LuceneException(
@@ -116,9 +118,11 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			}
 		}
+		SimpleProfiler.stopProfiler("LocalLuceneSession.addDocument");
 	}
 
 	public void addDocuments(Collection docs) {
+		SimpleProfiler.startProfiler("LocalLuceneSession.addDocuments");
 
 		IndexWriter indexWriter;
 
@@ -154,6 +158,7 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			}
 		}
+		SimpleProfiler.stopProfiler("LocalLuceneSession.addDocuments");
 	}
 
 	public void deleteDocument(String uid) {
@@ -161,6 +166,7 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void deleteDocuments(Term term) {
+		SimpleProfiler.startProfiler("LocalLuceneSession.deleteDocuments(Term)");
 		IndexReader indexReader;
 
 		// block until updateDocs is completed
@@ -188,9 +194,11 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			}
 		}
+		SimpleProfiler.stopProfiler("LocalLuceneSession.deleteDocuments(Term)");
 	}
 
 	public void deleteDocuments(Query query) {
+		SimpleProfiler.startProfiler("LocalLuceneSession.deleteDocuments(Query)");
 		IndexSearcher indexSearcher;
 
 		// block until updateDocs is completed
@@ -217,6 +225,7 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			}
 		}
+		SimpleProfiler.stopProfiler("LocalLuceneSession.deleteDocuments");
 	}
 
 	public void updateDocument(String uid, String fieldname, String fieldvalue) {
@@ -233,23 +242,27 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void updateDocuments(Query query, String fieldname, String fieldvalue) {
-
+		SimpleProfiler.startProfiler("LocalLuceneSession.updateDocuments(Query,String,String");
+		
 		try {
 			updateDocs(query, fieldname, fieldvalue);
 		} catch (Exception e) {
 			throw new LuceneException("Error updating index [" + indexPath
 					+ "]", e);
 		}
+		SimpleProfiler.stopProfiler("LocalLuceneSession.updateDocs(Query,String,String");
 	}
 	
 	public void updateDocuments(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
-
+		SimpleProfiler.startProfiler("LocalLuceneSession.updateDocuments(ArrayList,String,ArrayList");
+		
 		try {
 			updateDocs(queries, fieldname, values);
 		} catch (Exception e) {
 			throw new LuceneException("Error updating index [" + indexPath
 					+ "]", e);
 		}
+		SimpleProfiler.stopProfiler("LocalLuceneSession.updateDocs(ArrayList,String,ArrayList");
 	}
 
 	public com.sitescape.team.lucene.Hits search(Query query) {
@@ -510,7 +523,6 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private void updateDocs(Query q, String fieldname, String fieldvalue) {
-		
 		//block every read/write while updateDocs is in progress
 		synchronized (LocalLuceneSession.class) {
 			// first Optimize the index.
@@ -537,7 +549,6 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private void updateDocs(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
-		
 		//block every read/write while updateDocs is in progress
 		int count = 0;
 		synchronized (LocalLuceneSession.class) {

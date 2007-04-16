@@ -59,6 +59,7 @@ import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
@@ -426,13 +427,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		
 	}
 	public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
-	        
 	    // The following part requires update database transaction.
 		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
 	           		Map ctx = new HashMap();
 	        		for (int i=0; i<inputAccessors.size(); ++i) {
+	        			SimpleProfiler.startProfiler("syncNewEntries:dbTransaction");
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
 	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null, ctx);
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -450,15 +451,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			newEntries.put(entry, inputData);
 	        			addEntry_startWorkflow(entry, ctx);
 	        			ctx.clear();
+	        			SimpleProfiler.stopProfiler("syncNewEntries:dbTransaction");
 	        		}
 	                return newEntries;
 	        	}
 	        });
 	    for (Iterator i=newEntries.entrySet().iterator(); i.hasNext();) {
+	    	SimpleProfiler.startProfiler("syncNewEntries:indexAdd");
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);	
+	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);
+	    	SimpleProfiler.stopProfiler("syncNewEntries:indexAdd");
 	    }
 	    return new ArrayList(newEntries.keySet()); 
 		
