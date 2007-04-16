@@ -298,16 +298,6 @@ ss_createEventObj('PopupWindow_hidePopupWindows', 'MOUSEUP');
 function PopupWindow_attachListener() {
 	//This routine was replaced by the "ss_createEventObj" call above - pmh
 	return
-	
-	if (document.layers) {
-		document.captureEvents(Event.MOUSEUP);
-	}
-	window.popupWindowOldEventListener = document.onmouseup;
-	if (window.popupWindowOldEventListener != null) {
-		document.onmouseup = new Function("window.popupWindowOldEventListener(); PopupWindow_hidePopupWindows();");
-	} else {
-		document.onmouseup = PopupWindow_hidePopupWindows;
-	}
 }
 // CONSTRUCTOR for the PopupWindow object
 // Pass it a DIV name to use a DHTML popup, otherwise will default to window popup
