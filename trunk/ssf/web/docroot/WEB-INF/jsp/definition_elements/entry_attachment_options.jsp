@@ -27,6 +27,8 @@ function ss_hideLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
+	var appletObj = document.getElementById('dropboxobj${ssEntryId}${ss_namespace}');
+	if (appletObj != null) appletObj.focus();
 }
 function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 	var divId = 'ss_divDropTargetLoading${ssEntryId}${ss_namespace}';
