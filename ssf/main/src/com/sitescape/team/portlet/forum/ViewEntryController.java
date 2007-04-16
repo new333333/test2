@@ -219,9 +219,10 @@ public class ViewEntryController extends  SAbstractController {
 		//What do the newTab values mean?
 		/*
 		NEW FUNCTIONALITY: 04/12/2007: 
-		IF newTab == 1, always create a new tab
+		IF newTab == 1, means if the Tab already exists use it, if not create another one
 		ELSE IF newTab == 2, always create a new tab
 		ELSE IF newTab == 3, always use current tab (Clear the current tab and set the new entry)
+		ELSE IF newTab == 4, always create a new tab
 		ELSE IF a valid tabId is passed in, then we will open it in that specific tab 
 		ELSE IF a valid tab is not passed in, then we will check if the current tab is a search tab
 		IF current tab is a search tab, then we will NOT use the current tab, 
@@ -240,11 +241,13 @@ public class ViewEntryController extends  SAbstractController {
 		*
 		*/
 		if (newTab.equals("1")) {
-			tabs.setCurrentTab(tabs.addTab(folderEntry));
+			tabs.setCurrentTab(tabs.findTab(folderEntry));
 		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(folderEntry));
 		} else if (newTab.equals("3")) {
 			tabs.setCurrentTab(tabs.setTab(folderEntry, true));
+		} else if (newTab.equals("4")) {
+			tabs.setCurrentTab(tabs.addTab(folderEntry));
 		} else if (tabId != null) {
 			//Do not set the page number to zero
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), folderEntry));
@@ -259,7 +262,7 @@ public class ViewEntryController extends  SAbstractController {
 				//if the current tab is a search tab, if so we will not overwrite it
 				//if the current tab is not a search tab, then we will overwrite it
 				if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-					tabs.setCurrentTab(tabs.findTab(folderEntry));
+					tabs.setCurrentTab(tabs.findTab(folderEntry, true));
 				} else {
 					tabs.setCurrentTab(tabs.setTab(folderEntry, true));
 				}
