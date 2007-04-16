@@ -29,7 +29,7 @@ public class SearchFilter {
 	protected Element sfRoot;
 	protected Element currentFilterTerms = null;
 
-	
+	public static String AllEntries = "_all_entries";
 
 	private void addFilter(String field, String type, String searchTerm) {
 		if (currentFilterTerms == null) {
@@ -149,7 +149,7 @@ public class SearchFilter {
 		if (currentFilterTerms == null) {
 			newCurrent();
 		}
-		if (!defId.equals("") && name.equals("_all_entries")) {
+		if (!defId.equals("") && name.equals(AllEntries)) {
 			Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterEntryDefId, defId);
