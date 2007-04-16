@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
@@ -35,7 +36,6 @@ import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
@@ -60,14 +60,12 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
-import com.sitescape.team.module.binder.EntryProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -606,7 +604,39 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
  
     	return retMap; 
 	}	
-	
+    
+	/**
+	 * Delete all the entries in the index that are children of the ids passed in.
+	 * If the top of the tree is passed in (the zoneid), then clear the entire index.
+	 */
+    public void deleteIndexTree(List<Long> ids) {
+		if (ids.size() == 0)
+			return;
+		Term delTerm;
+
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+
+		try {
+			// if the top of the tree is in the list of id's, then delete
+			// everything in the tree. Otherwise, walk the ancestry list
+			// and delete all the entries under each folderid.
+			if (ids.contains(zoneId)) {
+				luceneSession.clearIndex();
+			} else {
+				for (Long id : ids) {
+					delTerm = new Term(EntityIndexUtils.ENTRY_ANCESTRY, id
+							.toString());
+					luceneSession.deleteDocuments(delTerm);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Exception:" + e);
+		} finally {
+			luceneSession.close();
+		}
+		return;
+	}
 
 	public ArrayList getSearchTags(String wordroot, String type) {
 		ArrayList tags = new ArrayList();

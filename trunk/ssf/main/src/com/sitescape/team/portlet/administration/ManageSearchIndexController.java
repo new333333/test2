@@ -61,6 +61,16 @@ public class ManageSearchIndexController extends  SAbstractController {
 				}
 			}
 			TreeSet exclude = new TreeSet();
+			
+			
+			// Delete all the matching entries in the index before re-indexing the tree.
+			List<Long> ids = new ArrayList<Long>();
+			ids.addAll(wsIdList);
+			ids.addAll(folderIdList);
+			ids.add(profileId);
+			getBinderModule().deleteIndexTree((List<Long>)ids);
+			
+			
 			for (Long id:wsIdList) {
 				exclude.addAll(getBinderModule().indexTree(id, exclude));
 			}
