@@ -3824,7 +3824,7 @@ function ss_linkMenuObj() {
 	this.newTab = function() {
 		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
-		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "4");
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
 		
 		if (self.opener) {
 			self.opener.location.href = url;
