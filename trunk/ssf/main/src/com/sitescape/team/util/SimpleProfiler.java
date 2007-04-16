@@ -23,14 +23,28 @@ import org.apache.commons.logging.Log;
  *
  */
 public class SimpleProfiler {
+	
+	private static final ThreadLocal<SimpleProfiler> TL = new ThreadLocal();
+	
+	private String title = null;
 	private boolean active = true; // defaults to true 
     private Map<String,Event> events;
-
+    private long beginTime; // time in ms
+    
     public SimpleProfiler() {
     	events = new HashMap<String,Event>();
+    	beginTime = System.currentTimeMillis();
+    }
+    public SimpleProfiler(String title) {
+    	this();
+    	this.title = title;
     }
     public SimpleProfiler(boolean active) {
     	this();
+    	this.active = active;
+    }
+    public SimpleProfiler(String title, boolean active) {
+    	this(title);
     	this.active = active;
     }
     
@@ -61,6 +75,8 @@ public class SimpleProfiler {
     		for(Map.Entry entry : events.entrySet()) {
     			if(sb.length() > 0)
     				sb.append(Constants.NEWLINE);
+    			if(title != null)
+    				sb.append(title).append("/");
     			sb.append(entry.getKey())
     			.append(": ")
     			.append(entry.getValue().toString());
@@ -85,8 +101,38 @@ public class SimpleProfiler {
     	}
     }
     public void print() {
-    	if(active)
+    	if(active) {
+    		long currTime = System.currentTimeMillis();
+    		double elapsedTimeMS = currTime - beginTime;
+    		System.out.println("*** Elapsed time: " + elapsedTimeMS/1000.0 + " seconds");
     		System.out.println("*** " + toString());
+    	}
+    }
+    
+    public static void setProfiler(SimpleProfiler profiler) {
+    	TL.set(profiler);
+    }
+    public static SimpleProfiler getProfiler() {
+    	return (SimpleProfiler) TL.get();
+    }
+    
+    public static void startProfiler(String eventName) {
+    	if(getProfiler() != null)
+    		getProfiler().start(eventName);
+    }
+    
+    public static void stopProfiler(String eventName) {
+    	if(getProfiler() != null)
+    		getProfiler().stop(eventName);
+    }
+    
+    public static void printProfiler() {
+    	if(getProfiler() != null)
+    		getProfiler().print();
+    }
+    
+    public static void clearProfiler() {
+    	TL.set(null);
     }
     
     public class Event {
