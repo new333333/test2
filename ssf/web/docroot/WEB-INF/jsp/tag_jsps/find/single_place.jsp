@@ -37,7 +37,7 @@ var ss_findPlacesSearchLastfindPlacesType = "";
 function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text == '' || text != ss_findPlacesSearchLastText) ss_findPlaces_pageNumber = 0;
+	if (text != ss_findPlacesSearchLastText) ss_findPlaces_pageNumber = 0;
 	ss_setupStatusMessageDiv()
 	ss_moveDivToBody('ss_findPlacesNavBarDiv_<portlet:namespace/>');
 	//Are we already doing a search?

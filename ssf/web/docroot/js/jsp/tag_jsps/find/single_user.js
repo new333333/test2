@@ -52,7 +52,7 @@ function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs
 function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 	var textObj = $(textObjId);
 	var text = textObj.value;
-	if (text == '' || text != ss_findUserSearchLastText[prefix]) ss_findUser_pageNumber[prefix] = 0;
+	if (text != ss_findUserSearchLastText[prefix]) ss_findUser_pageNumber[prefix] = 0;
 	ss_setupStatusMessageDiv()
 	//ss_moveDivToBody('ss_findUserNavBarDiv${prefix}');
 	//Are we already doing a search?
@@ -112,7 +112,7 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
  	}
  	if (divObj != null) divObj.style.color = "#cccccc";
 
- 	ss_debug("//"+text+"//")
+ 	ss_debug("//"+text+"// page: "+ss_findUser_pageNumber[prefix])
 	var ajaxRequest = new ss_AjaxRequest(ss_findUserSearchUrl[prefix]); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {

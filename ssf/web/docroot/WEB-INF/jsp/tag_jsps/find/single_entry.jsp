@@ -43,7 +43,7 @@ var ss_findEntriesClickRoutine${prefix} = "<%= clickRoutine %>";
 function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text == '' || text != ss_findEntriesSearchLastText) ss_findEntries_pageNumber = 0;
+	if (text != ss_findEntriesSearchLastText) ss_findEntries_pageNumber = 0;
 	ss_setupStatusMessageDiv()
 	ss_moveDivToBody('ss_findEntriesNavBarDiv_<portlet:namespace/>');
 	//Are we already doing a search?
