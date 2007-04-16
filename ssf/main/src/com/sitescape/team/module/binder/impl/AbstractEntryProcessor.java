@@ -103,12 +103,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (!filesFromApplet) {
         	sp.start("addEntry_toEntryData");
             entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
-            sp.stop("addEntry_toEntryData").print();
+            sp.stop("addEntry_toEntryData");
     	}
     	else {
 	    	sp.start("createNewEntryWithAttachmentAndTitle");
 	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems, ctx);
-		    sp.stop("createNewEntryWithAttachmentAndTitle").print();
+		    sp.stop("createNewEntryWithAttachmentAndTitle");
     	}        
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -117,14 +117,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         if(binder.isMirrored()) {
 	        sp.start("addEntry_mirrored");
 	        addEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
-	        sp.stop("addEntry_mirrored").print();
+	        sp.stop("addEntry_mirrored");
         }
         
         try {
         	
         	sp.start("addEntry_create");
         	final Entry entry = addEntry_create(def, clazz, ctx);
-        	sp.stop("addEntry_create").print();
+        	sp.stop("addEntry_create");
         
         	sp.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
@@ -141,30 +141,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			return null;
         		}
         	});
-        	sp.stop("addEntry_transactionExecute").print();
+        	sp.stop("addEntry_transactionExecute");
         	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
             sp.start("addEntry_filterFiles");
         	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-        	sp.stop("addEntry_filterFiles").print();
+        	sp.stop("addEntry_filterFiles");
 
         	sp.start("addEntry_processFiles");
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
-        	sp.stop("addEntry_processFiles").print();
+        	sp.stop("addEntry_processFiles");
         
  
         	sp.start("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
-        	sp.stop("addEntry_indexAdd").print();
+        	sp.stop("addEntry_indexAdd");
         	
         	sp.start("addEntry_done");
         	addEntry_done(binder, entry, inputData, ctx);
-        	sp.stop("addEntry_done").print();
+        	sp.stop("addEntry_done");
         	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
@@ -402,12 +402,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (!filesFromApplet) {
 	    	sp.start("modifyEntry_toEntryData");
 	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
-		    sp.stop("modifyEntry_toEntryData").print();
+		    sp.stop("modifyEntry_toEntryData");
     	}
     	else {
 	    	sp.start("getFilesUploadedByApplet");
 	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems, ctx);
-		    sp.stop("getFilesUploadedByApplet").print();
+		    sp.stop("getFilesUploadedByApplet");
     	}
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -416,7 +416,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         if(binder.isMirrored()) {
 	        sp.start("modifyEntry_mirrored");
 	        modifyEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
-	        sp.stop("modifyEntry_mirrored").print();
+	        sp.stop("modifyEntry_mirrored");
         }
         
 	    try {	    	
@@ -430,21 +430,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
  	    			return null;
 	    		}});
-	    	sp.stop("modifyEntry_transactionExecute").print();
+	    	sp.stop("modifyEntry_transactionExecute");
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
 	        sp.start("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
             modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex, ctx);
-	        sp.stop("modifyBinder_removeAttachments").print();
+	        sp.stop("modifyBinder_removeAttachments");
 	    	
 	    	sp.start("modifyEntry_filterFiles");
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-	    	sp.stop("modifyEntry_filterFiles").print();
+	    	sp.stop("modifyEntry_filterFiles");
 
            	sp.start("modifyEntry_processFiles");
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
-	    	sp.stop("modifyEntry_processFiles").print();
+	    	sp.stop("modifyEntry_processFiles");
 
 
 	    	// Since index update is implemented as removal followed by add, 
@@ -453,15 +453,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	filesToDeindex.addAll(filesToReindex);
 	    	sp.start("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
-	    	sp.stop("modifyEntry_indexRemoveFiles").print();
+	    	sp.stop("modifyEntry_indexRemoveFiles");
 	    	
 	    	sp.start("modifyEntry_indexAdd");
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
-	    	sp.stop("modifyEntry_indexAdd").print();
+	    	sp.stop("modifyEntry_indexAdd");
 	    	
 	    	sp.start("modifyEntry_done");
 	    	modifyEntry_done(binder, entry, inputData,ctx);
-	    	sp.stop("modifyEntry_done").print();
+	    	sp.stop("modifyEntry_done");
 	    		    
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -665,27 +665,27 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	Map ctx = deleteEntry_setCtx(entry, null);
     	sp.start("deleteEntry_preDelete");
         deleteEntry_preDelete(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_preDelete").print();
+        sp.stop("deleteEntry_preDelete");
         
         sp.start("deleteEntry_workflow");
         deleteEntry_workflow(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_workflow").print();
+        sp.stop("deleteEntry_workflow");
         
         sp.start("deleteEntry_processFiles");
         deleteEntry_processFiles(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_processFiles").print();
+        sp.stop("deleteEntry_processFiles");
          
         sp.start("deleteEntry_delete");
         deleteEntry_delete(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_delete").print();
+        sp.stop("deleteEntry_delete");
         
         sp.start("deleteEntry_postDelete");
         deleteEntry_postDelete(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_postDelete").print();
+        sp.stop("deleteEntry_postDelete");
         
         sp.start("deleteEntry_indexDel");
         deleteEntry_indexDel(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_indexDel").print();
+        sp.stop("deleteEntry_indexDel");
     }
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	return ctx;
