@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="28" definitionType="1" databaseId="402883c6115753d8011157829367000f">
+<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="29" definitionType="1" databaseId="402883c6115753d8011157829367000f">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
@@ -40,6 +40,16 @@
           <property name="caption" value="__description"/>
           <property name="height" value=""/>
           <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" id="28">
+        <properties>
+          <property name="name" value="ss_attachFile"/>
+          <property name="caption" value="__attach_files"/>
+          <property name="width" value="60"/>
+          <property name="number" value=""/>
+          <property name="storage" value="simpleFileRepository"/>
+          <property name="hide" value="true"/>
         </properties>
       </item>
       <item name="entryFormButtons" caption="__form_buttons" id="6">
