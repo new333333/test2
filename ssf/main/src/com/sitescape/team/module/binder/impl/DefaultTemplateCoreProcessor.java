@@ -43,7 +43,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
-    		Collection<FileAttachment> filesToIndex) {
+    		Collection<FileAttachment> filesToIndex, Map ctx) {
     }
     public void deleteBinder(Binder binder) {
     	//Delete the template.  The interalId isn't meant

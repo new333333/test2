@@ -44,6 +44,7 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
+import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
@@ -105,7 +106,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
  		//only execting one
  		if (companies.size() == 0) {
  			String zoneName = SZoneConfig.getDefaultZoneName();
- 			IndexSynchronizationManager.begin();
 			addZone(zoneName);
  		} else {
  			//make sure super user is set correctly
@@ -169,16 +169,23 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
  	}
 
 	public void addZone(final String name) {
-		
 		final String adminName = SZoneConfig.getString(name, "property[@name='adminUser']", "admin");
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	try {
+    		luceneSession.clearIndex();
+    	} finally {
+    		luceneSession.close();
+    	}
 		boolean closeSession = false;
 		try {
  			if (!SessionUtil.sessionActive()) {
  				SessionUtil.sessionStartup();	
  				closeSession = true;
  			}
+ 			IndexSynchronizationManager.begin();
+
     		final Workspace top = new Workspace();
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -230,6 +237,8 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		profiles.setModification(stamp);
 	        		user.setCreation(stamp);
 	        		user.setModification(stamp);
+	        		//flush these changes, other reads may re-load
+//	        		getCoreDao().flush();
 			
 	        		addPosting(profiles, stamp);
 	        		addJobProcessor(profiles, stamp); 
@@ -354,6 +363,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		user.setCreation(stamp);
 		user.setModification(stamp);
 		getCoreDao().save(user);
+		getProfileModule().addUserWorkspace(user);
 		return user;
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {

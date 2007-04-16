@@ -732,17 +732,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /*
      * classes must provide code to delete files belonging to entries
      */
-    protected abstract Object deleteBinder_processFiles(Binder binder, Object ctx);
+    protected abstract void deleteBinder_processFiles(Binder binder, Map ctx);
     /*
      * classes must provide code to delete entries in the binder
      */   
-    protected abstract Object deleteBinder_delete(Binder binder, Object ctx);
-    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
+    protected abstract void deleteBinder_delete(Binder binder, Map ctx);
+    protected void deleteBinder_indexDel(Binder binder, Map ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
     	indexDeleteEntries(binder);
     	super.deleteBinder_indexDel(binder, ctx);
-       	return ctx;
     }
 	    
     //***********************************************************************************************************
@@ -889,7 +888,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			total += count;
        			//have 1000 entries, manually load their collections
        			indexEntries_load(binder, batch);
-       			logger.info("Indexing at " + total + "(" + binder.getId().toString() + ")");
+       			logger.info("Indexing at " + total + "(" + binder.getPathName() + ")");
        			Map tags = indexEntries_loadTags(binder, batch);
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
@@ -918,14 +917,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				getCoreDao().evict(entry);
        			}
        			IndexSynchronizationManager.addDocuments(docs);
-       			IndexSynchronizationManager.applyChanges();
+       			IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
 	            
        			// Delete the document that's currently in the index.
  // turn back on later when don't delete everything
 //       				luceneSession.deleteDocument(entry.getIndexDocumentUid());
 	            
        			// Register the index document for indexing.
-       			logger.info("Indexing done at " + total + "("+ binder.getId().toString() + ")");
+       			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
        		
         	}
         	

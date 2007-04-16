@@ -29,7 +29,7 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
      }
  
     /*******************************************************************/
-    protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
+    protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//User workspace - title change may come when userTitle changes,
     	//but definition does not include title as a form field
     	Integer type = binder.getDefinitionType();
@@ -43,7 +43,7 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     		}
 
     	}
-    	super.modifyBinder_postFillIn(binder, inputData, entryData);
+    	super.modifyBinder_postFillIn(binder, inputData, entryData, ctx);
     }
     
 }
