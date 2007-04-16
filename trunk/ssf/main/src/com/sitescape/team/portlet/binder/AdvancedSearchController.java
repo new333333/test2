@@ -65,6 +65,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public static final String SearchBlockType = "type";
 	public static final String SearchStartDate = "startDate";
 	public static final String SearchEndDate = "endDate";
+	public static final String SearchStartDateNotFormated = "startDateNotFormated";
+	public static final String SearchEndDateNotFormated = "endDateNotFormated";
 	
 	public static final String SearchEntryType="entryType";
 	public static final String SearchEntryElement="entryElement";
@@ -286,7 +288,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 		public Entry(Definition definition, List fields) {
 			this.id = definition.getId();
-			this.title = definition.getTitle();
+			this.title = definition.getName();
 			this.fields = fields;
 		}
 		public String getId() {
@@ -356,7 +358,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 				
 				Map fieldsMap = getDefinitionModule().getEntryDefinitionElements(entryType);
 				
-				if (fieldsMap != null) {
+				if (fieldsMap != null && fieldsMap.get(fieldName) != null) {
 					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
 					((Entry)entriesMap.get(entryType)).addField(entryField);
 				}
@@ -570,8 +572,10 @@ public class AdvancedSearchController extends AbstractBinderController {
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
 		block.put(SearchEntryType, filterTerm.attributeValue(FilterHelper.FilterEntryDefId, ""));
 		block.put(SearchEntryElement, filterTerm.attributeValue(FilterHelper.FilterElementName, ""));
-		block.put(SearchEntryValues, getElementValues(filterTerm).get(0));
-		
+		List values = getElementValues(filterTerm);
+		if (values.size() > 0) {
+			block.put(SearchEntryValues, getElementValues(filterTerm).get(0));
+		} 
 		return block;
 	}
 	
@@ -643,6 +647,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		block.put(SearchStartDate, formatedStartDate);
 		block.put(SearchEndDate, formatedEndDate);
+		block.put(SearchStartDateNotFormated, startDateParsed);
+		block.put(SearchEndDateNotFormated, endDateParsed);
 		return block;
 	}
 	
@@ -750,7 +756,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			}
 			if (types[i].equals(SearchBlockTypeEntry)) {
 				String entryTypeId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterEntryDefIdField.concat(numbers[i]), "");
-				String entryFieldId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterElementNameField.concat(numbers[i]), "");
+				String entryFieldId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterElementNameField.concat(numbers[i]), SearchEntryFilter.AllEntries);
 				String[] value = PortletRequestUtils.getStringParameters(request, FilterHelper.FilterElementValueField.concat(numbers[i]));
 //				String[] valueType = PortletRequestUtils.getStringParameters(request, FilterElementValueTypeField + String.valueOf(i));
 //				if (valueType.length > 0 && valueType[0].equals("checkbox")) {
