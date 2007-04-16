@@ -154,18 +154,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
-    	sp.reset("addBinder_toEntryData").begin();
+    	sp.start("addBinder_toEntryData");
         Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems);
-        sp.end().print();
+        sp.stop("addBinder_toEntryData").print();
         
         final Map entryData = (Map) entryDataAll.get("entryData");
         
          List fileUploadItems = (List) entryDataAll.get("fileData");
         
     	try {
-	        sp.reset("addBinder_create").begin();
+	        sp.start("addBinder_create");
 	        final Binder binder = addBinder_create(def, clazz);
-	        sp.end().print();
+	        sp.stop("addBinder_create").print();
 	        
 	    	if (def != null) {
 	    		if ((parent.getDefinitionType() == null) ||
@@ -182,7 +182,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
-	        sp.reset("addBinder_transactionExecute").begin();
+	        sp.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -201,31 +201,31 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                return null;
 	        	}
 	        });
-	        sp.end().print();
+	        sp.stop("addBinder_transactionExecute").print();
 	           
 	        if(binder.isMirrored()) {
-		        sp.reset("addBinder_mirrored").begin();
+		        sp.start("addBinder_mirrored");
 		        addBinder_mirrored(binder, inputData);
-		        sp.end().print();
+		        sp.stop("addBinder_mirrored").print();
 	        }
 	        
-	        sp.reset("addBinder_filterFiles").begin();
+	        sp.start("addBinder_filterFiles");
 	        //Need to do filter here after binder is saved cause it makes use of
 	        // the id of binder
 	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
-	        sp.end().print();
+	        sp.stop("addBinder_filterFiles").print();
 	        
-	        sp.reset("addBinder_processFiles").begin();
+	        sp.start("addBinder_processFiles");
 	        // We must save the entry before processing files because it makes use
 	        // of the persistent id of the entry. 
 	        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors);
-	        sp.end().print();
+	        sp.stop("addBinder_processFiles").print();
 	        
-	        sp.reset("addBinder_indexAdd").begin();
+	        sp.start("addBinder_indexAdd");
 	        // This must be done in a separate step after persisting the entry,
 	        // because we need the entry's persistent ID for indexing. 
 	        addBinder_indexAdd(parent, binder, inputData, fileUploadItems);
-	        sp.end().print();
+	        sp.stop("addBinder_indexAdd").print();
 	        
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -350,20 +350,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
-    	sp.reset("modifyBinder_toEntryData").begin();
+    	sp.start("modifyBinder_toEntryData");
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems);
-	    sp.end().print();
+	    sp.stop("modifyBinder_toEntryData").print();
 	    
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 
 	    try {
 		    
-	    	sp.reset("modifyBinder_filterFiles").begin();
+	    	sp.start("modifyBinder_filterFiles");
 		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
-		    sp.end().print();
+		    sp.stop("modifyBinder_filterFiles").print();
 	
-	    	sp.reset("modifyBinder_transactionExecute").begin();
+	    	sp.start("modifyBinder_transactionExecute");
 	    	// The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -385,30 +385,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         			}
         			return null;
 	        	}});
-	        sp.end().print();
+	        sp.stop("modifyBinder_transactionExecute").print();
 	        
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
-	        sp.reset("modifyBinder_removeAttachments").begin();
+	        sp.start("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
 	        modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex);    
-	        sp.end().print();
+	        sp.stop("modifyBinder_removeAttachments").print();
 	        
-	        sp.reset("modifyBinder_processFiles").begin();
+	        sp.start("modifyBinder_processFiles");
 		    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
-		    sp.end().print();
+		    sp.stop("modifyBinder_processFiles").print();
 		    
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
-	    	sp.reset("modifyBinder_indexRemoveFiles").begin();
+	    	sp.start("modifyBinder_indexRemoveFiles");
 	        modifyBinder_indexRemoveFiles(binder, filesToDeindex);
-	        sp.end().print();
+	        sp.stop("modifyBinder_indexRemoveFiles").print();
 	        
-	        sp.reset("modifyBinder_indexAdd").begin();
+	        sp.start("modifyBinder_indexAdd");
 		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex);
-		    sp.end().print();
+		    sp.stop("modifyBinder_indexAdd").print();
 		    
 	    	if (filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -531,13 +531,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
-    	sp.reset("deleteBinder_preDelete").begin();
+    	sp.start("deleteBinder_preDelete");
         Object ctx = deleteBinder_preDelete(binder);
-        sp.end().print();
+        sp.stop("deleteBinder_preDelete").print();
         
-        sp.reset("deleteBinder_processFiles").begin();
+        sp.start("deleteBinder_processFiles");
         ctx = deleteBinder_processFiles(binder, ctx);
-        sp.end().print();
+        sp.stop("deleteBinder_processFiles").print();
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
     		getCoreDao().updateFileName(binder.getParentBinder(), binder, binder.getTitle(), null);
@@ -545,17 +545,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				getCoreDao().updateTitle(binder.getParentBinder(), binder, binder.getNormalTitle(), null);
     	}
         
-        sp.reset("deleteBinder_delete").begin();
+        sp.start("deleteBinder_delete");
         ctx = deleteBinder_delete(binder, ctx);
-        sp.end().print();
+        sp.stop("deleteBinder_delete").print();
        
-        sp.reset("deleteBinder_postDelete").begin();
+        sp.start("deleteBinder_postDelete");
         ctx = deleteBinder_postDelete(binder, ctx);
-        sp.end().print();
+        sp.stop("deleteBinder_postDelete").print();
         
-        sp.reset("deleteBinder_indexDel").begin();
+        sp.start("deleteBinder_indexDel");
         deleteBinder_indexDel(binder, ctx);
-        sp.end().print();
+        sp.stop("deleteBinder_indexDel").print();
         
     }
     
