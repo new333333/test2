@@ -47,6 +47,7 @@ import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
@@ -96,7 +97,7 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-
+	protected static int INDEX_THRESHHOLD=1000;
    protected DefinitionModule definitionModule;
    private static final String TEXT_SUBDIR = "text",
    							   TXT_EXT = ".txt";
@@ -155,16 +156,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("addBinder_toEntryData");
-        Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems);
+        final Map ctx = addBinder_setCtx(parent, null);
+        Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems,ctx);
         sp.stop("addBinder_toEntryData");
         
         final Map entryData = (Map) entryDataAll.get("entryData");
         
          List fileUploadItems = (List) entryDataAll.get("fileData");
-        
+       
     	try {
 	        sp.start("addBinder_create");
-	        final Binder binder = addBinder_create(def, clazz);
+	        final Binder binder = addBinder_create(def, clazz, ctx);
 	        sp.stop("addBinder_create");
 	        
 	    	if (def != null) {
@@ -188,13 +190,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	public Object doInTransaction(TransactionStatus status) {
 	                //need to set entry/binder information before generating file attachments
 	                //Attachments/Events need binder info for AnyOwner
-	                addBinder_fillIn(parent, binder, inputData, entryData);
+	                addBinder_fillIn(parent, binder, inputData, entryData, ctx);
 	                
-	                addBinder_preSave(parent, binder, inputData, entryData);      
+	                addBinder_preSave(parent, binder, inputData, entryData, ctx);      
 	
-	                addBinder_save(parent, binder, inputData, entryData);      
+	                addBinder_save(parent, binder, inputData, entryData, ctx);      
 	                
-	                addBinder_postSave(parent, binder, inputData, entryData);
+	                addBinder_postSave(parent, binder, inputData, entryData, ctx);
 	                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
 	                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
 	                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
@@ -205,26 +207,26 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	           
 	        if(binder.isMirrored()) {
 		        sp.start("addBinder_mirrored");
-		        addBinder_mirrored(binder, inputData);
+		        addBinder_mirrored(binder, inputData, ctx);
 		        sp.stop("addBinder_mirrored");
 	        }
 	        
 	        sp.start("addBinder_filterFiles");
 	        //Need to do filter here after binder is saved cause it makes use of
 	        // the id of binder
-	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
+	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems,ctx);
 	        sp.stop("addBinder_filterFiles");
 	        
 	        sp.start("addBinder_processFiles");
 	        // We must save the entry before processing files because it makes use
 	        // of the persistent id of the entry. 
-	        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors);
+	        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors,ctx);
 	        sp.stop("addBinder_processFiles");
 	        
 	        sp.start("addBinder_indexAdd");
 	        // This must be done in a separate step after persisting the entry,
 	        // because we need the entry's persistent ID for indexing. 
-	        addBinder_indexAdd(parent, binder, inputData, fileUploadItems);
+	        addBinder_indexAdd(parent, binder, inputData, fileUploadItems, ctx);
 	        sp.stop("addBinder_indexAdd");
 	        
 	    	if(filesErrors.getProblems().size() > 0) {
@@ -239,16 +241,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        cleanupFiles(fileUploadItems);
     	}
     }
+    protected Map addBinder_setCtx(Binder binder, Map ctx) {
+    	return ctx;
+    }
 
-    protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems, Map ctx) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 
-    protected FilesErrors addBinder_processFiles(Binder binder, List fileUploadItems, FilesErrors filesErrors) {
+    protected FilesErrors addBinder_processFiles(Binder binder, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
     	return getFileModule().writeFiles(binder, binder, fileUploadItems, filesErrors);
     }
     
-    protected Map addBinder_toEntryData(Binder parent, Definition def, InputDataAccessor inputData, Map fileItems) {
+    protected Map addBinder_toEntryData(Binder parent, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
     	if (def != null) {
     		return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
@@ -257,7 +262,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
     
-    protected Binder addBinder_create(Definition def, Class clazz)  {
+    protected Binder addBinder_create(Definition def, Class clazz, Map ctx)  {
     	try {
     		Binder binder = (Binder)clazz.newInstance();
             binder.setEntryDef(def);
@@ -276,7 +281,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
     
-    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {  
+    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setZoneId(parent.getZoneId());
         binder.setCreation(new HistoryStamp(user));
@@ -313,21 +318,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			binder.setMirrored(true);
     }
 
-    protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
+    protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     }
 
-    protected void addBinder_save(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
+    protected void addBinder_save(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
         getCoreDao().save(binder);
     }
     
-    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
+    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(binder, ChangeLog.ADDBINDER);
     	
     }
 
     protected void addBinder_indexAdd(Binder parent, Binder binder, 
-    		InputDataAccessor inputData, List fileUploadItems) {
+    		InputDataAccessor inputData, List fileUploadItems, Map ctx) {
         
     	indexBinder(binder, fileUploadItems, null, true);
     }
@@ -351,7 +356,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("modifyBinder_toEntryData");
-	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems);
+    	final Map ctx = modifyBinder_setCtx(binder, null);
+	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems, ctx);
 	    sp.stop("modifyBinder_toEntryData");
 	    
 	    final Map entryData = (Map) entryDataAll.get("entryData");
@@ -360,7 +366,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    try {
 		    
 	    	sp.start("modifyBinder_filterFiles");
-		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
+		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems, ctx);
 		    sp.stop("modifyBinder_filterFiles");
 	
 	    	sp.start("modifyBinder_transactionExecute");
@@ -369,8 +375,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		String oldTitle = binder.getTitle();
 	        		String oldNormalTitle = binder.getNormalTitle();
-	        		modifyBinder_fillIn(binder, inputData, entryData);
-	        		modifyBinder_postFillIn(binder, inputData, entryData);
+	        		modifyBinder_fillIn(binder, inputData, entryData, ctx);
+	        		modifyBinder_postFillIn(binder, inputData, entryData, ctx);
 	        		//if title changed, must update path infor for all child folders
 	        		String newTitle = binder.getTitle();
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
@@ -391,11 +397,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        sp.start("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
-	        modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex);    
+	        modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex, ctx);    
 	        sp.stop("modifyBinder_removeAttachments");
 	        
 	        sp.start("modifyBinder_processFiles");
-		    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
+		    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors, ctx);
 		    sp.stop("modifyBinder_processFiles");
 		    
 	    	// Since index update is implemented as removal followed by add, 
@@ -403,11 +409,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
 	    	sp.start("modifyBinder_indexRemoveFiles");
-	        modifyBinder_indexRemoveFiles(binder, filesToDeindex);
+	        modifyBinder_indexRemoveFiles(binder, filesToDeindex, ctx);
 	        sp.stop("modifyBinder_indexRemoveFiles");
 	        
 	        sp.start("modifyBinder_indexAdd");
-		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex);
+		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex, ctx);
 		    sp.stop("modifyBinder_indexAdd");
 		    
 	    	if (filesErrors.getProblems().size() > 0) {
@@ -421,15 +427,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    cleanupFiles(fileUploadItems);
 	    }
 	}
-    protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    protected Map modifyBinder_setCtx(Binder binder, Map ctx) {
+    	if (ctx == null) ctx = new HashMap();
+    	//save title before changes
+		ctx.put(ObjectKeys.FIELD_ENTITY_TITLE, binder.getTitle());
+    	return ctx;
+    }
+    protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems, Map ctx) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 
     protected FilesErrors modifyBinder_processFiles(Binder binder, 
-    		List fileUploadItems, FilesErrors filesErrors) {
+    		List fileUploadItems, FilesErrors filesErrors, Map ctx) {
     	return getFileModule().writeFiles(binder, binder, fileUploadItems, filesErrors);
     }
-    protected Map modifyBinder_toEntryData(Binder binder, InputDataAccessor inputData, Map fileItems) {
+    protected Map modifyBinder_toEntryData(Binder binder, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
     	Definition def = binder.getEntryDef();
     	if (def == null) {
@@ -438,7 +450,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	} 
         return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
     }
-    protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData) {  
+    protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
@@ -457,27 +469,29 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     }
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
-    		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex) {
+    		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex, Map ctx) {
     	removeAttachments(binder, binder, deleteAttachments, filesToDeindex, filesToReindex);
     }
 
-    protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
+    protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(binder, ChangeLog.MODIFYBINDER);
     }
     
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
-    		Collection<FileAttachment> filesToIndex) {
+    		Collection<FileAttachment> filesToIndex, Map ctx) {
     	indexBinder(binder, fileUploadItems, filesToIndex, false);
     	
     	//Also re-index all of the direct children binders to get the correct folder extended title indexed
-    	Iterator itBinders = binder.getBinders().iterator();
-    	while (itBinders.hasNext()) {
-    		indexBinder((Binder) itBinders.next(), false);
+    	if (!ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle())) {
+    		Iterator itBinders = binder.getBinders().iterator();
+    		while (itBinders.hasNext()) {
+    			indexBinder((Binder) itBinders.next(), false);
+    		}
     	}
     }
-    protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex) {
+    protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex, Map ctx) {
     	removeFilesIndex(binder, filesToDeindex);
     }
     //***********************************************************************************************************
@@ -532,11 +546,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("deleteBinder_preDelete");
-        Object ctx = deleteBinder_preDelete(binder);
+    	final Map ctx = deleteBinder_setCtx(binder, null);
+        deleteBinder_preDelete(binder,ctx);
         sp.stop("deleteBinder_preDelete");
         
         sp.start("deleteBinder_processFiles");
-        ctx = deleteBinder_processFiles(binder, ctx);
+        deleteBinder_processFiles(binder, ctx);
         sp.stop("deleteBinder_processFiles");
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
@@ -546,11 +561,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
         
         sp.start("deleteBinder_delete");
-        ctx = deleteBinder_delete(binder, ctx);
+        deleteBinder_delete(binder, ctx);
         sp.stop("deleteBinder_delete");
        
         sp.start("deleteBinder_postDelete");
-        ctx = deleteBinder_postDelete(binder, ctx);
+        deleteBinder_postDelete(binder, ctx);
         sp.stop("deleteBinder_postDelete");
         
         sp.start("deleteBinder_indexDel");
@@ -558,8 +573,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.stop("deleteBinder_indexDel");
         
     }
+    protected Map deleteBinder_setCtx(Binder binder, Map ctx) {
+    	return ctx;
+    }
     
-    protected Object deleteBinder_preDelete(Binder binder) { 
+    protected void deleteBinder_preDelete(Binder binder, Map ctx) { 
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
@@ -577,33 +595,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	//remove postings to this binder handled in coreDao
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
-    	
-    	return null;
+
     }
   
     
-    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
+    protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     	getFileModule().deleteFiles(binder, binder, null);
-    	return ctx;
-    }
+     }
     
-    protected Object deleteBinder_delete(Binder binder, Object ctx) {
+    protected void deleteBinder_delete(Binder binder, Map ctx) {
     	
        	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
        	getCoreDao().delete(binder);
-    	
-       	return ctx;
     }
-    protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
-    	return ctx;
+    protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     }
 
-    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
+    protected void deleteBinder_indexDel(Binder binder, Map ctx) {
         // Delete the document that's currently in the index.
     	indexDeleteBinder(binder);
-       	return ctx;
     }
     
     //***********************************************************************************************************
@@ -744,7 +756,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
    	    	indexedIds.addAll(processor.indexTree(b, exclusions));
    	   	 }
-   		IndexSynchronizationManager.applyChanges();
+   		//apply after we have gathered a few
+   		IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
    		return indexedIds;
         	
     }
@@ -1188,7 +1201,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return EntityIndexUtils.CREATORID_FIELD;
     }
 
-	protected void addBinder_mirrored(Binder binder, InputDataAccessor inputData) {
+	protected void addBinder_mirrored(Binder binder, InputDataAccessor inputData, Map ctx) {
 		Boolean synchToSource = (Boolean) inputData.getSingleObject("_synchToSource");
 		if(Boolean.TRUE.equals(synchToSource)) {
 			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());

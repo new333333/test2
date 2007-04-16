@@ -69,29 +69,24 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
     
 	//cannot be deleted
-    protected Object deleteBinder_preDelete(Binder binder) {     	
-    	return null;
+    protected void deleteBinder_preDelete(Binder binder, Map ctx) {     	
     }
   
     
-    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
-    	return ctx;
+    protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     }
     
-    protected Object deleteBinder_delete(Binder binder, Object ctx) {
-    	return ctx;
+    protected void deleteBinder_delete(Binder binder, Map ctx) {
     }
-    protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
-    	return ctx;
+    protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     }
 
-    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
-      	return ctx;
-    }
+    protected void deleteBinder_indexDel(Binder binder, Map ctx) {
+     }
     
     //*******************************************************************/
-    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
-    	super.addBinder_fillIn(parent,binder, inputData, entryData);
+    protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
     	Integer type = binder.getDefinitionType();
     	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getOwner();
@@ -143,6 +138,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	   String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
 	   if (!user.getTitle().equals(originalTitle)) {
 		   //need to update user workspace
+		   List excludeIds=null;
 		   if (user.getWorkspaceId() != null) {
 			   Workspace ws = (Workspace)getCoreDao().load(Workspace.class, user.getWorkspaceId());
 			   if (ws != null) {
@@ -152,41 +148,42 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 				   updates.put(ObjectKeys.FIELD_BINDER_SEARCHTITLE, user.getSearchTitle());
 				   try {
 					   processor.modifyBinder(ws, new MapInputData(updates), null, null);
+					   excludeIds = new ArrayList();
+					   excludeIds.add(ws.getId());
+					   //modifyBinder will also reindex direct child binders, so remove them
+					   List<Binder> binders = ws.getBinders();
+					   for (Binder child:binders) {
+						   excludeIds.add(child.getId());
+					   }
 				   } catch (WriteFilesException wf) {};
+				   
 			   }
 		   }
-		   scheduleTitleUpdate(user);
-	   }
-	   
-   }
-   protected void scheduleTitleUpdate(User user) {
-	   List entryIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.FolderEntry where creation.principal=" +
-			   user.getId() + " or modification.principal=" + user.getId(), null);
-	   List binderIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.Binder where creation.principal=" +
-			   user.getId() + " or modification.principal=" + user.getId(), null);
-	   String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-	   String jobClass = SZoneConfig.getString(zoneName, "userConfiguration/property[@name='" + UserTitleChange.USER_TITLE_JOB + "']");
- 	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultUserTitleChange";
- 	   try {
- 		   Class processorClass = ReflectHelper.classForName(jobClass);
- 		  UserTitleChange job = (UserTitleChange)processorClass.newInstance();
- 		  job.schedule(user, binderIds, entryIds);
+		   List entryIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.FolderEntry where creation.principal=" +
+				   user.getId() + " or modification.principal=" + user.getId(), null);
+		   List binderIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.Binder where creation.principal=" +
+				   	user.getId() + " or modification.principal=" + user.getId(), null);
+		   //remove binders already processed in modifyBinder above
+		   if (excludeIds != null) binderIds.removeAll(excludeIds);
+		   String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		   String jobClass = SZoneConfig.getString(zoneName, "userConfiguration/property[@name='" + UserTitleChange.USER_TITLE_JOB + "']");
+		   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultUserTitleChange";
+		   try {
+			   Class processorClass = ReflectHelper.classForName(jobClass);
+			   UserTitleChange job = (UserTitleChange)processorClass.newInstance();
+			   job.schedule(user, binderIds, entryIds);
  	
- 	   } catch (ClassNotFoundException e) {
- 		   throw new ConfigurationException(
- 				"Invalid UserTitleChange class name '" + jobClass + "'",
- 				e);
- 	   } catch (InstantiationException e) {
- 		   throw new ConfigurationException(
- 				"Cannot instantiate UserTitleChange of type '"
-                     	+ jobClass + "'");
- 	   } catch (IllegalAccessException e) {
- 		   throw new ConfigurationException(
- 				"Cannot instantiate UserTitleChange of type '"
- 				+ jobClass + "'");
- 	   } 
- 	   	   
-	   
+		   } catch (ClassNotFoundException e) {
+			   throw new ConfigurationException(
+					   "Invalid UserTitleChange class name '" + jobClass + "'", e);
+		   } catch (InstantiationException e) {
+			   throw new ConfigurationException(
+					   "Cannot instantiate UserTitleChange of type '"  + jobClass + "'");
+		   } catch (IllegalAccessException e) {
+			   throw new ConfigurationException(
+					   "Cannot instantiate UserTitleChange of type '" + jobClass + "'");
+		   }
+	   }	   
    }
    /**
      * Handle fields that are not covered by the definition builder

@@ -73,6 +73,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
+	protected final static int INDEX_THRESHHOLD=1000;
 	protected TransactionTemplate transactionTemplate;
 
     protected DefinitionModule definitionModule;
@@ -397,8 +398,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   List<User> addedUsers = addEntries(users, User.class, binder, userDef);  
     	   for (int j=0; j<addedUsers.size(); ++j) {
     		   addUserWorkspace(addedUsers.get(j));
+        	   IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
     	   }   	   
-    	   IndexSynchronizationManager.applyChanges();
     	}
        defList = root.selectNodes("/profiles/group");
    	   
@@ -458,40 +459,51 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
         	} catch (Exception ex) {};
         }
-        if (entry.isReserved()) {
-        	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) ||
-        			ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId())) {
-        		return null;
-        	}
-        }
-   		List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
-   		try {
-   			if (!templates.isEmpty()) {
-   				//pick the first
-   				TemplateBinder template = (TemplateBinder)templates.get(0);
-   				RequestContext oldCtx = RequestContextHolder.getRequestContext();
-   				//want the user to be the creator
-   				RequestContextUtil.setThreadContext(entry);
-  				try {
-   					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), entry.getTitle() + " ("+ entry.getName()+")", entry.getName());
-   					Binder ws = getCoreDao().loadBinder(wsId, entry.getZoneId());
-   					entry.setWorkspaceId(wsId);
-   					return (Workspace)ws;
-  				} finally {
-  					//leave new context for indexing
-  					RequestContextHolder.setRequestContext(oldCtx);				
+		Workspace ws = null;
+		String wsTitle = entry.getTitle() + " ("+ entry.getName()+")";
+        RequestContext oldCtx = RequestContextHolder.getRequestContext();
+        //want the user to be the creator
+        RequestContextUtil.setThreadContext(entry);
+ 		try {	
+  			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
+ 					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
+  				List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
+
+  				if (!templates.isEmpty()) {
+  						//	pick the first
+  					TemplateBinder template = (TemplateBinder)templates.get(0);
+  					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), wsTitle, entry.getName());
+  					ws = (Workspace)getCoreDao().loadBinder(wsId, entry.getZoneId());
   				}
-   			}
+  			}
+  			if (ws == null) {
+  				//just load a workspace without all the stuff underneath
+  				Definition userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
+  				ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
+  				Map updates = new HashMap();
+  				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
+  				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
+        		       		
+  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null);				
+  			}
+  			if (ws != null) entry.setWorkspaceId(ws.getId());
    		} catch (WriteFilesException wf) {
    			logger.error("Cannot create user workspace: ", wf);
    			FilterControls fc = new FilterControls();
    			fc.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, entry.getParentBinder());
-   			fc.add(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
+   			fc.add(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
    			List results = getCoreDao().loadObjects(Workspace.class, fc);
-   			if (!results.isEmpty()) return (Workspace)results.get(0);
+   			if (!results.isEmpty()) {
+   				ws = (Workspace)results.get(0);
+   				entry.setWorkspaceId(ws.getId());
+   			}
+   			
+   		} finally {
+   			//	leave new context for indexing
+   			RequestContextHolder.setRequestContext(oldCtx);				
    		}
-   		
-        return null;
+  		
+        return ws;
    }
 
     //NO transaction

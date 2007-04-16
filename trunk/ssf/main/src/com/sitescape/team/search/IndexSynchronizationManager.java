@@ -143,6 +143,10 @@ public class IndexSynchronizationManager {
         clear();
     }
     
+    public static void applyChanges(int threshold) {
+    	List req = getRequests();
+    	if (req.size() >= threshold) applyChanges();
+    }
     /**
      * Warning: For use by framework only. Not to be called directly by application code.
      *

@@ -424,17 +424,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      	};
     }
     
-    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
+    protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     	//save for background
-    	return ctx;
+
     }
-    public Object deleteBinder_delete(Binder binder, Object ctx) {
+    public void deleteBinder_delete(Binder binder, Map ctx) {
       	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
     	//mark for delete now and continue in the background
     	binder.setDeleted(true);
-    	return ctx;
+
     }
 
  

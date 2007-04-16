@@ -113,7 +113,11 @@ public class User extends Principal {
     	if (Validator.isNotNull(val)) tBuf.append(val + " ");
     	val = getMiddleName();
     	if (Validator.isNotNull(val)) tBuf.append(val + " ");
-    	tBuf.append(" (" + getName() + ")");
+    	
+    	if (tBuf.toString().endsWith(", ")) {
+    		tBuf.delete(tBuf.length()-2, tBuf.length()-1);
+    	}
+    	tBuf.append("(" + getName() + ")");
     	return tBuf.toString().trim();   	
     	
     }

@@ -11,7 +11,9 @@
 
 package com.sitescape.team.jobs;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -102,9 +104,13 @@ public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleCh
 			jobDetail.setJobDataMap(data);
 			jobDetail.addJobListener(getDefaultCleanupListener());
 			scheduler.addJob(jobDetail, true);
+			//wait 3 minutes so user title is committed.  Otherwise we end up with
+			// the previously commited title and the index is wrong
+			GregorianCalendar start = new GregorianCalendar();
+			start.add(Calendar.MINUTE, 3);
 		
 			//repeats every 5 minutes
-			SimpleTrigger trigger = new SimpleTrigger(userIdString, USER_TITLE_GROUP, userIdString, USER_TITLE_GROUP, new Date(), null, 
+			SimpleTrigger trigger = new SimpleTrigger(userIdString, USER_TITLE_GROUP, userIdString, USER_TITLE_GROUP, start.getTime(), null, 
 						SimpleTrigger.REPEAT_INDEFINITELY, 5*60*1000);
 			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
 			trigger.setDescription(USER_TITLE_DESCRIPTION);

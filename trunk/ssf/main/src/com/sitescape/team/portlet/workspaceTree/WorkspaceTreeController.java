@@ -107,8 +107,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				if (entry.getWorkspaceId() == null) {
 					binder = getProfileModule().addUserWorkspace(entry);
 					if (binder == null) {
-						//reserved users don't have workspaces.  Redirect to
-						// profile list
+						// Redirect to profile list
 						PortletURL reloadUrl = response.createRenderURL();
 						reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 						reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
