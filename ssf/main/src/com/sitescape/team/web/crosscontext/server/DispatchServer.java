@@ -76,23 +76,23 @@ public class DispatchServer extends GenericServlet {
 				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch, updates);
 			}
 			catch(UserDoesNotExistException e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e.getLocalizedMessage(), e);
 				// Throw ServletException with cause's error message rather
 				// then the cause itself. This is because the class loader
 			    // of the calling app does not have access to the class of 
 				// the cause exception. 
-				throw new ServletException(e.getMessage());
+				throw new ServletException(e.getLocalizedMessage());
 			}
 			catch(PasswordDoesNotMatchException e) {
-				logger.warn(e.getMessage(), e);
-				throw new ServletException(e.getMessage());
+				logger.warn(e.getLocalizedMessage(), e);
+				throw new ServletException(e.getLocalizedMessage());
 			}	
 			catch(Exception e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e.getLocalizedMessage(), e);
 				if(e instanceof IOException)
 					throw (IOException) e;
 				else
-					throw new ServletException(e.getMessage());
+					throw new ServletException(e.getLocalizedMessage());
 			}
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SESSION)) {

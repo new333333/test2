@@ -67,7 +67,7 @@ public class TeamMembers extends BodyTagSupport {
 			pageContext.getOut().print(res.getString().trim());
 
 		} catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		} finally {
 			formElement = "";
 			binderId = "";			

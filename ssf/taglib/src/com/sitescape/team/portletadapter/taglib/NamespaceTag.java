@@ -30,7 +30,7 @@ public class NamespaceTag extends TagSupport {
 			pageContext.getOut().print(renderResponse.getNamespace());
 		}
 		catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 
 		return SKIP_BODY;

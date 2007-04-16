@@ -51,7 +51,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 			return EVAL_PAGE;
 		}
 		catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
 			_columns = null;

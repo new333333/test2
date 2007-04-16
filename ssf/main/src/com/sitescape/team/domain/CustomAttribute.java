@@ -331,7 +331,7 @@ public class CustomAttribute  {
     			xOut.write((Document)value);
     			xmlValue = new SSClobString(sOut.toString());
          	} catch (IOException io) {
-         		throw new IllegalArgumentException(io.getMessage());
+         		throw new IllegalArgumentException(io.getLocalizedMessage());
          	} finally {
          		try {
          			xOut.close();
@@ -393,7 +393,7 @@ public class CustomAttribute  {
         		try {
         			doc = xIn.read(sIn); 
         		} catch (DocumentException de) {
-        			throw new IllegalArgumentException(de.getMessage());
+        			throw new IllegalArgumentException(de.getLocalizedMessage());
         		} finally {
         			sIn.close();
         		}

@@ -75,10 +75,10 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 				
 		   	} catch (MailSendException sx) {
 		   		//try again
-	    		logger.error("Error sending mail:" + sx.getMessage());
+	    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
 	    	} catch (MailAuthenticationException ax) {
 		   		//try again
-	       		logger.error("Authentication Exception:" + ax.getMessage());				
+	       		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
 			} catch (Exception ex) {
 				//remove job
 				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);

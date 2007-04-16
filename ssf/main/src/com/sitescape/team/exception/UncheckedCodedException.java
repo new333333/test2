@@ -50,7 +50,7 @@ public abstract class UncheckedCodedException extends UncheckedException impleme
     		return NLT.get(getErrorCode(), getErrorArgs());
     	}
     	catch(Exception e) {
-    		return super.getMessage();
+    		return super.getLocalizedMessage();
     	}
     }
     

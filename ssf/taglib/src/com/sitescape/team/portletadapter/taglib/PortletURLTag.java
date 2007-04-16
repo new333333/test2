@@ -79,8 +79,8 @@ public abstract class PortletURLTag extends ParamAncestorTagImpl {
 			return EVAL_PAGE;
 		}
 		catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			throw new JspTagException(e.getMessage());
+			logger.error(e.getLocalizedMessage(), e);
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
 			clearParams();

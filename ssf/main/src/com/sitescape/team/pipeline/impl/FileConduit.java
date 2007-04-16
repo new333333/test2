@@ -56,7 +56,7 @@ public class FileConduit extends AbstractConduit {
 			try {
 				FileHelper.delete(dataFile);
 			} catch (IOException e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e.getLocalizedMessage(), e);
 			}
 			dataFile = null;
 		}

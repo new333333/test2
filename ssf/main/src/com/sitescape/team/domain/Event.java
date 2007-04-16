@@ -1062,7 +1062,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			return (DayAndPosition[]) arrayclone(byDay);
     }
     catch (CloneNotSupportedException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.getLocalizedMessage());
 		}
 	}
 
@@ -1092,7 +1092,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			byDay = (DayAndPosition[]) arrayclone(b);
     }
     catch (CloneNotSupportedException e) {
-			throw new IllegalStateException(e.getMessage());
+			throw new IllegalStateException(e.getLocalizedMessage());
 		}
 	}
 
@@ -1135,7 +1135,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 							"clone", nilParams);
 					aDest[i] = clone.invoke(aSrc[i], nilArgs);
 				} catch (Exception e) {
-					throw new CloneNotSupportedException(e.getMessage());
+					throw new CloneNotSupportedException(e.getLocalizedMessage());
 				}
 			}
 		}
@@ -2714,7 +2714,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			return other;
 		} catch (CloneNotSupportedException e) {
 			// This shouldn't happen, since we are Cloneable
-			throw new InternalError("Clone error: " + e.getMessage());
+			throw new InternalError("Clone error: " + e.getLocalizedMessage());
 		}
 	}
 

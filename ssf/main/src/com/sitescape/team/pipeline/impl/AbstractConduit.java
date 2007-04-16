@@ -104,7 +104,7 @@ public abstract class AbstractConduit implements Conduit {
 				try {
 					FileHelper.delete(file);
 				} catch (IOException e) {
-					logger.warn(e.getMessage(), e);
+					logger.warn(e.getLocalizedMessage(), e);
 				}
 			}
 			file = null;
@@ -115,7 +115,7 @@ public abstract class AbstractConduit implements Conduit {
 				inputstream.close();
 			}
 			catch(IOException e) {
-				logger.warn(e.getMessage(), e);
+				logger.warn(e.getLocalizedMessage(), e);
 			}
 			inputstream = null;
 		}
@@ -248,7 +248,7 @@ public abstract class AbstractConduit implements Conduit {
 								is.close();
 							}
 							catch(IOException e1) {
-								logger.warn(e1.getMessage(), e1);
+								logger.warn(e1.getLocalizedMessage(), e1);
 							}
 						}
 					}
@@ -290,7 +290,7 @@ public abstract class AbstractConduit implements Conduit {
 								is.close();
 							}
 							catch(IOException e1) {
-								logger.warn(e1.getMessage(), e1);
+								logger.warn(e1.getLocalizedMessage(), e1);
 							}
 						}
 					}

@@ -58,7 +58,7 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
 			jspOut.print(sb.toString());
 		}
 		catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
 			_values = null;

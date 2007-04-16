@@ -228,7 +228,7 @@ public class ChangeLog {
     			xOut.close();
     			xmlString = baos.toString(); 
     		} catch (Exception fe) {
-    			logger.error(fe.getMessage(), fe);
+    			logger.error(fe.getLocalizedMessage(), fe);
     		}
     	}
     	return xmlString;
@@ -251,7 +251,7 @@ public class ChangeLog {
     			xOut.close();
     			xml = baos.toString(); 
     		} catch (Exception fe) {
-    			logger.error(fe.getMessage(), fe);
+    			logger.error(fe.getLocalizedMessage(), fe);
     		}
     	}
     	return xml;
@@ -267,7 +267,7 @@ public class ChangeLog {
     		document = xIn.read(ois);   
     		ois.close();
     	} catch (Exception fe) {
-    		logger.error(fe.getMessage(), fe);
+    		logger.error(fe.getLocalizedMessage(), fe);
     	}
         return document;
     }

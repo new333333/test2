@@ -81,9 +81,9 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 			context.setResult("Success");
 			return;
 	   	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getMessage());
+    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
     	} catch (MailAuthenticationException ax) {
-       		logger.error("Authentication Exception:" + ax.getMessage());				
+       		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
 		} catch (Exception ex) {
 			//remove job
 			context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
@@ -107,9 +107,9 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 			mail.sendMail(mailSenderName, helper);
 			return true;
 	   	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getMessage());
+    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
     	} catch (MailAuthenticationException ax) {
-       		logger.error("Authentication Exception:" + ax.getMessage());				
+       		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
     	}
        	// at this point we want to schedule a retry
 		Map newMessage = new HashMap();

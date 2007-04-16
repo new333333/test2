@@ -42,7 +42,7 @@ public class EscapeJavaScript extends TagSupport {
 				pageContext.getOut().print(
 						StringEscapeUtils.escapeJavaScript(value));
 		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
+			logger.error(e.getLocalizedMessage(), e);
 		} finally {
 			this.value = null;
 		}

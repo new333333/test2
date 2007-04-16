@@ -502,7 +502,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
            SAXReader xIn = new SAXReader();
            def.setDefinition(xIn.read(r.getInputStream()));   
     	} catch (Exception fe) {
-			logger.error(fe.getMessage(), fe);
+			logger.error(fe.getLocalizedMessage(), fe);
     	}
 		cdi.save(def);
 		wfi.modifyProcessDefinition(def.getId(), def);
@@ -519,7 +519,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
            SAXReader xIn = new SAXReader();
            def.setDefinition(xIn.read(r.getInputStream()));   
     	} catch (Exception fe) {
-			logger.error(fe.getMessage(), fe);
+			logger.error(fe.getLocalizedMessage(), fe);
     	}
     	//keep the database id, referenced from workflow definition for
     	//entry data transitions

@@ -356,7 +356,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());						
 		} catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -605,7 +605,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getMessage());
+			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
 		}		
 	}
 	

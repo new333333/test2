@@ -275,17 +275,17 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 					mailMsg.saveChanges();
 					Transport.send(mailMsg);
 				} catch (MailParseException px) {
-					logger.error(px.getMessage());	    		
+					logger.error(px.getLocalizedMessage());	    		
 				} catch (MailSendException sx) {
 					if (binder != null) {
 				  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
 				   		process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
 					}
-					logger.error("Error sending posting reject:" + sx.getMessage());
+					logger.error("Error sending posting reject:" + sx.getLocalizedMessage());
 				} catch (MailAuthenticationException ax) {
-					logger.error("Authentication Exception:" + ax.getMessage());
+					logger.error("Authentication Exception:" + ax.getLocalizedMessage());
 				} catch (Exception ex) {
-					logger.error("Error sending posting reject:" + ex.getMessage());
+					logger.error("Error sending posting reject:" + ex.getLocalizedMessage());
 				}
 			}
 		}
@@ -330,15 +330,15 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				mHelper.setToAddrs((Set)e.getValue());
 				mailSender.send(mHelper);
 			} catch (MailSendException sx) {
-	    		logger.error("Error sending mail:" + sx.getMessage());
+	    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
 		   	} catch (MailAuthenticationException ax) {
-	    		logger.error("Error sending mail:" + ax.getMessage());
+	    		logger.error("Error sending mail:" + ax.getLocalizedMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));		   	 
 		   	} catch (Exception ex) {
-	       		logger.error(ex.getMessage());
+	       		logger.error(ex.getLocalizedMessage());
 	    	} 
 		}
 

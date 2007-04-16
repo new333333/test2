@@ -69,7 +69,7 @@ public class DispatchServer extends GenericServlet {
 				// rather than utilizing more typical exception mechanism. 
 				
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_AUTHENTICATION_FAILURE);	
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				logger.warn(e);
 				return;
 			}		
@@ -108,13 +108,13 @@ public class DispatchServer extends GenericServlet {
 				// by returning error code and message in the request object
 				// rather than throwing ServletException. This is to avoid 
 				// unwanted additional entries and stack dump in the log file.
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(AlreadyExistsException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_ALREADY_EXISTS);				
 				logger.warn(e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(NoSuchObjectException e) {
@@ -130,31 +130,31 @@ public class DispatchServer extends GenericServlet {
 				// solution, because it adds the potential risk of not logging a
 				// true error (nothing's perfect).
 				logger.debug(e); // debug level message
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(LockException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_LOCK);
 				logger.warn(e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(TypeMismatchException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_TYPE_MISMATCH);				
 				logger.warn(e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(IOException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
-				logger.error(e.getMessage(), e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				logger.error(e.getLocalizedMessage(), e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(ServletException e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
-				logger.error(e.getMessage(), e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				logger.error(e.getLocalizedMessage(), e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;			
 			}
 			catch(SiteScapeFileSystemException e) {
@@ -162,14 +162,14 @@ public class DispatchServer extends GenericServlet {
 				if(e.isWarning())
 					logger.warn(e);
 				else
-					logger.error(e.getMessage(), e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+					logger.error(e.getLocalizedMessage(), e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 			catch(Exception e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
-				logger.error(e.getMessage(), e);
-				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				logger.error(e.getLocalizedMessage(), e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
 		}

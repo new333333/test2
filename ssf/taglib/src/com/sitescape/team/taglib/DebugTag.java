@@ -46,7 +46,7 @@ public class DebugTag extends BodyTagSupport implements ParamAncestorTag {
 			if (this.var != null) test = this.var;
 		}
 		catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
 			_values = null;

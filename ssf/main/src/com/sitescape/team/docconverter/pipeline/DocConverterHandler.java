@@ -87,7 +87,7 @@ public class DocConverterHandler extends AbstractDocHandler {
 					FileHelper.delete(inputTempFile);
 				}
 				catch(IOException e) {
-					logger.warn(e.getMessage(), e);
+					logger.warn(e.getLocalizedMessage(), e);
 				}				
 			}
 		}

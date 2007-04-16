@@ -51,7 +51,7 @@ public abstract class TextConverter
 		try {
 			return reader.read(textFile);
 		} catch (DocumentException e) {
-			logger.error(e.getMessage(), e);
+			logger.error(e.getLocalizedMessage(), e);
 			return null;
 		}	
 	}
@@ -78,7 +78,7 @@ public abstract class TextConverter
 				tranny.setParameter("Lang", l);
 				tranny.transform(new DocumentSource(tempfile), result);
 			} catch (Exception ex) {
-				return ex.getMessage();
+				return ex.getLocalizedMessage();
 			}
 			return result.getWriter().toString();
 		}

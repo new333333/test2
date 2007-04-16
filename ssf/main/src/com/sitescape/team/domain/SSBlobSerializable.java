@@ -51,7 +51,7 @@ public class SSBlobSerializable implements Serializable {
     	    	 	value = ois.readObject();
     	    	 	return value;
     	    	 }  catch (ClassNotFoundException ex) {
-    	    	 	throw new IOException("Could not deserialize BLOB contents: " + ex.getMessage());
+    	    	 	throw new IOException("Could not deserialize BLOB contents: " + ex.getLocalizedMessage());
     	    	 } finally {
     	    	 	ois.close();
     	    	 }

@@ -527,7 +527,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	try {
     		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.FILE, name));
     	} catch (Exception ex) {
-				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getMessage());
+				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getLocalizedMessage());
 	   	}    	
     }
     //normalized titles in parentbinder
@@ -535,7 +535,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	try {
     		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.TITLE, name));
     	} catch (Exception ex) {
-			logger.error("Error removeing library entry for: " + binder + " title" +  ex.getMessage());
+			logger.error("Error removeing library entry for: " + binder + " title" +  ex.getLocalizedMessage());
 	   	}   	
     }
     //create our own session cause failures clear the existing session

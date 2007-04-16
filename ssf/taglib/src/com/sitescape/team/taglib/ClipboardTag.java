@@ -77,7 +77,7 @@ public class ClipboardTag extends BodyTagSupport {
 			pageContext.getOut().print(res.getString().trim());
 
 		} catch (Exception e) {
-			throw new JspTagException(e.getMessage());
+			throw new JspTagException(e.getLocalizedMessage());
 		} finally {
 			this.type = null;
 			this.formElement = "";
