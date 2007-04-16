@@ -114,6 +114,9 @@ public class AddEntryController extends SAbstractController {
 				response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
 				response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getTotalReplyCount()));
 			} else if (!addEntryFromIFrame.equals("")) {
+				setupReloadOpener(response, folderId, Long.MIN_VALUE);
+				//clear entryId out
+				response.setRenderParameter(WebKeys.URL_ENTRY_ID, "");
 				response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");				
 			} else {
 				setupCloseWindow(response);
