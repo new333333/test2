@@ -55,6 +55,6 @@
   <properties>
     <property name="name" value="_guestbookFolder"/>
     <property name="caption" value="__definition_default_folder_guestbook"/>
-	<property name="icon" value="/icons/folder_blue_document.gif" /> 
+	<property name="icon" value="/icons/folder_blue_guestbook.gif" /> 
   </properties>
 </definition>
