@@ -55,6 +55,6 @@
   <properties>
     <property name="name" value="_photoFolder"/>
     <property name="caption" value="__definition_default_folder_photo"/>
-	<property name="icon" value="/icons/folder_blue_camera.gif" /> 
+	<property name="icon" value="/icons/folder_blue_photo.gif" /> 
   </properties>
 </definition>
