@@ -347,11 +347,6 @@ body.ss_style_body {
   color: ${ss_style_text_color};
   }
 
-.ss_style li, .ss_portlet_style li {
-  list-style-image:none;
-  list-style-position:outside;
-  list-style-type:none;
-}
 .ss_style a, .ss_style a:visited {
   color: ${ss_style_link_color};
 }
