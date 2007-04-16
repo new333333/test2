@@ -50,7 +50,12 @@
 			</ssf:url>"
 		
 		var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
-		var ss_entryWindowWidth = ${ss_entryWindowWidth};
+		<c:if test="${empty ss_entryWindowWidth}">
+			var ss_entryWindowWidth = 0;
+		</c:if>
+		<c:if test="${!empty ss_entryWindowWidth}">
+			var ss_entryWindowWidth = "${ss_entryWindowWidth}";
+		</c:if>
 		var ss_entryBackgroundColor = "${ss_style_background_color}";
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>

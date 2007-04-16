@@ -587,7 +587,7 @@ function ss_createEventObj(function_name, event_name, function_def) {
     
     //Enable the event
     if (isNSN) {
-        eval("self.document.captureEvents(Event."+event_name+")")
+        //eval("self.document.captureEvents(Event."+event_name+")")
     }
     if (ss_eventList[fn].eventName.toLowerCase() == "unload") {
     	//Add the unload event to the body object

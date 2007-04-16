@@ -61,7 +61,7 @@
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
 <div style="display:inline">
-<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}" treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
   topId="${nextBinder.id}" rootOpen="false" showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
 </div>
 </c:if>
@@ -100,7 +100,7 @@
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <div style="display:inline">
-<ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefinitionEntry.id}" 
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefinitionEntry.id}${renderResponse.namespace}" 
   treeDocument="${ssNavigationLinkTree[ssDefinitionEntry.id]}" 
   topId="${ssDefinitionEntry.id}" rootOpen="false" 
   showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 

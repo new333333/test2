@@ -10,9 +10,9 @@
  */
 //Routines that support the sliding table
 
-if (self.Event && self.Event.MOUSEDOWN) self.document.captureEvents(Event.MOUSEDOWN);
-if (self.Event && self.Event.MOUSEUP) self.document.captureEvents(Event.MOUSEUP);
-if (self.Event && self.Event.MOUSEMOVE) self.document.captureEvents(Event.MOUSEMOVE);
+//if (self.Event && self.Event.MOUSEDOWN) self.document.captureEvents(Event.MOUSEDOWN);
+//if (self.Event && self.Event.MOUSEUP) self.document.captureEvents(Event.MOUSEUP);
+//if (self.Event && self.Event.MOUSEMOVE) self.document.captureEvents(Event.MOUSEMOVE);
 
 var ss_slidingTableDragObj = null
 var ss_slidingTableOffsetX

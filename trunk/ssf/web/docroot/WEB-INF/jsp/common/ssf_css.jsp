@@ -767,7 +767,7 @@ div.ss_popup_topcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  background-position: -50 top;
+  background-position: -50px top;
   height: 24px;
   padding: 0px;
 }
@@ -797,7 +797,7 @@ div.ss_popup_bottomcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: -50 top;
+  background-position: -50px top;
   height: 16px;
   padding: 0px;
 }
