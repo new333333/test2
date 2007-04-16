@@ -150,7 +150,18 @@ public class Tabs {
 		Map options = new HashMap();
 		return findTab(entry, options, -1);
 	}
+	
+	public int findTab(Entry entry, boolean blnClearTab) {
+		Map options = new HashMap();
+		return findTab(entry, options, blnClearTab, -1);
+	}
+
 	public int findTab(Entry entry, Map options, int defaultTabId) {
+		boolean blnClearTab = false;
+		return findTab(entry, options, blnClearTab, -1);
+	}
+	
+	public int findTab(Entry entry, Map options, boolean blnClearTab, int defaultTabId) {
 		List tabList = (List) tabs.get(TABLIST);
 		int tabId = -1;
 		//Look for this tab
@@ -169,6 +180,7 @@ public class Tabs {
 		} else if (tabId == -1 && defaultTabId >= 0) {
 			tabId = defaultTabId;
 		}
+		if (blnClearTab == true) clearTabInfo(tabId);
 		return setTab(tabId, entry, options);
 	}
 	
