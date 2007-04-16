@@ -3758,6 +3758,10 @@ a.ss_button {
 	border: 1px solid #afc8e3;
 	padding: 0px 6px 0px 12px;
 }
+#ss_filterSummary_content {float:left;}
+#ss_filterSummary_content p {margin:6px;}
+#ss_filterSummary_switch {float:right; padding: 6px 12px 6px 0px;}
+#ss_searchForm_filterSummary {border-bottom:1px solid #afc8e3;}
 /*
 	Search styles / end
 */
