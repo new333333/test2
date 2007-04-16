@@ -101,32 +101,32 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         final Map ctx = addEntry_setCtx(binder, null);
     	Map entryDataAll;
     	if (!filesFromApplet) {
-        	sp.reset("addEntry_toEntryData").begin();
+        	sp.start("addEntry_toEntryData");
             entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
-            sp.end().print();
+            sp.stop("addEntry_toEntryData").print();
     	}
     	else {
-	    	sp.reset("createNewEntryWithAttachmentAndTitle").begin();
+	    	sp.start("createNewEntryWithAttachmentAndTitle");
 	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems, ctx);
-		    sp.end().print();
+		    sp.stop("createNewEntryWithAttachmentAndTitle").print();
     	}        
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         
         if(binder.isMirrored()) {
-	        sp.reset("addEntry_mirrored").begin();
+	        sp.start("addEntry_mirrored");
 	        addEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
-	        sp.end().print();
+	        sp.stop("addEntry_mirrored").print();
         }
         
         try {
         	
-        	sp.reset("addEntry_create").begin();
+        	sp.start("addEntry_create");
         	final Entry entry = addEntry_create(def, clazz, ctx);
-        	sp.end().print();
+        	sp.stop("addEntry_create").print();
         
-        	sp.reset("addEntry_transactionExecute").begin();
+        	sp.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         		public Object doInTransaction(TransactionStatus status) {
@@ -141,30 +141,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			return null;
         		}
         	});
-        	sp.end().print();
+        	sp.stop("addEntry_transactionExecute").print();
         	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
-            sp.reset("addEntry_filterFiles").begin();
+            sp.start("addEntry_filterFiles");
         	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-        	sp.end().print();
+        	sp.stop("addEntry_filterFiles").print();
 
-        	sp.reset("addEntry_processFiles").begin();
+        	sp.start("addEntry_processFiles");
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
-        	sp.end().print();
+        	sp.stop("addEntry_processFiles").print();
         
  
-        	sp.reset("addEntry_indexAdd").begin();
+        	sp.start("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
-        	sp.end().print();
+        	sp.stop("addEntry_indexAdd").print();
         	
-        	sp.reset("addEntry_done").begin();
+        	sp.start("addEntry_done");
         	addEntry_done(binder, entry, inputData, ctx);
-        	sp.end().print();
+        	sp.stop("addEntry_done").print();
         	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
@@ -400,27 +400,27 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     	Map entryDataAll;
     	if (!filesFromApplet) {
-	    	sp.reset("modifyEntry_toEntryData").begin();
+	    	sp.start("modifyEntry_toEntryData");
 	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
-		    sp.end().print();
+		    sp.stop("modifyEntry_toEntryData").print();
     	}
     	else {
-	    	sp.reset("getFilesUploadedByApplet").begin();
+	    	sp.start("getFilesUploadedByApplet");
 	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems, ctx);
-		    sp.end().print();
+		    sp.stop("getFilesUploadedByApplet").print();
     	}
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 	    
         if(binder.isMirrored()) {
-	        sp.reset("modifyEntry_mirrored").begin();
+	        sp.start("modifyEntry_mirrored");
 	        modifyEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
-	        sp.end().print();
+	        sp.stop("modifyEntry_mirrored").print();
         }
         
 	    try {	    	
-	    	sp.reset("modifyEntry_transactionExecute").begin();
+	    	sp.start("modifyEntry_transactionExecute");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
 	    	getTransactionTemplate().execute(new TransactionCallback() {
@@ -430,38 +430,38 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
  	    			return null;
 	    		}});
-	    	sp.end().print();
+	    	sp.stop("modifyEntry_transactionExecute").print();
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
-	        sp.reset("modifyBinder_removeAttachments").begin();
+	        sp.start("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
             modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex, ctx);
-	        sp.end().print();
+	        sp.stop("modifyBinder_removeAttachments").print();
 	    	
-	    	sp.reset("modifyEntry_filterFiles").begin();
+	    	sp.start("modifyEntry_filterFiles");
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-	    	sp.end().print();
+	    	sp.stop("modifyEntry_filterFiles").print();
 
-           	sp.reset("modifyEntry_processFiles").begin();
+           	sp.start("modifyEntry_processFiles");
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
-	    	sp.end().print();
+	    	sp.stop("modifyEntry_processFiles").print();
 
 
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
-	    	sp.reset("modifyEntry_indexRemoveFiles").begin();
+	    	sp.start("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
-	    	sp.end().print();
+	    	sp.stop("modifyEntry_indexRemoveFiles").print();
 	    	
-	    	sp.reset("modifyEntry_indexAdd").begin();
+	    	sp.start("modifyEntry_indexAdd");
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
-	    	sp.end().print();
+	    	sp.stop("modifyEntry_indexAdd").print();
 	    	
-	    	sp.reset("modifyEntry_done").begin();
+	    	sp.start("modifyEntry_done");
 	    	modifyEntry_done(binder, entry, inputData,ctx);
-	    	sp.end().print();
+	    	sp.stop("modifyEntry_done").print();
 	    		    
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -663,29 +663,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     public void deleteEntry(Binder parentBinder, Entry entry) {
     	SimpleProfiler sp = new SimpleProfiler(false);
     	Map ctx = deleteEntry_setCtx(entry, null);
-    	sp.reset("deleteEntry_preDelete").begin();
+    	sp.start("deleteEntry_preDelete");
         deleteEntry_preDelete(parentBinder, entry, ctx);
-        sp.end().print();
+        sp.stop("deleteEntry_preDelete").print();
         
-        sp.reset("deleteEntry_workflow").begin();
+        sp.start("deleteEntry_workflow");
         deleteEntry_workflow(parentBinder, entry, ctx);
-        sp.end().print();
+        sp.stop("deleteEntry_workflow").print();
         
-        sp.reset("deleteEntry_processFiles").begin();
+        sp.start("deleteEntry_processFiles");
         deleteEntry_processFiles(parentBinder, entry, ctx);
-        sp.end().print();
+        sp.stop("deleteEntry_processFiles").print();
          
-        sp.reset("deleteEntry_delete").begin();
+        sp.start("deleteEntry_delete");
         deleteEntry_delete(parentBinder, entry, ctx);
-        sp.end().print();
+        sp.stop("deleteEntry_delete").print();
         
-        sp.reset("deleteEntry_postDelete").begin();
+        sp.start("deleteEntry_postDelete");
         deleteEntry_postDelete(parentBinder, entry, ctx);
-        sp.end().print();
+        sp.stop("deleteEntry_postDelete").print();
         
-        sp.reset("deleteEntry_indexDel").begin();
+        sp.start("deleteEntry_indexDel");
         deleteEntry_indexDel(parentBinder, entry, ctx);
-        sp.end().print();
+        sp.stop("deleteEntry_indexDel").print();
     }
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	return ctx;

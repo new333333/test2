@@ -153,8 +153,8 @@ public class IndexSynchronizationManager {
         
         try {
             if(hasWorkToDo()) {
-                SimpleProfiler prof = new SimpleProfiler("Index update");
-                prof.begin();
+                SimpleProfiler prof = new SimpleProfiler();
+                prof.start("Index update");
                 
 		        LuceneSession luceneSession = getInstance().getLuceneSessionFactory().openSession();
 		        
@@ -165,8 +165,8 @@ public class IndexSynchronizationManager {
 		            luceneSession.close();
 		        }
 		        
-		        prof.end();
-		        prof.logDebug();
+		        prof.stop("Index update");
+		        prof.logDebug(logger);
             }
         }
         finally {
