@@ -10,4 +10,6 @@
  *
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_dashboard_context" value="1"/>
 <%@ include file="/WEB-INF/jsp/presence/view.jsp" %>
