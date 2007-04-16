@@ -158,7 +158,7 @@ public class Tabs {
 
 	public int findTab(Entry entry, Map options, int defaultTabId) {
 		boolean blnClearTab = false;
-		return findTab(entry, options, blnClearTab, -1);
+		return findTab(entry, options, blnClearTab, defaultTabId);
 	}
 	
 	public int findTab(Entry entry, Map options, boolean blnClearTab, int defaultTabId) {
