@@ -10,10 +10,38 @@
  *
  */
 %>
+
 <div class="ss_style ss_portlet_style">
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
+
+<script type="text/javascript">
+
+<c:if test="${!empty ssWorkflowDefinitionMap}">
+	var workflows = new Array();
+	var steps = new Array();
+	<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
+		workflows['${wf.id}'] = '${wf.title}';
+		<c:forEach var="step" items="${wf.steps}">
+			steps['${wf.id}-${step.name}'] = '${step.title}';
+		</c:forEach>
+	</c:forEach>
+</c:if>
+<c:if test="${!empty ssEntryDefinitionMap}">
+	var entries = new Array();
+	var fields = new Array();
+	var fieldsTypes = new Array();
+	<c:forEach var="entry" items="${ssEntryDefinitionMap}">
+		entries['${entry.id}'] = '${entry.title}';
+		<c:forEach var="field" items="${entry.fields}">
+			fields['${entry.id}-${field.name}'] = '${field.title}';
+			fieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
+		</c:forEach>
+	</c:forEach>
+</c:if>
+</script>
+
 
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
@@ -87,29 +115,6 @@ ss_fillMask("searchTags", "<ssf:escapeJavaScript value="${filterMap.searchTags}"
 	if (document.getElementById("searchJoinerOr")) document.getElementById("searchJoinerOr").checked="true";
 </c:if>
 
-<c:if test="${!empty ssWorkflowDefinitionMap}">
-	var workflows = new Array();
-	var steps = new Array();
-	<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
-		workflows['${wf.id}'] = '${wf.title}';
-		<c:forEach var="step" items="${wf.steps}">
-			steps['${wf.id}-${step.name}'] = '${step.title}';
-		</c:forEach>
-	</c:forEach>
-</c:if>
-<c:if test="${!empty ssEntryDefinitionMap}">
-	var entries = new Array();
-	var fields = new Array();
-	var fieldsTypes = new Array();
-	<c:forEach var="entry" items="${ssEntryDefinitionMap}">
-		entries['${entry.id}'] = '${entry.title}';
-		<c:forEach var="field" items="${entry.fields}">
-			fields['${entry.id}-${field.name}'] = '${field.title}';
-			fieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
-		</c:forEach>
-	</c:forEach>
-</c:if>
-
 
 function init() {
   if (!ss_searchMoreInitialized) {
@@ -170,9 +175,9 @@ function init() {
   ss_searchMoreInitialized = true;
 }
 
-dojo.addOnLoad(function() {
-  init()
-});
+// dojo.addOnLoad(function() {
+//  init()
+// });
 
 </script>
 
