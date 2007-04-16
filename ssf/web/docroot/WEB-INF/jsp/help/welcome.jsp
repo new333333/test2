@@ -10,7 +10,7 @@
  *
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <h1>Welcome to ICECorps!</h1>
 
