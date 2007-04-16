@@ -523,6 +523,7 @@ public class WebKeys {
     public static final String REPLY_BLOG_URL="replyBlogUrl";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
+    public static final String SCHEDULE_INFO2="ssScheduleInfo2";
     public static final String SEARCH_FORM_DATA="ssSearchFormData";
     public static final String SEARCH_FORM_ELEMENT="ssSearchFormElement";
     public static final String SEARCH_FORM_FORM="ssSearchFormForm";
@@ -546,7 +547,7 @@ public class WebKeys {
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";
-    public static final String SHOW_POSTING="showPosting";
+    public static final String SHOW_POSTING="ssShowPosting";
     public static final String SUBSCRIPTION="ssSubscription";
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";

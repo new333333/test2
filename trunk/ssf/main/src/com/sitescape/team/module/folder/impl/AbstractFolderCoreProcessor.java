@@ -39,7 +39,6 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;

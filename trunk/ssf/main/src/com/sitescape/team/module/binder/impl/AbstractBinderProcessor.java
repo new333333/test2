@@ -744,13 +744,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void indexBinder(Binder binder, boolean includeEntries) {
    		indexBinder(binder, null, null, false);    	
     }
+    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex) {
+   		indexBinder(binder, null, null, !deleteIndex);    	
+    	
+    }
     //***********************************************************************************************************
+    //It is assumed that the index has been deleted for each binder to be index
     public Collection indexTree(Binder binder, Collection exclusions) {
        	TreeSet indexedIds = new TreeSet();
        	if (exclusions == null) exclusions = new TreeSet();
        	if (!exclusions.contains(binder.getId())) {
         	//index self.
-        	indexBinder(binder, true);
+        	indexBinder(binder, true, false);
         	indexedIds.add(binder.getId());
         }
        	List binders = binder.getBinders();

@@ -78,9 +78,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span>
 
 <input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"
-<c:if test="${!showPosting}">
+<c:if test="${!ssShowPosting}">
 disabled="disabled"
-</c:if>/>
+</c:if>/> <c:if test="${!ssScheduleInfo2.enabled}"><ssf:nlt tag="incoming.disabled"/></c:if>
 
 </td>
 <td class="ss_buttonBarRight">

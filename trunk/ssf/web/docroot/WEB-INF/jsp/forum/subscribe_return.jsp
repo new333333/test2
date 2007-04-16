@@ -21,7 +21,16 @@
 
 <div class="ss_style" align="left">
 <form method="post" onSubmit="ss_setActionUrl(this, ss_saveSubscriptionUrl);">
+<c:if test="${ssScheduleInfo.enabled}">
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span>
+</c:if>
+<c:if test="${!ssScheduleInfo.enabled}">
+<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.disabled"/>
+<br><ssf:nlt tag="subscribe.contact.admin">
+<ssf:param name="value" value="${ssBinder.owner.emailAddress}"/>
+<ssf:param name="value" value="${ssBinder.owner.title}"/>
+</ssf:nlt></span>
+</c:if>
 <br/>
 <br/>
 <div class="ss_indent_medium">

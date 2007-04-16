@@ -12,7 +12,7 @@
 		<property name="notify.timezone">America/New_York</property>
 	</mailConfiguration>	
 	<ldapConfiguration>	
-		<property name="java.naming.provider.url">ldap://localhost:389/dc=sitescape,dc=com</property>
+		<property name="java.naming.provider.url">ldap://localhost:389</property>
 		<userMapping>
 			<mapping from="uid" to="name"/>
 			<mapping from="mail" to="emailAddress"/>

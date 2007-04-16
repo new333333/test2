@@ -58,7 +58,25 @@ public class ConfigureLdapController extends  SAbstractController {
 					maps.put(vals[1].trim(), vals[0].trim());
 				}
 				config.setUserMappings(maps);
-				getLdapModule().setLdapConfig(config);
+				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
+				if (runNow) {
+					boolean enabled = config.isEnabled();
+					//disable the schedule first
+					config.setEnabled(false);
+					getLdapModule().setLdapConfig(config);
+					try {
+						getLdapModule().syncAll();
+					} finally {
+						//set it back
+						if (enabled) {
+							config.setEnabled(enabled);
+							getLdapModule().setLdapConfig(config);
+						}
+					}
+				} else {
+					getLdapModule().setLdapConfig(config);
+					
+				}
 			}
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {

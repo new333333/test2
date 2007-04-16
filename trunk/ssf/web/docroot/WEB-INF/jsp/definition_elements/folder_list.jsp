@@ -31,11 +31,11 @@
 <jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo.jsp" />
 </c:if>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/searchview/searchview.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'guestbook'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook.jsp" />
 </c:if>
-<c:if test="${ss_folderViewStyle == 'search'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/searchview/searchview.jsp" />
+<c:if test="${ss_folderViewStyle == 'table'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
 </c:if>
