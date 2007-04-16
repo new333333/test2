@@ -258,9 +258,11 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 <%
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 	String seenStyle = "";
+	String seenStyleAuthor = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
 		seenStyle = "class=\"ss_unseen\"";
+		seenStyleAuthor="ss_unseen";
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
 %>
@@ -285,8 +287,8 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		displayDiv="false" entryId="${entry1._docId}" binderId="${ssBinder.id}" 
 		entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
 		menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-		namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no">
-		
+		namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no"
+		seenStyle="<%= seenStyle %>" seenStyleFine="<%= seenStyleFine %>">
 		<ssf:param name="url" useBody="true">
 			<ssf:url adapter="true" portletName="ss_forum" folderId="${ssFolder.id}" 
 			action="view_folder_entry" entryId="${entry1._docId}" actionUrl="true" />					
@@ -316,7 +318,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
   
  <c:if test="${!empty ssFolderColumns['author']}">
   <ssf:slidingTableColumn>
-	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyle %>"/> 
+	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyleAuthor %>"/> 
   </ssf:slidingTableColumn>
  </c:if>
  
