@@ -35,7 +35,7 @@ var ss_findUserSearchLastfindPlacesType = "";
 function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text == '' || text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
+	if (text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
 	ss_debug('ss_findUserSearch: '+text+', '+elementName+', '+findPlacesType+', '+ss_findUser_pageNumber)
 	ss_setupStatusMessageDiv()
 	//ss_moveDivToBody('ss_findUserNavBarDiv_<portlet:namespace/>');
