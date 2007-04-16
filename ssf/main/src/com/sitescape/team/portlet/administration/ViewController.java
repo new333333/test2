@@ -230,7 +230,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Posting schedule
-		if (getAdminModule().testAccess("addPosting")) {
+		if (getAdminModule().testAccess("setPostingSchedule")) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_posting_job"));
 			element.addAttribute("image", "bullet");

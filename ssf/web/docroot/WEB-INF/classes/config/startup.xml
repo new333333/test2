@@ -13,7 +13,8 @@
 	<definitionFile>config/definitions/_wikiEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_blogFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_calendarFolder.xml</definitionFile>
-	<definitionFile>config/definitions/_discussionFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_discussionFolderList.xml</definitionFile>
+	<definitionFile>config/definitions/_discussionFolderTable.xml</definitionFile>
 	<definitionFile>config/definitions/_libraryFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_guestbookFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_photoFolder.xml</definitionFile>
@@ -24,14 +25,15 @@
 		<property name="templateTitle">__configuration_default_folder</property>
 		<property name="templateDescription">__configuration_default_folder_description</property>
 		<property name="name">_discussionFolderConfig</property>
-		<property name="entryDef">_discussionFolder</property>
-		<definition name="_discussionFolder"/>
+		<property name="entryDef">__discussionFolderList</property>
+		<definition name="_discussionFolderList"/>
+		<definition name="_discussionFolderTable"/>
 		<definition name="_blogFolder"/>
 		<definition name="_calendarFolder"/>
 		<definition name="_wikiFolder"/>
-		<definition name="_discussionEntry"/>	
-			
+		<definition name="_discussionEntry"/>				
 	</template>
+	
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_blog</property>
 		<property name="templateDescription">__configuration_default_folder_blog_description</property>
@@ -39,11 +41,12 @@
 		<property name="entryDef">_blogFolder</property>
 		<definition name="_blogFolder"/>
 		<definition name="_calendarFolder"/>
-		<definition name="_discussionFolder"/>
+		<definition name="_discussionFolderList"/>
+		<definition name="_discussionFolderTable"/>
 		<definition name="_wikiFolder"/>
-		<definition name="_blogEntry"/>
-		
+		<definition name="_blogEntry"/>		
 	</template>
+	
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_wiki</property>
 		<property name="templateDescription">__configuration_default_folder_wiki_description</property>
@@ -53,10 +56,11 @@
 		<definition name="_wikiFolder"/>
 		<definition name="_blogFolder"/>
 		<definition name="_calendarFolder"/>
-		<definition name="_discussionFolder"/>
+		<definition name="_discussionFolderList"/>
+		<definition name="_discussionFolderTable"/>
 		<definition name="_wikiEntry"/>
-		
 	</template>
+	
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_calendar</property>
 		<property name="templateDescription">__configuration_default_folder_calendar_description</property>
@@ -64,10 +68,12 @@
 		<property name="entryDef">_calendarFolder</property>
 		<definition name="_calendarFolder"/>
 		<definition name="_blogFolder"/>
-		<definition name="_discussionFolder"/>
+		<definition name="_discussionFolderList"/>
+		<definition name="_discussionFolderTable"/>
 		<definition name="_wikiFolder"/>
 		<definition name="_calendarEntry"/>	
 	</template>
+	
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_library</property>
 		<property name="templateDescription">__configuration_default_folder_library_description</property>
@@ -78,6 +84,7 @@
 		<definition name="_calendarFolder"/>
 		<definition name="_libraryEntry"/>
 	</template>
+	
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_guestbook</property>
 		<property name="templateDescription">__configuration_default_folder_guestbook_description</property>
@@ -86,6 +93,7 @@
 		<definition name="_guestbookFolder"/>
 		<definition name="_guestbookEntry"/>
 	</template>
+	
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_photo</property>
 		<property name="templateDescription">__configuration_default_folder_photo_description</property>
@@ -94,6 +102,7 @@
 		<definition name="_photoFolder"/>
 		<definition name="_photoEntry"/>
 	</template>
+	
 	<template type="8">
 		<property name="templateTitle">__configuration_default_workspace</property>
 		<property name="templateDescription">__configuration_default_workspace_description</property>
@@ -101,6 +110,7 @@
 		<property name="entryDef">_workspace</property>
 		<definition name="_workspace"/>
 	</template>
+	
 	<template type="12">
 		<property name="templateTitle">__configuration_default_user_workspace</property>
 		<property name="templateDescription">__configuration_default_user_workspace_description</property>

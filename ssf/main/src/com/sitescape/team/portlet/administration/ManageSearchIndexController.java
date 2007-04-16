@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Collection;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -41,8 +42,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			//Get the list of binders to be indexed
-			List<Long> folderIdList = new ArrayList();
-			List<Long> wsIdList = new ArrayList();
+			List<Long> ids = new ArrayList();
 			Long profileId = null;
 			//Get the binders to be indexed
 			Iterator itFormData = formData.entrySet().iterator();
@@ -51,34 +51,21 @@ public class ManageSearchIndexController extends  SAbstractController {
 				String key = (String)me.getKey();
 				if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
 					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
-					folderIdList.add(Long.valueOf(binderId));
+					ids.add(Long.valueOf(binderId));
 				} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
 					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
-					wsIdList.add(Long.valueOf(binderId));
+					ids.add(Long.valueOf(binderId));
 				} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_PEOPLE)) {
+					//people are handled separetly, so we can reindex users without reindex their
+					//the entire workspace tree.
 					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_PEOPLE + "_", "");
 					profileId = Long.valueOf(binderId);
 				}
 			}
-			TreeSet exclude = new TreeSet();
 			
-			
-			// Delete all the matching entries in the index before re-indexing the tree.
-			List<Long> ids = new ArrayList<Long>();
-			ids.addAll(wsIdList);
-			ids.addAll(folderIdList);
-			ids.add(profileId);
-			getBinderModule().deleteIndexTree((List<Long>)ids);
-			
-			
-			for (Long id:wsIdList) {
-				exclude.addAll(getBinderModule().indexTree(id, exclude));
-			}
-			for (Long id:folderIdList) {
-				exclude.addAll(getBinderModule().indexTree(id, exclude));
-			}
+			Collection idsIndexed = getBinderModule().indexTree(ids);
 			//if people selected and not yet index; index content only, not the whole ws tree
-			if ((profileId != null) && !exclude.contains(profileId))
+			if ((profileId != null) && !idsIndexed.contains(profileId))
 				getBinderModule().indexBinder(profileId, true);
 			
 			response.setRenderParameter("redirect", "true");

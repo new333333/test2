@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussionFolder" caption="__definition_default_folder_discussion" type="5" nextId="12" definitionType="5" databaseId="402883b90cc53079010cc539bf260001" internalId="402883b90cc53079010cc539bf260001">
+<definition name="_discussionFolderList" caption="__definition_default_folder_discussion_list" type="5" nextId="12" definitionType="5" databaseId="402883b90cc53079010cc539bf260001" internalId="402883b90cc53079010cc539bf260001">
   <item name="folderForm" caption="__folder_form" type="form" id="1">
     <properties/>
     <item name="title" caption="__title" type="data" id="3">
@@ -8,12 +8,8 @@
         <property name="name" value="title"/>
         <property name="caption" value="__title"/>
         <property name="width" value="100"/>
-        <property name="inline" caption="__inline" type="boolean" value="false">
-          <help>__help_mark_as_inline</help>
-        </property>
-        <property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1" value="false">
-          <help>__help_mark_as_title</help>
-        </property>
+        <property name="inline" caption="__inline" type="boolean" value="false"/>
+        <property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1" value="false"/>
       </properties>
     </item>
     <item name="description" caption="__description" type="data" id="4">
@@ -51,8 +47,8 @@
     </properties>
   </item>
   <properties>
-    <property name="name" value="_discussionFolder"/>
-    <property name="caption" value="__definition_default_folder_discussion"/>
-	<property name="icon" value="/icons/folder_blue_discussion.gif" /> 
+    <property name="name" value="_discussionFolderList"/>
+    <property name="caption" value="__definition_default_folder_discussion_list"/>
+	<property name="icon" value="/icons/folder_blue_document.gif" /> 
   </properties>
 </definition>

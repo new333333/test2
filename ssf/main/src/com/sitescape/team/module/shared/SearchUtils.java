@@ -309,4 +309,7 @@ public class SearchUtils {
 		}
 		return result;
 	}
+	public void clearIndex() {
+		
+	}
 }

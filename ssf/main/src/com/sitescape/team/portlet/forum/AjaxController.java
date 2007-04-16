@@ -699,8 +699,11 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		Binder binder = getBinderModule().getBinder(binderId);
 		Subscription sub = getBinderModule().getSubscription(binderId);
 		model.put(WebKeys.SUBSCRIPTION, sub);
+		model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binderId));
+		model.put(WebKeys.BINDER, binder);
 		return new ModelAndView("forum/subscribe_return", model);
 	}
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 

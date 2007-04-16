@@ -66,6 +66,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
+import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -224,13 +225,50 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return false;
     }	
     public Collection indexTree(Long binderId) {
-    	return indexTree(binderId, null);
+    	List ids = new ArrayList();
+    	ids.add(binderId);
+    	return indexTree(ids);
     }
-    public Collection indexTree(Long binderId, Collection exclusions) {
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "indexTree");
-		return loadBinderProcessor(binder).indexTree(binder, exclusions);
-	}    
+    //optimization so we can manage the deletion to the searchEngine
+    public Collection indexTree(Collection binderIds) {
+    	//make list of binders we have access to first
+    	boolean clearAll = false;
+    	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, RequestContextHolder.getRequestContext().getZoneId());
+    	List<Binder> checked = new ArrayList();
+    	for (Binder binder:binders) {
+    		try {
+    			checkAccess(binder, "indexTree");
+    			if (binder.isDeleted()) continue;
+    			if (binder.isZone()) clearAll = true;
+    			checked.add(binder);
+    		} catch (Exception ex) {};
+    		
+    	}
+    	List done = new ArrayList();
+    	if (checked.isEmpty()) return done;
+
+		if (clearAll) {
+			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+			try {
+				luceneSession.clearIndex();
+
+			} catch (Exception e) {
+				System.out.println("Exception:" + e);
+			} finally {
+				luceneSession.close();
+			}
+		} else {
+			//	delete all sub-binders - walk the ancestry list
+			// 	and delete all the entries under each folderid.
+			for (Binder binder:checked) {
+				IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
+			}
+		}
+	   	for (Binder binder:checked) {
+	   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done));
+	   	}
+	   	return done;
+	} 
     public void indexBinder(Long binderId) {
     	indexBinder(binderId, false);
     }
@@ -605,38 +643,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return retMap; 
 	}	
     
-	/**
-	 * Delete all the entries in the index that are children of the ids passed in.
-	 * If the top of the tree is passed in (the zoneid), then clear the entire index.
-	 */
-    public void deleteIndexTree(List<Long> ids) {
-		if (ids.size() == 0)
-			return;
-		Term delTerm;
 
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-
-		try {
-			// if the top of the tree is in the list of id's, then delete
-			// everything in the tree. Otherwise, walk the ancestry list
-			// and delete all the entries under each folderid.
-			if (ids.contains(zoneId)) {
-				luceneSession.clearIndex();
-			} else {
-				for (Long id : ids) {
-					delTerm = new Term(EntityIndexUtils.ENTRY_ANCESTRY, id
-							.toString());
-					luceneSession.deleteDocuments(delTerm);
-				}
-			}
-		} catch (Exception e) {
-			System.out.println("Exception:" + e);
-		} finally {
-			luceneSession.close();
-		}
-		return;
-	}
 
 	public ArrayList getSearchTags(String wordroot, String type) {
 		ArrayList tags = new ArrayList();
@@ -786,7 +793,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      */
 	public ScheduleInfo getNotificationConfig(Long binderId) {
         Binder binder = loadBinder(binderId); 
-        checkAccess(binder, "getNotificationConfig"); 
+        //Anyone can read 
         //data is stored with job
 		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
   		return process.getScheduleInfo(binder);

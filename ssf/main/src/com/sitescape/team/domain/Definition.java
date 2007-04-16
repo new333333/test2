@@ -52,12 +52,13 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int USER_WORKSPACE_VIEW=12;
 	
 	public static final String VIEW_STYLE_DEFAULT="folder"; 
+	public static final String VIEW_STYLE_TABLE="table"; 
 	public static final String VIEW_STYLE_WIKI="wiki"; 
 	public static final String VIEW_STYLE_CALENDAR="event"; 
 	public static final String VIEW_STYLE_BLOG="blog";
-	public static final String VIEW_STYLE_SEARCH="search";
 	public static final String VIEW_STYLE_GUESTBOOK="guestbook"; 
 	public static final String VIEW_STYLE_PHOTO_ALBUM="photo"; 
+	public static final String VIEW_STYLE_FILE="file"; 
 	
 	//visibility values
 	public static final int PUBLIC=1;

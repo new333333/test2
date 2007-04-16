@@ -99,13 +99,14 @@ public class EmailConfigController extends  AbstractBinderController  {
 				}
 	
 				model.put(WebKeys.USERS, uList);
-				model.put(WebKeys.GROUPS, gList);
+				model.put(WebKeys.GROUPS, gList); 
 			}
 			//only show posting if access allowed
 			if (getBinderModule().testAccess(folder, "setPosting"))
 				model.put(WebKeys.SHOW_POSTING, Boolean.TRUE);
 			else
 				model.put(WebKeys.SHOW_POSTING, Boolean.FALSE);
+			model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
 			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
 		} catch (Exception e) {
 			//assume not selected yet - first time through from admin menu

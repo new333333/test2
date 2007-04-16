@@ -28,6 +28,10 @@
 <tr><td> 
 <input type="checkbox" id="enabled" name="enabled" <c:if test="${ssLdapConfig.enabled}">checked</c:if>/>
 <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.enable"/></span><br/>
+</td></tr>
+<tr><td>
+<input type="checkbox" id="runnow" name="runnow"/>
+<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.now"/></span><br/>
 </td></tr></table>
 
 <br/>
@@ -112,8 +116,8 @@
 
 <br/>
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
 </form>
 </div>

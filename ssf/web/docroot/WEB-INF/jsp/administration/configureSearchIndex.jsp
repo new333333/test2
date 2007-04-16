@@ -34,20 +34,9 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <span class="ss_bold"><ssf:nlt tag="administration.configure.index.select" text="Select the forums to be re-indexed:"/></span>
 <br>
 <br>
-<a class="ss_linkButton ss_smallprint" 
-  href="javascript:<portlet:namespace/>_doSelect(true);"
-><ssf:nlt tag="button.selectAll"/></a>
-&nbsp;&nbsp;&nbsp;
-<a class="ss_linkButton ss_smallprint" 
-  href="javascript:<portlet:namespace/>_doSelect(false);"
-><ssf:nlt tag="button.clearAll"/></a>
-<br>
+
 <script type="text/javascript">
-function <portlet:namespace/>_doSelect(newState) {
-	ss_selectAll('<portlet:namespace/>fm', 'workspace_', newState);
-	ss_selectAll('<portlet:namespace/>fm', 'folder_', newState);
-	ss_selectAll('<portlet:namespace/>fm', 'people_', newState);
-}
+
 function <%= wsTreeName %>_showId(forum, obj, action) {
 	var prefix = action+"_";
 	ss_createTreeCheckbox("<%= wsTreeName %>", prefix, forum);
@@ -67,30 +56,12 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 	}
 	return false
 }
-function ss_selectAll(formName, prefix, newState) {
-    var totalElements = self.document[formName].elements.length;
-    for ( var i=0; i < totalElements; i++) {
-        var namestring = self.document.forms[formName].elements[i].name.substring(0,prefix.length)
-        ss_debug("namestring="+namestring)
-        if (namestring == prefix) {
-            var e = self.document.forms[formName].elements[i];
-            e.checked = newState;
-        }
-    }
-}
+
 </script>
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
   multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type_" />
 
-<br>
-<a class="ss_linkButton ss_smallprint" 
-  href="javascript:<portlet:namespace/>_doSelect(true);"
-><ssf:nlt tag="button.selectAll"/></a>
-&nbsp;&nbsp;&nbsp;
-<a class="ss_linkButton ss_smallprint" 
-  href="javascript:<portlet:namespace/>_doSelect(false);"
-><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <br>
 <div class="ss_buttonBarLeft">

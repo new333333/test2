@@ -49,11 +49,6 @@ public interface BinderModule {
 	 */
 	public List deleteBinder(Long binderId) throws AccessControlException;
 	
-	/**
-	 * delete all the entries in the index that are descended from the list of id's.
-	 * @param ids
-	 */
-	public void deleteIndexTree(List<Long> ids);
 	
 	/**
 	 * Stop receiveing notifications that you have explicity requested.
@@ -191,13 +186,14 @@ public interface BinderModule {
      */
     public Collection indexTree(Long binderId);
     /**
-     * Same as <code>indexTree</code> except can include a list of sub-binders to skip.
+     * Same as <code>indexTree</code> except handles a collection of binders.  Use this as a
+     * performance optimzation for multiple binders- it handles the index cleanup better
      * @param binderId
      * @param exclusions - sub-binders to skip
      * @return Collection binderIds indexed
      */
-    public Collection indexTree(Long binderId, Collection exclusions);
-    
+     public Collection indexTree(Collection binderId);
+   
     /**
      * Modify a binder
      * @param binderId

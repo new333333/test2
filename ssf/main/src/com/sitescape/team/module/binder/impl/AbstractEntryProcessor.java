@@ -751,12 +751,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 	    
     //***********************************************************************************************************
-    public void indexBinder(Binder binder, boolean includeEntries) {
-    	if (includeEntries == true) indexEntries(binder);
-    	else  indexBinder(binder, null, null, false);
-
-    }
-    protected void indexDeleteEntries(Binder binder) {
+     protected void indexDeleteEntries(Binder binder) {
 		// Since all matches will be deleted, this will also delete the attachments 
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
    	
@@ -862,17 +857,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /**
      * Index binder and its entries
      */
-    public void indexEntries(Binder binder) {
-    	
-     	// this is just here until we get our indexes in sync with
-    	// the db.  (Early in development, they're not...
-   		//iterate through results
-    	indexEntries_preIndex(binder);
-   		//flush any changes so any exiting changes don't get lost on the evict
-   		getCoreDao().flush();
-   		//index just the binder first
-   		indexBinder(binder, null, null, false);
-   		SFQuery query = indexEntries_getQuery(binder);
+    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex) {
+    	super.indexBinder(binder, includeEntries, deleteIndex);
+    	if (includeEntries == false) return;
+    	indexEntries(binder, deleteIndex);
+    }
+    protected void indexEntries(Binder binder, boolean deleteIndex) {
+    	//may already have been handled with an optimized query
+    	if (deleteIndex) indexEntries_preIndex(binder);
+  		//flush any changes so any exiting changes don't get lost on the evict
+    	getCoreDao().flush();
+  		SFQuery query = indexEntries_getQuery(binder);
 	   	
        	try {       
   			List batch = new ArrayList();
@@ -924,11 +919,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			}
        			IndexSynchronizationManager.addDocuments(docs);
        			IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
-	            
-       			// Delete the document that's currently in the index.
- // turn back on later when don't delete everything
-//       				luceneSession.deleteDocument(entry.getIndexDocumentUid());
-	            
+	            	            
        			// Register the index document for indexing.
        			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
        		
@@ -941,7 +932,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     protected void indexEntries_preIndex(Binder binder) {
     	indexDeleteEntries(binder); 
-	    }
+    }
  
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected boolean indexEntries_validate(Binder binder, Entry entry) {

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -52,15 +51,12 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.module.shared.SearchUtils;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.web.util.FilterHelper;
+
 import com.sitescape.util.Validator;
 /**
  *
