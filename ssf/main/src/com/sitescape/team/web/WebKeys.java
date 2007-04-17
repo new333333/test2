@@ -530,7 +530,8 @@ public class WebKeys {
     public static final String SEARCH_FORM_ENTRY_DEF_ID = "ss_entry_def_id";
     public static final String SEARCH_FORM_QUERY_DATA="searchQueryData";
     public static final String SEARCH_FORM_RESULTS="searchResults";
-    public static final String SEARCH_FORM_MAX_HITS="ssMaxHits";
+    public static final String SEARCH_FORM_MAX_HITS="resultsCount";
+    public static final String SEARCH_FORM_SUMMARY_WORDS="summaryWordCount";
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
