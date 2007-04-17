@@ -219,7 +219,7 @@ public class IndexSynchronizationManager {
             	    break;
             	}case Request.TYPE_ADD_DOCS: {
             		luceneSession.addDocuments((List) obj);
-            		addCount++;
+            		addCount += ((List)obj).size();
             	    break;
             	}
             	case Request.TYPE_DELETE: {
@@ -241,7 +241,7 @@ public class IndexSynchronizationManager {
         if(((Boolean) autoFlushTL.get()).booleanValue())
             luceneSession.flush();
         
-        logger.info("Update to index: add [" + addCount + "], delete [" + deleteCount + "] requests");
+        logger.info("Update to index: add [" + addCount + "], delete [" + deleteCount + "] docs");
     }
     
     private static void clear() {
