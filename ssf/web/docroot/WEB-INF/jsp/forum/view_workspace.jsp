@@ -66,9 +66,9 @@
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 							<div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">				
 								<% // Workspace toolbar %>
-							<div class="ss_content_inner">
-								<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
-							</div>
+								<div class="ss_content_inner">
+									<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
+								</div>
 	
 								<div class="ss_content_inner">
 								  	<c:choose>

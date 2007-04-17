@@ -284,7 +284,7 @@ function ss_showHide(objId){
 
 function ss_showAdditionalOptions(objId) {
 	ss_showHide(objId);
-	if (!ss_searchMoreInitialized) init();
+	if (!ss_searchMoreInitialized) ss_initSearchOptions();
 }
 
 function ss_showHideDetails(ind){
