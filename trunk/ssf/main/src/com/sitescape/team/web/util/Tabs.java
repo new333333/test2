@@ -72,6 +72,7 @@ public class Tabs {
    	public final static String ENTRY = "entry";
    	public final static String USER = "user";
    	public final static String QUERY = "query";
+   	public final static String SEARCH = "search";
 	
 	public Tabs(PortletRequest request) {
 		PortletSession ps = null;
@@ -207,8 +208,8 @@ public class Tabs {
 		//Look for this tab
 		for (int i = 0; i < tabList.size(); i++) {
 			Map tab = (Map)tabList.get(i);
-			if (tab != null && tab.get(TYPE)!=null && query != null && tab.get(TYPE).equals(QUERY) && tab.containsKey(QUERY_DOC) && 
-					((Document)tab.get(QUERY_DOC)).asXML().equals(query.asXML())) {
+			if (tab != null && tab.get(TYPE)!=null && ((query != null && tab.get(TYPE).equals(QUERY) && tab.containsKey(QUERY_DOC) && 
+					((Document)tab.get(QUERY_DOC)).asXML().equals(query.asXML()))) || (tab.get(TYPE).equals(SEARCH))) {
 				tabId = ((Integer)tab.get(TAB_ID)).intValue();
 				break;
 			}
