@@ -811,6 +811,8 @@ public class LocalLuceneSession implements LuceneSession {
 	public void clearIndex() {
 		long startTime = System.currentTimeMillis();
 
+		LuceneUtil.closeAll();
+		
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = LuceneUtil.getWriter(indexPath, true);

@@ -48,9 +48,9 @@ public class LuceneUtil {
 		synchronized (LuceneUtil.class) {
 			switch(prevState) {
 			case (READSEARCH):
-			case (READDELETE):
 				if (indexReader != null) 
 					return indexReader;
+			case (READDELETE):
 			case(WRITE): 
 				try {
 					indexWriter.close();	
@@ -119,10 +119,14 @@ public class LuceneUtil {
 		synchronized (LuceneUtil.class) {
 			switch (prevState) {
 			case (WRITE):
-			case (READSEARCH):
-				if (indexWriter != null)
+				if (indexWriter != null && !create)
 					break;
+			case (READSEARCH):
 			case (READDELETE):
+				try {
+					indexReader.close();
+					indexReader = null;
+				} catch (Exception e) {} // Don't care - just want the writer closed.
 				try {
 					indexWriter = new IndexWriter(indexPath, 
 						new SsfIndexAnalyzer(), create);
