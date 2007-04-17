@@ -18,7 +18,9 @@
 	action="<portlet:actionURL/>"  onSubmit="return ss_onSubmit(this);">
 
 <input type="hidden" name="componentName" value="search"/>
-<%@ include file="/WEB-INF/jsp/dashboard/search_config.jsp" %>
+
+<!-- %@ include file="/WEB-INF/jsp/dashboard/search_config.jsp" % -->
+	<%@ include file="/WEB-INF/jsp/search/dashboard_search_form.jsp" %>
 
 <br/>
 <br>
