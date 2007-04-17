@@ -46,8 +46,6 @@
 <c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
 
-DATA: ${ssDashboard}
-
 <div class="ss_style ss_portlet_style">
 
 	<div class="ss_searchContainer">
