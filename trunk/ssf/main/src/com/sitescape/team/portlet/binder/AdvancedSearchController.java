@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -36,6 +37,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.SearchEntryFilter;
 import com.sitescape.team.util.NLT;
@@ -79,6 +81,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	
 	public static final String SearchFilterMap = "filterMap";
 	private static int MoreEntriesCounter = 200;
+	
 		
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -135,12 +138,19 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) defaultMaxOnPage = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
 		int maxOnPage = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, defaultMaxOnPage);
 		int userOffset = (pageNo - 1) * maxOnPage;
-		
+		Integer summaryWords = null;
+		if (options.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) {
+			summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+		} else {
+			summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, 20);
+		}
 		Integer searchLuceneOffset = 0;
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
 		options.put(WebKeys.URL_PAGE_NUMBER, pageNo);
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		
 	}
 	private Map getOptionsFromTab(Map tab) {
 		Map options = new HashMap();
@@ -152,7 +162,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (tab.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, tab.get(Tabs.TITLE));
 		if (tab.containsKey(Tabs.TYPE)) options.put(Tabs.TYPE, tab.get(Tabs.TYPE));
 		if (tab.containsKey(Tabs.TAB_SEARCH_TEXT)) options.put(Tabs.TAB_SEARCH_TEXT, tab.get(Tabs.TAB_SEARCH_TEXT));
-
+		if (tab.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, tab.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 		return options;
 	}
 	
@@ -206,7 +216,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
 		model.put(SearchFilterMap, convertedToDisplay(query));
 		//this method check in model(SearchAdditionalOptions) which data are necessary to set search filters defined by user 
-		prepareAdditionalFiltersData(model);
+		prepareAdditionalFiltersData(model, getDefinitionModule());
 		
 		// SearchUtils.filterEntryAttachmentResults(results);
 		prepareRatingsAndFolders(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -215,15 +225,15 @@ public class AdvancedSearchController extends AbstractBinderController {
 		preparePagination(model, results, options);
 		
 		model.put(WebKeys.SEARCH_FORM_MAX_HITS, options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
-		
+		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+
 		// TODO implement - get values from user setup? options?
-		model.put("summaryWordCount", 20);
 		model.put("quickSearch", false);
 		
 	}
 	
 
-	public class Workflow {
+	public static class Workflow {
 		String id;
 		String title;
 		List<WorkflowStep> steps;
@@ -330,16 +340,16 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 	}
 	
-	private void prepareAdditionalFiltersData(Map model) {
+	public static void prepareAdditionalFiltersData(Map model, DefinitionModule definitionModule) {
 		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);
 		if (additionalOptions != null) {
-			prepareWorkflows(model);
+			prepareWorkflows(model, definitionModule);
 			prepareTags(model);
-			prepareEntries(model);
+			prepareEntries(model, definitionModule);
 		}
 	}
 	
-	private void prepareEntries(Map model) {
+	private static void prepareEntries(Map model, DefinitionModule definitionModule) {
 		List entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
 		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);		
 		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
@@ -356,7 +366,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 				String entryType = (String) entryMap.get(SearchEntryType);
 				String fieldName = (String) entryMap.get(SearchEntryElement);
 				
-				Map fieldsMap = getDefinitionModule().getEntryDefinitionElements(entryType);
+				Map fieldsMap = definitionModule.getEntryDefinitionElements(entryType);
 				
 				if (fieldsMap != null && fieldsMap.get(fieldName) != null) {
 					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
@@ -366,7 +376,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, entriesMap.values());
 		}
 	}
-	private void prepareTags(Map model) {
+	private static void prepareTags(Map model) {
 		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);
 		List tagsFromFilter = (List) additionalOptions.get(SearchBlockTypeTag);
 		if (tagsFromFilter != null) {
@@ -396,7 +406,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			additionalOptions.put(SearchBlockTypeTag, tagsDuets);
 		}
 	}
-	private void prepareWorkflows(Map model) {
+	private static void prepareWorkflows(Map model, DefinitionModule definitionModule) {
 		List workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
 		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);		
 		List wfFromSearch = (List) additionalOptions.get(SearchBlockTypeWorkflow);
@@ -411,7 +421,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			while (it.hasNext()) {
 				Map wfFilter = (Map) it.next();
 				String wfId = (String)wfFilter.get(FilterHelper.SearchWorkflowId);
-				Map steps = getDefinitionModule().getWorkflowDefinitionStates(wfId);
+				Map steps = definitionModule.getWorkflowDefinitionStates(wfId);
 				
 				List selectedStepsNames = (List) wfFilter.get(FilterHelper.FilterWorkflowStateName);
 				Iterator filterSteps = selectedStepsNames.iterator();
@@ -494,14 +504,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
 	}
 	
-	private Map convertedToDisplay(Document searchQuery) {
+	public static Map convertedToDisplay(Document searchQuery) {
 		Map searchFormData = new HashMap();
 		if (searchQuery != null) { 
 	    	Element rootElement = searchQuery.getRootElement();
 	    	List liFilterTerms = rootElement.selectNodes(FilterHelper.FilterTerms);
 
 	    	System.out.println("Query: "+searchQuery.asXML());
-	    	System.out.println("Terms size: "+liFilterTerms.size());
 
 	    	// read the joiner information, probably the size will be always 1 so it can be in loop
 	    	for (int i = 0; i < liFilterTerms.size(); i++) {
@@ -567,7 +576,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return searchFormData;
 	}
 	
-	private Map createEntryBlock(Element filterTerm) {
+	private static Map createEntryBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
 		block.put(SearchEntryType, filterTerm.attributeValue(FilterHelper.FilterEntryDefId, ""));
@@ -579,7 +588,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return block;
 	}
 	
-	private List getElementValues(Element filterTerm) {
+	private static List getElementValues(Element filterTerm) {
 		List values = filterTerm.selectNodes(FilterHelper.FilterElementValue);
 		List modelValues = new ArrayList();
 		Iterator it = values.iterator(); 
@@ -589,14 +598,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return modelValues;
 	}
 	
-	private Map createCreatorBlock(Element filterTerm) {
+	private static Map createCreatorBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
 		block.put(SearchAuthorTitle, filterTerm.attributeValue(FilterHelper.FilterCreatorTitle, ""));
 		block.put(SearchAuthor, getElementValues(filterTerm).get(0));
 		return block;
 	}
-	private Map createWorkflowBlock(Element filterTerm) {
+	private static Map createWorkflowBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));	
 		block.put(FilterHelper.SearchWorkflowId, filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, ""));
@@ -610,14 +619,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 		block.put(FilterHelper.FilterWorkflowStateName, modelSteps);
 		return block;
 	}
-	private Map createTagBlock(Element filterTerm) {
+	private static Map createTagBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
 		block.put(SearchTag, filterTerm.getTextTrim());
 		return block;
 	}
 	
-	private Map createDateBlock(Element filterTerm) {
+	private static Map createDateBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
 		if (EntityIndexUtils.CREATION_DAY_FIELD.equalsIgnoreCase(filterTerm.attributeValue(FilterHelper.FilterElementName))) {
@@ -636,12 +645,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Date startDateParsed = null;
-		try { startDateParsed = inputFormater.parse(startDate);} catch (ParseException e) {logger.error(e);}
+		try { startDateParsed = inputFormater.parse(startDate);} catch (ParseException e) {}
 		String formatedStartDate = "";
 		if (startDateParsed != null) formatedStartDate = outputFormater.format(startDateParsed);
 		
 		Date endDateParsed=null;
-		try {endDateParsed = inputFormater.parse(endDate);} catch (ParseException e) {logger.error(e);}
+		try {endDateParsed = inputFormater.parse(endDate);} catch (ParseException e) {}
 		String formatedEndDate = "";
 		if (endDateParsed != null) formatedEndDate = outputFormater.format(endDateParsed);
 		
@@ -700,6 +709,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Integer maxHits = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, new Integer(entriesPerPage));
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
 		
+		Integer summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, new Integer(20));
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		
 		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
 		if (searchUserOffset > 200) {
 			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
@@ -720,7 +732,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}
 
 	
-	private Document getSearchQuery(RenderRequest request) {
+	public static Document getSearchQuery(PortletRequest request) {
 		Boolean joiner = PortletRequestUtils.getBooleanParameter(request, FilterHelper.SearchJoiner, true);
 		SearchEntryFilter searchFilter = new SearchEntryFilter(joiner);
 		
@@ -781,10 +793,18 @@ public class AdvancedSearchController extends AbstractBinderController {
 				inputFormater.setTimeZone(user.getTimeZone());
 				Date startD = null;
 				Date endD = null;
-				if (!startDate.equals(""))
-					try {startD = inputFormater.parse(startDate);} catch (ParseException e) {logger.error("Parse exception by date:"+startDate);}
-				if (!endDate.equals(""))	
-					try {endD = inputFormater.parse(endDate);} catch (ParseException e) {logger.error("Parse exception by date:"+endDate);}
+				if (!startDate.equals("")) {
+					try {startD = inputFormater.parse(startDate);} 
+					catch (ParseException e) {
+						//logger.error("Parse exception by date:"+startDate);
+					}
+				}
+				if (!endDate.equals("")) {	
+					try {endD = inputFormater.parse(endDate);} 
+					catch (ParseException e) {
+						// logger.error("Parse exception by date:"+endDate);
+					}
+				}
 				if (types[i].equals(SearchBlockTypeCreationDate))
 					searchFilter.addCreationDateRange(startD, endD);
 				else if (types[i].equals(SearchBlockTypeModificationDate))
