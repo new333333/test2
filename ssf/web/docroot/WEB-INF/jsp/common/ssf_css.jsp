@@ -3645,6 +3645,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 #ss_content_container {
     padding:0 0 0 15px;
     margin:0;
+    vertical-align:top;
 }
 div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;}
 #ss_content { 
@@ -3667,6 +3668,9 @@ div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_l
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
 	padding:6px;
 	border-bottom:1px solid #afc8e3;
+}
+#ss_searchForm table {
+	background-color: #e8eff7;
 }
 #ss_searchForm input { width: 150px;}
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
