@@ -16,14 +16,23 @@
 					<tr><th><ssf:nlt tag="searchForm.searchTag"/>:</th>
 						<td><input type="text" name="searchTags" id="searchTags" onkeypress="return ss_submitViaEnter(event)"/></td>
 						<td>
-							<select name="ssMaxHits" id="ssMaxHits">
-								<option value="5" <c:if test="${ssMaxHits == 5}">selected="selected"</c:if>>5</option>							
-								<option value="10" <c:if test="${ssMaxHits == 10}">selected="selected"</c:if>>10</option>
-								<option value="25" <c:if test="${ssMaxHits == 25}">selected="selected"</c:if>>25</option>							
-								<option value="50" <c:if test="${ssMaxHits == 50}">selected="selected"</c:if>>50</option>
-								<option value="100" <c:if test="${ssMaxHits == 100}">selected="selected"</c:if>>100</option>								
+							<select name="resultsCount" id="resultsCount">
+								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>>5 items</option>							
+								<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>>10 items</option>
+								<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>>25 items</option>							
+								<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>>50 items</option>
+								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>>100 items</option>								
 							</select>
+							<select name="summaryWordCount" id="summaryWordCount">
+								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>>15 words</option>							
+								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>>20 words</option>
+								<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>>30 words</option>							
+								<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>>50 words</option>
+								<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>>100 words</option>
+							</select>
+							<c:if test="${empty dashboardForm || dashboardForm == 0}">
 							<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+							</c:if>
 							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 						</td>
 					</tr>
