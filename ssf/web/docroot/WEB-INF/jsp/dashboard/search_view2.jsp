@@ -11,8 +11,6 @@
  *
  */
 %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
@@ -38,7 +36,7 @@
 <c:set var="ssTotalRecords" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}" />
 <c:set var="ssPageEndIndex" value="${ss_pageNumber * ss_pageSize + ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}" />
 <c:set var="ssPageStartIndex" value="${ss_pageNumber * ss_pageSize + 1}" />
-<c:set var="dashboardResult" value="1"/>
+<c:set var="isDashboard" value="yes"/>
 
 <%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
 
