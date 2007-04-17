@@ -46,7 +46,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.EntryProcessor;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -67,7 +66,6 @@ import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
-import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SimpleProfiler;
@@ -361,8 +359,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, Map ctx){
-        
-    	indexEntry(binder, entry, fileUploadItems, null, true);
+        //no tags typically exists on a new entry - reduce db lookups by supplying list
+    	List tags = null;
+    	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
+    	if (tags == null) tags = new ArrayList();
+    	indexEntry(binder, entry, fileUploadItems, null, true, tags);
     }
  
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -650,7 +651,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	indexEntry(binder, entry, fileUploadItems, filesToIndex, false);
+    	//tags will be null for now
+    	indexEntry(binder, entry, fileUploadItems, filesToIndex, false, 
+    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
     }
 
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -773,7 +776,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			// TODO (Roy, I believe this was your design idea, so please 
 			// verify that this strategy will indeed work). 
 
-			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false);
+			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false, null);
 		}
     }
  
@@ -848,7 +851,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			// TODO (Roy, I believe this was your design idea, so please 
 			// verify that this strategy will indeed work). 
 
-			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false);
+			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false, null);
 		}
     	
     }
@@ -857,8 +860,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /**
      * Index binder and its entries
      */
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex) {
-    	super.indexBinder(binder, includeEntries, deleteIndex);
+    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+    	super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return;
     	indexEntries(binder, deleteIndex);
     }
@@ -895,29 +898,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				Entry entry = (Entry)batch.get(i);
        				if (indexEntries_validate(binder, entry)) {
        					List entryTags = (List)tags.get(entry.getEntityIdentifier());
-       					// 	Create an index document from the entry object.
-       					org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, entryTags);
-       					docs.add(indexDoc);
-       					if (logger.isDebugEnabled())
-       						logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
-       					//Create separate documents one for each attached file and index them.
-       					List atts = entry.getFileAttachments();
-       					for (int j = 0; j < atts.size(); j++) {
-       						FileAttachment fa = (FileAttachment)atts.get(j);
-       						try {
-       							indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null, entryTags);
-       							// Register the index document for indexing.
-       							docs.add(indexDoc);
-       						} catch (Exception ex) {
-       							//log error but continue
-       							logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
-       						}
-       					}
-      				indexEntries_postIndex(binder, entry);
+       					// 	Create an index document from the entry object. 
+       					// Entry already deleted from index, so pretend we are new
+       				   	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
+       				   	indexEntries_postIndex(binder, entry);
        				}
        				getCoreDao().evict(entry);
        			}
-       			IndexSynchronizationManager.addDocuments(docs);
        			IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
 	            	            
        			// Register the index document for indexing.
@@ -1115,7 +1102,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             
 
     public void indexEntry(Entry entry) {
-    	indexEntry(entry.getParentBinder(), entry, null, null, false);
+    	indexEntry(entry.getParentBinder(), entry, null, null, false, null);
     }
     /**
      * Index entry and optionally its attached files.
@@ -1129,7 +1116,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
     protected void indexEntry(Binder binder, Entry entry, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, List tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -1144,7 +1131,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
     	
-    	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry);
+    	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags);
     }
     
     /**
@@ -1163,8 +1150,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
 	protected void indexEntryWithAttachments(Binder binder, Entry entry,
-			List fileAttachments, List fileUploadItems, boolean newEntry) {
-		List docs = new ArrayList();
+			List fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			
@@ -1173,11 +1159,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
 		
         // Create an index document from the entry object.
-		org.apache.lucene.document.Document indexDoc;
-		indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
        // Register the index document for indexing.
-        docs.add(indexDoc);        
-        
+        IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(entry.getParentBinder(), entry, tags));
         //Create separate documents one for each attached file and index them.
         for(int i = 0; i < fileAttachments.size(); i++) {
         	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
@@ -1185,17 +1168,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
-        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui, null);
+        		IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntryFile(binder, entry, fa, fui, tags));
            		// Register the index document for indexing.
-        		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
-        		docs.add(indexDoc);
 	        } catch (Exception ex) {
 		       		//log error but continue
 		       		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
         	}
          }
-        IndexSynchronizationManager.addDocuments(docs);
-	}
+ 	}
 
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();

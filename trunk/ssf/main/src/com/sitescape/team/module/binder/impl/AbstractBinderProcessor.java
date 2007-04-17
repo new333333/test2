@@ -335,8 +335,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     protected void addBinder_indexAdd(Binder parent, Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems, Map ctx) {
+        //no tags typically exists on a new binder - reduce db lookups by supplying list
+    	List tags = null;
+    	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
+    	if (tags == null) tags = new ArrayList();
         
-    	indexBinder(binder, fileUploadItems, null, true);
+    	indexBinder(binder, fileUploadItems, null, true, tags);
     }
  	//common fillin for add/modify
  	protected void doBinderFillin(Binder binder, InputDataAccessor inputData, Map entryData) {  
@@ -485,7 +489,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	indexBinder(binder, fileUploadItems, filesToIndex, false);
+    	indexBinder(binder, fileUploadItems, filesToIndex, false,
+    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
     	
     	//Also re-index all of the direct children binders to get the correct folder extended title indexed
     	if (!ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle())) {
@@ -743,10 +748,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {
     	//call overloaded methods
-   		indexBinder(binder, includeEntries, true);    	
+   		indexBinder(binder, includeEntries, true, null);    	
     }
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex) {
-   		indexBinder(binder, null, null, !deleteIndex);    	
+    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+   		indexBinder(binder, null, null, !deleteIndex, tags);    	
     	
     }
     //***********************************************************************************************************
@@ -756,7 +761,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	if (exclusions == null) exclusions = new TreeSet();
        	if (!exclusions.contains(binder.getId())) {
         	//index self.
-        	indexBinder(binder, true, false);
+        	indexBinder(binder, true, false, null);
         	indexedIds.add(binder.getId());
         }
        	List binders = binder.getBinders();
@@ -793,7 +798,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param newEntry
      */
     protected void indexBinder(Binder binder, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, List tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -808,7 +813,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
 
-    	indexBinderWithAttachments(binder, binder.getFileAttachments(), fileUploadItems, newEntry);
+    	indexBinderWithAttachments(binder, binder.getFileAttachments(), fileUploadItems, newEntry, tags);
     }
     protected void indexDeleteBinder(Binder binder) {
 		// Since all matches will be deleted, this will also delete the attachments 
@@ -828,7 +833,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param newEntry
      */
 	protected void indexBinderWithAttachments(Binder binder,
-			List fileAttachments, List fileUploadItems, boolean newEntry) {
+			List fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			indexDeleteBinder(binder);	        
@@ -836,7 +841,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		
         // Create an index document from the entry object.
 		org.apache.lucene.document.Document indexDoc;
-		List tags =  getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
+		if (tags == null) getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
 		indexDoc = buildIndexDocumentFromBinder(binder, tags);
 
         // Register the index document for indexing.

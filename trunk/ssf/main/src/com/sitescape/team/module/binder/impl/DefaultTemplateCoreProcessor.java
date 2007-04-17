@@ -57,13 +57,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		throw new NotSupportedException("Move not supported on TemplateBinder");
 	
 	}
-	//nothing to index
-	public void indexBinder(Binder binder) {
-	
-	}
-	public void indexBinder(Binder binder, boolean includeEntries) {
-		
-	}
+    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+   		//nothing to do    	    	
+    }
 	//nothing to index
 	public Collection indexTree(Binder binder, Collection exclusions) {
 		return new ArrayList();

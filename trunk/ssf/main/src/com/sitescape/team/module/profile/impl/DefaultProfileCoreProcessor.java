@@ -297,6 +297,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
           
     //***********************************************************************************************************
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
+    	
        	if (entry instanceof User) {
        		User p = (User)entry;
        		//mark deleted, cause their ids are used all over
@@ -305,8 +306,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
       		Map updatesCtx = new HashMap();
        		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
        		String newName = NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString();
-       		p.setName(newName); //mark as deleted
-       		p.setTitle(p.getTitle() + " (" + newName + ")");
+       		p.setName(newName); //mark as deleted - change name incase re-added -unique key
+      		p.setForeignName(newName); //clear name incase re-added - unique key
+      	    p.setTitle(p.getTitle() + " (" + newName + ")");
        		checkUserTitle(p, updatesCtx);
        	}
     	getProfileDao().delete((Principal)entry);   
@@ -424,10 +426,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 	public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
 	    // The following part requires update database transaction.
+   		final Map ctx = new HashMap();
 		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
-	           		Map ctx = new HashMap();
 	        		for (int i=0; i<inputAccessors.size(); ++i) {
 	        			SimpleProfiler.startProfiler("syncNewEntries:dbTransaction");
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
@@ -452,12 +454,14 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	                return newEntries;
 	        	}
 	        });
+		//we don't have any tags yet, so set to null to prevent database lookup 
+		ctx.put(ObjectKeys.INPUT_FIELD_TAGS, new ArrayList());
 	    for (Iterator i=newEntries.entrySet().iterator(); i.hasNext();) {
 	    	SimpleProfiler.startProfiler("syncNewEntries:indexAdd");
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);
+	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, ctx);
 	    	SimpleProfiler.stopProfiler("syncNewEntries:indexAdd");
 	    }
 	    return new ArrayList(newEntries.keySet()); 

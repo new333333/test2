@@ -11,7 +11,6 @@
 package com.sitescape.team.search;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -67,17 +66,6 @@ public class IndexSynchronizationManager {
     public static void addDocument(Document doc) throws LuceneException {
         BasicIndexUtils.validateDocument(doc);
         getRequests().add(new Request(doc, Request.TYPE_ADD));
-    }
-    /**
-     * Application calls this method to add a document.
-     * 
-     * @param doc
-     * @throws LuceneException
-     */
-    public static void addDocuments(List docs) throws LuceneException {
-        for (int i = 0; i < docs.size(); i++)
-        	BasicIndexUtils.validateDocument((Document)docs.get(i));
-        getRequests().add(new Request((List)docs, Request.TYPE_ADD_DOCS));
     }
     
     /**
@@ -208,22 +196,25 @@ public class IndexSynchronizationManager {
         int addCount = 0;
         int deleteCount = 0;
 
-        List list = (List) requests.get();
-        for(Iterator i = ((List) requests.get()).iterator(); i.hasNext();) {
-            request = (Request) i.next();
+        List<Request> list = (List) requests.get();
+        List adds = new ArrayList();
+        for (int i=0; i<list.size(); ++i) {
+            request = list.get(i);
             obj = request.getObject();
             switch(request.getType()) {
             	case Request.TYPE_ADD: {
-            		luceneSession.addDocument((Document) obj);
+            		adds.add(obj);
             		addCount++;
             	    break;
-            	}case Request.TYPE_ADD_DOCS: {
-            		luceneSession.addDocuments((List) obj);
-            		addCount += ((List)obj).size();
-            	    break;
-            	}
+            	} 
             	case Request.TYPE_DELETE: {
-            	    if(obj instanceof String) {
+            		if (!adds.isEmpty()) {
+            			//flush out the current adds
+            			luceneSession.addDocuments(adds);
+            			adds = new ArrayList();
+            		}
+            	       
+            		if(obj instanceof String) {
             	        luceneSession.deleteDocument((String) obj);
             	    }
             	    else if(obj instanceof Term) {
@@ -237,7 +228,9 @@ public class IndexSynchronizationManager {
             	}
             }
         }
-        
+        //flush out remaining
+        if (!adds.isEmpty()) luceneSession.addDocuments(adds);
+   	        
         if(((Boolean) autoFlushTL.get()).booleanValue())
             luceneSession.flush();
         
@@ -254,7 +247,6 @@ public class IndexSynchronizationManager {
     private static class Request {
         private static final int TYPE_ADD		= 1;
         private static final int TYPE_DELETE	= 2;
-        private static final int TYPE_ADD_DOCS	= 3;
         
         private int type;
         private Object obj;
