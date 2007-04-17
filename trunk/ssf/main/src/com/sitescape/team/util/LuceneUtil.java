@@ -31,82 +31,130 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.FSDirectory;
 
 
+
 public class LuceneUtil {
+	
+	private static final int READSEARCH = 1;
+	private static final int READDELETE = 2;
+	private static final int WRITE = 3;
+	
+	private static int prevState = READSEARCH;
+	private static IndexWriter indexWriter = null;
+	private static IndexReader indexReader = null;
+	private static IndexSearcher indexSearcher = null;
 
-/* These methods are no longer supported
- * 
-	public static void addTerm(
-			BooleanQuery booleanQuery, String field, String text)
-		throws ParseException {
-
-		if (Validator.isNotNull(text)) {
-			if (text.indexOf(StringPool.SPACE) == -1) {
-				text = KeywordsUtil.toWildcard(text);
-			}
-
-			Query query = QueryParser.parse(text, field, new SimpleAnalyzer());
-
-			booleanQuery.add(query, false, false);
-		}
-	}
-
-	public static void addRequiredTerm(
-		BooleanQuery booleanQuery, String field, String text) {
-
-		text = KeywordsUtil.escape(text);
-
-		Term term = new Term(field, text);
-		TermQuery termQuery = new TermQuery(term);
-
-		booleanQuery.add(termQuery, true, false);
-	}
-*/
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
-		try {
-			return IndexReader.open(indexPath);
-		}
-		catch(IOException ioe) {
-			if(initializeIndex(indexPath)) {
-				return IndexReader.open(indexPath);
-			} else {
+		synchronized (LuceneUtil.class) {
+			switch(prevState) {
+			case (READSEARCH):
+			case (READDELETE):
+				if (indexReader != null) 
+					return indexReader;
+			case(WRITE): 
 				try {
-					// force unlock of the directory
-					IndexReader.unlock(FSDirectory.getDirectory(indexPath, false));
-					return IndexReader.open(indexPath);
-				} catch (IOException e) {
-					throw e;
+					indexWriter.close();	
+				} catch (Exception e) {} // don't care, just want it closed
+				indexWriter = null;
+				try {
+					if (indexReader != null) indexReader.close();
+					indexReader = IndexReader.open(indexPath);
+				} catch (IOException ioe) {
+					if (initializeIndex(indexPath)) {
+						indexReader =  IndexReader.open(indexPath);
+						return indexReader;
+					} else {
+						try {
+							// force unlock of the directory
+							IndexReader.unlock(FSDirectory.getDirectory(indexPath,
+									false));
+							indexReader = IndexReader.open(indexPath);
+						} catch (IOException e) {
+							throw e;
+						}
+					}
 				}
 			}
+			prevState = READDELETE;
 		}
+		return indexReader;
 	}
-
-	public static IndexSearcher getSearcher(String indexPath)
-			throws IOException {
-
-		try {
-			return new IndexSearcher(indexPath);
-		} catch (IOException e) {
-			if (initializeIndex(indexPath)) {
-				return new IndexSearcher(indexPath);
-			} else {
-				throw e;
+	
+	public static IndexSearcher getSearcher(String indexPath) throws IOException {
+		synchronized (LuceneUtil.class) {
+			switch(prevState) {
+			case (READSEARCH):
+			case (READDELETE):
+				if (indexSearcher != null) 
+					return indexSearcher;
+			case(WRITE): 
+				try {
+					indexWriter.close();
+				} catch (Exception e) {} // Don't care - just want the writer closed.
+				try {
+					indexSearcher = new IndexSearcher(indexPath);
+				} catch (IOException ioe) {
+					if (initializeIndex(indexPath)) {
+						indexSearcher = new IndexSearcher(indexPath);
+						return indexSearcher;
+					} else {
+						try {
+							// force unlock of the directory
+							IndexReader.unlock(FSDirectory.getDirectory(indexPath,
+									false));
+							indexSearcher = new IndexSearcher(indexPath);
+						} catch (IOException e) {
+							throw e;
+						}
+					}
+				}
 			}
+			prevState = READSEARCH;
 		}
+		return indexSearcher;
 	}
-
+	
+	public static IndexWriter getWriter(String indexPath, boolean create)
+			throws IOException {
+		synchronized (LuceneUtil.class) {
+			switch (prevState) {
+			case (WRITE):
+			case (READSEARCH):
+				if (indexWriter != null)
+					break;
+			case (READDELETE):
+				try {
+					indexWriter = new IndexWriter(indexPath, 
+						new SsfIndexAnalyzer(), create);
+				} catch (Exception ie) {
+					try {
+						// force unlock of the directory
+						IndexReader.unlock(FSDirectory.getDirectory(indexPath,
+								false));
+						indexWriter = new IndexWriter(indexPath, 
+								new SsfIndexAnalyzer(), create);
+					} catch (IOException e) {
+						throw e;
+					}
+				}
+				indexWriter.setUseCompoundFile(false);
+			}
+			
+			prevState = WRITE;
+		}
+		return indexWriter;
+	}
+	
 	public static IndexSearcher getSearcher(IndexReader reader) {
-		return new IndexSearcher(reader);
+		synchronized (LuceneUtil.class) {
+			indexSearcher =  new IndexSearcher(reader);
+			prevState = READSEARCH;
+		}
+		return indexSearcher;
 	}
 
 	public static IndexWriter getWriter(String indexPath) throws IOException {
 		return getWriter(indexPath, false);
-	}
-
-	public static IndexWriter getWriter(String indexPath, boolean create) throws IOException {
-		IndexWriter iw = new IndexWriter(indexPath, new SsfIndexAnalyzer(), create);
-		iw.setUseCompoundFile(false);
-		return iw;
 	}
 	
 	private static boolean initializeIndex(String indexPath) throws IOException {
@@ -121,6 +169,19 @@ public class LuceneUtil {
 				getWriter(indexPath, true);
 				return true;
 			}
+		}
+	}
+	public static void closeAll() {
+		synchronized(LuceneUtil.class) {
+			try {
+				indexWriter.close();
+			} catch (Exception we) {}
+			try {
+				indexReader.close();
+			} catch (Exception re) {}
+			try {
+				indexSearcher.close();
+			} catch (Exception se) {}
 		}
 	}
 }
