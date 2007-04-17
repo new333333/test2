@@ -162,7 +162,7 @@ public interface ObjectKeys {
     public static final String INPUT_FIELD_POSTING_FROM="__poster";
     public static final String INPUT_FIELD_ENTITY_ATTACHMENTS="ss_attachFile";
     public static final String INPUT_FIELD_GROUP_MEMBERNAME="memberName";
-
+    public static final String INPUT_FIELD_TAGS="_tags";
     //Reserved data field names
     public static final String FIELD_ID="id";
     public static final String FIELD_ZONE="zoneId";

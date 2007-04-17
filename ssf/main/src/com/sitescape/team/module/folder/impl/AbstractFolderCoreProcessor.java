@@ -110,7 +110,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     			// TODO (Roy, I believe this was your design idea, so please 
     			// verify that this strategy will indeed work). 
 
-    			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false);
+    			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false, null);
         		
         	}
            	// Need entry id before filtering 
