@@ -133,7 +133,6 @@
 	
 	
 	function ss_initSearchOptions() {
-	  if (!ss_searchMoreInitialized) {
 		<c:if test="${! empty filterMap.additionalFilters}">
 			<c:if test="${!empty filterMap.additionalFilters.workflow}">
 				<c:forEach var="block" items="${filterMap.additionalFilters.workflow}">
@@ -187,7 +186,14 @@
 			</c:if>
 			
 		</c:if>
-	  }
+		<c:if test="${empty filterMap.additionalFilters}">
+			ss_addOption('creation_date');
+			ss_addOption('modification_date');
+			ss_addOption('tag');
+			ss_addOption('workflow');
+			ss_addOption('creator_by_id');
+			ss_addOption('entry');
+		</c:if>	
 	  ss_searchMoreInitialized = true;
 	}
 
