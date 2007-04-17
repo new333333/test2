@@ -10,6 +10,9 @@
  *
  */
 %>
+<c:if test="${empty isDashboard}">
+	<c:set var="isDashboard" value="no"/>
+</c:if>
 		<ul id="ss_searchResult">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 			<li>
@@ -25,7 +28,7 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no"
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="${isDashboard}"
 									useBinderFunction="no">
 				
 									<ssf:param name="url" useBody="true">
@@ -71,7 +74,7 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
 									useBinderFunction="no">
 									
 									<ssf:param name="url" useBody="true">
@@ -124,11 +127,15 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId="menuimg_${entry._docId}_${renderResponse.namespace}" 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="permalink">
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
+									useBinderFunction="yes">
 									
 									<ssf:param name="url" useBody="true">
-										<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>
+									<ssf:url folderId="${entry._docId}" action="view_ws_listing" actionUrl="true">
+										<ssf:param name="binderId" value="${entry._binderId}"/>
+										<ssf:param name="entryId" value="${entry._docId}"/>
+										<ssf:param name="newTab" value="1"/>
+									</ssf:url>
 									</ssf:param>
 									<c:out value="${entry.title}"/>
 								</ssf:menuLink>
@@ -159,7 +166,7 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId="menuimg_${entry._docId}_${entry._fileID}_${renderResponse.namespace}" 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
 									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
 										<ssf:url webPath="viewFile" binderId="${entry._binderId}">
@@ -179,9 +186,12 @@
 							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
 							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
 							<p><ssf:nlt tag="searchResult.label.user" />:
-								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>"
-									class="ss_parentPointer"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${renderResponse.namespace}');">
+								<a href="<ssf:url folderId="${entry._docId}" action="view_ws_listing" actionUrl="true">
+										<ssf:param name="binderId" value="${entry._binderId}"/>
+										<ssf:param name="entryId" value="${entry._docId}"/>
+										<ssf:param name="newTab" value="1"/>
+									</ssf:url>"
+									class="ss_parentPointer">
 									<c:out value="${entry.title}"/>
 								</a>
 							</p>
@@ -189,28 +199,12 @@
 			</c:when>				    
 			<c:when test="${entry._entityType == 'group'}">
 						<div class="ss_thumbnail">
-							<c:if test="${!empty entry._fileID}"><img src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
-												<ssf:param name="fileId" value="${entry._fileID}"/>
-											    <ssf:param name="viewType" value="thumbnail"/>
-											    </ssf:url>" />
-							</c:if>
 							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/group_icon.gif"/></c:if>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
 								<h3 class="ss_entryTitle">
-								<ssf:menuLink 
-									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-									entityType="${entry._entityType}" imageId="menuimg_${entry._docId}_${renderResponse.namespace}" 
-							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
-									useBinderFunction="no">
-									<ssf:param name="url" useBody="true">
-								    	<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" entryId="${entry._docId}" 
-					      					action="view_group" actionUrl="true" />
-									</ssf:param>
 									<c:out value="${entry.title}"/>
-								</ssf:menuLink>
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
@@ -244,7 +238,7 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
 									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
 										<ssf:url folderId="${entry._docId}" action="view_folder_listing" />
@@ -283,7 +277,7 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
 									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
 										<ssf:url folderId="${entry._docId}" action="view_ws_listing" />
@@ -322,7 +316,7 @@
 									displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="no"
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
 									useBinderFunction="no">
 									<ssf:param name="url" useBody="true">
 										<ssf:url folderId="${entry._docId}" binderId="${entry._docId}" action="view_profile_listing" />
