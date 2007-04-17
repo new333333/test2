@@ -3619,15 +3619,32 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 /*
 	Search styles / start
 */
-#ss_tab_content {padding:6px 6px 12px 6px;}
-#ss_tabs_container {border-left:1px solid #cccccc;border-right:1px solid #cccccc;border-bottom:1px solid #cccccc;}
+#ss_tab_content {
+	padding:6px 6px 12px 6px;
+}
+#ss_tabs_container {
+	border-left: 1px solid #cccccc;
+	border-right:1px solid #cccccc;
+	border-bottom:1px solid #cccccc;
+	position:relative;
+	<c:if test="<%= isIE %>">
+	    top:-3px;
+	</c:if>
+	<c:if test="<%= !isIE %>">
+	    top:-2px;
+	</c:if>
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
 
-#ss_rankings { float: left; width: 215px;}
+#ss_rankings { 
+	width: 215px;
+	vertical-align: top;
+}
 #ss_content_container {
-    float: right;
-    width: 508px;
-    padding:0px;
-    margin:0px;
+    padding:0 0 0 15px;
+    margin:0;
 }
 div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;}
 #ss_content { 
@@ -3665,6 +3682,7 @@ a.ss_searchButton img {
 	vertical-align: bottom;
 }
 
+
 a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
 	background: transparent url(<html:imagesPath/>pics/search_icons.gif) no-repeat top left; 
 }
@@ -3684,26 +3702,32 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	margin:0px 0px 0px 0px;
 }
 
-#ss_searchResult li {
-	border-bottom: 1px solid #cccccc;
-	display:block;
-	margin:12px 12px 12px 12px;
-}
 #ss_searchResult {
 	margin:12px 0px 0px 0px;
 	padding:0px;
+	zoom: 1; // a workaround IE bug - parent border disappears
 }
+#ss_searchResult li {
+	border-bottom: 1px solid #cccccc;
+	display:block;
+	margin:12px 12px 12px 12px;	
+}
+
 #ss_searchResult_header {
 	border-bottom: 1px solid #afc8e3;	
 	margin-bottom:24px;
 	padding:6px 24px 6px 12px;
+	zoom: 1; // a workaround IE bug - parent border disappears
 }
 #ss_searchResult_numbers {float:left;}
 #ss_paginator {float:right;}
 
 div.ss_thumbnail {float: left; width:62px; text-align:center;}
 div.ss_thumbnail img {width:50px;height:50px;padding:0px; margin:0px;}
-div.ss_entry {float: left; width:418px;}
+div.ss_entry {
+	float: left;
+	width: 400px;
+}
 h3.ss_entryTitle {float:left;margin:0px;}
 h3.ss_entryTitle a:link, h3.ss_entryTitle a:hover, h3.ss_entryTitle a:visited, h3.ss_entryTitle a:active, h3.ss_entryTitle a {
 	color: #0000FF;
