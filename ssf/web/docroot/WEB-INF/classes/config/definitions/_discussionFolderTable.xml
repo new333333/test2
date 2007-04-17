@@ -52,6 +52,6 @@
   <properties>
     <property name="name" value="_discussionFolderTable"/>
     <property name="caption" value="__definition_default_folder_discussion_table"/>
-    <property name="icon" value="/icons/folder_blue_document.gif"/>
+    <property name="icon" value="/icons/folder_blue_discussion.gif"/>
   </properties>
 </definition>
