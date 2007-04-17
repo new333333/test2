@@ -168,8 +168,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (tabId < 0) {
 			if (!options.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
 			if (!options.containsKey(Tabs.TAB_SEARCH_TEXT))options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
-			options.put(Tabs.TYPE, "search");
-			int newTabId = tabs.addTab(DocumentHelper.createDocument(), options);
+			options.put(Tabs.TYPE, Tabs.SEARCH);
+			int newTabId = tabs.findTab(DocumentHelper.createDocument(), options);
 			tabs.setCurrentTab(newTabId);
 		}		
 		Map model = new HashMap();
