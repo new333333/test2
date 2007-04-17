@@ -136,20 +136,21 @@ public class AdvancedSearchController extends AbstractBinderController {
 		int pageNo = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 1);
 		int defaultMaxOnPage = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) defaultMaxOnPage = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
-		int maxOnPage = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, defaultMaxOnPage);
+		int[] maxOnPageArr = PortletRequestUtils.getIntParameters(request, WebKeys.SEARCH_FORM_MAX_HITS);
+		int maxOnPage = defaultMaxOnPage;
+		if (maxOnPageArr.length >0) maxOnPage = maxOnPageArr[0];
 		int userOffset = (pageNo - 1) * maxOnPage;
-		Integer summaryWords = null;
-		if (options.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) {
-			summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
-		} else {
-			summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, 20);
-		}
+		int[] summaryWords = PortletRequestUtils.getIntParameters(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS);
+		int summaryWordsCount = 20;
+		if (options.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) { summaryWordsCount = (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS);}
+		if (summaryWords.length > 0) {summaryWordsCount = summaryWords[0];}
+		
 		Integer searchLuceneOffset = 0;
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
 		options.put(WebKeys.URL_PAGE_NUMBER, pageNo);
-		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWordsCount);
 		
 	}
 	private Map getOptionsFromTab(Map tab) {
@@ -185,7 +186,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map model = new HashMap();
 		model.put(WebKeys.TABS, tabs.getTabs());
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
-		model.put(WebKeys.SEARCH_FORM_MAX_HITS, options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("quickSearch", false);
 		
 		return model;
@@ -224,7 +225,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// this function puts also proper part of entries list into a model
 		preparePagination(model, results, options);
 		
-		model.put(WebKeys.SEARCH_FORM_MAX_HITS, options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 
 		// TODO implement - get values from user setup? options?
