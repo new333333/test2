@@ -28,7 +28,7 @@
 			</div>
 			<div id="ss_paginator"> 
 			
-			<c:if test="${empty dashboardResult || dashboardResult == 0}">
+			<c:if test="${empty isDashboard || isDashboard == no}">
 				<c:if test="${ss_pageNumber > 1}">
 					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
 				</c:if>
