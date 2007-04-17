@@ -113,6 +113,7 @@ function ss_initSearchOptions() {
 				ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValues}");
 			</c:forEach>
 		</c:if>
+		
 		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.workflow}">
 			ss_addOption('workflow');
 		</c:if>
@@ -131,8 +132,15 @@ function ss_initSearchOptions() {
 		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">
 			ss_addOption('entry');
 		</c:if>
-		
 	</c:if>
+	<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters}">
+		ss_addOption('creation_date');
+		ss_addOption('modification_date');
+		ss_addOption('tag');
+		ss_addOption('workflow');
+		ss_addOption('creator_by_id');
+		ss_addOption('entry');
+	</c:if>		
 	  ss_searchMoreInitialized = true;
 }	
 
