@@ -31,11 +31,15 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	</td>
 
 	<td valign="top">
+	
+	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		<% if (isAppletSupported) { %>
 			<a class="ss_linkButton ss_tinyControl" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;">
 				<ssf:nlt tag="entry.AttachFilesByApplet"/>
 			</a>
 		<% } %>
+	</c:if>	
+		
 
 	<% if (isIE) { %>
 		<c:if test="${ss_folderViewStyle == 'blog'}">
@@ -51,9 +55,13 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 		</c:if>
 	<% } %>
 	
+	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+
 		<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;">
 			<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
 		</a>
+	
+	</c:if>
 	
 		<div id="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" width="1px" height="1px" name="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" style="visibility:hidden;display:none;">
 			<div align="right">

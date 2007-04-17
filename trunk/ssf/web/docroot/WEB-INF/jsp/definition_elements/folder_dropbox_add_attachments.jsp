@@ -43,6 +43,9 @@ function ss_onAppletLoad${ssBinderId}${ss_namespace}() {
 	ss_hideLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}();
 	ss_showFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}();
 	ss_showFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}();
+	
+	var appletObj = document.getElementById('folderdropboxobj${ssBinderId}${ss_namespace}');
+	if (appletObj != null) appletObj.focus();
 }
 
 //Function to be called when the files start loading
@@ -120,7 +123,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			</div>
 			
 			<c:if test="<%= isIE %>">
-			<object id="folderdropboxobj" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
+			<object id="folderdropboxobj${ssBinderId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
 			  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
 			  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
@@ -135,7 +138,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME ="ARCHIVE" VALUE = "droptarget/ssf-droptarget-applet.jar" />
 			    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
 			    <param name = "scriptable" value="true" />
-			    <PARAM NAME = "NAME" VALUE = "folderdropboxobj" />
+			    <PARAM NAME = "NAME" VALUE = "folderdropboxobj${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "startingDir" VALUE=""/>
 			    <PARAM NAME = "reloadFunctionName" VALUE="ss_hideFolderDropTarget${ssBinderId}${ss_namespace}"/>
 			    <PARAM NAME = "bgcolorFunctionName" VALUE="getFolderAppletBgColor${ssBinderId}${ss_namespace}"/>

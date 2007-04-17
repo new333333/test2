@@ -45,6 +45,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
@@ -1634,10 +1635,45 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
+
+		setAccessControlForAttachmentList(model, entry, user);
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/view_entry_attachments_ajax", model);
-	}	
+	}
+	
+	private void setAccessControlForAttachmentList(Map model, FolderEntry entry, User user) {
+
+		Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
+
+		boolean reserveAccessCheck = false;
+		boolean isUserBinderAdministrator = false;
+		boolean isEntryReserved = false;
+		boolean isLockedByAndLoginUserSame = false;
+
+		if (getFolderModule().testAccess(entry, "reserveEntry")) {
+			reserveAccessCheck = true;
+		}
+		if (getFolderModule().testAccess(entry, "overrideReserveEntry")) {
+			isUserBinderAdministrator = true;
+		}
+		
+		HistoryStamp historyStamp = entry.getReservation();
+		if (historyStamp != null) isEntryReserved = true;
+
+		if (isEntryReserved) {
+			Principal lockedByUser = historyStamp.getPrincipal();
+			if (lockedByUser.getId().equals(user.getId())) {
+				isLockedByAndLoginUserSame = true;
+			}
+		}		
+		if (getFolderModule().testAccess(entry, "modifyEntry")) {
+			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+			} else {
+				accessControlEntryMap.put("modifyEntry", new Boolean(true));
+			}
+		}
+	}
 
 	private ModelAndView openWebDAVFile(RenderRequest request, 
 			RenderResponse response) throws Exception {
