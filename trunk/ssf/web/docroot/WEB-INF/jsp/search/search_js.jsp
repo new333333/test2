@@ -239,7 +239,7 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 		dojo.widget.createWidget("DropDownDatePicker", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 	else 
-		dojo.widget.createWidget("DropDownDatePicker", {value:'today', lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+		dojo.widget.createWidget("DropDownDatePicker", {value:'', lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 	
 }
