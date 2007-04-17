@@ -921,11 +921,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		converter = textConverterManager.getConverter();
 		
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
-		relativeFilePath = fa.getId() + File.separator + fa.getFileItem().getName();
+		relativeFilePath = fa.getFileItem().getName();
 		
 		// Determine the location in cache to store files we are going to process an make the directories
 		// that are required if they don't exist
-		filePath = FilePathUtil.getFilePath(binder, entity, TEXT_SUBDIR, relativeFilePath);
+		filePath = FilePathUtil.getFilePath(binder, entity, fa, TEXT_SUBDIR, relativeFilePath);
 		textfile = cacheFileStore.getFile(filePath);
 		// If the output file's parent directory doesn't already exist, create it.
 		File parentDir = textfile.getParentFile();
