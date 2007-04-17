@@ -13,6 +13,8 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<!-- h1> MODIFY DASHBOARD COMPONENT </h1 -->
+
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
 <div class="ss_rounded">
@@ -23,7 +25,7 @@
   action="<portlet:actionURL>
       <portlet:param name="action" value="modify_dashboard"/>
       <portlet:param name="binderId" value="${ssBinder.id}"/>
-      </portlet:actionURL>">
+      </portlet:actionURL>" name="${ssSearchFormForm}" id="${ssSearchFormForm}">
 
 <div class="ss_form ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" 
