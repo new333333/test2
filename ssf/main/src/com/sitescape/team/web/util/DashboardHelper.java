@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.RenderRequest;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -53,6 +54,7 @@ import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
@@ -759,10 +761,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				searchQuery.addElement(FilterHelper.FilterRootName);		
 			}
 		}
-		Map elementData = BinderHelper.getCommonEntryElements();
-		searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, 
-				FilterHelper.buildFilterFormMap(searchQuery,
-						elementData));
+		
+		// Map elementData = BinderHelper.getCommonEntryElements();
+		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
+		searchSearchFormData.put(AdvancedSearchController.SearchFilterMap, AdvancedSearchController.convertedToDisplay(searchQuery));
+		AdvancedSearchController.prepareAdditionalFiltersData(searchSearchFormData, getDefinitionModule());
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
@@ -815,10 +818,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}		
 		Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 		List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-		entries = BinderHelper.filterEntryAttachmentResults(entries);
+		// entries = BinderHelper.filterEntryAttachmentResults(entries);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 		Integer searchCount = (Integer)retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);
 		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
+		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, (Integer)retMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
 		//Also get the folder titles
 		Set ids = new HashSet();
 		Iterator itEntries = entries.iterator();
@@ -852,7 +856,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				searchSearchFormData.put(WebKeys.GUESTBOOK_BINDER, fBinder);					
 			}
 		}
-		
+	
     }
     protected void searchResultsToXml(Element parent, Map data) {
 		Element child;
@@ -991,9 +995,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				    ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName)) {
 					//Get the search query
 					try {
-						Document query = FilterHelper.getSearchFilter(request);
+						// Document query = FilterHelper.getSearchFilter(request);
+						Document query = AdvancedSearchController.getSearchQuery(request);
 						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-					} catch(Exception ex) {}
+					} catch(Exception ex) {
+						System.out.println("EX:"+ex);
+						
+					}
 				} else if (componentMap.get(DashboardHelper.Name).
 						equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					if (componentData.containsKey("users")) {
