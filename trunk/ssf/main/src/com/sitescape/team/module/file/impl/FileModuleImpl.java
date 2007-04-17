@@ -329,6 +329,14 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			triggerUpdateTransaction();
 		}
 				
+		String faPath = FilePathUtil.getFileAttachmentDirPath(binder, entry, fAtt);
+		try {
+			cacheFileStore.deleteDirectory(faPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the file attachment's cache directory [" +
+					cacheFileStore.getAbsolutePath(faPath) + "]", e);
+		}
 		
 		return errors;
 	}
@@ -357,7 +365,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	
 	public boolean scaledFileExists(Binder binder, 
 			DefinableEntity entry, FileAttachment fAtt) {
-		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fAtt.getFileItem().getName());
+		String filePath = FilePathUtil.getFilePath(binder, entry, fAtt, SCALED_SUBDIR, fAtt.getFileItem().getName());
 		if(cacheFileStore.fileExists(filePath)) {
 			return true;
 		}
@@ -396,7 +404,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		else
 			relativeFilePath = fa.getFileItem().getName();
 		
-		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
+		String filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, relativeFilePath);
 		if(!cacheFileStore.fileExists(filePath))
 		{
 			generateThumbnailFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, 0);
@@ -421,7 +429,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		else
 			relativeFilePath = fa.getFileItem().getName();
 		
-		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+		String filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, relativeFilePath);
 		if(!cacheFileStore.fileExists(filePath)) {			
 				generateThumbnailFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, 0);
 				generateScaledFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
@@ -456,7 +464,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			// See if we already have a cached version of file.
 			// The cached version of the file will have an HTML extension as opposed to the original file extension
 			// such as (DOC, PPT, etc). We need to change the filename to reflect this.
-			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, fa.getFileItem().getName());
 			filePath = filePath.substring(0, filePath.lastIndexOf('.')) + HTML_FILE_SUFFIX;
 			htmlFile = cacheFileStore.getFile(filePath);
 			
@@ -509,7 +517,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		
 		try
 		{
-			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + urlFileName);
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, urlFileName);
 			urlFile = cacheFileStore.getFile(filePath);
 						
 			is = new FileInputStream(urlFile);
@@ -554,7 +562,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		
 		try
 		{
-			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + imageFileName);
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, imageFileName);
 			imageFile = cacheFileStore.getFile(filePath);
 
 			// Process Image file
@@ -613,7 +621,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			else
 				relativeFilePath = fa.getFileItem().getName();
 			
-			filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, relativeFilePath);
 			scaledfile = cacheFileStore.getFile(filePath);
 			// If the output file's parent directory doesn't already exist, create it.
 			File parentDir = scaledfile.getParentFile();
@@ -621,7 +629,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				parentDir.mkdirs();
 			
 			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
-			filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fa.getFileItem().getName());
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, fa.getFileItem().getName());
 			originalFile = cacheFileStore.getFile(filePath);
 			fos = new FileOutputStream(originalFile);
 			FileCopyUtils.copy(is, fos);
@@ -680,7 +688,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			else
 				relativeFilePath = fa.getFileItem().getName();
 			
-			filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, relativeFilePath);
 			thumbfile = cacheFileStore.getFile(filePath);
 			// If the output file's parent directory doesn't already exist, create it.
 			File parentDir = thumbfile.getParentFile();
@@ -688,7 +696,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				parentDir.mkdirs();
 			
 			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
-			filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fa.getFileItem().getName());
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, fa.getFileItem().getName());
 			originalFile = cacheFileStore.getFile(filePath);
 			fos = new FileOutputStream(originalFile);
 			FileCopyUtils.copy(is, fos);
@@ -754,7 +762,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		{
 			relativeFilePath = fa.getFileItem().getName();
 			
-			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
+			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, relativeFilePath);
 			htmlfile = cacheFileStore.getFile(filePath);
 			// If the output file's parent directory doesn't already exist, create it.
 			File parentDir = htmlfile.getParentFile();
@@ -772,7 +780,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				try
 				{
 					is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
-					filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + relativeFilePath);
+					filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, relativeFilePath);
 					originalFile = cacheFileStore.getFile(filePath);
 					fos = new FileOutputStream(originalFile);
 					FileCopyUtils.copy(is, fos);
@@ -1254,44 +1262,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				// Even if we failed to delete the primary file, we still proceed
 				// to deleting generated files. 
 			}
-
-			// Currently file module does not maintain metadata about "generated"
-			// files, which unfortunately, leads to this clumsy and not-so-precise
-			// attempt at deleting those generated files. However, storing too
-			// much metadata has its own share of problems. So...
-			
-			// Try deleting scaled file if exists
-			try {
-				String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fAtt.getFileItem().getName());
-				if(cacheFileStore.fileExists(filePath)) {
-					cacheFileStore.deleteFile(filePath);
-				}
-			}
-			catch(Exception e) {
-				logger.error("Error deleting scaled copy of " + relativeFilePath, e);
-				errors.addProblem(new FilesErrors.Problem
-						(repositoryName, relativeFilePath, 
-								FilesErrors.Problem.PROBLEM_DELETING_SCALED_FILE, e));
-				// Since we successfully deleted the primary file above (which
-				// indicates that at least the repository seems up and running),
-				// let's not the failure to delete generated file to abort the
-				// entire operation. So we proceed. 
-			}
-
-			// Try deleting thumbnail file if exists
-			try {
-				String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fAtt.getFileItem().getName());
-				if(cacheFileStore.fileExists(filePath)) {
-					cacheFileStore.deleteFile(filePath);
-				}
-			}
-			catch(Exception e) {
-				logger.error("Error deleting thumbnail copy of " + relativeFilePath, e);
-				errors.addProblem(new FilesErrors.Problem
-						(repositoryName, relativeFilePath, 
-								FilesErrors.Problem.PROBLEM_DELETING_THUMBNAIL_FILE, e));
-				// We proceed and update metadata.
-			}
 		} finally {
 			session.close();
 		}
@@ -1546,6 +1516,24 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     			return false;
     		}		
 
+	    	// Update metadata - We do this only after successfully writing
+	    	// the file to the repository to ensure that our metadata describes
+	    	// what actually exists. Of course, there could be a failure scenario
+	    	// where this metadata update fails leaving the file dangling in the
+	    	// repository. But that is expected to be a lot more rare, and not
+	    	// quite as destructive as the other case. But the bottom line is, 
+	    	// unless we have a single transaction that spans both repository
+	    	// update and database update all within a single unit, there will
+	    	// always be error cases that can leave the data inconsistent. 
+	    	// When a repository supports JCA, this should be possible to do
+	    	// using JTA. But that's not always available, and this version of
+	    	// the system does not try to address that. 
+	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
+	    	
+	    	// We can generate cache files only after successful transaction
+	    	// on the metadata, since the cache store relies on the persistent
+	    	// id of the file attachment object.
+	    	
     		// Scaled file
         	// Generate scaled file which goes into the same repository as
     		// the primary file except that the generated file is not versioned.
@@ -1591,25 +1579,13 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     					(repositoryName, relativeFilePath, 
     							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
     		}
+      	
+	    	return true;
     	}
     	finally {
     		session.close();
     	}
-    	
-    	// Finally update metadata - We do this only after successfully writing
-    	// the file to the repository to ensure that our metadata describes
-    	// what actually exists. Of course, there could be a failure scenario
-    	// where this metadata update fails leaving the file dangling in the
-    	// repository. But that is expected to be a lot more rare, and not
-    	// quite as destructive as the other case. But the bottom line is, 
-    	// unless we have a single transaction that spans both repository
-    	// update and database update all within a single unit, there will
-    	// always be error cases that can leave the data inconsistent. 
-    	// When a repository supports JCA, this should be possible to do
-    	// using JTA. But that's not always available, and this version of
-    	// the system does not try to address that. 
-    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
-    	return true;
+
     }
     
     private void writeExistingFile(RepositorySession session,
@@ -1945,7 +1921,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 
-			String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
+			String filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, relativeFilePath);
 
 			try {
 				cacheFileStore.writeFile(filePath, baos.toByteArray());
@@ -1971,7 +1947,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 		}
 
-		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+		String filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, relativeFilePath);
 
 		try {
 			cacheFileStore.writeFile(filePath, baos.toByteArray());

@@ -15,6 +15,7 @@ import java.io.File;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
 
 public class FilePathUtil {
 	
@@ -45,6 +46,16 @@ public class FilePathUtil {
 	public static String getFilePath(Binder binder, DefinableEntity entity,
 			String subdirName, String fileName) {
 		return getFilePathInternal(binder, entity, subdirName, fileName).toString();
+	}
+
+	public static String getFilePath(Binder binder, DefinableEntity entity,
+			FileAttachment fa, String fileName) {
+		return getFilePathInternal(binder, entity, fa, fileName).toString();
+	}
+
+	public static String getFilePath(Binder binder, DefinableEntity entity,
+			FileAttachment fa, String subdirName, String fileName) {
+		return getFilePathInternal(binder, entity, fa, subdirName, fileName).toString();
 	}
 	
 	/**
@@ -90,43 +101,83 @@ public class FilePathUtil {
 		return getEntitySubdirPathInternal(binder, entity, subdirName).toString();
 	}
 	
-	private static StringBuffer getEntitySubdirPathInternal(Binder binder, 
+	public static String getFileAttachmentDirPath(Binder binder, 
+			DefinableEntity entity, FileAttachment fa) {
+		return getFileAttachmentDirPathInternal(binder, entity, fa).toString();
+	}
+	
+	private static StringBuilder getEntitySubdirPathInternal(Binder binder, 
 			DefinableEntity entity, String subdirName) {
 		return getEntityDirPathInternal(binder, entity).
 		append(subdirName).
 		append(File.separatorChar);
 	}
 	
-	private static StringBuffer getBinderDirPathInternal(Binder binder) {
+	private static StringBuilder getFileAttachmentSubdirPathInternal(Binder binder, 
+			DefinableEntity entity, FileAttachment fa, String subdirName) {
+		return getFileAttachmentDirPathInternal(binder, entity, fa).
+		append(subdirName).
+		append(File.separatorChar);
+	}
+	
+	private static StringBuilder getFileAttachmentDirPathInternal(Binder binder, 
+			DefinableEntity entity, FileAttachment fa) {
+		String faId = fa.getId();
+		if(faId == null)
+			throw new IllegalStateException("File attachment should have an id");
+		
+		return getEntityDirPathInternal(binder, entity)
+		.append(faId)
+		.append(File.separatorChar);
+	}
+	
+	private static StringBuilder getBinderDirPathInternal(Binder binder) {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		
+		Long binderId = binder.getId();
+		if(binderId == null)
+			throw new IllegalStateException("Binder must have an id");
 		
 		// For better scalability, each binder is represented as two-level 
 		// directories on the file system, where the binders are grouped
 		// into chunks of size 1000.
-		return new StringBuffer(zoneName).
+		return new StringBuilder(zoneName).
 			append(File.separator).
-			append(binder.getId()/1000).		
+			append(binderId.longValue()/1000).		
 			append(File.separator).
-			append(binder.getId()).
+			append(binderId).
 			append(File.separator);
 	}
 	
-	private static StringBuffer getEntityDirPathInternal(Binder binder, DefinableEntity entity) {
+	private static StringBuilder getEntityDirPathInternal(Binder binder, DefinableEntity entity) {
+		String id = entity.getTypedId();
+		if(id == null)
+			throw new IllegalStateException("Entity must have an id");
+		
 		return getBinderDirPathInternal(binder).
-			append(entity.getTypedId()).
+			append(id).
 			append(File.separator);
 	}
 	
-	private static StringBuffer getFilePathInternal(Binder binder, DefinableEntity entity,
+	private static StringBuilder getFilePathInternal(Binder binder, DefinableEntity entity,
 			String fileName) {
 		return getEntityDirPathInternal(binder, entity).append(fileName);
 	}
 	
-	private static StringBuffer getFilePathInternal(Binder binder, DefinableEntity entity,
+	private static StringBuilder getFilePathInternal(Binder binder, DefinableEntity entity,
 			String subdirName, String fileName) {
 		return getEntitySubdirPathInternal(binder, entity, subdirName).append(fileName);
 	}
 	
+	private static StringBuilder getFilePathInternal(Binder binder, DefinableEntity entity,
+			FileAttachment fa, String fileName) {
+		return getFileAttachmentDirPathInternal(binder, entity, fa).append(fileName);
+	}
+	
+	private static StringBuilder getFilePathInternal(Binder binder, DefinableEntity entity,
+			FileAttachment fa, String subdirName, String fileName) {
+		return getFileAttachmentSubdirPathInternal(binder, entity, fa, subdirName).append(fileName);
+	}
 	
 	public static void main(String[] args) {
 		System.out.println("-1001: " + (-1001/1000));
