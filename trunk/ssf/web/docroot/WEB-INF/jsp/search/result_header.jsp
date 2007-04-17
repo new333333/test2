@@ -27,6 +27,8 @@
 				</c:choose>
 			</div>
 			<div id="ss_paginator"> 
+			
+			<c:if test="${empty dashboardResult || dashboardResult == 0}">
 				<c:if test="${ss_pageNumber > 1}">
 					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
 				</c:if>
@@ -34,6 +36,22 @@
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
 					<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
 				</c:if>
+			</c:if>
+			<c:if test="${dashboardResult == 1}">
+				<c:if test="${ssDashboard.scope != 'portlet'}">
+					<c:set var="binderId" value="${ssBinder.id}"/>
+				</c:if>
+				<c:if test="${ssDashboard.scope == 'portlet'}">
+					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+				</c:if>
+				<c:if test="${ss_pageNumber > 0}">
+					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search'); return false;" />
+				</c:if>
+				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
+				<c:if test="${ssPageEndIndex < ssTotalRecords}">
+					<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search'); return false;" />
+				</c:if>
+			</c:if>
 			</div>
 			<div class="ss_clear"></div>
 		</div>
