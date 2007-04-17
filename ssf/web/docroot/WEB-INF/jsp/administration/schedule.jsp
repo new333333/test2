@@ -20,7 +20,7 @@
     <input type="radio" name="minuteType" id="minuteType" value="repeat" <c:if test="${schedule.repeatMinutes}">checked</c:if>/>
    <span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
    <input type="text" class="ss_text" name="minutesRepeat" id="minutesRepeat" size="2" value="${schedule.minutesRepeat}"/>
-  	&nbsp;<ssf:nlt tag="schedule.minutes"/>
+  	&nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.minutes"/></span>
   	<br/>
     <input type="radio" name="minuteType" id="minuteType" value="absolute" <c:if test="${!schedule.repeatMinutes}">checked</c:if>/>
     <span class="ss_labelRight"><ssf:nlt tag="schedule.atminutes"/></span>
@@ -30,7 +30,7 @@
     <input type="radio"  name="hourType" id="hourType" value="repeat" <c:if test="${schedule.repeatHours}">checked</c:if>/>
     <span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
   <input type="text" class="ss_text"  name="hoursRepeat" id="hoursRepeat" size="2" value="${schedule.hoursRepeat}"/>
-  &nbsp;<ssf:nlt tag="schedule.hours"/>
+  &nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.hours"/></span>
   <br/>
    <input type="radio"  name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>
    <span class="ss_labelRight"><ssf:nlt tag="schedule.athours"/></span>
