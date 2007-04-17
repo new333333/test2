@@ -26,7 +26,7 @@
 </div>
 <script type="text/javascript">
 // Init empty additional options
-function init() {
+function ss_initSearchOptions() {
 	if (!ss_searchMoreInitialized) {
 		ss_addOption('workflow');
 		ss_addOption('entry');

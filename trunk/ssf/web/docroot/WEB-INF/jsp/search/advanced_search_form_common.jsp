@@ -82,10 +82,13 @@
 					<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>
+			<div style="text-align: right; padding: 10px;">
+				<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a> <ssf:nlt tag="searchForm.button.label"/>	
+			</div>
 		</div>
 		<div id="ss_buttonBar">
 			<input type="hidden" name="operation" value="ss_searchResults"/>
 			<input type="hidden" name="searchNumbers" id="searchNumbers" value=""/>		
-			<input type="hidden" name="searchTypes" id="searchTypes" value=""/>		
+			<input type="hidden" name="searchTypes" id="searchTypes" value=""/>
 		</div>
 	</div>
