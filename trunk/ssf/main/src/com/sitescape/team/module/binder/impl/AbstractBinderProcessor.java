@@ -742,7 +742,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {
-   		indexBinder(binder, null, null, false);    	
+    	//call overloaded methods
+   		indexBinder(binder, includeEntries, true);    	
     }
     protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex) {
    		indexBinder(binder, null, null, !deleteIndex);    	
