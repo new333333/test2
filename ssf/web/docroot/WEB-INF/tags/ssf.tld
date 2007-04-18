@@ -496,6 +496,24 @@
 			<type>java.lang.String</type>
 		</attribute>
 	</tag>
+
+	<tag>
+		<name>isFileEditorConfiguredForOS</name>
+		<tag-class>com.sitescape.team.taglib.IsFileEditorConfiguredForOS</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>relativeFilePath</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+		<attribute>
+			<name>operatingSystem</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
 	
 	<tag>
 		<name>ifSupportsViewAsHtml</name>

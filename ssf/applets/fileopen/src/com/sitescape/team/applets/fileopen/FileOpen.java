@@ -79,6 +79,8 @@ public class FileOpen extends JApplet implements Runnable {
                         String [] command;
                         //String strOperSystem = "windows";
                         
+                        //System.out.println("TESTING the Editor Type: Using This: " + strEditorType[i]);
+                        
                         if (strOperatingSystem.equalsIgnoreCase("windows")) {
                        	 	command =  new String[4];
                             command[0] = "cmd";
@@ -89,7 +91,8 @@ public class FileOpen extends JApplet implements Runnable {
                         	command =  new String[3];
                             command[0] = "bash";
                             command[1] = "-c";
-                            command[2] = "ooffice " + "'"+strReplacedURL+"'";
+                            //command[2] = "ooffice " + "'"+strReplacedURL+"'";
+                            command[2] = strEditorType[i] + " '"+strReplacedURL+"'";
                         } else {
                         	System.out.println("Operating System " + strOperatingSystem + " not Handled!");
                         	return;
