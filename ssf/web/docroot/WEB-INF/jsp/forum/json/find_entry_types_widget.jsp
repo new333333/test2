@@ -15,6 +15,6 @@
 <% // This is JSON type AJAX response  %>
 {
 <c:forEach var="entryType" items="${ssEntry}" varStatus="status">
-	"<ssf:escapeJavaScript value="${entryType.id}"/>":"<ssf:escapeJavaScript value="${entryType.name}"/>"<c:if test="${!status.last}">,</c:if>
+	"<ssf:escapeJavaScript value="${entryType.id}"/>":"<ssf:nlt tag="${entryType.title}"/>"<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 }
