@@ -17,6 +17,7 @@
 	Map ssFolderColumns = (Map) ssUserFolderProperties.getProperty("userFolderColumns");
 	if (ssFolderColumns == null) {
 		ssFolderColumns.put("title", "title");
+		ssFolderColumns.put("state", "state");
 		ssFolderColumns.put("author", "author");
 		ssFolderColumns.put("date", "date");
 	}
