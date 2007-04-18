@@ -27,7 +27,9 @@ renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intVa
 String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String menuDivWidth = "300px";
 
+Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request));
 %>
+<c:set var="isWebdavSupported" value="<%= webdavSupported %>"/>
 <script type="text/javascript">
 var ss_userSkin = "${ss_user_skin}";
 </script>
@@ -85,6 +87,7 @@ var ss_userSkin = "${ss_user_skin}";
 	        <c:if test="${toolbarMenuCategoryItem.value.qualifiers.popup}">
 	          <c:set var="popup" value="true"/>
 	        </c:if>
+	        <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.folder || (!empty toolbarMenuCategoryItem.value.qualifiers.folder && isWebdavSupported)}">
 	        <li>
 	          <c:choose>
 	            <c:when test="${!empty toolbarMenuCategoryItem.value.url}">
@@ -130,6 +133,7 @@ var ss_userSkin = "${ss_user_skin}";
 	          </c:if>
 	          ><c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
+	        </c:if>
 	      </c:forEach>
        </c:forEach>
       </ul>
@@ -149,6 +153,7 @@ var ss_userSkin = "${ss_user_skin}";
       </c:if>
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
+	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
 	      <li><a href="${toolbarMenu.value.url}"
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
 <%
@@ -197,9 +202,11 @@ var ss_userSkin = "${ss_user_skin}";
 	      <c:if test="${empty toolbarMenu.value.qualifiers.icon}">
 		      	<c:out value="${toolbarMenu.value.title}" />
 		  </c:if>
-	        </span></a></li>
+	      </span></a></li>
+	      </c:if>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
+	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
 	      <li><a href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
@@ -235,6 +242,7 @@ var ss_userSkin = "${ss_user_skin}";
 	      </c:if>
 	 	  ><c:out 
 	 	    value="${toolbarMenu.value.title}" /></span></a></li>
+	 	  </c:if>
 	    </c:when>
 	    <c:otherwise>
 	      <li><a href=""><span
