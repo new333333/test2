@@ -51,7 +51,8 @@
 				
 				<c:if test="${!empty entry._desc}">
 				<div class="ss_entryContent">
-					<span><ssf:markup type="view"><c:out 
+					<span><ssf:markup type="view" entryId="${entry._docId}" 
+					binderId="${entry._binderId}"><c:out 
 					  value="${entry._desc}" escapeXml="false"/></ssf:markup></span>
 				</div>
 				</c:if>
