@@ -75,7 +75,7 @@
 									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
-									useBinderFunction="no">
+									useBinderFunction="no" isFile="yes">
 									
 									<ssf:param name="url" useBody="true">
 										<ssf:url webPath="viewFile" binderId="${entry._binderId}">
@@ -167,7 +167,7 @@
 									entityType="${entry._entityType}" imageId="menuimg_${entry._docId}_${entry._fileID}_${renderResponse.namespace}" 
 							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 									namespace="${renderResponse.namespace}" entryCallbackRoutine="none" isDashboard="${isDashboard}"
-									useBinderFunction="no">
+									useBinderFunction="no" isFile="yes">
 									<ssf:param name="url" useBody="true">
 										<ssf:url webPath="viewFile" binderId="${entry._binderId}">
 											<ssf:param name="entryId" value="${entry._docId}"/>

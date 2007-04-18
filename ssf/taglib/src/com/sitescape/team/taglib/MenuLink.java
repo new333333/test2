@@ -46,6 +46,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String isDashboard = "";
 	private String useBinderFunction = "";
 	private String dashboardType = "";
+	private String isFile = "";
 	
 	private Map _params;
     
@@ -92,6 +93,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("isDashboard", new String[] {this.isDashboard});
 				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				_params.put("dashboardType", new String[] {this.dashboardType});
+				_params.put("isFile", new String[] {this.isFile});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -108,6 +110,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("isDashboard", new String[] {this.isDashboard});
 				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				_params.put("dashboardType", new String[] {this.dashboardType});
+				_params.put("isFile", new String[] {this.isFile});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -138,6 +141,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			isDashboard = "";
 			useBinderFunction = "";
 			dashboardType = "";
+			isFile = "";
 			if (_params != null) {
 				_params.clear();
 			}
@@ -230,4 +234,8 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	public void setDashboardType(String dashboardType) {
 	    this.dashboardType = dashboardType;
 	}
+
+	public void setIsFile(String isFile) {
+	    this.isFile = isFile;
+	}	
 }

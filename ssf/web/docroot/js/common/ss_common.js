@@ -2849,7 +2849,7 @@ function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityTy
 	return false;
 }
 
-function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
+function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard, isFile) {
 	//var linkMenuObj = eval(linkMenu+"");
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 
@@ -2877,7 +2877,12 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 		}
 	}
 	
-	ss_showForumEntry(obj.href, eval(entryCallBackRoutine+""), isDashboard);
+	if (isFile == "yes") {
+		self.window.open(obj.href, '_blank');
+		return false;
+	}
+	
+	ss_showForumEntry(obj.href, eval(entryCallBackRoutine+""), isDashboard, entityType);
 	
 	return false;
 }
@@ -2897,7 +2902,7 @@ function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, names
 
 var menuLinkAdapterURL = "";
 
-function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard) {
+function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard, isFile) {
 
 	if (adapterURL) menuLinkAdapterURL = adapterURL;
 	//var linkMenuObj = eval(linkMenu+"");
@@ -2949,6 +2954,12 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 	linkMenuObj.menuDiv = menuDivId;
 	linkMenuObj.binderUrl = binderUrl;
 	linkMenuObj.entryUrl = entryUrl;
+	
+	if (isFile == "yes") {
+		linkMenuObj.fileUrl = adapterURL;
+	} else {
+		linkMenuObj.fileUrl = "";
+	}
 
 	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
 	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + namespace;
@@ -3735,12 +3746,25 @@ function ss_linkMenuObj() {
 			menuObj.style.left = x + "px";
 			menuObj.style.zIndex = ssMenuZ;
 			
+			//Show File
+			if (this.menuLinkShowFile != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowFile);
+				
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'none';
+					//if (this.binderDefinitionType == this.type_folder) menuLinkObj.style.display = 'block';
+					if (this.fileUrl && this.fileUrl != "") 
+						menuLinkObj.style.display = 'block';
+				}
+			}
+
+			//Show Entry
 			if (this.menuLinkShowEntry != null) {
 				var menuLinkObj = document.getElementById(this.menuLinkShowEntry);
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'none';
 					if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) {
-						if (dashboardType && dashboardType == 'portlet') {
+						if ( (dashboardType && dashboardType == 'portlet') || this.fileUrl != "") {
 							//do nothing
 						} else {
 							menuLinkObj.style.display = 'block';
@@ -3748,34 +3772,36 @@ function ss_linkMenuObj() {
 					}
 				}
 			}
-			
-			if (this.menuLinkShowFile != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowFile);
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'none';
-					if (this.binderDefinitionType == this.type_folder) 
-						menuLinkObj.style.display = 'block';
-				}
-			}
 
-			if (this.menuLinkShowNewWindow != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowNewWindow);
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'none';
-					if (this.currentDefinitionType == this.type_folderEntry) 
-						menuLinkObj.style.display = 'block';
-				}
-			}
-			
+			//Show Current Tab
 			if (this.menuLinkShowCurrentTab != null) {
 				var menuLinkObj = document.getElementById(this.menuLinkShowCurrentTab);
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'block';
-					if ( (dashboardType && dashboardType == 'portlet') ) 
+					if ( (dashboardType && dashboardType == 'portlet') ||  this.fileUrl != "") 
 						menuLinkObj.style.display = 'none';
 				}
 			}
-		
+			
+			//Show New Tab
+			if (this.menuLinkShowNewTab != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowNewTab);
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'block';
+					if ( this.fileUrl != "" ) menuLinkObj.style.display = 'none';
+				}
+			}			
+			
+			//Show New Window
+			if (this.menuLinkShowNewWindow != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowNewWindow);
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'none';
+					if (this.currentDefinitionType == this.type_folderEntry && this.fileUrl == "") 
+						menuLinkObj.style.display = 'block';
+				}
+			}
+			
 			ss_ShowHideDivXY(this.menuDiv, x, y)
 			ss_HideDivOnSecondClick(this.menuDiv)
 		}
@@ -3864,8 +3890,8 @@ function ss_linkMenuObj() {
 	
 	this.showFile = function() {
 		var url = this.fileUrl;
-		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
-		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
+		//url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
+		//url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
 		self.window.open(url, '_blank');
 		return false;
 	}
