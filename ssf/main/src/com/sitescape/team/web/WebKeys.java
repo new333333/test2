@@ -530,8 +530,11 @@ public class WebKeys {
     public static final String SEARCH_FORM_ENTRY_DEF_ID = "ss_entry_def_id";
     public static final String SEARCH_FORM_QUERY_DATA="searchQueryData";
     public static final String SEARCH_FORM_RESULTS="searchResults";
+    // values for the next two constants can't be changed without modifications in dashboard stuff
+    // used in search form in standard and dashboard search
     public static final String SEARCH_FORM_MAX_HITS="data_resultsCount";
     public static final String SEARCH_FORM_SUMMARY_WORDS="data_summaryWordCount";
+    public static final String SEARCH_FORM_QUICKSEARCH="quickSearch";
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
