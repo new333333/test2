@@ -730,7 +730,7 @@
 		<property name="repositoryRootDir"><value>${data.root.dir}/jackrabbit</value></property>
 		<property name="homeSubdirName"><value>home</value></property>
 		<property name="configFileName"><value>jackrabbit-repository.xml</value></property>
-		<property name="initializeOnStartup"><value>false</value></property>
+		<property name="initializeOnStartup"><value>true</value></property>
 		<property name="username"><value>none</value></property>
 		<property name="password"><value>none</value></property>
 		<property name="versionDeletionAllowed"><value>true</value></property>
