@@ -42,17 +42,20 @@ var ss_displayStyle = "<%= displayStyle %>";
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
-<table cellspacing="0" cellpadding="0" width="95%">
-<tr><td align="left">
-<% // Then include the navigation widgets for this view %>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-</td>
-<td>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-</td>
-<td align="right">&nbsp;</td>
-</tr>
-</table>
+  
+  	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+	
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
+			<c:set var="ss_history_bar_table_class" value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+		</ssf:toolbar>
+		
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+		</ssf:toolbar>
+	
+	</ssf:toolbar>
+
 </div>
 </div>
 
