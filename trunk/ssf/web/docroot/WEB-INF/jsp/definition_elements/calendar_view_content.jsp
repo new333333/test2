@@ -28,6 +28,15 @@
 				folderId="${ssFolder.id}" 
 				action="view_folder_entry" 
 				actionUrl="true" />";
+				
+	var ss_changeDisplayEventsType =  "<ssf:url 
+		    	adapter="true" 
+		    	portletName="ss_forum" 
+		    	action="__ajax_request" 
+		    	actionUrl="true" >
+					<ssf:param name="binderId" value="${ssBinder.id}" />
+					<ssf:param name="operation" value="save_calendar_events_display_type" />
+		    	</ssf:url>";				
 	
 	var ss_addCalendarEntryUrl = "${addDefaultEntryURL}";
 	if (ss_addCalendarEntryUrl.indexOf("addEntryFromIFrame=1&") > -1) {

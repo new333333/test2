@@ -27,6 +27,7 @@ public class WebKeys {
 	public static final String CALENDAR_STARTTIMESTRING = "cal_starttimestring";
 	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
 	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";
+	public static final String CALENDAR_CURRENT_EVENT_TYPE = "ssCurrentEventType";
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
@@ -271,6 +272,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
+	public static final String OPERATION_SAVE_CALENDAR_EVENTS_DISPLAY_TYPE = "save_calendar_events_display_type";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -281,6 +283,8 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
+	
+	
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
