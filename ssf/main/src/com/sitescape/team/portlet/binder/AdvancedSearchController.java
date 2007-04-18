@@ -306,7 +306,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 		public Entry(Definition definition, List fields) {
 			this.id = definition.getId();
-			this.title = definition.getName();
+			this.title = NLT.getDef(definition.getTitle());
 			this.fields = fields;
 		}
 		public String getId() {
