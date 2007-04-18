@@ -50,6 +50,7 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -82,8 +83,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		} catch (UnsupportedOperationException us) {}
 
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		BinderHelper.getBinderAccessibleUrl(this, binderId, entryId, request, response, model);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (operation.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
@@ -98,42 +97,44 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 
 		Binder binder=null;
+		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		Long entryId = null;
+		if (Validator.isNotNull(entryIdString) && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
+			entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		}
 		//see if it is a user workspace - can also get directly to user ws by a binderId
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
-		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
-			if (entryId != null) {
-				User entry = (User)getProfileModule().getEntry(binderId, entryId);
-				if (entry.getWorkspaceId() == null) {
-					binder = getProfileModule().addUserWorkspace(entry);
-					if (binder == null) {
-						// Redirect to profile list
-						PortletURL reloadUrl = response.createRenderURL();
-						reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-						reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-						reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
-						reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
-						model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-						return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
-
-					}
-				} else {
-					try {
-						binder = getBinderModule().getBinder(entry.getWorkspaceId());
-					} catch (NoBinderByTheIdException nb) {
-						//reload entry
-						entry = (User)getProfileModule().getEntry(binderId, entryId);
-						binder = getProfileModule().addUserWorkspace(entry);
-						
-					}
+		if (entryId != null) {
+			User entry = (User)getProfileModule().getEntry(binderId, entryId);
+			if (entry.getWorkspaceId() == null) {
+				binder = getProfileModule().addUserWorkspace(entry);
+				if (binder == null) {
+					// Redirect to profile list
+					PortletURL reloadUrl = response.createRenderURL();
+					reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+					reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+					reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+					reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
+					model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
+					return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 				}
-				binderId = binder.getId();
+			} else {
+				try {
+					binder = getBinderModule().getBinder(entry.getWorkspaceId());
+				} catch (NoBinderByTheIdException nb) {
+					//reload entry
+					entry = (User)getProfileModule().getEntry(binderId, entryId);
+					binder = getProfileModule().addUserWorkspace(entry);	
+				}
 			}
+			binderId = binder.getId();
+			entryId = null;
 		}
 
 		
 		Map formData = request.getParameterMap();
 		if (binder == null) binder = getBinderModule().getBinder(binderId);
+		BinderHelper.getBinderAccessibleUrl(this, binder, entryId, request, response, model);
 
  
  		//Check special options in the URL
@@ -168,8 +169,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//See if this is a user workspace
 		if ((binder.getDefinitionType() != null) && 
-				(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
-				binder.getOwner() != null) {
+				(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 			Principal owner = binder.getOwner();
 			if (owner != null) {
 				//	turn owner into real object = not hibernate proxy
