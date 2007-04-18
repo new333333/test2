@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -42,6 +43,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.SearchEntryFilter;
+import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -170,6 +172,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (tab.containsKey(Tabs.TYPE)) options.put(Tabs.TYPE, tab.get(Tabs.TYPE));
 		if (tab.containsKey(Tabs.TAB_SEARCH_TEXT)) options.put(Tabs.TAB_SEARCH_TEXT, tab.get(Tabs.TAB_SEARCH_TEXT));
 		if (tab.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, tab.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+		if (tab.containsKey(WebKeys.SEARCH_FORM_QUICKSEARCH)) options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, tab.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		return options;
 	}
 	
@@ -201,13 +204,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private Map prepareSearchResultData(RenderRequest request) throws Exception {
 		Map model = new HashMap();
 		Tabs tabs = setupTabs(request);
-		String tabType = tabs.getTabType(tabs.getCurrentTab());
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 
 		Document searchQuery = getSearchQuery(request, getDefinitionModule());
 		Map options = prepareSearchOptions(request);
-
-		prepareSearchResultPage(model, searchQuery, options, tabs, newTab);
+ 
+ 		prepareSearchResultPage(model, searchQuery, options, tabs, newTab);
 
 		return model;
 	}
@@ -234,8 +236,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 
-		// TODO implement - get values from user setup? options?
-		model.put("quickSearch", false);
+		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		
 	}
 	
@@ -504,13 +505,33 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		int currentPageNo = (firstOnCurrentPage + pageInterval)/pageInterval; 
 		
-		model.put(WebKeys.FOLDER_ENTRIES, ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage));
+		List shownOnPage = ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage);
+		checkFileIds(shownOnPage);
+		model.put(WebKeys.FOLDER_ENTRIES, shownOnPage);
 		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
 		model.put(WebKeys.PAGE_TOTAL_RECORDS, totalRecordsFound);
 		model.put(WebKeys.PAGE_START_INDEX, firstOnCurrentPage+1);
 		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
 	}
 	
+	private void checkFileIds(List entries) {
+		Iterator it = entries.iterator();
+		while (it.hasNext()) {
+			Map entry = (Map)it.next();
+			if (entry.containsKey(ObjectKeys.FIELD_FILE_ID)) {
+				try{ 
+					Set files = ((SearchFieldResult)entry.get(ObjectKeys.FIELD_FILE_ID)).getValueSet();
+					if (!files.isEmpty()) {
+						entry.put(ObjectKeys.FIELD_FILE_ID, files.iterator().next());
+					}
+				} catch (Exception e) {
+					// do nothing, if not set - it is only one or no _fileID
+				}
+			}
+		}
+	}
+
+
 	public static Map convertedToDisplay(Document searchQuery, DefinitionModule definitionModule) {
 		Map searchFormData = new HashMap();
 		if (searchQuery != null) { 
@@ -770,8 +791,18 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Integer pageNo = PortletRequestUtils.getIntParameter(request, Tabs.PAGE, 1);
 		options.put(Tabs.PAGE, pageNo);
 		
-		options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
-		options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
+		
+		
+		Boolean quickSearch = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_QUICKSEARCH, Boolean.FALSE);
+		options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, quickSearch);
+
+		if (quickSearch) {
+			options.put(Tabs.TITLE, NLT.get("searchForm.quicksearch.Title"));
+			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.quicksearch.Title"));			
+		} else {
+			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
+			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));			
+		} 
 
 		// TODO - if needed - implement dynamic
 //		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE.toString());
