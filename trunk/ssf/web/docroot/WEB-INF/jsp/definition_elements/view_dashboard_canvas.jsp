@@ -13,9 +13,37 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_dashboard_iframe_box_div";
+
+String displayStyle = ssUser.getDisplayStyle();
+if (displayStyle == null) displayStyle = "";
+
+
+int entryWindowWidth = 0;
+if (ssUserProperties.containsKey("folderEntryWidth")) {
+	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
+}
+int entryWindowTop = 0;
+if (ssUserProperties.containsKey("folderEntryTop")) {
+	entryWindowTop = Integer.parseInt((String) ssUserProperties.get("folderEntryTop"));
+}
+int entryWindowLeft = 0;
+if (ssUserProperties.containsKey("folderEntryLeft")) {
+	entryWindowLeft = Integer.parseInt((String) ssUserProperties.get("folderEntryLeft"));
+}
+int entryWindowHeight = 0;
+if (ssUserProperties.containsKey("folderEntryHeight")) {
+	entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+}
+String autoScroll = "true";
+request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
+request.setAttribute("ss_entryWindowTop", new Integer(entryWindowTop));
+request.setAttribute("ss_entryWindowLeft", new Integer(entryWindowLeft));
+request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 %>
 
 <script type="text/javascript">
@@ -32,6 +60,8 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 	var ss_entryWindowTop = -1;
 	var ss_entryWindowLeft = -1;
 </c:if>
+
+var ss_displayStyle = "<%= displayStyle %>";
 
 var ss_saveEntryWidthUrl = "<ssf:url 
 	adapter="true" 
@@ -50,7 +80,6 @@ var ss_entryWindowWidth = "${ss_entryWindowWidth}";
 </c:if>
 var ss_entryBackgroundColor = "${ss_style_background_color}";
 
-
 var ss_dashboardViewEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
@@ -60,27 +89,74 @@ var ss_dashboardViewBinderUrl = '<portlet:renderURL windowState="maximized"><por
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 		name="newTab" value="1"/></portlet:renderURL>';
-		
 
-var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
-var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
-function ss_showForumEntryInIframe_Popup(url) {
-    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
-    var wObj = self.document.getElementById('ss_showfolder')
-	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
-	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
-    self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
-    return false;
+
+function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
+	if (ss_displayStyle == "accessible") {
+		self.location.href = obj.href;
+		return false;
+	}
+	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
+		//The user wants to see the drop down options, don't show the entry
+		if (binderId != null && binderId != "") ss_linkMenu.binderId = binderId;
+		if (entityType != null && entityType != "") ss_linkMenu.entityType = entityType;
+		ss_linkMenu.showingMenu = 0;
+		return false;
+	}
+	ss_linkMenu.showingMenu = 0;
+	
+	if (id == "") return false;
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
+	if (window.ss_highlightLineById) {
+		ss_highlightLineById(folderLine);
+		if (window.swapImages && window.restoreImages) {
+			restoreImages(id);
+		}
+	}
+	
+	ss_showForumEntry(obj.href, "<c:out value="${showEntryCallbackRoutine}"/>", isDashboard, entityType);
+	return false;
 }
-		
-function ss_showForumEntryInIframe_Overlay(url) {
+
+function ss_showForumEntry(url, callbackRoutine, isDashboard, entityType) {
+<%
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+%>
+	if (isDashboard == "yes") {
+<%		
+		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+%>		
+			return ss_showForumEntryInIframe_Overlay(url);
+<%		
+		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)  ||
+					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
+%>		
+			return ss_showForumEntryInIframe_Popup(entityType);			
+<%
+		}
+%>
+	} else {
+		return ss_showForumEntryInIframe(url);
+	}
+<%
+	}
+%>
+	ss_fetch_url(url, callbackRoutine);
+}
+
+function ss_showForumEntryInIframe_Overlay(url, entityType) {
 	//ss_debug('show url in frame = '+url)
-	ss_positionEntryDiv();
+//	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-    
-	if (wObj1 == null) return true;
+     
+	if (wObj1 == null){
+		checkLinkAndCallPopup(url, entityType);
+		return true;
+	}
 	
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
@@ -101,6 +177,37 @@ function ss_showForumEntryInIframe_Overlay(url) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 
     return false;
+}
+
+function checkLinkAndCallPopup(url, entityType) {
+	if (menuLinkAdapterURL && menuLinkAdapterURL == "") {
+		menuLinkAdapterURL = url;
+	} else {
+		menuLinkAdapterURL = url;
+	}
+	ss_showForumEntryInIframe_Popup(entityType);
+}
+
+var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
+var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
+function ss_showForumEntryInIframe_Popup(definitionType) {
+	var strAddWindowOpenParams = "";
+	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
+		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
+		strAddWindowOpenParams = ",toolbar,menubar";
+	}
+
+    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    var wObj = self.document.getElementById('ss_showfolder')
+	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+	
+    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
+    return false;
+}
+function ss_showForumEntryInPopupWindow(definitionType) {
+	return ss_showForumEntryInIframe_Popup(definitionType);
 }
 </script>
   
