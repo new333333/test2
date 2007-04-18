@@ -129,10 +129,7 @@ public class LuceneUtil {
 					break;
 			case (READSEARCH):
 			case (READDELETE):
-				try {
-					indexReader.close();
-					indexReader = null;
-				} catch (Exception e) {} // Don't care - just want the writer closed.
+				closeAll();
 				try {
 					indexWriter = new IndexWriter(indexPath, 
 						new SsfIndexAnalyzer(), create);
