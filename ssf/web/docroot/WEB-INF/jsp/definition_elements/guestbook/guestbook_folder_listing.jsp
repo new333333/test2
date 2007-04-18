@@ -14,7 +14,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/guestbook/guestbook_sign.jsp" %>
 
-
 <c:forEach var="entry" items="${ssFolderEntries}" >
 <table class="ss_guestbook" width="100%">
 		<jsp:useBean id="entry" type="java.util.HashMap" />
@@ -45,7 +44,7 @@
 					</ssf:menuLink>
 				</span>
 
-				<span class="ss_entrySignature"><fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+				<span class="ss_entrySignature"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${entry._modificationDate}" type="both" 
 					  timeStyle="short" dateStyle="short" /></span>
 				
