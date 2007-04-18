@@ -119,7 +119,7 @@
 		<definition name="_userWorkspace"/>
 		<property name="template">_blogFolderConfig</property>
 		<property name="template">_calendarFolderConfig</property>
-		<property name="template">_discussionFolderConfig</property>
+		<property name="template">_libraryFolderConfig</property>
 		<property name="template">_guestbookFolderConfig</property>
 		<property name="template">_photoFolderConfig</property>
 	</template>
