@@ -773,7 +773,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			List<Binder> others = new ArrayList(binders);
 			for (Binder b:others) {
 				//have same owner, have same acl
-				if (b.getOwnerId().equals(top.getOwnerId())) {
+				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId())) {
 					binders.remove(b);
 					ids.add(b.getId());
 				}
