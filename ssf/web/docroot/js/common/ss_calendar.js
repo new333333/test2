@@ -608,15 +608,14 @@ var ss_cal_CalAllDayEvent = {
         // Calculate day offsets.
         dayOffset = Math.floor((gridX / gridWidth)  / (1.0 / ss_cal_Grid.gridSize));
         var firstDayOnGrid = ss_cal_Grid.firstDayToShow;
-        // TODO: fix it! use addDate or something else....
 		this.currDay = firstDayOnGrid.addDays(dayOffset);
         
         hourOffset = this.recordHourOffset(this.currDay.getFullYear(), this.currDay.getMonth(), this.currDay.getDate());
         this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "#CCCCCC", "#CCCCCC", "");
         this.resetGridHeight();
-        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
+        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
         this.currEventData = new Object();
-        this.currEventData.day = dayOffset;
+        this.currEventData.startDate = this.currDay;
         this.currEventData.start = -1;
         this.currEventData.dur = 0;
     },
@@ -790,7 +789,7 @@ function ss_cal_centerDivInViewport(id) {
 function ss_cal_newEventInfo(evt, gridControl) {
     evt = (evt) ? evt : ((event) ? event : null);
     
-    var currEventData = ss_cal_CalEvent.currEventData;
+    var currEventData = gridControl.currEventData;
     
     var url = ss_addCalendarEntryUrl;
     url += "&year=" + currEventData.startDate.getFullYear();
