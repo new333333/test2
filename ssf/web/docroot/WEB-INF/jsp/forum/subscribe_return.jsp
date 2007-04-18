@@ -26,10 +26,13 @@
 </c:if>
 <c:if test="${!ssScheduleInfo.enabled}">
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.disabled"/>
-<br><ssf:nlt tag="subscribe.contact.admin">
+<c:if test="${!empty ssBinder && !empty ssBinder.owner}">
+<br/><ssf:nlt tag="subscribe.contact.admin">
 <ssf:param name="value" value="${ssBinder.owner.emailAddress}"/>
 <ssf:param name="value" value="${ssBinder.owner.title}"/>
-</ssf:nlt></span>
+</ssf:nlt>
+</c:if>
+</span>
 </c:if>
 <br/>
 <br/>
