@@ -18,12 +18,20 @@
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
-				<h4><ssf:nlt tag="searchForm.advanced.Title"/></h4>
+				<h4><ssf:nlt tag="searchForm.quicksearch.Title"/></h4>
+				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="advanced_search"/>
+					<portlet:param name="tabTitle" value=""/>
+					<portlet:param name="newTab" value="1"/>
+					</portlet:actionURL>" class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
+				<div class="ss_clear"></div>
+								
 				<table>
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
 						<td><input type="text" name="searchText" id="searchText"/></td>
-						<td><img src="<html:imagesPath/>pics/search_icon.gif" onClick="ss_search();"/>
-							<a href="#"><ssf:nlt tag="searchForm.advancedSearch"/></a>
+						<td>
+							<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+							<input type="hidden" name="quickSearch" value="true"/>
 						</td>
 					</tr>
 				</table>
