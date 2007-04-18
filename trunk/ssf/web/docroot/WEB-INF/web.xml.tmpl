@@ -25,18 +25,23 @@
 	</context-param>
 
 	<filter>
-		<filter-name>rssAuthenticationFilter</filter-name>
-		<filter-class>com.sitescape.team.rss.servlet.filter.RssAuthenticationFilter</filter-class>
+		<filter-name>digestBasedSoftAuthenticationFilter</filter-name>
+		<filter-class>com.sitescape.team.web.servlet.filter.DigestBasedSoftAuthenticationFilter</filter-class>
+	</filter>
+
+	<filter>
+		<filter-name>digestBasedHardAuthenticationFilter</filter-name>
+		<filter-class>com.sitescape.team.web.servlet.filter.DigestBasedHardAuthenticationFilter</filter-class>
 	</filter>
 
 @@LOGIN_FILTER@@
 	<filter-mapping>
-		<filter-name>rssAuthenticationFilter</filter-name>
+		<filter-name>digestBasedSoftAuthenticationFilter</filter-name>
 		<servlet-name>rss</servlet-name>
 	</filter-mapping>
 	
 	<filter-mapping>
-		<filter-name>rssAuthenticationFilter</filter-name>
+		<filter-name>digestBasedHardAuthenticationFilter</filter-name>
 		<servlet-name>ical</servlet-name>
 	</filter-mapping>
 

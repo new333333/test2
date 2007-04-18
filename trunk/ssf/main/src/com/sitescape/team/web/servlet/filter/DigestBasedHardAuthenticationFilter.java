@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.rss.servlet.filter;
+package com.sitescape.team.web.servlet.filter;
 
 import java.io.IOException;
 
@@ -30,7 +30,7 @@ import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 
-public class RssAuthenticationFilter implements Filter {
+public class DigestBasedHardAuthenticationFilter implements Filter {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -50,7 +50,7 @@ public class RssAuthenticationFilter implements Filter {
 			
 			chain.doFilter(request, response); // Proceed
 			
-			//RequestContextUtil.setThreadContext(user);
+			RequestContextUtil.clearThreadContext();
 		}
 		catch(UserDoesNotExistException e) {
 			logger.warn(e);

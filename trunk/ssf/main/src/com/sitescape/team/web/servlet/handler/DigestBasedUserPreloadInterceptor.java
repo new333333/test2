@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.rss.servlet.handler;
+package com.sitescape.team.web.servlet.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,8 +20,9 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.web.WebKeys;
 
-public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
+public class DigestBasedUserPreloadInterceptor extends HandlerInterceptorAdapter {
 	private ProfileDao profileDao;
 	
 	protected ProfileDao getProfileDao() {
@@ -33,6 +34,16 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		Boolean unathenticatedRequest = (Boolean) request.getAttribute
+		(WebKeys.UNAUTHENTICATED_REQUEST);
+
+		if(Boolean.TRUE.equals(unathenticatedRequest)) {
+			// The framework says that this request is being made unauthenticated,
+			// that is, in no particular user's context. 
+			// In this case we simply pass up in the interceptor chain. 
+			return true;
+		}
+		
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
 		
 		if(requestContext.getUser() == null) {

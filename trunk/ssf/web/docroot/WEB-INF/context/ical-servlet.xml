@@ -38,7 +38,7 @@
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
-	<bean id="userPreloadInterceptor" class="com.sitescape.team.rss.servlet.handler.UserPreloadInterceptor">
+	<bean id="userPreloadInterceptor" class="com.sitescape.team.web.servlet.handler.DigestBasedUserPreloadInterceptor">
 		<property name="profileDao"><ref bean="profileDao"/></property>
 	</bean>	
 

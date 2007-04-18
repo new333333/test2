@@ -59,6 +59,21 @@ implements RssGeneratorMBean {
 	private String rssRootDir;
 	private long monthAgoTime = 31L * DAYMILLIS;
 	
+	private static final String emptyRssFileContent =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+		"<rss version=\"2.0\">" +
+		"<channel>" +
+	    "<title>Security Community of Practice</title>" +
+	    "<link/>" +
+	    "<description>Updates to the Security Community of Practice forum</description>" +
+	    "<pubDate>" +
+		new Date().toString() +
+		"</pubDate>" +
+	    "<ttl>60</ttl>" +
+	    "<generator feedVersion=\"1.0\">SiteScape Forum</generator>" +
+	    "</channel>" +
+	    "</rss>";
+	
 	public RssGenerator() {
 		int maxDays = 31;
 
@@ -98,31 +113,8 @@ implements RssGeneratorMBean {
 		File rssdir = new File(rssRootDir);
 		if (!rssdir.exists()) rssdir.mkdir();	
 		
-		// First create our top-level document
-		Document doc = DocumentHelper.createDocument();
-		Element root = doc.addElement("rss");
-
-		// Set RSS version number
-		root.addAttribute("version", "2.0");
+		Document doc = createEmptyRssDoc(binder.getTitle());
 		
-		String binderTitle = binder.getTitle();
-		
-	    Element channel = root.addElement("channel");
-	    
-	    channel.addElement("title")
-	    	.addText(binderTitle);
-	    channel.addElement("link")
-	    	.addText("" /*this.getRssLink(binder)*/);
-	    channel.addElement("description")
-	    	.addText("Updates to the " + binderTitle + " forum");
-	    channel.addElement("pubDate")
-	    	.addText(new Date().toString());
-	    channel.addElement("ttl")
-	    	.addText("60");
-	    channel.addElement("generator")
-	    	.addAttribute("feedVersion", "1.0")
-	    	.addText("SiteScape Forum");
-	    
 	    writeRssFile(binder, doc);
 	}
 	
@@ -199,54 +191,62 @@ implements RssGeneratorMBean {
 	}
 
 	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder, User user) {
-		// See if the feed already exists
-		boolean access = false;
-		String rssFileName = getRssFileName(binder);
-		File rf = new File(rssFileName);
-		if (!rf.exists())
-			this.generateRssFeed(binder);
-	    
-		Document doc = this.parseFile(this.getRssFileName(binder));
-		Element rssRoot = doc.getRootElement();
-		// Get the list of nodes with acls set
-		List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
-
-		// get the current users acl set
-		Set<Long> userAclSet = getProfileDao().getPrincipalIds(user);
-		Set userStringSet = new HashSet();
-		for (Long id:userAclSet) {
-			userStringSet.add(id.toString());
-		}
-		// Walk thru the nodes with ACL's and find the ones this
-		// user has read access to, and delete the rest.
-		for (Iterator i = aclNodes.iterator(); i.hasNext();) {
-			Element thisAcl = (Element)i.next();
-			if (user.isSuper()) {
-				// need to delete the acl before we send it to the client
-				thisAcl.detach();
-			} else {
-				access = AccessUtils.checkAccess(thisAcl, userStringSet); 	       	
-				if (!access) {
- 	       			thisAcl.getParent().detach();
- 	       		} else {
- 	       			// need to delete the acl before we send it to the client
- 	       			thisAcl.detach();
- 	       		}
+		if(user != null) { // Normal situation
+			// See if the feed already exists
+			boolean access = false;
+			String rssFileName = getRssFileName(binder);
+			File rf = new File(rssFileName);
+			if (!rf.exists())
+				this.generateRssFeed(binder);
+		    
+			Document doc = this.parseFile(this.getRssFileName(binder));
+			Element rssRoot = doc.getRootElement();
+			// Get the list of nodes with acls set
+			List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
+	
+			// get the current users acl set
+			Set<Long> userAclSet = getProfileDao().getPrincipalIds(user);
+			Set userStringSet = new HashSet();
+			for (Long id:userAclSet) {
+				userStringSet.add(id.toString());
 			}
-        }
-		
-		//detach the age before sending the xml to the user
-		List ageNodes = rssRoot.selectNodes("/rss/channel/item/age");
-		for (Iterator i = ageNodes.iterator(); i.hasNext();) {
-			Node thisAge = (Node)i.next();
-			thisAge.detach();
+			// Walk thru the nodes with ACL's and find the ones this
+			// user has read access to, and delete the rest.
+			for (Iterator i = aclNodes.iterator(); i.hasNext();) {
+				Element thisAcl = (Element)i.next();
+				if (user.isSuper()) {
+					// need to delete the acl before we send it to the client
+					thisAcl.detach();
+				} else {
+					access = AccessUtils.checkAccess(thisAcl, userStringSet); 	       	
+					if (!access) {
+	 	       			thisAcl.getParent().detach();
+	 	       		} else {
+	 	       			// need to delete the acl before we send it to the client
+	 	       			thisAcl.detach();
+	 	       		}
+				}
+	        }
+			
+			//detach the age before sending the xml to the user
+			List ageNodes = rssRoot.selectNodes("/rss/channel/item/age");
+			for (Iterator i = ageNodes.iterator(); i.hasNext();) {
+				Node thisAge = (Node)i.next();
+				thisAge.detach();
+			}
+	
+			// return the doc
+			String results = doc.asXML();
+			results = WebHelper.markupStringReplacement(null, null, 
+					request, response, null, results, WebKeys.MARKUP_VIEW);
+			return results;
 		}
-
-		// return the doc
-		String results = doc.asXML();
-		results = WebHelper.markupStringReplacement(null, null, 
-				request, response, null, results, WebKeys.MARKUP_VIEW);
-		return results;
+		else {
+			// This request is being made without appropriate user authentication.
+			// Do NOT use binder in this case, since it may be null in this situation.
+			Document doc = createEmptyRssDoc("Unknown");
+			return doc.asXML();
+		}
 	}
 
     public Document parseFile(String rssFileName) {
@@ -290,4 +290,32 @@ implements RssGeneratorMBean {
     	return entryElement;
     	
     }
+    
+	private Document createEmptyRssDoc(String binderTitle) {
+		// First create our top-level document
+		Document doc = DocumentHelper.createDocument();
+		Element root = doc.addElement("rss");
+
+		// Set RSS version number
+		root.addAttribute("version", "2.0");
+		
+	    Element channel = root.addElement("channel");
+	    
+	    channel.addElement("title")
+	    	.addText(binderTitle);
+	    channel.addElement("link")
+	    	.addText("" /*this.getRssLink(binder)*/);
+	    channel.addElement("description")
+	    	.addText("Updates to the " + binderTitle + " forum");
+	    channel.addElement("pubDate")
+	    	.addText(new Date().toString());
+	    channel.addElement("ttl")
+	    	.addText("60");
+	    channel.addElement("generator")
+	    	.addAttribute("feedVersion", "1.0")
+	    	.addText("SiteScape Forum");
+	    
+	    return doc;
+	}
+	
 }
