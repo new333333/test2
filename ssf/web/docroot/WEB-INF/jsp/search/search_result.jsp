@@ -52,12 +52,12 @@
 	<div class="ss_clear"></div>
 
 	<div id="ss_tabs_container">
-		<ssf:toolbar style="ss_actions_bar ss_actions_bar1"/>
-		
-		<div class="ss_clear"></div>
+		<ul class="ss_actions_bar ss_actions_bar1"></ul>
+		<% // Breadcrumbs %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 	
 		<div id="ss_tab_content">
-
+			
 			<table width="100%" cellpadding="0" cellspacing="0">
 				<% // used table couse of IE problem with positioning of div with margin-left: -x% attribute placed in a table %>
 				<tr>
@@ -74,7 +74,6 @@
 							
 							<!-- Saved searches -->
 							<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
-							
 						</div>
 					</td>
 					

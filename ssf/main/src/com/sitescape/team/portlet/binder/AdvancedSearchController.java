@@ -40,6 +40,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.SearchEntryFilter;
@@ -102,6 +103,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
         model.put(WebKeys.LOCALE, getUserLocale());
+        
+        // this is necessary for the breadcrumbs
+        Workspace top = getWorkspaceModule().getTopWorkspace();
+		BinderHelper.buildNavigationLinkBeans(this, top, model);
+		model.put(WebKeys.DEFINITION_ENTRY, top);
+        
         if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model.putAll(prepareSearchResultData(request));
         	return new ModelAndView("search/search_result", model);
