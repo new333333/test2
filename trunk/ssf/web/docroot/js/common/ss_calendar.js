@@ -546,8 +546,10 @@ var ss_cal_Grid = {
         inner = dojo.byId("ss_cal_dayGridWindowInner");
         //outer.style.height = "1008px";
         //inner.style.top = "-3px";
+        
+
         dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 500, end: 1008 }], 200).play();
-        dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -255, end: -3 }], 200).play();
+   	    dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -255, end: -3 }], 200).play();
         
         var celendarHoursSelector = dojo.byId("ss_selectCalendarHours");
         var children = celendarHoursSelector.childNodes;
@@ -559,6 +561,9 @@ var ss_cal_Grid = {
         		break;
         	}
         }
+        
+		ss_cal_Grid.activateGrid(ss_cal_Grid.currentType);// couse of IE...
+    	ss_cal_Events.redrawAll();
     },
 
     workDayGrid: function() {
@@ -566,8 +571,9 @@ var ss_cal_Grid = {
         inner = dojo.byId("ss_cal_dayGridWindowInner");
         //outer.style.height = "500px";
         //inner.style.top = "-255px";
-        dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 1008, end: 500 }], 200).play();
-        dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -255 }], 200).play();
+        
+       	dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 1008, end: 500 }], 200).play();
+       	dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -255 }], 200).play();
         
         var celendarHoursSelector = dojo.byId("ss_selectCalendarHours");
         var children = celendarHoursSelector.childNodes;
@@ -578,6 +584,8 @@ var ss_cal_Grid = {
         		break;
         	}
         }
+		ss_cal_Grid.activateGrid(ss_cal_Grid.currentType); // couse of IE... 
+    	ss_cal_Events.redrawAll();        
     }
 }
 
