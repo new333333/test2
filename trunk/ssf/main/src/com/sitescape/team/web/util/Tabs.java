@@ -451,6 +451,7 @@ public class Tabs {
 		if (options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) tab.put(ObjectKeys.SEARCH_USER_OFFSET, options.get(ObjectKeys.SEARCH_USER_OFFSET));
 		if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) tab.put(ObjectKeys.SEARCH_MAX_HITS, options.get(ObjectKeys.SEARCH_MAX_HITS));
 		if (options.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) tab.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+		if (options.containsKey(WebKeys.SEARCH_FORM_QUICKSEARCH)) tab.put(WebKeys.SEARCH_FORM_QUICKSEARCH, options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		if (options.containsKey(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE)) tab.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, options.get(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE));
 		
 		return ((Integer)tab.get(TAB_ID)).intValue();
