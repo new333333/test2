@@ -73,7 +73,7 @@
     &nbsp;&nbsp;
     </c:if>
     <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
-	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
       value="${fileEntry._modificationDate}" type="both" 
 	  timeStyle="short" dateStyle="short" /></span>&nbsp;&nbsp;
 	</td>
