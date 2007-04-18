@@ -68,6 +68,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
 					</c:if>
 					     ><c:out value="${selection.fileItem.name} "/></a>
+			<c:if test="${!empty selection.fileLock}">
+			  <br/>
+			  <img src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
+	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
+			  </ssf:nlt></span>
+			</c:if>
 		</td>
 		<td class="ss_att_meta" width="10%"></td>
 		<td class="ss_att_meta">
