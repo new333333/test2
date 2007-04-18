@@ -232,7 +232,7 @@ public class EventsViewHelper {
 			
 		eventBean.put("entry", entry);
 		eventBean.put("eventType", eventType);
-		eventBean.put("eventid", event.getId());
+		eventBean.put("eventid", event.getId() + "_" + event.getDtStart().getTimeInMillis() +"_" + event.getDtEnd().getTimeInMillis());
 		eventBean.put("entry_tostring", entry.get(BasicIndexUtils.UID_FIELD).toString());
 		eventBean.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
 				.format(event.getDtStart().getTime()));
