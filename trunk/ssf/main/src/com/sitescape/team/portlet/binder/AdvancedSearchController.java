@@ -25,6 +25,8 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -56,6 +58,8 @@ import com.sitescape.team.web.util.Tabs;
 
 public class AdvancedSearchController extends AbstractBinderController {
 	
+	private static Log logger = LogFactory.getLog(AdvancedSearchController.class);
+	
 	public static final String NEW_TAB_VALUE = "1";
 	
 	public static final String SearchBlockTypeCreationDate = "creation_date";
@@ -73,6 +77,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public static final String SearchEntryType="entryType";
 	public static final String SearchEntryElement="entryElement";
 	public static final String SearchEntryValues="entryValues";
+	public static final String SearchEntryValueType="valueType";
+	public static final String SearchEntryValuesNotFormatted="entryValuesNotFormatted";
 	public static final String SearchAuthor="authorId";
 	public static final String SearchAuthorTitle="authorTitle";
 	public static final String SearchTag="tag";
@@ -198,7 +204,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		String tabType = tabs.getTabType(tabs.getCurrentTab());
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 
-		Document searchQuery = getSearchQuery(request);
+		Document searchQuery = getSearchQuery(request, getDefinitionModule());
 		Map options = prepareSearchOptions(request);
 
 		prepareSearchResultPage(model, searchQuery, options, tabs, newTab);
@@ -215,7 +221,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.TABS, tabs.getTabs());
 
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
-		model.put(SearchFilterMap, convertedToDisplay(query));
+		model.put(SearchFilterMap, convertedToDisplay(query, getDefinitionModule()));
 		//this method check in model(SearchAdditionalOptions) which data are necessary to set search filters defined by user 
 		prepareAdditionalFiltersData(model, getDefinitionModule());
 		
@@ -505,13 +511,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
 	}
 	
-	public static Map convertedToDisplay(Document searchQuery) {
+	public static Map convertedToDisplay(Document searchQuery, DefinitionModule definitionModule) {
 		Map searchFormData = new HashMap();
 		if (searchQuery != null) { 
 	    	Element rootElement = searchQuery.getRootElement();
 	    	List liFilterTerms = rootElement.selectNodes(FilterHelper.FilterTerms);
 
-	    	System.out.println("Query: "+searchQuery.asXML());
+	    	logger.debug("Query: "+searchQuery.asXML());
 
 	    	// read the joiner information, probably the size will be always 1 so it can be in loop
 	    	for (int i = 0; i < liFilterTerms.size(); i++) {
@@ -542,7 +548,10 @@ public class AdvancedSearchController extends AbstractBinderController {
 	    	    			else  searchedTags = searchedTags.concat(" "+filterTerm.getText());
 	    	    		} else if (filterType.equals(FilterHelper.FilterTypeEntry)) {
 	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm));
+	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm, definitionModule));
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypeEvent)) {
+	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm, definitionModule));
 	    	    		} else if ( filterType.equals(FilterHelper.FilterTypeCreatorById)) {
 	    	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
@@ -577,14 +586,63 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return searchFormData;
 	}
 	
-	private static Map createEntryBlock(Element filterTerm) {
+	private static Map createEntryBlock(Element filterTerm, DefinitionModule definitionModule) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
-		block.put(SearchEntryType, filterTerm.attributeValue(FilterHelper.FilterEntryDefId, ""));
-		block.put(SearchEntryElement, filterTerm.attributeValue(FilterHelper.FilterElementName, ""));
+		String entryTypeId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+		block.put(SearchEntryType, entryTypeId);
+		String entryFieldId = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+		block.put(SearchEntryElement, entryFieldId);
 		List values = getElementValues(filterTerm);
 		if (values.size() > 0) {
-			block.put(SearchEntryValues, getElementValues(filterTerm).get(0));
+			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
+			String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
+			block.put(SearchEntryValueType, valueType);
+			String value = (String)values.get(0);
+			
+			Object parsedValue = value;
+			String formattedValue = value;
+			if (valueType.equals("date")) {
+				parsedValue = parseDate_from_yyyyMMdd(value);
+				formattedValue = formatDate_to_yyyy_MM_dd((Date)parsedValue);
+			}
+			
+			block.put(SearchEntryValues, formattedValue);
+			block.put(SearchEntryValuesNotFormatted, parsedValue);
+		} 
+		return block;
+	}
+	
+	private static Map createEventBlock(Element filterTerm, DefinitionModule definitionModule) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		String entryTypeId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+		block.put(SearchEntryType, entryTypeId);
+		String entryFieldId = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+		block.put(SearchEntryElement, entryFieldId);
+		List values = new ArrayList();
+		
+		List eventDatesNodes = filterTerm.selectNodes(FilterHelper.FilterEventDate);
+		Iterator eventDatesNodesIt = eventDatesNodes.iterator(); 
+		while (eventDatesNodesIt.hasNext()) {
+			values.add(((Element) eventDatesNodesIt.next()).getText());
+		}
+		
+		if (values.size() > 0) {
+			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
+			String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
+			block.put(SearchEntryValueType, valueType);
+			String value = (String)values.get(0);
+			
+			Object parsedValue = value;
+			String formattedValue = value;
+			if (valueType.equals("event")) {
+				parsedValue = parseDate_from_yyyyMMdd(value);
+				formattedValue = formatDate_to_yyyy_MM_dd((Date)parsedValue);
+			}
+			
+			block.put(SearchEntryValues, formattedValue);
+			block.put(SearchEntryValuesNotFormatted, parsedValue);
 		} 
 		return block;
 	}
@@ -636,24 +694,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 			block.put(SearchBlockType, SearchBlockTypeModificationDate);
 		}
 		
-		User user = RequestContextHolder.getRequestContext().getUser();
-
 		String startDate = filterTerm.attributeValue(SearchStartDate, "");
 		String endDate = filterTerm.attributeValue(SearchEndDate, "");
 		
-		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyyMMdd");
-		inputFormater.setTimeZone(user.getTimeZone());
-		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
+		Date startDateParsed = parseDate_from_yyyyMMdd(startDate);
+		String formatedStartDate = formatDate_to_yyyy_MM_dd(startDateParsed);
 		
-		Date startDateParsed = null;
-		try { startDateParsed = inputFormater.parse(startDate);} catch (ParseException e) {}
-		String formatedStartDate = "";
-		if (startDateParsed != null) formatedStartDate = outputFormater.format(startDateParsed);
-		
-		Date endDateParsed=null;
-		try {endDateParsed = inputFormater.parse(endDate);} catch (ParseException e) {}
-		String formatedEndDate = "";
-		if (endDateParsed != null) formatedEndDate = outputFormater.format(endDateParsed);
+		Date endDateParsed = parseDate_from_yyyyMMdd(endDate);
+		String formatedEndDate = formatDate_to_yyyy_MM_dd(endDateParsed);
 		
 		block.put(SearchStartDate, formatedStartDate);
 		block.put(SearchEndDate, formatedEndDate);
@@ -733,7 +781,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}
 
 	
-	public static Document getSearchQuery(PortletRequest request) {
+	public static Document getSearchQuery(PortletRequest request, DefinitionModule definitionModule) {
 		Boolean joiner = PortletRequestUtils.getBooleanParameter(request, FilterHelper.SearchJoiner, true);
 		SearchEntryFilter searchFilter = new SearchEntryFilter(joiner);
 		
@@ -771,7 +819,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 				String entryTypeId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterEntryDefIdField.concat(numbers[i]), "");
 				String entryFieldId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterElementNameField.concat(numbers[i]), SearchEntryFilter.AllEntries);
 				String[] value = PortletRequestUtils.getStringParameters(request, FilterHelper.FilterElementValueField.concat(numbers[i]));
-//				String[] valueType = PortletRequestUtils.getStringParameters(request, FilterElementValueTypeField + String.valueOf(i));
+//				String[] valueType = PortletRequestUtils.getStringParameters(request, FilterHelper.FilterElementValueTypeField.concat(numbers[i]));
 //				if (valueType.length > 0 && valueType[0].equals("checkbox")) {
 //					//Fix up the value for a checkbox. Make it either true or false
 //					if (value.length > 0 && value[0].equals("on")) {
@@ -783,7 +831,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 //					}
 //				}
 				
-				if (!entryTypeId.equals("")) searchFilter.addEntryType(entryTypeId, entryFieldId, value);
+				String valueType = null;
+				if (entryTypeId != null && !entryTypeId.equals("")) {
+					Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
+					if (fieldsMap != null && fieldsMap.get(entryFieldId) != null) {
+						valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
+					}
+				}
+				if (!entryTypeId.equals("")) searchFilter.addEntryType(entryTypeId, entryFieldId, value, valueType);
 
 			}
 			if (types[i].equals(SearchBlockTypeCreationDate) || types[i].equals(SearchBlockTypeModificationDate)) {
@@ -826,5 +881,33 @@ public class AdvancedSearchController extends AbstractBinderController {
 			}
 		}
 		return searchFilter.getFilter();
+	}
+
+	private static Date parseDate_from_yyyyMMdd(String s) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyyMMdd");
+		inputFormater.setTimeZone(user.getTimeZone());
+		
+		Date result = null;
+		
+		try { 
+			result = inputFormater.parse(s);
+		} catch (ParseException e) {
+			logger.error("Date [" + s + "] in search mask is in wrong format");			
+		}
+		
+		return result;
+	}
+	
+	/*
+	 * to yyyy-MM-dd
+	 */
+	private static String formatDate_to_yyyy_MM_dd(Date date) {
+		if (date == null) {
+			return "";
+		}
+		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
+		return outputFormater.format(date);
 	}
 }

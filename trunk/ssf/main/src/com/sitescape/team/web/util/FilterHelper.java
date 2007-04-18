@@ -76,6 +76,7 @@ public class FilterHelper {
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeAuthor = "author";
    	public final static String FilterTypeDate = "date";
+   	public final static String FilterTypeEvent = "event";
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
    	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntry = "entry";
@@ -91,6 +92,7 @@ public class FilterHelper {
    	public final static String FilterEndDate = "endDate";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
+   	public final static String FilterEventDate = "filterEventDate";
    	
    	//Attribute names
    	public final static String FilterAnd = "filterTermsAnd";
@@ -422,6 +424,8 @@ public class FilterHelper {
     	    			addCommunityTagField(block, filterTerm.getText());
     	    		} else if (filterType.equals(FilterTypePersonalTagSearch)) {
     	    			addPersonalTagField(block, filterTerm.getText());
+    	    		} else if (filterType.equals(FilterTypeEvent)) {
+    	    			addEventField(block, filterTerm);    	    			
     		    	} else if (filterType.equals(FilterTypeDate)) {
     		    		addDateRange(block, filterTerm.attributeValue(FilterElementName, ""), filterTerm.attributeValue(FilterStartDate, ""),filterTerm.attributeValue(FilterEndDate, ""));
     		    	}
@@ -430,6 +434,21 @@ public class FilterHelper {
     	}
     	
     	return qTree;
+	}
+   	
+   	private static void addEventField(Element block, Element filterTerm) {
+		Element andField = block;
+		Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+		Iterator itEventDate = filterTerm.selectNodes(FilterEventDate).iterator();
+		while (itEventDate.hasNext()) {
+			String eventDate = ((Element) itEventDate.next()).getText();
+			if (!eventDate.equals("")) {
+				Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+				field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+				Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+				child2.setText(eventDate);
+			}
+		}
 	}
    	
    	private static void addDateRange(Element block, String fieldName, String startDate, String endDate) {
@@ -522,6 +541,37 @@ public class FilterHelper {
 	}
 
 	private static void parseAndAddWorkflowField(Element block, Element filterTerm) {
+		//This is a workflow state term. Build booleans from the state name.
+		String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
+		Element field;
+		Element child;
+		Element andField = block;
+		if (!defId.equals("")) {
+			andField = block.addElement(QueryBuilder.AND_ELEMENT);
+			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_PROCESS_FIELD);
+	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	child.setText(defId);
+		}
+		
+    	//Add an OR field with all of the desired states
+		if (filterTerm.selectNodes(FilterWorkflowStateName).size()>0) {
+			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+			Iterator itTermStates = filterTerm.selectNodes(FilterWorkflowStateName).iterator();			
+			while (itTermStates.hasNext()) {
+				String stateName = ((Element) itTermStates.next()).getText();
+				if (!stateName.equals("")) {
+					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
+					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child2.setText(stateName);
+				}
+			}
+		}
+	}
+	
+	private static void parseAndAddEventField(Element block, Element filterTerm) {
 		//This is a workflow state term. Build booleans from the state name.
 		String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
 		Element field;

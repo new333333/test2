@@ -17,24 +17,24 @@
 <script type="text/javascript">
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
-	var workflows = new Array();
-	var steps = new Array();
+	var ss_searchWorkflows = new Array();
+	var ss_searchSteps = new Array();
 	<c:forEach var="wf" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
-		workflows['${wf.id}'] = '${wf.title}';
+		ss_searchWorkflows['${wf.id}'] = '${wf.title}';
 		<c:forEach var="step" items="${wf.steps}">
-			steps['${wf.id}-${step.name}'] = '${step.title}';
+			ss_searchSteps['${wf.id}-${step.name}'] = '${step.title}';
 		</c:forEach>
 	</c:forEach>
 </c:if>
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}">
-	var entries = new Array();
-	var fields = new Array();
-	var fieldsTypes = new Array();
+	var ss_searchEntries = new Array();
+	var ss_searchFields = new Array();
+	var ss_searchFieldsTypes = new Array();
 	<c:forEach var="entry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}">
-		entries['${entry.id}'] = '${entry.title}';
+		ss_searchEntries['${entry.id}'] = '${entry.title}';
 		<c:forEach var="field" items="${entry.fields}">
-			fields['${entry.id}-${field.name}'] = '${field.title}';
-			fieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
+			ss_searchFields['${entry.id}-${field.name}'] = '${field.title}';
+			ss_searchFieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
 		</c:forEach>
 	</c:forEach>
 </c:if>
@@ -106,6 +106,9 @@ function ss_initSearchOptions() {
 				<c:forEach var="step" items="${block.filterWorkflowStateName}">
 					ss_addInitializedWorkflow("${block.searchWorkflow}", "${step}");
 				</c:forEach>
+				<c:if test="${empty block.filterWorkflowStateName}">
+					ss_addInitializedWorkflow("${block.searchWorkflow}", "");				
+				</c:if>				
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">

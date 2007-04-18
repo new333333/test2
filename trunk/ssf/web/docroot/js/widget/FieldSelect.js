@@ -80,16 +80,16 @@ dojo.widget.defineWidget(
 		addKids: function() {
 			switch (this.dataProvider.dataType[this.selectedResult[1]]) {
 				case "date":
-					this.nextNodeRef = document.createElement('select');
-					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
-					this.nodeObj.appendChild(this.nextNodeRef);
+					var prop = {value: '', lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
+								autoComplete: false, nodeObj: this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
 					break;
 				case "event":
-					this.nextNodeRef = document.createElement('select');
-					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
-					this.nodeObj.appendChild(this.nextNodeRef);
+					var prop = {value: '', lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
+								autoComplete: false, nodeObj: this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
 					break;
 				case "radio":
 					// TODO checkboxes
@@ -122,16 +122,16 @@ dojo.widget.defineWidget(
 		initializeKids: function(fieldType, userValue) {
 			switch (fieldType) {
 				case "date":
-					this.nextNodeRef = document.createElement('select');
-					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
-					this.nodeObj.appendChild(this.nextNodeRef);
+					var prop = {value: userValue, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
+								autoComplete: false, nodeObj: this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");				
 					break;
 				case "event":
-					this.nextNodeRef = document.createElement('select');
-					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
-					this.nodeObj.appendChild(this.nextNodeRef);
+					var prop = {value: userValue, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
+								autoComplete: false, nodeObj: this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");				
 					break;
 				case "radio":
 					// TODO checkboxes
