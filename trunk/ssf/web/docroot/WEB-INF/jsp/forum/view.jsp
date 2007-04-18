@@ -10,8 +10,11 @@
  *
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ss_portletInitialization}">
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+</c:if>
+
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
@@ -49,6 +52,19 @@ function <portlet:namespace/>_getUnseenCounts() {
 </c:if>
 <div class="ss_style" style="padding:4px;">
 
+<c:if test="${empty ssFolderList}">
+<div align="right">
+  <a class="ss_linkButton" 
+    href="<portlet:renderURL 
+      portletMode="edit" 
+      windowState="maximized" />"
+    ><ssf:nlt tag="portlet.configure"/></a>
+</div>
+<div>
+  <ssf:nlt tag="portlet.notConfigured"/>
+</div>
+</c:if>
+ 
 <c:if test="${!empty ssFolderList}">
 <div style="padding:5px 0px;">
   <a class="ss_linkButton ss_bold ss_smallprint" 
@@ -57,12 +73,6 @@ function <portlet:namespace/>_getUnseenCounts() {
 </div>
 </c:if>
 
-<c:if test="${empty ssFolderList}">
-<div style="padding:4px;">
-  <ssf:nlt tag="portlet.notConfigured"/>
-</div>
-</c:if>
- 
 <c:if test="${!empty ssFolderList}">
 <table cellspacing="0" cellpadding="0">
 <c:forEach var="folder" items="${ssFolderList}">
@@ -98,6 +108,3 @@ function <portlet:namespace/>_getUnseenCounts() {
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
 <input type="hidden" name="ssNamespace" value="<portlet:namespace/>">
 </form>
-
-</c:if>
-
