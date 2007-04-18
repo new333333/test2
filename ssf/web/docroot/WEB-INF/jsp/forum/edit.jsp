@@ -27,7 +27,10 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <tr>
   <td>
     <input type="checkbox" name="del_${folder.id}"/>
-    <c:out value="${folder.title}" />
+    <c:if test="${!empty folder.parentBinder}">
+    	${folder.parentBinder.title} // 
+    </c:if>
+    ${folder.title}
   </td>
 </tr>
 </c:forEach>
