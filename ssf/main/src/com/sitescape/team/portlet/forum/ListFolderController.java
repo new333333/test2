@@ -1153,6 +1153,7 @@ public class ListFolderController extends  SAbstractController {
 		//WebDav folder view
 		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
 		qualifiers = new HashMap();
+		qualifiers.put("webdavUrl", webdavUrl);
 		qualifiers.put("folder", webdavUrl);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
