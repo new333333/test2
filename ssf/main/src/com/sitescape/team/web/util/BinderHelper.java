@@ -41,6 +41,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -143,9 +144,8 @@ public class BinderHelper {
 		return url;
 	}
 	
-	static public void getBinderAccessibleUrl(AllBusinessServicesInjected bs, Long binderId, Long entryId,
+	static public void getBinderAccessibleUrl(AllBusinessServicesInjected bs, Binder binder, Long entryId,
 			RenderRequest request, RenderResponse response, Map model) {
-		Binder binder = bs.getBinderModule().getBinder(binderId);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
@@ -155,11 +155,11 @@ public class BinderHelper {
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
 		
 		PortletURL url = response.createActionURL();
-		if (binder instanceof Workspace) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		else if (binder instanceof Folder) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		else if (binder instanceof Folder) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+		if (binder.getEntityType().equals(EntityType.folder)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		else if (binder.getEntityType().equals(EntityType.workspace)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		else if (binder.getEntityType().equals(EntityType.profiles)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 		if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
