@@ -52,9 +52,7 @@ public class LuceneUtil {
 					return indexReader;
 			case (READDELETE):
 			case(WRITE): 
-				try {
-					indexWriter.close();	
-				} catch (Exception e) {} // don't care, just want it closed
+				closeAll();
 				indexWriter = null;
 				try {
 					if (indexReader != null) indexReader.close();
@@ -90,9 +88,7 @@ public class LuceneUtil {
 				if (indexSearcher != null) 
 					return indexSearcher;
 			case(WRITE): 
-				try {
-					indexWriter.close();
-				} catch (Exception e) {} // Don't care - just want the writer closed.
+				closeAll();
 				try {
 					indexSearcher = new IndexSearcher(indexPath);
 				} catch (IOException ioe) {
@@ -200,6 +196,9 @@ public class LuceneUtil {
 			try {
 				indexSearcher.close();
 			} catch (Exception se) {}
+			indexWriter = null;
+			indexReader = null;
+			indexSearcher = null;
 		}
 	}
 }
