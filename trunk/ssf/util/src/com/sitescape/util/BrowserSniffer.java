@@ -132,16 +132,56 @@ public class BrowserSniffer {
 		}
 	}
 
-	public static boolean is_mozilla(HttpServletRequest req) {
-		if (req == null) {
-			return false;
-		}
+	public static boolean is_ie_6(HttpServletRequest req) {
+		if (req == null) return false;
 
 		String agent = req.getHeader(USER_AGENT);
+		if (agent == null) return false;
 
-		if (agent == null) {
+		agent = agent.toLowerCase();
+
+		if (is_ie(req) && (agent.indexOf("msie 6") != -1)) {
+			return true;
+		} else {
 			return false;
 		}
+	}
+
+	public static boolean is_ie_7(HttpServletRequest req) {
+		if (req == null) return false;
+
+		String agent = req.getHeader(USER_AGENT);
+		if (agent == null) return false;
+
+		agent = agent.toLowerCase();
+
+		if (is_ie(req) && (agent.indexOf("msie 7") != -1)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean is_mozilla_5(HttpServletRequest req) {
+		if (req == null) return false;
+
+		String agent = req.getHeader(USER_AGENT);
+		if (agent == null) return false;
+
+		agent = agent.toLowerCase();
+
+		if (is_mozilla(req) && (agent.indexOf("mozilla/5") != -1)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean is_mozilla(HttpServletRequest req) {
+		if (req == null) return false;
+
+		String agent = req.getHeader(USER_AGENT);
+		if (agent == null) return false;
 
 		agent = agent.toLowerCase();
 
