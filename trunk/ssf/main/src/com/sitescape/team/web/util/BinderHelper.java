@@ -25,6 +25,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.lucene.search.SortField;
 import org.dom4j.Attribute;
@@ -55,11 +56,13 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.util.BrowserSniffer;
 import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 
 public class BinderHelper {
@@ -1066,6 +1069,17 @@ public class BinderHelper {
 		return tabs;
 	}
 
-	
+	public static boolean isWebdavSupported(HttpServletRequest req) {
+		//Is this ie7
+		if (BrowserSniffer.is_ie_7(req)) return SPropsUtil.getBoolean("webdav.ie.7", false);
+		
+		//Is this ie6
+		if (BrowserSniffer.is_ie_6(req)) return SPropsUtil.getBoolean("webdav.ie.6", false);
+		
+		//Is this moz5
+		if (BrowserSniffer.is_mozilla_5(req)) return SPropsUtil.getBoolean("webdav.moz.5", false);
+		
+		return false;
+	}
 	
 }
