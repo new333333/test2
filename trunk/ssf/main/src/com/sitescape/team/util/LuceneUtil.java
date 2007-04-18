@@ -60,9 +60,11 @@ public class LuceneUtil {
 					if (indexReader != null) indexReader.close();
 					indexReader = IndexReader.open(indexPath);
 				} catch (IOException ioe) {
-					if (initializeIndex(indexPath)) {
-						indexReader =  IndexReader.open(indexPath);
-						return indexReader;
+					if (!indexExists(indexPath)) {
+						if (initializeIndex(indexPath)) {
+							indexReader =  IndexReader.open(indexPath);
+							return indexReader;
+						}
 					} else {
 						try {
 							// force unlock of the directory
@@ -94,18 +96,22 @@ public class LuceneUtil {
 				try {
 					indexSearcher = new IndexSearcher(indexPath);
 				} catch (IOException ioe) {
-					if (initializeIndex(indexPath)) {
-						indexSearcher = new IndexSearcher(indexPath);
-						return indexSearcher;
-					} else {
-						try {
+					try {
+						if (indexExists(indexPath)) {
 							// force unlock of the directory
 							IndexReader.unlock(FSDirectory.getDirectory(indexPath,
 									false));
 							indexSearcher = new IndexSearcher(indexPath);
-						} catch (IOException e) {
-							throw e;
+						} else {
+							if (initializeIndex(indexPath)) {
+								indexSearcher = new IndexSearcher(indexPath);
+								return indexSearcher;
+							} else {
+								throw ioe;
+							}
 						}
+					} catch (IOException e) {
+						throw e;
 					}
 				}
 			}
@@ -152,7 +158,7 @@ public class LuceneUtil {
 	public static IndexSearcher getSearcher(IndexReader reader) {
 		synchronized (LuceneUtil.class) {
 			indexSearcher =  new IndexSearcher(reader);
-			prevState = READSEARCH;
+			//prevState = READSEARCH;
 		}
 		return indexSearcher;
 	}
@@ -171,10 +177,21 @@ public class LuceneUtil {
 			else {
 				// No index exists at the specified directory. Create a new one.
 				getWriter(indexPath, true);
+				indexWriter.close();
+				indexWriter = null;
 				return true;
 			}
 		}
 	}
+	
+	public static boolean indexExists(String indexPath) {
+		if (IndexReader.indexExists(indexPath))
+			return true;
+		else
+			return false;
+	}
+	
+	
 	public static void closeAll() {
 		synchronized(LuceneUtil.class) {
 			try {
