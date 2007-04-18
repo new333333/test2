@@ -3732,6 +3732,10 @@ div.ss_entry {
 	float: left;
 	width: 400px;
 }
+div.ss_entry_folderListView {
+	float: left;
+	width: 600px;	
+}
 h3.ss_entryTitle {float:left;margin:0px;}
 h3.ss_entryTitle a:link, h3.ss_entryTitle a:hover, h3.ss_entryTitle a:visited, h3.ss_entryTitle a:active, h3.ss_entryTitle a {
 	color: #0000FF;
