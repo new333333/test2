@@ -14,6 +14,9 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
 {
+
+eventType : "${ssCalendarViewBean.eventType}",
+
 dayNamesShort : [<%--
 --%><c:forEach var="d" items="${ssCalendarViewBean.dayHeaders}" varStatus="status"><%--
   --%>"${d}"<c:if test="${!status.last}">,</c:if><%--

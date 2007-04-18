@@ -121,6 +121,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxSetBinderOwnerId(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
 				ajaxModifyGroup(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_EVENTS_DISPLAY_TYPE)) {
+				ajaxSaveCalendarEventsDisplayType(request, response);
 			}
 		}
 	}
@@ -316,7 +318,6 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetGroup(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_FIND_CALENDAR_EVENTS)) {
 			return ajaxFindCalendarEvents(request, response);
-
 		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FOR_FILE)) {
 			return ajaxFindEntryForFile(request, response);
 		}
@@ -1360,6 +1361,13 @@ public class AjaxController  extends SAbstractController {
 		}
 	}
 	
+	private void ajaxSaveCalendarEventsDisplayType(ActionRequest request, 
+			ActionResponse response) {
+		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		EventsViewHelper.setCalendarDisplayEventType(portletSession, eventType);
+	}
+	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1844,10 +1852,12 @@ public class AjaxController  extends SAbstractController {
 			int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
 			int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 			
+			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 			
-			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(request));
+			Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
 			currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+			EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
 			
 			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 
@@ -1869,13 +1879,17 @@ public class AjaxController  extends SAbstractController {
 			folderEntries = getFolderModule().getEntries(binderId, options);
 			List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 			
-			EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response);
+			EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response, portletSession);
 		} else {
 			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);			
 		}
 		
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
+	}
+	
+	private void ajaxSaveCalendarEventsDisplayType() {
+		
 	}
 	
 	private ModelAndView ajaxFindEntryForFile(RenderRequest request, RenderResponse response) throws Exception

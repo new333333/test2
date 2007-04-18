@@ -47,6 +47,7 @@ import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DateHelper;
+import com.sitescape.team.web.util.WebHelper;
 
 public class EventsViewHelper {
 
@@ -82,15 +83,17 @@ public class EventsViewHelper {
 		NLT.get("calendar.abbreviation.december")
 	};
 	
-	private static final String EVENT_TYPE_CREATION = "creation";
+	public static final String EVENT_TYPE_CREATION = "creation";
 	
-	private static final String EVENT_TYPE_ACTIVITY = "activity";
+	public static final String EVENT_TYPE_ACTIVITY = "activity";
 	
-	private static final String EVENT_TYPE_EVENT = "event";
+	public static final String EVENT_TYPE_EVENT = "event";
+
+	public static final String EVENT_TYPE_DEFAULT = EVENT_TYPE_EVENT;
 	
 	public static void getEvents(Date currentDate,
 			CalendarViewRangeDates calendarViewRangeDates, Binder folder,
-			List entrylist, Map model, RenderResponse response) {
+			List entrylist, Map model, RenderResponse response, PortletSession portletSession) {
 
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE,
 				calendarViewRangeDates.getStartViewCal().getTime());
@@ -108,6 +111,8 @@ public class EventsViewHelper {
 		calendarViewBean.put("monthInfo", calendarViewRangeDates.getCurrentDateMonthInfo());
 		calendarViewBean.put("today", new Date());
 		calendarViewBean.put("events", events);
+		calendarViewBean.put("eventType", getCalendarDisplayEventType(portletSession));
+		
 		
 		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
 	}
@@ -299,6 +304,35 @@ public class EventsViewHelper {
 		}
 		
 		return currentDate;
+	}
+	
+	public static void setCalendarCurrentDate(PortletSession portletSession, Date currentDate) {
+		if (currentDate == null) {
+			currentDate = new Date();
+		}
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+	}
+	
+	public static String getCalendarDisplayEventType(PortletSession portletSession) {
+		String eventType = null;
+		if (portletSession != null) {
+			eventType = (String) portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE);
+		}
+		if (eventType == null) {
+			eventType = EVENT_TYPE_DEFAULT;
+			portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);	
+		}
+		
+		return eventType;
+	}
+	
+	public static void setCalendarDisplayEventType(PortletSession portletSession, String eventType) {
+		if (eventType == null || !(eventType.equals(EVENT_TYPE_EVENT) ||
+				eventType.equals(EVENT_TYPE_ACTIVITY) ||
+				eventType.equals(EVENT_TYPE_CREATION))) {
+			eventType = EVENT_TYPE_DEFAULT;
+		}
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
 	}
 
 	public static Date getDate(int year, int month, int dayOfMonth, Date defaultValue) {

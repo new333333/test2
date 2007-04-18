@@ -203,6 +203,9 @@ var ss_cal_CalData = {
 					ss_cal_Grid.setFirstDayToShow(date);
 				}
 				ss_cal_Grid.activateGrid(grid);
+				
+				ss_cal_Events.setEventTypeByName(data.eventType);
+				
 		        ss_cal_Events.redrawAll();
 			},
 						
@@ -1378,14 +1381,29 @@ var ss_cal_Events = {
 		
     },
     
+    setEventTypeByName: function(newEventTypeName) {
+    	for (var i = 0; i < this.eventsTypes.length; i++) {
+    		if (this.eventsTypes[i] == newEventTypeName) {
+    			this.eventsType = i;
+    		}
+    	}
+    	
+    	var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose");
+		var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect");
+		if (this.eventsType == 0) {
+			ss_calChooseEntryTypes.checked = false;
+		} else {
+			ss_calChooseEntryTypes.checked = true;
+			if (this.eventsType == 1) {
+				ss_calSelectEntryTypes.selectedIndex = 0;
+			} else {
+				ss_calSelectEntryTypes.selectedIndex = 1;
+			}
+		}    	
+    },
+    
     changeEventType: function() {
     	var oldEventType = this.eventsType;
-    
-		if (this.eventsType < (this.eventsTypes.length - 1)) {
-			this.eventsType++;
-		} else {
-			this.eventsType = 0;
-		}
 		
 		var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose");
 		var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect");
@@ -1403,7 +1421,19 @@ var ss_cal_Events = {
 			this.eventsType = 0;
 		}
 
+		var url = ss_changeDisplayEventsType;
+		url += "\&eventType=" + this.eventsTypes[this.eventsType];
+		url += "\&randomNumber="+ss_random++;
 		if (oldEventType != this.eventsType) {
+			dojo.io.bind({
+		    	url: url,
+				error: function(type, data, evt) {
+					alert(ss_not_logged_in);
+				},
+				load: function(type, data, evt) {},
+				mimetype: "text/json",
+				method: "get"
+			});
 			this.redrawAll();
 		}
     }
