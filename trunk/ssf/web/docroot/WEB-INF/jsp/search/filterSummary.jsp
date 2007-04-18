@@ -1,4 +1,5 @@
 <div id="ss_filterSummary_content">
+	<h4><ssf:nlt tag="searchForm.summary.Title"/></h4>
 <c:if test="${! empty filterMap.additionalFilters}">
 	<c:if test="${!empty filterMap.additionalFilters.workflow}">
 		<c:forEach var="block" items="${filterMap.additionalFilters.workflow}">

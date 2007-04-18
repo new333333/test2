@@ -7,6 +7,8 @@
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<h4><ssf:nlt tag="searchForm.advanced.Title"/></h4>
+				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
+				<div class="ss_clear"></div>
 				<table>
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
 						<td><input type="text" name="searchText" id="searchText" onkeypress="return ss_submitViaEnter(event)"/></td>
@@ -33,7 +35,7 @@
 							<c:if test="${empty dashboardForm || dashboardForm == 0}">
 							<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
 							</c:if>
-							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
+							
 						</td>
 					</tr>
 				</table>
