@@ -23,6 +23,7 @@ import org.dom4j.Element;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.portlet.binder.AdvancedSearchController.EntryField;
 import com.sitescape.team.web.util.FilterHelper;
 
 /**
@@ -32,7 +33,7 @@ import com.sitescape.team.web.util.FilterHelper;
 public class SearchEntryFilter extends SearchFilter {
 
 	// default join as 'OR' so joinAnd is false 
-	private Boolean joinAnd = new Boolean(false);
+	private Boolean joinAnd = Boolean.FALSE;
 
 	public SearchEntryFilter() {
 		super();
@@ -221,6 +222,20 @@ public class SearchEntryFilter extends SearchFilter {
 		}
 	}
 	
+	public void addEvent(String defId, String name, String[] eventDates) {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEvent);
+				
+		filterTerm.addAttribute(FilterHelper.FilterEntryDefId, defId);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, name);
+		
+		for (int i = 0; i < eventDates.length; i++) {
+			Element newTerm = filterTerm.addElement(FilterHelper.FilterEventDate);
+			newTerm.setText(eventDates[i]);
+		}
+	}
+	
 	public void addPlace(String place) {
 		checkCurrent();
 		
@@ -246,11 +261,28 @@ public class SearchEntryFilter extends SearchFilter {
 		addAndFilter(FilterHelper.FilterTypeDocTypes,FilterHelper.FilterDocType, searchTerms);	
 	}
 	
-	public  void addEntryType(String defId, String name, String[] value) {
-		// TODO implement it better, it should be possible look for entry type independent of value...
-		if (name.equals("description")) name="_desc";
-		addEntryTypeFilter(defId, name, value);
+	public  void addEntryType(String defId, String name, String[] value, String valueType) {
+		if (valueType != null && valueType.equals("description")) {
+			name="_desc";
+		}
+		if (value != null && valueType != null &&
+			(valueType.equals("date") || valueType.equals("event"))) {
+			for (int c = 0; c < value.length; c++) {
+				if (value[c] != null) {
+					value[c] = value[c].replaceAll("-", "");
+				}
+			}
+		}	
+		
+		if (valueType != null && valueType.equals("event")) {
+			addEvent(defId, name, value);
+		} else {
+			addEntryTypeFilter(defId, name, value);
+		}
 		
 	}
+	
+	
+	
 	
 }

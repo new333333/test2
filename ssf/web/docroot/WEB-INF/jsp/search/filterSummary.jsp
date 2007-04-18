@@ -5,12 +5,19 @@
 			<c:forEach var="step" items="${block.filterWorkflowStateName}">
 				<p><ssf:nlt tag="searchForm.label.workflow"/>:
 				<script type="text/javascript">
-					document.write(workflows['${block.searchWorkflow}']+" - ");
-					if (steps['${block.searchWorkflow}-${step}'])
-						document.write(steps['${block.searchWorkflow}-${step}']);
+					document.write(ss_searchWorkflows['${block.searchWorkflow}']+" - ");
+					if (ss_searchSteps['${block.searchWorkflow}-${step}'])
+						document.write(ss_searchSteps['${block.searchWorkflow}-${step}']);
 				</script>
 				</p>
 			</c:forEach>
+			<c:if test="${empty block.filterWorkflowStateName}">
+				<p><ssf:nlt tag="searchForm.label.workflow"/>:
+				<script type="text/javascript">
+					document.write(ss_searchWorkflows['${block.searchWorkflow}']);
+				</script>
+				</p>				
+			</c:if>
 		</c:forEach>
 	</c:if>
 	<c:if test="${!empty filterMap.additionalFilters.tag}">
@@ -27,11 +34,20 @@
 		<c:forEach var="block" items="${filterMap.additionalFilters.entry}">
 			<p><ssf:nlt tag="searchForm.label.entry"/>:
 			<script type="text/javascript">
-				document.write(entries['${block.entryType}']+" - ");
-				if (fields['${block.entryType}-${block.entryElement}'])
-					document.write(fields['${block.entryType}-${block.entryElement}']);
+				document.write(ss_searchEntries['${block.entryType}']+" - ");
+				if (ss_searchFields['${block.entryType}-${block.entryElement}'])
+					document.write(ss_searchFields['${block.entryType}-${block.entryElement}']);
 			</script>
-			: "${block.entryValues}"</p>
+			: 
+			<c:choose>
+				<c:when test="${block.valueType == 'date' || block.valueType == 'event'}">
+					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="date" />
+				</c:when>
+				<c:otherwise>
+					${block.entryValues}
+				</c:otherwise>
+			</c:choose>
+			</p>
 		</c:forEach>
 	</c:if>
 	<c:if test="${!empty filterMap.additionalFilters.creation_date}">

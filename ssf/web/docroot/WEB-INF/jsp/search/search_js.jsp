@@ -113,7 +113,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
 	if (wfIdValue!=null && wfIdValue!=""){
-		wfWidget.setDefaultValue(wfIdValue, workflows[wfIdValue], stepsValue, steps[wfIdValue+"-"+stepsValue]);
+		wfWidget.setDefaultValue(wfIdValue, ss_searchWorkflows[wfIdValue], stepsValue, ss_searchSteps[wfIdValue+"-"+stepsValue]);
 	}
 	return wfWidget;
 }
@@ -139,7 +139,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value) {
 								maxListLength : 10,	autoComplete: false};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
-		entryWidget.setDefaultValue(entryId, entries[entryId], fieldName, fields[entryId+"-"+fieldName], value, fieldsTypes[entryId+"-"+fieldName]);
+		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName]);
 	}
 }
 function ss_addTag(orderNo, communityTagValue, personalTagValue) {
@@ -228,20 +228,17 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	
 	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
 	else document.getElementById('ss_modificationDates_options').appendChild(div);
-	if (startDate) 
-		dojo.widget.createWidget("DropDownDatePicker", {value:startDate, lang: ss_user_locale, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo,
-								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderStartDate"+orderNo+""));
-	else 
-		dojo.widget.createWidget("DropDownDatePicker", {value:'', lang: ss_user_locale, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo,
-								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderStartDate"+orderNo+""));
+	if (!startDate)
+		startDate = ''; 
 
-	if (endDate)
-		dojo.widget.createWidget("DropDownDatePicker", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+	if (!endDate)
+		endDate = '';
+
+	dojo.widget.createWidget("DropDownDatePicker", {value:startDate, lang: ss_user_locale, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo,
+							maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderStartDate"+orderNo+""));
+
+	dojo.widget.createWidget("DropDownDatePicker", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
-	else 
-		dojo.widget.createWidget("DropDownDatePicker", {value:'', lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
-								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
-	
 }
 
 function ss_removeOption(orderNo) {

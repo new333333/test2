@@ -764,7 +764,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		
 		// Map elementData = BinderHelper.getCommonEntryElements();
 		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
-		searchSearchFormData.put(AdvancedSearchController.SearchFilterMap, AdvancedSearchController.convertedToDisplay(searchQuery));
+		searchSearchFormData.put(AdvancedSearchController.SearchFilterMap, AdvancedSearchController.convertedToDisplay(searchQuery, getDefinitionModule()));
 		AdvancedSearchController.prepareAdditionalFiltersData(searchSearchFormData, getDefinitionModule());
 		
 		//Do the search and store the search results in the bean
@@ -953,15 +953,22 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			if (componentId.contains("_")) componentScope = componentId.split("_")[0];
 			if (!componentScope.equals("")) {
 				Dashboard d = getInstance().getDashboardObj(binder, componentScope);
-				DashboardHelper.saveComponentData(request, d, componentId);
+				getInstance().internSaveComponentData(request, d, componentId);
 			}
 		}
 	}
 	public static void saveComponentData(ActionRequest request, Dashboard d) {
 		//Get the dashboard component
-		DashboardHelper.saveComponentData(request, d, PORTLET_COMPONENT_ID);
+		getInstance().internSaveComponentData(request, d, PORTLET_COMPONENT_ID);
 	}
 	public static void saveComponentData(ActionRequest request, Dashboard d, String componentId) {
+		getInstance().internSaveComponentData(request, d, componentId);
+	}
+
+	/*
+	 * No static version because needs a DefinitionModule.
+	 */
+	private void internSaveComponentData(ActionRequest request, Dashboard d, String componentId) {
 
 		//Get the generic data elements that start with the ElementNamePrefix
 		Map formData = request.getParameterMap();
@@ -996,7 +1003,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					//Get the search query
 					try {
 						// Document query = FilterHelper.getSearchFilter(request);
-						Document query = AdvancedSearchController.getSearchQuery(request);
+						Document query = AdvancedSearchController.getSearchQuery(request, getDefinitionModule());
 						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 					} catch(Exception ex) {
 						System.out.println("EX:"+ex);

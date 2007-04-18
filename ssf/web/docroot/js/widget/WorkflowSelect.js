@@ -34,6 +34,11 @@ dojo.widget.defineWidget(
 			this.setLabel(wfLabel);
 			this.setValue(wfId);
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
+			
+			if (!stepId || stepId == "") {
+				return;
+			}
+			
 			var id = this.stepsWidget.id+wfId;
 			var stepsProp = {dataUrl:this.nestedUrl+"&workflowId="+wfId, id:id, name:this.searchFieldName};
 			this.widgetStepsRef = dojo.widget.createWidget("Select", stepsProp, this.stepsWidget, "last");
