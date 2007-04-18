@@ -238,7 +238,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		user.setCreation(stamp);
 	        		user.setModification(stamp);
 	        		//flush these changes, other reads may re-load
-//	        		getCoreDao().flush();
+	        		getCoreDao().flush();
 			
 	        		addPosting(profiles, stamp);
 	        		addJobProcessor(profiles, stamp); 
@@ -273,7 +273,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		members.clear();
 	        		members.add(user.getId());
 	        		addMembership(top, adminRole, top, members);
-	        		
 	        		//use module instead of processor directly so index synchronziation works correctly
 	        		//index flushes entries from session - don't make changes without reload
 	        		getBinderModule().indexTree(top.getId());
@@ -363,7 +362,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		user.setCreation(stamp);
 		user.setModification(stamp);
 		getCoreDao().save(user);
-		getProfileModule().addUserWorkspace(user);
 		return user;
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {
