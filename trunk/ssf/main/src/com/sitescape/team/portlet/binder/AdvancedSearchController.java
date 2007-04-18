@@ -521,7 +521,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
 	}
 	
-	private void checkFileIds(List entries) {
+	public static void checkFileIds(List entries) {
 		Iterator it = entries.iterator();
 		while (it.hasNext()) {
 			Map entry = (Map)it.next();
