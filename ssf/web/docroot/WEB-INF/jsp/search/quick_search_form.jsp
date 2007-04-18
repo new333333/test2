@@ -14,7 +14,7 @@
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value=""/>
 					<portlet:param name="newTab" value="1"/>
-					</portlet:actionURL>" method="post" onSubmit="return ss_prepareAdditionalSearchOptions();" id="advSearchForm">
+					</portlet:actionURL>" method="post" id="advSearchForm">
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
@@ -30,8 +30,9 @@
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
 						<td><input type="text" name="searchText" id="searchText"/></td>
 						<td>
-							<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+							<a class="ss_searchButton" href="javascript: document.getElementById('advSearchForm').submit();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a> <ssf:nlt tag="searchForm.button.label"/>
 							<input type="hidden" name="quickSearch" value="true"/>
+							<input type="hidden" name="operation" value="ss_searchResults"/>
 						</td>
 					</tr>
 				</table>
