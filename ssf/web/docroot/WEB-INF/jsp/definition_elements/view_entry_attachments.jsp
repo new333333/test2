@@ -40,19 +40,25 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 		<% } %>
 	</c:if>	
 		
-
-	<% if (isIE) { %>
-		<c:if test="${ss_folderViewStyle == 'blog'}">
-			<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-			<a class="ss_linkButton ss_tinyControl" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
-				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
-			</a>		
-		</c:if>
-		<c:if test="${ss_folderViewStyle != 'blog'}">
-			<a class="ss_linkButton ss_tinyControl" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" target="_blank">
-				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
-			</a>		
-		</c:if>
+	<% if (com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request)) { %>
+	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
+		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
+		<a class="ss_linkButton ss_tinyControl" 
+		  style="behavior: url(#default#AnchorClick);" 
+		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
+		  href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
+		  target="_blank">
+			<ssf:nlt tag="entry.AttachFilesByWebDav"/>
+		</a>		
+	</c:if>
+	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
+		<a class="ss_linkButton ss_tinyControl" 
+		  style="behavior: url(#default#AnchorClick);" 
+		  folder="${ssWebDavURL}" href="${ssWebDavURL}" 
+		  target="_blank">
+			<ssf:nlt tag="entry.AttachFilesByWebDav"/>
+		</a>		
+	</c:if>
 	<% } %>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
