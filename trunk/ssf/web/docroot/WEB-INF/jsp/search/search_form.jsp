@@ -23,7 +23,12 @@
 	<div class="ss_clear"></div>
 
 	<div id="ss_tabs_container">
+
 		<ul class="ss_actions_bar ss_actions_bar1"></ul>
+	
+		<% // Breadcrumbs %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+	
 		<div class="ss_clear"></div>
 	
 		<div id="ss_tab_content">
