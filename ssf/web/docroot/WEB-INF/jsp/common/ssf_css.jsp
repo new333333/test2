@@ -3783,8 +3783,12 @@ a.ss_button {
 }
 #ss_filterSummary_content {float:left;}
 #ss_filterSummary_content p {margin:6px;}
+#ss_filterSummary_content h4 {margin:6px 0px 0px 6px;}
 #ss_filterSummary_switch {float:right; padding: 6px 12px 6px 0px;}
 #ss_searchForm_filterSummary {border-bottom:1px solid #afc8e3;}
+
+#ss_searchForm_main h4 {float:left;}
+#ss_searchForm_main a.ss_advanced {float:right;}
 /*
 	Search styles / end
 */
