@@ -44,11 +44,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </script>
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<div style="padding-top:10px;">
 <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" 
   title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
-  xAlignment="left" offsetY="15">
-</ssHelpSpot>
+  offsetX="-13" offsetY="10">
+<div style="padding-top:10px;">
 <c:choose>
 <c:when test="${renderRequest.windowState == 'normal'}">
 	<ssf:tree treeName="<%= wsTreeName %>" 
@@ -69,6 +68,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </c:choose>			
 
 </div>
+</ssHelpSpot>
 
 </div>
 </c:if>

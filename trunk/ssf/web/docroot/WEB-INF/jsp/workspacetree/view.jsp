@@ -39,15 +39,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <table width="100%">
 	<tr>
-	  <td colspan="2">
-	    <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" 
-	      title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
-	      offsetY="-40">
-	    </ssHelpSpot>
-	  </td>
-	</tr>
-	<tr>
 		<td align="left">
+	    <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" offsetX="-13" 
+	      title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>">
 			<div>
 			<c:choose>
 			<c:when test="${renderRequest.windowState == 'normal'}">
@@ -67,8 +61,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 				  />
 			</c:when>
 			</c:choose>			
-
 			</div>
+	    </ssHelpSpot>
 		</td>
 		<c:if test="${ss_windowState != 'maximized'}">
 		  <td align="right" width="30" valign="top">

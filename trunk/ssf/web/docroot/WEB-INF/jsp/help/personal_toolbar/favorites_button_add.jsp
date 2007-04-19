@@ -30,7 +30,6 @@
 
 <p><ssf:nlt tag="help.favoritesicon.add.current.page.content.listAfterEffects"/></p>
 
-<p style="text-align:center;"><a href="javascript: ss_hideFavoritesPane();"><ssf:nlt tag="help.favoritesicon.content.intro.closeFavoritesPanel"/></a></p>
 </div>
 <br/>
 

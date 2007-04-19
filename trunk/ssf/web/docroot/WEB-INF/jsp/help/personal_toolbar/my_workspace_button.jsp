@@ -15,7 +15,29 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span> (1/1)
 
-<p><ssf:nlt tag="help.globalStrings.notimplemented"/></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.intro.explainIcon"/></p>
+
+<p><ssf:nlt tag="help.myWorkspaceIcon.intro.listIntro"/></p>
+
+<ul style="list-style-type:disc;">
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.picture"/></li>
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.pictureGallery"/></li>
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.orgInfo"/></li>
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.contactInfo"/></li>
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.blog"/></li>
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.guestbook"/></li>
+
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.more"/></li>
+
+</ul>
+
+<p><ssf:nlt tag="help.myWorkspaceIcon.intro.alterAccess"/></p>
 
 </div>
 <br/>

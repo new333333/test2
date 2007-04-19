@@ -13,16 +13,16 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (2/7)<br />
-<span style="font-weight:bold;"><ssf:nlt tag="help.folderMenu.subtopic.addFolder"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (2/4)<br />
+<span style="font-weight:bold;"><ssf:nlt tag="help.folderMenu.subtopic.addNewFolder"/></span>
 
-<p><ssf:nlt tag="help.addFolder.content.listIntro"/></p>
+<p><ssf:nlt tag="help.addNewFolder.content.listIntro"/></p>
 
 <ol>
 
-<li><ssf:nlt tag="help.addFolder.listItem.config"/></li>
+<li><ssf:nlt tag="help.addNewFolder.listItem.config"/></li>
 
-<li><ssf:nlt tag="help.addFolder.listItem.provideInfo"/></li>
+<li><ssf:nlt tag="help.addNewFolder.listItem.provideInfo"/></li>
 
 </ol>
 
@@ -42,6 +42,6 @@
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/edit_workflows', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/configure_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

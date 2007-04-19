@@ -18,8 +18,6 @@
 
 <p><ssf:nlt tag="help.favoritesicon.content.intro.explainIcon"/></p>
 
-<p><a href="javascript: ss_showFavoritesPane();"><ssf:nlt tag="help.favoritesicon.content.intro.viewFavoritesPanel"/></a></p>
-
 <p><ssf:nlt tag="help.favoritesicon.content.intro.listIntro"/></p>
 
 <ul style="list-style-type:disc;">
@@ -30,8 +28,6 @@
 
 <li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
 </ul>
-
-<p style="text-align:center;"><a href="javascript: ss_hideFavoritesPane();"><ssf:nlt tag="help.favoritesicon.content.intro.closeFavoritesPanel"/></a></p>
 
 </div>
 <br/>

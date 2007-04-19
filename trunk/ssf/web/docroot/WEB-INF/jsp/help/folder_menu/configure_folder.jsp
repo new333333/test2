@@ -13,8 +13,8 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (6/7)<br />
-<span style="font-weight:bold;"><ssf:nlt tag="help.folderMenu.subtopic.configureThisFolder"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (3/4)<br />
+<span style="font-weight:bold;"><ssf:nlt tag="help.globalStrings.menuItem.configure"/></span>
 
 <p><ssf:nlt tag="help.configureFolder.content.listIntro"/></p>
 
@@ -51,10 +51,10 @@
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/move_folder', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/add_folder', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/folder_acls', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/move_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

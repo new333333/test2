@@ -14,5 +14,5 @@
 
 <h1>Welcome to ICECorps!</h1>
 
-<a href="/ssf/help/welcome.html" onclick="javascript:return ss_openUrlInWindow(this,'help')">Learn more!</a>
+<a href="/ssf/help/welcome.html" onclick="javascript:return ss_openUrlInWindow(this,'help')">Click here to learn more about our software!</a>
 
