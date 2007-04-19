@@ -646,7 +646,7 @@ public class SearchController extends AbstractBinderController {
 
 	//This method rates the places
 	public static List ratePlaces(List entries) {
-		ArrayList ratedList = new ArrayList();
+		List ratedList = new ArrayList();
 		int intMaxHitsPerFolder = 0;
 		for (int i = 0; i < entries.size(); i++) {
 			Map place = (Map) entries.get(i);
