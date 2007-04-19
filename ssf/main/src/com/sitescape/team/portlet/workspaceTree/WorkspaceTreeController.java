@@ -256,7 +256,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Toolbar toolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Map qualifiers;
-
+		AdaptedPortletURL adapterUrl;
+		
 		//The "Administration" menu
 		boolean adminMenuCreated=false;
 		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
@@ -294,14 +295,15 @@ public class WorkspaceTreeController extends SAbstractController  {
 			//Modify
 			
 			adminMenuCreated=true;
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), 
+					adapterUrl.toString(), qualifiers);
 		}
 		
 		//Delete
@@ -366,7 +368,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				//	The "Modify" menu item
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
@@ -385,7 +387,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				//	The "Modify" menu item
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
@@ -420,7 +422,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 			// Sendmail
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
@@ -497,7 +499,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		String[] contributorIds = collectContributorIds(workspace);
 		
 		// permalink
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());

@@ -14,18 +14,22 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.context.request.RequestContextHolder" %>
+<%
+Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request));
+%>
+<c:set var="isWebdavSupported" value="<%= webdavSupportedFooter %>"/>
 <c:if test="${!empty ssFooterToolbar}">
 <div align="center" class="ss_footer_toolbar">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ssFooterToolbar}">
-    
-      <c:out value="${delimiter}" escapeXml="false"/>
       <c:set var="popup" value="false"/>
       <c:if test="${toolbarMenu.value.qualifiers.popup}">
         <c:set var="popup" value="true"/>
       </c:if>
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
+	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
+      	  <c:out value="${delimiter}" escapeXml="false"/>
 	      <div class="ss_bottomlinks">
 	      
 			  	<% // qualifier 'post' allows to open new page with post method - it sends a form with parameter given as qualifiers.postParams %>
@@ -75,8 +79,12 @@
        
 	        
 	        </div>
+	  		<c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" />
+	      </c:if>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
+	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
+          <c:out value="${delimiter}" escapeXml="false"/>
 	      <div class="ss_bottomlinks"><a href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
@@ -105,18 +113,20 @@
     	    </c:if>
 	 	  ><c:out 
 	 	    value="${toolbarMenu.value.title}" /></a></div>
+	  		<c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" />
+	 	  </c:if>
 	    </c:when>
 	    <c:otherwise>
+          <c:out value="${delimiter}" escapeXml="false"/>
 	      <div class="ss_bottomlinks">
 	      	<a href="javascript: //"
 		        <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
 	    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
 	    	    </c:if>
 	    	    ><c:out value="${toolbarMenu.value.title}" /></a></div>
+	      <c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" />
 	    </c:otherwise>
-	  </c:choose>
-	  <c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" />
-    
+	  </c:choose>    
 </c:forEach>
 </div>
 

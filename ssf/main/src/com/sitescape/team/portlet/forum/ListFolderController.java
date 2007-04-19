@@ -1017,12 +1017,15 @@ public class ListFolderController extends  SAbstractController {
 		//Modify binder
 		if (getBinderModule().testAccess(folder, "modifyBinder")) {
 			adminMenuCreated=true;
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_folder"), url);		
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_folder"), 
+					adapterUrl.toString(), qualifiers);		
 		}
 		
 		//set email
@@ -1324,6 +1327,7 @@ public class ListFolderController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		
 		qualifiers = new HashMap();
+		qualifiers.put("webdavUrl", webdavUrl);
 		qualifiers.put("folder", webdavUrl);
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		
