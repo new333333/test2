@@ -145,7 +145,7 @@ var ss_cal_CalData = {
     
     loadInitial : function() {
     	this.setMap([
-		  {calsrc: "cal1", box: "#8888CC", border: "#6666AA"},
+		  {calsrc: "cal1", box: "#EDF2E0", border: "#CCCCCC"},
 		  {calsrc: "cal2", box: "#88CC88", border: "#66AA66"},
 		  {calsrc: "cal3", box: "#CC88CC", border: "#AA66AA"},
 		  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
@@ -326,9 +326,10 @@ var ss_cal_Grid = {
 		var todayVisible = false;
 		var currentDayToShow = firstDayToShow;
         for (var x = 0; x < howManyDays; x++) {
-            currentDayToShow = currentDayToShow.addDays(x);
         	var isToday = ss_cal_CalData.isToday(currentDayToShow);
-        	todayVisible = todayVisible || isToday;
+        	if (!todayVisible) {
+        	   	todayVisible = todayVisible || isToday;
+        	}
         	if (isToday) {
         		todayOffsetInView = x;
         	}
@@ -339,6 +340,7 @@ var ss_cal_Grid = {
             vrule.style.left = dayOffset + "%";
             container.appendChild(vrule);
             dayOffset += dayOffsetSize;
+            currentDayToShow = currentDayToShow.addDays(1);
         }
         
         if (todayVisible) {

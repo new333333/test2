@@ -15,7 +15,7 @@
 	<ul id="ss_calendarNaviBar">
 		<li class="ss_calendarNaviBarOption">
 			<span class="ss_calHoursSelectorMenu">
-				<ssf:menu title="<%= NLT.get("calendar.hours.fullday") %>" 
+				<ssf:menu title="<%= NLT.get("calendar.hours.workday") %>" 
 							titleId="ss_selectCalendarHours" 
 							titleClass="ss_hoursSelectorTitle ss_tinyControl" 
 							menuClass="ss_actions_bar3 ss_actions_bar_submenu" menuImage="pics/menudown.gif">

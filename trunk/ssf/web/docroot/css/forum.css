@@ -637,9 +637,9 @@ span.ss_required {
 div.ss_calPopupDiv {
   position:absolute; 
   visibility:hidden; 
-  background-color:#f7f7f7; 
-  border-right:solid 2px gray;
-  border-bottom:solid 2px gray;
+  background-color:#E8EFF7; 
+  border-right:solid 2px #CCCCCC;
+  border-bottom:solid 2px #CCCCCC;
   }
 
 .ss_cpYearNavigation,
@@ -647,7 +647,7 @@ div.ss_calPopupDiv {
 	text-align:center;
 	vertical-align:middle;
 	text-decoration:none;
-	color:#000000;
+	color:#666666;
 	font-weight:bold;
 	}
 .ss_cpDayColumnHeader,
@@ -665,6 +665,7 @@ div.ss_calPopupDiv {
 	{
 	font-family:arial;
 	font-size:8pt;
+	color: #666666;
 	}
 TD.ss_cpDayColumnHeader
 	{
@@ -689,12 +690,12 @@ TD.ss_cpDayColumnHeader
 	}
 .ss_cpCurrentMonthDate
 	{
-	color:#000000;
+	color:#666666;
 	font-weight:bold;
 	}
 .ss_cpCurrentDate
 	{
-	color: #000000;
+	color: #666666;
 	font-weight:bold;
 	}
 .ss_cpOtherMonthDate
@@ -703,7 +704,7 @@ TD.ss_cpDayColumnHeader
 	}
 TD.ss_cpCurrentDate
 	{
-	color:#000000;
+	color:#666666;
 	background-color: #cecece;
 	border-width:1px;
 	border:solid thin #000000;
@@ -716,7 +717,7 @@ TD.ss_cpCurrentDateDisabled
 TD.ss_cpTodayText,
 TD.ss_cpTodayTextDisabled
 	{
-	border:solid thin #6677DD;
+	border:solid thin #CCCCCC;
 	border-width:1px 0px 0px 0px;
 	}
 A.ss_cpTodayText,
@@ -726,7 +727,7 @@ SPAN.ss_cpTodayTextDisabled
 	}
 A.ss_cpTodayText
 	{
-	color:black;
+	color:#666666;
 	font-weight:bold;
 	}
 SPAN.ss_cpTodayTextDisabled
