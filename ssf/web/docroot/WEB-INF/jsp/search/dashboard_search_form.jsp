@@ -67,7 +67,7 @@ function ss_fillMask(id, value) {
 }
 
 <% /* fill the search mask form*/ %>
-ss_fillMask("searchText", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchText}"/>");
+ss_fillMask("searchText_adv", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchText}"/>");
 ss_fillMask("searchAuthors", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchAuthors}"/>");
 ss_fillMask("searchTags", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchTags}"/>");
 // ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd ${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd}
