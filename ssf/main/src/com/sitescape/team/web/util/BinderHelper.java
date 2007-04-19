@@ -108,6 +108,7 @@ public class BinderHelper {
 					|| displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_BLOG)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_PHOTO_ALBUM)
+					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_CALENDAR)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_GUESTBOOK))) {
 				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 			} else {

@@ -1166,7 +1166,8 @@ public class ListFolderController extends  SAbstractController {
 				|| viewType.equals(Definition.VIEW_STYLE_BLOG) 
 				|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
 				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
-				|| viewType.equals(Definition.VIEW_STYLE_TABLE) 
+				|| viewType.equals(Definition.VIEW_STYLE_TABLE)
+				|| viewType.equals(Definition.VIEW_STYLE_CALENDAR)
 				|| viewType.equals(""))) {
 			//Only show these options if in the folder table style and not in accessible mode
 			entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
@@ -1175,7 +1176,8 @@ public class ListFolderController extends  SAbstractController {
 			//Do not display - Show entries at bottom for the Blog, Guestbook and Search View
 			if (!viewType.equals(Definition.VIEW_STYLE_BLOG) && !viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
 					 && !viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
-					 && !viewType.equals(Definition.VIEW_STYLE_DEFAULT)) {
+					 && !viewType.equals(Definition.VIEW_STYLE_DEFAULT) 
+					 && !viewType.equals(Definition.VIEW_STYLE_CALENDAR) ) {
 			
 			//vertical
 			qualifiers = new HashMap();
