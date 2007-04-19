@@ -2296,7 +2296,7 @@ ul.ss_actions_bar1  {
 	border-top: 0;
 	border-bottom: 0;
 	height: 26px;
-	margin: 0 10px 0 10px;
+	margin: 0 5px 0 5px;
 	width: 0;
 	padding: 0;
 }
@@ -3056,7 +3056,7 @@ table.ss_cal_gridTable td {
  * is visible.
  */
 div.ss_cal_todayMarker {
-  background-color: #FFFFDD;
+  background-color: #BFCA8A;
   position: absolute;
 }
 
@@ -3083,12 +3083,12 @@ div.ss_cal_gridHeaderText {
 }
 
 div.ss_cal_gridHeaderTextToday {
-  background-color: #BBBBDD;
-  color: #888888;
+  background-color: #E8EFF7;
+  color: #666666;
 }
 
 div.ss_cal_gridHeaderText a {
-  color: #888888;
+  color: #666666;
   text-decoration: none;
 }
 
@@ -3134,8 +3134,8 @@ div.ss_cal_dayGridDivider {
 
 /* Left-hand column with the 24 hours of the day */
 td.ss_cal_dayGridHourTicksColumn {
-  width: 35px;
-  color:#AAAAAA;
+	width: 35px;
+  	color:#666666;
 	font-family:sans-serif;
 	font-size:11px;
 	padding-right:3px;
@@ -3149,7 +3149,7 @@ div.ss_cal_timeHead {
   padding-top: 3px;
   font-size: 11px;
   font-family: sans-serif;
-  color: #AAAAAA;
+  color: #666666;
 }
 
 /* Styles to divide up the grid visually */
@@ -3238,17 +3238,17 @@ div.ss_cal_monthGridDayBadge {
   padding-right: 3px;
   font-size: 9px;
   font-family: sans-serif;
-  color: #BBBBBB;
+  color: #666666;
 }
 
 /* Highlight for today */
 div.ss_cal_monthGridDayBadgeToday {
-  background-color: ${ss_generic_border_color};
+  background-color: #E8EFF7;
   color: #FFFFFF;
 }
 
 div.ss_cal_monthGridDayBadge a {
-  color: #BBBBBB;
+  color: #666666;
   text-decoration: none;
 }
 
@@ -3378,7 +3378,7 @@ table.ss_minicard_interior {
 
 div.ss_cal_eventBody {
   font-size: 11px;
-  color: #FFFFFF;
+  color: #666666;
   font-family: sans-serif;
   margin: 0px;
   padding-left: 4px;
@@ -3395,10 +3395,14 @@ div.ss_cal_eventBox {
 
 div.ss_cal_monthEventBody {
   font-size: 11px;
-  color: #FFFFFF;
+  color: #666666;
   font-family: sans-serif;
   margin: 0px;
   padding-left: 4px;
+}
+
+div.ss_cal_monthEventBody a {
+	color: #666666;
 }
 
 /* Used to render the short-form time of the event */

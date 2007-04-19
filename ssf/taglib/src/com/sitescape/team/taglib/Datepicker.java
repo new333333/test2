@@ -391,8 +391,14 @@ public class Datepicker extends TagSupport {
 				  .append("\"")
 				  .append("><IMG BORDER=\"0\" SRC=\"")
 				  .append(contextPath)
-				  .append("/images/pics/sym_s_cal.gif\" ");
-				sb.append("alt=\"").append(this.altText).append("\" /></A>\n");
+				  .append("/images/icons/calendar.gif\" ");
+				sb.append("alt=\"").append(this.altText).append("\" onmouseover=\"this.src='")
+						.append(contextPath)
+						 .append("/images/icons/calendar_f.gif")
+						.append("'\" onmouseout=\"this.src='")
+						.append(contextPath)
+						 .append("/images/icons/calendar.gif")						
+						.append("'\"/></A>\n");
 			} else {
 				sb.append("<A NAME=\"anchor_").append(prefix).append("\"");
 				sb.append(" ID=\"anchor_").append(prefix)
