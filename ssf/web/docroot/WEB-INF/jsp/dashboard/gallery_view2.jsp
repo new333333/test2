@@ -62,7 +62,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
+		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'user'}">
@@ -72,7 +72,7 @@
 			<ssf:param name="entityType" value="workspace" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
+		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'group'}">
@@ -87,7 +87,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-		onClick="return ss_gotoPermalink('${fileEntry._docId}','', '${fileEntry._entityType}', '${portletNamespace}');">
+		onClick="return ss_gotoPermalink('${fileEntry._docId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
 
     </c:when>
  	</c:choose>

@@ -29,7 +29,7 @@
 <script type="text/javascript">
 function ${ss_divId}_searchurl(binderId, entryId, type) {
 	//Build a url to go to
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}');
+	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
 }
 </script>
 

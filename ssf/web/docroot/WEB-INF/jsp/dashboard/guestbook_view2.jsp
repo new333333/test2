@@ -46,7 +46,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
+			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
 		
 				<span class="ss_entryTitle ss_normalprint">
 					<c:if test="${empty fileEntry.title}">

@@ -35,7 +35,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}');">
+			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '', 'yes');">
 
      <c:if test="${empty fileEntry.title}">
     <span class="ss_fineprint"><i>(no title)</i></span>
@@ -64,7 +64,7 @@
 				    <ssf:param name="entityType" value="folder" />
 		    	    <ssf:param name="newTab" value="1"/>
 					</ssf:url>" 
-					onClick="return ss_gotoPermalink('${fileEntry._binderId}', '', 'folder');">
+					onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">
 					
 		  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
 		  </ul>
