@@ -67,7 +67,7 @@
         <td><div id="ss_cal_dayGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
       </tr>
       <tr>
-        <td class="ss_cal_dayGridHourTicksColumn"></td>
+        <td class="ss_cal_dayGridHourTicksColumn">All day</td>
         <td><div id="ss_cal_dayGridAllDay" class="ss_cal_dayGridHour ss_cal_dayGridAllDay ss_cal_reserveWidth"></div></td>
       </tr>
     </tbody>
@@ -90,7 +90,7 @@
   <table style="width: 100%" cellpadding=0 cellspacing=0 border=0>
     <tbody>
       <tr>
-        <td><div id="ss_cal_monthGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
+        <td id="ss_cal_monthGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></td>
       </tr>
       <tr>
         <td><div id="ss_cal_monthGrid" class="ss_cal_monthGrid ss_cal_reserveWidth"></div></td>

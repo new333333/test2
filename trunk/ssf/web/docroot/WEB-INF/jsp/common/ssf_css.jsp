@@ -3065,7 +3065,7 @@ div.ss_cal_todayMarker {
  * Header for grids
  */
 
-div.ss_cal_gridHeader {
+.ss_cal_gridHeader {
   position: relative;
   width: 100%;
   height: 20px;
@@ -3135,6 +3135,12 @@ div.ss_cal_dayGridDivider {
 /* Left-hand column with the 24 hours of the day */
 td.ss_cal_dayGridHourTicksColumn {
   width: 35px;
+  color:#AAAAAA;
+	font-family:sans-serif;
+	font-size:11px;
+	padding-right:3px;
+	padding-top:3px;
+	text-align:right;  
 }
 
 div.ss_cal_timeHead {

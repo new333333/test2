@@ -435,6 +435,12 @@ var ss_cal_Grid = {
         }
         while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
 
+        var v = dojo.dom.getFirstChildElement(dojo.byId("ss_cal_monthGridHeader"));
+        while (v) {
+            if (dojo.html.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
+            v = dojo.dom.getNextSiblingElement(v);
+        }
+        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
 
         for (var x = 0; x < 7; x++) {
             vOffset += vOffsetSize;
@@ -444,11 +450,13 @@ var ss_cal_Grid = {
             container.appendChild(vrule);
         }
         vOffset = 0;
+        
         for (var x = 0; x < 7; x++) {
             var badge = document.createElement("div");
             badge.className = "ss_cal_gridHeaderText";
             badge.style.left = vOffset + "%";
             badge.style.width = vOffsetSize + "%";
+            badge.style.top = "0%";
             var badgeText = document.createTextNode(Date.dayNamesShort[x]);
             badge.appendChild(badgeText);
             header.appendChild(badge);
