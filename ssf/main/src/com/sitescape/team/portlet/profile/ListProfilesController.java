@@ -354,7 +354,7 @@ public class ListProfilesController extends   SAbstractController {
 	protected Toolbar buildViewToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = "";
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		PortletURL url;
 		String binderId = binder.getId().toString();
 		//Build the toolbar array

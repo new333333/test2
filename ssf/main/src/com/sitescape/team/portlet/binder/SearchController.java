@@ -755,7 +755,7 @@ public class SearchController extends AbstractBinderController {
 			RenderResponse response, Map model) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = "";
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 
         //Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();

@@ -102,14 +102,16 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 
 function ss_showForumEntry(url, callbackRoutine, isDashboard) {
 <%
-	if (displayStyle.equals("") || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+	if (displayStyle == null || displayStyle.equals("") || 
+	    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 	if (isDashboard == "yes") {
 <%		
-		if (displayStyle.equals("") || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) ||
-					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+		if (displayStyle == null || displayStyle.equals("") || 
+		    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) ||
+			displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>		
 			return ss_showForumEntryInIframe_Overlay(url);
 <%		

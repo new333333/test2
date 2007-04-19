@@ -73,13 +73,15 @@ var autoScroll = "<%= autoScroll %>";
 
 function ss_showForumEntry(url, callbackRoutine, isDashboard, entityType) {
 <%
-if (displayStyle.equals("") || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+if (displayStyle == null || displayStyle.equals("") || 
+    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
 	displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
 	displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 		if (isDashboard == "yes") {
 <%		
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || displayStyle.equals("") 
+	if (displayStyle == null || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) 
+	    || displayStyle.equals("") 
 	  	|| displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
 %>		
 			//Dashboard iframe or vertical; show as overlay
@@ -191,7 +193,8 @@ if (self.parent && self.parent.ss_highlightLineById) {
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%
 	//Iframe view
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+	if (displayStyle == null || displayStyle.equals("") || 
+	    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="${ssConfigElement}" 
