@@ -121,30 +121,34 @@ function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
 
 function ss_showForumEntry(url, callbackRoutine, isDashboard, entityType) {
 <%
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+if (displayStyle.equals("") || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+	displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
+	displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
-	if (isDashboard == "yes") {
+		if (isDashboard == "yes") {
 <%		
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || displayStyle.equals("") 
+	  	|| displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
 %>		
+			//Dashboard iframe or vertical; show as overlay
 			return ss_showForumEntryInIframe_Overlay(url);
 <%		
-		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)  ||
-					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
+	} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>		
+			//Dashboard popup; popup in new window
 			return ss_showForumEntryInIframe_Popup(entityType);			
 <%
+	}
+%>
+		} else {
+			//Not dashboard; show normal action
+			return ss_showForumEntryInIframe(url);
 		}
-%>
-	} else {
-		return ss_showForumEntryInIframe(url);
-	}
 <%
-	}
+}
 %>
-	ss_fetch_url(url, callbackRoutine);
+	//Not a normal view; probably accessible; show in same window
+	self.location.href=url;
 }
 
 function ss_showForumEntryInIframe_Overlay(url, entityType) {
