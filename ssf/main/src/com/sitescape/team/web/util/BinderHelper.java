@@ -528,7 +528,7 @@ public class BinderHelper {
 
 	//This method provides ratings for the tags
 	public static List rateTags(List entries, int intMaxHits) {
-		ArrayList ratedList = new ArrayList();
+		List ratedList = new ArrayList();
 		int intMaxHitsPerFolder = intMaxHits;
 		/*
 		for (int i = 0; i < entries.size(); i++) {
