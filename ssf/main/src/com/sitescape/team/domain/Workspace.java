@@ -98,15 +98,6 @@ public class Workspace extends Binder  {
  		
 	}
  
-    /**
-     * Overload so we can return parents definition if not set for this folder
-     */
-    public Definition getDefaultPostingDef() {
-    	Definition def = super.getDefaultPostingDef();
-    	if (def != null) return def;
-    	if (!isRoot()) return getParentBinder().getDefaultPostingDef();
-    	return null;
-    }
     
     public List getChildAclContainers() {
         return new ArrayList(this.getBinders());

@@ -15,6 +15,7 @@
 	<property name="uniqueTitles"/>
 	<property name="logVersion"/>
     <property name="mirrored"/>
+    <property name="binderCount"/>
     <property name="resourceDriverName" length="64"/>
     <property name="resourcePath" length="1024"/>
     <many-to-one name="parentBinder">
@@ -54,9 +55,6 @@
         <column name="definition" sql-type="char(32)"/>
       </many-to-many>
     </list>
-    <many-to-one access="field" class="com.sitescape.team.domain.Definition" name="defaultPostingDef">
-      <column name="defaultPostingDef" sql-type="char(32)" />
-    </many-to-one>
     <property name="type" length="16" update="false" insert="false"/>
     <property name="name" length="128" not-null="true"/>
     <property name="pathName" length="1024"/>

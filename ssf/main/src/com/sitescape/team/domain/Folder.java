@@ -85,15 +85,7 @@ public class Folder extends Binder {
     public void setNextFolderNumber(int nextFolderNumber) {
     	this.nextFolderNumber = nextFolderNumber;
     }   
-    /**
-     * Overload so we can return parents definition if not set for this folder
-     */
-    public Definition getDefaultPostingDef() {
-    	Definition def = super.getDefaultPostingDef();
-    	if (def != null) return def;
-    	return getParentBinder().getDefaultPostingDef();
-    }
-    
+
     /**
      * @hibernate.component class="com.sitescape.team.domain.HKey" prefix="folder_"
      */

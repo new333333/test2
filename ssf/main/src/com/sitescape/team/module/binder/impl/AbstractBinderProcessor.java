@@ -97,7 +97,6 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-	protected static int INDEX_THRESHHOLD=1000;
    protected DefinitionModule definitionModule;
    private static final String TEXT_SUBDIR = "text",
    							   TXT_EXT = ".txt";
@@ -774,7 +773,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	    	indexedIds.addAll(processor.indexTree(b, exclusions));
    	   	 }
    		//apply after we have gathered a few
-   		IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
+   		IndexSynchronizationManager.applyChanges(ObjectKeys.INDEX_THRESHHOLD);
    		return indexedIds;
         	
     }

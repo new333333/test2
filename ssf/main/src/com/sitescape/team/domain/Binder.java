@@ -43,7 +43,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected String type;
     protected String pathName;
     protected List definitions;	//initialized by hiberate access=field
-    protected Definition defaultPostingDef;//initialized by hiberate access=field
     protected List binders;//initialized by hibernate access="field"
     protected Map workflowAssociations;//initialized by hibernate access="field"
     protected boolean definitionsInherited=true;
@@ -58,6 +57,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected boolean mirrored = false;
     protected String resourceDriverName;
     protected String resourcePath;
+    protected int binderCount=0;
     
     public Binder() {
     }
@@ -76,7 +76,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 functionMembershipInherited=source.functionMembershipInherited;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
-		 defaultPostingDef = source.defaultPostingDef;
 		 if (source.properties != null)
 			 properties = new HashMap(source.properties);
 		 //don't copy postingDef, notificationDef, internalId, binders, owner or pathName
@@ -173,24 +172,23 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void addBinder(Binder binder) {
     	getBinders().add(binder);
  		binder.setParentBinder(this);
+ 		++binderCount;
 	}
     public void removeBinder(Binder binder) {
  		getBinders().remove(binder);
  		binder.setParentBinder(null);
- 		
+		--binderCount;
+		
 	}
     /**
-     * @hibernate.many-to-one access="field" class="com.sitescape.team.domain.Definition"
-     * @hibernate.column name="defaultPostingDef" sql-type="char(32)"
-     * @return
+     * @hibernate.property
      */
-    public Definition getDefaultPostingDef() {
-  		return defaultPostingDef;
+    public int getBinderCount() {
+    	return binderCount;
     }
-    public void setDefaultPostingDef(Definition defaultPostingDef) {
-        this.defaultPostingDef = defaultPostingDef;
+    public void setBinderCount(int binderCount) {
+    	this.binderCount = binderCount;
     }
-    
     /**
      * @hibernate.property length="16" insert="false" update="false"
      *

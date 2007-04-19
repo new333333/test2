@@ -905,7 +905,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				}
        				getCoreDao().evict(entry);
        			}
-       			IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
+       			IndexSynchronizationManager.applyChanges(ObjectKeys.INDEX_THRESHHOLD);
 	            	            
        			// Register the index document for indexing.
        			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");

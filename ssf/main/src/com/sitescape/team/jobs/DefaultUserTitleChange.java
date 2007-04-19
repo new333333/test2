@@ -11,11 +11,10 @@
 
 package com.sitescape.team.jobs;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -24,15 +23,15 @@ import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.User;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -41,11 +40,7 @@ import com.sitescape.team.util.SpringContextUtil;
  */
 public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleChange {
 	 
-    /*
-     * The bulk of this code is taken from org.jbpm.scheduler.impl.SchedulerThread
-     * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
-     */
-
+ 
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 	   	CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
 	    BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
@@ -55,10 +50,12 @@ public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleCh
     		//index binder only
 			try {
 				binderModule.indexBinder(id, false);
-			} catch (NoBinderByTheIdException ex) {
+			} catch (NoObjectByTheIdException ex) {
 				//gone, skip it
 			} catch (Exception ex) {
 				//try again
+				logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " +
+						ex.getLocalizedMessage());
 				retryBinderIds.add(id);
 			}
     	}
@@ -71,7 +68,11 @@ public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleCh
 				//get entry directly, don't have parent folder
 				FolderEntry entry = (FolderEntry)coreDao.load(FolderEntry.class, id);
 				if (entry != null) folderModule.indexEntry(entry, false);
+			} catch (NoObjectByTheIdException ex) {
+				//gone, skip it
 			} catch (Exception ex) {
+				logger.error(NLT.get("profile.titlechange.index.error") + " (entry " + id.toString() + ") " +
+						ex.getLocalizedMessage());
 				//try again
 				retryEntryIds.add(id);
 			}
