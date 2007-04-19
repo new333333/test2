@@ -87,59 +87,8 @@ function ss_clearUnseen(obj) {
 }
 
 function ss_showEntryInDiv(str) {
-    //Make sure the absolute div is in the body
-    self.ss_moveDivToBody('ss_showentrydiv');
-    
-    //Keep a high water mark for the page so the scrolling doesn't bounce around
-    setWindowHighWaterMark('ss_showentryhighwatermark');
-    
-    var wObj1 = null
-    var wObj2 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-        wObj2 = self.document.getElementById('ss_showentry')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-        wObj2 = self.document.all['ss_showentry']
-    }
-    
-    if (str.indexOf('<body onLoad="self.location =') >= 0) {self.loaction.reload();}
-    wObj1.style.display = "block";
-    wObj2.innerHTML = str;
-    wObj1.style.visibility = "visible";
-
-    //If the entry div needs dynamic positioning after adding the entry, do it now
-    if (self.ss_positionEntryDiv) {ss_positionEntryDiv();}
-        
-    //Keep a high water mark for the page so the scrolling doesn't bounce around
-    setWindowHighWaterMark('ss_showentryhighwatermark');
-    
-    //Get the position of the div displaying the entry
-    if (autoScroll == "true") {
-	    var entryY = ss_getDivTop('ss_showentrydiv')
-	    var entryH = ss_getDivHeight('ss_showentrydiv')
-	    var bodyY = self.document.body.scrollTop
-	    var windowH = ss_getWindowHeight()
-	    if (entryY >= bodyY) {
-	    	if (entryY >= parseInt(bodyY + windowH)) {
-	    		if (entryH > windowH) {
-	    			smoothScroll(0,entryY)
-	    		} else {
-	    			var newY = parseInt(entryY - (windowH - entryH))
-	    			smoothScroll(0,newY)
-	    		}
-	    	} else if (parseInt(entryY + entryH) > parseInt(bodyY + windowH)) {
-	    		var overhang = parseInt((entryY + entryH) - (bodyY + windowH))
-	    		var newY = parseInt(bodyY + overhang)
-	    		if (newY > entryY) {newY = entryY}
-	    		smoothScroll(0,newY)
-	    	}
-	    } else {
-	    	smoothScroll(0,entryY)
-	    }
-	}
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	//If we ever get here, it was an error (pmh)
+	return
 }
 
 function ss_swapImages (id, img, alt) {

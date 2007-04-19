@@ -102,18 +102,18 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 
 function ss_showForumEntry(url, callbackRoutine, isDashboard) {
 <%
-	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+	if (displayStyle.equals("") || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 	if (isDashboard == "yes") {
 <%		
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+		if (displayStyle.equals("") || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) ||
+					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>		
 			return ss_showForumEntryInIframe_Overlay(url);
 <%		
-		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)  ||
-					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
+		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ) {
 %>		
 			return ss_showForumEntryInIframe_Popup(url);			
 <%
@@ -125,7 +125,8 @@ function ss_showForumEntry(url, callbackRoutine, isDashboard) {
 <%
 	}
 %>
-	ss_fetch_url(url, callbackRoutine);
+	//This must be the accessible style. Just open the url where we are
+	self.location.href = url;
 }
 
 var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
