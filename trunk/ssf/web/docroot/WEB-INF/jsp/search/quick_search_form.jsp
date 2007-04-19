@@ -28,7 +28,7 @@
 								
 				<table>
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
-						<td><input type="text" name="searchText" id="searchText"/></td>
+						<td><input type="text" name="searchText" id="searchText_adv"/></td>
 						<td>
 							<a class="ss_searchButton" href="javascript: document.getElementById('advSearchForm').submit();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a> <ssf:nlt tag="searchForm.button.label"/>
 							<input type="hidden" name="quickSearch" value="true"/>

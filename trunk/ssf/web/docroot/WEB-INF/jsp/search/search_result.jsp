@@ -51,62 +51,64 @@
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 	<div class="ss_clear"></div>
 
-	<div id="ss_tabs_container">
-		<ul class="ss_actions_bar ss_actions_bar1"></ul>
-		<% // Breadcrumbs %>
-		<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-	
-		<div id="ss_tab_content">
-			
-			<table width="100%" cellpadding="0" cellspacing="0">
-				<% // used table couse of IE problem with positioning of div with margin-left: -x% attribute placed in a table %>
-				<tr>
-					<td id="ss_rankings" >
-						<div>
-							<!-- Places rating - Moved to the new file -->
-							<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
-					
-							<!-- People rating - Moved to the new file -->
-							<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
-					
-							<!-- Tags -->
-							<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
-							
-							<!-- Saved searches -->
-							<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
-						</div>
-					</td>
-					
-					<td id="ss_content_container">
-			
-						<div class="ss_searchContainer">
-							<div id="ss_searchForm_spacer"></div>
-					
-							<div id="ss_content">
-								<c:if test="${quickSearch}">
-									<!-- Quick search form -->
-									<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
-								</c:if>
-								<c:if test="${!quickSearch}">
-									<!-- Advanced search form -->
-									<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
-								</c:if>		
-						
-								<!-- Search result header -->
-								<%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
-							
-								<!-- Search result list -->
-								<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</table>			
-				
-		</div>
-		
-	</div>
+	<div id="ss_tab_data_${ss_tabs.current_tab}">
 
+		<div id="ss_tabs_container">
+			<ul class="ss_actions_bar ss_actions_bar1"></ul>
+			<% // Breadcrumbs %>
+			<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+		
+			<div id="ss_tab_content">
+				
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<% // used table couse of IE problem with positioning of div with margin-left: -x% attribute placed in a table %>
+					<tr>
+						<td id="ss_rankings" >
+							<div>
+								<!-- Places rating - Moved to the new file -->
+								<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
+						
+								<!-- People rating - Moved to the new file -->
+								<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
+						
+								<!-- Tags -->
+								<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
+								
+								<!-- Saved searches -->
+								<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
+							</div>
+						</td>
+						
+						<td id="ss_content_container">
+				
+							<div class="ss_searchContainer">
+								<div id="ss_searchForm_spacer"></div>
+						
+								<div id="ss_content">
+									<c:if test="${quickSearch}">
+										<!-- Quick search form -->
+										<%@ include file="/WEB-INF/jsp/search/quick_search_form.jsp" %>
+									</c:if>
+									<c:if test="${!quickSearch}">
+										<!-- Advanced search form -->
+										<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
+									</c:if>		
+							
+									<!-- Search result header -->
+									<%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
+								
+									<!-- Search result list -->
+									<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>			
+					
+			</div>
+			
+		</div>
+	</div>
 </div>
 
 
@@ -119,7 +121,7 @@
 	}
 	
 	<% /* fill the search mask form*/ %>
-	ss_fillMask("searchText", "<ssf:escapeJavaScript value="${filterMap.searchText}"/>");
+	ss_fillMask("searchText_adv", "<ssf:escapeJavaScript value="${filterMap.searchText}"/>");
 	ss_fillMask("searchAuthors", "<ssf:escapeJavaScript value="${filterMap.searchAuthors}"/>");
 	ss_fillMask("searchTags", "<ssf:escapeJavaScript value="${filterMap.searchTags}"/>");
 	// filterMap.searchJoinerAnd ${filterMap.searchJoinerAnd}

@@ -11,7 +11,7 @@
 				<div class="ss_clear"></div>
 				<table>
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
-						<td><input type="text" name="searchText" id="searchText" onkeypress="return ss_submitViaEnter(event)"/></td>
+						<td><input type="text" name="searchText" id="searchText_adv" onkeypress="return ss_submitViaEnter(event)"/></td>
 						<td rowspan="2"><p class="ss_help_text"><ssf:nlt tag="searchForm.advanced.Help"/></p></td></tr>
 					<tr><th><ssf:nlt tag="searchForm.searchAuthor"/>:</th>
 						<td><input type="text" name="searchAuthors" id="searchAuthors" onkeypress="return ss_submitViaEnter(event)"/></td></tr>
