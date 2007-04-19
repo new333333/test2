@@ -72,7 +72,7 @@
 %>
 </c:if>
 <li style="float:left;">
-<c:if test="${empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
+<c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <a class="ss_bold"
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
   href="<ssf:url 
@@ -98,7 +98,7 @@
 <c:out value="${ssDefinitionEntry.title}" /><img border="0"
   style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
-<c:if test="${!empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
+<c:if test="${ssDefinitionEntry.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <div style="display:inline">
 <ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefinitionEntry.id}${renderResponse.namespace}" 
   treeDocument="${ssNavigationLinkTree[ssDefinitionEntry.id]}" 
