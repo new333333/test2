@@ -389,17 +389,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     		   userL.add(user);
     	   }
        }
-   	   //add users in groups of 100
+   	   //add entries in groups of 100
        for (Iterator iter=userLists.entrySet().iterator(); iter.hasNext();) {
     	   Map.Entry me = (Map.Entry)iter.next();
     	   List users = (List)me.getValue();
     	   Definition userDef = (Definition)me.getKey();
-    	   List<User> addedUsers = addEntries(users, User.class, binder, userDef);  
-// Takes to long to addWorkspaces - they will get added as needed
-//    	   for (int j=0; j<addedUsers.size(); ++j) {
-//    		   addUserWorkspace(addedUsers.get(j));
-//       	   IndexSynchronizationManager.applyChanges(ObjectKeys.INDEX_THRESHHOLD);
-//    	   }   	   
+    	   addEntries(users, User.class, binder, userDef); 
     	}
        defList = root.selectNodes("/profiles/group");
    	   
@@ -408,9 +403,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   Definition defaultGroupDef = temp.getEntryDef();
    	   addEntries(defList, Group.class, binder, defaultGroupDef);  	   
     }
-    private List addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
+    private void addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
        ProfileCoreProcessor processor=loadProcessor(binder);
-       List allEntries = new ArrayList();
    	   Map newEntries = new HashMap();
    	   Map oldEntries = new HashMap();
    	   for (int j=0; j<elements.size();) {
@@ -442,15 +436,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					logger.debug("Principal exists: " + p.getName());
 			}
 			if (!newEntries.isEmpty() || !oldEntries.isEmpty()) {
-				//returns list of user objects
-				allEntries.addAll(processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values())));
 				processor.syncEntries(oldEntries);
+				//flush from cache
+				for (int i=0; i<exists.size(); ++i) getCoreDao().evict(exists.get(i));
+				//returns list of user objects
+				List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()));
+				//flush from cache
+				for (int i=0; i<addedEntries.size(); ++i) getCoreDao().evict(addedEntries.get(i));			
 				//processor commits entries - so update indexnow
 				IndexSynchronizationManager.applyChanges();
 			}
   	   }
-   	   return allEntries;
-  
     }
     //RW transaction
     public Workspace addUserWorkspace(User entry) throws AccessControlException {

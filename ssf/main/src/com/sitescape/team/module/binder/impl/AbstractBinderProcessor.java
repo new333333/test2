@@ -773,7 +773,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	    	indexedIds.addAll(processor.indexTree(b, exclusions));
    	   	 }
    		//apply after we have gathered a few
-   		IndexSynchronizationManager.applyChanges(ObjectKeys.INDEX_THRESHHOLD);
+   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
    		return indexedIds;
         	
     }

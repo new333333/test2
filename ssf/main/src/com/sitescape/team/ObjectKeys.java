@@ -298,6 +298,4 @@ public interface ObjectKeys {
 	public static final String FI_ADAPTER = "fiAdapter";
 
 	
-	//index related
-	public static final int INDEX_THRESHHOLD=1000;	//count to use to flush index queue when doing bulk operations
 }
