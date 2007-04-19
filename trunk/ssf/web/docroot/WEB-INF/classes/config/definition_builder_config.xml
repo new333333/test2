@@ -97,7 +97,7 @@
 	
 	<item name="entrySignatureView" caption="__entry_signature" category="commonEntryViewData" >
 		<properties>
-			<property name="caption" caption="__caption" type="text" value=""/>
+			<property name="caption" caption="__caption" type="text" value="__entry_signature"/>
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
