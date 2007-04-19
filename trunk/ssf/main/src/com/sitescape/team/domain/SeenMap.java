@@ -103,7 +103,12 @@ public class SeenMap {
 	protected boolean checkAndSetSeen(Entry entry, boolean setIt) {
 		return checkAndSetSeen(entry.getId(), entry.getModification().getDate(), setIt);
 	}
-    public boolean checkIfSeen(HashMap entry) {
+	public boolean checkAndSetSeen(Map entry, boolean setIt) {
+      	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
+		Date modDate = (Date)entry.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);		
+    	return checkAndSetSeen(id, modDate, setIt);
+	}	
+    public boolean checkIfSeen(Map entry) {
       	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
 		Date modDate = (Date)entry.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);		
     	return checkAndSetSeen(id, modDate, false);

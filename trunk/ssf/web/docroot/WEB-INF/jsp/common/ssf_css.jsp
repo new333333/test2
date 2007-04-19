@@ -3650,11 +3650,14 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	vertical-align: top;
 }
 #ss_content_container {
-    padding:0 0 0 15px;
+    padding:0;
     margin:0;
     vertical-align:top;
 }
-div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;}
+div.ss_searchContainer {
+	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;
+	margin-left: 15px;
+}
 #ss_content { 
 	border-left:1px solid #afc8e3; 
 	border-right:1px solid #afc8e3;

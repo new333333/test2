@@ -60,7 +60,7 @@
 		
 			<div id="ss_tab_content">
 				
-				<table width="100%" cellpadding="0" cellspacing="0">
+				<table width="99%" cellpadding="0" cellspacing="0">
 					<% // used table couse of IE problem with positioning of div with margin-left: -x% attribute placed in a table %>
 					<tr>
 						<td id="ss_rankings" >
