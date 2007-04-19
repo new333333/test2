@@ -44,7 +44,7 @@
 </c:if>
 <script type="text/javascript">
 function ${ss_divId}_searchurl(binderId, entryId, type) {
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}');
+	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
 }
 </script>
 
@@ -69,7 +69,7 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
     </c:if>
   </td>
   <td><a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.id}', '', 'folder', '${portletNamespace}');"
+		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
 		>${folder.title}</a></td>
 </tr>
 </c:forEach>

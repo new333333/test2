@@ -30,7 +30,7 @@
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 <script type="text/javascript">    	
 function ${ssNamespace}_user_url(binderId, entryId, type) {
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}');
+	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
 }
 </script>
 </c:if>
