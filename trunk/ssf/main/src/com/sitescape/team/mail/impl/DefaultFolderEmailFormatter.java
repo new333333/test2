@@ -597,7 +597,6 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		Map fileItems = new HashMap();
 		Map inputData = new HashMap();
 		Definition definition = pDef.getDefinition();
-		if (definition == null) definition = folder.getDefaultPostingDef();
 		if (definition == null) definition = folder.getDefaultEntryDef();
 		String defId=null;
 		if (definition != null) defId = definition.getId();

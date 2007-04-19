@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.axis.utils.SessionUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -102,18 +103,25 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
      * Check on zones
      */
  	public void afterPropertiesSet() {
- 		final List companies = getCoreDao().findCompanies();
- 		//only execting one
- 		if (companies.size() == 0) {
- 			String zoneName = SZoneConfig.getDefaultZoneName();
-			addZone(zoneName);
- 		} else {
- 			//make sure super user is set correctly
- 			//there should not be any session opened, so auto-commit should be in effect
-	        getTransactionTemplate().execute(new TransactionCallback() {
+		boolean closeSession = false;
+		if (!SessionUtil.sessionActive()) {
+			SessionUtil.sessionStartup();	
+			closeSession = true;
+		}
+		try {
+			final List companies = getCoreDao().findCompanies();
+			//only execting one
+			if (companies.size() == 0) {
+				String zoneName = SZoneConfig.getDefaultZoneName();
+				addZone(zoneName);
+			} else {
+				//make sure zone is setup correctly
+				getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
+	        			//reload to get in session
+	        			zone = (Workspace)getCoreDao().loadBinder(zone.getId(), zone.getId());
 	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
 	        			//	get super user from config file - must exist or throws and error
 	        			User superU = getProfileDao().findUserByName(superName, zone.getName());
@@ -127,8 +135,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        					"update com.sitescape.team.domain.User set internalId=null where " +
 	        					"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
 	        			RequestContextUtil.setThreadContext(superU);
-	        			//TODO: temporary to reload
-	        			importDefaultDefs(zone.getName());
 	        			//adds user to profileDao cache
 	        			superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
 	        			//make sure posting agent and background user exist
@@ -158,12 +164,27 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        				//	updates cache
 	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
 	        			}
+	        			//setup binder counts if not done
+	        			if (zone.getBinderCount() == 0) {
+	        				List<Binder> binders = new ArrayList();
+	        				binders.add(zone);
+	        				while (!binders.isEmpty()) {
+	        					Binder b = binders.get(0);
+	        					binders.remove(0);
+	        					binders.addAll(b.getBinders());
+	        					b.setBinderCount(b.getBinders().size());
+	        				}
+	        			}
 	    	        }
 		        	return null;
 	        	}
        	   });
  			
-	        }
+			}
+		} finally {
+			if (closeSession) SessionUtil.sessionStop();
+		}
+
  		RequestContextHolder.clear();
  		
  	}
@@ -178,17 +199,12 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
     	} finally {
     		luceneSession.close();
     	}
-		boolean closeSession = false;
 		try {
- 			if (!SessionUtil.sessionActive()) {
- 				SessionUtil.sessionStartup();	
- 				closeSession = true;
- 			}
- 			IndexSynchronizationManager.begin();
+  			IndexSynchronizationManager.begin();
 
-    		final Workspace top = new Workspace();
-	        getTransactionTemplate().execute(new TransactionCallback() {
+ 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
+	           		Workspace top = new Workspace();
 	        		top.setName(name);
 	        		//temporary until have read id
 	        		top.setZoneId(new Long(-1));
@@ -283,15 +299,12 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
 	        		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
 
-	        		//add user workspace	        		
-	        		getProfileModule().addUserWorkspace(user);
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
 	        		return null;
 	        	}
 	        });
 		} finally  {
-			if (closeSession) SessionUtil.sessionStop();
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);
 		}

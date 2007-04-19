@@ -73,7 +73,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
-	protected final static int INDEX_THRESHHOLD=1000;
 	protected TransactionTemplate transactionTemplate;
 
     protected DefinitionModule definitionModule;
@@ -396,10 +395,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   List users = (List)me.getValue();
     	   Definition userDef = (Definition)me.getKey();
     	   List<User> addedUsers = addEntries(users, User.class, binder, userDef);  
-    	   for (int j=0; j<addedUsers.size(); ++j) {
-    		   addUserWorkspace(addedUsers.get(j));
-        	   IndexSynchronizationManager.applyChanges(INDEX_THRESHHOLD);
-    	   }   	   
+// Takes to long to addWorkspaces - they will get added as needed
+//    	   for (int j=0; j<addedUsers.size(); ++j) {
+//    		   addUserWorkspace(addedUsers.get(j));
+//       	   IndexSynchronizationManager.applyChanges(ObjectKeys.INDEX_THRESHHOLD);
+//    	   }   	   
     	}
        defList = root.selectNodes("/profiles/group");
    	   
@@ -688,6 +688,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
 					user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
 			processor.syncEntry(user, new MapInputData(updates));
+			if (user.getWorkspaceId() == null) addUserWorkspace(user);
+
 			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 		} finally {

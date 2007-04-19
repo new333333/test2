@@ -424,33 +424,64 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    }
 		
 	}
-	public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
+    protected Map syncNewEntries_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
+    	return addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
+    }
+    protected Entry syncNewEntries_create(Definition def, Class clazz, Map ctx)  {
+    	return addEntry_create(def, clazz, ctx);
+    }
+    protected void syncNewEntries_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	addEntry_fillIn(binder, entry, inputData, entryData, ctx);
+    }
+    protected void syncNewEntries_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+		addEntry_preSave(binder, entry, inputData, entryData, ctx);
+	}
+    protected void syncNewEntries_save(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+		//don't change owner - will do in bulk to save all these updates
+		addEntry_save(binder, entry, inputData, entryData, ctx);
+	}
+    protected void syncNewEntries_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+		//don't change owner - will do in bulk to save all these updates
+		super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
+	}
+    protected void syncNewEntries_startWorkflow(Entry entry, Map ctx) {
+    	addEntry_startWorkflow(entry, ctx);
+    }
+   public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
 		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
-	        		for (int i=0; i<inputAccessors.size(); ++i) {
+          			StringBuffer inList = new StringBuffer();
+          			for (int i=0; i<inputAccessors.size(); ++i) {
 	        			SimpleProfiler.startProfiler("syncNewEntries:dbTransaction");
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
-	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null, ctx);
+	        			Map entryDataAll = syncNewEntries_toEntryData(binder, definition, inputData, null, ctx);
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	   	        
-	        			Entry entry = addEntry_create(definition, clazz, ctx);
+	        			Entry entry = syncNewEntries_create(definition, clazz, ctx);
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
-	        			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
+	        			syncNewEntries_fillIn(binder, entry, inputData, entryData, ctx);
 	                
-	        			addEntry_preSave(binder, entry, inputData, entryData, ctx);    
+	        			syncNewEntries_preSave(binder, entry, inputData, entryData, ctx);    
 
-	        			addEntry_save(binder, entry, inputData, entryData, ctx);      
-	                
-	        			addEntry_postSave(binder, entry, inputData, entryData, ctx);
+	        			syncNewEntries_save(binder, entry, inputData, entryData, ctx);      
+	       	    		inList.append(entry.getId().toString() + ",");
+	       	    	 	                
+	        			syncNewEntries_postSave(binder, entry, inputData, entryData, ctx);
+	        		
 	        			newEntries.put(entry, inputData);
-	        			addEntry_startWorkflow(entry, ctx);
+	        			syncNewEntries_startWorkflow(entry, ctx);
 	        			ctx.clear();
 	        			SimpleProfiler.stopProfiler("syncNewEntries:dbTransaction");
 	        		}
+        			inList.deleteCharAt(inList.length()-1);
+        			//set creator to user, but do in bulk to reduce database update operations
+        			getCoreDao().executeUpdate("Update com.sitescape.team.domain.Principal " +
+        					" set creation_principal=id,modification_principal=id where id in (" + inList + ")");
+
 	                return newEntries;
 	        	}
 	        });
