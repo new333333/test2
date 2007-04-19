@@ -37,7 +37,7 @@ ss_presencePopupGraphics["phone"].src = '<html:imagesPath/>pics/sym_s_gray_phone
 ss_presencePopupGraphics["sched"] = new Image();
 ss_presencePopupGraphics["sched"].src = '<html:imagesPath/>pics/sym_s_sched.gif';
 ss_presencePopupGraphics["clipboard"] = new Image();
-ss_presencePopupGraphics["clipboard"].src = '<html:imagesPath/>icons/liveclipboard-icon-16x16.jpg';
+ss_presencePopupGraphics["clipboard"].src = '<html:imagesPath/>pics/sys_s_clipboard.gif';
 
 var ss_ostatus_none = ' <ssf:nlt tag="presence.none"/>'
 var ss_ostatus_away = ' <ssf:nlt tag="presence.isAway" text="is away"/>';
