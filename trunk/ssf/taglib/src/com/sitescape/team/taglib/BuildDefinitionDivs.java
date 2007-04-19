@@ -457,7 +457,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						//this is the item
 						if (optionSelect == null) {
 							if (testOption(optionItem, sourceRoot, optionName)) {
-								addOption(optionsMap, optionItem, optionName, "");
+								addOption(optionsMap, optionItem, optionName);
 								optionsSeen.put(optionName, optionName);
 							}
 						
@@ -483,12 +483,10 @@ public class BuildDefinitionDivs extends TagSupport {
 								//this won't work if these items are nested
 								String selName = selItem.attributeValue("name");
 								if (excludeNames.contains(selName)) continue;
-								if (optionsSeen.containsKey(selName)) continue;
 								String optionId = selItem.attributeValue("id", optionName);
 								//	See if multiple are allowed
 								if (testOption(selItem, sourceRoot, optionName)) {
-									addOption(optionsMap, selItem, optionName, optionId);
-									optionsSeen.put(selName, selName);
+									addDataOption(optionsMap, selItem, optionName, optionId);
 								}
 							}	
 						}					
@@ -520,7 +518,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							if ("dataView".equals(optionType)) optionSelect = (Element)optionSelectItem.selectSingleNode("./option_entry_data");
 							if (optionSelect == null) {
 								if (testOption(optionSelectItem, sourceRoot, optionSelectName)) {
-									addOption(optionsMap, optionSelectItem, optionSelectName, "");
+									addOption(optionsMap, optionSelectItem, optionSelectName);
 									optionsSeen.put(optionSelectName, optionSelectName);
 								}
 							} else {
@@ -543,12 +541,10 @@ public class BuildDefinitionDivs extends TagSupport {
 									//this won't work if these items are nested
 									String selName = selItem.attributeValue("name");
 									if (excludeNames.contains(selName)) continue;
-									if (optionsSeen.containsKey(selName)) continue;
 									String optionId = selItem.attributeValue("id", optionSelectName);
 									//	See if multiple are allowed
 									if (testOption(selItem, sourceRoot, optionSelectName)) {
-										addOption(optionsMap, selItem, optionSelectName, optionId);
-										optionsSeen.put(selName, selName);
+										addDataOption(optionsMap, selItem, optionSelectName, optionId);
 									}
 								}
 							}	
@@ -580,14 +576,40 @@ public class BuildDefinitionDivs extends TagSupport {
 		return false;
 		
 	}
-	protected void addOption(Map<String, StringBuffer[]> optionsMap, Element item, String name, String refId) {
+	//item points to config
+	protected void addOption(Map<String, StringBuffer[]> optionsMap, Element item, String name) {
+		StringBuffer sb=new StringBuffer();
+		StringBuffer hb = new StringBuffer();
+		sb.append("<li>");
+		sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+name+"', '');return false;\">");
+		String caption = NLT.getDef(item.attributeValue("caption",name));
+		sb.append(caption);
+		sb.append("</a>");
+		addOptionHelp(item, sb, hb);
+		sb.append("</li>\n");
+		//build sorted list 
+		optionsMap.put(caption, new StringBuffer[]{sb,hb});
+		
+	}
+	//item points to instance definition
+	protected void addDataOption(Map<String, StringBuffer[]> optionsMap, Element item, String name, String refId) {
 		StringBuffer sb=new StringBuffer();
 		StringBuffer hb = new StringBuffer();
 		sb.append("<li>");
 		sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+name+"', '"+refId+"');return false;\">");
-		String caption = NLT.getDef(item.attributeValue("caption", name));
+		String caption = NLT.getDef(DefinitionUtils.getPropertyValue(item, "caption"));
+		if (Validator.isNull(caption)) {
+			caption = DefinitionUtils.getPropertyValue(item, "name");
+		} 
 		sb.append(caption);
 		sb.append("</a>");
+		addOptionHelp(item, sb, hb);
+		sb.append("</li>\n");
+		//build sorted list 
+		optionsMap.put(caption, new StringBuffer[]{sb,hb});
+		
+	}
+	private void addOptionHelp(Element item, StringBuffer sb, StringBuffer hb) {
 		//See if this item has any help
 		Element help = (Element) item.selectSingleNode("./help");
 		if (help != null) {
@@ -604,9 +626,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append(Integer.toString(helpDivCount));
 			sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 		}
-		sb.append("</li>\n");
-		//build sorted list 
-		optionsMap.put(caption, new StringBuffer[]{sb,hb});
 		
 	}
 	private void buildPropertiesDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
