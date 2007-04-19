@@ -122,6 +122,7 @@ implements ExclusiveRepositorySessionFactory, JCRRepositorySessionFactoryMBean {
 	}
 
 	public void shutdown() {
+		/*
 		if(initialized) {
 			try {
 				Session session = createSession(null);
@@ -134,7 +135,7 @@ implements ExclusiveRepositorySessionFactory, JCRRepositorySessionFactoryMBean {
 			finally {
 				initialized = false;
 			}
-		}
+		}*/
 	}
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
