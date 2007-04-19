@@ -27,10 +27,18 @@
     <property name="internalId" length="32"/>
     <property name="deleted"/>
     <property name="disabled"/>
-    <property name="zoneId" not-null="true"/>
+    <property name="zoneId"/>
 	<property name="logVersion"/>
-    <property name="name" length="82" not-null="true"/>
-    <property name="foreignName" length="128" not-null="true"/>
+    <property name="name" length="64"/>
+    <property name="foreignName" length="128" />
+<properties name="nameKey" unique="true" update="false" insert="false">
+<property name="zoneId" update="false" insert="false"/>
+<property name="name" update="false" insert="false"/>
+</properties>
+<properties name="foreignKey" unique="true" update="false" insert="false">
+<property name="zoneId" update="false" insert="false"/>
+<property name="foreignName" update="false" insert="false"/>
+</properties>
     <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
       <cache usage="read-write"/>
       <key column="userId"/>

@@ -357,6 +357,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             	    		session.evict(p);
             	    	}
             			inList.deleteCharAt(inList.length()-1);
+            			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
     		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
    		   					EntityType.folderEntry.name() + "'", FolderEntry.class);
     		   			//delete ratings/visits for these entries
@@ -547,6 +548,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
+        			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
 	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
  	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())

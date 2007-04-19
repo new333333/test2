@@ -242,7 +242,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
        	   			}
-        			//need to use ownerId, cause attachments/custom sets not indexed by principal
+        			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by principal
 		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and (ownerType='" +
 		   					EntityType.user.name() + "' or ownerType='" + EntityType.group.name() + "')", Principal.class);
 		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in (:pList)")

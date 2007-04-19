@@ -28,7 +28,8 @@ public class AnyOwner {
 	protected Principal principal;
 	protected Binder binder;
    //keep as reference for user queries only 
-    protected String owningFolderSortKey;    
+    protected String owningFolderSortKey;   
+    //optimization to delete associations for entries in a binder, but not associations of the binder itself
     protected Long owningBinderId;
     /**
      * This should be used only by hibernate

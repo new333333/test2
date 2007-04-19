@@ -252,6 +252,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      	   		EntityIdentifier id = entity.getEntityIdentifier();
      	   		if (entity instanceof TemplateBinder) {
      	   			//these associations are based on class, which is not a what we get back with EntityType for template
+        			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by binder
+
      	   			deleteEntityAssociations("ownerId=" + id.getEntityId() + " and ownerType='template'", entity.getClass());
     	   			
      	   		} else {
