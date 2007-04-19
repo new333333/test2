@@ -1487,6 +1487,7 @@ div.ss_dashboardProtoDropTarget {
   margin: 10px;
   border: 1px solid ${ss_form_border_color};
   background-color: ${ss_form_component_background_color};
+  zoom:1; // a workaround IE bug - font color not display correctly
 }
 
 .ss_dashboard_view {
