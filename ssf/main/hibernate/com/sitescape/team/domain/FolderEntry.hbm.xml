@@ -27,7 +27,7 @@
     </bag>
     <component name="reservation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="reserved_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
         <column name="reserved_principal"/>
       </many-to-one>
     </component>
@@ -41,24 +41,28 @@
     </set>
     <component name="HKey" class="com.sitescape.team.domain.HKey">
       <property name="level" column="entry_level"/>
-      <property name="sortKey" length="512" column="entry_sortKey"/>
+      <property name="sortKey" length="512" column="entry_sortKey" index="entrySortKey"/>
     </component>
-    <property name="owningFolderSortKey" length="512"/>
+    <property name="owningFolderSortKey" length="512" index="owningFolderSortKey"/>
     <property name="lastActivity"/>
 	<property name="logVersion"/>
-    <property name="replyCount" not-null="true"/>
-    <property name="nextDescendant" not-null="true"/>
-    <property name="totalReplyCount" not-null="true"/>
+    <property name="replyCount"/>
+    <property name="nextDescendant" />
+    <property name="totalReplyCount" />
     <property name="postedBy" length="256"/>
-    <many-to-one class="com.sitescape.team.domain.FolderEntry" name="topEntry"/>
+    <many-to-one class="com.sitescape.team.domain.FolderEntry" name="topEntry">
+    	<column name="topEntry" index="owningEntry" />
+    </many-to-one>
     <many-to-one class="com.sitescape.team.domain.FolderEntry" name="parentEntry"/>
     <component name="workflowChange" access="field" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="wrk_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
         <column name="wrk_principal"/>
       </many-to-one>
     </component>
-    <many-to-one name="parentBinder"/>
+    <many-to-one name="parentBinder">
+    	<column name="parentBinder" index="owningFolder" />
+    </many-to-one>
     <component name="description">
       <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>

@@ -117,7 +117,7 @@ public abstract class Principal extends Entry  {
     }
      
     /**
-     * @hibernate.property not-null="true"
+     * @hibernate.property 
      */
     public Long getZoneId() {
     	return this.zoneId;
@@ -128,7 +128,7 @@ public abstract class Principal extends Entry  {
 
  
     /**
-     * @hibernate.property length="82"
+     * @hibernate.property length="64"
      * @return Returns the loginName.
      */
     public String getName() {

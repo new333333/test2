@@ -290,9 +290,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setModification(binder.getCreation());
         binder.setLogVersion(Long.valueOf(1));
         binder.setOwner(user);
-    	//Since parent collection is a list we can add the binder without an id
-    	getCoreDao().refresh(parent);
-      	parent.addBinder(binder);
+    	//make sure we have the latest = to reduce optimistic lock exceptions
+        getCoreDao().refresh(parent);
+       	//Since parent collection is a list we can add the binder without an id
+    	parent.addBinder(binder);
  
 // not implemented
 //      	getAclManager().doInherit(parent, (AclControlled) binder);

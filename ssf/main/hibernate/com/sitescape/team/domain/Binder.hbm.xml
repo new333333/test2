@@ -17,7 +17,9 @@
     <property name="mirrored"/>
     <property name="resourceDriverName" length="64"/>
     <property name="resourcePath" length="1024"/>
-    <many-to-one name="parentBinder"/>
+    <many-to-one name="parentBinder">
+          <column name="parentBinder" index="owningBinder"/>
+    </many-to-one>
     <many-to-one name="owner" access="field"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
@@ -105,7 +107,7 @@
       </many-to-one>
     </component>
     <subclass name="com.sitescape.team.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
-      <many-to-one embed-xml="false" node="topFolder/@id" name="topFolder"/>
+      <many-to-one name="topFolder" />
       <property name="nextEntryNumber"/>
       <property name="nextFolderNumber"/>
       <component name="folderHKey" class="com.sitescape.team.domain.HKey">
@@ -130,4 +132,5 @@
     </subclass>
  
   </class>
+  	
 </hibernate-mapping>
