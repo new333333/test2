@@ -201,4 +201,12 @@ public class LuceneUtil {
 			indexSearcher = null;
 		}
 	}
+	
+	// needed for searchers that are opened on existing readers.
+	public static void closeSearcher() {
+		try {
+			indexSearcher.close();
+		} catch (Exception se) {}
+		indexSearcher = null;
+	}
 }

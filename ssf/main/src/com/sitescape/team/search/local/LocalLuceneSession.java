@@ -498,14 +498,7 @@ public class LocalLuceneSession implements LuceneSession {
 				return resultTags;
 			}
 		} finally {
-			/*
-			try {
-				indexReader.close();
-				indexSearcher.close();
-			} catch (Exception e) {
-			}
-			*/
-
+			LuceneUtil.closeSearcher();
 		}
 	}
 	
@@ -792,13 +785,7 @@ public class LocalLuceneSession implements LuceneSession {
 				return resultTitles;
 			}
 		} finally {
-			/*
-			try {
-				indexReader.close();
-				indexSearcher.close();
-			} catch (Exception e) {
-			}
-			*/
+			LuceneUtil.closeSearcher();
 		}
 	}
 	
