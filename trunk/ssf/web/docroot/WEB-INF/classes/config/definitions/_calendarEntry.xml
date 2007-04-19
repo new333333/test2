@@ -40,7 +40,7 @@
       <item name="attachFiles" caption="__attach_files" type="data" id="5">
         <properties>
           <property name="name" value="ss_attachFile"/>
-          <property name="caption" value=""/>
+          <property name="caption" value="__attach_files"/>
           <property name="width" value="60"/>
           <property name="number" value=""/>
           <property name="storage" value=""/>
