@@ -1609,6 +1609,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor) {
 		//access check not needed = assumed okay from entry
         Definition def = entry.getEntryDef();
+        if(def == null) return;
         String flagElementPath = "./" + visitor.getFlagElementName();
         Document definitionTree = def.getDefinition();
         if (definitionTree != null) {
