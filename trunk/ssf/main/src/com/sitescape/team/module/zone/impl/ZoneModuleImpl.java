@@ -120,8 +120,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
-	        			//reload to get in session
-	        			zone = (Workspace)getCoreDao().loadBinder(zone.getId(), zone.getId());
 	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
 	        			//	get super user from config file - must exist or throws and error
 	        			User superU = getProfileDao().findUserByName(superName, zone.getName());

@@ -68,6 +68,7 @@ import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
@@ -871,7 +872,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		//flush any changes so any exiting changes don't get lost on the evict
     	getCoreDao().flush();
   		SFQuery query = indexEntries_getQuery(binder);
-	   	
+  		int threshhold = SPropsUtil.getInt("lucene.flush.threshhold", 100);
        	try {       
   			List batch = new ArrayList();
   			List docs = new ArrayList();
@@ -904,15 +905,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				   	indexEntries_postIndex(binder, entry);
        				}
        				getCoreDao().evict(entry);
-       			}
-       			IndexSynchronizationManager.applyChanges(ObjectKeys.INDEX_THRESHHOLD);
-	            	            
+          	  		//apply after we have gathered a few
+           	   		IndexSynchronizationManager.applyChanges(threshhold);
+           			}
+       	 	            	            
        			// Register the index document for indexing.
        			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
        		
         	}
         	
         } finally {
+        	//clear out anything remaining
+   	   		IndexSynchronizationManager.applyChanges();
         	query.close();
         }
  
