@@ -38,6 +38,21 @@
 
   <c:set var="hitCount" value="${hitCount + 1}"/>
     <div>
+	  <a href="<ssf:url 
+	    webPath="viewFile"
+	    folderId="${fileEntry._binderId}"
+	    entryId="${fileEntry._docId}" >
+	    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
+	    </ssf:url>"
+		onClick="return ss_openUrlInWindow(this, '_blank');">
+    <img border="0" src="<ssf:url 
+    webPath="viewFile"
+    folderId="${fileEntry._binderId}"
+    entryId="${fileEntry._docId}" >
+    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
+    <ssf:param name="viewType" value="thumbnail"/>
+    </ssf:url>"></a>
+    <br\>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -76,13 +91,6 @@
 
     </c:when>
  	</c:choose>
-    <img border="0" src="<ssf:url 
-    webPath="viewFile"
-    folderId="${fileEntry._binderId}"
-    entryId="${fileEntry._docId}" >
-    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
-    <ssf:param name="viewType" value="thumbnail"/>
-    </ssf:url>"><br\>
     <c:out value="${fileEntry.title}"/></a></div>
  </c:if>
 
