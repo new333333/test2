@@ -38,6 +38,14 @@
 					<div class="ss_entry_folderListView">
 						<div class="ss_entryHeader">
 							<h3 class="ss_entryTitle">
+							
+								<%
+									if (!ssSeenMap.checkAndSetSeen(entry, true)) {
+										%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+									}
+								%>
+							
+							
 								<c:out value="${entry._docNum}" escapeXml="false"/>.
 								<ssf:menuLink 
 									displayDiv="false" action="view_folder_entry" 
