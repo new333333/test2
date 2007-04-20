@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_userWorkspace" caption="__definition_default_user_workspace" type="12" nextId="9" definitionType="12" databaseId="402883b90cc53079010cc539bf26000b" internalId="402883b90cc53079010cc539bf26000b">
+<definition name="_userWorkspace" caption="__definition_default_user_workspace" type="12" nextId="10" definitionType="12" databaseId="402883b90cc53079010cc539bf26000b" internalId="402883b90cc53079010cc539bf26000b">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
     <item name="description" caption="__description" type="data" id="3">
@@ -20,6 +20,11 @@
   </item>
   <item name="userWorkspaceView" caption="__user_workspace_view" id="5">
     <properties/>
+    <item name="descriptionView" caption="__description" category="commonEntryViewData" id="9">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
     <item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" id="6">
       <properties>
         <property name="caption" value="__user_workspace_businessCard"/>
