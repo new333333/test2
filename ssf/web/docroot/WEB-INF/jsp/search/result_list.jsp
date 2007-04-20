@@ -166,9 +166,14 @@
 								<div class="ss_clear">&nbsp;</div>
 							</div>
 							<p id="summary_${status.count}">
-								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-									${entry._desc}
-								</ssf:textFormat>
+							
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>
+											
+
 							</p>
 						</div>
 						<div class="ss_clear">&nbsp;</div>
@@ -231,9 +236,11 @@
 								<div class="ss_clear">&nbsp;</div>
 							</div>
 							<p id="summary_${status.count}">
-								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-									${entry._desc}
-								</ssf:textFormat>
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>
 							</p>
 						</div>
 						<div class="ss_clear">&nbsp;</div>
@@ -268,9 +275,11 @@
 								<div class="ss_clear">&nbsp;</div>
 							</div>
 							<p id="summary_${status.count}">
-								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-									${entry._desc}
-								</ssf:textFormat>
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>							
 							</p>
 						</div>
 						<div class="ss_clear">&nbsp;</div>
@@ -304,9 +313,11 @@
 								<div class="ss_clear">&nbsp;</div>
 							</div>
 							<p id="summary_${status.count}">
-								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-									${entry._desc}
-								</ssf:textFormat>
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>							
 							</p>
 						</div>
 						<div class="ss_clear">&nbsp;</div>
@@ -338,9 +349,11 @@
 								<div class="ss_clear">&nbsp;</div>
 							</div>
 							<p id="summary_${status.count}">
-								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-									${entry._desc}
-								</ssf:textFormat>
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>							
 							</p>
 						</div>
 						<div class="ss_clear">&nbsp;</div>
