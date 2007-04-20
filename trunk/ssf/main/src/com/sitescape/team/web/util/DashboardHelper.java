@@ -341,9 +341,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					//Set up the workspace tree bean,
 					getInstance().getWorkspaceTreeBean(binder, 
 							ssDashboard, model, id, component, new WorkspaceConfigHelper());
-				} else if (component.get(Name).equals(
-						ObjectKeys.DASHBOARD_COMPONENT_SEARCH)  ||
-						component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
+				} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component, true);
@@ -999,8 +997,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				if (componentMap.containsKey(Data)) originalComponentData = (Map) componentMap.get(Data);
 				String cName = (String)componentMap.get(DashboardHelper.Name);
 				//Get any component specific data
-				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName) ||
-				    ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName)) {
+				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName)) {
 					//Get the search query
 					try {
 						// Document query = FilterHelper.getSearchFilter(request);
@@ -1020,6 +1017,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					}
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
 					//Get the folderIds out of the formData
 					Iterator itFormData = formData.keySet().iterator();
