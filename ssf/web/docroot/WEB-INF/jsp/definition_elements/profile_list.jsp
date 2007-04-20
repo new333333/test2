@@ -104,13 +104,10 @@
 <%
 	}
 %>
-    <a href="<ssf:url     
-    adapter="true" 
-    portletName="ss_forum" 
-    folderId="${ssBinder.id}" 
-    action="view_profile_entry" 
-    entryId="<%= docId %>" actionUrl="false" />" 
-    onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" >
+  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+  	name="action" value="view_ws_listing"/><portlet:param 
+  	name="binderId" value="${ssBinder.id}"/><portlet:param 
+  	name="entryId" value="<%= docId %>"/></portlet:renderURL>">
     <c:if test="${empty entry.title}">
     <span class="ss_fineprint">--no title--</span>
     </c:if>
