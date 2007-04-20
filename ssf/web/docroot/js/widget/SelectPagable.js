@@ -75,19 +75,24 @@ ss_widget.incrementalPagableComboBoxDataProvider = function(/*String*/ url, /*Nu
 				if (!dojo.lang.isArray(data[0])) {
 					//console.debug(data[0]._prev);
 					var pagerObj = data.shift();
-					//console.debug(pagerObj._prev);
-					if (typeof pagerObj._prev != "undefined")
-					{
-						pagerObj._prev.pgTp = "p";
-						data.unshift(pagerObj._prev); // previous as first item
+					
+					
+					if (typeof pagerObj != "undefined") { 
+
+						if (typeof pagerObj._prev != "undefined")
+						{
+							pagerObj._prev.pgTp = "p";
+							data.unshift(pagerObj._prev); // previous as first item
+						}
+						if (typeof pagerObj._next != "undefined") 
+						{
+							pagerObj._next.pgTp = "n";
+							data.push(pagerObj._next);    // next as last item
+						}
+						if (typeof pagerObj._idx != "undefined") 
+							activeIndex = pagerObj._idx;
+
 					}
-					if (typeof pagerObj._next != "undefined") 
-					{
-						pagerObj._next.pgTp = "n";
-						data.push(pagerObj._next);    // next as last item
-					}
-					if (typeof pagerObj._idx != "undefined") 
-						activeIndex = pagerObj._idx;
 
 					// server returned only a pager, no data
 					if (data.length==0)
