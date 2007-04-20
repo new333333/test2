@@ -15,7 +15,10 @@
 <div class="ss_entryContent">
  <span class="ss_labelLeft"><c:out value="${property_caption}" />:</span>
  <span>
-  <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+ <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
+					  pattern="dd MMM yyyy" />
+
 </span>
 </div>
 </c:if>
@@ -28,7 +31,9 @@
   </td>
   <td valign="top">
 	<span class="ss_bold">
-	  <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
+					  pattern="dd MMM yyyy" />
 	</span>
   </td>
 </tr>
