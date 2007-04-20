@@ -22,6 +22,8 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.web.WebKeys;
@@ -47,7 +49,10 @@ public class WelcomeController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
- 		Map<String,Object> model = new HashMap<String,Object>();
+        User user = RequestContextHolder.getRequestContext().getUser();
+
+        Map<String,Object> model = new HashMap<String,Object>();
+ 		model.put(WebKeys.USER_PRINCIPAL, user);
 		
 		return new ModelAndView("help/welcome", model);
 	}

@@ -12,7 +12,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<h1>Welcome to ICECorps!</h1>
+<h1><ssf:nlt tag="welcome.header"/></h1>
 
-<a href="/ssf/help/welcome.html" onclick="javascript:return ss_openUrlInWindow(this,'help')">Click here to learn more about our software!</a>
+<a href="<html:rootPath/>help/${ssUser.locale.language}/welcome.html" 
+  onClick="javascript:return ss_openUrlInWindow(this,'help')"><ssf:nlt tag="welcome.learnMore"/></a>
 
