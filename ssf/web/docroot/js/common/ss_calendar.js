@@ -1294,7 +1294,7 @@ var ss_cal_Events = {
             hb.style.borderColor = ss_cal_CalData.border(e.calsrc);
             dojo.html.setOpacity(hb,0);
             dojo.html.show(hb);
-            dojo.html.placeOnScreen(hb, (ebox.left + eboxm.width), (ebox.top), 10, false, "TL");
+            dojo.html.placeOnScreen(hb, (ebox.left + 30), (ebox.top - hb.offsetHeight - 20), 10, false, "TL");
             dojo.lfx.html.fadeIn(hb, 200).play();
         }
     },
