@@ -47,6 +47,13 @@
 				<portlet:param name="binderId" value="${ssFolder.id}"/>
 				<portlet:param name="operation" value="select_filter"/>
 				</portlet:actionURL>" method="post" >
+			
+			
+			<%
+			//	if (filterName.length() > 10) {
+			//		filterName = filterName.substring(0, 6) + "...";
+			//	}
+			%>
 			<ssf:menu title="<%= filterName %>" 
 			  titleId="ss_filterTitle" 
 			  titleClass="ss_compact"

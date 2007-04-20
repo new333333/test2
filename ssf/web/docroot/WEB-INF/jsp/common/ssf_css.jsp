@@ -2231,8 +2231,17 @@ a.ss_breadcrumb {
 	font-family: ${ss_style_title_font_family};
 }
 
-.ss_actions_bar2 {
+
+table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
+	width: 100%;
+}
+
+.ss_actions_bar2, table.ss_actions_bar2_pane {
+	background-color: ${ss_toolbar2_background_color};
+}
+
+.ss_actions_bar2 {
 	font-weight: normal;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
