@@ -37,23 +37,29 @@
 
 <% // Then include the navigation widgets for this view %>
 
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+<table class="ss_actions_bar2_pane">
+	<tr>
+		<td>
 
-<% // Entry toolbar %>
-<c:if test="${!empty ssEntryToolbar}">
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-</c:if>
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-</ssf:toolbar>
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_select_events.jsp" %>
-</ssf:toolbar>
-
-
-</ssf:toolbar>
-
+			<% // Add the toolbar with the navigation widgets, commands and filter %>
+			<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+			
+			<% // Entry toolbar %>
+			<c:if test="${!empty ssEntryToolbar}">
+			<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+			</c:if>
+			
+			<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+			</ssf:toolbar>
+			
+			<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
+			<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_select_events.jsp" %>
+			</ssf:toolbar>
+			
+			
+			</ssf:toolbar>
+		</td>
+	</tr>
+</table>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_content.jsp" %>

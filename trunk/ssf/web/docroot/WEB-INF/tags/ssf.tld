@@ -1155,6 +1155,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>
 		</attribute>		
+		<attribute>
+			<name>skipSeparator</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>			
 	</tag>
 
 	<tag>

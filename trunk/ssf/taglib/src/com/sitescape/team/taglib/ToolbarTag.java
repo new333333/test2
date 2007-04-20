@@ -46,6 +46,7 @@ public class ToolbarTag extends BodyTagSupport {
 	private SortedMap toolbar = null;
 	private String style = "";
 	private boolean item = false;
+	private boolean skipSeparator = false;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -70,6 +71,7 @@ public class ToolbarTag extends BodyTagSupport {
 			req.setAttribute(WebKeys.TOOLBAR, this.toolbar);
 			req.setAttribute(WebKeys.TOOLBAR_STYLE, this.style);
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
+			req.setAttribute(WebKeys.TOOLBAR_SKIP_SEPARATOR, this.skipSeparator);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -83,6 +85,7 @@ public class ToolbarTag extends BodyTagSupport {
 			req.setAttribute(WebKeys.TOOLBAR, this.toolbar);
 			req.setAttribute(WebKeys.TOOLBAR_STYLE, this.style);
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
+			req.setAttribute(WebKeys.TOOLBAR_SKIP_SEPARATOR, this.skipSeparator);
 			res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -96,6 +99,7 @@ public class ToolbarTag extends BodyTagSupport {
 			this.toolbar = null;
 			this.style = "";
 			this.item = false;
+			this.skipSeparator = false;
 		}
 	}
 
@@ -109,6 +113,10 @@ public class ToolbarTag extends BodyTagSupport {
 
 	public void setItem(boolean item) {
 	    this.item = item;
+	}
+
+	public void setSkipSeparator(boolean skipSeparator) {
+		this.skipSeparator = skipSeparator;
 	}
 
 }
