@@ -81,22 +81,22 @@ function <portlet:namespace/>_getUnseenCounts() {
   <td><span id="<portlet:namespace/>_count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td>
-	<c:if test="${folder.parentBinder.entityIdentifier.entityType == 'folder'}">
-	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="view_folder_listing"/><portlet:param 
-			name="binderId" value="${folder.parentBinder.id}"/></portlet:renderURL>">
-			${folder.parentBinder.title}</a> // 
-	</c:if>
-	<c:if test="${folder.parentBinder.entityIdentifier.entityType != 'folder'}">
-	  <a href="<portlet:renderURL windowState="maximized">
-			<portlet:param name="action" value="view_ws_listing"/>
-			<portlet:param name="binderId" value="${folder.parentBinder.id}"/>
-		</portlet:renderURL>"><c:out value="${folder.parentBinder.title}"/></a> // 
-	</c:if>
 	<a href="<portlet:renderURL windowState="maximized">
 			<portlet:param name="action" value="view_folder_listing"/>
 			<portlet:param name="binderId" value="${folder.id}"/>
-		</portlet:renderURL>"><span class="ss_bold">${folder.title}</span></a>
+		</portlet:renderURL>"><span>${folder.title}</span></a>
+	<c:if test="${folder.parentBinder.entityIdentifier.entityType == 'folder'}">
+	  <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized"><portlet:param 
+			name="action" value="view_folder_listing"/><portlet:param 
+			name="binderId" value="${folder.parentBinder.id}"/></portlet:renderURL>">
+			<span class="ss_smallprint ss_light">(${folder.parentBinder.title})</span></a>
+	</c:if>
+	<c:if test="${folder.parentBinder.entityIdentifier.entityType != 'folder'}">
+	  <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized">
+			<portlet:param name="action" value="view_ws_listing"/>
+			<portlet:param name="binderId" value="${folder.parentBinder.id}"/></portlet:renderURL>">
+			<span  class="ss_smallprint ss_light">(${folder.parentBinder.title})</span></a>
+	</c:if>
   </td>
   </tr>
   <%
