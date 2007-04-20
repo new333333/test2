@@ -14,6 +14,7 @@
 <% // Define the user's choice of skins (right now there is only one) %>
 <c:set var="ss_user_skin" value="r1" scope="request"/>
 <div class="ss_style" align="left">
+<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
 
 <span class="ss_titlebold"><ssf:nlt tag="help.on.help.title"/></span> 
 

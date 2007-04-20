@@ -2301,6 +2301,10 @@ var ss_helpSystem = {
 		}
 	},
 
+	hideHelpPanel : function(obj, panelId) {
+		ss_hideDiv(panelId);
+	},
+	
 	highlight : function(id) {
 		//ss_debug("Highlight " + id)
 		var obj = document.getElementById(id);

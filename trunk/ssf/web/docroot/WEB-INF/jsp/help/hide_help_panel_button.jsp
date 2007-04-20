@@ -10,15 +10,9 @@
  *
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
-<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
-
-<span class="ss_bold">The Workspace Tree Portlet</span>
-<br/>
-<br/>
-This is the primary navigation portlet. 
-<br/>
-<br/>
-Where do you want to go today?
+<div align="right">
+  <a href="javascript: ;" 
+    onClick="ss_helpSystem.hideHelpPanel(this, 'ss_help_panel');return false;"><img 
+    border="0" style="padding-left: 10px;" 
+    src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
 </div>

@@ -12,6 +12,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
+<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
+
 <span class="ss_bold"><ssf:nlt tag="administration.portlet"/></span>
 <br/>
 <ssf:nlt tag="administration.selectHelp"/>
