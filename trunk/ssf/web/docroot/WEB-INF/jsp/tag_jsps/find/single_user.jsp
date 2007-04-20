@@ -44,14 +44,13 @@
     <div id="available_${prefix}">
       <ul>
       </ul>
-    </div>
-</div>
-<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+    </div><img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 		value="${ssUser.parentBinder.id}"/><ssf:param name="entryId" 
 		value="ss_entryIdPlaceholder"/><ssf:param name="newTab" value="1"/></ssf:url>', ${leaveResultsVisible}, '<ssf:url 
     	adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false" >
 		<ssf:param name="operation" value="find_user_search" />
     	</ssf:url>'); ss_findUserInitializeForm('${form_name}', '${prefix}')" />
+</div>
 <input type="hidden" name="<%= findUserElementName %><%= instanceCount %>"/>
 </div>
 

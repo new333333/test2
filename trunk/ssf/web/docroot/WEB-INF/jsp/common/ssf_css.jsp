@@ -1756,6 +1756,7 @@ div.ss_dashboardProtoDropTarget {
 
 /* -------------------Skins-------------------- */
 .ss_content_outer {
+    position: relative;
 	padding-bottom:100px;
 	margin-top:1px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back1.gif) repeat;
@@ -1873,6 +1874,7 @@ div.ss_global_toolbar_in_portlet {
 	height: auto;
 }
 div.ss_global_toolbar_maximized {
+    position: relative;
 	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
 	height:45px;
 	padding-top:2px;
@@ -1889,6 +1891,7 @@ div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global
  div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help {
 	float: left;
 	white-space: nowrap;
+	position: relative;
 }
 
 .ss_global_toolbar_help {
@@ -1898,7 +1901,7 @@ div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
 	width: 4px;
-	height: 45px;
+	height: 43px;
 	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.jpg) no-repeat;	
 	margin: 0 5px 0 5px;	
 }
@@ -1950,17 +1953,19 @@ div.ss_global_toolbar table td {
 
 
 .ss_global_toolbar_myworkspace div, .ss_global_toolbar_favs div {
-	padding: 25px 5px 10px 5px;
+	padding: 25px 5px 0px 5px;
 	vertical-align: middle;
 }
 
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
 	width: 40px;
+	position: relative;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
 	width: 62px;
+	position: relative;
 }
 
 .ss_global_toolbar_favs_big div {
