@@ -19,19 +19,19 @@ eventType : "${ssCalendarViewBean.eventType}",
 
 dayNamesShort : [<%--
 --%><c:forEach var="d" items="${ssCalendarViewBean.dayHeaders}" varStatus="status"><%--
-  --%>"${d}"<c:if test="${!status.last}">,</c:if><%--
+  --%>"<ssf:escapeJavaScript value="${d}"/>"<c:if test="${!status.last}">,</c:if><%--
 --%></c:forEach><%--
 --%>],
 
 monthNamesShort : [<%--
 --%><c:forEach var="d" items="${ssCalendarViewBean.monthNamesShort}" varStatus="status"><%--
-  --%>"${d}"<c:if test="${!status.last}">,</c:if><%--
+  --%>"<ssf:escapeJavaScript value="${d}"/>"<c:if test="${!status.last}">,</c:if><%--
 --%></c:forEach><%--
 --%>],
 
 monthNames : [<%--
 --%><c:forEach var="d" items="${ssCalendarViewBean.monthNames}" varStatus="status"><%--
-  --%>"${d}"<c:if test="${!status.last}">,</c:if><%--
+  --%>"<ssf:escapeJavaScript value="${d}"/>"<c:if test="${!status.last}">,</c:if><%--
 --%></c:forEach><%--
 --%>],
 
@@ -58,7 +58,7 @@ events : [<%--
     --%><jsp:useBean id="evim" type="java.util.Map" /><%--
     --%><% java.util.HashMap e = (java.util.HashMap) evim.get("entry"); %><%--
     --%>
-		  {eventId: "${evim.eventid}", 
+		  {eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
 		  	entryId : "<%= e.get("_docId").toString() %>",
 		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
 		  	<c:if test="${evim.cal_duration == 0 && evim.eventType == 'event'}">
@@ -78,11 +78,11 @@ events : [<%--
 			  	hour: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="HH"/>",
 			  	minutes: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="mm"/>"
 		  	},
-		  	text: "${evim.cal_endtimestring} // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm z"/>  ",
+		  	text: "<ssf:escapeJavaScript value="${evim.cal_endtimestring}"/> // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm z"/> ",
 		  	dur: ${evim.cal_duration},
-		  	title: "${evim.entry.title}", 
+		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
-		  	eventType: "${evim.eventType}",
-			viewOnClick: "ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');"}<c:if test="${!status.last}">,</c:if><%--
+		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",
+			viewOnClick: "<ssf:escapeJavaScript value="ss_loadEntry(this,'${evim.entry._docId}');"/>"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]
 }
