@@ -13,6 +13,7 @@ package com.sitescape.team.portlet.binder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -618,8 +619,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
 		String entryTypeId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+		if (entryTypeId == null || entryTypeId.equals("")) {
+			return new HashMap();
+		}
 		block.put(SearchEntryType, entryTypeId);
 		String entryFieldId = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+		if (entryFieldId == null || entryFieldId.equals("")) {
+			return new HashMap();
+		}
 		block.put(SearchEntryElement, entryFieldId);
 		List values = getElementValues(filterTerm);
 		if (values.size() > 0) {
