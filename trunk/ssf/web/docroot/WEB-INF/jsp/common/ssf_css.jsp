@@ -3056,7 +3056,7 @@ table.ss_cal_gridTable td {
  * is visible.
  */
 div.ss_cal_todayMarker {
-  background-color: #BFCA8A;
+  background-color: #AFC8E3;
   position: absolute;
 }
 

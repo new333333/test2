@@ -145,7 +145,7 @@ var ss_cal_CalData = {
     
     loadInitial : function() {
     	this.setMap([
-		  {calsrc: "cal1", box: "#EDF2E0", border: "#CCCCCC"},
+		  {calsrc: "cal1", box: "#E8EFF7", border: "#CCCCCC"},
 		  {calsrc: "cal2", box: "#88CC88", border: "#66AA66"},
 		  {calsrc: "cal3", box: "#CC88CC", border: "#AA66AA"},
 		  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
