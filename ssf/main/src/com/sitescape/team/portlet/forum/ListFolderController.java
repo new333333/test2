@@ -106,10 +106,6 @@ public class ListFolderController extends  SAbstractController {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		} else if (op.equals(WebKeys.OPERATION_CALENDAR_GOTO_DATE)) {
-			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
-			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 			
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
@@ -526,9 +522,7 @@ public class ListFolderController extends  SAbstractController {
 			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
 		Map folderEntries = null;
 		Long folderId = folder.getId();
-		
-		CalendarViewRangeDates calendarViewRangeDates = null;
-			
+					
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
 			//Get the WebDAV URLs
@@ -538,17 +532,7 @@ public class ListFolderController extends  SAbstractController {
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-//				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-//
-//				Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
-//				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-//				
-//				calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
-//		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
-//		       	
-//    	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-//		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-//		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+				// don't get events now, do it with ajax
 			} else {
 				folderEntries = getFolderModule().getEntries(folderId, options);
 			}
