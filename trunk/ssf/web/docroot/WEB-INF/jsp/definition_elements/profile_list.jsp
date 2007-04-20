@@ -60,6 +60,11 @@
   border-left:solid #666666 1px;">
   
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar" >
+
+	<c:if test="${!empty ssEntryToolbar}">
+		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+	</c:if>
+
 	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
 		<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 	</ssf:toolbar>

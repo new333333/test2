@@ -182,7 +182,8 @@ public class ListProfilesController extends   SAbstractController {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(request, response, binder).getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, buildViewFolderToolbar(request, response, binder).getToolbar());
+		model.put(WebKeys.ENTRY_TOOLBAR, buildViewEntryToolbar(request, response, binder).getToolbar());
 
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
@@ -351,39 +352,15 @@ public class ListProfilesController extends   SAbstractController {
 		return hmRet;
 	}
 	
-	protected Toolbar buildViewToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
+	protected Toolbar buildViewFolderToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-		PortletURL url;
-		String binderId = binder.getId().toString();
+        PortletURL url;
+        String binderId = binder.getId().toString();
+        
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		//	The "Add" menu (Turned off because adding users must be done in the portal)
-/*		List defaultEntryDefinitions = binder.getEntryDefinitions();
-		if (!defaultEntryDefinitions.isEmpty()) {
-			try {
-				getProfileModule().checkAddEntryAllowed(binder);
-				int count = 1;
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				Map qualifiers = new HashMap();
-				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.getDef(def.getTitle());
-					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-						title = title + " (" + String.valueOf(count++) + ")";
-					}
-					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-				}
-			} catch (AccessControlException ac) {};
-		}
-*/
 		
 		//The "Administration" menu
 		boolean adminMenuCreated=false;
@@ -419,6 +396,45 @@ public class ListProfilesController extends   SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 			toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 			}
+		
+		return toolbar;
+	}
+	
+	protected Toolbar buildViewEntryToolbar (RenderRequest request, RenderResponse response, ProfileBinder binder) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        String userDisplayStyle = user.getDisplayStyle();
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+		PortletURL url;
+		String binderId = binder.getId().toString();
+		//Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+		//	The "Add" menu (Turned off because adding users must be done in the portal)
+/*		List defaultEntryDefinitions = binder.getEntryDefinitions();
+		if (!defaultEntryDefinitions.isEmpty()) {
+			try {
+				getProfileModule().checkAddEntryAllowed(binder);
+				int count = 1;
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				Map qualifiers = new HashMap();
+				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+						title = title + " (" + String.valueOf(count++) + ")";
+					}
+					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+				}
+			} catch (AccessControlException ac) {};
+		}
+*/
+		
+
 
 		//	The "Display styles" menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
