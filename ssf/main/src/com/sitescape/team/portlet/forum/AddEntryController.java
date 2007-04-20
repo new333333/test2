@@ -369,6 +369,7 @@ public class AddEntryController extends SAbstractController {
 							int hour = Integer.parseInt(timeS[0]);
 							if (hour != -1) {
 								startDate.set(Calendar.HOUR_OF_DAY, hour);
+								startDate.set(Calendar.MINUTE, 0);
 							}
 						}
 						if (timeS.length > 1) {
