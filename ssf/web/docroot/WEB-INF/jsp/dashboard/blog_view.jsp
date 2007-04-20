@@ -61,16 +61,12 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
-    <c:if test="${empty folder.iconName}">
-      <img src="<html:imagesPath/>icons/folder.gif"/>
-    </c:if>
-    <c:if test="${!empty folder.iconName}">
-      <img src="<html:imagesPath/>${folder.iconName}"
-    </c:if>
-  </td>
-  <td><a href="javascript: ;"
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${portletNamespace}', 'yes');"
+		>${folder.parentBinder.title}</a> // 
+    <a href="javascript: ;"
 		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
-		>${folder.title}</a></td>
+		><span class="ss_bold">${folder.title}</span></a></td>
 </tr>
 </c:forEach>
 </table>

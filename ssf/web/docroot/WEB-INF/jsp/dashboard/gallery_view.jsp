@@ -41,6 +41,23 @@ function ${ss_divId}_galleryurl(binderId, entryId, type) {
 </script>
 </c:if>
 
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<tr>
+  <td>
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${portletNamespace}', 'yes');"
+		>${folder.parentBinder.title}</a> // 
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
+		><span class="ss_bold">${folder.title}</span></a></td>
+</tr>
+</c:forEach>
+</table>
+<br/>
+</c:if>
+
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/gallery_view2.jsp" %>
 </div>

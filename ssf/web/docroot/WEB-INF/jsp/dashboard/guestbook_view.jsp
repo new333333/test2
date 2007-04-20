@@ -49,21 +49,40 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 
 <script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
 
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
+<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<tr>
+  <td>
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${portletNamespace}', 'yes');"
+		>${folder.parentBinder.title}</a> // 
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
+		><span class="ss_bold">${folder.title}</span></a>
+  </td>
+  <td valign="top" align="right">
+	<div style="text-align: right; margin: 5px; ">
+		<c:if test="${!empty ssComponentId && !empty ssDashboard.beans[componentId] && !empty ssDashboard.beans[componentId].ssSearchFormData && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0]}">
+		<a class="ss_linkButton" href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="add_folder_entry"
+				    binderId="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.id}">
+				    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0].id}" />
+		    	    <ssf:param name="newTab" value="1"/>
+		    	    <ssf:param name="addEntryFromIFrame" value="1"/>
+		    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    
+					</ssf:url>" onClick="ss_signGuestbook('${ssNamespace}', this);return false;">
+		<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
+		</a>
+		</c:if>
+	</div>
+  </td>
+</tr>
+</c:forEach>
+</table>
+<br/>
+</c:if>
 
-<div style="text-align: right; margin: 5px; ">
-	<c:if test="${!empty ssComponentId && !empty ssDashboard.beans[componentId] && !empty ssDashboard.beans[componentId].ssSearchFormData && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0]}">
-	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			    action="add_folder_entry"
-			    binderId="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.id}">
-			    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0].id}" />
-	    	    <ssf:param name="newTab" value="1"/>
-	    	    <ssf:param name="addEntryFromIFrame" value="1"/>
-	    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    
-				</ssf:url>" onClick="ss_signGuestbook('${ssNamespace}', this);return false;">
-	<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
-	</a>
-	</c:if>
-</div>
 
 
 <div id="${ssNamespace}_add_entry_from_iframe" style="display:none; visibility:hidden;">

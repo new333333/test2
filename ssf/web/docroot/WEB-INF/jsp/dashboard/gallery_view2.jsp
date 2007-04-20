@@ -104,7 +104,7 @@
     <td>
 <c:if test="${hitCount > 0}">
       <span class="ss_light ss_fineprint">
-	    [<ssf:nlt tag="search.results">
+	    [<ssf:nlt tag="folder.Results">
 	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
 	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
 	    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
@@ -113,7 +113,7 @@
 </c:if>
 <c:if test="${hitCount == 0}">
     <span class="ss_light ss_fineprint">
-	  [<ssf:nlt tag="search.noneFound"/>]
+	  [<ssf:nlt tag="dashboard.gallery.noneFound"/>]
 	</span>
 </c:if>
 	</td>
