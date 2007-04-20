@@ -40,10 +40,14 @@
 								</h3>
 								<div class="ss_clear">&nbsp;</div>
 							</div>
-							<p id="summary_${status.count}">							
+							<p id="summary_${status.count}">
+							<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
 								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 									${entry._desc}
 								</ssf:textFormat>
+							</ssf:markup>
+      							
+								
 							</p>
 						</div>
 						<div class="ss_clear">&nbsp;</div>
