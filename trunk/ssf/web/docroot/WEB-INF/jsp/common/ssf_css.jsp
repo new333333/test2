@@ -1904,7 +1904,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
-	width: 96px;
+	width: 72px;
 	padding-top: 7px;
 }
 
@@ -1920,7 +1920,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_labe
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_quick_advanced {
 	text-align: right;
 	font-size: 10px;
-	padding-left: 50px;
+	padding-left: 10px;
 	vertical-align: top;
 }
 
@@ -1956,11 +1956,11 @@ div.ss_global_toolbar table td {
 
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
-	width: 45px;
+	width: 40px;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
-	width: 73px;
+	width: 62px;
 }
 
 .ss_global_toolbar_favs_big div {
@@ -2007,7 +2007,7 @@ span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch
 }
 
 span.ss_global_toolbar_label_text_quickSearch {
-	font-size: 11px;
+	font-size: 9px;
 }
 span.ss_global_toolbar_label_text {
 	font-size: 10px;
@@ -2024,8 +2024,9 @@ div.ss_global_toolbar_findUser_text span {
 .ss_global_toolbar_search form {
 	background:transparent;
 }
+
 .ss_global_toolbar_quick input {
-	width: 150px;
+	width: 115px;
 	background: #FFFFFF;
 	border: 1px solid #7F9DB9;
 }

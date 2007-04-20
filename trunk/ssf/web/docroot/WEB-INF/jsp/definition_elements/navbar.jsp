@@ -140,7 +140,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="user"
-				    width="90px" singleItem="true"/> 
+				    width="70px" singleItem="true"/> 
 			  </ssHelpSpot>
 			</form>
 		</div>
@@ -158,7 +158,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="places"
-				    width="90px" singleItem="true"/> 
+				    width="70px" singleItem="true"/> 
 			  </ssHelpSpot>
 			</form>
 		</div>
@@ -178,7 +178,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="tags"
-				    width="90px" singleItem="true"/> 
+				    width="70px" singleItem="true"/> 
 			</form>
 			</ssHelpSpot>
 		
