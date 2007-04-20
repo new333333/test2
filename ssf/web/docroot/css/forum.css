@@ -1,12 +1,28 @@
 /* ------------------------------------------------------------------------ */
 /* general styles, used most everywhere */
 
+/*
+ * But first... some hacks for Liferay...
+ *
+ * These two changes are inter-related.  The first fixes a
+ * layout problem with IE when the box model is changed.
+ * The second fixes a layout problem in IE caused by the first
+ * fix.  (Apparently the height: auto makes IE more sensitive
+ * to positioning).
+ */
+ 
+.xportlet-minimum-height {
+	height: auto;
+}
+
+div.xportlet-box {
+    position: relative;
+}
+
+
 /* ss_style is specified in view_css so its colors can be set up
 .ss_style {}
 */
-.portlet-minimum-height {
-		height: auto;
-}
 
 
 /* This style triggers the Nifty Corners rounding effect. 

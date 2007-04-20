@@ -89,8 +89,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
-	    <div id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;clear:both;"
-	    ><img border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
+	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;clear:both;"
+	    ></div>
 	  </ssHelpSpot>
 	</div>
 	
