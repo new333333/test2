@@ -469,7 +469,7 @@
 		<properties>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="folder" value="folder">
-				<option name="folder" caption="__folder_list" />
+				<option name="folder" caption="__folder_listing" />
 				<option name="table" caption="__folder_table" />
 				<option name="event" caption="__folder_event" />
 				<option name="blog" caption="__folder_blog" />
