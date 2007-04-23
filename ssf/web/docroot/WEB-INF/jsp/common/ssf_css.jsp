@@ -1487,7 +1487,9 @@ div.ss_dashboardProtoDropTarget {
   margin: 10px;
   border: 1px solid ${ss_form_border_color};
   background-color: ${ss_form_component_background_color};
-  zoom:1; // a workaround IE bug - font color not display correctly
+<c:if test="<%= isIE %>">
+  zoom:1; /* a workaround IE bug - font color not display correctly */
+</c:if>
 }
 
 .ss_dashboard_view {
@@ -3743,7 +3745,9 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 #ss_searchResult {
 	margin:12px 0px 0px 0px;
 	padding:0px;
-	zoom: 1; // a workaround IE bug - parent border disappears
+<c:if test="<%= isIE %>">	
+	zoom: 1; /* a workaround IE bug - parent border disappears */
+</c:if>
 }
 #ss_searchResult li {
 	border-bottom: 1px solid #cccccc;
@@ -3755,7 +3759,9 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	border-bottom: 1px solid #afc8e3;	
 	margin-bottom:24px;
 	padding:6px 24px 6px 12px;
-	zoom: 1; // a workaround IE bug - parent border disappears
+<c:if test="<%= isIE %>">	
+	zoom: 1; /* a workaround IE bug - parent border disappears */
+</c:if>
 }
 #ss_searchResult_numbers {float:left;}
 #ss_paginator {float:right;}
