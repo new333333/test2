@@ -423,6 +423,11 @@ public class AjaxController  extends SAbstractController {
 			Map valuesData = new HashMap();
 			if (WebHelper.isUserLoggedIn(request)) {
 				valuesData = (Map)((Map) fieldsData.get(entryField)).get("values");
+				if (valuesData == null && "checkbox".equals(((Map) fieldsData.get(entryField)).get("type"))) {
+					valuesData = new HashMap();
+					valuesData.put(Boolean.TRUE.toString(), NLT.get("searchForm.checkbox.selected"));
+					valuesData.put(Boolean.FALSE.toString(), NLT.get("searchForm.checkbox.unselected"));
+				}
 			}
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
 			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
