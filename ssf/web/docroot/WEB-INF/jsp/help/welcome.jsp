@@ -14,6 +14,15 @@
 
 <h1><ssf:nlt tag="welcome.header"/></h1>
 
+<ul style="list-style: outside;">
+  <li style="list-style-type: disc;"><a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Quick Tips.pdf"
+    onClick="javascript:return ss_openUrlInWindow(this,'help')">
+      <span><ssf:nlt tag="welcome.quickTipsOnUsage"/></span></a>
+  </li>
+</ul>
+
+<div align="right">
 <a href="<html:rootPath/>help/${ssUser.locale.language}/welcome.html" 
-  onClick="javascript:return ss_openUrlInWindow(this,'help')"><ssf:nlt tag="welcome.learnMore"/></a>
+  onClick="javascript:return ss_openUrlInWindow(this,'help')">[<ssf:nlt tag="general.more"/>]</a>
+</div>
 
