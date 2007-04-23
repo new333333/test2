@@ -207,6 +207,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, List fileData, Map ctx) {
     	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
+    	//Also re-index the top entry (to catch the change in lastActivity)
+    	indexEntry(entry.getParentFolder(), entry.getTopEntry(), new ArrayList(), null, false, new ArrayList());
     }
     
      //***********************************************************************************************************

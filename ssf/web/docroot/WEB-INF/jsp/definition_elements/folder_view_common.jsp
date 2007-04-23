@@ -230,9 +230,9 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
-		<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
+		<portlet:param name="ssFolderSortBy" value="_lastActivity"/>
 		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
+		  <c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 		  	<portlet:param name="ssFolderSortDescend" value="false"/>
 		  </c:when>
 		  <c:otherwise>
@@ -242,10 +242,10 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
 		<ssf:nlt tag="folder.column.Date"/>
-	    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
+	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'false'}">
+		<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
 			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
     <a/>
@@ -325,7 +325,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
  <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn>
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-     value="${entry1._modificationDate}" type="both" 
+     value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>
   </ssf:slidingTableColumn>
  </c:if>
