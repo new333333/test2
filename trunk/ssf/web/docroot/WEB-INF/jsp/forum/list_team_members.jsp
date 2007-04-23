@@ -24,34 +24,34 @@
 	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
 	
-		<c:if test="${ssTeamMembersCount > 0}">					
-			<c:forEach var="member" items="${ssTeamMembers}">
-				<tr>
-					<td class="picture">
-						<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" photos="${member.customAttributes['picture'].value}" 
-							folderId="${member.parentBinder.id}" entryId="${member.id}" />						
-					 </td>
-					<td>
-						<a class="ss_bold" href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
-							value="${member.parentBinder.id}"/><ssf:param name="entryId" 
-							value="${member.id}"/></ssf:url>">${member.title}</a>
-					</td>
-					<td><c:out value="${member.organization}" /></td>
-					<td>
-						<div id="ss_presenceOptions_${renderResponse.namespace}"></div>
-						<ssf:presenceInfo user="${member}" 
-						    showOptionsInline="false" 
-						    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
-					</td>
-					<td><a class="ss_bold" href="mailto:<c:out value="${member.emailAddress}" />"><c:out value="${member.emailAddress}" /></a></td>
-				</tr>
-			</c:forEach>
-		</c:if>
-	
-		
-		<c:if test="${ssTeamMembersCount == 0}">
-			<tr><td><ssf:nlt tag="teamMembersList.empty"/></td></tr>
-		</c:if>
+		<c:choose>
+			<c:when test="${ssTeamMembersCount > 0}">					
+				<c:forEach var="member" items="${ssTeamMembers}">
+					<tr>
+						<td class="picture">
+							<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" photos="${member.customAttributes['picture'].value}" 
+								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
+						 </td>
+						<td>
+							<a class="ss_bold" href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+								value="${member.parentBinder.id}"/><ssf:param name="entryId" 
+								value="${member.id}"/></ssf:url>">${member.title}</a>
+						</td>
+						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>
+						<td>
+							<div id="ss_presenceOptions_${renderResponse.namespace}"></div>
+							<ssf:presenceInfo user="${member}" 
+							    showOptionsInline="false" 
+							    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
+						</td>
+						<td><a class="ss_bold" href="mailto:<c:out value="${member.emailAddress}" />"><c:out value="${member.emailAddress}" /></a></td>
+					</tr>
+				</c:forEach>
+			</c:when>
+			<c:otherwise>
+				<tr><td><ssf:nlt tag="teamMembersList.empty"/></td></tr>
+			</c:otherwise>
+		</c:choose>
 		
 	</table>
 	
