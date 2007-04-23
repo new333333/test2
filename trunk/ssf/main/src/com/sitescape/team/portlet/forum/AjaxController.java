@@ -1542,6 +1542,8 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxShowHelpPanel(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		String helpPanelId = PortletRequestUtils.getStringParameter(request, 
 				WebKeys.HELP_PANEL_ID, "ss_help_panel");
 		model.put(WebKeys.HELP_PANEL_ID, helpPanelId);
