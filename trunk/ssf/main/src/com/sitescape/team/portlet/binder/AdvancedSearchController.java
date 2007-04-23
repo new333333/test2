@@ -382,12 +382,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 				String entryType = (String) entryMap.get(SearchEntryType);
 				String fieldName = (String) entryMap.get(SearchEntryElement);
 				
-				Map fieldsMap = definitionModule.getEntryDefinitionElements(entryType);
-				
-				if (fieldsMap != null && fieldsMap.get(fieldName) != null) {
-					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
-					((Entry)entriesMap.get(entryType)).addField(entryField);
+				if (entryType != null && !entryType.equals("")) {
+					Map fieldsMap = definitionModule.getEntryDefinitionElements(entryType);
+					if (fieldsMap != null && fieldsMap.get(fieldName) != null) {
+						EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
+						((Entry)entriesMap.get(entryType)).addField(entryField);
+					}
 				}
+				
 			}
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, entriesMap.values());
 		}
