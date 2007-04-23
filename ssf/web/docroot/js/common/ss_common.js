@@ -3714,8 +3714,33 @@ function ss_linkMenuObj() {
 		} 
 	*/
 		if (this.lastShownButton && this.lastShownButton != obj) this.hideMenu(obj);
-		obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow.gif";
+		var imgElements = obj.parentNode.getElementsByTagName("img");
+		for(var imgCount=0; imgCount < imgElements.length; imgCount++) {
+			var imgSrc = imgElements[imgCount].src;
+			if (imgSrc.indexOf("pics/downarrow_off.gif") != -1) {
+				imgElements[imgCount].src = ss_imagesPath + "pics/downarrow.gif";
+			}
+		}
 		this.lastShownButton = obj;
+	}	
+	
+	this.hideButton = function(obj, imgid) {
+	/*
+		if (imgid != null && imgid != "") {
+			var imgObj = document.getElementById(imgid);
+			if (imgObj != null) {
+				imgObj.src = ss_imagesPath + "pics/downarrow_off.gif";
+				return;
+			}
+		} 
+	*/
+		var imgElements = obj.parentNode.getElementsByTagName("img");
+		for(var imgCount=0; imgCount < imgElements.length; imgCount++) {
+			var imgSrc = imgElements[imgCount].src;
+			if (imgSrc.indexOf("pics/downarrow.gif") != -1) {
+				imgElements[imgCount].src = ss_imagesPath + "pics/downarrow_off.gif";
+			}
+		}
 	}	
 	
 	this.showMenu = function(obj, id, binderId, definitionType, dashboardType) {
@@ -3813,19 +3838,6 @@ function ss_linkMenuObj() {
 		}
 	}
 
-	this.hideButton = function(obj, imgid) {
-	/*
-		if (imgid != null && imgid != "") {
-			var imgObj = document.getElementById(imgid);
-			if (imgObj != null) {
-				imgObj.src = ss_imagesPath + "pics/downarrow_off.gif";
-				return;
-			}
-		} 
-	*/
-		obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow_off.gif";
-	}
-	
 	this.hideMenu = function(obj) {
 		if (this.linkObj == obj) return;
 		ss_hideDiv(this.menuDiv)
