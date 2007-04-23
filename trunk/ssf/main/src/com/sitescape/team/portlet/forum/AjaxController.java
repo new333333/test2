@@ -332,66 +332,71 @@ public class AjaxController  extends SAbstractController {
 		String search = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
 
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
-		
-		int startPageNo = 1;
-		int endPageNo = 10;
-		if (!pagerText.equals("")) {
-			String[] pagesNos = pagerText.split(";");
-			startPageNo = Integer.parseInt(pagesNos[0]);
-			endPageNo = Integer.parseInt(pagesNos[1]);
-		}
-
-		options.put(ObjectKeys.SEARCH_MAX_HITS, (endPageNo - startPageNo) + 1);
-		options.put(ObjectKeys.SEARCH_OFFSET, startPageNo - 1);
-		
-		if (!search.equals("")) {
-			SearchFilter searchTermFilter = new SearchFilter();
-			search += "*";
+		List users = new ArrayList();
+		if (WebHelper.isUserLoggedIn(request)) {
+				
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 			
-			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, search);
-			searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, search);
-						
-			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-		}
-		
-		Map entries = getProfileModule().getUsers(currentUser.getParentBinder().getId(), options);
-		List users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
-	
-		
-		int searchCountTotal = ((Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		int totalSearchRecordsReturned = ((Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).intValue();
-		
-		
-		if (startPageNo + totalSearchRecordsReturned < searchCountTotal) {
-			Map next = new HashMap();
-			next.put("start", startPageNo + totalSearchRecordsReturned);
-			if (startPageNo + totalSearchRecordsReturned + 10 < searchCountTotal) {
-				next.put("end",  startPageNo + totalSearchRecordsReturned + 10);
-			} else {
-				next.put("end",  searchCountTotal);
+			int startPageNo = 1;
+			int endPageNo = 10;
+			if (!pagerText.equals("")) {
+				String[] pagesNos = pagerText.split(";");
+				startPageNo = Integer.parseInt(pagesNos[0]);
+				endPageNo = Integer.parseInt(pagesNos[1]);
 			}
-			model.put(WebKeys.PAGE_NEXT, next);
-		}
-
-		if (startPageNo > 1) {
-			Map prev = new HashMap();
-			prev.put("start", startPageNo - 10);
-			prev.put("end", startPageNo - 1);
-			model.put(WebKeys.PAGE_PREVIOUS, prev);
-		}
+	
+			options.put(ObjectKeys.SEARCH_MAX_HITS, (endPageNo - startPageNo) + 1);
+			options.put(ObjectKeys.SEARCH_OFFSET, startPageNo - 1);
+			
+			if (!search.equals("")) {
+				SearchFilter searchTermFilter = new SearchFilter();
+				search += "*";
+				
+				searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, search);
+				searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, search);
+							
+				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+			}
+			
+			Map entries = getProfileModule().getUsers(currentUser.getParentBinder().getId(), options);
+			users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
 		
+			
+			int searchCountTotal = ((Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+			int totalSearchRecordsReturned = ((Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).intValue();
+			
+			
+			if (startPageNo + totalSearchRecordsReturned < searchCountTotal) {
+				Map next = new HashMap();
+				next.put("start", startPageNo + totalSearchRecordsReturned);
+				if (startPageNo + totalSearchRecordsReturned + 10 < searchCountTotal) {
+					next.put("end",  startPageNo + totalSearchRecordsReturned + 10);
+				} else {
+					next.put("end",  searchCountTotal);
+				}
+				model.put(WebKeys.PAGE_NEXT, next);
+			}
+	
+			if (startPageNo > 1) {
+				Map prev = new HashMap();
+				prev.put("start", startPageNo - 10);
+				prev.put("end", startPageNo - 1);
+				model.put(WebKeys.PAGE_PREVIOUS, prev);
+			}
+		}
 		model.put(WebKeys.USERS, users);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_users_widget", model);
 	}
 	private ModelAndView ajaxGetEntryTypes(RenderRequest request, RenderResponse response) {
-		List entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
 		
 		Map model = new HashMap();
-		// TODO if unlogged... - in all widgets!!!
+		List entryTypes = new ArrayList();
+		if (WebHelper.isUserLoggedIn(request)) {
+			entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+		}
 		model.put(WebKeys.ENTRY, entryTypes);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_entry_types_widget", model);
@@ -399,18 +404,25 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxGetEntryFields(RenderRequest request, RenderResponse response) {
 		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
+		String entryField = PortletRequestUtils.getStringParameter(request,FilterHelper.FilterElementNameField, "");
+		
 		
 		Map model = new HashMap();
 		response.setContentType("text/json");
 		
-		String entryField = PortletRequestUtils.getStringParameter(request,FilterHelper.FilterElementNameField, "");
-		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryTypeId);
+		Map fieldsData = new HashMap();
+		if (WebHelper.isUserLoggedIn(request)) {
+			fieldsData = getDefinitionModule().getEntryDefinitionElements(entryTypeId);
+		}
 	
 		if (entryField.equals("")) {
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
 			return new ModelAndView("forum/json/find_entry_fields_widget", model);
 		} else {
-			Map valuesData = (Map)((Map) fieldsData.get(entryField)).get("values");
+			Map valuesData = new HashMap();
+			if (WebHelper.isUserLoggedIn(request)) {
+				valuesData = (Map)((Map) fieldsData.get(entryField)).get("values");
+			}
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
 			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
 		}
@@ -419,7 +431,11 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxGetWorkflowSteps(RenderRequest request, RenderResponse response) {
 		String workflowId = PortletRequestUtils.getStringParameter(request, "workflowId", "");
 		Map model = new HashMap();
-		Map stateData = getDefinitionModule().getWorkflowDefinitionStates(workflowId);
+		
+		Map stateData = new HashMap();
+		if (WebHelper.isUserLoggedIn(request)) {
+			stateData = getDefinitionModule().getWorkflowDefinitionStates(workflowId);
+		}
 		model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
 		
 		response.setContentType("text/json");
@@ -430,54 +446,62 @@ public class AjaxController  extends SAbstractController {
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "tags");
 		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
 		
-		int startPageNo = 1;
-		int endPageNo = 10;
-		if (!pagerText.equals("")) {
-			String[] pagesNos = pagerText.split(";");
-			startPageNo = Integer.parseInt(pagesNos[0]);
-			endPageNo = Integer.parseInt(pagesNos[1]);
-		}
-		
-		String wordRoot = searchText;
-		int i = wordRoot.indexOf("*");
-		if (i > 0) wordRoot = wordRoot.substring(0, i);
-		
-		List tags = getBinderModule().getSearchTags(wordRoot, findType);
-		int searchCountTotal = tags.size();
-		
-		if (tags.size() > startPageNo) {
-			if (tags.size() < endPageNo) endPageNo = tags.size();
-			tags = tags.subList(startPageNo, endPageNo);
-		}
-		
 		Map model = new HashMap();
-		model.put(WebKeys.TAGS, tags);
-		
-		if (endPageNo < searchCountTotal) {
-			Map next = new HashMap();
-			next.put("start", endPageNo + 1);
-			if (endPageNo + 10 < searchCountTotal) {
-				next.put("end",  endPageNo + 10);
-			} else {
-				next.put("end",  searchCountTotal);
-			}
-			model.put(WebKeys.PAGE_NEXT, next);
-		}
-
-		if (startPageNo > 1) {
-			Map prev = new HashMap();
-			prev.put("start", startPageNo - 10);
-			prev.put("end", startPageNo - 1);
-			model.put(WebKeys.PAGE_PREVIOUS, prev);
-		}
+		List tags = new ArrayList();
 			
+		if (WebHelper.isUserLoggedIn(request)) {
+			int startPageNo = 1;
+			int endPageNo = 10;
+			if (!pagerText.equals("")) {
+				String[] pagesNos = pagerText.split(";");
+				startPageNo = Integer.parseInt(pagesNos[0]);
+				endPageNo = Integer.parseInt(pagesNos[1]);
+			}
+			
+			String wordRoot = searchText;
+			int i = wordRoot.indexOf("*");
+			if (i > 0) wordRoot = wordRoot.substring(0, i);
+			
+			tags = getBinderModule().getSearchTags(wordRoot, findType);
+			int searchCountTotal = tags.size();
+			
+			if (tags.size() > startPageNo) {
+				if (tags.size() < endPageNo) endPageNo = tags.size();
+				tags = tags.subList(startPageNo, endPageNo);
+			}
+			
+			if (endPageNo < searchCountTotal) {
+				Map next = new HashMap();
+				next.put("start", endPageNo + 1);
+				if (endPageNo + 10 < searchCountTotal) {
+					next.put("end",  endPageNo + 10);
+				} else {
+					next.put("end",  searchCountTotal);
+				}
+				model.put(WebKeys.PAGE_NEXT, next);
+			}
+	
+			if (startPageNo > 1) {
+				Map prev = new HashMap();
+				prev.put("start", startPageNo - 10);
+				prev.put("end", startPageNo - 1);
+				model.put(WebKeys.PAGE_PREVIOUS, prev);
+			}
+		
+		}
+		model.put(WebKeys.TAGS, tags);
 		
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_tags_widget", model);
 	}
 	
 	private ModelAndView ajaxGetWorkflows(RenderRequest request, RenderResponse response) {
-		List workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
+		
+		List workflows = new ArrayList();
+		if (WebHelper.isUserLoggedIn(request)) {
+			workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
+		}
+		
 		Map model = new HashMap();
 		model.put(WebKeys.WORKFLOW_DEFINTION_MAP, workflows);
 		response.setContentType("text/json");
@@ -1881,15 +1905,11 @@ public class AjaxController  extends SAbstractController {
 			
 			EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response, portletSession);
 		} else {
-			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);			
+			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);
 		}
 		
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
-	}
-	
-	private void ajaxSaveCalendarEventsDisplayType() {
-		
 	}
 	
 	private ModelAndView ajaxFindEntryForFile(RenderRequest request, RenderResponse response) throws Exception
