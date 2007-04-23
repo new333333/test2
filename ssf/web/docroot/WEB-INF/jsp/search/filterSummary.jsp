@@ -23,12 +23,12 @@
 	</c:if>
 	<c:if test="${!empty filterMap.additionalFilters.tag}">
 		<c:forEach var="block" items="${filterMap.additionalFilters.tag}">
-			<p><ssf:nlt tag="tags.communityTags"/>:${block.communityTag} <ssf:nlt tag="tags.personalTags"/>:${block.personalTag}</p>		
+			<p><ssf:nlt tag="tags.communityTags"/>: ${block.communityTag} <ssf:nlt tag="tags.personalTags"/>:${block.personalTag}</p>		
 		</c:forEach>
 	</c:if>
 	<c:if test="${!empty filterMap.additionalFilters.creator_by_id}">
 		<c:forEach var="block" items="${filterMap.additionalFilters.creator_by_id}">
-			<p><ssf:nlt tag="searchForm.label.author"/>:${block.authorTitle} (${block.authorId})</p>
+			<p><ssf:nlt tag="searchForm.label.author"/>: ${block.authorTitle} (${block.authorId})</p>
 		</c:forEach>
 	</c:if>
 	<c:if test="${!empty filterMap.additionalFilters.entry}">
