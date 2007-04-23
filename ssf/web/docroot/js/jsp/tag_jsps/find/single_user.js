@@ -53,7 +53,7 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 	var textObj = $(textObjId);
 	var text = textObj.value;
 	if (text != ss_findUserSearchLastText[prefix]) ss_findUser_pageNumber[prefix] = 0;
-	ss_setupStatusMessageDiv()
+	ss_setupStatusMessageDiv();
 	//ss_moveDivToBody('ss_findUserNavBarDiv${prefix}');
 	//Are we already doing a search?
 	if (ss_findUserSearchInProgress[prefix] == 1) {
@@ -216,6 +216,10 @@ function ss_saveFindUserData(prefix) {
 		}
 		return false;
 	}
+}
+
+function ss_findUserBlurTextArea(prefix) {
+	setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_'+prefix+'\')', 1000);
 }
 
 function ss_findUserNextPage(prefix) {
