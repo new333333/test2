@@ -62,6 +62,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.SearchEntryFilter;
 import com.sitescape.team.search.SearchFilter;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -1464,12 +1465,22 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView(view, model);
 	}
 	
+	public HashMap getEntryAccessMap(Map model, FolderEntry entry) {
+		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+		HashMap entryAccessMap = new HashMap();
+		if (accessControlMap.containsKey(entry.getId())) {
+			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
+		}
+		return entryAccessMap;
+	}
+	
 	private ModelAndView ajaxGetBlogReplies(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		model.put(WebKeys.NAMESPACE, namespace);
 		
@@ -1478,6 +1489,9 @@ public class AjaxController  extends SAbstractController {
 		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
 		if (folderEntries != null) {
 			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			setAccessControlForAttachmentList(model, entry, user);
+			Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+			HashMap entryAccessMap = getEntryAccessMap(model, entry);
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
@@ -1491,6 +1505,7 @@ public class AjaxController  extends SAbstractController {
 				replies.add(entry);
 				for (int i=0; i<replies.size(); i++) {
 					FolderEntry reply = (FolderEntry)replies.get(i);
+					accessControlMap.put(reply.getId(), entryAccessMap);
 					//if any reply is not seen, add it to list - try to avoid update transaction
 					if (!seen.checkIfSeen(reply)) {
 						getProfileModule().setSeen(null, replies);
@@ -1503,6 +1518,7 @@ public class AjaxController  extends SAbstractController {
 		}
 		return new ModelAndView("definition_elements/blog/view_blog_replies_content", model);
 	}
+	
 	private ModelAndView ajaxGetEntryRating(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1698,13 +1714,25 @@ public class AjaxController  extends SAbstractController {
 			if (lockedByUser.getId().equals(user.getId())) {
 				isLockedByAndLoginUserSame = true;
 			}
+		}
+		
+		if (getFolderModule().testAccess(entry, "addReply")) {
+			accessControlEntryMap.put("addReply", new Boolean(true));
 		}		
+		
 		if (getFolderModule().testAccess(entry, "modifyEntry")) {
 			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
 			} else {
 				accessControlEntryMap.put("modifyEntry", new Boolean(true));
 			}
 		}
+		
+		if (getFolderModule().testAccess(entry, "deleteEntry")) {
+			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+			} else {
+				accessControlEntryMap.put("deleteEntry", new Boolean(true));
+			}
+		}		
 	}
 
 	private ModelAndView openWebDAVFile(RenderRequest request, 

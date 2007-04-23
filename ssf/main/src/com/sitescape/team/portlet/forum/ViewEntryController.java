@@ -189,6 +189,8 @@ public class ViewEntryController extends  SAbstractController {
 				
 		buildEntryToolbar(request, response, model, fe, userProperties);
 		
+		setRepliesAccessControl(model, fe);
+		
 		//Setup the tabs
 		Tabs tabs = initTabs(request, fe);
 		model.put(WebKeys.TABS, tabs.getTabs());
@@ -268,6 +270,24 @@ public class ViewEntryController extends  SAbstractController {
 		}	
 		return tabs;
 	}	
+
+	protected void setRepliesAccessControl(Map model, FolderEntry entry) {
+
+		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+		HashMap entryAccessMap = new HashMap();
+		if (accessControlMap.containsKey(entry.getId())) {
+			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
+		}
+		
+		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
+		if (replies != null)  {
+			for (int i=0; i<replies.size(); i++) {
+				FolderEntry reply = (FolderEntry)replies.get(i);
+				accessControlMap.put(reply.getId(), entryAccessMap);
+			}
+		}
+		
+	}
 	
 	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, 
 			Map model, FolderEntry entry, Map userProperties) {
