@@ -24,6 +24,8 @@ import com.sitescape.team.lucene.SsfQueryAnalyzer;
 
 public class SearchObject {//implements Serializable {
 
+	private static final int MAX_BOOLEAN_CLAUSES = 25000;
+	
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	private String queryString = null;
@@ -36,6 +38,7 @@ public class SearchObject {//implements Serializable {
 	 */
 	public SearchObject() {
 		super();
+		BooleanQuery.setMaxClauseCount(MAX_BOOLEAN_CLAUSES);
 		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
 			QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
