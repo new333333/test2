@@ -30,21 +30,26 @@
 </table>
 </div>
 
-<div class="ss_folder_border" style="position:relative; top:2; margin:0px; padding:2px 0px; 
+<div class="ss_folder_border" style="position:relative; top:2; margin:0px; 
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
-
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar">
-
-<% // Entry toolbar %>
-<c:if test="${!empty ssEntryToolbar}">
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-</c:if>
-
-</ssf:toolbar>
-
+	<table class="ss_actions_bar2_pane">
+		<tr>
+			<td>
+				<% // Add the toolbar with the navigation widgets, commands and filter %>
+				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+					<% // Entry toolbar %>
+					<c:if test="${!empty ssEntryToolbar}">
+						<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+					</c:if>
+					<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
+						<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+					</ssf:toolbar>
+				</ssf:toolbar>
+			</td>
+		</tr>
+	</table>
 </div>
 </div>
 <div class="folder" id="ss_guestbook_folder_div">
