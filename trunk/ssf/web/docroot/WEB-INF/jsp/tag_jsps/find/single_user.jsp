@@ -37,7 +37,7 @@
     name="<%= findUserElementName %>" 
     id="ss_findUser_searchText_${prefix}"
     onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"
-    onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_${prefix}\')', 200);"></textarea></div>
+    onBlur="ss_findUserBlurTextArea('${prefix}');"></textarea></div>
 <div id="ss_findUser_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findUserNavBarDiv_${prefix}" 
     class="ss_findUserList" style="display:none; visibility:hidden;">
