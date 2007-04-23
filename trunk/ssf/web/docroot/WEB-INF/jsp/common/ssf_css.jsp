@@ -2235,6 +2235,11 @@ a.ss_breadcrumb {
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
+	height: 26px;
+	padding: 0;
+	margin: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
 }
 
 .ss_actions_bar2, table.ss_actions_bar2_pane {
