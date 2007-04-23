@@ -44,7 +44,7 @@
   <input type="checkbox" name="title" ${titleChecked}> <ssf:nlt tag="folder.column.Title"/><br/>
   <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>
   <input type="checkbox" name="author" ${authorChecked}> <ssf:nlt tag="folder.column.Author"/><br/>
-  <input type="checkbox" name="date" ${dateChecked}> <ssf:nlt tag="folder.column.Date"/><br/>
+  <input type="checkbox" name="date" ${dateChecked}> <ssf:nlt tag="folder.column.LastActivity"/><br/>
   
   <br/>
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
