@@ -241,7 +241,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		</c:choose>
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
-		<ssf:nlt tag="folder.column.Date"/>
+		<ssf:nlt tag="folder.column.LastActivity"/>
 	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>

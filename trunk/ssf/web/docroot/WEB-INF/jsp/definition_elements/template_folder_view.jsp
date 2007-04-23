@@ -118,7 +118,7 @@
 
   <c:if test="${!empty ssFolderColumns['date']}">
     <ssf:slidingTableColumn width="20%">
-		<ssf:nlt tag="folder.column.Date"/>
+		<ssf:nlt tag="folder.column.LastActivity"/>
     </ssf:slidingTableColumn>
   </c:if>
 </ssf:slidingTableRow>

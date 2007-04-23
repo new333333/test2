@@ -1107,8 +1107,82 @@ public class ListFolderController extends  SAbstractController {
 			if (viewType == null) viewType = "";
 		}
 		
+		//See if a "sort by" menu is needed
+		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT)) {
+			//Add a way to set the sorting
+			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), folder.getId());
+			String searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+			if (searchSortBy == null) searchSortBy = "";
+			entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_sortBy"));
+			
+			//number
+			qualifiers = new HashMap();
+			if (searchSortBy.equals(EntityIndexUtils.DOCID_FIELD)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.DOCID_FIELD);
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+					NLT.get("folder.column.Number"), url, qualifiers);
+			
+			//title
+			qualifiers = new HashMap();
+			if (searchSortBy.equals(EntityIndexUtils.SORT_TITLE_FIELD)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+					NLT.get("folder.column.Title"), url, qualifiers);
+			
+			//state
+			qualifiers = new HashMap();
+			if (searchSortBy.equals(EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD);
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+					NLT.get("folder.column.State"), url, qualifiers);
+			
+			//author
+			qualifiers = new HashMap();
+			if (searchSortBy.equals(EntityIndexUtils.CREATOR_TITLE_FIELD)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.CREATOR_TITLE_FIELD);
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+					NLT.get("folder.column.Author"), url, qualifiers);
+			
+			//last activity date
+			qualifiers = new HashMap();
+			if (searchSortBy.equals(IndexUtils.LASTACTIVITY_FIELD)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.FOLDER_SORT_BY, IndexUtils.LASTACTIVITY_FIELD);
+			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+					NLT.get("folder.column.LastActivity"), url, qualifiers);
+		}
+		
 		//	The "Display styles" menu
-		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_views"));
+		entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
 		List folderViewDefs = folder.getViewDefinitions();
 		for (int i = 0; i < folderViewDefs.size(); i++) {
@@ -1135,14 +1209,14 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
-			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
 		}
 		//WebDav folder view
 		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
 		qualifiers = new HashMap();
 		qualifiers.put("webdavUrl", webdavUrl);
 		qualifiers.put("folder", webdavUrl);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
+		entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
@@ -1154,7 +1228,7 @@ public class ListFolderController extends  SAbstractController {
 				|| viewType.equals(Definition.VIEW_STYLE_CALENDAR)
 				|| viewType.equals(""))) {
 			//Only show these options if in the folder table style and not in accessible mode
-			entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
+			entryToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
 
 			
 			//Do not display - Show entries at bottom for the Blog, Guestbook and Search View
@@ -1172,7 +1246,7 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 			}
 			
@@ -1185,7 +1259,7 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
 			//popup
 			qualifiers = new HashMap();
@@ -1196,7 +1270,7 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 		}
 
