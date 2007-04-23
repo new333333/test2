@@ -23,7 +23,7 @@ if (isIECheck) strBrowserType = "ie";
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="title_entry" type="com.sitescape.team.domain.Entry" />
+<jsp:useBean id="title_entry" type="com.sitescape.team.domain.FolderEntry" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {

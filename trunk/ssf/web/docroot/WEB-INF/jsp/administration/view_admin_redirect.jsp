@@ -19,7 +19,7 @@ var timeout = 0;
 <c:if test="${!empty ssDownloadURL}">
 timeout = 200;
 </c:if>
-setTimeout("self.location.replace(url_str)", 0);
+setTimeout("self.location.replace('"+url_str+"')", timeout);
 </script>
 </c:if>
 <c:if test="${!empty ssErrorList}">

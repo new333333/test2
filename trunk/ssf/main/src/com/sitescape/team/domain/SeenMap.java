@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ArrayList;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 
 /**
@@ -95,22 +96,25 @@ public class SeenMap {
 
     }
     public void setSeen(Entry entry) {
+    	if (entry instanceof FolderEntry) checkAndSetSeen((FolderEntry) entry, true);
+    }
+    public void setSeen(FolderEntry entry) {
     	checkAndSetSeen(entry, true);
     }
-    public boolean checkIfSeen(Entry entry) {
+    public boolean checkIfSeen(FolderEntry entry) {
     	return checkAndSetSeen(entry, false);
     }
-	protected boolean checkAndSetSeen(Entry entry, boolean setIt) {
-		return checkAndSetSeen(entry.getId(), entry.getModification().getDate(), setIt);
+	protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
+		return checkAndSetSeen(entry.getId(), entry.getLastActivity(), setIt);
 	}
 	public boolean checkAndSetSeen(Map entry, boolean setIt) {
       	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
-		Date modDate = (Date)entry.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);		
+		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
     	return checkAndSetSeen(id, modDate, setIt);
 	}	
     public boolean checkIfSeen(Map entry) {
       	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
-		Date modDate = (Date)entry.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);		
+		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
     	return checkAndSetSeen(id, modDate, false);
     }   
     

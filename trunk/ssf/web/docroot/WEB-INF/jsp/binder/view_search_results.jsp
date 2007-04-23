@@ -15,9 +15,9 @@
 
 <table class="ss_style" style="width:100%;">
 <tr>
-  <th align="left">Title</th>
-  <th align="left">Author</th>
-  <th align="left">Date</th>
+  <th align="left"><ssf:nlt tag="folder.column.Title"/></th>
+  <th align="left"><ssf:nlt tag="folder.column.Author"/></th>
+  <th align="left"><ssf:nlt tag="folder.column.Date"/></th>
 </tr>
 <c:forEach var="fileEntry" items="${ss_searchResults}" >
 <tr>
