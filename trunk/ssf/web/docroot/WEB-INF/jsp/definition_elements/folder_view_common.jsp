@@ -129,7 +129,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -158,7 +158,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
       
@@ -188,7 +188,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -217,7 +217,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -246,7 +246,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
