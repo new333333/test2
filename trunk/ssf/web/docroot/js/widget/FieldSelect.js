@@ -97,8 +97,9 @@ dojo.widget.defineWidget(
 					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
 					break;
 				case "user_list":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+					var prop = {dataUrl:url, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
+					this.nextNodeRef = dojo.widget.createWidget("SelectPagable", prop, this.widgetContainer, "last");
 					break;
 				case "checkbox":
 					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
