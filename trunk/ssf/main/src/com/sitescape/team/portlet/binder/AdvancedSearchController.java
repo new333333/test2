@@ -384,12 +384,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 				
 				if (entryType != null && !entryType.equals("")) {
 					Map fieldsMap = definitionModule.getEntryDefinitionElements(entryType);
-					if (fieldsMap != null && fieldsMap.get(fieldName) != null) {
+					if (fieldsMap != null && fieldName != null && fieldsMap.get(fieldName) != null) {
 						EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
 						((Entry)entriesMap.get(entryType)).addField(entryField);
-					}
+					}	
 				}
-				
 			}
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, entriesMap.values());
 		}
@@ -627,7 +626,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		block.put(SearchEntryType, entryTypeId);
 		String entryFieldId = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
 		if (entryFieldId == null || entryFieldId.equals("")) {
-			return new HashMap();
+			return block;
 		}
 		block.put(SearchEntryElement, entryFieldId);
 		List values = getElementValues(filterTerm);
@@ -864,6 +863,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			}
 			if (types[i].equals(SearchBlockTypeEntry)) {
 				String entryTypeId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterEntryDefIdField.concat(numbers[i]), "");
+				
 				String entryFieldId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterElementNameField.concat(numbers[i]), SearchEntryFilter.AllEntries);
 				String[] value = PortletRequestUtils.getStringParameters(request, FilterHelper.FilterElementValueField.concat(numbers[i]));
 //				String[] valueType = PortletRequestUtils.getStringParameters(request, FilterHelper.FilterElementValueTypeField.concat(numbers[i]));
@@ -886,7 +886,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 					}
 				}
 				if (!entryTypeId.equals("")) searchFilter.addEntryType(entryTypeId, entryFieldId, value, valueType);
-
+				
 			}
 			if (types[i].equals(SearchBlockTypeCreationDate) || types[i].equals(SearchBlockTypeModificationDate)) {
 				String startDate = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchStartDate.concat(numbers[i]), "");
