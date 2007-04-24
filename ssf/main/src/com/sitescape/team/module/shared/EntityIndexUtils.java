@@ -131,11 +131,13 @@ public class EntityIndexUtils {
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
                 doc.add(allTextField);
-                if ((entry.getEntityType().equals(EntityType.folder) || entry.getEntityType().equals(EntityType.workspace)) &&
-                		entry.getParentBinder() != null) {
-                	String extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
-                	//Special case: user workspaces don't show parent folder
-                	if (entry.getParentBinder().getEntityType().equals(EntityType.profiles)) extendedTitle = title;
+                if (entry.getEntityType().equals(EntityType.folder) || entry.getEntityType().equals(EntityType.workspace) || entry.getEntityType().equals(EntityType.profiles)) {
+                	//Special case: user workspaces and top workspace don't show parent folder 
+                	String extendedTitle = title;
+                	if (entry.getParentBinder() != null && !entry.getParentBinder().getEntityType().equals(EntityType.profiles)) {
+                		extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
+                	} 
+                	
         	        Field extendedTitleField = new Field(EntityIndexUtils.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.TOKENIZED);
         	        doc.add(extendedTitleField);
                 }
