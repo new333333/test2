@@ -205,9 +205,10 @@ public class SearchFilter {
 			filterTerm.setText(searchText.trim());
 		}
 		
-		List searchTerms = new ArrayList(2);
+		List searchTerms = new ArrayList(3);
 		searchTerms.add(EntityIdentifier.EntityType.folder.name());
 		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
+		searchTerms.add(EntityIdentifier.EntityType.profiles.name());
 		addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);		
 
 		searchTerms = new ArrayList(1);
