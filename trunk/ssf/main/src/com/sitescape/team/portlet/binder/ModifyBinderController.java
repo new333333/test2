@@ -56,7 +56,9 @@ public class ModifyBinderController extends AbstractBinderController {
 			setupViewOnDelete(response, binder, binderType);	
 			getBinderModule().deleteBinder(binderId);
 			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
-			
+		} else if(op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
+			getFolderModule().synchronize(binderId);
+			setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("okBtn")) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
 				//	The modify form was submitted. Go process it

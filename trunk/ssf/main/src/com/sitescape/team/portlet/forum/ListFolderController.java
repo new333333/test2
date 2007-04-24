@@ -1011,7 +1011,19 @@ public class ListFolderController extends  SAbstractController {
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_folder"), 
 					adapterUrl.toString(), qualifiers);		
 		}
-		
+	
+		//Synchronize mirrored folder
+		if(folder.isMirrored() &&
+				getFolderModule().testAccess(folder, "addEntry")) {
+			adminMenuCreated=true;
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url);
+		}
+
 		//set email
 		if (getBinderModule().testAccess(folder, "setNotificationConfig")) {
 			try {

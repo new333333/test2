@@ -24,12 +24,9 @@ import javax.activation.FileTypeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.Element;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -42,7 +39,6 @@ import com.sitescape.team.module.file.LockedByAnotherUserException;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.FolderUtils;
-import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.AlreadyExistsException;

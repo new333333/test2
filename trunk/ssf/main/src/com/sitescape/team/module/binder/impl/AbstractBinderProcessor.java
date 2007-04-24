@@ -204,11 +204,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        });
 	        sp.stop("addBinder_transactionExecute");
 	           
-	        if(binder.isMirrored()) {
-		        sp.start("addBinder_mirrored");
-		        addBinder_mirrored(binder, inputData, ctx);
-		        sp.stop("addBinder_mirrored");
-	        }
+	        sp.start("addBinder_mirrored");
+	        addBinder_mirrored(binder, inputData, ctx);
+	        sp.stop("addBinder_mirrored");
 	        
 	        sp.start("addBinder_filterFiles");
 	        //Need to do filter here after binder is saved cause it makes use of
@@ -316,8 +314,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		}
  		EntryBuilder.buildEntry(binder, entryData);
  		
- 		if(parent.isMirrored())
+ 		Boolean mb = (Boolean) inputData.getSingleObject(ObjectKeys.MIRRORED);
+ 		if(Boolean.TRUE.equals(mb) || parent.isMirrored())
  			binder.setMirrored(true);
+ 		
+ 		String resourceDriverName = inputData.getSingleValue(ObjectKeys.RESOURCE_DRIVER_NAME);
+ 		if(resourceDriverName != null && resourceDriverName.length() > 0)
+ 			binder.setResourceDriverName(resourceDriverName);
+ 		
+ 		String resourcePath = inputData.getSingleValue(ObjectKeys.RESOURCE_PATH);
+ 		if(resourcePath != null && resourcePath.length() > 0)
+ 			binder.setResourcePath(resourcePath);
     }
 
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
@@ -548,7 +555,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * This allows us to log each deleted entry and file without tying up the current transaction
      * Expected that sub-folders are handled separetly
      */
-    public void deleteBinder(Binder binder) {
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
     	if (binder.isReserved()) 
     		throw new NotSupportedException(
     				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
@@ -569,8 +576,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				getCoreDao().updateTitle(binder.getParentBinder(), binder, binder.getNormalTitle(), null);
     	}
         
+        sp.start("deleteBinder_mirrored");
+        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
+        sp.stop("deleteBinder_mirrored");
+
         sp.start("deleteBinder_delete");
-        deleteBinder_delete(binder, ctx);
+        deleteBinder_delete(binder, deleteMirroredSource, ctx);
         sp.stop("deleteBinder_delete");
        
         sp.start("deleteBinder_postDelete");
@@ -610,10 +621,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   
     
     protected void deleteBinder_processFiles(Binder binder, Map ctx) {
-    	getFileModule().deleteFiles(binder, binder, null);
+    	getFileModule().deleteFiles(binder, binder, false, null);
      }
     
-    protected void deleteBinder_delete(Binder binder, Map ctx) {
+    protected void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
     	
        	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
@@ -1218,15 +1229,29 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
 	protected void addBinder_mirrored(Binder binder, InputDataAccessor inputData, Map ctx) {
-		Boolean synchToSource = (Boolean) inputData.getSingleObject("_synchToSource");
-		if(Boolean.TRUE.equals(synchToSource)) {
+		if(binder.isMirrored()) {
+			Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
+			if(Boolean.TRUE.equals(synchToSource)) {
+				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
+				try {
+					session.makeDirectory();
+				}
+				finally {
+					session.close();
+				}
+			}
+		}
+	}
+	
+	protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
+		if(binder.isMirrored() && deleteMirroredSource) {
 			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
 			try {
-				session.makeDirectory();
+				session.delete();
 			}
 			finally {
 				session.close();
-			}
+			}	
 		}
 	}
 }

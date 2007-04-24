@@ -33,9 +33,6 @@ implements ExclusiveRepositorySessionFactory, FileRepositorySessionFactoryMBean 
 			this.repositoryRootDir = repositoryRootDir + Constants.SLASH;
 	}
 
-	public void initialize() throws RepositoryServiceException, UncheckedIOException {
-	}
-
 	public void shutdown() {
 	}
 

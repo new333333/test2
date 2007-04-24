@@ -284,7 +284,7 @@ public class WebKeys {
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	
-	
+	public static final String OPERATION_SYNCHRONIZE_MIRRORED_FOLDER = "synchronize_mirrored_folder";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";

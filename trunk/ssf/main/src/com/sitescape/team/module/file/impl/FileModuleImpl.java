@@ -92,6 +92,7 @@ import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.ThumbnailException;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
@@ -261,13 +262,14 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	}
 
 	public FilesErrors deleteFiles(final Binder binder, 
-			final DefinableEntity entry, FilesErrors errors) {
-		return deleteFiles(binder, entry, errors, false);
+			final DefinableEntity entry, boolean deleteMirroredSource, 
+			FilesErrors errors) {
+		return deleteFiles(binder, entry, deleteMirroredSource, errors, false);
 	}
 	
 	private FilesErrors deleteFiles(final Binder binder, 
-			final DefinableEntity entry, FilesErrors errors,
-			boolean deleteAttachment) {
+			final DefinableEntity entry, boolean deleteMirroredSource, 
+			FilesErrors errors, boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
@@ -279,7 +281,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
 			try {
 				ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
-						errors, updateMetadata);
+						deleteMirroredSource, errors, updateMetadata);
 				if(changeLog != null)
 					changeLogs.add(changeLog);
 			}
@@ -318,7 +320,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			errors = new FilesErrors();
 		
 		try {
-			deleteFileInternal(binder, entry, fAtt, errors, true);
+			deleteFileInternal(binder, entry, fAtt, true, errors, true);
 		}
 		catch(Exception e) {
 			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -1199,7 +1201,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	}
 	
 	private ChangeLog deleteFileInternal(Binder binder, DefinableEntity entry,
-			FileAttachment fAtt, FilesErrors errors, boolean updateMetadata) {
+			FileAttachment fAtt, boolean deleteMirroredSource, 
+			FilesErrors errors, boolean updateMetadata) {
 		String relativeFilePath = fAtt.getFileItem().getName();
 		String repositoryName = fAtt.getRepositoryName();
 		
@@ -1247,23 +1250,25 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			}
 		}
 		
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
-
-		try {
+		if(!ObjectKeys.FI_ADAPTER.equals(fAtt.getRepositoryName()) || deleteMirroredSource) {
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
+	
 			try {
-				// Delete primary file
-				session.delete(binder, entry, relativeFilePath);
+				try {
+					// Delete primary file
+					session.delete(binder, entry, relativeFilePath);
+				}
+				catch(Exception e) {
+					logger.error("Error deleting primary file " + relativeFilePath, e);
+					errors.addProblem(new FilesErrors.Problem
+							(repositoryName, relativeFilePath, 
+									FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
+					// Even if we failed to delete the primary file, we still proceed
+					// to deleting generated files. 
+				}
+			} finally {
+				session.close();
 			}
-			catch(Exception e) {
-				logger.error("Error deleting primary file " + relativeFilePath, e);
-				errors.addProblem(new FilesErrors.Problem
-						(repositoryName, relativeFilePath, 
-								FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
-				// Even if we failed to delete the primary file, we still proceed
-				// to deleting generated files. 
-			}
-		} finally {
-			session.close();
 		}
 		
    		ChangeLog changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
@@ -1413,6 +1418,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
                  	String oldTitle = entry.getNormalTitle();
            			entry.setTitle(title);
            		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
+        		} else if (fui.getType() == FileUploadItem.TYPE_EXTERNAL) {
+        			if(isNew) {
+        				entry.addAttachment(fAtt);
+        			}
         		}
         		ChangeLog changes;
             	if (isNew)
@@ -1453,6 +1462,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	 */
     private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
     		FileUploadItem fui, FilesErrors errors) {
+    	
+    	SimpleProfiler sp = new SimpleProfiler("writeFileTransactional", false);
     	
     	/// Work Flow:
     	/// step1: write primary file
@@ -1499,11 +1510,15 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	    		// files unless we could successfully store the primary file first. 
 	    		
 	    		if(fAtt == null) { // New file for the entry
+	    			sp.start("createFile");
 	    			isNew = true;
 	    			fAtt = createFile(session, binder, entry, fui);
+	    			sp.stop("createFile");
 	    		}
 	    		else { // Existing file for the entry
+	    			sp.start("writeExistingFile");
 	    			writeExistingFile(session, binder, entry, fui);
+	    			sp.stop("writeExistingFile");
 	    		}
     		}
     		catch(Exception e) {
@@ -1528,7 +1543,9 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	    	// When a repository supports JCA, this should be possible to do
 	    	// using JTA. But that's not always available, and this version of
 	    	// the system does not try to address that. 
+    		sp.start("writeFileMetadataTransactional");
 	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
+    		sp.stop("writeFileMetadataTransactional");
 	    	
 	    	// We can generate cache files only after successful transaction
 	    	// on the metadata, since the cache store relies on the persistent
@@ -1539,7 +1556,9 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     		// the primary file except that the generated file is not versioned.
     		try {
     			// NOTE: cannot use fui.getMaxWidth(), fui.getMaxHeight() they may be 0
+    			sp.start("generateScaledFile");
     			generateScaledFile(binder, entry, fAtt, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
+    			sp.stop("generateScaledFile");
     		}
     		catch(ThumbnailException e) {
     			// Scaling operation can fail for a variety of reasons, primarily
@@ -1565,7 +1584,9 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     			 * 		Stellent does not deal with Stream data
     			 * 	NOTE: cannot use fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight() they may be 0
     			 */
+    			sp.start("generateThumbnailFile");
     			generateThumbnailFile(binder, entry, fAtt, IImageConverterManager.IMAGEWIDTH, 0);
+    			sp.stop("generateThumbnailFile");
     		}
     		catch(ThumbnailException e) {
     			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
@@ -1580,12 +1601,13 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
     		}
       	
+        	sp.print();
+
 	    	return true;
     	}
     	finally {
     		session.close();
     	}
-
     }
     
     private void writeExistingFile(RepositorySession session,

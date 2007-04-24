@@ -23,11 +23,13 @@ import org.dom4j.Element;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -186,7 +188,7 @@ public class FolderUtils {
 		
 		Map data = new HashMap(); // Input data
 		data.put("title", fileName);
-		data.put("_synchToSource", Boolean.valueOf(synchToSource));
+		data.put(ObjectKeys.SYNCH_TO_SOURCE, Boolean.valueOf(synchToSource));
 		
 		if(modDate != null) {
 			// We need to tell the system to use this client-supplied mod date
@@ -213,7 +215,7 @@ public class FolderUtils {
 		fileItems.put(EXTERNAL_FILE_ITEM_NAME, mf); // single file item
 		
 		Map data = new HashMap(); // Input data
-		data.put("_synchToSource", Boolean.valueOf(synchToSource));
+		data.put(ObjectKeys.SYNCH_TO_SOURCE, Boolean.valueOf(synchToSource));
 		
 		if(modDate != null) {
 			// We need to tell the system to use this client-supplied mod date
@@ -234,10 +236,11 @@ public class FolderUtils {
 		
 		Map<String,Object> data = new HashMap<String,Object>(); // Input data
 		data.put("title", folderName); 
-		data.put("mirrored", Boolean.TRUE.toString());
-		data.put("resourceDriverName", resourceDriverName);
-		data.put("resourcePath", resourcePath);
-		data.put("_synchToSource", Boolean.valueOf(synchToSource));
+		data.put("library", Boolean.TRUE.toString());
+		data.put(ObjectKeys.MIRRORED, Boolean.TRUE);
+		data.put(ObjectKeys.RESOURCE_DRIVER_NAME, resourceDriverName);
+		data.put(ObjectKeys.RESOURCE_PATH, resourcePath);
+		data.put(ObjectKeys.SYNCH_TO_SOURCE, Boolean.valueOf(synchToSource));
 		
 		if(parentBinder instanceof Workspace)
 			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
@@ -245,6 +248,19 @@ public class FolderUtils {
 		else
 			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), new HashMap());
+	}
+
+	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
+	throws AccessControlException {
+		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource);
+	}
+	
+	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry) {
+		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId());
+	}
+	
+	public static boolean isMirroredFolder(Binder binder) {
+		return ((binder instanceof Folder) && ((Folder) binder).isMirrored());
 	}
 	
 	//Routine to get the name of the element that will store the uploaded file
@@ -325,5 +341,8 @@ public class FolderUtils {
 	}
 	private static WorkspaceModule getWorkspaceModule() {
 		return (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
+	}
+	private static BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
 	}
 }

@@ -717,7 +717,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, Map ctx) {
     	//attachment meta-data not deleted.  Done in optimized delete entry
-    	getFileModule().deleteFiles(parentBinder, entry, null);
+    	getFileModule().deleteFiles(parentBinder, entry, true, null);
     }
     
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
@@ -746,7 +746,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /*
      * classes must provide code to delete entries in the binder
      */   
-    protected abstract void deleteBinder_delete(Binder binder, Map ctx);
+    protected abstract void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx);
     protected void deleteBinder_indexDel(Binder binder, Map ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
@@ -1249,7 +1249,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
 
 	protected void addEntry_mirrored(Binder binder, InputDataAccessor inputData, Map fileItems,
-			List fileUploadItems) {
+			List<FileUploadItem> fileUploadItems) {
 		MultipartFile mf = (MultipartFile) fileItems.get(ObjectKeys.EXTERNAL_FILE);
 		if(mf == null)
 			throw new IllegalArgumentException("A mirrored entry can not be created without its initial file content");
@@ -1261,10 +1261,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		
 		if(Boolean.FALSE.equals(synchToSource))
 			fui.setSynchToRepository(false);
+		
+		fileUploadItems.add(fui);
 	}
 	
 	protected void modifyEntry_mirrored(Binder binder, InputDataAccessor inputData, Map fileItems,
-			List fileUploadItems) {
+			List<FileUploadItem> fileUploadItems) {
 		MultipartFile mf = (MultipartFile) fileItems.get(ObjectKeys.EXTERNAL_FILE);
 		if(mf != null) {
 			Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
@@ -1274,6 +1276,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			
 			if(Boolean.FALSE.equals(synchToSource))
 				fui.setSynchToRepository(false);
+			
+			fileUploadItems.add(fui);
 		}
 	}
 }

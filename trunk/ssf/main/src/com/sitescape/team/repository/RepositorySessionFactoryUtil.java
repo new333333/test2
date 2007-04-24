@@ -10,8 +10,8 @@
  */
 package com.sitescape.team.repository;
 
-import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.InternalException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.repository.archive.ArchiveStore;
@@ -45,20 +45,11 @@ public class RepositorySessionFactoryUtil {
 	}
 	
 	public static ArchiveStore getArchiveStore(String repositoryName) {
-		RepositorySessionFactory factory = getRepositorySessionFactory(repositoryName);
-		
-		ArchiveStore archiveStore = null;
-		
-		if(factory instanceof FIRepositorySessionFactoryAdapter) {
+		if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+			return null;
 		}
-		else if(factory instanceof ExclusiveRepositorySessionFactory) {
-			archiveStore = factory.getArchiveStore();
-			if(archiveStore == null)
-				throw new ConfigurationException("Repository [" + repositoryName + "] is not configured properly. It is missing archive store.");
+		else {
+			return getRepositorySessionFactory(repositoryName).getArchiveStore();
 		}
-		else
-			throw new InternalException("This should not occur");
-	
-		return archiveStore;
 	}
 }
