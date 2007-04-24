@@ -80,97 +80,49 @@ dojo.widget.defineWidget(
 		addKids: function() {
 			switch (this.dataProvider.dataType[this.selectedResult[1]]) {
 				case "date":
-					var prop = {value: '', lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
-								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
-								autoComplete: false, nodeObj: this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
+					this.addDateField('');
 					break;
 				case "event":
-					var prop = {value: '', lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
-								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
-								autoComplete: false, nodeObj: this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
-					break;
-				case "radio":
-					// TODO checkboxes
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.addEventField('');
 					break;
 				case "user_list":
-					var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
-					var prop = {dataUrl:url, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
-					this.nextNodeRef = dojo.widget.createWidget("SelectPagable", prop, this.widgetContainer, "last");
+					this.addUserListField();
 					break;
 				case "checkbox":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
-					break;
-				case "selectbox":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.addCheckboxField();
 					break;
 				case "radio":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.addRadioField();
+					break;
+				case "selectbox":
+					this.addSelectBoxField();
 					break;
 				default: /* input for title, text, description, attachFiles, textarea... */
-					this.nextNodeRef = document.createElement('input');
-					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
-					this.nodeObj.appendChild(this.nextNodeRef);
+					this.addSimpleInputField();
 			}
 		},
-		initializeKids: function(fieldType, userValue) {
+		initializeKids: function(fieldType, userValue, userValueLabel) {
 			switch (fieldType) {
 				case "date":
-					var prop = {value: userValue, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
-								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
-								autoComplete: false, nodeObj: this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");				
+					this.addDateField(userValue);
 					break;
 				case "event":
-					var prop = {value: userValue, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
-								name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
-								autoComplete: false, nodeObj: this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");				
-					break;
-				case "radio":
-					// TODO checkboxes
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
-					this.nextNodeRef.setValue(userValue);
-					this.nextNodeRef.setLabel(userValue);
+					this.addEventField(userValue);
 					break;
 				case "user_list":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
-					this.nextNodeRef.setValue(userValue);
-					this.nextNodeRef.setLabel(userValue);
+					this.addUserListField(userValue, userValueLabel);
 					break;
 				case "checkbox":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
-					this.nextNodeRef.setValue(userValue);
-					this.nextNodeRef.setLabel(userValue);
-					break;
-				case "selectbox":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
-					this.nextNodeRef.setValue(userValue);
-					this.nextNodeRef.setLabel(userValue);
+					this.addCheckboxField(userValue, userValueLabel);
 					break;
 				case "radio":
-					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
-					this.nextNodeRef.setValue(userValue);
-					this.nextNodeRef.setLabel(userValue);
+					this.addRadioField(userValue, userValueLabel);
+					break;					
+				case "selectbox":
+					this.addSelectBoxField(userValue, userValueLabel);
 					break;
 				default: /* input for title, text, description, attachFiles, textarea... */
-					this.nextNodeRef = document.createElement('input');
-					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
-					this.nextNodeRef.value = userValue;
-					this.nodeObj.appendChild(this.nextNodeRef);
+					this.addSimpleInputField(userValue);
 			}
 		},
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag) {
@@ -182,12 +134,74 @@ dojo.widget.defineWidget(
 			ss_widget.FieldSelect.superclass.selectOption.call(this, evt);
 			this.addKids();
 		},
-		setDefaultValues: function(fieldId, fieldLabel, userValues, type){
+		setDefaultValues: function(fieldId, fieldLabel, userValue, type, userValueLabel){
 			this.setValue(fieldId);
 			this.setLabel(fieldLabel);
-			// initialize userValueInput;
-			this.initializeKids(type, userValues);
+			this.initializeKids(type, userValue, userValueLabel);
+		},
+		
+		addDateField: function(value) {
+			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
+						autoComplete: false, nodeObj: this.widgetContainer};
+			this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
+		},
+		
+		addEventField: function(value) {
+			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
+						autoComplete: false, nodeObj: this.widgetContainer};
+			this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
+		},
+		
+		addUserListField: function(value, label) {
+			var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+			var prop = {dataUrl:url, 
+						id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
+			this.nextNodeRef = dojo.widget.createWidget("SelectPagable", prop, this.widgetContainer, "last");
+			if (value && label) {
+				this.nextNodeRef.setValue(value);
+				this.nextNodeRef.setLabel(label);
+			}
+		},
+
+		addCheckboxField: function(value, label) {
+			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+"checkbox", id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			if (value && label) {
+				this.nextNodeRef.setValue(value);
+				this.nextNodeRef.setLabel(label);
+			}			
+		},
+		
+		addRadioField: function(value, label) {
+			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+"radio", id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			if (value && label) {
+				this.nextNodeRef.setValue(value);
+				this.nextNodeRef.setLabel(label);
+			}
+		},
+		
+		addSelectBoxField: function(value, label) {
+			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+"selectbox", id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			if (value && label) {
+				this.nextNodeRef.setValue(value);
+				this.nextNodeRef.setLabel(label);
+			}
+		},
+		
+		addSimpleInputField: function(value) {
+			this.nextNodeRef = document.createElement('input');
+			this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
+			this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
+			if (value) {
+				this.nextNodeRef.value = value;
+			}
+			this.nodeObj.appendChild(this.nextNodeRef);
 		}
+				
 	}
 );
 

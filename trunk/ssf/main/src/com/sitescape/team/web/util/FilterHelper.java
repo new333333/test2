@@ -30,7 +30,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchEntryFilter;
-import com.sitescape.team.search.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
@@ -218,8 +218,6 @@ public class FilterHelper {
 						sf.addFolderTerm((String) id);
 					}
 				} else if (filterType.equals(FilterTypeTags)) {
-					// TODO: temporary, remove later
-					// System.out.println("FILTER TYPE TAG! ");
 					String searchTags = PortletRequestUtils.getStringParameter(request, FilterCommunityTagsField + String.valueOf(i), "");
 					// addFilterTermElement(filterTerms, FilterTypeCommunityTagSearch, searchTags);
 					if (!searchTags.equals("")) {
@@ -234,8 +232,6 @@ public class FilterHelper {
 				}
 			}
 		}
-		// TODO: temporary, remove later
-		// System.out.println("AFTER ADD TAGS: "+searchFilter.asXML());
 		//searchFilter.asXML();
 		
 		//return searchFilter;
@@ -848,7 +844,7 @@ public class FilterHelper {
 	}
 	
    	public static Document getSearchTextQuery(String searchText) {
-   		SearchEntryFilter entryFilter = new SearchEntryFilter();
+   		SearchFilter entryFilter = new SearchFilter();
 
 		if (!searchText.equals("")) {
 			entryFilter.addText(searchText);

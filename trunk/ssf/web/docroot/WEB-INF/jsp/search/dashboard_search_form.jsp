@@ -113,7 +113,7 @@ function ss_initSearchOptions() {
 		</c:if>
 		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">
-				ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValues}");
+				ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValuesNotFormatted}", "${block.entryValues}");
 			</c:forEach>
 		</c:if>
 		

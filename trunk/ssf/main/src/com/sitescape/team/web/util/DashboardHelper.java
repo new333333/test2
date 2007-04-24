@@ -58,6 +58,8 @@ import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.filter.SearchFilterRequestParser;
+import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ResolveIds;
@@ -762,8 +764,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		
 		// Map elementData = BinderHelper.getCommonEntryElements();
 		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
-		searchSearchFormData.put(AdvancedSearchController.SearchFilterMap, AdvancedSearchController.convertedToDisplay(searchQuery, getDefinitionModule()));
-		AdvancedSearchController.prepareAdditionalFiltersData(searchSearchFormData, getDefinitionModule());
+		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule());
+		searchSearchFormData.put(AdvancedSearchController.SearchFilterMap, searchFilterConverter.toMap());
+		searchFilterConverter.prepareAdditionalFiltersData(searchSearchFormData);
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
@@ -999,14 +1002,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				//Get any component specific data
 				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName)) {
 					//Get the search query
-					try {
-						// Document query = FilterHelper.getSearchFilter(request);
-						Document query = AdvancedSearchController.getSearchQuery(request, getDefinitionModule());
-						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-					} catch(Exception ex) {
-						System.out.println("EX:"+ex);
-						
-					}
+					// Document query = FilterHelper.getSearchFilter(request);
+					Document query = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
+					componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 				} else if (componentMap.get(DashboardHelper.Name).
 						equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					if (componentData.containsKey("users")) {

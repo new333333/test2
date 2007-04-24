@@ -60,7 +60,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.SearchEntryFilter;
-import com.sitescape.team.search.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -423,7 +423,8 @@ public class AjaxController  extends SAbstractController {
 			Map valuesData = new HashMap();
 			if (WebHelper.isUserLoggedIn(request)) {
 				valuesData = (Map)((Map) fieldsData.get(entryField)).get("values");
-				if (valuesData == null && "checkbox".equals(((Map) fieldsData.get(entryField)).get("type"))) {
+				String fieldType = (String)((Map) fieldsData.get(entryField)).get("type");
+				if (valuesData == null && "checkbox".equals(fieldType)) {
 					valuesData = new HashMap();
 					valuesData.put(Boolean.TRUE.toString(), NLT.get("searchForm.checkbox.selected"));
 					valuesData.put(Boolean.FALSE.toString(), NLT.get("searchForm.checkbox.unselected"));
