@@ -113,7 +113,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 						<portlet:param name="action" value="advanced_search"/>
 						<portlet:param name="newTab" value="1"/>
 						</portlet:actionURL>">
-			  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="65" 
+			  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="50" 
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" type="text" /> 
 					<a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
