@@ -45,11 +45,10 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.portlet.binder.SearchController.Person;
-import com.sitescape.team.search.SearchEntryFilter;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -233,14 +232,19 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 	}
 	
+	//This method rates the people
+	public static List ratePeople(List entries) {
+		//The same logic and naming has been followed for both people and placess
+		return ratePlaces(entries);
+	}
 
 	private void prepareRatingsAndFolders(Map model, List entries) {
-		List peoplesWithCounters = SearchController.sortPeopleInEntriesSearchResults(entries);
-		List placesWithCounters = SearchController.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
+		List peoplesWithCounters = sortPeopleInEntriesSearchResults(entries);
+		List placesWithCounters = sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 		
-		List peoplesRating = SearchController.ratePeople(peoplesWithCounters);
+		List peoplesRating = ratePeople(peoplesWithCounters);
 		if (peoplesRating.size() > 20) peoplesRating = peoplesRating.subList(0,20);
-		List placesRating = SearchController.ratePlaces(placesWithCounters);
+		List placesRating = ratePlaces(placesWithCounters);
 		if (placesRating.size() > 20) placesRating = placesRating.subList(0,20);
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, peoplesRating);
 		model.put(WebKeys.FOLDER_ENTRYPLACES, placesRating);
@@ -260,6 +264,80 @@ public class AdvancedSearchController extends AbstractBinderController {
 
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
+	}
+	
+	protected static List sortPlacesInEntriesSearchResults(BinderModule binderModule, List entries) {
+		HashMap placeMap = new HashMap();
+		ArrayList placeList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique places.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			String id = (String)entry.get("_binderId");
+			if (id == null) continue;
+			Long bId = new Long(id);
+			if (placeMap.get(bId) == null) {
+				placeMap.put(bId, new Place(bId,1));
+			} else {
+				Place p = (Place)placeMap.remove(bId);
+				p = new Place(p.getId(),p.getCount()+1);
+				placeMap.put(bId,p);
+			}
+		}
+		//sort the hits
+		Collection collection = placeMap.values();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			Binder binder = binderModule.getBinder(((Place)array[j]).getId());
+			int count = ((Place)array[j]).getCount();
+			Map place = new HashMap();
+			place.put(WebKeys.BINDER, binder);
+			place.put(WebKeys.SEARCH_RESULTS_COUNT, new Integer(count));
+			placeList.add(place);
+		}
+		return placeList;
+
+	}
+
+	//This method rates the places
+	public static List ratePlaces(List entries) {
+		List ratedList = new ArrayList();
+		int intMaxHitsPerFolder = 0;
+		for (int i = 0; i < entries.size(); i++) {
+			Map place = (Map) entries.get(i);
+			Integer resultCount = (Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT);
+			if (i == 0) {
+				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(100));
+				place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brightest");
+				intMaxHitsPerFolder = resultCount;
+			}
+			else {
+				int intResultCount = resultCount.intValue();
+				Double DblRatingForFolder = ((double)intResultCount/intMaxHitsPerFolder) * 100;
+				int intRatingForFolder = DblRatingForFolder.intValue();
+				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
+				if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brightest");
+				}
+				else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brighter");
+				}
+				else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_bright");
+				}
+				else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_dim");
+				}
+				else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_very_dim");
+				}
+			}
+			ratedList.add(place);
+		}
+		return ratedList;
 	}
 	
 	private Map prepareFolderList(List placesWithCounters) {
@@ -470,5 +548,34 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return result;
 			}
 	}
+	// This class is used by the following method as a way to sort
+	// the values in a hashmap
+	public static class Place implements Comparable {
+		long id;
+		int count;
+
+		public Place (long id, int count) {
+			this.id = id;
+			this.count = count;
+		}
+		
+		public int getCount() {
+			return this.count;
+		}
+
+		public void incrCount() {
+			this.count += 1;
+		}
+		
+		public long getId() {
+			return this.id;
+		}
+		
+		public int compareTo(Object o) {
+			Place p = (Place) o;
+			int result = this.getCount() < p.getCount() ? 1 : 0;
+			return result;
+			}
+	}	
 
 }
