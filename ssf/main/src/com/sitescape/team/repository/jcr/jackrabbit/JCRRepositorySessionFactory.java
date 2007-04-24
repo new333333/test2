@@ -102,6 +102,8 @@ implements ExclusiveRepositorySessionFactory, JCRRepositorySessionFactoryMBean {
 	}
 
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
+		super.initialize();
+		
 		repositoryHomeDir = repositoryRootDir + homeSubdirName;
 		workspaceName = SPropsUtil.getString("jcr.workspace.name", "sitescape");
 		

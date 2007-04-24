@@ -40,16 +40,29 @@ public interface BinderModule {
 	 */
 	public void addSubscription(Long binderId, int style);
 	/**
-	 * Delete a binder including any sub-binders and entries
+	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
-	 * will continue deleting as much as possible
+	 * will continue deleting as much as possible.
 	 * @param binderId
 	 * @return List of errors when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public List deleteBinder(Long binderId) throws AccessControlException;
-	
-	
+	public List deleteBinder(Long binderId) 
+	throws AccessControlException;
+	/**
+	 * Delete a binder including any sub-binders and entries.
+	 * Any errors deleting child-binders will be returned, but
+	 * will continue deleting as much as possible.
+	 * @param binderId
+	 * @param deleteMirroredSource indicates whether or not to delete the
+	 * corresponding source resources (directories and files) if this binder
+	 * or any of the child binders is mirrored.
+	 * @return List of errors when deleting child binders
+	 * @throws AccessControlException
+	 */
+	public List deleteBinder(Long binderId, boolean deleteMirroredSource) 
+	throws AccessControlException;
+		
 	/**
 	 * Stop receiveing notifications that you have explicity requested.
 	 * @param binderId

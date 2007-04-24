@@ -50,6 +50,8 @@ public class SimpleProfiler {
     
     public SimpleProfiler start(String eventName) {
     	if(active){
+    		//System.out.println("*** " + new java.util.Date().toString() + ": start: " + ((title != null)? (title + "/") : "") + eventName);			
+    		
     		Event event = events.get(eventName);
     		if(event == null) {
     			event = new Event();
@@ -62,6 +64,8 @@ public class SimpleProfiler {
     
     public SimpleProfiler stop(String eventName) {
     	if(active) {
+    		//System.out.println("*** " + new java.util.Date().toString() + ": stop : " + ((title != null)? (title + "/") : "") + eventName);			
+    		
     		Event event = events.get(eventName);
     		if(event != null)
     			event.stop();

@@ -73,7 +73,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     }
     
-    protected void deleteBinder_delete(Binder binder, Map ctx) {
+    protected void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
     }
     protected void deleteBinder_postDelete(Binder binder, Map ctx) {
     }
@@ -260,7 +260,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
     
    	protected SFQuery indexEntries_getQuery(Binder binder) {
-   		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
    		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId());
    	}
    	protected boolean indexEntries_validate(Binder binder, Entry entry) {

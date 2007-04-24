@@ -71,7 +71,7 @@ public interface FileModule {
 	 * @param errors errors object or <code>null</code>
 	 */
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
-			FilesErrors errors);
+			boolean deleteMirroredSource, FilesErrors errors);
 
 	/**
 	 * Deletes the specified file. If applicable, also delete generated files

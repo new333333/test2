@@ -31,7 +31,7 @@ public interface BinderProcessor {
 
     public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
-  	public void deleteBinder(Binder binder) throws AccessControlException;
+  	public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
   	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 

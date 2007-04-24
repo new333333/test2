@@ -296,6 +296,8 @@ public interface ObjectKeys {
 	public static final String SYNCH_TO_SOURCE = "_synchToSource";
 	public static final String EXTERNAL_FILE = "_externalFile";
 	public static final String FI_ADAPTER = "fiAdapter";
-
+	public static final String RESOURCE_DRIVER_NAME = "resourceDriverName";
+	public static final String RESOURCE_PATH = "resourcePath";
+	public static final String MIRRORED = "mirrored"; 
 	
 }

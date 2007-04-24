@@ -393,15 +393,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		binder.setProperty(property, value);	
    }    
     public List deleteBinder(Long binderId) {
+    	// $$$Temporary change. 
+    	//return deleteBinder(binderId, true);
+    	return deleteBinder(binderId, false);
+    }
+    public List deleteBinder(Long binderId, boolean deleteMirroredSource) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, "deleteBinder");
 		
-   		List errors = deleteChildBinders(binder);
+   		List errors = deleteChildBinders(binder, deleteMirroredSource);
    		if (!errors.isEmpty()) return errors;
-   		loadBinderProcessor(binder).deleteBinder(binder);
+   		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource);
    		return null;
     }
-    protected List deleteChildBinders(Binder binder) {
+    protected List deleteChildBinders(Binder binder, boolean deleteMirroredSource) {
     	//First process all child folders
     	List binders = new ArrayList(binder.getBinders());
     	List errors = new ArrayList();
@@ -411,8 +416,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		if (b.isDeleted()) continue;
         	try {
         		checkAccess(b, "deleteBinder");
-       			List e = deleteChildBinders(b);
-       			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b);
+       			List e = deleteChildBinders(b, deleteMirroredSource);
+       			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b, deleteMirroredSource);
        			else errors.addAll(e);
         	} catch (Exception ex) {
         		errors.add(ex);
@@ -679,18 +684,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
    	public Binder getBinderByPathName(String pathName) throws AccessControlException {
-	   	List binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
+	   	List<Binder> binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
 	    	
-	   	if (binders.size() > 0) {
-	   		Binder binder = (Binder) binders.get(0); // only one matching binder
-			if (binder.isDeleted()) return null;
-			checkAccess(binder, "getBinder"); 
-	
+	    // only maximum of one matching non-deleted binder
+	   	for(Binder binder : binders) {
+	   		if(binder.isDeleted()) continue;
+			checkAccess(binder, "getBinder"); 			
 	   		return binder;
 	   	}
-	   	else {
-	   		return null;
-	   	}
+	   	
+	   	return null;
 	 }
 
 	public boolean hasTeamMembers(Long binderId, boolean explodeGroups) {

@@ -1030,7 +1030,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
    		for (Folder f: folders) {
    			FolderCoreProcessor processor = loadProcessor(f);
    			try {
-  				processor.deleteBinder(f);
+  				processor.deleteBinder(f, false);
    			} catch (Exception ex) {
    				logger.error(ex);
    			}

@@ -364,8 +364,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
          
     //***********************************************************************************************************
-    public void deleteBinder(Binder binder) {
-    	if (!binder.isDeleted()) super.deleteBinder(binder);
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
+    	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
     	else {
     		final Folder folder = (Folder)binder;
     		final FilterControls fc = new FilterControls(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
@@ -389,7 +389,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 								entry.incrLogVersion();
 								processChangeLog(entry, ChangeLog.DELETEENTRY);
 								try {
-									getFileModule().deleteFiles(folder, entry, null);
+									getFileModule().deleteFiles(folder, entry, false, null);
 								} catch (Exception ex) {
 									logger.error("Error delete files: " + ex.getLocalizedMessage());
 								}
@@ -405,7 +405,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 							}
 							//	finally delete the binder and its associations
 							try {
-								getFileModule().deleteFiles(folder, folder, null);
+								getFileModule().deleteFiles(folder, folder, false, null);
 							} catch (Exception ex) {
 								logger.error("Error delete files: " + ex.getLocalizedMessage());
 							}
@@ -421,7 +421,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 					}
 	        	});
 			}
-
      	};
     }
     
@@ -429,13 +428,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	//save for background
 
     }
-    public void deleteBinder_delete(Binder binder, Map ctx) {
+    public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
       	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
     	//mark for delete now and continue in the background
     	binder.setDeleted(true);
-
     }
 
  
@@ -624,5 +622,4 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().save(changes);
 		return changes;
 	}
-
 }

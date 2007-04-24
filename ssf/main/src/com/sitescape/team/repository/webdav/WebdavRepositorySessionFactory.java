@@ -83,6 +83,8 @@ implements ExclusiveRepositorySessionFactory, WebdavRepositorySessionFactoryMBea
 	}
 	
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
+		super.initialize();
+		
 		// Test if we can make a connection. This will check whether the webdav 
 		// server is properly set up or not. Better find problem at startup time.
 		
