@@ -23,7 +23,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.portlet.binder.SearchController;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
