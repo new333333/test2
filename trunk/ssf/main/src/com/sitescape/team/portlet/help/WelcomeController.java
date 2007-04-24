@@ -53,7 +53,11 @@ public class WelcomeController extends SAbstractController {
 
         Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.USER_PRINCIPAL, user);
-		
+
+		if (getLdapModule().testAccess("getLdapConfig") || getAdminModule().testAccess("setPostingSchedule")) {
+			model.put(WebKeys.SHOW_INSTALLATION_GUIDE, true);
+		}
+
 		return new ModelAndView("help/welcome", model);
 	}
 
