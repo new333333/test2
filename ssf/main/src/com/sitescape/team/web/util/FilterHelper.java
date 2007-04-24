@@ -29,7 +29,6 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.SearchEntryFilter;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
