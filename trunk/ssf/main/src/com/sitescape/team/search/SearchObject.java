@@ -21,10 +21,11 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
+import com.sitescape.team.util.SPropsUtil;
 
 public class SearchObject {//implements Serializable {
 
-	private static final int MAX_BOOLEAN_CLAUSES = 25000;
+	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
@@ -38,7 +39,7 @@ public class SearchObject {//implements Serializable {
 	 */
 	public SearchObject() {
 		super();
-		BooleanQuery.setMaxClauseCount(MAX_BOOLEAN_CLAUSES);
+		BooleanQuery.setMaxClauseCount(SPropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES));
 		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
 			QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
@@ -84,7 +85,7 @@ public class SearchObject {//implements Serializable {
 			long endTime = System.currentTimeMillis();
 			return retQ;
 		} catch (ParseException pe){ 
-			System.out.println("Parser exception: "+pe+" queryString in parser: "+queryString);
+			logger.info("Parser exception, can't parse: " + queryString);
 			return new BooleanQuery();}
 	}
 
