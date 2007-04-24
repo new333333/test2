@@ -11,13 +11,20 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<script type="text/javascript" src="<html:rootPath/>js/common/common.js"></script>
 
 <h1><ssf:nlt tag="welcome.header"/></h1>
 
 <ul style="list-style: outside;">
-  <li style="list-style-type: disc;"><a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Quick Tips.pdf"
-    onClick="javascript:return ss_openUrlInWindow(this,'help')">
+  <li style="list-style-type: disc;">
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Quick Tips.pdf"
+      onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.quickTipsOnUsage"/></span></a>
+  </li>
+  <li style="list-style-type: disc;">
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps QuickStart User Guide.pdf"
+      onClick="javascript:return ss_openUrlInWindow(this,'help')">
+      <span><ssf:nlt tag="welcome.quickStartUserGuide"/></span></a>
   </li>
 </ul>
 

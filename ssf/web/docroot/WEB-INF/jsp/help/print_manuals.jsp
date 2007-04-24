@@ -26,9 +26,9 @@
   <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"/></a>
 </li>
 
-<!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_user_guide.pdf">
+<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps QuickStart User Guide.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"/></a>
-</li>-->
+</li>
 
 <!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></a>
