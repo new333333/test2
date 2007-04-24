@@ -110,11 +110,13 @@ public class SeenMap {
 	public boolean checkAndSetSeen(Map entry, boolean setIt) {
       	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
 		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
+		if (modDate == null) return true;
     	return checkAndSetSeen(id, modDate, setIt);
 	}	
     public boolean checkIfSeen(Map entry) {
       	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
 		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
+    	if (modDate == null) return true;
     	return checkAndSetSeen(id, modDate, false);
     }   
     
