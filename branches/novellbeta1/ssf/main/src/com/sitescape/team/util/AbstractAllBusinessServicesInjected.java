@@ -1,0 +1,151 @@
+package com.sitescape.team.util;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ical.IcalGenerator;
+import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.dashboard.DashboardModule;
+import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.file.FileModule;
+import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.sample.EmployeeModule;
+import com.sitescape.team.module.workflow.WorkflowModule;
+import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.rss.RssGenerator;
+
+public class AbstractAllBusinessServicesInjected implements AllBusinessServicesInjected {
+
+	protected final Log logger = LogFactory.getLog(getClass());
+
+	private EmployeeModule employeeModule;
+	private WorkspaceModule workspaceModule;
+	private FolderModule folderModule;
+	private AdminModule adminModule;
+	private ProfileModule profileModule;
+	private DefinitionModule definitionModule;
+	private WorkflowModule workflowModule;
+	private BinderModule binderModule;
+	private LdapModule ldapModule;
+	private FileModule fileModule;
+	private RssGenerator rssGenerator;	
+	private DashboardModule dashboardModule;
+	private ICBroker icBroker;
+	private IcalGenerator icalGenerator;
+
+	public RssGenerator getRssGenerator() {
+		return rssGenerator;
+	}
+
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
+	}
+
+	public void setEmployeeModule(EmployeeModule employeeModule) {
+		this.employeeModule = employeeModule;
+	}
+	
+	public EmployeeModule getEmployeeModule() {
+		return employeeModule;
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	
+	public BinderModule getBinderModule() {
+		return binderModule;
+	}
+
+	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
+		this.workspaceModule = workspaceModule;
+	}
+	
+	public WorkspaceModule getWorkspaceModule() {
+		return workspaceModule;
+	}
+
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+	
+	public FolderModule getFolderModule() {
+		return folderModule;
+	}
+	
+	public void setAdminModule(AdminModule adminModule) {
+		this.adminModule = adminModule;
+	}
+	
+	public AdminModule getAdminModule() {
+		return adminModule;
+	}
+
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
+	
+	public ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+	
+	public DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+
+	public WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+	
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	
+	public LdapModule getLdapModule() {
+		return ldapModule;
+	}
+	
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
+	public FileModule getFileModule() {
+		return fileModule;
+	}
+	
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
+	}
+	
+	public DashboardModule getDashboardModule() {
+		return dashboardModule;
+	}
+
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
+	}
+
+	public IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
+	}
+	
+}
