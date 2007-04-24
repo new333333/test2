@@ -180,6 +180,8 @@ function ss_findPlacesSelectItem<portlet:namespace/>(obj, type) {
 		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_folder_listing');
 	} else if (type == 'workspace') {
 		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_ws_listing');
+	} else if (type == 'profiles') {
+		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_profile_listing');
 	} else {
 		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_permalink');
 	}
