@@ -62,9 +62,9 @@ function ss_addInitializedWorkflow(wfIdValue, stepsValue) {
 	ss_userOptionsCounter++;
 }
 
-function ss_addInitializedEntry(entryId, fieldName, value) {
+function ss_addInitializedEntry(entryId, fieldName, value, valueLabel) {
 	ss_optionsArray[ss_userOptionsCounter]='entry';
-	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value);
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel);
 	ss_userOptionsCounter++;
 }
 
@@ -117,7 +117,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	}
 	return wfWidget;
 }
-function ss_addEntry(orderNo, entryId, fieldName, value) {
+function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
@@ -139,7 +139,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value) {
 								maxListLength : 10,	autoComplete: false};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
-		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName]);
+		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
 	}
 }
 function ss_addTag(orderNo, communityTagValue, personalTagValue) {

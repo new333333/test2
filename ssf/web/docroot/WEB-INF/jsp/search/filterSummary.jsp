@@ -39,11 +39,11 @@
 				if (ss_searchFields['${block.entryType}-${block.entryElement}'])
 					document.write(ss_searchFields['${block.entryType}-${block.entryElement}']);
 			</script>
-			: 
+			:
 			<c:choose>
 				<c:when test="${block.valueType == 'date' || block.valueType == 'event'}">
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="date" />
-				</c:when>
+				</c:when>			
 				<c:otherwise>
 					${block.entryValues}
 				</c:otherwise>

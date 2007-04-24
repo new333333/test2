@@ -157,7 +157,7 @@
 			</c:if>
 			<c:if test="${!empty filterMap.additionalFilters.entry}">
 				<c:forEach var="block" items="${filterMap.additionalFilters.entry}">
-					ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValues}");
+					ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValuesNotFormatted}", "${block.entryValues}");
 				</c:forEach>
 			</c:if>
 			<c:if test="${!empty filterMap.additionalFilters.creation_date}">
