@@ -59,7 +59,6 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.SearchEntryFilter;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
