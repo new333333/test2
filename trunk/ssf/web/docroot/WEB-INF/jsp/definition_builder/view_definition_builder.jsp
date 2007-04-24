@@ -36,6 +36,11 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 <script type="text/javascript">
+dojo.require('dojo.widget.*');
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPagable.js"></script>
+
+<script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)
 var selectedId = null;
@@ -310,6 +315,18 @@ function getConditionSelectbox(obj, op, op2) {
 	ajaxRequest.setPostRequest(ss_postLoadGetConditionRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_createUserList(name) {
+	if (!name || name == "") name = 'conditionElementValue';
+	
+	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+	var props = {name : name, 
+				 id : name, 
+				 dataUrl:url,
+				 maxListLength : 12,
+				 autoComplete: false};
+	var usersWidget = dojo.widget.createWidget("SelectPagable", props, document.getElementById("conditionOperand"), "last");
 }
 
 function ss_postLoadGetConditionRequest() {
