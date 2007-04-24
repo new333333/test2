@@ -85,7 +85,11 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 		var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0]);
+			var placeLink = liObjs[0].getElementsByTagName('a')[0];
+			placeLink.onclick();
+
+//  next function, called without type, uses permalink - loop problem
+//	ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0]);
 			return;
 		}
  	}
@@ -167,7 +171,6 @@ function ss_findPlacesSelectItem0_${prefix}() {
 //Routine called when item is clicked
 function ss_findPlacesSelectItem<portlet:namespace/>(obj, type) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
-	
 	var url="<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="ssActionPlaceHolder"/><portlet:param name="binderId" 
 		value="ss_binderIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
