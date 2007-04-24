@@ -26,6 +26,13 @@
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.quickStartUserGuide"/></span></a>
   </li>
+<c:if test="${ss_showInstallationGuide}">
+  <li style="list-style-type: disc;">
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Installation Guide.pdf"
+      onClick="javascript:return ss_openUrlInWindow(this,'help')">
+      <span><ssf:nlt tag="welcome.installationGuide"/></span></a>
+  </li>
+</c:if>
 </ul>
 
 <div align="right">
