@@ -29,7 +29,13 @@
 	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span><br/>
 	   <select
 	   name="conditionElementOperation" 
-	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">
+	   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}"> 
+	   onChange="ss_createUserList('conditionElementValue')"
+	   </c:if>
+   	   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type != 'user_list'}"> 
+	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')"
+	   </c:if>
+	   >
 	     <option value="" selected="selected"><ssf:nlt 
 	       tag="filter.selectElementOperation"/></option>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
