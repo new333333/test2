@@ -42,7 +42,6 @@ public class LuceneUtil {
 	private static IndexWriter indexWriter = null;
 	private static IndexReader indexReader = null;
 	private static IndexSearcher indexSearcher = null;
-
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		synchronized (LuceneUtil.class) {
@@ -208,5 +207,16 @@ public class LuceneUtil {
 			indexSearcher.close();
 		} catch (Exception se) {}
 		indexSearcher = null;
+	}
+
+	// unlock the index
+	public static void unlock(String indexPath) {
+		try {
+			if (indexExists(indexPath)) {
+				// force unlock of the directory
+				IndexReader.unlock(FSDirectory.getDirectory(indexPath, false));
+			}
+		} catch (Exception e) {
+		}
 	}
 }
