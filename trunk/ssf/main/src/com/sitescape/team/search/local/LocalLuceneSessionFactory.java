@@ -11,6 +11,10 @@
 package com.sitescape.team.search.local;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.springframework.beans.factory.DisposableBean;
 
 import com.sitescape.team.search.AbstractLuceneSessionFactory;
 import com.sitescape.team.search.LuceneException;
@@ -23,7 +27,7 @@ import com.sitescape.team.util.FileHelper;
  *
  */
 public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
-implements LocalLuceneSessionFactoryMBean {
+implements DisposableBean, LocalLuceneSessionFactoryMBean {
     
 	private String indexRootDir;
 
@@ -52,5 +56,9 @@ implements LocalLuceneSessionFactoryMBean {
 	
 	private String getIndexDirPath(String indexName) {
 		return indexRootDir + indexName;
+	}
+
+	public void destroy() throws Exception {
+
 	}
 }
