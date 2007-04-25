@@ -40,6 +40,7 @@ var ss_findEntriesSearchLastTextObjId = "";
 var ss_findEntriesSearchLastElement = "";
 var ss_findEntriesSearchLastfindEntriesType = "";
 var ss_findEntriesClickRoutine${prefix} = "<%= clickRoutine %>";
+var ss___findEntriesIsMouseOverList = false;
 function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
@@ -218,6 +219,20 @@ function ss_findEntriesClose<portlet:namespace/>() {
 	document.getElementById('ss_findEntries_searchText_<portlet:namespace/>').focus();
 }
 
+function ss_findEntriesBlurTextArea<portlet:namespace/>() {
+	if (!ss___findEntriesIsMouseOverList) {
+		setTimeout(function() { ss_hideDiv('ss_findEntriesNavBarDiv_<portlet:namespace/>') } , 200);
+	}
+}
+
+function ss_findEntriesMouseOverList<portlet:namespace/>() {
+	ss___findEntriesIsMouseOverList = true;
+}
+
+function ss_findEntriesMouseOutList<portlet:namespace/>() {
+	ss___findEntriesIsMouseOverList = false;
+}
+
 </script>
 <c:set var="ss_find_entries_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
@@ -227,10 +242,12 @@ function ss_findEntriesClose<portlet:namespace/>() {
     name="ss_findEntries_searchText_<portlet:namespace/>" 
     id="ss_findEntries_searchText_<portlet:namespace/>"
     onKeyUp="ss_findEntriesSearch_${prefix}(this.id, '<%= findEntriesElementName %>', '<%= findEntriesType %>');"
-    onBlur="setTimeout('ss_hideDiv(\'ss_findEntriesNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
+    onBlur="ss_findEntriesBlurTextArea<portlet:namespace/>();"></textarea></div>
 <div id="ss_findEntries_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findEntriesNavBarDiv_<portlet:namespace/>"
-    class="ss_findUserList" style="visibility:hidden;">
+    class="ss_findUserList" style="visibility:hidden;"
+    onmouseover="ss_findEntriesMouseOverList<portlet:namespace/>()"
+    onmouseout="ss_findEntriesMouseOutList<portlet:namespace/>()">
     <div id="available_<%= findEntriesElementName %>_${prefix}">
       <ul>
       </ul>

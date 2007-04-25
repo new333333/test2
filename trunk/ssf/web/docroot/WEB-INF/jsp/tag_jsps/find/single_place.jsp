@@ -34,6 +34,7 @@ var ss_findPlacesSearchLastText = "";
 var ss_findPlacesSearchLastTextObjId = "";
 var ss_findPlacesSearchLastElement = "";
 var ss_findPlacesSearchLastfindPlacesType = "";
+var ss___findPlacesIsMouseOverList = false;
 function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
@@ -214,6 +215,22 @@ function ss_findPlacesClose<portlet:namespace/>() {
 	document.getElementById('ss_findPlaces_searchText_<portlet:namespace/>').focus();
 }
 
+
+function ss_findPlacesBlurTextArea<portlet:namespace/>() {
+	if (!ss___findPlacesIsMouseOverList) {
+		setTimeout(function() { ss_hideDiv('ss_findPlacesNavBarDiv_<portlet:namespace/>') } , 200);
+	}
+}
+
+function ss_findPlacesMouseOverList<portlet:namespace/>() {
+	ss___findPlacesIsMouseOverList = true;
+}
+
+function ss_findPlacesMouseOutList<portlet:namespace/>() {
+	ss___findPlacesIsMouseOverList = false;
+}
+
+
 </script>
 <c:set var="ss_find_places_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
@@ -223,10 +240,12 @@ function ss_findPlacesClose<portlet:namespace/>() {
     name="ss_findPlaces_searchText_<portlet:namespace/>" 
     id="ss_findPlaces_searchText_<portlet:namespace/>"
     onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
-    onBlur="setTimeout('ss_hideDiv(\'ss_findPlacesNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
+    onBlur="ss_findPlacesBlurTextArea<portlet:namespace/>();"></textarea></div>
 <div id="ss_findPlaces_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findPlacesNavBarDiv_<portlet:namespace/>"
-    class="ss_findUserList" style="visibility:hidden;">
+    class="ss_findUserList" style="visibility:hidden;"
+    onmouseover="ss_findPlacesMouseOverList<portlet:namespace/>()"
+    onmouseout="ss_findPlacesMouseOutList<portlet:namespace/>()">
     <div id="available_<%= findPlacesElementName %>_${prefix}">
       <ul>
       </ul>

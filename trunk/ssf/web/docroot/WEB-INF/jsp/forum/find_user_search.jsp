@@ -16,6 +16,7 @@
 <taconite-root xml:space="preserve">
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
+
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
 	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
@@ -27,6 +28,7 @@
           <tr>
           <td colspan="2">
 	      <ul>
+	      
 			<c:forEach var="entry" items="${ssUsers}">
 			  <c:set var="count" value="${count + 1}"/>
 			  <li id="<c:out value="ss_findUser_id_${entry._docId}"/>"><a 

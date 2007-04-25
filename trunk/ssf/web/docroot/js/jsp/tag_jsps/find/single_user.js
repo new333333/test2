@@ -9,25 +9,30 @@
  *
  */
 
-if (!window.ss_findUser_searchText) window.ss_findUser_searchText = new Array();
-if (!window.ss_findUser_pageNumber)	window.ss_findUser_pageNumber = new Array();
-if (!window.ss_findUserDivTopOffset) window.ss_findUserDivTopOffset = new Array();
+function ss_declareFindUserSearchVariables () {
+	window.ss_findUser_searchText = new Array();
+	window.ss_findUser_pageNumber = new Array();
+	window.ss_findUserDivTopOffset = new Array();
 
-if (!window.ss_findUserSearchInProgress) window.ss_findUserSearchInProgress = new Array();
-if (!window.ss_findUserSearchWaiting) window.ss_findUserSearchWaiting = new Array();
-if (!window.ss_findUserSearchStartMs) window.ss_findUserSearchStartMs = new Array();
-if (!window.ss_findUserSearchLastText) window.ss_findUserSearchLastText = new Array();
-if (!window.ss_findUserSearchLastTextObjId) window.ss_findUserSearchLastTextObjId = new Array();
-if (!window.ss_findUserSearchLastElement) window.ss_findUserSearchLastElement = new Array();
-if (!window.ss_findUserSearchLastfindUserGroupType) window.ss_findUserSearchLastfindUserGroupType = new Array();
-if (!window.ss_findUserClickRoutine) window.ss_findUserClickRoutine = new Array();
-if (!window.ss_findUserClickRoutineArgs) window.ss_findUserClickRoutineArgs = new Array();
-if (!window.ss_findUserViewUrl) window.ss_findUserViewUrl = new Array();
-if (!window.ss_findUserLeaveResultsVisible) window.ss_findUserLeaveResultsVisible = new Array();
-if (!window.ss_findUserSearchUrl) window.ss_findUserSearchUrl = new Array();
-
+	window.ss_findUserSearchInProgress = new Array();
+	window.ss_findUserSearchWaiting = new Array();
+	window.ss_findUserSearchStartMs = new Array();
+	window.ss_findUserSearchLastText = new Array();
+	window.ss_findUserSearchLastTextObjId = new Array();
+	window.ss_findUserSearchLastElement = new Array();
+	window.ss_findUserSearchLastfindUserGroupType = new Array();
+	window.ss_findUserClickRoutine = new Array();
+	window.ss_findUserClickRoutineArgs = new Array();
+	window.ss_findUserViewUrl = new Array();
+	window.ss_findUserLeaveResultsVisible = new Array();
+	window.ss_findUserSearchUrl = new Array();
+	window.ss___findUserIsMouseOverList = new Array();
+}
 
 function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs, viewUrl, leaveResultsVisible, userSearchUrl) {
+	if (!window.ss_findUser_searchText) {
+		ss_declareFindUserSearchVariables();
+	}
 	ss_findUser_searchText[prefix] = "";
 	ss_findUser_pageNumber[prefix] = 0;
 	ss_findUserDivTopOffset[prefix] = 2;
@@ -40,21 +45,21 @@ function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs
 	ss_findUserSearchLastElement[prefix] = "";
 	ss_findUserSearchLastfindUserGroupType[prefix] = "";
 	ss_findUserClickRoutine[prefix] = clickRoutine;
-	if (clickRoutineArgs && clickRoutineArgs != "")
-		ss_findUserClickRoutineArgs[prefix] = clickRoutineArgs.split(",");
-	else
-		ss_findUserClickRoutineArgs[prefix] = new Array();
 	ss_findUserViewUrl[prefix] = viewUrl;
 	ss_findUserLeaveResultsVisible[prefix] = leaveResultsVisible;
 	ss_findUserSearchUrl[prefix] = userSearchUrl;
+	if (clickRoutineArgs && clickRoutineArgs != "")
+		ss_findUserClickRoutineArgs[prefix] = clickRoutineArgs.split(",");
+	else
+		ss_findUserClickRoutineArgs[prefix] = new Array();	
 }
 
 function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
-	var textObj = $(textObjId);
+	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
 	if (text != ss_findUserSearchLastText[prefix]) ss_findUser_pageNumber[prefix] = 0;
 	ss_setupStatusMessageDiv();
-	//ss_moveDivToBody('ss_findUserNavBarDiv${prefix}');
+	ss_moveDivToBody('ss_findUserNavBarDiv' + prefix);
 	//Are we already doing a search?
 	if (ss_findUserSearchInProgress[prefix] == 1) {
 		//Yes, hold this request until the current one finishes
@@ -97,7 +102,7 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
  	if (crFound == 1) {
  		textObj.value = newText;
  		text = textObj.value;
-		var ulObj = $('available_' + prefix)
+		var ulObj = document.getElementById('available_'+prefix)
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
 			ss_findUserSelectItem(prefix, liObjs[0]);
@@ -106,13 +111,13 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
  	}
  	//Fade the previous selections
  	var savedColor = "#000000";
- 	var divObj = $('available_' + prefix);
+ 	var divObj = document.getElementById('available_' + prefix);
  	if (divObj != null && divObj.style && divObj.style.color) {
  		savedColor = divObj.style.color;
  	}
  	if (divObj != null) divObj.style.color = "#cccccc";
 
- 	ss_debug("//"+text+"// page: "+ss_findUser_pageNumber[prefix])
+ 	ss_debug("//"+text+"//")
 	var ajaxRequest = new ss_AjaxRequest(ss_findUserSearchUrl[prefix]); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
@@ -124,8 +129,6 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 	ajaxRequest.addKeyValue("findType", findUserGroupType)
 	ajaxRequest.addKeyValue("listDivId", "available_" + prefix)
 	ajaxRequest.addKeyValue("namespace", prefix);
-	//ajaxRequest.setEchoDebugInfo();
-	//ajaxRequest.setPreRequest(ss_preFindUserRequest);
 	ajaxRequest.setPostRequest(ss_postFindUserRequest);
 	ajaxRequest.setData("prefix", prefix);
 	ajaxRequest.setData("elementName", elementName)
@@ -136,9 +139,9 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 }
 function ss_postFindUserRequest(obj) {
 	var prefix = obj.getData("prefix");
-	ss_debug('ss_postFindUserRequest');
+	ss_debug('ss_postFindUserRequest'+prefix);
 	//See if there was an error
-	if (self.$("ss_status_message").innerHTML == "error") {
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
 	ss_findUserSearchInProgress[prefix] = 0;
@@ -146,8 +149,8 @@ function ss_postFindUserRequest(obj) {
 	ss_showFindUserSelections(prefix);
 	
  	//Show this at full brightness
-	var divObj = $('ss_findUserNavBarDiv_' + prefix);
- 	divObj = $('available_' + prefix);
+	var divObj = document.getElementById('ss_findUserNavBarDiv_' + prefix);
+ 	divObj = document.getElementById('available_' + prefix);
  	if (divObj != null) divObj.style.color = obj.getData('savedColor');
 	
 	//See if there is another search request to be done
@@ -156,7 +159,6 @@ function ss_postFindUserRequest(obj) {
         ss_findUserSearch(a, b, c, d)
       });
     }
-    
     var runitRef = runItLater(prefix, ss_findUserSearchLastTextObjId[prefix], ss_findUserSearchLastElement[prefix], ss_findUserSearchLastfindUserGroupType[prefix]);
 	if (ss_findUserSearchWaiting[prefix] == 1) {
 		setTimeout(runitRef, 100);
@@ -164,7 +166,7 @@ function ss_postFindUserRequest(obj) {
 
 	//See if the user typed a return. If so, see if there is a unique value to go to
 	if (obj.getData('crFound') == 1) {
-		var ulObj = $('available_' + prefix);
+		var ulObj = document.getElementById('available_' + prefix);
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
 			setTimeout(function (){ss_findUserSelectItem0(prefix);}, 100);
@@ -173,14 +175,14 @@ function ss_postFindUserRequest(obj) {
 	}
 }
 function ss_showFindUserSelections(prefix) {
-	var divObj = $('ss_findUserNavBarDiv_' + prefix);
+	var divObj = document.getElementById('ss_findUserNavBarDiv_' + prefix);
 	ss_moveDivToBody('ss_findUserNavBarDiv_' + prefix);
 	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findUser_searchText_bottom_" + prefix) + ss_findUserDivTopOffset[prefix]))
 	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findUser_searchText_bottom_" + prefix)))
 	ss_showDivActivate('ss_findUserNavBarDiv_' + prefix);
 }
 function ss_findUserSelectItem0(prefix) {
-	var ulObj = $('available_' + prefix);
+	var ulObj = document.getElementById('available_' + prefix);
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
 		ss_findUserSelectItem(prefix, liObjs[0])
@@ -190,11 +192,11 @@ function ss_findUserSelectItem0(prefix) {
 function ss_findUserSelectItem(prefix, obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
-		var textObj = $(ss_findUserSearchLastTextObjId[prefix]);
-		textObj.value = "";
 	if (ss_findUserClickRoutine[prefix] != "") {
+		//eval(ss_findUserClickRoutine[prefix] + "('"+id+"');");
 		window[ss_findUserClickRoutine[prefix]].apply(this, [id, obj].concat(ss_findUserClickRoutineArgs[prefix]));
 		if (ss_findUserLeaveResultsVisible[prefix]) {
+			//setTimeout("ss_showFindUserSelections('"+prefix+"');", 200)
 			setTimeout(function() {ss_showFindUserSelections(prefix)}, 200); // faster then "ss_showFindUserSelections(prefix)"
 		}
 	} else {
@@ -209,17 +211,14 @@ function ss_saveFindUserData(prefix) {
 	var me = this;
 	
 	this.invoke = function() {
-		var ulObj = $('available_' + me.prefix)
+		ss_debug('ss_saveFindUserData')
+		var ulObj = document.getElementById('available_' + me.prefix)
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
 			ss_findUserSelectItem(me.prefix, liObjs[0]);
 		}
 		return false;
 	}
-}
-
-function ss_findUserBlurTextArea(prefix) {
-	setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_'+prefix+'\')', 1000);
 }
 
 function ss_findUserNextPage(prefix) {
@@ -234,7 +233,7 @@ function ss_findUserPrevPage(prefix) {
 }
 
 function ss_findUserClose(prefix) {
-	$('ss_findUser_searchText_' + prefix).focus();
+	document.getElementById('ss_findUser_searchText_' + prefix).focus();
 }
 
 function ss_findUserInitializeForm(formName, prefix) {
@@ -242,4 +241,18 @@ function ss_findUserInitializeForm(formName, prefix) {
 		var saveFindUserData = new ss_saveFindUserData(prefix);
 		ss_createOnSubmitObj(prefix + 'onSubmit_single_user', formName, saveFindUserData.invoke);
 	}
+}
+
+function ss_findUserBlurTextArea(prefix) {
+	if (!ss___findUserIsMouseOverList[prefix]) {
+		setTimeout(function() { ss_hideDiv('ss_findUserNavBarDiv_' + prefix) } , 200);
+	}
+}
+
+function ss_findUserMouseOverList(prefix) {
+	ss___findUserIsMouseOverList[prefix] = true;
+}
+
+function ss_findUserMouseOutList(prefix) {
+	ss___findUserIsMouseOverList[prefix] = false;
 }
