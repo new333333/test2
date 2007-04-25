@@ -4114,6 +4114,7 @@ function ss_showThisImage(obj) {
 		var imgObj = imgObjs.item(0);
 		var url = imgObj.src
 		url = ss_replaceSubStr(url, "viewType=thumbnail", "viewType=normal")
+		url = ss_replaceSubStr(url, "viewType=scaled", "viewType=normal")
 		self.window.open(url, "_blank")
 	}
 }

@@ -73,15 +73,14 @@ public abstract class Converter<T>
 			FileCopyUtils.copy(is, fos);
 			convert(copyOfOriginalFile.getAbsolutePath(), convertedFile.getAbsolutePath(), 30000, parameters);
 		}
-		catch(Exception e)
+		catch(Exception e) {
+		}
+		finally
 		{
 			if (is != null)
 				is.close();
 			if (fos != null)
 				fos.close();
-		}
-		finally
-		{
 			if(copyOfOriginalFile != null && copyOfOriginalFile.exists()) {
 				copyOfOriginalFile.delete();
 			}

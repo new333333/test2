@@ -198,15 +198,21 @@ public class Thumbnail {
 			int maxWidth, int maxHeight) throws ImageFormatException,
 			IOException {
 		// Determine the scale.
-		double scaleWidth = (double) maxWidth / (double) inImage.getWidth(null);
-		double scaleHeight = (double) maxHeight
-				/ (double) inImage.getHeight(null);
+		int sourceWidth = inImage.getWidth(null);
+		int sourceHeight = inImage.getHeight(null);
+
+		if(sourceWidth < 0 || sourceHeight < 0) {
+			throw new ImageFormatException("Format not supported by AWT");
+		}
+		
+		double scaleWidth = (double) maxWidth / (double) sourceWidth;
+		double scaleHeight = (double) maxHeight / (double) sourceHeight;
 		double scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth;
 
 		// Determine size of new image. 
 		// One of them should equal maxDim.
-		int scaledW = (int) (scale * inImage.getWidth(null));
-		int scaledH = (int) (scale * inImage.getHeight(null));
+		int scaledW = (int) (scale * sourceWidth);
+		int scaledH = (int) (scale * sourceHeight);
 
 		// Create an image buffer in which to paint on.
 		BufferedImage outImage = new BufferedImage(scaledW, scaledH,
@@ -249,6 +255,10 @@ public class Thumbnail {
 		int sourceWidth = inImage.getWidth(null);
 		int sourceHeight = inImage.getHeight(null);
 
+		if(sourceWidth < 0 || sourceHeight < 0) {
+			throw new ImageFormatException("Format not supported by AWT");
+		}
+		
 		// Determine the scale.
 		double scaleWidth = (double) maxSize / (double) sourceWidth;
 		double scaleHeight = (double) maxSize / (double) sourceHeight;
