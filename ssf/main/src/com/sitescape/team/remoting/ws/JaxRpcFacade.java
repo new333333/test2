@@ -46,6 +46,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.facade.getFolderEntryAsXML(binderId, entryId);
 	}
 	
+/*
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
 		return this.facade.addFolderEntry(binderId, definitionId, inputDataAsXML);
 	}
@@ -66,11 +67,12 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
 		return this.facade.addReply(binderId, parentId, definitionId, inputDataAsXML);
 	}
-
+	*/
+	
 	public String getPrincipalAsXML(long binderId, long principalId) {
 		return this.facade.getPrincipalAsXML(binderId, principalId);
 	}
-
+	/*
 	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
 		return this.facade.addUser(binderId, definitionId, inputDataAsXML);
 	}
@@ -86,7 +88,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public void deletePrincipal(long binderId, long principalId) {
 		this.facade.deletePrincipal(binderId, principalId);
 	}
-	
+	*/
 	public String getWorkspaceTreeAsXML(long binderId, int levels) {
 		return this.facade.getWorkspaceTreeAsXML(binderId, levels);
 	}
