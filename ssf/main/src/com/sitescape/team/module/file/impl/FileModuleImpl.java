@@ -11,18 +11,12 @@
 package com.sitescape.team.module.file.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.imageio.stream.FileImageInputStream;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +41,6 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.docconverter.HtmlConverter;
 import com.sitescape.team.docconverter.IHtmlConverterManager;
 import com.sitescape.team.docconverter.IImageConverterManager;
 import com.sitescape.team.docconverter.ImageConverter;
@@ -93,7 +86,6 @@ import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.util.ThumbnailException;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.team.InternalException;
@@ -127,15 +119,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	private static final String FAILED_FILTER_TRANSACTION_CONTINUE 	= "CONTINUE";
 	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "ABORT";
 	private static final String FAILED_FILTER_TRANSACTION_DEFAULT	= FAILED_FILTER_TRANSACTION_ABORT;
-
-	// TODO To be removed once fixup is no longer necessary
-	private static final String SCALED_FILE_SUFFIX = "__ssfscaled_";
-	private static final String THUMBNAIL_FILE_SUFFIX = "__ssfthumbnail_";
-	private static final String HTML_FILE_SUFFIX = ".html";
-	
-	private static final String SCALED_SUBDIR = "scaled";
-	private static final String THUMB_SUBDIR = "thumb";
-	private static final String HTML_SUBDIR = "html";
 		
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -365,58 +348,27 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 	}
 	
-	public boolean scaledFileExists(Binder binder, 
-			DefinableEntity entry, FileAttachment fAtt) {
-		String filePath = FilePathUtil.getFilePath(binder, entry, fAtt, SCALED_SUBDIR, fAtt.getFileItem().getName());
-		if(cacheFileStore.fileExists(filePath)) {
-			return true;
-		}
-		else {
-			// TODO temporary fixup code - to be removed
-			return scaledFileExistsInRepository(binder, entry, fAtt);
-		}
-	}
-
-	private boolean scaledFileExistsInRepository(Binder binder, 
-			DefinableEntity entry, FileAttachment fAtt) {
-		int fileInfo = RepositoryUtil.fileInfo(fAtt.getRepositoryName(), 
-				binder, entry, makeScaledFileNameInRepository(fAtt.getFileItem().getName()));
-		
-		if(fileInfo == RepositorySession.UNVERSIONED_FILE)
-			return true;
-		else if(fileInfo == RepositorySession.NON_EXISTING_FILE)
-			return false;
-		else
-			throw new InternalException();
-	}
-
-	/*
-	public HistoryStamp getCheckoutInfo(
-			Binder binder, DefinableEntity entry, FileAttachment fa) {
-		return fa.getCheckout();
-	}*/
-	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out)
 	{
-		String relativeFilePath = "";
+		ImageConverter converter = null;
 		
-		if (!fa.getFileItem().getName().toLowerCase().endsWith(IImageConverterManager.IMG_EXTENSION))
-			relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
-		else
-			relativeFilePath = fa.getFileItem().getName();
-		
-		String filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, relativeFilePath);
-		if(!cacheFileStore.fileExists(filePath))
+		try
 		{
-			generateThumbnailFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, 0);
-			generateScaledFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
+			converter = this.imageConverterManager.getConverter();
+			FileCopyUtils.copy(converter.convertToScaledImage(binder, entry, fa,
+									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT)),
+							   out);
 		}
-		
-		try {
-			cacheFileStore.readFile(filePath, out);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+		catch (IOException e)
+		{
+			try {
+				readFile(binder, entry, fa, out);				
+			}
+			catch(Exception ex) {
+				// out.print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+				throw new UncheckedIOException(e);
+			}
 		}
 	}
 	
@@ -424,22 +376,17 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out)
 	{
-		String relativeFilePath = "";
+		ImageConverter converter = null;
 		
-		if (!fa.getFileItem().getName().toLowerCase().endsWith(IImageConverterManager.IMG_EXTENSION))
-			relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
-		else
-			relativeFilePath = fa.getFileItem().getName();
-		
-		String filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, relativeFilePath);
-		if(!cacheFileStore.fileExists(filePath)) {			
-				generateThumbnailFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, 0);
-				generateScaledFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
+		try
+		{
+			converter = this.imageConverterManager.getConverter();
+			FileCopyUtils.copy(converter.convertToThumbnail(binder, entry, fa,
+									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0)),
+							   out);
 		}
-
-		try {
-			cacheFileStore.readFile(filePath, out);
-		} catch (IOException e) {
+		catch (IOException e)
+		{
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -458,31 +405,11 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	public void readCacheHtmlFile(String url, Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) 
 	{
 		InputStream is = null;
-		File htmlFile = null;
-		String filePath = "";
 
 		try
 		{
-			// See if we already have a cached version of file.
-			// The cached version of the file will have an HTML extension as opposed to the original file extension
-			// such as (DOC, PPT, etc). We need to change the filename to reflect this.
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, fa.getFileItem().getName());
-			filePath = filePath.substring(0, filePath.lastIndexOf('.')) + HTML_FILE_SUFFIX;
-			htmlFile = cacheFileStore.getFile(filePath);
-			
-			if (htmlFile == null
-			|| !htmlFile.exists()
-			|| htmlFile.lastModified() < fa.getModification().getDate().getTime())
-			{
-				generateHtmlFile(url, binder, entry, fa);
-			}
-			// Process Character file
-			is = new FileInputStream(htmlFile);
+			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
 			FileCopyUtils.copy(is, out);
-			return;
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -512,21 +439,12 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out, String urlFileName)
 	{
-		byte[] bbuf = null;
-		File urlFile = null;
 		InputStream is = null;
-		String filePath = "";
 		
 		try
 		{
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, urlFileName);
-			urlFile = cacheFileStore.getFile(filePath);
-						
-			is = new FileInputStream(urlFile);
+			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, urlFileName);
 			FileCopyUtils.copy(is, out);
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -557,280 +475,26 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out, String imageFileName)
 	{
-		String filePath = "";
-		byte[] bbuf = null;
-		File imageFile = null;
-		FileImageInputStream fis = null;
+		InputStream is = null;
 		
 		try
 		{
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, imageFileName);
-			imageFile = cacheFileStore.getFile(filePath);
-
-			// Process Image file
-			fis = new FileImageInputStream(imageFile);
-			bbuf = new byte[(int)fis.length()];
-			
-			fis.readFully(bbuf, 0, (int)fis.length());			
-			out.write(bbuf);
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
+			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, imageFileName);
+			FileCopyUtils.copy(is, out);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
 		}	
 		finally {
-			if (fis != null)
+			if (is != null)
 			{
 				try
 				{
-					fis.close();
+					is.close();
 				}
 				catch (IOException io) {}
 			}
 		}		
-	}
-/*
-	public void generateScaledFile(Binder binder, DefinableEntity entry, 
-			FileAttachment fa, int maxWidth, int maxHeight) {
-		String repositoryName = fa.getRepositoryName();
-		String relativeFilePath = fa.getFileItem().getName();
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		RepositoryUtil.read(repositoryName, binder, entry, relativeFilePath, baos);
-		
-		generateAndStoreScaledFile(binder, entry, fa, 
-				baos.toByteArray(), maxWidth, maxHeight);
-	}
-*/		
-	public void generateScaledFile(Binder binder, 
-			 DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight)
-	{
-		InputStream is = null;
-		FileOutputStream fos = null;
-		File scaledfile = null,
-		 	 originalFile = null;
-		String filePath = "",
-			   outFile = "",
-			   relativeFilePath = "";
-
-		try 
-		{
-			if (!fa.getFileItem().getName().toLowerCase().endsWith(IImageConverterManager.IMG_EXTENSION))
-				relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
-			else
-				relativeFilePath = fa.getFileItem().getName();
-			
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, relativeFilePath);
-			scaledfile = cacheFileStore.getFile(filePath);
-			// If the output file's parent directory doesn't already exist, create it.
-			File parentDir = scaledfile.getParentFile();
-			if(!parentDir.exists())
-				parentDir.mkdirs();
-			
-			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, fa.getFileItem().getName());
-			originalFile = cacheFileStore.getFile(filePath);
-			fos = new FileOutputStream(originalFile);
-			FileCopyUtils.copy(is, fos);
-		
-			outFile = scaledfile.getAbsolutePath();			
-			generateAndStoreScaledFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, maxWidth, maxHeight);
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		finally
-		{
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				}
-				catch(Exception e)
-				{
-					logger.error(e.getLocalizedMessage(), e);
-				}
-			}
-			if (fos != null)
-			{
-				try
-				{
-					fos.close();
-				}
-				catch(Exception e)
-				{
-					logger.error(e.getLocalizedMessage(), e);
-				}
-			}
-		}
-	}
-	
-	public void generateThumbnailFile(Binder binder, 
-			 DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight)
-	{
-		InputStream is = null;
-		FileOutputStream fos = null;
-		File thumbfile = null,
-		 	 originalFile = null;
-		String filePath = "",
-			   outFile = "",
-			   relativeFilePath = "";
-
-		try 
-		{
-			if (!fa.getFileItem().getName().toLowerCase().endsWith(IImageConverterManager.IMG_EXTENSION))
-				relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
-			else
-				relativeFilePath = fa.getFileItem().getName();
-			
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, relativeFilePath);
-			thumbfile = cacheFileStore.getFile(filePath);
-			// If the output file's parent directory doesn't already exist, create it.
-			File parentDir = thumbfile.getParentFile();
-			if(!parentDir.exists())
-				parentDir.mkdirs();
-			
-			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, fa.getFileItem().getName());
-			originalFile = cacheFileStore.getFile(filePath);
-			fos = new FileOutputStream(originalFile);
-			FileCopyUtils.copy(is, fos);
-			
-			outFile = thumbfile.getAbsolutePath();			
-			generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, maxWidth, maxHeight);
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		finally
-		{
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				}
-				catch(Exception e)
-				{
-					logger.error(e.getLocalizedMessage(), e);
-				}
-			}
-			if (fos != null)
-			{
-				try
-				{
-					fos.close();
-				}
-				catch(Exception e)
-				{
-					logger.error(e.getLocalizedMessage(), e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Generate HTML file based on an attachment file held in repository. This functionality is used for
-	 * 'view as html' functionality. We need to convert a non-HTML file type into a HTML file type.
-	 * 
-	 * @param url		Url that will be inserted into image an url sources to make them valid
-	 * @param binder	SiteScape Binder Object - holds path information in repository
-	 * @param entry		SiteScape DefinableEntity Object - holds path information in repository
-	 * @param fa		SiteScape FileAttachment Object - represents file in respository
-	 *
-	 */
-	public void generateHtmlFile(String url, Binder binder, 
-			 DefinableEntity entry, FileAttachment fa)
-	{
-		InputStream is = null;
-		FileOutputStream fos = null;
-		File htmlfile = null,
-		 	 originalFile = null;
-		String filePath = "",
-			   outFile = "",
-			   relativeFilePath = "";
-
-		try 
-		{
-			relativeFilePath = fa.getFileItem().getName();
-			
-			filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, relativeFilePath);
-			htmlfile = cacheFileStore.getFile(filePath);
-			// If the output file's parent directory doesn't already exist, create it.
-			File parentDir = htmlfile.getParentFile();
-			if(!parentDir.exists())
-				parentDir.mkdirs();
-			
-			// Verify the HTML file exists in cache or not
-			outFile = htmlfile.getAbsolutePath();
-			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
-			File oFile = new File(outFile);
-			
-			if (!oFile.exists()
-			|| htmlfile.lastModified() < fa.getModification().getDate().getTime())
-			{
-				try
-				{
-					is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
-					filePath = FilePathUtil.getFilePath(binder, entry, fa, HTML_SUBDIR, relativeFilePath);
-					originalFile = cacheFileStore.getFile(filePath);
-					fos = new FileOutputStream(originalFile);
-					FileCopyUtils.copy(is, fos);
-				}
-				catch(Exception e)
-				{
-					if (is != null)
-						is.close();
-					if (fos != null)
-						fos.close();
-				}
-				
-				generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), originalFile.getAbsolutePath(), outFile);
-			}
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-	
-	/**
-	 * This method is functionally equivalent to <code>generateScaledFile</code>
-	 * and <code>generateThumbnailFile</code> combined. But this is potentially
-	 * more efficient than calling them separately because it reads in the
-	 * primary file only once. 
-	 */
-	public void generateFiles(Binder binder, DefinableEntity entry, 
-			FileAttachment fa, int maxWidth, int maxHeight, 
-			int thumbnailMaxWidth, int thumbnailMaxHeight) {
-		String repositoryName = fa.getRepositoryName();
-		String relativeFilePath = fa.getFileItem().getName();
-
-		// Read the input file from the repository into a byte array. 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		RepositoryUtil.read(repositoryName, binder, entry, relativeFilePath, baos);
-
-		// Generate and store scaled file.
-		generateScaledFile(binder, entry, fa, maxWidth, maxHeight);
-		
-		/**
-		 * (rsordillo) To use Stellent to convert documents into thumbnails we need to deal with files since
-		 * 		Stellent does not deal with Stream data
-		 */
-		generateThumbnailFile(binder, entry, fa, maxWidth, maxHeight);
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -1467,9 +1131,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	
     	/// Work Flow:
     	/// step1: write primary file
-    	/// step2: generate and write scaled file (if necessary)
-    	/// step3: generate and write thumbnail file (if necessary)
-    	/// step4: update metadata in database
+    	/// step2: update metadata in database
     	
 		int type = fui.getType();
 		if(type != FileUploadItem.TYPE_FILE && 
@@ -1547,60 +1209,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
     		sp.stop("writeFileMetadataTransactional");
 	    	
-	    	// We can generate cache files only after successful transaction
-	    	// on the metadata, since the cache store relies on the persistent
-	    	// id of the file attachment object.
-	    	
-    		// Scaled file
-        	// Generate scaled file which goes into the same repository as
-    		// the primary file except that the generated file is not versioned.
-    		try {
-    			// NOTE: cannot use fui.getMaxWidth(), fui.getMaxHeight() they may be 0
-    			sp.start("generateScaledFile");
-    			generateScaledFile(binder, entry, fAtt, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
-    			sp.stop("generateScaledFile");
-    		}
-    		catch(ThumbnailException e) {
-    			// Scaling operation can fail for a variety of reasons, primarily
-    			// when the file format is not supported. Do not cause this to
-    			// fail the entire operation. Simply log it and proceed.  
-    			logger.warn("Error generating scaled copy of " + relativeFilePath, e);
-    			errors.addProblem(new FilesErrors.Problem
-    					(repositoryName, relativeFilePath, 
-    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
-    		}
-    		catch(Exception e) {
-    			// Failed to store scaled file. Record the problem and proceed.
-    			logger.warn("Error storing scaled copy of " + relativeFilePath, e);
-    			errors.addProblem(new FilesErrors.Problem
-    					(repositoryName, relativeFilePath, 
-    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
-    		}
-
-    		// Thumbnail file
-    		try {
-    			/**
-    			 * (rsordillo) To use Stellent to convert documents into thumbnails we need to deal with files since
-    			 * 		Stellent does not deal with Stream data
-    			 * 	NOTE: cannot use fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight() they may be 0
-    			 */
-    			sp.start("generateThumbnailFile");
-    			generateThumbnailFile(binder, entry, fAtt, IImageConverterManager.IMAGEWIDTH, 0);
-    			sp.stop("generateThumbnailFile");
-    		}
-    		catch(ThumbnailException e) {
-    			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
-    			errors.addProblem(new FilesErrors.Problem
-    					(repositoryName, relativeFilePath, 
-    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
-    		}
-    		catch(Exception e) {
-    			logger.warn("Error storing thumbnail copy of " + relativeFilePath, e);
-    			errors.addProblem(new FilesErrors.Problem
-    					(repositoryName, relativeFilePath, 
-    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
-    		}
-      	
+     	
         	sp.print();
 
 	    	return true;
@@ -1892,209 +1501,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		fAtt.addFileVersion(vAtt);
 	}
 	
-	// TODO - This method is obsolete. Used only for temporary fixup code. To be removed.
-	private String makeScaledFileNameInRepository(String primaryFileName) {
-		int index = primaryFileName.lastIndexOf(".");
-		String scaledFileName = null;
-		if(index == -1) {
-			// The file name doesn't contain extension 
-			scaledFileName = primaryFileName + SCALED_FILE_SUFFIX;
-		}
-		else {
-			scaledFileName = primaryFileName.substring(0, index) + SCALED_FILE_SUFFIX + 
-				"." + primaryFileName.substring(index+1);
-		}
-		return scaledFileName;
-	}
 	
-	// TODO - This method is obsolete. Used only for temporary fixup code. To be removed.
-	private String makeThumbnailFileName(String primaryFileName) {
-		int index = primaryFileName.lastIndexOf(".");
-		String thumbnailFileName = null;
-		if(index == -1) {
-			// The file name doesn't contain extension 
-			thumbnailFileName = primaryFileName + THUMBNAIL_FILE_SUFFIX;
-		}
-		else {
-			thumbnailFileName = primaryFileName.substring(0, index) + THUMBNAIL_FILE_SUFFIX + 
-				"." + primaryFileName.substring(index+1);
-		}
-		return thumbnailFileName;
-	}
-/*
-	private void generateAndStoreScaledFile(
-			Binder binder, DefinableEntity entry, FileAttachment fa, 
-			byte[] inputData, int maxWidth, int maxHeight) 
-		throws ThumbnailException, UncheckedIOException
-	{
-		File originalFile = null;
-		String relativeFilePath = fa.getFileItem().getName();
-		
-		if (!(relativeFilePath.toLowerCase().endsWith(".gif")
-		|| relativeFilePath.toLowerCase().endsWith(".jpg")
-		|| relativeFilePath.toLowerCase().endsWith(".jpeg")
-		|| relativeFilePath.toLowerCase().endsWith(".png")))
-		{
-			vvv
-			generateThumbnailFile(binder, entry, fa, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
-		}
-		else
-		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
-
-			String filePath = FilePathUtil.getFilePath(binder, entry, fa, SCALED_SUBDIR, relativeFilePath);
-
-			try {
-				cacheFileStore.writeFile(filePath, baos.toByteArray());
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-		}
-	}
-*/
-/*	
-	private void generateAndStoreThumbnailFile(Binder binder, 
-			DefinableEntity entry, String relativeFilePath, 
-			byte[] inputData, int maxWidth, int maxHeight) 
-		throws ThumbnailException, RepositoryServiceException, UncheckedIOException {
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		// Generate thumbnail
-		// maxHeight is 0 if square thumbnail
-		if (maxHeight == 0) {
-			Thumbnail.createThumbnail(inputData, baos, maxWidth);
-		} else {
-			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
-		}
-
-		String filePath = FilePathUtil.getFilePath(binder, entry, fa, THUMB_SUBDIR, relativeFilePath);
-
-		try {
-			cacheFileStore.writeFile(filePath, baos.toByteArray());
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-*/	
-	
-	private void generateAndStoreScaledFile(Long binderId, Long entryId, String inFile, String outFile, int maxWidth, int maxHeight) 
-		throws IOException, FileNotFoundException
-	{
-		ImageConverter converter = null;
-		
-		try
-		{
-			converter = this.imageConverterManager.getConverter();
-			converter.convert(inFile, outFile, 30000, maxWidth, maxHeight);
-		}
-		catch (Exception e)
-		{
-			throw new IOException(e.getLocalizedMessage());
-		}
-		
-		return;
-	}
-	
-	private void generateAndStoreThumbnailFile(Long binderId, Long entryId, String inFile, String outFile, int maxWidth, int maxHeight) 
-		throws IOException, FileNotFoundException
-	{
-		ImageConverter converter = null;
-		
-		try
-		{
-			converter = this.imageConverterManager.getConverter();			
-			converter.convert(inFile, outFile, 30000, maxWidth, 0);
-		}
-		catch (Exception e)
-		{
-			throw new IOException(e.getLocalizedMessage());
-		}
-		
-		return;
-	}
-	
-	private void generateAndStoreHtmlFile(String url, Long binderId, Long entryId, String fileId, String inFile, String outFile) 
-		throws IOException, FileNotFoundException
-	{
-		int length = 2048;
-		char[] cbuf = new char[length];
-		HtmlConverter converter = null;
-		StringBuffer buffer = null,
-					 bufferAlter = null;
-			
-		String src = "";
-		buffer = new StringBuffer();
-	
-		try
-		{
-			int j = outFile.lastIndexOf(File.separator);
-			//outFile = outFile.substring(0, j+1) + fileId + File.separator + outFile.substring(j+1);
-			
-			converter = htmlConverterManager.getConverter();
-			
-			converter.convert(inFile, outFile, 30000);
-			// When generating the HMTL equivalent file.
-			// Many HTML files can be generated. Open file(s) an make adjustments to image src attribute
-			// Every HTML file in directory should be related to converter process
-			File outputDir = new File(outFile.substring(0, j+1));
-			if (outputDir.isDirectory())
-			{
-				src = url + "?binderId=" + binderId + "&entryId=" + entryId + "&fileId=" + fileId + "&viewType=XXXX&filename=";
-				File[] files = outputDir.listFiles();
-				for (int x=0; x < files.length; x++)
-				{
-					if (files[x].isFile() && files[x].getName().endsWith(".html"))
-						parseHtml(files[x], files[x], src);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw new IOException(e.getLocalizedMessage());
-		}
-	}
-    
-	/*
-	 * private void closeLocksTransactional(Binder binder, DefinableEntity
-	 * entity, boolean commit) throws RepositoryServiceException,
-	 * UncheckedIOException { if(closeLocks(binder, entity, commit))
-	 * triggerUpdateTransaction(); }
-	 */
-    
-	/*
-    private boolean closeLocks(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
-    		UncheckedIOException {
-    	if((entity instanceof Reservable) &&
-    			((Reservable)entity).getLockedFileCount() <= 0) {
-    		// A little optimization for reservable entity.
-    		return false; 
-    	}
-    	else {
-	    	boolean metadataDirty = false; 
-	    	
-			// Iterate over file attachments and close each lock.
-			List fAtts = entity.getFileAttachments();
-			for(int i = 0; i < fAtts.size(); i++) {
-				FileAttachment fa = (FileAttachment) fAtts.get(i);
-				if(closeLock(binder, entity, fa, commit))
-					metadataDirty = true;
-			}
-	    	
-	    	return metadataDirty;  	
-    	}
-    }*/
-    
-    /*
-    private void closeLockTransactional(Binder binder, DefinableEntity entity,
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
-    		UncheckedIOException {
-    	if(closeLock(binder, entity, fa, commit))
-    		this.triggerUpdateTransaction();
-    }*/
-
     private boolean closeLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
@@ -2298,129 +1705,4 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	return (lock.getExpirationDate().getTime() + 
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
     }
-    
-    /**
-     * Alter tag data held in HTML file. We need to alter Image and Url file path information to reflect were
-     * the image or files actually reside on the server. After converted a file into an HTML file the Image an
-     * Url file paths are specified to be relative to HTML file just generated. We must change these entries so
-     * we can recall these items and stream items into browser.
-     * 
-     * @param indata		Data to check for alterations
-     * @param tag			What tag item are we going to look to change
-     * @param attrtag		What attribute on 'tag' are we going to change
-     * @param newdata		New data to insert into attribute we are changing
-     * 
-     * @return				Altered 'indata'
-     */
-    private StringBuffer alterTagData(String indata, String tag, String attrtag, String newdata)
-	{
-		String[] splits = null;
-		StringBuffer buffer = null;
-		String s = "",
-			   src = "",
-			   data = "",
-			   altdata = "",
-			   predata = "",
-			   imageurl = "";
-		
-		buffer = new StringBuffer();
-		splits = indata.split(tag);
-        for (int x=0; x < splits.length; x++)
-        {
-        	s = splits[x];
-        	int i = s.indexOf(attrtag);
-        	if (i > -1)
-        	{
-        		predata = s.substring(0, i);
-        		data = s.substring(i + attrtag.length());
-        		imageurl = data.substring(0, data.indexOf("\""));
-        		if (imageurl.startsWith("#")
-        		|| imageurl.startsWith("http:")
-        		|| imageurl.startsWith("https:"))
-        			src = imageurl;
-        		else
-        			src = newdata + imageurl;
-        		
-        		altdata = tag + predata;
-        		altdata += attrtag + (src + "\"" + data.substring(data.indexOf("\"")+1));
-        		buffer.append(altdata);
-        	}
-        	else
-        	// we could have a file like (ex) this is a test <a name='rsordillo' /> for testing
-        	// we would not want to add 'tag' to beginning of file
-        	if (x == 0)
-        		buffer.append(s);
-        	else
-        		buffer.append(tag + s);
-        }
-        
-        return buffer;
-	}
-	
-    /**
-     * Parse HTML file replacing URL an IMAGE paths to conform with were the actual Images or Url files exist
-     * on the system.
-     * 
-     * @param fin			Input file to be adjusted
-     * @param fout			Output file after adjustments have been made
-     * @param attrdata		What attribute data to change if required
-     * 
-     * @throws Exception	Something goes wrong with parsing/changing input file
-     * 
-     */
-	public void parseHtml(File fin, File fout, String attrdata)
-		throws Exception
-	{
-		int length = 2048;
-		FileReader fr = null;
-		FileWriter fw = null;
-		char[] cbuf = new char[length];
-		StringBuffer buffer = null;
-		String fileData = "";
-		
-		try
-		{
-			buffer = new StringBuffer();
-			
-			fr = new FileReader(fin);			
-			while (fr.read(cbuf, 0, length) > -1)
-			{
-				buffer.append(cbuf);
-				// clear buffer
-				for (int x=0; x < cbuf.length; x++)
-					cbuf[x] = '\0';
-			}
-			fileData = buffer.toString().trim();
-			fr.close();
-	
-			buffer = alterTagData(fileData, "<img ", "src=\"", attrdata.replaceAll("XXXX", "image"));
-			buffer = alterTagData(buffer.toString(), "<IMG ", "SRC=\"", attrdata.replaceAll("XXXX", "image"));
-			buffer = alterTagData(buffer.toString(), "<a ", "href=\"", attrdata.replaceAll("XXXX", "url"));
-			buffer = alterTagData(buffer.toString(), "<A ", "HREF=\"", attrdata.replaceAll("XXXX", "url"));
-			
-			fw = new FileWriter(fout);
-	        fw.write(buffer.toString());
-		}
-		finally
-		{
-			try
-			{
-				if (fr != null)
-					fr.close();
-			} catch (Exception e) {}
-			
-			try
-			{
-				if (fw != null)
-				{
-					fw.flush();
-					fw.close();
-				}
-			}
-			catch (Exception e) {}
-		}
-        
-        return;
-	}
-
 }

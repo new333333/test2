@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -89,12 +90,6 @@ public class ImageOpenOfficeConverter
 		_port = port_in;
 	}
 
-	public void convert(File ifp, File ofp, long timeout, int maxWidth, int maxHeight)
-		throws Exception
-	{
-		convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(), timeout, maxWidth, maxHeight);
-	}
-	
 	/**
 	 *  Run the conversion using the given input path, output path.
 	 *
@@ -103,7 +98,7 @@ public class ImageOpenOfficeConverter
 	 *  @param timeout Export process timeout in milliseconds.
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public String convert(String ifp, String ofp, long timeout, int maxWidth, int maxHeight)
+	public void convert(String ifp, String ofp, long timeout, ImageConverter.Parameters parameters)
 		throws Exception
 	{
 		FileInputStream is = null;
@@ -125,7 +120,7 @@ public class ImageOpenOfficeConverter
 			if (ofile != null
 			&& ofile.exists()
 			&& ofile.lastModified() >= ifile.lastModified())
-				return "";
+				return;
 				
 			// Can not handle anything other than JPEG
 			if (ifp.toLowerCase().endsWith(".jpg")
@@ -140,10 +135,10 @@ public class ImageOpenOfficeConverter
 			inputData = FileCopyUtils.copyToByteArray(is);
 			
 			baos = new ByteArrayOutputStream();
-			if (maxHeight == 0) {
-				Thumbnail.createThumbnail(inputData, baos, maxWidth);
+			if (parameters.getHeight() == 0) {
+				Thumbnail.createThumbnail(inputData, baos, parameters.getWidth());
 			} else {
-				Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
+				Thumbnail.createThumbnail(inputData, baos, parameters.getHeight(), parameters.getWidth());
 			}
 
 			if (!(ofp.toLowerCase().endsWith(".jpg")
@@ -165,23 +160,6 @@ public class ImageOpenOfficeConverter
 			if (os != null)
 				os.close();
 		}
-		
-		return "";
-	}
-	
-	/**
-	 *  Run the conversion using the given input path, output path.
-	 *  Default the timeout to 0.
-	 *
-	 *  @param ifp     Input path.
-	 *  @param ofp     Output path.
-	 */
-
-	public void convert(String ifp, String ofp)
-		throws Exception
-	{
-		// default the timeout value to 0
-		convert(ifp, ofp, 0, 300, 300);
 	}
 	
 	/**

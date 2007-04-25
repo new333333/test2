@@ -915,71 +915,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	byte[] bbuf = null;
     	ITextConverterManager textConverterManager = null;
     	TextConverter converter = null;
-		FileStore cacheFileStore;
-		InputStream is = null;
-		FileReader fr = null;
-		FileOutputStream fos = null;
-		File outFp = null,
-			 textfile = null;
-		String text = "",
-			   filePath = "",
-			   outFile = "",
-			   relativeFilePath = "";
+		String text = "";
 		
 		// Get the Text converter from manager
 		// Abstract Class can not use Spring Injection mechanism
 		textConverterManager = (ITextConverterManager)SpringContextUtil.getBean("textConverterManager");
 		converter = textConverterManager.getConverter();
-		
-		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
-		relativeFilePath = fa.getFileItem().getName();
-		
-		// Determine the location in cache to store files we are going to process an make the directories
-		// that are required if they don't exist
-		filePath = FilePathUtil.getFilePath(binder, entity, fa, TEXT_SUBDIR, relativeFilePath);
-		textfile = cacheFileStore.getFile(filePath);
-		// If the output file's parent directory doesn't already exist, create it.
-		File parentDir = textfile.getParentFile();
-		if(!parentDir.exists())
-			parentDir.mkdirs();
-		
+
 		try
 		{
-			outFile = textfile.getAbsolutePath();
-			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + TXT_EXT;
-			outFp = new File(outFile);
-			
-			// If the output text file already exists and the last modification time is >= to incoming file
-			// we can use the cached version of the file (no conversion since it is already done)
-			if (!outFp.exists() || outFp.lastModified() <= fa.getModification().getDate().getTime()) {
-				// Write the file to cache file store we can not be sure that item is an actual file in Repository
-				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
-				fos = new FileOutputStream(textfile);
-				FileCopyUtils.copy(is, fos);
-				
-				text = converter.convert(textfile.getAbsolutePath(), 20000);
-				FileWriter fw = new FileWriter(outFp);
-				try {
-					fw.write(text, 0, text.length());
-				} catch(Exception io) {
-				} finally {
-					fw.close();
-				}
-			}
-			else
-			{
-				StringBuffer b = new StringBuffer("");
-				fr = new FileReader(outFp);
-				char[] cbuf = new char[1024];
-				while (fr.read(cbuf, 0, 1024) > 0)
-				{
-					b.append(cbuf);
-					// clear buffer
-					for (int x=0; x < 1024; x++)
-						cbuf[x] = '\0';
-				}
-				text = b.toString();
-			}
+			text = converter.convert(binder, entity, fa);
 		}
 		catch (Exception e)
 		{
@@ -987,38 +932,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			// limitation of Software.
 			logger.error(e);
 		}
-		finally
-		{
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				} catch (Exception io) {}
-			}
-			
-			if (fos != null)
-			{
-				try
-				{
-					fos.close();
-				} catch (Exception io) {}
-			}
-			
-			if (fr != null)
-			{
-				try
-				{
-					fr.close();
-				} catch (Exception io) {}
-			}
-			if(textfile != null && textfile.exists()) {
-				textfile.delete();
-			}
-		}
 
-        
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+		org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	
     	// Add document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);

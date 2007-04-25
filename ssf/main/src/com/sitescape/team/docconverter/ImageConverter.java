@@ -10,18 +10,37 @@
  */
 package com.sitescape.team.docconverter;
 
+import java.io.InputStream;
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public abstract class ImageConverter 
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
+
+public abstract class ImageConverter extends Converter<ImageConverter.Parameters>
 {
 	protected String _defaultImage = "";
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
-	
-	public abstract String convert(String ifp, String ofp, long timeout, int maxWidth, int maxHeight)
-		throws Exception;
-	
+	private static final String SCALED_SUBDIR = "scaled";
+	private static final String THUMB_SUBDIR = "thumb";
+	private static final String IMG_FILE_SUFFIX = ".jpg";
+
+	public InputStream convertToScaledImage(Binder binder, DefinableEntity entry, FileAttachment fa, ImageConverter.Parameters parameters)
+	throws IOException
+{
+	return super.convert(binder, entry, fa, parameters, SCALED_SUBDIR, IMG_FILE_SUFFIX);
+}
+
+	public InputStream convertToThumbnail(Binder binder, DefinableEntity entry, FileAttachment fa, ImageConverter.Parameters parameters)
+	throws IOException
+{
+	return super.convert(binder, entry, fa, parameters, THUMB_SUBDIR, IMG_FILE_SUFFIX);
+}
+
 	public void setDefaultImage(String image_in)
 	{
 		_defaultImage = image_in;
@@ -30,5 +49,20 @@ public abstract class ImageConverter
 	public String getDefaultImage()
 	{
 		return _defaultImage;
+	}
+	
+	public static class Parameters
+	{
+		int width;
+		int height;
+		
+		public Parameters(int width, int height)
+		{
+			this.width = width;
+			this.height = height;
+		}
+		
+		public int getWidth() { return width; }
+		public int getHeight() { return height; }
 	}
 }
