@@ -121,28 +121,33 @@ public class ImageOpenOfficeConverter
 			&& ofile.exists()
 			&& ofile.lastModified() >= ifile.lastModified())
 				return;
-				
-			// Can not handle anything other than JPEG
-			if (ifp.toLowerCase().endsWith(".jpg")
-			|| ifp.toLowerCase().endsWith(".jpeg"))
-			{
+			
+			try {
 				is = new FileInputStream(ifp);
+				inputData = FileCopyUtils.copyToByteArray(is);
+			
+				baos = new ByteArrayOutputStream();
+				if (parameters.getHeight() == 0) {
+					Thumbnail.createThumbnail(inputData, baos, parameters.getWidth());
+				} else {
+					Thumbnail.createThumbnail(inputData, baos, parameters.getHeight(), parameters.getWidth());
+				}
 			}
-			else
+			catch(Exception e)
 			{
 				is = new FileInputStream(_defaultImage);
+				inputData = FileCopyUtils.copyToByteArray(is);
+				
+				baos = new ByteArrayOutputStream();
+				if (parameters.getHeight() == 0) {
+					Thumbnail.createThumbnail(inputData, baos, parameters.getWidth());
+				} else {
+					Thumbnail.createThumbnail(inputData, baos, parameters.getHeight(), parameters.getWidth());
+				}
 			}
-			inputData = FileCopyUtils.copyToByteArray(is);
 			
-			baos = new ByteArrayOutputStream();
-			if (parameters.getHeight() == 0) {
-				Thumbnail.createThumbnail(inputData, baos, parameters.getWidth());
-			} else {
-				Thumbnail.createThumbnail(inputData, baos, parameters.getHeight(), parameters.getWidth());
-			}
-
 			if (!(ofp.toLowerCase().endsWith(".jpg")
-			|| ofp.toLowerCase().endsWith(".jpeg")))
+			      || ofp.toLowerCase().endsWith(".jpeg")))
 				os = new FileOutputStream(ofp + IImageConverterManager.IMG_EXTENSION);
 			else
 				os = new FileOutputStream(ofp);
