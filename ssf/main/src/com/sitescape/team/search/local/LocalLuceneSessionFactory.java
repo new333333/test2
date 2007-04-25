@@ -12,8 +12,6 @@ package com.sitescape.team.search.local;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.InitializingBean;
-
 import com.sitescape.team.search.AbstractLuceneSessionFactory;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
@@ -25,7 +23,7 @@ import com.sitescape.team.util.FileHelper;
  *
  */
 public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
-implements InitializingBean, LocalLuceneSessionFactoryMBean {
+implements LocalLuceneSessionFactoryMBean {
     
 	private String indexRootDir;
 
@@ -54,9 +52,5 @@ implements InitializingBean, LocalLuceneSessionFactoryMBean {
 	
 	private String getIndexDirPath(String indexName) {
 		return indexRootDir + indexName;
-	}
-
-	public void afterPropertiesSet() throws Exception {
-		// Cleanup previous lock, etc.
 	}
 }
