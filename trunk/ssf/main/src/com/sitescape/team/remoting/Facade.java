@@ -30,7 +30,8 @@ public interface Facade {
 	public String getFolderEntriesAsXML(long folderId);
 
 	public String getFolderEntryAsXML(long folderId, long entryId);
-	
+
+	/*
 	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML);
 	
 	public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
@@ -41,12 +42,14 @@ public interface Facade {
 
 	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
-
+	 */
+	
 	//
 	// Profile operations
 	//
 	public String getPrincipalAsXML(long binderId, long principalId);
-	
+
+	/*
 	public long addUser(long binderId, String definitionId, String inputDataAsXML);
 
 	public long addGroup(long binderId, String definitionId, String inputDataAsXML);
@@ -54,6 +57,8 @@ public interface Facade {
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML);
 	
 	public void deletePrincipal(long binderId, long principalId);
+
+	*/
 	
 	//
 	// Workspace operations
