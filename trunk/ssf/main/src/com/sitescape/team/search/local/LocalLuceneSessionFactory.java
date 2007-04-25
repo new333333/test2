@@ -11,8 +11,8 @@
 package com.sitescape.team.search.local;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.DisposableBean;
 
@@ -21,6 +21,7 @@ import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
+import com.sitescape.team.util.LuceneUtil;
 
 /**
  * @author Jong Kim
@@ -30,6 +31,8 @@ public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory
 implements DisposableBean, LocalLuceneSessionFactoryMBean {
     
 	private String indexRootDir;
+	private static ConcurrentHashMap<String,String> indexNameMap= new ConcurrentHashMap();
+	
 
 	public LuceneSession openSession(String indexName) {
 		String indexDirPath = getIndexDirPath(indexName);
@@ -39,7 +42,10 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 		} catch (IOException e) {
 			throw new LuceneException(e);
 		}
-		
+		if (!indexNameMap.containsKey(indexName)) {
+			indexNameMap.put(indexName, indexDirPath);
+			LuceneUtil.unlock(indexName);
+		}
         return new LocalLuceneSession(indexDirPath);
     }
 	
@@ -59,6 +65,13 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 	}
 
 	public void destroy() throws Exception {
-
+		String indexDirPath = "";
+		if (indexNameMap.size() == 0) return;
+		Iterator iter = indexNameMap.keySet().iterator();
+		while (iter.hasNext()) {
+			indexDirPath = indexNameMap.get(iter.next());
+			LuceneUtil.unlock(indexDirPath);
+		}
+		
 	}
 }
