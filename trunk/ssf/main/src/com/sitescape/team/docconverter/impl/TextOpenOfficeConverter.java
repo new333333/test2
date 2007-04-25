@@ -108,11 +108,9 @@ public class TextOpenOfficeConverter
 	 *  @param timeout Export process timeout in milliseconds.
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public String convert(String ifp, long timeout)
+	public void convert(String ifp, String ofp, long timeout, String parameters)
 		throws Exception
 	{
-		String ofp = ifp + "._convert_.xml";
-
 		org.dom4j.Document doc = null;
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
@@ -143,7 +141,7 @@ public class TextOpenOfficeConverter
 			if (ifp.toLowerCase().endsWith(".jpg")
 			|| ifp.toLowerCase().endsWith(".jpeg")
 			|| ifp.toLowerCase().endsWith(".gif"))
-				return "";
+				return;
 			
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
@@ -197,7 +195,7 @@ public class TextOpenOfficeConverter
 			if (objectDocumentToStore == null)
 			{
 				logger.error("OpenOffice Text Converter, could not load file: " + url);
-				return "";
+				return;
 			}
 			
 			// Getting an object that will offer a simple way to store a document to a URL.
@@ -240,10 +238,6 @@ public class TextOpenOfficeConverter
 			// Storing and converting the document
 			url = convertToUrl(ofile, xcomponentcontext);
 			xstorable.storeToURL(url, propertyValues);
-			if (ofile.exists() && ofile.length() > 0)
-			{
-				return getTextFromXML(ofile, getNullTransformFile());
-			}
 		}
 		catch (Exception e)
 		{
@@ -267,12 +261,7 @@ public class TextOpenOfficeConverter
 				if (xcomponent != null)
 					xcomponent.dispose();
 			}
-			if(ofile != null && ofile.exists()) {
-				ofile.delete();
-			}
 		}
-	    
-		return "";
 	  }
 	
 	/**

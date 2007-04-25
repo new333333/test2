@@ -11,8 +11,12 @@
 package com.sitescape.team.docconverter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Locale;
 
@@ -30,19 +34,44 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 
-public abstract class TextConverter 
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
+
+public abstract class TextConverter extends Converter<String>
 {
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
+	private static final String TEXT_SUBDIR = "text",
+		   TEXT_FILE_SUFFIX = ".txt";
 	
-	public abstract String convert(String ifp, long timeout)
-		throws Exception;
-	
-	public String convert(File ifp, long timeout)
-		throws Exception
+	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
+		throws IOException
 	{
-		return convert(ifp.getAbsolutePath(),timeout);
+		InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
+		StringWriter textWriter = new StringWriter();
+		FileCopyUtils.copy(new InputStreamReader(textStream), textWriter);
+		return textWriter.toString();
+	}
+	
+	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
+			String filePath, String relativeFilePath, String parameters)
+		throws IOException
+	{
+		String iPath = filePath + "._convert_.xml";
+		File intermediateFile = cacheFileStore.getFile(iPath);
+		try {
+			super.createCachedFile(intermediateFile, binder, entry, fa, filePath, relativeFilePath, parameters);
+			getTextFromXML(intermediateFile, getNullTransformFile(), new FileOutputStream(convertedFile));
+		}
+		finally
+		{
+			if(intermediateFile != null && intermediateFile.exists()) {
+				intermediateFile.delete();
+			}
+		}
 	}
 	
 	protected org.dom4j.Document getDomDocument(File textFile) {
@@ -56,7 +85,7 @@ public abstract class TextConverter
 		}	
 	}
 	
-	protected String getTextFromXML(File ofile, File transformFile)
+	protected void getTextFromXML(File ofile, File transformFile, OutputStream out)
     {	
     	Locale l = Locale.getDefault();
 		Templates trans;
@@ -73,18 +102,15 @@ public abstract class TextConverter
 				tranny =  trans.newTransformer();
 			} catch (TransformerConfigurationException tce) {}
 
-			StreamResult result = new StreamResult(new StringWriter());
+			StreamResult result = new StreamResult(out);
 			try {
 				tranny.setParameter("Lang", l);
 				tranny.transform(new DocumentSource(tempfile), result);
 			} catch (Exception ex) {
-				return ex.getLocalizedMessage();
 			}
-			return result.getWriter().toString();
 		}
-		return "";
 	}
-	
+
 	/**
 	 * @return Returns the nullTransform.
 	 */

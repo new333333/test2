@@ -97,12 +97,6 @@ public class HtmlOpenOfficeConverter
 		return returnUrl;
 	}
 
-	public void convert(File ifp, File ofp, long timeout)
-		throws Exception
-	{
-		convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
-	}
-	
 	/**
 	 *  Run the conversion using the given input path, output path.
 	 *
@@ -111,7 +105,7 @@ public class HtmlOpenOfficeConverter
 	 *  @param timeout Export process timeout in milliseconds.
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public void convert(String ifp, String ofp, long timeout)
+	public void convert(String ifp, String ofp, long timeout, String parameters)
 		throws Exception
 	{
 		XStorable xstorable = null;
@@ -244,20 +238,4 @@ public class HtmlOpenOfficeConverter
 	    
 	    return;
 	  }
-	
-	/**
-	 *  Run the conversion using the given input path, output path.
-	 *  Default the timeout to 0.
-	 *
-	 *  @param ifp     Input path.
-	 *  @param ofp     Output path.
-	 */
-
-	public void convert(String ifp, String ofp)
-		throws Exception
-	{
-		// default the timeout value to 0
-		convert(ifp,ofp,0);
-	}
-	
 }

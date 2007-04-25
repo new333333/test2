@@ -47,6 +47,10 @@ public class WSClient
 				fetchAndPrintXML("getFolderEntriesAsXML", new Object[] {Long.parseLong(args[1])});			
 			} else if(args[0].equals("printFolderEntry")) {
 				fetchAndPrintXML("getFolderEntryAsXML", new Object[] {Long.parseLong(args[1]),Long.parseLong(args[2])});			
+			} else if(args[0].equals("printDefinition")) {
+				fetchAndPrintXML("getDefinitionAsXML", new Object[] {args[1]});			
+			} else if(args[0].equals("printDefinitionConfig")) {
+				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);			
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -89,8 +93,10 @@ public class WSClient
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth>");
-		System.out.println("printPrincipalTree <binder id> <principal id>");
+		System.out.println("printPrincipal <binder id> <principal id>");
 		System.out.println("printFolderEntries <folder id>");
 		System.out.println("printFolderEntry <folder id> <entry id>");
+		System.out.println("printDefinition <definition id>");
+		System.out.println("printDefinitionConfig");
 	}
 }

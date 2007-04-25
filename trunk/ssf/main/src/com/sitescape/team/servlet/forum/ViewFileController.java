@@ -190,31 +190,12 @@ public class ViewFileController extends SAbstractController {
 							attachment + "filename=\"" + shortFileName + "\"");
 				
 				if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
-					boolean scaledFileExists = false;
-					response.setContentType("image/jpeg");
-					
 					try {
-						// (rsordillo) different file types are possible need to convert extension to 'JPG' to ensure image
-						if (!(fa.getFileItem().getName().toLowerCase().endsWith(".gif")
-						|| fa.getFileItem().getName().toLowerCase().endsWith(".jpg")
-						|| fa.getFileItem().getName().toLowerCase().endsWith(".jpeg")
-						|| fa.getFileItem().getName().toLowerCase().endsWith(".png")))
-							fa.getFileItem().setName(fa.getFileItem().getName() + com.sitescape.team.docconverter.IImageConverterManager.IMG_EXTENSION);
-						
-						if (getFileModule().scaledFileExists(parent, entity, fa)) {
-							scaledFileExists = true;
-						}
-					}
-					catch(Exception e1) {}
-					if (scaledFileExists) {
+						response.setContentType("image/jpeg");
 						getFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
-					} else {
-						try {
-							getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
-						}
-						catch(Exception e) {
-							response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
-						}
+					}
+					catch(Exception e) {
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				} else if (viewType.equals("thumbnail")) {
 					try {
