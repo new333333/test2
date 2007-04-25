@@ -25,6 +25,8 @@ function ss_declareFindTagSearchVariables () {
 	window.ss_findTagViewUrl = new Array();
 	window.ss_findTagLeaveResultsVisible = new Array();
 	window.ss_findTagSearchUrl = new Array();
+	
+	window.ss___findTagIsMouseOverList = new Array();
 }
 
 function ss_confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResultsVisible, userSearchUrl) {
@@ -52,8 +54,6 @@ function ss_confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResul
 function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-// Renata: I have removed "text == '' ||" from the next if line, 
-// I dont understand why it shoud be, "next" page dont work with it if you look for all tags
 	if (text != ss_findTagSearchLastText[prefix]) ss_findTag_pageNumber[prefix] = 0;
 	ss_setupStatusMessageDiv();
 	ss_moveDivToBody('ss_findTagNavBarDiv'+prefix);
@@ -125,10 +125,7 @@ function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
 	ajaxRequest.addKeyValue("pageNumber", ss_findTag_pageNumber[prefix]);
 	ajaxRequest.addKeyValue("findType", findTagType);
 	ajaxRequest.addKeyValue("listDivId", "available_"+prefix);
-	ajaxRequest.addKeyValue("namespace", prefix);
-	//ajaxRequest.setEchoDebugInfo();
-	//ajaxRequest.setPreRequest(ss_preFindTagRequest);
-	// TODO implement add param ajaxRequest.setPostRequestParam like ajaxRequest.setPostRequest  
+	ajaxRequest.addKeyValue("namespace", prefix); 
 	ajaxRequest.setPostRequest(ss_postFindTagRequest);
 	ajaxRequest.setData("prefix", prefix);
 	ajaxRequest.setData("elementName", elementName);
@@ -144,7 +141,7 @@ function ss_postFindTagRequest(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
-	ss_findTagSearchInProgress[obj.getData("prefix")] = 0;
+	ss_findTagSearchInProgress[prefix] = 0;
 
 	ss_showFindTagSelections(prefix);
 	
@@ -237,7 +234,20 @@ function ss_findTagClose(prefix) {
 function ss_findTagInitializeForm(formName, prefix) {
 	if (formName != '') {
 		var saveFindTagData = new ss_saveFindTagData(prefix);
-		ss_createOnSubmitObj(prefix + 'onSubmit', formName, saveFindTagData.invoke);
+		ss_createOnSubmitObj(prefix + 'onSubmit_single_tag', formName, saveFindTagData.invoke);
 	}
 }
 
+function ss_findTagBlurTextArea(prefix) {
+	if (!ss___findTagIsMouseOverList[prefix]) {
+		setTimeout(function() { ss_hideDiv('ss_findTagNavBarDiv_' + prefix) } , 200);
+	}
+}
+
+function ss_findTagMouseOverList(prefix) {
+	ss___findTagIsMouseOverList[prefix] = true;
+}
+
+function ss_findTagMouseOutList(prefix) {
+	ss___findTagIsMouseOverList[prefix] = false;
+}

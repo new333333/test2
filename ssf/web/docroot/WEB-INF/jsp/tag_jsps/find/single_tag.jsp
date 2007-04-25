@@ -41,16 +41,17 @@
 	    class="ss_text" style="height:17px; width:<%= findTagElementWidth %>; overflow:hidden;" 
 	    name="<%= findTagElementName %>" 
 	    id="ss_findTag_searchText_${prefix}"
-	    
 	    onKeyUp="ss_findTagSearch('${prefix}', this.id, '<%= findTagElementName %>', '<%= findTagType %>');"
-	    onBlur="setTimeout('ss_hideDiv(\'ss_findTagNavBarDiv_${prefix}\')', 200);"></textarea>
+	    onBlur="ss_findTagBlurTextArea('${prefix}');"></textarea>
 	<img src="<html:imagesPath/>pics/1pix.gif" 
 			onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:'', '${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
 	/>    
 </div>
 <div id="ss_findTag_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findTagNavBarDiv_${prefix}" 
-    class="ss_findUserList" style="visibility:hidden;">
+    class="ss_findUserList" style="visibility:hidden;"
+    onmouseover="ss_findTagMouseOverList('${prefix}')"
+    onmouseout="ss_findTagMouseOutList('${prefix}')">
     <div id="available_${prefix}">
       <ul>
       </ul>
