@@ -58,8 +58,7 @@ renderRequest.setAttribute("ss_entryWindowLeft", new Integer(entryWindowLeft));
 renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 %>
 <c:if test="<%= !isViewEntry %>">
-<c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
-
+<c:set var="showEntryCallbackRoutine" value="ss_dummyMethodCall" scope="request"/>
 
 <script type="text/javascript">
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
