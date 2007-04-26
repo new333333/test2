@@ -48,10 +48,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 
 // global variable for tag search
 var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="search"/>
-			<portlet:param name="searchCommunityTags" value="ss_tagPlaceHolder"/>
-			<portlet:param name="searchPersonalTags" value="ss_tagPlaceHolder"/>
-			<portlet:param name="searchTags" value="searchTagsOr"/>
+			<portlet:param name="action" value="advanced_search"/>
+			<portlet:param name="searchTags" value="ss_tagPlaceHolder"/>
+			<portlet:param name="operation" value="ss_searchResults"/>
 			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>";
