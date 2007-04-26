@@ -36,46 +36,46 @@
 		</li>
 		<li class="ss_calendarNaviBarSeparator"/>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('daydelta'); return false;" onmouseover="document.getElementById('ss_calDaySelector').src='<html:imagesPath/>icons/day_f.gif'" onmouseout="document.getElementById('ss_calDaySelector').src='<html:imagesPath/>icons/day.gif'">
-				<img id="ss_calDaySelector" src="<html:imagesPath/>icons/day.gif" />
+			<a class="ss_calDaySelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('daydelta'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('3daydelta'); return false;" onmouseover="document.getElementById('ss_cal3DaySelector').src='<html:imagesPath/>icons/3_day_f.gif'" onmouseout="document.getElementById('ss_cal3DaySelector').src='<html:imagesPath/>icons/3_day.gif'">
-				<img id="ss_cal3DaySelector" src="<html:imagesPath/>icons/3_day.gif" />
+			<a class="ss_cal3DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('3daydelta'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('workweek'); return false;" onmouseover="document.getElementById('ss_cal5DaySelector').src='<html:imagesPath/>icons/5_day_f.gif'" onmouseout="document.getElementById('ss_cal5DaySelector').src='<html:imagesPath/>icons/5_day.gif'">
-				<img id="ss_cal5DaySelector" src="<html:imagesPath/>icons/5_day.gif" />
+			<a class="ss_cal5DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('workweek'); return false;" >
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('week'); return false;" onmouseover="document.getElementById('ss_calWeekSelector').src='<html:imagesPath/>icons/7_day_f.gif'" onmouseout="document.getElementById('ss_calWeekSelector').src='<html:imagesPath/>icons/7_day.gif'">
-				<img id="ss_calWeekSelector" src="<html:imagesPath/>icons/7_day.gif" />
+			<a class="ss_cal7DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('week'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('fortnight'); return false;" onmouseover="document.getElementById('ss_calFortnightSelector').src='<html:imagesPath/>icons/2_weeks_f.gif'" onmouseout="document.getElementById('ss_calFortnightSelector').src='<html:imagesPath/>icons/2_weeks.gif'">
-				<img id="ss_calFortnightSelector" src="<html:imagesPath/>icons/2_weeks.gif" />
+			<a class="ss_cal14DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('fortnight'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('month'); return false;" onmouseover="document.getElementById('ss_calMonthSelector').src='<html:imagesPath/>icons/month_f.gif'" onmouseout="document.getElementById('ss_calMonthSelector').src='<html:imagesPath/>icons/month.gif'">
-				<img id="ss_calMonthSelector" src="<html:imagesPath/>icons/month.gif" />
+			<a class="ss_calMonthSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('month'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionBigImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('prev'); return false;" onmouseover="document.getElementById('ss_calPrevSelector').src='<html:imagesPath/>icons/date_down_f.gif'" onmouseout="document.getElementById('ss_calPrevSelector').src='<html:imagesPath/>icons/date_down.gif'">
-				<img id="ss_calPrevSelector" class="ss_CalNaviBigImg" src="<html:imagesPath/>icons/date_down.gif" />
+			<a class="ss_calDateDownButton" href="javascript: ;" onclick="ss_cal_Events.switchView('prev'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calViewDatesDescriptionLi ss_calendarNaviBarOption">
 			<span id="ss_calViewDatesDescriptions"><fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" /></span>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionBigImg">
-			<a href="javascript: ;" onclick="ss_cal_Events.switchView('next'); return false;" onmouseover="document.getElementById('ss_calNextSelector').src='<html:imagesPath/>icons/date_up_f.gif'" onmouseout="document.getElementById('ss_calNextSelector').src='<html:imagesPath/>icons/date_up.gif'">
-				<img id="ss_calNextSelector" class="ss_fullHeight" src="<html:imagesPath/>icons/date_up.gif" />
+			<a class="ss_calDateUpButton" href="javascript: ;" onclick="ss_cal_Events.switchView('next'); return false;">
+				<img src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calSelectDate ss_calendarNaviBarOption">

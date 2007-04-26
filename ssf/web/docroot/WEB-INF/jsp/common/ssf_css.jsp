@@ -3281,6 +3281,163 @@ div.ss_cal_monthGridDayBadge a:hover {
 
 
 
+a.ss_calDaySelectButton img {
+	width: 25px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_calDaySelectButton img, a.ss_calDaySelectButton:link img , a.ss_calDaySelectButton:focus img, a.ss_calDaySelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/day.gif) no-repeat top left; 
+}
+
+a.ss_calDaySelectButton:hover img {
+	background-position: left -24px; 
+}
+
+
+a.ss_cal3DaysSelectButton img {
+	width: 25px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButton:link img , a.ss_cal3DaysSelectButton:focus img, a.ss_cal3DaysSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/3_day.gif) no-repeat top left; 
+}
+
+a.ss_cal3DaysSelectButton:hover img {
+	background-position: left -24px; 
+}
+
+a.ss_cal5DaysSelectButton img {
+	width: 25px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButton:link img , a.ss_cal5DaysSelectButton:focus img, a.ss_cal5DaysSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+}
+
+a.ss_cal5DaysSelectButton:hover img {
+	background-position: left -24px; 
+}
+
+a.ss_cal7DaysSelectButton img {
+	width: 25px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButton:link img , a.ss_cal7DaysSelectButton:focus img, a.ss_cal7DaysSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+}
+
+a.ss_cal7DaysSelectButton:hover img {
+	background-position: left -24px; 
+}
+
+a.ss_cal14DaysSelectButton img {
+	width: 25px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButton:link img , a.ss_cal14DaysSelectButton:focus img, a.ss_cal14DaysSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+}
+
+a.ss_cal14DaysSelectButton:hover img {
+	background-position: left -24px; 
+}
+
+a.ss_calMonthSelectButton img {
+	width: 25px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_calMonthSelectButton img, a.ss_calMonthSelectButton:link img , a.ss_calMonthSelectButton:focus img, a.ss_calMonthSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+}
+
+a.ss_calMonthSelectButton:hover img {
+	background-position: left -24px; 
+}
+
+a.ss_calDateDownButton img {
+	width: 12px;
+	height: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_calDateDownButton img, a.ss_calDateDownButton:link img , a.ss_calDateDownButton:focus img, a.ss_calDateDownButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/date_down.gif) no-repeat top left; 
+}
+
+a.ss_calDateDownButton:hover img {
+	background-position: left -28px; 
+}
+
+a.ss_calDateUpButton img {
+	width: 12px;
+	height: 28px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_calDateUpButton img, a.ss_calDateUpButton:link img , a.ss_calDateUpButton:focus img, a.ss_calDateUpButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/date_up.gif) no-repeat top left; 
+}
+
+a.ss_calDateUpButton:hover img {
+	background-position: left -28px; 
+}
+
+
+a.ss_calendarButton img {
+	width: 14px;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_calendarButton img, a.ss_calendarButton:link img , a.ss_calendarButton:focus img, a.ss_calendarButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/calendar.gif) no-repeat top left; 
+}
+
+a.ss_calendarButton:hover img {
+	background-position: left -16px; 
+}
+ 
+
+
 /*
  * Calendar events are displayed in small boxes with rounded corners.
  * The rounding mechanism is suitable for any small rounded box, so there is no
