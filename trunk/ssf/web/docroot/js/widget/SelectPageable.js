@@ -1,4 +1,4 @@
-dojo.provide("ss_widget.SelectPagable");
+dojo.provide("ss_widget.SelectPageable");
 
 dojo.require("dojo.widget.Select");
 dojo.require("dojo.widget.*");
@@ -28,7 +28,6 @@ ss_widget.incrementalPagableComboBoxDataProvider = function(/*String*/ url, /*Nu
 			// FIXME: implement backoff!
 		}
 		var tss = encodeURIComponent(searchStr);
-		
 		
 		var pager = pagerStr || "";
 		var pgTp = pagerType || "";
@@ -131,7 +130,7 @@ ss_widget.incrementalPagableComboBoxDataProvider = function(/*String*/ url, /*Nu
 }
 
 dojo.widget.defineWidget(
-	"ss_widget.SelectPagable",
+	"ss_widget.SelectPageable",
 	dojo.widget.Select,
 	{
 	
