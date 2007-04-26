@@ -22,10 +22,12 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DebugHelper;
@@ -57,6 +59,9 @@ public class WelcomeController extends SAbstractController {
 		if (getLdapModule().testAccess("getLdapConfig") || getAdminModule().testAccess("setPostingSchedule")) {
 			model.put(WebKeys.SHOW_INSTALLATION_GUIDE, true);
 		}
+		
+		//Put in the product name
+		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
 
 		return new ModelAndView("help/welcome", model);
 	}

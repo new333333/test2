@@ -508,6 +508,7 @@ public class WebKeys {
     public static final String PRESENCE_TEXT="ss_presence_text";
     public static final String PRESENCE_USER="ss_presence_user";
     public static final String PRESENCE_ZON_BRIDGE="ss_presence_zonBridge";
+	public static final String PRODUCT_NAME="ssProductName";
 	public static final String PROFILE_CONFIG_ELEMENT="ssProfileConfigElement";
     public static final String PROFILE_CONFIG_DEFINITION="ssProfileConfigDefinition";
     public static final String PROFILE_CONFIG_JSP_STYLE="ssProfileConfigJspStyle";

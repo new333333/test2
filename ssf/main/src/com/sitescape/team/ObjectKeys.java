@@ -18,6 +18,9 @@ package com.sitescape.team;
  */
 public interface ObjectKeys {
 	
+    //Default name for the product
+	public static final String PRODUCT_NAME_DEFAULT="ICEcore";
+
 	/**
 	 * reserved ids for reserved objects
 	 */
