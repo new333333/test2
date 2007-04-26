@@ -52,17 +52,6 @@
 	</div>	
 </div>
 <script type="text/javascript">
-// Init empty additional options
-function ss_initSearchOptions() {
-	if (!ss_searchMoreInitialized) {
-		ss_addOption('workflow');
-		ss_addOption('entry');
-		ss_addOption('tag');
-		ss_addOption('creation_date');
-		ss_addOption('modification_date');
-		ss_addOption('creator_by_id'); 
-		ss_searchMoreInitialized = true;
-	}
-}
+	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 </script>
 	

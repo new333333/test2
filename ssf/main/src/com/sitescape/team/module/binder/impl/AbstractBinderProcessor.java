@@ -80,6 +80,7 @@ import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.FilePathUtil;
@@ -705,11 +706,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
        	Hits hits = null;
        	org.dom4j.Document queryTree = null;
-       	org.dom4j.Document searchFilter = null;
+       	org.dom4j.Document userSearchFilter = null;
        	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
-       		searchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
-      	queryTree = SearchUtils.getInitalSearchDocument(searchFilter, options);
-      	getBinders_getSearchDocument(binder, queryTree);
+       		userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+       	
+       	SearchFilter searchFilter = null;
+       	if (userSearchFilter != null) {
+       		searchFilter = new SearchFilter(userSearchFilter);
+       	} else {
+       		searchFilter = new SearchFilter(true);
+       	}
+       	getBinders_getSearchDocument(binder, searchFilter);
+      	queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), options);
+      	
       	SearchUtils.getQueryFields(queryTree, options); 
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());
@@ -740,19 +749,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return hits;
      
     }
-    protected void getBinders_getSearchDocument(Binder binder, org.dom4j.Document qTree) {
-  		Element boolElement = (Element) qTree.getRootElement().selectSingleNode(QueryBuilder.AND_ELEMENT);
-  		
-		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(binder.getId().toString());
+    protected void getBinders_getSearchDocument(Binder binder, SearchFilter searchFilter) {
+//  		Element boolElement = (Element) qTree.getRootElement().selectSingleNode(QueryBuilder.AND_ELEMENT);
+//  		
+//		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+//		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+//		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+//		child.setText(binder.getId().toString());
    	
-		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+//		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+//		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+//		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+//		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
     	
+		searchFilter.addBinderParentId(binder.getId().toString());
+   		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_BINDER);
     
     }    
     
@@ -921,19 +932,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		// Abstract Class can not use Spring Injection mechanism
 		textConverterManager = (ITextConverterManager)SpringContextUtil.getBean("textConverterManager");
 		converter = textConverterManager.getConverter();
-
+		
 		try
 		{
 			text = converter.convert(binder, entity, fa);
-		}
+				}
 		catch (Exception e)
 		{
 			// Most like conversion did not succeed, nothing client can do about this
 			// limitation of Software.
 			logger.error(e);
 		}
-
-		org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+			
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	
     	// Add document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);

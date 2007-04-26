@@ -27,34 +27,33 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.FilterHelper;
 
 public class SearchFilterToMapConverter {
 	
 	private Log logger = LogFactory.getLog(this.getClass());
 
-	public static final String SearchBlockTypeCreationDate = "creation_date";
-	public static final String SearchBlockTypeModificationDate = "modification_date";
-	public static final String SearchBlockTypeWorkflow = "workflow";
-	public static final String SearchBlockTypeEntry = "entry";
-	public static final String SearchBlockTypeAuthor = "creator_by_id";
-	public static final String SearchBlockTypeTag = "tag";
-	public static final String SearchBlockType = "type";
-	public static final String SearchStartDate = "startDate";
-	public static final String SearchEndDate = "endDate";
-	public static final String SearchStartDateNotFormated = "startDateNotFormated";
-	public static final String SearchEndDateNotFormated = "endDateNotFormated";
+	static final String SearchBlockTypeCreationDate = "creation_date";
+	static final String SearchBlockTypeModificationDate = "modification_date";
+	static final String SearchBlockTypeWorkflow = "workflow";
+	static final String SearchBlockTypeEntry = "entry";
+	static final String SearchBlockTypeAuthor = "creator_by_id";
+	static final String SearchBlockTypeTag = "tag";
+	static final String SearchBlockType = "type";
+	static final String SearchStartDate = "startDate";
+	static final String SearchEndDate = "endDate";
+	static final String SearchStartDateNotFormated = "startDateNotFormated";
+	static final String SearchEndDateNotFormated = "endDateNotFormated";
 	
-	public static final String SearchEntryType="entryType";
-	public static final String SearchEntryElement="entryElement";
-	public static final String SearchEntryValues="entryValues";
-	public static final String SearchEntryValueType="valueType";
-	public static final String SearchEntryValuesNotFormatted="entryValuesNotFormatted";
-	public static final String SearchAuthor="authorId";
-	public static final String SearchAuthorTitle="authorTitle";
-	public static final String SearchTag="tag";
-	public static final String SearchPersonalTag="personalTag";
-	public static final String SearchCommunityTag="communityTag";
+	static final String SearchEntryType="entryType";
+	static final String SearchEntryElement="entryElement";
+	static final String SearchEntryValues="entryValues";
+	static final String SearchEntryValueType="valueType";
+	static final String SearchEntryValuesNotFormatted="entryValuesNotFormatted";
+	static final String SearchAuthor="authorId";
+	static final String SearchAuthorTitle="authorTitle";
+	static final String SearchTag="tag";
+	static final String SearchPersonalTag="personalTag";
+	static final String SearchCommunityTag="communityTag";
 		
 	private Document searchQuery;
 	
@@ -62,8 +61,6 @@ public class SearchFilterToMapConverter {
 	
 	private ProfileModule profileModule;
 	
-	private Map convertedQuery;
-
 	public SearchFilterToMapConverter(Document query, DefinitionModule definitionModule, ProfileModule profileModule) {
 		super();
 		this.searchQuery = query;
@@ -71,11 +68,20 @@ public class SearchFilterToMapConverter {
 		this.profileModule = profileModule;
 	}
 	
-	public Map toMap() {
-		convertedQuery = new HashMap();
+	/**
+	 * Returns map with three keys:
+	 * <code>WebKeys.SEARCH_FILTER_MAP</code>, <code>WebKeys.WORKFLOW_DEFINTION_MAP</code>, <code>WebKeys.ENTRY_DEFINTION_MAP</code>.  
+	 * It means methods chenge query to map and puts some additional data required to show advanced search query form.
+	 * 
+	 * @return
+	 */
+	public Map convertAndPrepareFormData() {
+		Map result = new HashMap();
+		
+		Map convertedQuery = new HashMap();
 		if (searchQuery != null) { 
 	    	Element rootElement = searchQuery.getRootElement();
-	    	List liFilterTerms = rootElement.selectNodes(FilterHelper.FilterTerms);
+	    	List liFilterTerms = rootElement.selectNodes(SearchFilterKeys.FilterTerms);
 
 	    	logger.debug("Query: "+searchQuery.asXML());
 
@@ -84,7 +90,7 @@ public class SearchFilterToMapConverter {
 	    		Element filterTerms = (Element) liFilterTerms.get(i);
 
 	    		String andJoiner = Boolean.FALSE.toString();
-	    		if (filterTerms.attributeValue(FilterHelper.FilterAnd, "").equals(Boolean.TRUE.toString())) {
+	    		if (filterTerms.attributeValue(SearchFilterKeys.FilterAnd, "").equals(Boolean.TRUE.toString())) {
 	    			andJoiner = Boolean.TRUE.toString();
 	    		}
 	    		
@@ -92,39 +98,39 @@ public class SearchFilterToMapConverter {
 	    		String searchedTags = "";
 	    		String searchedAuthors = "";
 	    		Map blocks = new HashMap();
-	    		List liFilterTermsTerm = filterTerms.selectNodes("./" + FilterHelper.FilterTerm);
+	    		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
 	    		if (liFilterTermsTerm.size() > 0) {
 	            	for (int j = 0; j < liFilterTermsTerm.size(); j++) {
 	    	    		Element filterTerm = (Element) liFilterTermsTerm.get(j);
-	    	    		String filterType = filterTerm.attributeValue(FilterHelper.FilterType, "");
-	    	    		if (filterType.equals(FilterHelper.FilterTypeSearchText)) {
+	    	    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
+	    	    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
 	    	    			if (searchedText.equals("")) searchedText = filterTerm.getText(); 
 	    	    			else searchedText = searchedText.concat(" "+filterTerm.getText()); 
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypeAuthor)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAuthor)) {
 	    	    			if (searchedAuthors.equals("")) searchedAuthors = filterTerm.getText(); 
 	    	    			else  searchedAuthors = searchedAuthors.concat(" "+filterTerm.getText());
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypeTags)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
 	    	    			if (searchedTags.equals("")) searchedTags = filterTerm.getText(); 
 	    	    			else  searchedTags = searchedTags.concat(" "+filterTerm.getText());
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypeEntry)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition)) {
 	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm, definitionModule, profileModule));
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypeEvent)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
 	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm, definitionModule));
-	    	    		} else if ( filterType.equals(FilterHelper.FilterTypeCreatorById)) {
+	    	    		} else if ( filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
 	    	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypeWorkflow)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
 	    	    			if (blocks.get(SearchBlockTypeWorkflow) == null) blocks.put(SearchBlockTypeWorkflow, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeWorkflow)).add(createWorkflowBlock(filterTerm));
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypeCommunityTagSearch)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
 	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
-	    	    		} else if (filterType.equals(FilterHelper.FilterTypePersonalTagSearch)) {
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
 	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
-	    		    	} else if (filterType.equals(FilterHelper.FilterTypeDate)) {
+	    		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
 	    	    			Map dateBlock = createDateBlock(filterTerm);
 	    	    			if (SearchBlockTypeCreationDate.equals(dateBlock.get(SearchBlockType))) {
 	    	    				if (blocks.get(SearchBlockTypeCreationDate) == null) blocks.put(SearchBlockTypeCreationDate, new ArrayList());
@@ -136,26 +142,30 @@ public class SearchFilterToMapConverter {
 	    		    	}
 	            	}
 	    		}
-	    		convertedQuery.put(FilterHelper.SearchText, searchedText);
-	    		convertedQuery.put(FilterHelper.SearchAuthors, searchedAuthors);
-	    		convertedQuery.put(FilterHelper.SearchTags, searchedTags);
-	    		convertedQuery.put(FilterHelper.SearchJoiner, andJoiner);
-	    		convertedQuery.put(FilterHelper.SearchAdditionalFilters, blocks);
+	    		convertedQuery.put(SearchFilterKeys.SearchText, searchedText);
+	    		convertedQuery.put(SearchFilterKeys.SearchAuthors, searchedAuthors);
+	    		convertedQuery.put(SearchFilterKeys.SearchTags, searchedTags);
+	    		convertedQuery.put(SearchFilterKeys.SearchJoiner, andJoiner);
+	    		convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
 	    	}
 		}
-		return convertedQuery;
-	
+		
+		
+		result.put(WebKeys.SEARCH_FILTER_MAP, convertedQuery);
+		result.putAll(prepareAdditionalFiltersData(convertedQuery));
+		
+		return result;
 	}
 	
 	private Map createEntryBlock(Element filterTerm, DefinitionModule definitionModule, ProfileModule profileModule) {
 		Map block = new HashMap();
-		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
-		String entryTypeId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
+		String entryTypeId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
 		if (entryTypeId == null || entryTypeId.equals("")) {
 			return new HashMap();
 		}
 		block.put(SearchEntryType, entryTypeId);
-		String entryFieldId = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+		String entryFieldId = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
 		if (entryFieldId == null || entryFieldId.equals("")) {
 			return block;
 		}
@@ -201,14 +211,14 @@ public class SearchFilterToMapConverter {
 
 	private Map createEventBlock(Element filterTerm, DefinitionModule definitionModule) {
 		Map block = new HashMap();
-		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
-		String entryTypeId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
+		String entryTypeId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
 		block.put(SearchEntryType, entryTypeId);
-		String entryFieldId = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+		String entryFieldId = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
 		block.put(SearchEntryElement, entryFieldId);
 		List values = new ArrayList();
 		
-		List eventDatesNodes = filterTerm.selectNodes(FilterHelper.FilterEventDate);
+		List eventDatesNodes = filterTerm.selectNodes(SearchFilterKeys.FilterEventDate);
 		Iterator eventDatesNodesIt = eventDatesNodes.iterator(); 
 		while (eventDatesNodesIt.hasNext()) {
 			values.add(((Element) eventDatesNodesIt.next()).getText());
@@ -235,37 +245,37 @@ public class SearchFilterToMapConverter {
 
 	private Map createCreatorBlock(Element filterTerm) {
 		Map block = new HashMap();
-		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
-		block.put(SearchAuthorTitle, filterTerm.attributeValue(FilterHelper.FilterCreatorTitle, ""));
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
+		block.put(SearchAuthorTitle, filterTerm.attributeValue(SearchFilterKeys.FilterCreatorTitle, ""));
 		block.put(SearchAuthor, getElementValues(filterTerm).get(0));
 		return block;
 	}
 
 	private Map createWorkflowBlock(Element filterTerm) {
 		Map block = new HashMap();
-		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));	
-		block.put(FilterHelper.SearchWorkflowId, filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, ""));
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));	
+		block.put(SearchFilterKeys.SearchWorkflowId, filterTerm.attributeValue(SearchFilterKeys.FilterWorkflowDefId, ""));
 		
-		List steps = filterTerm.selectNodes(FilterHelper.FilterWorkflowStateName);
+		List steps = filterTerm.selectNodes(SearchFilterKeys.FilterWorkflowStateName);
 		List modelSteps = new ArrayList();
 		Iterator it = steps.iterator();
 		while (it.hasNext()) {
 			modelSteps.add(((Element)it.next()).getText());
 		}
-		block.put(FilterHelper.FilterWorkflowStateName, modelSteps);
+		block.put(SearchFilterKeys.FilterWorkflowStateName, modelSteps);
 		return block;
 	}
 	private Map createTagBlock(Element filterTerm) {
 		Map block = new HashMap();
-		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
 		block.put(SearchTag, filterTerm.getTextTrim());
 		return block;
 	}
 	
 	private Map createDateBlock(Element filterTerm) {
 		Map block = new HashMap();
-		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
-		if (EntityIndexUtils.CREATION_DAY_FIELD.equalsIgnoreCase(filterTerm.attributeValue(FilterHelper.FilterElementName))) {
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
+		if (EntityIndexUtils.CREATION_DAY_FIELD.equalsIgnoreCase(filterTerm.attributeValue(SearchFilterKeys.FilterElementName))) {
 			block.put(SearchBlockType, SearchBlockTypeCreationDate);
 		} else {
 			block.put(SearchBlockType, SearchBlockTypeModificationDate);
@@ -288,7 +298,7 @@ public class SearchFilterToMapConverter {
 	}
 	
 	private List getElementValues(Element filterTerm) {
-		List values = filterTerm.selectNodes(FilterHelper.FilterElementValue);
+		List values = filterTerm.selectNodes(SearchFilterKeys.FilterElementValue);
 		List modelValues = new ArrayList();
 		Iterator it = values.iterator(); 
 		while (it.hasNext()) {
@@ -325,32 +335,29 @@ public class SearchFilterToMapConverter {
 		return outputFormater.format(date);
 	}	
 
-	public Map prepareAdditionalFiltersData(Map model) {
-		if (convertedQuery == null) {
-			toMap();
-		}
+	private Map prepareAdditionalFiltersData(Map convertedQuery) {
 		
 		Map result = new HashMap();
 		
-		Map additionalOptions = (Map)convertedQuery.get(FilterHelper.SearchAdditionalFilters);
+		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
 		if (additionalOptions != null) {
-			prepareTags();
-			Collection preparedWorkflows = prepareWorkflows();
+			prepareTags(convertedQuery);
+			Collection preparedWorkflows = prepareWorkflows(convertedQuery);
 			if (preparedWorkflows != null) {
-				model.put(WebKeys.WORKFLOW_DEFINTION_MAP, preparedWorkflows);
+				result.put(WebKeys.WORKFLOW_DEFINTION_MAP, preparedWorkflows);
 			}
-			Collection preparedEntries = prepareEntries();
+			Collection preparedEntries = prepareEntries(convertedQuery);
 			if (preparedEntries != null) {
-				model.put(WebKeys.ENTRY_DEFINTION_MAP, preparedEntries);
+				result.put(WebKeys.ENTRY_DEFINTION_MAP, preparedEntries);
 			}
 		}
 		
 		return result;
 	}
 
-	private Collection prepareEntries() {
+	private Collection prepareEntries(Map convertedQuery) {
 		List entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
-		Map additionalOptions = (Map)convertedQuery.get(FilterHelper.SearchAdditionalFilters);		
+		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
 		if (entryTypes == null || entriesFromSearch == null) {
 			return null;
@@ -378,8 +385,8 @@ public class SearchFilterToMapConverter {
 		return entriesMap.values();
 	}
 	
-	private  void prepareTags() {
-		Map additionalOptions = (Map)convertedQuery.get(FilterHelper.SearchAdditionalFilters);
+	private  void prepareTags(Map convertedQuery) {
+		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
 		List tagsFromFilter = (List) additionalOptions.get(SearchBlockTypeTag);
 		if (tagsFromFilter != null) {
 			Iterator it = tagsFromFilter.iterator();
@@ -387,7 +394,7 @@ public class SearchFilterToMapConverter {
 			List communityTags = new ArrayList();
 			while (it.hasNext()) {
 				Map tag = (Map)it.next();
-				if (tag.get(SearchBlockType).equals(FilterHelper.FilterTypePersonalTagSearch)) {
+				if (tag.get(SearchBlockType).equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
 					personalTags.add((String)tag.get(SearchTag));
 				} else {
 					communityTags.add((String)tag.get(SearchTag));
@@ -408,9 +415,9 @@ public class SearchFilterToMapConverter {
 			additionalOptions.put(SearchBlockTypeTag, tagsDuets);
 		}
 	}
-	private Collection prepareWorkflows() {
+	private Collection prepareWorkflows(Map convertedQuery) {
 		List workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
-		Map additionalOptions = (Map)convertedQuery.get(FilterHelper.SearchAdditionalFilters);		
+		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List wfFromSearch = (List) additionalOptions.get(SearchBlockTypeWorkflow);
 		if (workflows == null || wfFromSearch == null) {
 			return null;
@@ -424,10 +431,10 @@ public class SearchFilterToMapConverter {
 		Iterator it = wfFromSearch.iterator();
 		while (it.hasNext()) {
 			Map wfFilter = (Map) it.next();
-			String wfId = (String)wfFilter.get(FilterHelper.SearchWorkflowId);
+			String wfId = (String)wfFilter.get(SearchFilterKeys.SearchWorkflowId);
 			Map steps = definitionModule.getWorkflowDefinitionStates(wfId);
 			
-			List selectedStepsNames = (List) wfFilter.get(FilterHelper.FilterWorkflowStateName);
+			List selectedStepsNames = (List) wfFilter.get(SearchFilterKeys.FilterWorkflowStateName);
 			Iterator filterSteps = selectedStepsNames.iterator();
 			while (filterSteps.hasNext()) {
 				String stepName = (String)filterSteps.next();

@@ -245,19 +245,6 @@ function ss_removeOption(orderNo) {
 	parent.removeChild(document.getElementById('block'+orderNo));
 }
 
-function ss_prepareAdditionalSearchOptions() {
-	var numbers = new Array();
-	var types = new Array();
-	for (var i=0; i<ss_userOptionsCounter; i++) {
-		if (ss_optionsArray[i] != "") {
-			numbers[numbers.length] = i;
-			types[types.length] = ss_optionsArray[i];
-		}
-	}
-	document.getElementById("searchNumbers").value = numbers.join(" ");
-	document.getElementById("searchTypes").value = types.join(" ");
-	return true;
-}
 function ss_search() {
 	ss_prepareAdditionalSearchOptions();
 	document.getElementById('advSearchForm').submit();
@@ -307,6 +294,11 @@ function ss_goToSearchResultPage(ind) {
 		</portlet:actionURL>";
 	url = url + "&pageNumber=" + ind;
 	window.location.assign(url);
+}
+
+
+function ss_fillSearchMask(id, value) { 
+	if (document.getElementById(id)) document.getElementById(id).value = value;
 }
 
 </script>

@@ -201,6 +201,7 @@ public class CalendarViewRangeDates {
 		}
 
 		while (earlier.get(Calendar.YEAR) != later.get(Calendar.YEAR)) {
+			// TODO: fix it! not each year has 365 days!
 			tempDifference = 365 * (later.get(Calendar.YEAR) - earlier
 					.get(Calendar.YEAR));
 			difference += tempDifference;

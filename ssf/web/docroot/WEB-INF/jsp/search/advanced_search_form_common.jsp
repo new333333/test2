@@ -6,34 +6,38 @@
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
-				<h4><ssf:nlt tag="searchForm.advanced.Title"/></h4>
+				<c:if test="${empty filterDefinition || filterDefinition == 0}">
+					<h4><ssf:nlt tag="searchForm.advanced.Title"/></h4>
+				</c:if>
 				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 				<div class="ss_clear"></div>
 				<table>
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
-						<td><input type="text" name="searchText" id="searchText_adv" <c:if test="${empty dashboardForm || dashboardForm == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
+						<td><input type="text" name="searchText" id="searchText_adv" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
 						<td rowspan="2"><p class="ss_help_text"><ssf:nlt tag="searchForm.advanced.Help"/></p></td></tr>
 					<tr><th><ssf:nlt tag="searchForm.searchAuthor"/>:</th>
-						<td><input type="text" name="searchAuthors" id="searchAuthors" <c:if test="${empty dashboardForm || dashboardForm == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td></tr>
+						<td><input type="text" name="searchAuthors" id="searchAuthors" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td></tr>
 					<tr><th><ssf:nlt tag="searchForm.searchTag"/>:</th>
-						<td><input type="text" name="searchTags" id="searchTags" <c:if test="${empty dashboardForm || dashboardForm == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
+						<td><input type="text" name="searchTags" id="searchTags" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
 						<td>
-							<select name="data_resultsCount" id="data_resultsCount">
-								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>>5 items</option>							
-								<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>>10 items</option>
-								<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>>25 items</option>							
-								<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>>50 items</option>
-								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>>100 items</option>								
-							</select>
-							<select name="data_summaryWordCount" id="data_summaryWordCount">
-								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>>15 words</option>							
-								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>>20 words</option>
-								<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>>30 words</option>							
-								<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>>50 words</option>
-								<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>>100 words</option>
-							</select>
-							<c:if test="${empty dashboardForm || dashboardForm == 0}">
-							<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+							<c:if test="${empty filterDefinition || filterDefinition == 0}">
+								<select name="data_resultsCount" id="data_resultsCount">
+									<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>>5 items</option>							
+									<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>>10 items</option>
+									<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>>25 items</option>							
+									<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>>50 items</option>
+									<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>>100 items</option>								
+								</select>
+								<select name="data_summaryWordCount" id="data_summaryWordCount">
+									<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>>15 words</option>							
+									<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>>20 words</option>
+									<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>>30 words</option>							
+									<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>>50 words</option>
+									<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>>100 words</option>
+								</select>
+								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
+								<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+								</c:if>
 							</c:if>
 							
 						</td>
@@ -43,7 +47,7 @@
 					<input type="radio" name="searchJoinerAnd" id="searchJoinerOr" value="false"/><ssf:nlt tag="searchForm.searchJoiner.Or"/> -->
 			</div>
 		</div>
-		<c:if test="${! empty filterMap.additionalFilters}">
+		<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<div id="ss_searchForm_filterSummary" style="visibility:visible; display: block;">
 			<!-- Summary of user filters -->
 			<%@ include file="/WEB-INF/jsp/search/filterSummary.jsp" %>
@@ -93,7 +97,7 @@
 					<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>
-			<c:if test="${empty dashboardForm || dashboardForm == 0}">
+			<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 			<div style="text-align: right; padding: 10px;">
 					<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a> <ssf:nlt tag="searchForm.button.label"/>	
 			</div>

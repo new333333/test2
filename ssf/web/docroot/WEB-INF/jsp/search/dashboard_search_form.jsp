@@ -40,7 +40,7 @@
 </c:if>
 </script>
 
-<c:set var="dashboardForm" value="1"/>
+
 <c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
 <c:if test="${empty summaryWordCount}"><c:set var="summaryWordCount" value="20"/></c:if>
 <c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
@@ -52,7 +52,7 @@
 		<div id="ss_searchForm_spacer"></div>
 
 		<div id="ss_content">
-		
+			<c:set var="disableSearchButton" value="1"/>		
 			<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
 		
 		</div>
@@ -61,91 +61,8 @@
 <script type="text/javascript">
 ss_createOnSubmitObj('ss_prepareAdditionalSearchOptions', '${ss_dashboard_config_form_name}', ss_prepareAdditionalSearchOptions);
 
-// TODO find the same method somewhere in common....
-function ss_fillMask(id, value) { 
-	if (document.getElementById(id)) document.getElementById(id).value = value;
-}
-
-<% /* fill the search mask form*/ %>
-ss_fillMask("searchText_adv", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchText}"/>");
-ss_fillMask("searchAuthors", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchAuthors}"/>");
-ss_fillMask("searchTags", "<ssf:escapeJavaScript value="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchTags}"/>");
-// ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd ${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd}
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd && ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd}">
-	if (document.getElementById("searchJoinerAnd")) document.getElementById("searchJoinerAnd").checked="true";
-</c:if>
-<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd || !ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.searchJoinerAnd}">
-	if (document.getElementById("searchJoinerOr")) document.getElementById("searchJoinerOr").checked="true";
-</c:if>
-
-
-function ss_initSearchOptions() {
-	<c:if test="${! empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters}">
-		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.tag}">
-			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.tag}">
-				ss_addInitializedTag("${block.communityTag}", "${block.personalTag}");
-			</c:forEach>
-		</c:if>
-		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.creator_by_id}">
-			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.creator_by_id}">
-				ss_addInitializedAuthor("${block.authorId}", "${block.authorTitle}");
-			</c:forEach>
-		</c:if>
-		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.creation_date}">
-			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.creation_date}">
-				ss_addInitializedCreationDate("${block.startDate}", "${block.endDate}");
-			</c:forEach>
-		</c:if>
-		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.modification_date}">
-			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.modification_date}">
-				ss_addInitializedModificationDate("${block.startDate}", "${block.endDate}");
-			</c:forEach>
-		</c:if>
-		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.workflow}">
-			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.workflow}">
-				<c:forEach var="step" items="${block.filterWorkflowStateName}">
-					ss_addInitializedWorkflow("${block.searchWorkflow}", "${step}");
-				</c:forEach>
-				<c:if test="${empty block.filterWorkflowStateName}">
-					ss_addInitializedWorkflow("${block.searchWorkflow}", "");				
-				</c:if>				
-			</c:forEach>
-		</c:if>
-		<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">
-			<c:forEach var="block" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">
-				ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValuesNotFormatted}", "${block.entryValues}");
-			</c:forEach>
-		</c:if>
-		
-		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.workflow}">
-			ss_addOption('workflow');
-		</c:if>
-		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.tag}">
-			ss_addOption('tag');
-		</c:if>
-		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.creation_date}">
-			ss_addOption('creation_date');
-		</c:if>
-		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.modification_date}">
-			ss_addOption('modification_date');
-		</c:if>
-		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.creator_by_id}">
-			ss_addOption('creator_by_id');
-		</c:if>
-		<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters.entry}">
-			ss_addOption('entry');
-		</c:if>
-	</c:if>
-	<c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.filterMap.additionalFilters}">
-		ss_addOption('creation_date');
-		ss_addOption('modification_date');
-		ss_addOption('tag');
-		ss_addOption('workflow');
-		ss_addOption('creator_by_id');
-		ss_addOption('entry');
-	</c:if>		
-	  ss_searchMoreInitialized = true;
-}	
+<c:set var="ss_filterMap" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ss_filterMap}"/>	
+<%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 
 dojo.addOnLoad(function() {
 	ss_showAdditionalOptions('ss_searchForm_additionalFilters');

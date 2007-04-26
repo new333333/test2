@@ -59,7 +59,10 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -72,7 +75,6 @@ import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
@@ -354,8 +356,8 @@ public class AjaxController  extends SAbstractController {
 				SearchFilter searchTermFilter = new SearchFilter();
 				search += "*";
 				
-				searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, search);
-				searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, search);
+				searchTermFilter.addTitleFilter(SearchFilterKeys.FilterTypeEntryDefinition, search);
+				searchTermFilter.addLoginNameFilter(SearchFilterKeys.FilterTypeEntryDefinition, search);
 							
 				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 			}
@@ -404,7 +406,7 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxGetEntryFields(RenderRequest request, RenderResponse response) {
 		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
-		String entryField = PortletRequestUtils.getStringParameter(request,FilterHelper.FilterElementNameField, "");
+		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
 		
 		
 		Map model = new HashMap();
@@ -828,13 +830,13 @@ public class AjaxController  extends SAbstractController {
 		    	     	
 		//Build the search query
 		Document searchFilter = DocumentHelper.createDocument();
-		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
-		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, nameType);
+		Element sfRoot = searchFilter.addElement(SearchFilterKeys.FilterRootName);
+		Element filterTerms = sfRoot.addElement(SearchFilterKeys.FilterTerms);
+		Element filterTerm = filterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, nameType);
 		if (searchText.length() > 0) {
-			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTermValueEle.setText(searchText);
 		}
 	   	
@@ -902,18 +904,18 @@ public class AjaxController  extends SAbstractController {
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			if (searchText.length()>0)
-			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
+			searchTermFilter.addTitleFilter(SearchFilterKeys.FilterTypeEntryDefinition, searchText);
 
 			List searchTerms = new ArrayList();
 			searchTerms.add(EntityIdentifier.EntityType.folderEntry.name());
-			searchTermFilter.addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);
+			searchTermFilter.addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes, SearchFilterKeys.FilterEntityType, searchTerms);
 			
-			searchTermFilter.addAndFilter(FilterHelper.FilterTypeTopEntry);
+			searchTermFilter.addAndFilter(SearchFilterKeys.FilterTypeTopEntry);
 			
 			//Add terms to search this folder
 			if (!binderId.equals("")) {
 				
-				searchTermFilter.addAndFolderTerm(binderId);
+				searchTermFilter.addAndFolderId(binderId);
 				
 				//TODO Need to implement "searchSubFolders"
 			}
@@ -924,8 +926,8 @@ public class AjaxController  extends SAbstractController {
 		} else {
 			//Add the login name term
 			if (searchText.length()>0) {
-				searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
-				searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, searchText);
+				searchTermFilter.addTitleFilter(SearchFilterKeys.FilterTypeEntryDefinition, searchText);
+				searchTermFilter.addLoginNameFilter(SearchFilterKeys.FilterTypeEntryDefinition, searchText);
 			}
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.
@@ -1579,10 +1581,7 @@ public class AjaxController  extends SAbstractController {
 			Entry entry = getFolderModule().getEntry(binderId, entryId);
 			tabId = tabs.findTab(entry);
 		} else if (type.equals(Tabs.QUERY)) {
-			Document query = null;
-			try {
-				query = FilterHelper.getSearchFilter(request);
-			} catch(Exception ex) {}
+			Document query = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
 			tabId = tabs.findTab(query);
 		}
 		tabs.setCurrentTab(tabId);

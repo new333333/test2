@@ -39,8 +39,10 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.module.folder.index.IndexUtils;
 
 public class SearchUtils {
@@ -125,12 +127,13 @@ public class SearchUtils {
   		if (searchFilter == null) {
   			//Build a null search filter
   			searchFilter = DocumentHelper.createDocument();
-  			Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
-  			rootElement.addElement(FilterHelper.FilterTerms);
+  			Element rootElement = searchFilter.addElement(SearchFilterKeys.FilterRootName);
+  			rootElement.addElement(SearchFilterKeys.FilterTerms);
   		}
-  		org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
+  		org.dom4j.Document qTree = SearchFilterToSearchBooleanConverter.convertSearchFilterToSearchBoolean(searchFilter);
    		return qTree;
   	}
+  	
   	public static void getQueryFields(org.dom4j.Document queryTree, Map options) {
   		if (options == null) return;
 		Element rootElement = queryTree.getRootElement();
