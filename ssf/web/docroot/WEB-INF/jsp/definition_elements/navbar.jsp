@@ -72,7 +72,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
       	name="newTab" value="1"/></portlet:renderURL>';"
      onMouseOver="this.style.cursor = 'pointer';"
     >
-	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="8"
+	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="13" offsetX="15" 
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
@@ -84,7 +84,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	<div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
       onMouseOver="this.style.cursor = 'pointer';"
     >
-      <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-12" offsetY="8"  
+      <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="3" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>

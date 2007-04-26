@@ -28,7 +28,7 @@
 
 <li><ssf:nlt tag="help.workflowIntro.associatingWorkflows.listItem.configureMenuItem"/>
 
-<p><ssf:nlt tag="help.workflowIntro.associatingWorkflows.listItem.configureMenuItem.moreInfo"/></p>
+<p><ssf:nlt tag="help.workflowIntro.associatingWorkflows.listItem.configureMenuItem.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 </li>
 
 <li><ssf:nlt tag="help.workflowIntro.associatingWorkflows.listItem.selectWorkflow"/></li>
@@ -37,7 +37,7 @@
 
 </ol>
 
-<p><ssf:nlt tag="help.workflowIntro.associatingWorkflows.autoStart"/></p>
+<p><ssf:nlt tag="help.workflowIntro.associatingWorkflows.autoStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 

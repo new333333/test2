@@ -24,7 +24,7 @@
 
 <p><ssf:nlt tag="help.workflowIntro.content.security"/></p>
 
-<p><ssf:nlt tag="help.workflowIntro.content.workflowDef"/></p>
+<p><ssf:nlt tag="help.workflowIntro.content.workflowDef"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.globalStrings.moreinfo.header"/></p>
 

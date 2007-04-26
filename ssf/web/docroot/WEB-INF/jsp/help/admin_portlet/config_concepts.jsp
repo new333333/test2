@@ -16,7 +16,7 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="help.configurationOverview.title"/></span> (1/2)
 
-<p><ssf:nlt tag="help.configurationOverview.content.commonConfigTasks.listIntro"/></p>
+<p><ssf:nlt tag="help.configurationOverview.content.commonConfigTasks.listIntro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <ul style="list-style-type:disc;">
 
@@ -32,7 +32,7 @@
 
 <p><ssf:nlt tag="help.configurationOverview.content.configAdminPortlet"/></p>
 
-<p><ssf:nlt tag="help.configurationOverview.content.designingExampleIntro"/></p>
+<p><ssf:nlt tag="help.configurationOverview.content.designingExampleIntro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <div style="margin-left:20px;">
 <a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts_example', 'ss_config_concepts', '', '');"><ssf:nlt tag="help.configurationOverview.subtopic.designer"/></a>

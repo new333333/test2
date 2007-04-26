@@ -18,9 +18,9 @@
 <div style="display:inline;" id="ss_multiple_pages">(2/5)</div><br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.helpicon.subtopic.stepThrough"/></span>
 
-<p><ssf:nlt tag="help.helpicon.stepThroughIcons.content.intro"/></p>
+<p><ssf:nlt tag="help.helpicon.stepThroughIcons.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.helpicon.stepThroughIcons.content.multiplePages"/></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.helpicon.stepThroughIcons.content.multiplePages"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.helpicon.stepThroughIcons.content.navigating"/></p>
 

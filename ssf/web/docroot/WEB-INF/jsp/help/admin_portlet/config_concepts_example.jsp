@@ -17,7 +17,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.configurationOverview.title"/></span> (2/2)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.configurationOverview.subtopic.designer"/></span>
 
-<p><ssf:nlt tag="help.formViewDesigner.content.intro"/></p>
+<p><ssf:nlt tag="help.formViewDesigner.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.globalStrings.considerThisExample"/></p>
 
@@ -37,7 +37,7 @@
 
 <p><ssf:nlt tag="help.formViewDesigner.content.multipleDesigns"/></p>
 
-<p><ssf:nlt tag="help.formViewDesigner.content.optionsForDesigning"/></p>
+<p><ssf:nlt tag="help.formViewDesigner.content.optionsForDesigning"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 <br />

@@ -17,7 +17,7 @@
 <div style="visibility:hidden; display:none;" id="ss_helpMenuAnchor"></div>
 </c:if>
 <script type="text/javascript">
-var ss_helpWelcomeText = "<ssf:nlt tag="help.welcome"/>";
+var ss_helpWelcomeText = "<ssf:nlt tag="help.welcome"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>";
 var ss_helpTocText = "<ssf:nlt tag="help.toc"/>";
 var ss_helpPreviousText = "<ssf:nlt tag="general.Previous"/>";
 var ss_helpNextText = "<ssf:nlt tag="general.Next"/>";

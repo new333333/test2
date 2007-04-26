@@ -16,7 +16,7 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span> (1/1)
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.intro.explainIcon"/></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.intro.explainIcon"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.myWorkspaceIcon.intro.listIntro"/></p>
 
@@ -25,8 +25,6 @@
 <li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.picture"/></li>
 
 <li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.pictureGallery"/></li>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.orgInfo"/></li>
 
 <li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.contactInfo"/></li>
 
@@ -47,12 +45,3 @@
 ss_helpSystem.highlight('ss_navbarMyWorkspaceButton');
 </script>
 
-<div align="center">
-<div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showPreviousHelpSpot('', 'left');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
-</div>
-
-<div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showNextHelpSpot();"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
-</div>
-</div>

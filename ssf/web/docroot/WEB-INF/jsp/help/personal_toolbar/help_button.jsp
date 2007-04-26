@@ -16,9 +16,9 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.helpButton"/></span> (1/5)
 
-<p><ssf:nlt tag="help.helpicon.content.intro"/></p>
+<p><ssf:nlt tag="help.helpicon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.helpicon.content.description"/></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.helpicon.content.description"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p style="margin-bottom:0px;margin-top:0px;"><span style="font-weight:bold;"><ssf:nlt tag="help.globalStrings.moreinfo.header"/></span></p>
 

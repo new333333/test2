@@ -16,7 +16,7 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.clipboardButton"/></span> (1/1)
 
-<p><ssf:nlt tag="help.clipboardicon.content.intro"/></p>
+<p><ssf:nlt tag="help.clipboardicon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.globalStrings.notimplemented"/></p>
 </div>

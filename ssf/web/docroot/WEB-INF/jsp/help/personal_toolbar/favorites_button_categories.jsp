@@ -22,7 +22,7 @@
 <ol>
 <li><ssf:nlt tag="help.favoritesicon.categories.content.listItem.clickAdd"/>
 
-<p><ssf:nlt tag="help.favoritesicon.categories.content.listItem.clickAdd.afterEffects"/></p></li>
+<p><ssf:nlt tag="help.favoritesicon.categories.content.listItem.clickAdd.afterEffects"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p></li>
 
 <li><ssf:nlt tag="help.favoritesicon.categories.content.listItem.typeText"/></li>
 

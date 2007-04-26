@@ -16,7 +16,7 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.maximizeButton"/></span>  (1/1)
 
-<p><ssf:nlt tag="help.maximizeicon.content.intro"/></p>
+<p><ssf:nlt tag="help.maximizeicon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.maximizeicon.content.normalIcon"/></p>
 

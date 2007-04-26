@@ -26,11 +26,11 @@
 <img border="0" alt="" src="<html:imagesPath/>icons/toolbar_help.gif" />
 </div>
 
-<p><ssf:nlt tag="help.helpicon.stepThroughIcons.content.intro"/></p>
+<p><ssf:nlt tag="help.helpicon.stepThroughIcons.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.on.help.toc"/></p>
+<p><ssf:nlt tag="help.on.help.toc"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.on.help.buttons"/></p>
+<p><ssf:nlt tag="help.on.help.buttons"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <div align="center">
 <a class="ss_linkButton ss_smallprint" href="#" onClick="ss_hideDiv('ss_help_on_help'); return false;"><ssf:nlt tag="button.close"/></a>

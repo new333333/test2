@@ -39,7 +39,7 @@
 <p><ssf:nlt tag="help.folderMenu.content.adminGetStartBookIntro"/></p>
 
 <div style="margin-left:20px;">
-<a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></a>
+<a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 </div>
 
 </div>

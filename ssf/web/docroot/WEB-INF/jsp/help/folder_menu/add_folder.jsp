@@ -27,6 +27,8 @@
 
 </ol>
 
+<p><ssf:nlt tag="help.addNewFolder.content.summarize.configuration"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
 <p><ssf:nlt tag="help.globalStrings.configurations.moreInfo"/></p>
 
 <div style="margin-left:20px;">
