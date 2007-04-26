@@ -16,12 +16,10 @@ dojo.require('dojo.widget.*');
 <script type="text/javascript" src="<html:rootPath/>js/widget/WorkflowSelect.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/widget/EntrySelect.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/widget/FieldSelect.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPagable.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPageable.js"></script>
+
 <script type="text/javascript">
 
-
-
-// TODO move this stuff to js file when ready
 var ss_userOptionsCounter = 0;
 var ss_optionsArray = new Array();
 var ss_searchMoreInitialized = false;
@@ -170,8 +168,8 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 								id:"searchPersonalTags"+orderNo+"", 
 								dataUrl:url+"&findType=personalTags", 
 								maxListLength : 12,	autoComplete: false};
-	var communityTagWidget = dojo.widget.createWidget("SelectPagable", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
-	var personalTagWidget = dojo.widget.createWidget("SelectPagable", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
+	var communityTagWidget = dojo.widget.createWidget("SelectPageable", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
+	var personalTagWidget = dojo.widget.createWidget("SelectPageable", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
 	if (communityTagValue && communityTagValue != "") {
 		communityTagWidget.setValue(communityTagValue);
 		communityTagWidget.setLabel(communityTagValue);
@@ -203,7 +201,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 					dataUrl:url,
 					maxListLength : 12,
 					autoComplete: false};
-	var usersWidget = dojo.widget.createWidget("SelectPagable", props, document.getElementById("placeholderAuthor"+orderNo+""));
+	var usersWidget = dojo.widget.createWidget("SelectPageable", props, document.getElementById("placeholderAuthor"+orderNo+""));
 	if (authorId && authorName && authorId!="" && authorName!="") {
 		usersWidget.setValue(authorId);
 		usersWidget.setLabel(authorName);
