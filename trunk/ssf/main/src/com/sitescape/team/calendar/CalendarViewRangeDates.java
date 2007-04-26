@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.CalendarHelper;
@@ -187,36 +191,13 @@ public class CalendarViewRangeDates {
 	}
 
 	public static int calculateDifference(Date a, Date b) {
-		int tempDifference = 0;
-		int difference = 0;
-		Calendar earlier = Calendar.getInstance();
-		Calendar later = Calendar.getInstance();
-
-		if (a.compareTo(b) < 0) {
-			earlier.setTime(a);
-			later.setTime(b);
-		} else {
-			earlier.setTime(b);
-			later.setTime(a);
+		DateMidnight firstDate = new DateMidnight(a);
+		DateMidnight secondDate = new DateMidnight(b);
+				
+		if (!firstDate.isBefore(secondDate)) {
+			return Days.daysBetween(secondDate, firstDate).getDays();
 		}
-
-		while (earlier.get(Calendar.YEAR) != later.get(Calendar.YEAR)) {
-			// TODO: fix it! not each year has 365 days!
-			tempDifference = 365 * (later.get(Calendar.YEAR) - earlier
-					.get(Calendar.YEAR));
-			difference += tempDifference;
-
-			earlier.add(Calendar.DAY_OF_YEAR, tempDifference);
-		}
-
-		if (earlier.get(Calendar.DAY_OF_YEAR) != later
-				.get(Calendar.DAY_OF_YEAR)) {
-			tempDifference = later.get(Calendar.DAY_OF_YEAR)
-					- earlier.get(Calendar.DAY_OF_YEAR);
-			difference += tempDifference;
-		}
-
-		return difference;
+		return Days.daysBetween(firstDate, secondDate).getDays();
 	}
 
 	public boolean dateInView(Date dateToTest) {
