@@ -26,9 +26,14 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
+import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilterRequestParser;
+import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 
@@ -47,12 +52,12 @@ public class FilterController extends AbstractBinderController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 			//Parse the search filter
-			Document searchFilter = FilterHelper.getSearchFilter(request);
+			Document searchFilter = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
 			if (searchFilter != null) {
 				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 				if (searchFilters == null) searchFilters = new HashMap();
-				searchFilters.put(FilterHelper.getFilterName(searchFilter), searchFilter);
+				searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter);
 				
 				//Save the updated search filters
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
@@ -73,21 +78,6 @@ public class FilterController extends AbstractBinderController {
 				}
 			}
 			setupViewBinder(response, binderId, binderType);
-		
-		} else if (formData.containsKey("deleteTerm")) {
-			//This is a request to delete a term
-			//Parse the search filter
-			Document searchFilter = FilterHelper.getSearchFilter(request);
-			if (searchFilter != null) {
-				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-				if (searchFilters == null) searchFilters = new HashMap();
-				searchFilters.put(FilterHelper.getFilterName(searchFilter), searchFilter);
-				
-				//Save the updated search filters
-				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
-			}
-			response.setRenderParameters(formData);
 		
 		} else if (formData.containsKey("cancelBtn")) {
 			//Go back to the "Add filter" page
@@ -119,19 +109,16 @@ public class FilterController extends AbstractBinderController {
 		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
 		Map searchFilterData = new HashMap();
-		searchFilterData.put("filterTermCount", new Integer(0));
-		model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
+		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
 
 		if (formData.containsKey("addBtn")) {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
 		} else if (formData.containsKey("modifyBtn") || formData.containsKey("deleteTerm")) {
 			//Build a bean that contains all of the fields to be shown
 			if (searchFilters.containsKey(selectedSearchFilter)) {
-				Map elementData = BinderHelper.getCommonEntryElements();
-				searchFilterData = FilterHelper.buildFilterFormMap(
-						(Document)searchFilters.get(selectedSearchFilter),
-						elementData);
-				model.put(WebKeys.FILTER_SEARCH_FILTER_DATA, searchFilterData);
+				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter((Document)searchFilters.get(selectedSearchFilter), 
+							getDefinitionModule(), getProfileModule());
+				model.putAll(searchFilterConverter.convertAndPrepareFormData());
 			}
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
 		} else {

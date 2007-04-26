@@ -55,11 +55,11 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.tree.DomTreeBuilder;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 
 /**

@@ -65,6 +65,8 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.CalendarHelper;
@@ -77,7 +79,6 @@ import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
@@ -715,9 +716,9 @@ public class ListFolderController extends  SAbstractController {
 		Document searchFilter = (Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
 		if (searchFilter == null) {
 			searchFilter = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
-        	rootElement.addElement(FilterHelper.FilterTerms);
-    		rootElement.addElement(FilterHelper.FilterTerms);
+    		Element rootElement = searchFilter.addElement(SearchFilterKeys.FilterRootName);
+        	rootElement.addElement(SearchFilterKeys.FilterTerms);
+    		rootElement.addElement(SearchFilterKeys.FilterTerms);
 		}
 		Map options2 = new HashMap();
 		options2.put(ObjectKeys.SEARCH_MAX_HITS, 

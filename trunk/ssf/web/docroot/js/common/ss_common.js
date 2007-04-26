@@ -4629,5 +4629,17 @@ function ss_submitViaEnter(evt) {
     return true;
 }
 
-
+function ss_prepareAdditionalSearchOptions() {
+	var numbers = new Array();
+	var types = new Array();
+	for (var i=0; i<ss_userOptionsCounter; i++) {
+		if (ss_optionsArray[i] != "") {
+			numbers[numbers.length] = i;
+			types[types.length] = ss_optionsArray[i];
+		}
+	}
+	document.getElementById("searchNumbers").value = numbers.join(" ");
+	document.getElementById("searchTypes").value = types.join(" ");
+	return true;
+}
 

@@ -432,7 +432,6 @@ public class WebKeys {
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER_MAX="ss_filterTermNumberMax";
     public static final String FILTER_SEARCH_FILTERS="ss_searchFilters";
-    public static final String FILTER_SEARCH_FILTER_DATA="ss_searchFilterData";
     public static final String FILTER_SELECTED_FILTER_NAME="ss_selectedFilter";
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FILTER_VALUE_TYPE="ss_filterValueType";
@@ -543,6 +542,7 @@ public class WebKeys {
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
+    public static final String SEARCH_FILTER_MAP = "ss_filterMap";
     public static final String SEARCH_RESULTS="ss_searchResults";
     public static final String SEARCH_RESULTS_COUNT="searchResultsCount";
     public static final String SEARCH_RESULTS_RATING="searchResultsRating";

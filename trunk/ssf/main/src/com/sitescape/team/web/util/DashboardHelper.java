@@ -58,8 +58,11 @@ import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
+import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ResolveIds;
@@ -758,15 +761,14 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				searchQuery = DocumentHelper.parseText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
 			} catch (Exception e) {
 				searchQuery = DocumentHelper.createDocument();
-				searchQuery.addElement(FilterHelper.FilterRootName);		
+				searchQuery.addElement(SearchFilterKeys.FilterRootName);		
 			}
 		}
 		
 		// Map elementData = BinderHelper.getCommonEntryElements();
 		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule());
-		searchSearchFormData.put(AdvancedSearchController.SearchFilterMap, searchFilterConverter.toMap());
-		searchFilterConverter.prepareAdditionalFiltersData(searchSearchFormData);
+		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
@@ -1037,11 +1039,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 						folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
 					}
 					if (folderIds.size() > 0) {
-						try {
-							Document query = FilterHelper.getFolderListQuery(request, folderIds);
-							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-							componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
-						} catch(Exception ex) {}
+						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
+						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
+						componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
 					}
 				}
 					

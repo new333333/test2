@@ -50,6 +50,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
@@ -58,7 +59,6 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 
@@ -72,8 +72,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private static Log logger = LogFactory.getLog(AdvancedSearchController.class);
 	
 	public static final String NEW_TAB_VALUE = "1";
-	
-	public static final String SearchFilterMap = "filterMap";
 		
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -215,9 +213,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
 		
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(query, getDefinitionModule(), getProfileModule());
-		model.put(SearchFilterMap, searchFilterConverter.toMap());
-		//this method check in model(SearchAdditionalOptions) which data are necessary to set search filters defined by user 
-		searchFilterConverter.prepareAdditionalFiltersData(model);
+		model.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		// SearchUtils.filterEntryAttachmentResults(results);
 		prepareRatingsAndFolders(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));

@@ -12,10 +12,12 @@ package com.sitescape.team.search.filter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -24,7 +26,6 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.web.util.FilterHelper;
 
 public class SearchFilter {
 
@@ -39,18 +40,29 @@ public class SearchFilter {
 
 	public static String AllEntries = "_all_entries";
 
-	public SearchFilter(boolean joinAsAnd) {
-		this();
-		this.joinAnd = joinAsAnd;
-	}
-
-	public SearchFilter(String rootElement, Boolean joinAsAnd) {
-		this(rootElement);
-		this.joinAnd = joinAsAnd;
+	public SearchFilter() {
+		this(SearchFilterKeys.FilterRootName);
 	}
 	
-	public SearchFilter() {
-		this(FilterHelper.FilterRootName);
+	public SearchFilter(Document filter) {
+		this.filter = filter;
+		this.sfRoot = filter.getRootElement(); 
+		
+		Iterator nodes = sfRoot.nodeIterator();
+		while (nodes.hasNext()) {
+			Element el = (Element)nodes.next();
+			if (el.getName().equals(SearchFilterKeys.FilterTerms)) {
+				this.currentFilterTerms = el;
+				Attribute joinAndAttr = this.currentFilterTerms.attribute(SearchFilterKeys.FilterAnd);
+				joinAnd = Boolean.parseBoolean(joinAndAttr.getText());
+				break;
+			}
+		}
+	}
+	
+	public SearchFilter(Boolean joinAsAnd) {
+		this();
+		this.joinAnd = joinAsAnd;
 	}
 
 	public SearchFilter(String rootElement) {
@@ -58,26 +70,28 @@ public class SearchFilter {
 		filter = DocumentHelper.createDocument();
 		sfRoot = filter.addElement(rootElement);
 	}
+
+	public SearchFilter(String rootElement, Boolean joinAsAnd) {
+		this(rootElement);
+		this.joinAnd = joinAsAnd;
+	}
 	
 	private void addFilter(String field, String type, String searchTerm) {
-		if (currentFilterTerms == null) {
-			newCurrent();
-		}
+		checkCurrent();
 		
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, type);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, field);
-		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
+		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
 		
-		filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, type);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, field);
-		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
+		filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(searchTerm.trim());
 		
 	}
-
 	public void addTitleFilter(String type, String searchTerm) {
 		addFilter(EntityIndexUtils.TITLE_FIELD, type, searchTerm);
 	}
@@ -87,26 +101,34 @@ public class SearchFilter {
 	}
 	
 	public void addTagsFilter(String tagsType, String searchTerm) {
-		if (tagsType != null && tagsType == FilterHelper.FilterTypeCommunityTagSearch) { 
+		if (tagsType != null && tagsType == SearchFilterKeys.FilterTypeCommunityTagSearch) { 
 			addTermInCurrentFilter(tagsType, searchTerm);
-		} else if (tagsType != null && tagsType == FilterHelper.FilterTypePersonalTagSearch) {
+		} else if (tagsType != null && tagsType == SearchFilterKeys.FilterTypePersonalTagSearch) {
 			addTermInCurrentFilter(tagsType, searchTerm);
 		} else {
 			// add general
-			addTermInCurrentFilter(FilterHelper.FilterTypeTags, searchTerm);
+			addTermInCurrentFilter(SearchFilterKeys.FilterTypeTags, searchTerm);
 		}
 	}
 	
-	public void addAndFilter(String type, String tagType, List searchTerms) {
+	public void addAndNestedTerms(String type, String tagType, List searchTerms) {
 		//Add terms to search folders and workspaces
 		
 		newCurrent();
-		currentFilterTerms.addAttribute(FilterHelper.FilterAnd, "true");
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		addNestedTerms(type, tagType, searchTerms);
+	}
+	
+	public void addNestedTerms(String type, String tagType, List searchTerms) {
+		//Add terms to search folders and workspaces
+		
+		checkCurrent();
+		
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		
 		if (type != null) {
-			filterTerm.addAttribute(FilterHelper.FilterType, type);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
 		}
 		if ((tagType != null) && (searchTerms != null)) {
 			Iterator it = searchTerms.iterator();
@@ -116,25 +138,60 @@ public class SearchFilter {
 			}
 		}
 	}
+	
 	public void addAndFilter(String type) {
-		addAndFilter(type, null, null);
+		addAndNestedTerms(type, null, null);
 	}
 	
-	public void addAndFolderTerm(String folderId) {
+	public void addAndFolderId(String folderId) {
 		newCurrent();
-		currentFilterTerms.addAttribute(FilterHelper.FilterAnd, "true");
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
-		addFolderTerm(folderId);
+		addFolderId(folderId);
 	}
 
-	public void addFolderTerm(String folderId) {
-		if (currentFilterTerms == null) {
-			newCurrent();
-		}
+	public void addFolderId(String folderId) {
+		checkCurrent();
  
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeFolders);
-		filterTerm.addAttribute(FilterHelper.FilterFolderId, folderId);	
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeFolders);
+		filterTerm.addAttribute(SearchFilterKeys.FilterFolderId, folderId);	
+	}
+	
+	public void addBinderParentId(String binderId) {
+		checkCurrent();
+ 
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeBinderParent);
+		filterTerm.addAttribute(SearchFilterKeys.FilterBinderId, binderId);	
+	}
+	
+	public void addEntryId(String entryId) {
+		checkCurrent();
+ 
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryId);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEntryId, entryId);	
+	}
+	
+	public void addDocumentType(String documentType) {
+		checkCurrent();
+ 
+		if (documentType == null || documentType.equals("")) {
+			return;
+		}
+		
+		addNestedTerms(SearchFilterKeys.FilterTypeDocTypes, SearchFilterKeys.FilterDocType, Arrays.asList(new String[] { documentType }));
+	}
+	
+	public void addEntryTypes(String[] entryTypes) {
+		checkCurrent();
+ 
+		if (entryTypes == null || entryTypes.length == 0) {
+			return;
+		}
+		
+		addNestedTerms(SearchFilterKeys.FilterTypeEntryTypes, SearchFilterKeys.FilterEntryType, Arrays.asList(entryTypes));
 	}
 	
 	public void addTerm (String elementType, String attributeName, String value) {
@@ -143,52 +200,46 @@ public class SearchFilter {
 	}
 	
 	private void addTermInCurrentFilter (String elementType, String value) {
-		if (currentFilterTerms == null) {
-			newCurrent();
-		}
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, elementType);
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, elementType);
 		filterTerm.addText(value);
 	}
 	
 	public void addFilterName (String name) {
-		Element filterNameEle = sfRoot.addElement(FilterHelper.FilterName);
+		Element filterNameEle = sfRoot.addElement(SearchFilterKeys.FilterName);
 		filterNameEle.setText(name);
 	}
 	
 	public void addTextFilter(String searchText) {
-		addTermInCurrentFilter(FilterHelper.FilterTypeSearchText, searchText);
+		addTermInCurrentFilter(SearchFilterKeys.FilterTypeSearchText, searchText);
 	}
 	
 	public void addWorkflowFilter(String workflowId, String[] states) {
-		if (currentFilterTerms == null) {
-			newCurrent();
-		}
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeWorkflow);
-		filterTerm.addAttribute(FilterHelper.FilterWorkflowDefId, workflowId);
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeWorkflow);
+		filterTerm.addAttribute(SearchFilterKeys.FilterWorkflowDefId, workflowId);
 		for (int i = 0; i < states.length; i++) {
-			Element newTerm = filterTerm.addElement(FilterHelper.FilterWorkflowStateName);
+			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterWorkflowStateName);
 			newTerm.setText(states[i]);
 		}
 	}
 	
-	public void addEntryTypeFilter(String defId, String name, String[] value) {
-		if (currentFilterTerms == null) {
-			newCurrent();
-		}
+	public void addEntryAttributeValues(String defId, String name, String[] value) {
+		checkCurrent();
 		if (!defId.equals("") && name.equals(AllEntries)) {
-			Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-			filterTerm.addAttribute(FilterHelper.FilterEntryDefId, defId);
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
+			filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
 		} else if (!defId.equals("") && !name.equals("") && value.length > 0) {
-			Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
 			//If not selecting a "common" element, store the definition id, too
-			if (!defId.equals("_common")) filterTerm.addAttribute(FilterHelper.FilterEntryDefId, defId);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, name);
+			if (!defId.equals("_common")) filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, name);
 			for (int j = 0; j < value.length; j++) {
-				Element newTerm = filterTerm.addElement(FilterHelper.FilterElementValue);
+				Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 				newTerm.setText(value[j]);
 			}
 		}
@@ -213,23 +264,21 @@ public class SearchFilter {
 //	}
 	
 	public void addPlacesFilter(String searchText) {
-		if (currentFilterTerms == null) {
-			newCurrent();
-		}
+		checkCurrent();
 	
 		// this is not the same as in addFilter! 
 		// the setText method is called on filterTerm and not on filterTermValueElem
 		if (searchText.length()>0) {
-			Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
-			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
+			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
 			
-			filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
-			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
+			filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTerm.setText(searchText.trim());
 		}
 		
@@ -237,17 +286,17 @@ public class SearchFilter {
 		searchTerms.add(EntityIdentifier.EntityType.folder.name());
 		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
 		searchTerms.add(EntityIdentifier.EntityType.profiles.name());
-		addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);		
+		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, searchTerms);		
 
 		searchTerms = new ArrayList(1);
 		searchTerms.add(BasicIndexUtils.DOC_TYPE_BINDER);
-		addAndFilter(FilterHelper.FilterTypeDocTypes,FilterHelper.FilterDocType, searchTerms);		
+		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, searchTerms);		
 	}
 	
 	
 	protected void newCurrent() {
-		currentFilterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-		currentFilterTerms.addAttribute(FilterHelper.FilterAnd, joinAnd.toString());
+		currentFilterTerms = sfRoot.addElement(SearchFilterKeys.FilterTerms);
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, joinAnd.toString());
 	}
 	
 	protected void checkCurrent() {
@@ -271,8 +320,8 @@ public class SearchFilter {
 	public void addCreator(String name) {
 		checkCurrent();
 		
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeAuthor);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeAuthor);
 		filterTerm.setText(name);
 		
 	}
@@ -293,11 +342,11 @@ public class SearchFilter {
 	 */
 	public void addCreatorById(String userId, String userTitle) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeCreatorById);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
-		if (userTitle != null && userTitle != "") filterTerm.addAttribute(FilterHelper.FilterCreatorTitle, userTitle);
-		Element newTerm = filterTerm.addElement(FilterHelper.FilterElementValue);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCreatorById);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
+		if (userTitle != null && userTitle != "") filterTerm.addAttribute(SearchFilterKeys.FilterCreatorTitle, userTitle);
+		Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		newTerm.setText(userId);
 	}
 	
@@ -307,18 +356,18 @@ public class SearchFilter {
 	
 	public void addCreationDate(String date) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeDate);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
-		filterTerm.addAttribute(FilterHelper.FilterEndDate, date);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	
 	public void addModificationDate(String date) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeDate);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.MODIFICATION_DAY_FIELD);
-		filterTerm.addAttribute(FilterHelper.FilterEndDate, date);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.MODIFICATION_DAY_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	public void addModificationDateRange(String startDate, String endDate) {
 		addDateRange(EntityIndexUtils.MODIFICATION_DAY_FIELD, startDate, endDate);
@@ -327,11 +376,11 @@ public class SearchFilter {
 	private void addDateRange(String fieldName, String startDate, String endDate) {
 		if ((startDate== null || startDate.equals("")) && ((endDate == null) || endDate.equals(""))) return;
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeDate);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, fieldName);
-		if (startDate != null && !startDate.equals("")) { filterTerm.addAttribute(FilterHelper.FilterStartDate, startDate);}
-		if (endDate != null && !endDate.equals("")) { filterTerm.addAttribute(FilterHelper.FilterEndDate, endDate);}		
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, fieldName);
+		if (startDate != null && !startDate.equals("")) { filterTerm.addAttribute(SearchFilterKeys.FilterStartDate, startDate);}
+		if (endDate != null && !endDate.equals("")) { filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, endDate);}		
 	}
 	
 	public void addCreationDate(Date date) {
@@ -378,62 +427,62 @@ public class SearchFilter {
 	
 	public void addTitle(String title) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(title.trim());
 	}
 
 	public void addText(String text) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeSearchText);
 		filterTerm.addText(text);
 	}
 	
 	public void addTag(String tag) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeTags);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeTags);
 		filterTerm.addText(tag);
 	}
 	
 	public void addPersonalTag(String tag) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypePersonalTagSearch);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypePersonalTagSearch);
 		filterTerm.addText(tag);
 	}
 	
 	public void addCommunityTag(String tag) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeCommunityTagSearch);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCommunityTagSearch);
 		filterTerm.addText(tag);		
 	}
 	
 	public void addWorkflow(String workflowId, String[] states) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeWorkflow);
-		filterTerm.addAttribute(FilterHelper.FilterWorkflowDefId, workflowId);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeWorkflow);
+		filterTerm.addAttribute(SearchFilterKeys.FilterWorkflowDefId, workflowId);
 		for (int i = 0; i < states.length; i++) {
-			Element newTerm = filterTerm.addElement(FilterHelper.FilterWorkflowStateName);
+			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterWorkflowStateName);
 			newTerm.setText(states[i]);
 		}
 	}
 	
 	public void addEvent(String defId, String name, String[] eventDates) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEvent);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEvent);
 				
-		filterTerm.addAttribute(FilterHelper.FilterEntryDefId, defId);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, name);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, name);
 		
 		for (int i = 0; i < eventDates.length; i++) {
-			Element newTerm = filterTerm.addElement(FilterHelper.FilterEventDate);
+			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterEventDate);
 			newTerm.setText(eventDates[i]);
 		}
 	}
@@ -441,49 +490,70 @@ public class SearchFilter {
 	public void addPlace(String place) {
 		checkCurrent();
 		
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.TITLE_FIELD);
 		filterTerm.setText(place.replaceFirst("\\*", "").trim());
-		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		
-		filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.TITLE_FIELD);
 		filterTerm.setText(place.trim());
-		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 	
 		List searchTerms = new ArrayList(3);
 		searchTerms.add(EntityIdentifier.EntityType.folder.name());
 		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
 		searchTerms.add(EntityIdentifier.EntityType.profiles.name());
-		addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);		
+		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, searchTerms);		
 
 		searchTerms = new ArrayList(1);
 		searchTerms.add(BasicIndexUtils.DOC_TYPE_BINDER);
-		addAndFilter(FilterHelper.FilterTypeDocTypes,FilterHelper.FilterDocType, searchTerms);	
+		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, searchTerms);	
 	}
 	
-	public  void addEntryType(String defId, String name, String[] value, String valueType) {
+	public  void addEntryAttributeValues(String defId, String attributeName, String[] fieldValues, String valueType) {
 		if (valueType != null && valueType.equals("description")) {
-			name="_desc";
+			attributeName="_desc";
 		}
-		if (value != null && valueType != null &&
+		if (fieldValues != null && valueType != null &&
 			(valueType.equals("date") || valueType.equals("event"))) {
-			for (int c = 0; c < value.length; c++) {
-				if (value[c] != null) {
-					value[c] = value[c].replaceAll("-", "");
+			for (int c = 0; c < fieldValues.length; c++) {
+				if (fieldValues[c] != null) {
+					fieldValues[c] = fieldValues[c].replaceAll("-", "");
 				}
 			}
 		}	
 		
 		if (valueType != null && valueType.equals("event")) {
-			addEvent(defId, name, value);
+			addEvent(defId, attributeName, fieldValues);
 		} else {
-			addEntryTypeFilter(defId, name, value);
+			addEntryAttributeValues(defId, attributeName, fieldValues);
 		}
 		
 	}
 	
+
+	/**
+	 * Gets filter name for given search filter document.
+	 * 
+	 * @param searchFilter <code>null</code> if search filter has no name or given document is <code>null</code>
+	 * @return
+	 */
+	public static String getFilterName(Document searchFilter) {
+		if (searchFilter == null) {
+			return null;
+		}
+		Element sfRoot = searchFilter.getRootElement();
+		if (sfRoot == null) {
+			return null;
+		}
+		Element filterName = sfRoot.element(SearchFilterKeys.FilterName);
+		if (filterName == null) {
+			return null;
+		}
+		return filterName.getText();
+	}
 	
 }

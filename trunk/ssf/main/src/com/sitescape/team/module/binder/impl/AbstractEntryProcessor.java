@@ -63,6 +63,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
@@ -1005,25 +1006,25 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	Hits hits = null;
        	org.dom4j.Document queryTree = null;
        	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
-           	//Forget any other data and just get the desired entry
-       		queryTree = SearchUtils.getInitalSearchDocument(null,null);
-       		getBinderEntries_getSearchDocument(binder, entryTypes, queryTree);
-       		Element rootElement = queryTree.getRootElement();
-       		if (rootElement != null) {
-        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (boolElement != null) {
-        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.DOCID_FIELD);
-	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
-        		}
-        	}
+	   		SearchFilter searchFilter = new SearchFilter(true);
+	   		searchFilter.addEntryId((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
+	   		getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
+
+	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
        	} else {
-       		org.dom4j.Document searchFilter = null;
+
+       		org.dom4j.Document userSearchFilter = null;
         	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
-        		searchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
-      		queryTree = SearchUtils.getInitalSearchDocument(searchFilter, options);
-        	getBinderEntries_getSearchDocument(binder, entryTypes, queryTree);
+        		userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+       		
+        	SearchFilter searchFilter = null;
+        	if (userSearchFilter != null) {
+        		searchFilter = new SearchFilter(userSearchFilter);
+        	} else {
+        		searchFilter = new SearchFilter(true);
+        	}
+        	getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
+	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
         	SearchUtils.getQueryFields(queryTree, options); 
        	}       	
        	//System.out.println(queryTree.asXML());
@@ -1055,36 +1056,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      
     }
     protected void getBinderEntries_getSearchDocument(Binder binder, 
-    		String [] entryTypes, org.dom4j.Document qTree) {
-  		Element boolElement = (Element) qTree.getRootElement().selectSingleNode(QueryBuilder.AND_ELEMENT);
-     	
-    	//Look only for binderId=binder and doctype = entry (not attachement)
-   		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-       	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-       	child.setText(binder.getId().toString());
-        	
-       	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-       	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-       	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
- 
-    	//Look only for entryType=entry
-    	if (entryTypes.length == 1) {
-    		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-    		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    		child.setText(entryTypes[0]);
-    	} else {
-    		Element orField = boolElement.addElement(QueryBuilder.OR_ELEMENT);
-    		for (int i=0; i<entryTypes.length; ++i) {
-    			field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
-    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    			child.setText(entryTypes[i]);
-    		}
-    	}
-    
+    		String [] entryTypes, SearchFilter searchFilter) {
+   		searchFilter.addFolderId(binder.getId().toString());
+   		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_ENTRY);
+   		searchFilter.addEntryTypes(entryTypes);
     }
 
     //***********************************************************************************************************
