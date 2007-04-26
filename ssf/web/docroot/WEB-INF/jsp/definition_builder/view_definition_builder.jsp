@@ -38,7 +38,8 @@
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPagable.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPageable.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/MultiplePageableSelect.js"></script>
 
 <script type="text/javascript">
 
@@ -321,12 +322,14 @@ function ss_createUserList(name) {
 	if (!name || name == "") name = 'conditionElementValue';
 	
 	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
-	var props = {name : name, 
-				 id : name, 
+	var props = {name : "select_"+name, 
+				 id : "select_"+name, 
 				 dataUrl:url,
 				 maxListLength : 12,
-				 autoComplete: false};
-	var usersWidget = dojo.widget.createWidget("SelectPagable", props, document.getElementById("conditionOperand"), "last");
+				 autoComplete: false,
+				 hiddenFormElementName: name,
+				 imgRootPath: "<html:imagesPath/>"};
+	var usersWidget = dojo.widget.createWidget("MultiplePageableSelect", props, document.getElementById("conditionOperand"), "last");
 }
 
 function ss_postLoadGetConditionRequest() {
