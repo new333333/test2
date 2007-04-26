@@ -375,7 +375,7 @@ public class Datepicker extends TagSupport {
 			
 			//Show the calendar itself or show the calendar popup icon
 			if (calendarDivId.equals("")) {
-				sb.append("<A HREF=\"#\" ");
+				sb.append("<A class=\"ss_calendarButton\" HREF=\"#\" ");
 	            sb.append("onClick=\"");
 	            if (!popupDivId.equals("")) 
 	            		sb.append("ss_moveDivToBody('").append(popupDivId).append("');");
@@ -391,14 +391,8 @@ public class Datepicker extends TagSupport {
 				  .append("\"")
 				  .append("><IMG BORDER=\"0\" SRC=\"")
 				  .append(contextPath)
-				  .append("/images/icons/calendar.gif\" ");
-				sb.append("alt=\"").append(this.altText).append("\" onmouseover=\"this.src='")
-						.append(contextPath)
-						 .append("/images/icons/calendar_f.gif")
-						.append("'\" onmouseout=\"this.src='")
-						.append(contextPath)
-						 .append("/images/icons/calendar.gif")						
-						.append("'\"/></A>\n");
+				  .append("/images/pics/1pix.gif\" ");
+				sb.append("alt=\"").append(this.altText).append("\"/></A>\n");
 			} else {
 				sb.append("<A NAME=\"anchor_").append(prefix).append("\"");
 				sb.append(" ID=\"anchor_").append(prefix)
