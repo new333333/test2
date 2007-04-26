@@ -1556,6 +1556,10 @@ public class AjaxController  extends SAbstractController {
 		}
 		response.setContentType("text/xml");
 		model.put(WebKeys.HELP_PANEL_JSP, jsp);
+
+		//Put in the product name
+		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
+		
 		return new ModelAndView("forum/help_panel", model);
 	}
 
