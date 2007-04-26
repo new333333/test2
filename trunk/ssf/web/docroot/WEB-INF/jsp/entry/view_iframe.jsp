@@ -22,43 +22,50 @@
 	if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
+
+<script type="text/javascript">
+	//Define the variables needed by the javascript routines
+	var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+	
+	<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
+		var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
+		var ss_entryWindowTop = ${ss_entryWindowTop};
+		var ss_entryWindowLeft = ${ss_entryWindowLeft};
+	</c:if>
+	<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
+		var ss_entryWindowTopOriginal = -1;
+		var ss_entryWindowTop = -1;
+		var ss_entryWindowLeft = -1;
+	</c:if>
+	
+	var ss_saveEntryWidthUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="save_entry_width" />
+		</ssf:url>"
+	
+	var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
+	<c:if test="${empty ss_entryWindowWidth}">
+		var ss_entryWindowWidth = 0;
+	</c:if>
+	<c:if test="${!empty ss_entryWindowWidth}">
+		var ss_entryWindowWidth = "${ss_entryWindowWidth}";
+	</c:if>
+	var ss_entryBackgroundColor = "${ss_style_background_color}";
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
+
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<c:if test="${ss_showSearchResults}">
+		<%@ include file="/WEB-INF/jsp/search/search_result.jsp" %>
+	</c:if>
+	
+	<c:if test="${!ss_showSearchResults}">
 
-	<script type="text/javascript">
-		//Define the variables needed by the javascript routines
-		var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
-		
-		<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
-			var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
-			var ss_entryWindowTop = ${ss_entryWindowTop};
-			var ss_entryWindowLeft = ${ss_entryWindowLeft};
-		</c:if>
-		<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
-			var ss_entryWindowTopOriginal = -1;
-			var ss_entryWindowTop = -1;
-			var ss_entryWindowLeft = -1;
-		</c:if>
-		
-		var ss_saveEntryWidthUrl = "<ssf:url 
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="save_entry_width" />
-			</ssf:url>"
-		
-		var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
-		<c:if test="${empty ss_entryWindowWidth}">
-			var ss_entryWindowWidth = 0;
-		</c:if>
-		<c:if test="${!empty ss_entryWindowWidth}">
-			var ss_entryWindowWidth = "${ss_entryWindowWidth}";
-		</c:if>
-		var ss_entryBackgroundColor = "${ss_style_background_color}";
-	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
+	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
@@ -77,7 +84,6 @@
 			</div>
 	
 			<div class="ss_content_inner">
-				<c:if test="${!ss_showSearchResults}">
 					<% // Navigation links %>
 					<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 					<div align="right" width="100%">
@@ -87,10 +93,6 @@
 					<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />
-				</c:if>
-				<c:if test="${ss_showSearchResults}">
-					<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
-				</c:if>
 			</div>
 		</div>
 	</div>
@@ -98,9 +100,14 @@
 
 	<% // Footer toolbar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	
+	
+	</c:if>
 
 	</div>
 </div>
+
+
 
 <% //Removed the Wiki Check for the Dashboards to display the overlay %>
 <div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"

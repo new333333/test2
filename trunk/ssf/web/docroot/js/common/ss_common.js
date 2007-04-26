@@ -2891,6 +2891,9 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 	return false;
 }
 
+function ss_dummyMethodCall() {
+}
+
 function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, namespace) {
 	//var linkMenuObj = eval(linkMenu+"");
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
@@ -2965,11 +2968,11 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 		linkMenuObj.fileUrl = "";
 	}
 
-	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
-	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + namespace;
-	linkMenuObj.menuLinkShowCurrentTab = 'ss_folderMenuShowCurrentTab_' + namespace;
-	linkMenuObj.menuLinkShowNewTab = 'ss_folderMenuShowNewTab_' + namespace;
-	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + namespace;
+	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + linkMenu;
+	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + linkMenu;
+	linkMenuObj.menuLinkShowCurrentTab = 'ss_folderMenuShowCurrentTab_' + linkMenu;
+	linkMenuObj.menuLinkShowNewTab = 'ss_folderMenuShowNewTab_' + linkMenu;
+	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + linkMenu;
 
 	linkMenuObj.isDashboardLink = isDashboard;
 }

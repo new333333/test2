@@ -92,16 +92,31 @@ public class AdvancedSearchController extends AbstractBinderController {
         
         if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model.putAll(prepareSearchResultData(request));
-        	return new ModelAndView("search/search_result", model);
+        	addPropertiesForFolderView(model);
+        	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
+        	//return new ModelAndView("search/search_result", model);
         } else if (op.equals(WebKeys.SEARCH_VIEW_PAGE)) {
         	model.putAll(prepareSearchResultPage(request));
-        	return new ModelAndView("search/search_result", model);
+        	addPropertiesForFolderView(model);
+        	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
+        	//return new ModelAndView("search/search_result", model);
         } else {
         	model.putAll(prepareSearchFormData(request));
         	return new ModelAndView("search/search_form", model);
         }
 	}
-		
+	
+	public void addPropertiesForFolderView(Map model) {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
+    	
+		Definition def = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
+		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
+    	model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
+	}
+
 	private String getUserLocale() {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return user.getLocale().getLanguage();
