@@ -158,7 +158,7 @@ dojo.widget.defineWidget(
 			var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
 			var prop = {dataUrl:url, 
 						id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
-			this.nextNodeRef = dojo.widget.createWidget("SelectPagable", prop, this.widgetContainer, "last");
+			this.nextNodeRef = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer, "last");
 			if (value && label) {
 				this.nextNodeRef.setValue(value);
 				this.nextNodeRef.setLabel(label);
