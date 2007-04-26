@@ -17,7 +17,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.helpButton"/></span> (5/5)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.helpicon.subtopic.exit"/></span>
 
-<p><ssf:nlt tag="help.helpicon.exitHelpMode.content.intro"/></p>
+<p><ssf:nlt tag="help.helpicon.exitHelpMode.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <ul style="list-style-type:disc;">
 <li><ssf:nlt tag="help.helpicon.exitHelpMode.content.listItem.clickPage"/></li>

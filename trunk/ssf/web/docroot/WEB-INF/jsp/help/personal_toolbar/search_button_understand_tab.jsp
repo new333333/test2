@@ -17,7 +17,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span> (3/3)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.searchicon.subtopic.understandTab"/></span>
 
-<p><ssf:nlt tag="help.searchicon.understandTab.content.intro"/></p>
+<p><ssf:nlt tag="help.searchicon.understandTab.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <ul style="list-style-type:disc;">
 

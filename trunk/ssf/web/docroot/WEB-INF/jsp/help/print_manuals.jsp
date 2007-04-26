@@ -19,19 +19,19 @@
 
 <ul style="list-style-type:disc;">
 <!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_install.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"/></a>
+  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 </li>-->
 
 <li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Quick Tips.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"/></a>
+  <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 </li>
 
 <li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps QuickStart User Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"/></a>
+  <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 </li>
 
 <!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></a>
+  <ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 </li>-->
 
 <!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_workflow.pdf">

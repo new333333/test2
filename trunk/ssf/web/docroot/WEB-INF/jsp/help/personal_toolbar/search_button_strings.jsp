@@ -17,15 +17,15 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span> (2/3)<br/>
 <span style="font-weight:bold;"><ssf:nlt tag="help.searchicon.subtopic.searchStrings"/></span>
 
-<p><ssf:nlt tag="help.searchicon.searchStrings.content.intro"/></p>
+<p><ssf:nlt tag="help.searchicon.searchStrings.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <ul style="list-style-type:disc;">
 
-<li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.case"/></li>
+<li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.case"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
-<li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.severalWords"/></li>
+<li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.severalWords"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
-<li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.quotedPhrase"/></li>
+<li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.quotedPhrase"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.searchicon.searchStrings.content.listItem.excludeWords"/></li>
 

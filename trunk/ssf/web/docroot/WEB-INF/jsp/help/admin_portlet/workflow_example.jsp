@@ -18,7 +18,7 @@
 <span style="font-weight:bold;"><ssf:nlt tag="help.globalStrings.exampleSubtopic"/></span>
 
 
-<p><ssf:nlt tag="help.workflowIntro.example.content.listIntro"/></p>
+<p><ssf:nlt tag="help.workflowIntro.example.content.listIntro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <ol>
 

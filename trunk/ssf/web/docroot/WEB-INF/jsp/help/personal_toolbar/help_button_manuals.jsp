@@ -17,9 +17,9 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.helpButton"/></span> (4/5)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.helpicon.subtopic.pdfManuals"/></span>
 
-<p><ssf:nlt tag="help.helpicon.getStartManuals.content.intro"/></p>
+<p><ssf:nlt tag="help.helpicon.getStartManuals.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.helpicon.getStartManuals.content.moreInfo"/></p>
+<p><ssf:nlt tag="help.helpicon.getStartManuals.content.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 

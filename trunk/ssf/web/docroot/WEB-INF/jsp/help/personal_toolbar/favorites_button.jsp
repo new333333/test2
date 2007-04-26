@@ -17,7 +17,7 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="help.favoritesicon.content.title"/></span> (1/4)
 
-<p><ssf:nlt tag="help.favoritesicon.content.intro.explainIcon"/></p>
+<p><ssf:nlt tag="help.favoritesicon.content.intro.explainIcon"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.favoritesicon.content.intro.listIntro"/></p>
 

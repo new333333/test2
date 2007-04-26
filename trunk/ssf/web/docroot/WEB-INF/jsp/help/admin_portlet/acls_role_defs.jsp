@@ -17,7 +17,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.accessControlOverview.title"/></span> (2/3)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.accessControlOverview.subtopic.definingRoles"/></span>
 
-<p><ssf:nlt tag="help.accessControlOverview.roleDefs.content.intro"/></p>
+<p><ssf:nlt tag="help.accessControlOverview.roleDefs.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.accessControlOverview.roleDefs.content.listIntro"/></p>
 
@@ -25,7 +25,7 @@
 
 <li><ssf:nlt tag="help.accessControlOverview.roleDefs.content.listItem.adminPortlet"/></li>
 
-<li><ssf:nlt tag="help.accessControlOverview.roleDefs.content.listItem.clickConfigLink"/></li>
+<li><ssf:nlt tag="help.accessControlOverview.roleDefs.content.listItem.clickConfigLink"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.accessControlOverview.roleDefs.content.listItem.clickRoleName"/></li>
 
@@ -37,7 +37,7 @@
 
 </ol>
 
-<p><ssf:nlt tag="help.accessControlOverview.roleDefs.content.addNewRole"/></p>
+<p><ssf:nlt tag="help.accessControlOverview.roleDefs.content.addNewRole"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 <br />

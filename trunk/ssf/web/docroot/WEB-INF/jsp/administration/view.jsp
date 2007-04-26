@@ -20,7 +20,7 @@
 	<tr>
 	  <td>
 	    <ssHelpSpot helpId="admin_portlet/admin_portlet" 
-	      title="<ssf:nlt tag="helpSpot.adminPortlet"/>"
+	      title="<ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>"
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
 	  </td>
