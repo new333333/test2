@@ -3837,5 +3837,22 @@ a.ss_button {
 	Search styles / end
 */
 
+/* Widgets */
+div.ss_selectedItemsContainer {
+	border: 1px solid #333333;
+	<c:if test="<%= isIE %>">
+	  zoom:1; /* a workaround IE bug - font color not display correctly */
+	</c:if>
+}
+div.ss_selectedItemsContainer ul {
+	margin:6px; padding:0px;
+}
+div.ss_selectedItemsContainer li {
+	margin:0px; padding:0px;
+}
+div.ss_selectedItemsContainer img {
+	margin:0px 0px 0px 12px;
+}
+/* Widgets / end*/
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
