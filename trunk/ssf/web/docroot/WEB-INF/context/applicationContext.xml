@@ -200,6 +200,7 @@
 				<property name="configFiles">
 					<list>
 						<value>config/ssf.properties</value>
+						<value>config/ssf-additional.properties</value>
 						<value>optional:config/ssf-ext.properties</value>
 					</list>		
 				</property>
