@@ -1057,6 +1057,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     protected void getBinderEntries_getSearchDocument(Binder binder, 
     		String [] entryTypes, SearchFilter searchFilter) {
+    	
+    	searchFilter.newFiltersBlock(true);
+    	
    		searchFilter.addFolderId(binder.getId().toString());
    		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_ENTRY);
    		searchFilter.addEntryTypes(entryTypes);
