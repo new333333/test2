@@ -750,17 +750,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      
     }
     protected void getBinders_getSearchDocument(Binder binder, SearchFilter searchFilter) {
-//  		Element boolElement = (Element) qTree.getRootElement().selectSingleNode(QueryBuilder.AND_ELEMENT);
-//  		
-//		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-//		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
-//		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-//		child.setText(binder.getId().toString());
-   	
-//		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-//		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-//		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-//		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+    	searchFilter.newFiltersBlock(true);
     	
 		searchFilter.addBinderParentId(binder.getId().toString());
    		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_BINDER);

@@ -41,7 +41,8 @@ public class SearchFilter {
 	public static String AllEntries = "_all_entries";
 
 	public SearchFilter() {
-		this(SearchFilterKeys.FilterRootName);
+		filter = DocumentHelper.createDocument();
+		sfRoot = filter.addElement(SearchFilterKeys.FilterRootName);
 	}
 	
 	public SearchFilter(Document filter) {
@@ -62,17 +63,6 @@ public class SearchFilter {
 	
 	public SearchFilter(Boolean joinAsAnd) {
 		this();
-		this.joinAnd = joinAsAnd;
-	}
-
-	public SearchFilter(String rootElement) {
-		super();
-		filter = DocumentHelper.createDocument();
-		sfRoot = filter.addElement(rootElement);
-	}
-
-	public SearchFilter(String rootElement, Boolean joinAsAnd) {
-		this(rootElement);
 		this.joinAnd = joinAsAnd;
 	}
 	
@@ -114,7 +104,7 @@ public class SearchFilter {
 	public void addAndNestedTerms(String type, String tagType, List searchTerms) {
 		//Add terms to search folders and workspaces
 		
-		newCurrent();
+		newFiltersBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
 		addNestedTerms(type, tagType, searchTerms);
@@ -144,7 +134,7 @@ public class SearchFilter {
 	}
 	
 	public void addAndFolderId(String folderId) {
-		newCurrent();
+		newFiltersBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
 		addFolderId(folderId);
@@ -294,14 +284,18 @@ public class SearchFilter {
 	}
 	
 	
-	protected void newCurrent() {
+	protected void newFiltersBlock() {
+		newFiltersBlock(this.joinAnd);
+	}
+	
+	public void newFiltersBlock(boolean joinAnd) {
 		currentFilterTerms = sfRoot.addElement(SearchFilterKeys.FilterTerms);
-		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, joinAnd.toString());
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, Boolean.toString(joinAnd));
 	}
 	
 	protected void checkCurrent() {
 		if (currentFilterTerms == null) {
-			newCurrent();
+			newFiltersBlock();
 		}
 	}
 
