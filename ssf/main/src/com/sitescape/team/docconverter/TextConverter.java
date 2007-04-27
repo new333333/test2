@@ -90,11 +90,12 @@ public abstract class TextConverter extends Converter<String>
     	Locale l = Locale.getDefault();
 		Templates trans;
 		Transformer tranny = null;
-		org.dom4j.Document tempfile = getDomDocument(ofile);
+		org.dom4j.Document tempfile = null;
+		if(ofile.exists()) {
+			tempfile = getDomDocument(ofile);
+		}
 		if(tempfile != null) {
-
 			try {
-
 				TransformerFactory transFactory = TransformerFactory.newInstance();
 
 				Source s = new StreamSource(transformFile);
