@@ -56,7 +56,6 @@ function ss_userListSelectItem(id, obj, prefix) {
 	dojo.event.connect(newAnchorObj, "onclick", function(evt) {
 		ss_userListRemove(prefix, evt.target.parentNode);
     });	
-	
 	var newImgObj = document.createElement("img");
 	newImgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
 	newImgObj.setAttribute("border", "0");
@@ -64,13 +63,10 @@ function ss_userListSelectItem(id, obj, prefix) {
 	newAnchorObj.appendChild(newImgObj);
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
-
-	ss_addUserIdToFormElement(prefix, id);
-	
-	if (typeof ss_findUsersClickRoutine[prefix] != "undefined" && typeof window[ss_findUsersClickRoutine[prefix]] != "undefined") {
+	ss_addUserIdToFormElement(prefix, id);	
+	if (ss_findUsersClickRoutine[prefix] && window[ss_findUsersClickRoutine[prefix]]) {
 		window[ss_findUsersClickRoutine[prefix]]();
 	}
-
 	afterAddUser(prefix, newLiObj);
 }
 
