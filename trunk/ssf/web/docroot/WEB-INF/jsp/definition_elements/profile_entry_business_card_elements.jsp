@@ -26,7 +26,7 @@
 </c:if>
 <table width="99%">
 <tr>
-<td valign="top" style="width:${property_maxWidth + 30}px; >
+<td valign="top" style="width:${property_maxWidth + 30}px;" >
 <div class="ss_smallRBoxTop2 ss_profileBox1"></div><div class="ss_smallRBoxTop1 ss_profileBox1"></div>
 <div class="ss_profileBox1" style="padding: 10px;"><div style="height:${property_maxHeight + 25}px;">
  <div class="ss_profile_box_title">Photo</div>
