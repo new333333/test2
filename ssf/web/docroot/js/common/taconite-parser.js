@@ -42,10 +42,24 @@ function XhtmlToDOMParser(xml){
 	            xml.removeAttribute("parseInBrowser");
 	            handleAttributes(contextNode,xml);
 	            break;
+            case "taconite-execute-javascript":
+                executeJavascript(xml);
+                break;
 	        }
 	}
 };
-    
+
+    function executeJavascript(xmlNode) {
+        var scripts = xmlNode.getElementsByTagName("script");
+        for (var i = 0; i < scripts.length; i++) {
+            var script = scripts[i];
+            if (script.getAttribute("type") == "text/javascript") {
+                var js = script.firstChild.nodeValue;
+                eval(js);
+            }
+        }
+    }
+
     function isInlineMode(node) {
         var attrType;
         if(!node.tagName.toLowerCase() == "input") {
