@@ -372,7 +372,7 @@ public class EntityIndexUtils {
 		StringBuilder sb = new StringBuilder();
 		Iterator datesIt = dates.iterator();
 		while (datesIt.hasNext()) {
-			sb.append(DateTools.dateToString(((Calendar)datesIt.next()).getTime(), DateTools.Resolution.DAY));
+			sb.append(DateTools.dateToString(((Calendar)datesIt.next()).getTime(), DateTools.Resolution.MINUTE));
 			sb.append(" ");
 		}
 

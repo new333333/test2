@@ -192,52 +192,51 @@ public class SearchUtils {
 
     	//See if there are event days (modification is also an event)
     	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {
-    		Element orEventOrMofidifactionBoolElement = boolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		Element orEventOrLastActivityOrCreationBoolElement = boolElement.addElement(QueryBuilder.OR_ELEMENT);
     			
-    		Element orBoolElement = orEventOrMofidifactionBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		Element orBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(QueryBuilder.OR_ELEMENT);
     		Iterator it = ((List)options.get(ObjectKeys.SEARCH_EVENT_DAYS)).iterator();
     		while (it.hasNext()) {
-    			String eventDay = (String)it.next();
-    			Element field = orBoolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
-    			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    			child.setText(eventDay);
-    		}
-        			        		
-    		Element orModificationDateBoolElement = orEventOrMofidifactionBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-    		Element andStartAndEndModificationDate = orModificationDateBoolElement.addElement(QueryBuilder.AND_ELEMENT);
-        			        		
-    		//	See if there is a modification start date
-    		if (options.containsKey(ObjectKeys.SEARCH_MODIFICATION_DATE_START)) {
-    			Element range = andStartAndEndModificationDate.addElement(QueryBuilder.RANGE_ELEMENT);
-    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
+    			String[] eventDay = (String[])it.next();
+    			Element range = orBoolElement.addElement(QueryBuilder.RANGE_ELEMENT);
+    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
     			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
     			Element start = range.addElement(QueryBuilder.RANGE_START);
-    			start.addText((String) options.get(ObjectKeys.SEARCH_MODIFICATION_DATE_START));
+    			start.addText(eventDay[0]);
     			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
-    			Calendar cal = Calendar.getInstance();
-    			cal.set(2999, 0, 1);
-    			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-    			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-    			String s = formatter.format(cal.getTime());
-    			finish.addText((String) s);
+    			finish.addText(eventDay[1]);
     		}
-               	
-    		//See if there is a modification end date
-    		if (options.containsKey(ObjectKeys.SEARCH_MODIFICATION_DATE_END)) {
-    			Element range = andStartAndEndModificationDate.addElement(QueryBuilder.RANGE_ELEMENT);
-    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
+        			        		
+    		Element orLastActivityDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		Element andStartAndEndLastActivityDate = orLastActivityDateBoolElement.addElement(QueryBuilder.AND_ELEMENT);
+        			        		
+    		//	See if there is a last activity start date
+    		if (options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START) && 
+    				options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END)) {
+    			Element range = andStartAndEndLastActivityDate.addElement(QueryBuilder.RANGE_ELEMENT);
+    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_FIELD);
     			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
     			Element start = range.addElement(QueryBuilder.RANGE_START);
-    			Calendar cal = Calendar.getInstance();
-    			cal.set(1970, 0, 1);
-    			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-    			formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-    			String s = formatter.format(cal.getTime());
-    			start.addText((String) s);
+    			start.addText((String) options.get(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START));
     			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
-    			finish.addText((String) options.get(ObjectKeys.SEARCH_MODIFICATION_DATE_END));  
+    			finish.addText((String) options.get(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END));
     		}
+
+    		Element orCreationDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		Element andStartAndEndCreationDate = orCreationDateBoolElement.addElement(QueryBuilder.AND_ELEMENT);
+        			        		
+    		//	See if there is a last activity start date
+    		if (options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_START) && 
+    				options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_END)) {
+    			Element range = andStartAndEndCreationDate.addElement(QueryBuilder.RANGE_ELEMENT);
+    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DATE_FIELD);
+    			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
+    			Element start = range.addElement(QueryBuilder.RANGE_START);
+    			start.addText((String) options.get(ObjectKeys.SEARCH_CREATION_DATE_START));
+    			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+    			finish.addText((String) options.get(ObjectKeys.SEARCH_CREATION_DATE_END));
+    		}
+    	
     	}
   	}
     public static void extendPrincipalsInfo(List<Map> entries, ProfileDao profileDao, String userField) {
