@@ -41,4 +41,6 @@ public interface ResourceDriver {
 	 * @throws UncheckedIOException
 	 */
 	public ResourceSession openSession() throws FIException, UncheckedIOException;
+	
+	public String getResourcePath(String parentResourcePath, String resourceName);
 }
