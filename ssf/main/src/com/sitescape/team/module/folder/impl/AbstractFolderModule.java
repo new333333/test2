@@ -664,13 +664,16 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return processor.getEntryTree(folder, entry);   	
     }
     public void deleteEntry(Long parentFolderId, Long entryId) {
+    	deleteEntry(parentFolderId, entryId, true);
+    }
+    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) {
     	deCount.incrementAndGet();
 
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, "deleteEntry");
-        processor.deleteEntry(folder, entry);
+        processor.deleteEntry(folder, entry, deleteMirroredSource);
     }
     public void moveEntry(Long folderId, Long entryId, Long destinationId) {
         Folder folder = loadFolder(folderId);
@@ -1030,7 +1033,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
    		for (Folder f: folders) {
    			FolderCoreProcessor processor = loadProcessor(f);
    			try {
-  				processor.deleteBinder(f, false);
+  				processor.deleteBinder(f, true);
    			} catch (Exception ex) {
    				logger.error(ex);
    			}

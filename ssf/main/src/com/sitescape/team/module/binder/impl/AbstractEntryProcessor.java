@@ -114,12 +114,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         
-        if(binder.isMirrored()) {
-	        sp.start("addEntry_mirrored");
-	        addEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
-	        sp.stop("addEntry_mirrored");
-        }
-        
         try {
         	
         	sp.start("addEntry_create");
@@ -232,9 +226,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	return ctx;
     }
 
-    protected FilesErrors addEntry_filterFiles(Binder binder, Entry entry, 
-    		Map entryData, List fileUploadItems, Map ctx) throws FilterException {
-   		FilesErrors nameErrors = new FilesErrors();
+    private void checkInputFileNames(List fileUploadItems, FilesErrors errors) {
    		//name must be unique within Entry
    		for (int i=0; i<fileUploadItems.size(); ++i) {
 			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
@@ -243,12 +235,70 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
     				!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
     				fileUploadItems.remove(j);
-    				nameErrors.addProblem(new FilesErrors.Problem(fui1.getRepositoryName(), 
+    				errors.addProblem(new FilesErrors.Problem(fui1.getRepositoryName(), 
        	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui1.getOriginalFilename())));
     			} else ++j;
 			}
    		}
+    }
+    
+    private void checkInputFilesForNonMirroredBinder(Binder nonMirroredBinder,
+			List fileUploadItems, FilesErrors errors) {
+		for (int i = 0; i < fileUploadItems.size();) {
+			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+			if (fui.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
+				fileUploadItems.remove(i);
+				errors.addProblem(new FilesErrors.Problem(
+								fui.getRepositoryName(),
+								fui.getOriginalFilename(),
+								FilesErrors.Problem.PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER,
+								new IllegalArgumentException("Binder ["
+										+ nonMirroredBinder.getPathName()
+										+ "] is not a mirrored folder")));
+			} else {
+				i++;
+			}
+		}
+	}
+    
+    private void checkInputFilesForMirroredBinder(List fileUploadItems, FilesErrors errors) {
+		String mirroredFileName = null;
+		for(int i = 0; i < fileUploadItems.size();) {
+			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+			if(fui.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
+				if(mirroredFileName == null) {
+					mirroredFileName = fui.getOriginalFilename();
+					i++;
+				}
+				else {
+					if(mirroredFileName.equals(fui.getOriginalFilename())) {
+						i++;
+					}
+					else {
+	   					fileUploadItems.remove(i);
+	    				errors.addProblem(new FilesErrors.Problem
+								(fui.getRepositoryName(), fui.getOriginalFilename(), 
+										FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE, 
+										new IllegalArgumentException("The entry already mirrors another file [" + mirroredFileName + "]")));
+					}
+				}
+			}
+		}
+    }
+    
+    protected FilesErrors addEntry_filterFiles(Binder binder, Entry entry, 
+    		Map entryData, List fileUploadItems, Map ctx) throws FilterException {
+   		FilesErrors nameErrors = new FilesErrors();
+   		
+   		checkInputFileNames(fileUploadItems, nameErrors);
     			 
+   		if(!binder.isMirrored()) {
+   			checkInputFilesForNonMirroredBinder(binder, fileUploadItems, nameErrors);
+   		}
+   		else {
+   			checkInputFilesForMirroredBinder(fileUploadItems, nameErrors);
+   		}
+   		
    		if (binder.isLibrary()) {
     		// 	Make sure the file name is unique if requested		
     		for (int i=0; i<fileUploadItems.size(); ) {
@@ -417,12 +467,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-	    
-        if(binder.isMirrored()) {
-	        sp.start("modifyEntry_mirrored");
-	        modifyEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
-	        sp.stop("modifyEntry_mirrored");
-        }
         
 	    try {	    	
 	    	sp.start("modifyEntry_transactionExecute");
@@ -511,7 +555,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             	    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
             	    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
             	    	if (repositoryName == null) {
-            		    	repositoryName = "simpleFileRepository";
+            	    		repositoryName = RepositoryUtil.getDefaultRepositoryName();
             		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
             	    	}
             	    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
@@ -541,19 +585,40 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
    		FilesErrors nameErrors = new FilesErrors();
-   	 	//name must be unique within Entry
-   		for (int i=0; i<fileUploadItems.size(); ++i) {
-			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
-			for (int j=i+1; j<fileUploadItems.size(); ) {
-    			FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
-    			if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
-    				!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
-    				fileUploadItems.remove(j);
-    				nameErrors.addProblem(new FilesErrors.Problem(fui1.getRepositoryName(), 
-       	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui1.getOriginalFilename())));
-    			} else ++j;
-			}
+   		
+   		checkInputFileNames(fileUploadItems, nameErrors);
+   		
+   		if(!binder.isMirrored()) {
+   			checkInputFilesForNonMirroredBinder(binder, fileUploadItems, nameErrors);
    		}
+   		else {
+   			List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
+   			if(fas.size() > 1)
+   				logger.warn("Integrity error: Entry " + entry.getId() + " in binder [" + binder.getPathName() + "] mirrors multiple files");
+   			if(fas.isEmpty()) {
+   	   			checkInputFilesForMirroredBinder(fileUploadItems, nameErrors);
+   			}
+   			else {
+   	  			for(int i = 0; i < fileUploadItems.size(); i++) {
+   	   				FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+   	   				if(fui.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
+	   					for(FileAttachment fa : fas) {
+	   						if(!fui.getOriginalFilename().equals(fa.getFileItem().getName())) {
+	   		   					fileUploadItems.remove(i);
+	   							nameErrors.addProblem(new FilesErrors.Problem
+	   									(fui.getRepositoryName(), fui.getOriginalFilename(), 
+	   											FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE, 
+	   											new IllegalArgumentException("The entry " + entry.getId() + 
+	   													" already mirrors another file [" + fa.getFileItem().getName() + "]")));
+	   							i--;
+	   							break;					
+	   						}
+	   					}
+   	   				}
+   	  			}   				
+   			}
+   		}
+   		
     	// 	Make sure the file name is unique if requested		
     	for (int i=0; i<fileUploadItems.size(); ) {
     		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
@@ -661,7 +726,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     }
     protected void takeCareOfLastModDate(Entry entry, InputDataAccessor inputData) {
- 	   Date lastModDate = (Date) inputData.getSingleObject("_lastModifiedDate");
+ 	   Date lastModDate = (Date) inputData.getSingleObject(ObjectKeys.PI_LAST_MODIFIED);
  	   if(lastModDate != null) {
  		   // We have a caller-supplied last-modified date.
  	        User user = RequestContextHolder.getRequestContext().getUser();
@@ -669,7 +734,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  	   }
     }
     //***********************************************************************************************************   
-    public void deleteEntry(Binder parentBinder, Entry entry) {
+    public void deleteEntry(Binder parentBinder, Entry entry, boolean deleteMirroredSource) {
     	SimpleProfiler sp = new SimpleProfiler(false);
     	Map ctx = deleteEntry_setCtx(entry, null);
     	sp.start("deleteEntry_preDelete");
@@ -681,7 +746,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.stop("deleteEntry_workflow");
         
         sp.start("deleteEntry_processFiles");
-        deleteEntry_processFiles(parentBinder, entry, ctx);
+        deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
         sp.stop("deleteEntry_processFiles");
          
         sp.start("deleteEntry_delete");
@@ -716,9 +781,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
     }
     
-    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	//attachment meta-data not deleted.  Done in optimized delete entry
-    	getFileModule().deleteFiles(parentBinder, entry, true, null);
+    	getFileModule().deleteFiles(parentBinder, entry, deleteMirroredSource, null);
     }
     
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
@@ -1226,36 +1291,4 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		return changes;
 	}
 
-	protected void addEntry_mirrored(Binder binder, InputDataAccessor inputData, Map fileItems,
-			List<FileUploadItem> fileUploadItems) {
-		MultipartFile mf = (MultipartFile) fileItems.get(ObjectKeys.EXTERNAL_FILE);
-		if(mf == null)
-			throw new IllegalArgumentException("A mirrored entry can not be created without its initial file content");
-		
-		Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
-	
-		FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_EXTERNAL, 
-				ObjectKeys.EXTERNAL_FILE, mf, ObjectKeys.FI_ADAPTER);
-		
-		if(Boolean.FALSE.equals(synchToSource))
-			fui.setSynchToRepository(false);
-		
-		fileUploadItems.add(fui);
-	}
-	
-	protected void modifyEntry_mirrored(Binder binder, InputDataAccessor inputData, Map fileItems,
-			List<FileUploadItem> fileUploadItems) {
-		MultipartFile mf = (MultipartFile) fileItems.get(ObjectKeys.EXTERNAL_FILE);
-		if(mf != null) {
-			Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
-		
-			FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_EXTERNAL, 
-					ObjectKeys.EXTERNAL_FILE, mf, ObjectKeys.FI_ADAPTER);
-			
-			if(Boolean.FALSE.equals(synchToSource))
-				fui.setSynchToRepository(false);
-			
-			fileUploadItems.add(fui);
-		}
-	}
 }

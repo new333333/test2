@@ -12,8 +12,6 @@ package com.sitescape.team.module.file.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1082,11 +1080,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
                  	String oldTitle = entry.getNormalTitle();
            			entry.setTitle(title);
            		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
-        		} else if (fui.getType() == FileUploadItem.TYPE_EXTERNAL) {
-        			if(isNew) {
-        				entry.addAttachment(fAtt);
-        			}
-        		}
+        		} 
         		ChangeLog changes;
             	if (isNew)
             		changes = new ChangeLog(entry, ChangeLog.FILEADD);
@@ -1136,8 +1130,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		int type = fui.getType();
 		if(type != FileUploadItem.TYPE_FILE && 
 				type != FileUploadItem.TYPE_ATTACHMENT && 
-				type != FileUploadItem.TYPE_TITLE &&
-				type != FileUploadItem.TYPE_EXTERNAL) {
+				type != FileUploadItem.TYPE_TITLE) {
 			logger.error("Unrecognized file processing type " + type + " for ["
 					+ fui.getName() + ","
 					+ fui.getOriginalFilename() + "]");
@@ -1162,6 +1155,31 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			return false;
     	}
 
+		if(repositoryName.equals(ObjectKeys.FI_ADAPTER)) {
+			if(!binder.isMirrored()) {
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryName, relativeFilePath, 
+								FilesErrors.Problem.PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER, 
+								new IllegalArgumentException("Binder [" + binder.getPathName() + "] is not a mirrored folder")));
+				return false;				
+			}
+			else {
+				List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
+	   			if(fas.size() > 1)
+	   				logger.warn("Integrity error: Entry " + entry.getId() + " in binder [" + binder.getPathName() + "] mirrors multiple files");
+				for(FileAttachment fa : fas) {
+					if(!relativeFilePath.equals(fa.getFileItem().getName())) {
+						errors.addProblem(new FilesErrors.Problem
+								(repositoryName, relativeFilePath, 
+										FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE, 
+										new IllegalArgumentException("The entry " + entry.getId() + 
+												" already mirrors another file [" + fa.getFileItem().getName() + "]")));
+						return false;					
+					}
+				}
+			}
+		}
+		
     	boolean isNew = false;
     	
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);

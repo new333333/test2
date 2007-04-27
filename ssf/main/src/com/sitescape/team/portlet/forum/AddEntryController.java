@@ -200,9 +200,9 @@ public class AddEntryController extends SAbstractController {
 	        	    	//If there is not pre-existing entry - we create a new entry
 	        	    	//If there is a pre-existing entry - we modify the entry
 	        	    	if (preExistingEntry == null) {
-	        	    		FolderUtils.createFolderEntry(entryCreationFolder, orginalFileName, myFile.getInputStream(), null);
+	        	    		FolderUtils.createLibraryEntry(entryCreationFolder, orginalFileName, myFile.getInputStream(), null, true);
 	        	    	} else {
-	        	    		FolderUtils.modifyFolderEntry(preExistingEntry, orginalFileName, myFile.getInputStream(), null);
+	        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, orginalFileName, myFile.getInputStream(), null, true);
 	        	    	}
 	        	    	intFileCount++;
 	        		} else {

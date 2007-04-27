@@ -262,12 +262,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    		getFolderDao().deleteEntryWorkflows((Folder)parentBinder, ids);
     }
     
-    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, Map ctx) {
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	List replies = (List)ctx.get(this.getClass().getName());
        	for (int i=0; i<replies.size(); ++i) {
-    		super.deleteEntry_processFiles(parentBinder, (FolderEntry)replies.get(i), null);
+    		super.deleteEntry_processFiles(parentBinder, (FolderEntry)replies.get(i), deleteMirroredSource, null);
     	}
-       	super.deleteEntry_processFiles(parentBinder, entry, null);
+       	super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
     }
     
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {

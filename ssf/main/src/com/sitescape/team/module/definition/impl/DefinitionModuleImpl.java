@@ -1397,6 +1397,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    		fui.setGenerateThumbnail(true);
 					    		fui.setIsSquareThumbnail(true);						    		
 					    	}
+					    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
+					    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
+					    	}
 					    	fileData.add(fui);
 					    }
 					} else if (itemName.equals("attachFiles")) {
@@ -1418,6 +1421,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 							    	}
 							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+							    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
+							    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
+							    	}
 							    	fileData.add(fui);
 								}
 							}
