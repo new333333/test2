@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
@@ -708,7 +709,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			InputStream content, Date modDate)
 	throws NoAccessException {
 		try {
-			FolderUtils.createFolderEntry(folder, fileName, content, modDate);
+			FolderUtils.createLibraryEntry(folder, fileName, content, modDate, true);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
@@ -725,7 +726,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			InputStream content, Date modDate) 
 	throws NoAccessException {
 		try {
-			FolderUtils.modifyFolderEntry(entry, fileName, content, modDate);
+			FolderUtils.modifyLibraryEntry(entry, fileName, content, modDate, true);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
@@ -863,12 +864,23 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 		
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {
-		FileAttachment fa = getFileAttachment(objMap);
-		List faId = new ArrayList();
-		faId.add(fa.getId());
+		Binder parentBinder = getParentBinder(objMap);
+		FolderEntry entry = getFolderEntry(objMap);
 		
+		FileAttachment fa = getFileAttachment(objMap);
+
 		try {
-			bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null);
+			if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
+				// The file being deleted is a mirrored file.
+				// In this case, we delete the entire entry. 
+				FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
+			}
+			else {
+				List faId = new ArrayList();
+				faId.add(fa.getId());
+				
+				bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null);
+			}
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			

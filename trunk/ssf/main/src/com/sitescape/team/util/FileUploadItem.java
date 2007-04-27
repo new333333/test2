@@ -22,7 +22,6 @@ public class FileUploadItem {
 	public static final int TYPE_FILE = 1;
 	public static final int TYPE_ATTACHMENT = 2;
 	public static final int TYPE_TITLE = 3;
-	public static final int TYPE_EXTERNAL = 4;
 	
 	private static final int THUMBNAIL_MAX_WIDTH_DEFAULT = 100;
 	private static final int THUMBNAIL_MAX_HEIGHT_DEFAULT = 100;

@@ -340,17 +340,17 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * @param repositoryName
      * @return
      */
-    public List getFileAttachments(String repositoryName) {
+    public List<FileAttachment> getFileAttachments(String repositoryName) {
     	Set atts = getAttachments();
     	Attachment att;
     	FileAttachment fatt;
-    	List result = new ArrayList();
+    	List<FileAttachment> result = new ArrayList();
     	for (Iterator iter=atts.iterator(); iter.hasNext();) {
     		att = (Attachment)iter.next();
     		if (att instanceof FileAttachment) {
     			fatt = (FileAttachment) att;
     			if(fatt.getRepositoryName().equals(repositoryName))
-    				result.add(att);
+    				result.add(fatt);
     		}
     	}
     	return result;

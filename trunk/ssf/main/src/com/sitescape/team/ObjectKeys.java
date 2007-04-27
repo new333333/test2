@@ -188,6 +188,9 @@ public interface ObjectKeys {
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
     public static final String FIELD_BINDER_SEARCHTITLE="searchTitle";
+	public static final String FIELD_BINDER_MIRRORED = "mirrored"; 
+	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
+	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";
@@ -297,12 +300,9 @@ public interface ObjectKeys {
     public static final String XTAG_WFR_RESPONSEDATE="responseDate";
     public static final String XTAG_WFR_RESPONSE="response";
     
-	// file related
-	public static final String SYNCH_TO_SOURCE = "_synchToSource";
-	public static final String EXTERNAL_FILE = "_externalFile";
 	public static final String FI_ADAPTER = "fiAdapter";
-	public static final String RESOURCE_DRIVER_NAME = "resourceDriverName";
-	public static final String RESOURCE_PATH = "resourcePath";
-	public static final String MIRRORED = "mirrored"; 
+	
+	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
+	public static final String PI_LAST_MODIFIED = "_lastModified";
 	
 }

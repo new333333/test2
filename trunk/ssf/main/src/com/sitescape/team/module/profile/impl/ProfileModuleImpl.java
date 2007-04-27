@@ -525,7 +525,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         checkAccess(entry, "deleteEntry");
        	if (entry.isReserved()) 
     		throw new NotSupportedException(NLT.get("errorcode.principal.reserved", new Object[]{entry.getName()}));       	
-       	processor.deleteEntry(binder, entry); 
+       	processor.deleteEntry(binder, entry, true); // third arg is irrelevant 
         if (deleteWS && (entry instanceof User)) {
         	//delete workspace
         	User u = (User)entry;

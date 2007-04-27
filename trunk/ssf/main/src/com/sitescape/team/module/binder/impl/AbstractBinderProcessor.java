@@ -205,10 +205,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        });
 	        sp.stop("addBinder_transactionExecute");
 	           
-	        sp.start("addBinder_mirrored");
-	        addBinder_mirrored(binder, inputData, ctx);
-	        sp.stop("addBinder_mirrored");
-	        
 	        sp.start("addBinder_filterFiles");
 	        //Need to do filter here after binder is saved cause it makes use of
 	        // the id of binder
@@ -313,22 +309,74 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_NAME)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_NAME));
    		}
+   		Boolean mirrored = null;
+   		if(parent.isMirrored())
+   			mirrored = Boolean.TRUE;
+   		else {
+   	   		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_MIRRORED))
+   				mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
+   		}
+   		if(mirrored != null)
+   			entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);   		
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   		}
+
  		EntryBuilder.buildEntry(binder, entryData);
  		
- 		Boolean mb = (Boolean) inputData.getSingleObject(ObjectKeys.MIRRORED);
- 		if(Boolean.TRUE.equals(mb) || parent.isMirrored())
- 			binder.setMirrored(true);
- 		
- 		String resourceDriverName = inputData.getSingleValue(ObjectKeys.RESOURCE_DRIVER_NAME);
- 		if(resourceDriverName != null && resourceDriverName.length() > 0)
- 			binder.setResourceDriverName(resourceDriverName);
- 		
- 		String resourcePath = inputData.getSingleValue(ObjectKeys.RESOURCE_PATH);
- 		if(resourcePath != null && resourcePath.length() > 0)
- 			binder.setResourcePath(resourcePath);
+ 		// A little more validation is necessary with respect to mirrored binder.
+ 		if(binder.isMirrored()) {
+ 			if(binder.getResourceDriverName() == null) {
+ 				if(parent.isMirrored()) {
+ 					binder.setResourceDriverName(parent.getResourceDriverName());
+ 				}
+ 				else {
+ 					throw new IllegalArgumentException("Resource driver name must be specified for new binder");
+ 				}
+ 			}
+ 			else {
+ 				if(parent.isMirrored()) {
+ 					if(!binder.getResourceDriverName().equals(parent.getResourceDriverName()))
+ 						throw new IllegalArgumentException("Specified resource driver name [" + binder.getResourceDriverName()
+ 								+ "] does not match the resource driver name [" + parent.getResourceDriverName()
+ 								+ "] of the parent binder [" + parent.getPathName() + "]");
+ 				}
+ 			}
+ 			if(binder.getResourcePath() == null) {
+ 				if(parent.isMirrored()) {
+ 					binder.setResourcePath(getResourceDriverManager().getResourcePath(parent.getResourceDriverName(), parent.getResourcePath(), binder.getTitle()));
+ 				}
+ 				else {
+ 					throw new IllegalArgumentException("Resource path must be specified for new binder");
+ 				}
+ 			}
+ 		}
+ 		else {
+ 			if(binder.getResourceDriverName() != null)
+ 				throw new IllegalArgumentException("Resource driver name must not be specified for regular binder");
+ 			if(binder.getResourcePath() != null)
+ 				throw new IllegalArgumentException("Resource path must not be specified for regular binder");
+ 		}
     }
 
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+		if(binder.isMirrored()) {
+			Boolean synchToSource = Boolean.TRUE;
+			if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
+				synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
+			if(Boolean.TRUE.equals(synchToSource)) {
+				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
+				try {
+					session.makeDirectory();
+				}
+				finally {
+					session.close();
+				}								
+			}
+		}
     }
 
     protected void addBinder_save(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
@@ -570,16 +618,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.start("deleteBinder_processFiles");
         deleteBinder_processFiles(binder, ctx);
         sp.stop("deleteBinder_processFiles");
+        
+        sp.start("deleteBinder_mirrored");
+        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
+        sp.stop("deleteBinder_mirrored");
+        
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
     		getCoreDao().updateFileName(binder.getParentBinder(), binder, binder.getTitle(), null);
    			if (binder.getParentBinder().isUniqueTitles()) 
    				getCoreDao().updateTitle(binder.getParentBinder(), binder, binder.getNormalTitle(), null);
     	}
-        
-        sp.start("deleteBinder_mirrored");
-        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
-        sp.stop("deleteBinder_mirrored");
 
         sp.start("deleteBinder_delete");
         deleteBinder_delete(binder, deleteMirroredSource, ctx);
@@ -623,6 +672,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     	getFileModule().deleteFiles(binder, binder, false, null);
+     }
+    
+    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
+		if(binder.isMirrored() && deleteMirroredSource) {
+			try {
+				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
+				try {
+					session.delete();
+				}
+				finally {
+					session.close();
+				}	
+			}
+			catch(Exception e) {
+				logger.error("Error deleting mirrored source for binder [" + binder.getPathName() + "]", e);
+			}
+		}	
      }
     
     protected void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
@@ -1143,31 +1209,4 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	protected String getEntryPrincipalField() {
     	return EntityIndexUtils.CREATORID_FIELD;
     }
-
-	protected void addBinder_mirrored(Binder binder, InputDataAccessor inputData, Map ctx) {
-		if(binder.isMirrored()) {
-			Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
-			if(Boolean.TRUE.equals(synchToSource)) {
-				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
-				try {
-					session.makeDirectory();
-				}
-				finally {
-					session.close();
-				}
-			}
-		}
-	}
-	
-	protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
-		if(binder.isMirrored() && deleteMirroredSource) {
-			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
-			try {
-				session.delete();
-			}
-			finally {
-				session.close();
-			}	
-		}
-	}
 }

@@ -39,7 +39,7 @@ public interface EntryProcessor extends BinderProcessor {
     	throws WriteFilesException;
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Boolean filesFromApplet)
 	throws WriteFilesException;
-    public void deleteEntry(Binder binder, Entry entry);
+    public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource);
     public Entry getEntry(Binder binder, Long entryId);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)

@@ -73,6 +73,7 @@ public interface FolderModule {
      * @throws AccessControlException
      */
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
+    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) throws AccessControlException;
     public void deleteSubscription(Long folderId, Long entryId);
     public void deleteTag(Long binderId, Long entryId, String tagId);
     

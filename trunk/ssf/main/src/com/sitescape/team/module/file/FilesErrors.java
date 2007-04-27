@@ -47,21 +47,23 @@ public class FilesErrors implements Serializable {
 	public static class Problem implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
-		public static int OTHER_PROBLEM						= 0;
-		public static int PROBLEM_FILTERING					= 1;
-		public static int PROBLEM_STORING_PRIMARY_FILE		= 2;
-		public static int PROBLEM_GENERATING_SCALED_FILE	= 3;
-		public static int PROBLEM_STORING_SCALED_FILE		= 4;
-		public static int PROBLEM_GENERATING_THUMBNAIL_FILE	= 5;
-		public static int PROBLEM_STORING_THUMBNAIL_FILE	= 6;
-		public static int PROBLEM_DELETING_PRIMARY_FILE		= 7;
-		public static int PROBLEM_DELETING_SCALED_FILE		= 8;
-		public static int PROBLEM_DELETING_THUMBNAIL_FILE	= 9;
-		public static int PROBLEM_CANCELING_LOCK			= 10;
-		public static int PROBLEM_LOCKED_BY_ANOTHER_USER	= 11;
-		public static int PROBLEM_RESERVED_BY_ANOTHER_USER  = 12;
-		public static int PROBLEM_FILE_EXISTS				= 13;
-		public static int PROBLEM_ARCHIVING					= 14;
+		public static int OTHER_PROBLEM								= 0;
+		public static int PROBLEM_FILTERING							= 1;
+		public static int PROBLEM_STORING_PRIMARY_FILE				= 2;
+		public static int PROBLEM_GENERATING_SCALED_FILE			= 3;
+		public static int PROBLEM_STORING_SCALED_FILE				= 4;
+		public static int PROBLEM_GENERATING_THUMBNAIL_FILE			= 5;
+		public static int PROBLEM_STORING_THUMBNAIL_FILE			= 6;
+		public static int PROBLEM_DELETING_PRIMARY_FILE				= 7;
+		public static int PROBLEM_DELETING_SCALED_FILE				= 8;
+		public static int PROBLEM_DELETING_THUMBNAIL_FILE			= 9;
+		public static int PROBLEM_CANCELING_LOCK					= 10;
+		public static int PROBLEM_LOCKED_BY_ANOTHER_USER			= 11;
+		public static int PROBLEM_RESERVED_BY_ANOTHER_USER  		= 12;
+		public static int PROBLEM_FILE_EXISTS						= 13;
+		public static int PROBLEM_ARCHIVING							= 14;
+		public static int PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER	= 15;
+		public static int PROBLEM_MIRRORED_FILE_MULTIPLE			= 16;
 		
 		public static String[] typeCodes = {
 			"file.error.other",
@@ -78,7 +80,9 @@ public class FilesErrors implements Serializable {
 			"file.error.locked.by.another.user",
 			"file.error.reserved.by.another.user",
 			"file.error.file.exists",
-			"file.error.archiving"
+			"file.error.archiving",
+			"file.error.mirrored.file.in.regular.folder",
+			"file.error.mirrored.file.multiple"
 		};
 		
 		private String repositoryName;

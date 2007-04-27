@@ -393,9 +393,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		binder.setProperty(property, value);	
    }    
     public List deleteBinder(Long binderId) {
-    	// $$$Temporary change. 
-    	//return deleteBinder(binderId, true);
-    	return deleteBinder(binderId, false);
+    	return deleteBinder(binderId, true);
     }
     public List deleteBinder(Long binderId, boolean deleteMirroredSource) {
     	Binder binder = loadBinder(binderId);
