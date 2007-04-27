@@ -94,12 +94,14 @@ public class AdvancedSearchController extends AbstractBinderController {
         	model.putAll(prepareSearchResultData(request));
         	addPropertiesForFolderView(model);
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
-        	//return new ModelAndView("search/search_result", model);
         } else if (op.equals(WebKeys.SEARCH_VIEW_PAGE)) {
         	model.putAll(prepareSearchResultPage(request));
         	addPropertiesForFolderView(model);
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
-        	//return new ModelAndView("search/search_result", model);
+        } else if (op.equals(WebKeys.SEARCH_SAVED_QUERY)) {
+        	model.putAll(prepareSavedQueryResultData(request));
+        	addPropertiesForFolderView(model);
+        	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else {
         	model.putAll(prepareSearchFormData(request));
         	return new ModelAndView("search/search_form", model);
@@ -143,6 +145,26 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return model;
 	}
 	
+	private Map prepareSavedQueryResultData(RenderRequest request) throws PortletRequestBindingException {
+		Map model = new HashMap();
+
+		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		// get query and options from tab		
+		Document query = getSavedQuery(queryName, getProfileModule().getUserProperties(currentUser.getId()));
+		
+		// get page no and actualize options
+		// execute query
+		// actualize tabs info
+		Map options = new HashMap();
+		actualizeOptions(options, request);
+		Tabs tabs = setupTabs(request);
+		prepareSearchResultPage(model, query, options, tabs, "");
+		
+		return model;
+	}
+	
 	private void actualizeOptions(Map options, RenderRequest request) {
 		int pageNo = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 1);
 		int defaultMaxOnPage = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
@@ -179,9 +201,19 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return options;
 	}
 	
-	private Document getQueryFromTab(Map tab) {
+	public static Document getQueryFromTab(Map tab) {
 		Document query = (Document) tab.get(Tabs.QUERY_DOC);
 		return query;
+	}
+	
+	public static Document getSavedQuery(String queryName, UserProperties userProperties) {
+		
+		Map properties = userProperties.getProperties();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			Map queries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+			return (Document)queries.get(queryName);
+		}
+		return null;
 	}
 	
 	private Map prepareSearchFormData(RenderRequest request) throws PortletRequestBindingException {
@@ -232,6 +264,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		// SearchUtils.filterEntryAttachmentResults(results);
 		prepareRatingsAndFolders(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
+		model.putAll(prepareSavedQueries());
 
 		// this function puts also proper part of entries list into a model
 		preparePagination(model, results, options);
@@ -243,6 +276,21 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 	}
 	
+	private Map prepareSavedQueries() {
+		Map result = new HashMap();
+		
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = getProfileModule().getUserProperties(currentUser.getId());
+		if (userProperties != null) {
+			Map properties = userProperties.getProperties();
+			if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+				Map queries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+				result.put(WebKeys.SEARCH_SAVED_QUERIES, queries.keySet());
+			}
+		}
+		return result;
+	}
 	//This method rates the people
 	public static List ratePeople(List entries) {
 		//The same logic and naming has been followed for both people and placess
@@ -423,10 +471,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 		tabs.setCurrentTab(tabs.findTab(query, options, clearTab, targetTab));
 	}
 	
-	private Tabs setupTabs(RenderRequest request) throws PortletRequestBindingException {
+	public static Tabs setupTabs(PortletRequest request) throws PortletRequestBindingException {
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
+		if (tabId != null) {
+			tabs.setCurrentTab(tabId.intValue());
+		}
 		
 		return tabs;
 	}
