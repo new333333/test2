@@ -3990,6 +3990,24 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
+
+input.ss_saveQueryName, input.ss_saveQueryNameUnactive {
+	width: 100px;
+}
+
+input.ss_saveQueryNameUnactive {
+	color: #CCCCCC;	
+}
+
+input.ss_saveQueryName {
+	color: #000000;
+}
+
+#ss_saveQueryErrMsg {
+	font-weight: bold;
+}
+
+
 /*
 	Search styles / end
 */

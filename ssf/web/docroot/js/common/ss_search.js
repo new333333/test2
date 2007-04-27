@@ -85,7 +85,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
-	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_workflows_widget", nestedUrl:ss_AjaxBaseUrl+"&operation=get_workflow_step_widget", stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
+	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_workflows_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
@@ -113,7 +113,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_entries_options').appendChild(div);
 
-	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_entry_types_widget", nestedUrl:ss_AjaxBaseUrl+"&operation=get_entry_fields_widget", widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_entry_types_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&operation=get_entry_fields_widget&randomNumber="+ss_random++, widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
@@ -140,7 +140,7 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	div.appendChild(pDiv);
 	document.getElementById('ss_tags_options').appendChild(div);
 	
-	var url = ss_AjaxBaseUrl + "&operation=get_tags_widget&searchText=%{searchString}&pager=%{pagerString}";
+	var url = ss_AjaxBaseUrl + "&operation=get_tags_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
 	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", 
 								id:"searchCommunityTags"+orderNo+"", 
 								dataUrl:url+"&findType=communityTags", 								
@@ -176,7 +176,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	div.appendChild(aDiv);
 	document.getElementById('ss_authors_options').appendChild(div);
 	
-	var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+	var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
 	var props = {name : "searchAuthors"+orderNo+"", 
 					id : "searchAuthors"+orderNo+"", 
 					dataUrl:url,
@@ -294,4 +294,57 @@ function ss_prepareAdditionalSearchOptions() {
 	document.getElementById("searchTypes").value = types.join(" ");
 	return true;
 }
+
+function ss_saveSearchQuery(inputId, errMsgBoxId) {
+	var inputObj = document.getElementById(inputId);
+	if (!inputObj) {
+		return;
+	}
+	var queryName = inputObj.value;
+	if (!queryName || queryName == "" || queryName == "Query name") {
+		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
+		errMsgBoxObj.innerHTML = "Please name the query";
+		ss_showDiv(errMsgBoxObj);
+		inputObj.focus();
+		return;
+	}
+
+	var url = ss_AjaxBaseUrl;
+	url += "&operation=save_search_query";
+	url += "&queryName=" + queryName;
+	url += "&tabId=" + ss_currentTabId;
+	
+	var bindArgs = {
+    	url: url,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+			if (data.savedQueryName) {
+				ss_addSavedSearchToView(data);
+			} else {
+				alert(ss_not_logged_in);
+			}
+		},
+		preventCache: true,
+		mimetype: "text/json",
+		method: "post"
+	};   
+	dojo.io.bind(bindArgs);	
+}
+
+function ss_addSavedSearchToView(data) {
+	var savedQueriesList = document.getElementById("ss_savedQueriesList");	
+	var newLi = document.createElement("li");
+	
+	var queryLink = document.createElement("a");
+	queryLink.href = ss_AdvancedSearchURLNoOperation + "&operation=ss_savedQuery&ss_queryName=" + data.savedQueryName;
+	queryLink.innerHTML = data.savedQueryName;
+	
+	newLi.appendChild(queryLink);
+	
+	savedQueriesList.appendChild(newLi);
+}
+
+
 

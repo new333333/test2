@@ -92,6 +92,7 @@ public class WebKeys {
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
     public static final String URL_PAGE_NUMBER="pageNumber";
+    public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_PAGE_SIZE="pageSize";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
@@ -234,8 +235,6 @@ public class WebKeys {
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
-//	public static final String OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
-//	public static final String OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String OPERATION_SET_WIKI_HOMEPAGE = "set_wiki_homepage";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
 	public static final String OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
@@ -285,6 +284,8 @@ public class WebKeys {
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	
 	public static final String OPERATION_SYNCHRONIZE_MIRRORED_FOLDER = "synchronize_mirrored_folder";
+	
+	public static final String OPERATION_SAVE_SEARCH_QUERY="save_search_query";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
@@ -548,6 +549,8 @@ public class WebKeys {
     public static final String SEARCH_RESULTS_RATING="searchResultsRating";
     public static final String SEARCH_RESULTS_RATING_CSS="searchResultsRatingCSS";
     public static final String SEARCH_VIEW_PAGE="viewPage";
+    public static final String SEARCH_SAVED_QUERY="ss_savedQuery";
+    public static final String SEARCH_SAVED_QUERIES="ss_savedQueries";
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
     public static final String SEEN_MAP="ssSeenMap";

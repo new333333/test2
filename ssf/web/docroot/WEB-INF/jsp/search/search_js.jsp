@@ -29,10 +29,11 @@ var ss_nlt_tagsCommunityTags = "<ssf:nlt tag="tags.communityTags"/>";
 var ss_nlt_tagsPersonalTags = "<ssf:nlt tag="tags.personalTags"/>";
 var ss_searchFormLabelAuthor = "<ssf:nlt tag="searchForm.label.author"/>";
 var ss_searchFormLabelDate = "<ssf:nlt tag="searchForm.label.date"/>";
-var ss_AdvancedSearchURL = "<portlet:actionURL windowState="maximized" portletMode="view">
+var ss_AdvancedSearchURLNoOperation = "<portlet:actionURL windowState="maximized" portletMode="view">
 				<portlet:param name="action" value="advanced_search"/>
 				<portlet:param name="tabId" value="${tabId}"/>
-				<portlet:param name="operation" value="viewPage"/>
 		</portlet:actionURL>";
+var ss_AdvancedSearchURL = ss_AdvancedSearchURLNoOperation + "&operation=viewPage";
+var ss_currentTabId = "${tabId}";		
 
 </script>

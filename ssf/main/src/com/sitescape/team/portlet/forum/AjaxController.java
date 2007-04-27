@@ -58,6 +58,7 @@ import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
+import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
@@ -125,6 +126,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxModifyGroup(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_EVENTS_DISPLAY_TYPE)) {
 				ajaxSaveCalendarEventsDisplayType(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
+				ajaxSaveSearchQuery(request, response);
 			}
 		}
 	}
@@ -322,6 +325,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxFindCalendarEvents(request, response);
 		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FOR_FILE)) {
 			return ajaxFindEntryForFile(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
+			return ajaxGetSearchQueryName(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -1965,9 +1970,59 @@ public class AjaxController  extends SAbstractController {
 	    	FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
 	    	if(entry != null) {
 	    		model.put(WebKeys.ENTRY_TITLE, entry.getTitle());
-}
+	    	}
 		}
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/find_entry_for_file_ajax_return", model);	
 	}
+	
+	private void ajaxSaveSearchQuery(ActionRequest request, 
+			ActionResponse response) throws PortletRequestBindingException {
+		String queryName = PortletRequestUtils.getStringParameter(request, "queryName", "");
+		
+		Tabs tabs = AdvancedSearchController.setupTabs(request);
+		int tabId = tabs.getCurrentTab();  
+		Map currentTab = tabs.getTab(tabId);
+		
+		// get query and options from tab
+		Document query = AdvancedSearchController.getQueryFromTab(currentTab);
+
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = getProfileModule().getUserProperties(currentUser.getId());
+		Map properties = userProperties.getProperties();
+		
+		Map userQueries = new HashMap();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+		
+		userQueries.put(queryName, query);
+		userProperties.setProperty(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
+	}
+	
+	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
+		String queryName = PortletRequestUtils.getStringParameter(request, "queryName", "");
+
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = getProfileModule().getUserProperties(currentUser.getId());
+		Map properties = userProperties.getProperties();
+		
+		Map userQueries = new HashMap();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+		
+		String savedQueryName = "";
+		if (userQueries.containsKey(queryName)) {
+			savedQueryName = queryName;
+		}
+		
+		Map model = new HashMap();
+		model.put("ss_queryName", savedQueryName);
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/searchQuery", model);
+	}		
 }
