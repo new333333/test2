@@ -126,12 +126,21 @@ public class CalendarViewRangeDates {
 
 		List result = new ArrayList();
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		Calendar date = start;
-
-		while (date.getTimeInMillis() <= end.getTimeInMillis()) {
-			result.add(formatter.format(date.getTime()));
-			date.add(Calendar.DAY_OF_MONTH, 1);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
+		Calendar dayStart = start;
+		
+		Calendar dayEnd = (Calendar)dayStart.clone();
+		dayEnd.add(Calendar.DAY_OF_MONTH, 1);
+		dayEnd.add(Calendar.MILLISECOND, -1);
+		
+		while (dayStart.getTimeInMillis() <= end.getTimeInMillis()) {
+			result.add(new String[] {formatter.format(dayStart.getTime()), formatter.format(dayEnd.getTime())});
+			
+			dayStart.add(Calendar.DAY_OF_MONTH, 1);
+			
+			dayEnd = (Calendar)dayStart.clone();
+			dayEnd.add(Calendar.DAY_OF_MONTH, 1);
+			dayEnd.add(Calendar.MILLISECOND, -1);
 		}
 
 		return result;

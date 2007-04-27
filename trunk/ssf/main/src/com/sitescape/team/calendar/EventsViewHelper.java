@@ -206,6 +206,9 @@ public class EventsViewHelper {
 					event.setDtStart(startCal);
 					event.setDtEnd(endCal);
 					
+					
+					// in results we have only entries with events in view range but some entries can have
+					// events out of view, so we have to test each event date
 					if (viewRangeDates.eventInView(evStartDate.getTime(), evEndDate.getTime())) {
 						events.add(getEventBean(event, entry, EVENT_TYPE_EVENT));
 					}

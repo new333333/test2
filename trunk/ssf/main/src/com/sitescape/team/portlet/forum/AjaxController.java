@@ -1933,10 +1933,13 @@ public class AjaxController  extends SAbstractController {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
 	       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
 	       	
-	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-	       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-	       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
-		
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+
 			
 			folderEntries = getFolderModule().getEntries(binderId, options);
 			List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
