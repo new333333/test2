@@ -117,10 +117,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	return library;
     }
     public void setLibrary(boolean library) {
-    	if(!library) {
-    		if(mirrored)
-    			throw new IllegalStateException("Can not make a mirror folder a non-library folder");
-    	}
     	this.library = library;
     }
     /**

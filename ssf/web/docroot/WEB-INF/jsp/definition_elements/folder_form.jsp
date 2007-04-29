@@ -50,6 +50,7 @@
 </div>
 <input type="hidden" name="library" value="${ssDefinitionEntry.library}"/>
 <br/>
+
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.uniqueTitles}" >
 <c:set var="cb_checked" value="checked"/>
@@ -59,6 +60,31 @@
 </div>
 <input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
+
+<c:if test="${ssDefinitionEntry.entityType.value == '2' && ssDefinitionEntry.mirrored == 'false'}">
+<c:set var="cb_checked" value=""/>
+<c:if test="${ssDefinitionEntry.mirrored}" >
+<c:set var="cb_checked" value="checked"/>
+</c:if>
+<div style="display:block">
+<input type="checkbox" name="ss_mirrored" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span></input>
+</div>
+<input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
+<br/>
+
+<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
+<select name="resourceDriverName">
+<c:forEach var="driver" items="<%= com.sitescape.team.fi.connection.ResourceDriverManagerUtil.getResourceDrivers() %>">
+<option value="${driver.name}">${driver.title}</option>
+</c:forEach>
+</select>
+<br/>
+
+<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
+<input type="text" class="ss_text" size="80" name="resourcePath"></br/>
+<br/>
+</c:if>
+
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="  OK  "/>" >&nbsp;&nbsp;&nbsp;

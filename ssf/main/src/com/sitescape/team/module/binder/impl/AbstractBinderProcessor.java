@@ -298,7 +298,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	if (obj instanceof Event)
         		getCoreDao().save(obj);
         }
-        doBinderFillin(binder, inputData, entryData);
+        doBinderFillin(parent, binder, inputData, entryData);
         //can add these fields on creation, but cannot use modifyBinder to change them
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY)));
@@ -309,26 +309,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_NAME)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_NAME));
    		}
-   		Boolean mirrored = null;
-   		if(parent.isMirrored())
-   			mirrored = Boolean.TRUE;
-   		else {
-   	   		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_MIRRORED))
-   				mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
-   		}
-   		if(mirrored != null)
-   			entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);   		
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
-   		}
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
-   		}
-
+   		
  		EntryBuilder.buildEntry(binder, entryData);
  		
+ 		checkConstraintForMirror(parent, binder);
+    }
+
+    protected void checkConstraintForMirror(Binder parent, Binder binder) {
  		// A little more validation is necessary with respect to mirrored binder.
  		if(binder.isMirrored()) {
+ 			if(!binder.isLibrary())
+ 				throw new IllegalArgumentException("Mirrored folder must also be a library folder");
  			if(binder.getResourceDriverName() == null) {
  				if(parent.isMirrored()) {
  					binder.setResourceDriverName(parent.getResourceDriverName());
@@ -355,13 +346,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			}
  		}
  		else {
- 			if(binder.getResourceDriverName() != null)
- 				throw new IllegalArgumentException("Resource driver name must not be specified for regular binder");
- 			if(binder.getResourcePath() != null)
- 				throw new IllegalArgumentException("Resource path must not be specified for regular binder");
+ 			binder.setResourceDriverName(null);
+ 			binder.setResourcePath(null);
  		}
     }
-
+    
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
 		if(binder.isMirrored()) {
 			Boolean synchToSource = Boolean.TRUE;
@@ -399,7 +388,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	indexBinder(binder, fileUploadItems, null, true, tags);
     }
  	//common fillin for add/modify
- 	protected void doBinderFillin(Binder binder, InputDataAccessor inputData, Map entryData) {  
+ 	protected void doBinderFillin(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {  
    		if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
    			String val = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION);
    			entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, new Description(val) );
@@ -409,6 +398,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_ICONNAME));
    		}
   		
+   		Boolean mirrored = null;
+   		if(parent.isMirrored())
+   			mirrored = Boolean.TRUE;
+   		else {
+   	   		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_MIRRORED))
+   				mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
+   		}
+   		if(mirrored != null)
+   			entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);   		
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   		}
  	}
     //***********************************************************************************************************
     public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
@@ -527,10 +531,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         				getCoreDao().save(obj);
         	}
         }
-        doBinderFillin(binder, inputData, entryData);
+        doBinderFillin(binder.getParentBinder(), binder, inputData, entryData);
                
         EntryBuilder.updateEntry(binder, entryData);
 
+ 		checkConstraintForMirror(binder.getParentBinder(), binder);
     }
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
     		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex, Map ctx) {

@@ -27,6 +27,14 @@ public interface ResourceDriver {
 	public String getName();
 	
 	/**
+	 * Return the title of the driver instance. 
+	 * The title may or may not be localized depending on the driver implementation.
+	 * 
+	 * @return
+	 */
+	public String getTitle();
+	
+	/**
 	 * Return the type of the driver.
 	 *  
 	 * @return
