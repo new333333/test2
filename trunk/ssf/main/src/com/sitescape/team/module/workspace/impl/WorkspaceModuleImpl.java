@@ -254,7 +254,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	--levels;
 		TreeSet ws = new TreeSet(c);
 		List searchBinders = null;
-		if (!domTreeHelper.getPage().equals("") || top.getBinders().size() > 10) {  //what is the best number to avoid search??
+		if (!domTreeHelper.getPage().equals("") || top.getBinderCount() > 10) {  //what is the best number to avoid search??
 			//do search
 			BinderProcessor processor = loadProcessor(top);
 			if (domTreeHelper.getPage().equals("")) {

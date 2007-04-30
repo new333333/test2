@@ -584,7 +584,7 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="workspaceTitleView" />
 			<option name="dashboardCanvas" initial="true" />
-			<option name="description" initial="true" />
+			<option name="descriptionView" initial="true" />
 			<option name="profileDataItem" caption="__profile_data_item" definitionType="6" />
 			<option name="profileList" initial="true" />
 			<option_select path="//item[@category='commonEntryViewData']" />
