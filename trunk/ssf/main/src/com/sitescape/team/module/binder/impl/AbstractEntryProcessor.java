@@ -837,13 +837,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  	   		entry.incrLogVersion();
  	        getWorkflowModule().modifyWorkflowState(wEntry, ws, toState);
 			processChangeLog(entry, ChangeLog.MODIFYWORKFLOWSTATE);
-	     	// Do NOT use reindexEntry(entry) since it reindexes attached
-			// files as well. We want workflow state change to be lightweight
-			// and reindexing all attachments will be unacceptably costly.
-			// TODO (Roy, I believe this was your design idea, so please 
-			// verify that this strategy will indeed work). 
-
-			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false, null);
+			indexEntry(entry);
 		}
     }
  
@@ -912,13 +906,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		if (changes) {
 			getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
 			processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
-			// Do NOT use reindexEntry(entry) since it reindexes attached
-			// files as well. We want workflow state change to be lightweight
-			// and reindexing all attachments will be unacceptably costly.
-			// TODO (Roy, I believe this was your design idea, so please 
-			// verify that this strategy will indeed work). 
-
-			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false, null);
+			indexEntry(entry);
 		}
     	
     }
