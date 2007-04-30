@@ -61,27 +61,27 @@
 <input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
 
-<c:if test="${ssDefinitionEntry.entityType.value == '2' && ssDefinitionEntry.mirrored == 'false'}">
+<c:if test="${ssDefinitionEntry.entityType.value == '2'}">
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.mirrored}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div style="display:block">
-<input type="checkbox" name="ss_mirrored" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span></input>
+<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span></input>
 </div>
 <input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
 <br/>
 
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-<select name="resourceDriverName">
+<select name="resourceDriverName" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
 <c:forEach var="driver" items="<%= com.sitescape.team.fi.connection.ResourceDriverManagerUtil.getResourceDrivers() %>">
-<option value="${driver.name}">${driver.title}</option>
+<option value="${driver.name}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.title}</option>
 </c:forEach>
 </select>
 <br/>
 
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
-<input type="text" class="ss_text" size="80" name="resourcePath"></br/>
+<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>></br/>
 <br/>
 </c:if>
 
