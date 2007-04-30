@@ -192,6 +192,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                //Attachments/Events need binder info for AnyOwner
 	                addBinder_fillIn(parent, binder, inputData, entryData, ctx);
 	                
+	                addBinder_mirrored(parent, binder, inputData, entryData, ctx);
+	                
 	                addBinder_preSave(parent, binder, inputData, entryData, ctx);      
 	
 	                addBinder_save(parent, binder, inputData, entryData, ctx);      
@@ -312,10 +314,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		
  		EntryBuilder.buildEntry(binder, entryData);
  		
- 		checkConstraintForMirror(parent, binder);
+ 		checkConstraintMirrored(parent, binder);
     }
 
-    protected void checkConstraintForMirror(Binder parent, Binder binder) {
+    protected void checkConstraintMirrored(Binder parent, Binder binder) {
  		// A little more validation is necessary with respect to mirrored binder.
  		if(binder.isMirrored()) {
  			if(!binder.isLibrary())
@@ -350,8 +352,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			binder.setResourcePath(null);
  		}
     }
-    
-    protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+
+    protected void addBinder_mirrored(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
 		if(binder.isMirrored()) {
 			Boolean synchToSource = Boolean.TRUE;
 			if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
@@ -366,6 +368,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				}								
 			}
 		}
+    }
+
+    protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     }
 
     protected void addBinder_save(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
@@ -443,9 +448,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		String oldNormalTitle = binder.getNormalTitle();
 	        		modifyBinder_fillIn(binder, inputData, entryData, ctx);
 	        		modifyBinder_postFillIn(binder, inputData, entryData, ctx);
-	        		//if title changed, must update path infor for all child folders
+	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
+	        		modifyBinder_mirrored(binder, oldTitle, newTitle);
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
 	        			fixupPath(binder);
@@ -535,7 +541,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                
         EntryBuilder.updateEntry(binder, entryData);
 
- 		checkConstraintForMirror(binder.getParentBinder(), binder);
+ 		checkConstraintMirrored(binder.getParentBinder(), binder);
     }
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
     		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex, Map ctx) {
@@ -547,6 +553,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	processChangeLog(binder, ChangeLog.MODIFYBINDER);
     }
     
+    protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle) {
+    	if(isTitleRepresentingDirectory(binder) && !oldTitle.equals(newTitle)) {
+			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
+			try {
+				session.moveFile(getResourceDriverManager().getParentResourcePath(binder.getResourceDriverName(), binder.getResourcePath()), newTitle);
+				
+				// Do not yet update the resource path in the binder, since we 
+				// need old info again shortly.
+			}
+			finally {
+				session.close();
+			}								
+    	}
+    }
+
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {
@@ -1146,6 +1167,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	IndexSynchronizationManager.deleteDocuments(new Term(
     			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
     }
+    private boolean isTitleRepresentingDirectory(Binder binder) {
+		boolean parentIsMirrored = false;
+		if(binder.getParentBinder() != null && binder.getParentBinder().isMirrored())
+			parentIsMirrored = true;
+		if(binder.isMirrored() && parentIsMirrored)
+			return true;
+		else
+			return false;
+    }
+    
     protected void fixupPath(Binder binder) {
 		if (!binder.isRoot()) {
 			binder.setPathName(binder.getParentBinder().getPathName() + "/" + binder.getTitle());
@@ -1153,11 +1184,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			//must be top
 			binder.setPathName("/" + binder.getTitle());
 		}
+		
+		boolean resourcePathAffected = false;
+		if(isTitleRepresentingDirectory(binder)) {
+			// A mirrored binder's title actually represents a directory name on the 
+			// external source only when it's parent is also a mirrored folder. 
+			// That is, the top-level mirrored binders' titles bear no resemblance
+			// to the names of the directories they represent. Consequently changing
+			// their titles do not affect the resource names.
+			resourcePathAffected = true;
+			String oldParentPath = getResourceDriverManager().getParentResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
+			String newPath = getResourceDriverManager().getResourcePath(binder.getResourceDriverName(), oldParentPath, binder.getTitle());
+			binder.setResourcePath(newPath);
+		}
+		
 		List children = new ArrayList(binder.getBinders());
 		//if we index the path, need to reindex all these folders
 		while (!children.isEmpty()) {
 			Binder child = (Binder)children.get(0);
 			child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
+			if(resourcePathAffected) {
+				String newPath = getResourceDriverManager().getResourcePath
+				(child.getResourceDriverName(), child.getParentBinder().getResourcePath(), child.getTitle());
+				child.setResourcePath(newPath);
+			}
 			children.remove(0);
 			children.addAll(child.getBinders());
 		}

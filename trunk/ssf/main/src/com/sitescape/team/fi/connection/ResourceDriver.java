@@ -50,5 +50,9 @@ public interface ResourceDriver {
 	 */
 	public ResourceSession openSession() throws FIException, UncheckedIOException;
 	
-	public String getResourcePath(String parentResourcePath, String resourceName);
+	public String getResourcePath(String parentResourcePath, String resourceName) throws FIException;
+	
+	public String getParentResourcePath(String resourcePath) throws FIException;
+	
+	public String getResourceName(String resourcePath) throws FIException;
 }
