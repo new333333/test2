@@ -76,6 +76,11 @@ public class SimpleProfiler {
     public String toString() {
     	if(active) {
     		StringBuilder sb = new StringBuilder();
+    		long currTime = System.currentTimeMillis();
+    		double elapsedTimeMS = currTime - beginTime;
+    		sb.append("Elapsed time (sec) = ")
+    		.append(elapsedTimeMS/1000.0)
+    		.append(Constants.NEWLINE);
     		for(Map.Entry entry : events.entrySet()) {
     			if(sb.length() > 0)
     				sb.append(Constants.NEWLINE);
@@ -106,9 +111,6 @@ public class SimpleProfiler {
     }
     public void print() {
     	if(active) {
-    		long currTime = System.currentTimeMillis();
-    		double elapsedTimeMS = currTime - beginTime;
-    		System.out.println("*** Elapsed time: " + elapsedTimeMS/1000.0 + " seconds");
     		System.out.println("*** " + toString());
     	}
     }

@@ -81,5 +81,12 @@ public interface ResourceSession {
 	
 	public long getContentLength() throws FIException, IllegalStateException;
 	
+	/**
+	 * 
+	 * @param targetDirectoryResourcePath may be <code>null</code>
+	 * @param targetFileName
+	 * @throws FIException
+	 * @throws IllegalStateException
+	 */
 	public void moveFile(String targetDirectoryResourcePath, String targetFileName) throws FIException, IllegalStateException;
 }

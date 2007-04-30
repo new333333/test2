@@ -27,4 +27,11 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return new ArrayList<ResourceDriver>();
 	}
 
+	public String getParentResourcePath(String driverName, String resourcePath) throws FIException {
+		return null;
+	}
+
+	public String getResourceName(String driverName, String resourcePath) throws FIException {
+		return null;
+	}
 }
