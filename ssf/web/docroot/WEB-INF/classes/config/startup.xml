@@ -2,6 +2,7 @@
 <zoneConfiguration>
 <!-- keep as separate file - only need to load once -->
 	<definitionFile>config/definitions/_user.xml</definitionFile>		
+	<definitionFile>config/definitions/_profiles.xml</definitionFile>
 	<definitionFile>config/definitions/_blogEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_comment.xml</definitionFile>		
 	<definitionFile>config/definitions/_calendarEntry.xml</definitionFile>		

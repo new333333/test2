@@ -39,5 +39,6 @@
   <properties>
     <property name="name" value="_userWorkspace"/>
     <property name="caption" value="__definition_default_user_workspace"/>
+    <property name="icon" value="/icons/user_workspace.gif"/>
   </properties>
 </definition>

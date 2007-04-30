@@ -571,6 +571,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = addDefaultDefinition(definitionType);
 		binder.setEntryDef(def);
 		binder.setDefinitionType(definitionType);
+		if (Validator.isNull(binder.getIconName())) {
+			String icon = DefinitionUtils.getPropertyValue(def.getDefinition().getRootElement(), "icon");
+			if (Validator.isNotNull(icon)) binder.setIconName(icon);
+		}
 		return def;
 	}
 	public Definition setDefaultEntryDefinition(Entry entry) {
@@ -585,6 +589,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = addDefaultDefinition(definitionType);
 		entry.setEntryDef(def);
 		entry.setDefinitionType(definitionType);
+		if (Validator.isNull(entry.getIconName())) {
+			String icon = DefinitionUtils.getPropertyValue(def.getDefinition().getRootElement(), "icon");
+			if (Validator.isNotNull(icon)) entry.setIconName(icon);
+		}
 		return def;
 	}
 
