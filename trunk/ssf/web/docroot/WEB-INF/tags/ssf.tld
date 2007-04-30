@@ -7,6 +7,17 @@
 	<short-name>ssf</short-name>
 	
 	<tag>
+		<name>alt</name>
+		<tag-class>com.sitescape.team.taglib.AltTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>tag</name>
+			<required>treu</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>box</name>
 		<tag-class>com.sitescape.team.taglib.BoxTag</tag-class>
 		<body-content>JSP</body-content>
@@ -449,6 +460,18 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>ifaccessible</name>
+		<tag-class>com.sitescape.team.taglib.IfAccessibleTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
+		<name>ifnotaccessible</name>
+		<tag-class>com.sitescape.team.taglib.IfNotAccessibleTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
 	<tag>
 		<name>ifadapter</name>
 		<tag-class>com.sitescape.team.taglib.IfAdapterTag</tag-class>
