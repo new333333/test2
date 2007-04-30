@@ -104,13 +104,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	}});
         	//assume parent has been updated, index now
         	if (!lastParentVersion.equals(parent.getLogVersion())) {
-    	     	// Do NOT use reindexEntry(entry) since it reindexes attached
-    			// files as well. We want workflow state change to be lightweight
-    			// and reindexing all attachments will be unacceptably costly.
-    			// TODO (Roy, I believe this was your design idea, so please 
-    			// verify that this strategy will indeed work). 
-
-    			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false, null);
+    			indexEntry(parent);
         		
         	}
            	// Need entry id before filtering 
@@ -143,15 +137,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      * @return
      */
     protected FolderEntry addReply_create(Definition def, Map ctx) {
-    	try {
-    		FolderEntry entry =  new FolderEntry();
-           	entry.setEntryDef(def);
-           	if (def != null) entry.setDefinitionType(new Integer(def.getType()));
-           	return entry;
-    	} catch (Exception ex) {
-    		return null;
-    	}
-    	
+    	return (FolderEntry)addEntry_create(def, FolderEntry.class, ctx);    	
     }
 
     protected FilesErrors addReply_filterFiles(Binder binder, Entry reply, 
@@ -208,7 +194,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		InputDataAccessor inputData, List fileData, Map ctx) {
     	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
     	//Also re-index the top entry (to catch the change in lastActivity)
-    	indexEntry(entry.getParentFolder(), entry.getTopEntry(), new ArrayList(), null, false, new ArrayList());
+    	indexEntry(entry.getTopEntry());
     }
     
      //***********************************************************************************************************
