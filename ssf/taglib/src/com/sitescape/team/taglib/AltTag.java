@@ -12,11 +12,16 @@ package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
@@ -25,7 +30,7 @@ import com.sitescape.team.web.WebKeys;
  * @author Peter Hurley
  *
  */
-public class Nlt extends BodyTagSupport implements ParamAncestorTag {
+public class AltTag extends BodyTagSupport implements ParamAncestorTag {
     private String tag;
     private String text;
     private Boolean checkIfTag;
@@ -40,22 +45,33 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
 	}
 
 	public int doEndTag() throws JspTagException {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		User user = null;
+		boolean isAccessible = false;
+		if (rc != null) user = rc.getUser();
+		if (user != null) {
+			if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				isAccessible = true;
+			}
+		}
 		if (this.checkIfTag == null) this.checkIfTag = false;
 		try {
-			JspWriter jspOut = pageContext.getOut();
-			StringBuffer sb = new StringBuffer();
-			if (_values == null) {
-				_values = new ArrayList();
+			if (isAccessible) {
+				JspWriter jspOut = pageContext.getOut();
+				StringBuffer sb = new StringBuffer();
+				if (_values == null) {
+					_values = new ArrayList();
+				}
+				if (this.checkIfTag) {
+					//This is a request to see if the tag itself is text or a tag
+					sb.append(NLT.getDef(this.tag));
+				} else if (this.text == null) {
+					sb.append(NLT.get(this.tag, this._values.toArray()));
+				} else {
+					sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
+				}
+				jspOut.print("ALT=\"" + sb.toString() + "\" ");
 			}
-			if (this.checkIfTag) {
-				//This is a request to see if the tag itself is text or a tag
-				sb.append(NLT.getDef(this.tag));
-			} else if (this.text == null) {
-				sb.append(NLT.get(this.tag, this._values.toArray()));
-			} else {
-				sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
-			}
-			jspOut.print(sb.toString());
 		}
 		catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
