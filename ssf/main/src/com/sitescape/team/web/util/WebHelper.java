@@ -328,7 +328,7 @@ public class WebHelper {
 	        	logger.error("Error processing markup: " + description.getText());
     			break;
     		}
-    		String img = m.group(0);
+    		String img = new String(m.group(0));
         	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
         	Matcher m2 = p2.matcher(img);
         	if (m2.find() && m2.groupCount() >= 1) fileHandle = m2.group(1);
@@ -354,8 +354,8 @@ public class WebHelper {
 	    	Pattern p3 = Pattern.compile("src *= *\"([^\"]*)\"");
 	    	Matcher m3 = p3.matcher(img);
         	if (m3.find() && m3.groupCount() >= 1) {
-        		img = m3.replaceFirst("src=\"{{attachmentUrl: " + WebHelper.getFileName(fileHandle) + "}}\"");
-        		description.setText(m.replaceFirst(img));
+        		img = new String(m3.replaceFirst("src=\"{{attachmentUrl: " + WebHelper.getFileName(fileHandle) + "}}\""));
+        		description.setText(m.replaceFirst(img.replace("$", "\\$")));
         		m = pattern.matcher(description.getText());
         	}
     	}
@@ -371,19 +371,19 @@ public class WebHelper {
     			break;
     		}
     		String fileId = "";
-    		String img = m.group(0);
+    		String img = new String(m.group(0));
         	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
         	Matcher m2 = p2.matcher(img);
         	if (m2.find() && m2.groupCount() >= 1) fileId = m2.group(1).trim();
     		
         	String binderId = "";
-    		img = m.group(0);
+    		img = new String(m.group(0));
         	Pattern p3 = Pattern.compile("binderId=([^\\&\"]*)");
         	Matcher m3 = p3.matcher(img);
         	if (m3.find() && m3.groupCount() >= 1) binderId = m3.group(1).trim();
     		
         	String entryId = "";
-    		img = m.group(0);
+    		img = new String(m.group(0));
         	Pattern p4 = Pattern.compile("entryId=([^\\&\"]*)");
         	Matcher m4 = p4.matcher(img);
         	if (m4.find() && m4.groupCount() >= 1) entryId = m4.group(1).trim();
@@ -393,9 +393,9 @@ public class WebHelper {
 		    	Pattern p1 = Pattern.compile("src *= *\"([^\"]*)\"");
 		    	Matcher m1 = p1.matcher(img);
 	        	if (m1.find() && m1.groupCount() >= 1) {
-	        		img = m1.replaceFirst("src=\"{{attachmentFileId: fileId=" + fileId 
-	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId + "}}\"");
-	        		description.setText(m.replaceFirst(img));
+	        		img = new String(m1.replaceFirst("src=\"{{attachmentFileId: fileId=" + fileId 
+	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId + "}}\""));
+	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));
 	        		m = pattern.matcher(description.getText());
 	        	}
 	    	}
