@@ -74,42 +74,58 @@ public class FileHelper {
 	}
 	
 	public static void move(File source, File dest) throws IOException {
-		if(dest.exists() && !dest.delete())
-			throw new IOException("Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
+		delete(dest);
 		
-		File destParent = dest.getParentFile();
-		if(!destParent.exists())
-			destParent.mkdirs();
+		mkdirsIfNecessary(dest.getParentFile());
 		
 		// First, try to rename it.
 		if(source.renameTo(dest))
 			return;
 		
-		try {
-			// Simple renaming didn't do the trick. We will have to copy the content.
-			FileCopyUtils.copy(source, dest);
-			
-			// Make sure we preserve the last modification date.
-			dest.setLastModified(source.lastModified());
-			
-			// Delete the source.
-			delete(source);
-		}
-		catch(IOException e) {
-			// If anything went wrong, we can't just return. 
-			// We have to do our best to restore the state back to where it was
-			// prior to move. One thing we can do is to delete the half-baked
-			// destination file.
-			try {
-				delete(dest);
-			}
-			catch(IOException e2) {
-				// Nothing more we can do...
-			}
-			throw e; // Rethrow
-		}
+		// Simple renaming didn't do. Let's try copying.
+		destructiveCopyRecursively(source, dest, true);
+		
+		// If you're still here, it means that the copy above was successful. 
+		// It is safe to delete the source now. 
+		deleteRecursively(source);
 	}
 
+	/**
+	 * This copies the source (which may be either directory or file) to the 
+	 * destination (NOT into the destination). As the method name indicates,
+	 * unlike regular copy function, this performs a destructive copying
+	 * meaning that the original content of the destination (whether directory
+	 * or file) will be destroyed.  
+	 * 
+	 * @param source
+	 * @param dest
+	 * @throws IOException
+	 */
+	public static void destructiveCopyRecursively(File source, File dest, 
+			boolean preserveLastModified) throws IOException {
+		delete(dest);
+		
+		mkdirsIfNecessary(dest.getParentFile());
+		
+		if(source.isDirectory()) {
+			mkdirs(dest);
+			File[] sourceChildren = source.listFiles();
+			if(sourceChildren != null) {
+				for(int i = 0; i < sourceChildren.length; i++) {
+					File sourceChild = sourceChildren[i];
+					File destChild = new File(dest, sourceChild.getName());
+					destructiveCopyRecursively(sourceChild, destChild, preserveLastModified);
+				}
+			}
+		}
+		else {
+			FileCopyUtils.copy(source, dest);
+		}
+		if(preserveLastModified) {
+			dest.setLastModified(source.lastModified());
+		}
+	}
+	
     public static void deleteRecursively(File file) {
     	if(!file.exists())
     		return;

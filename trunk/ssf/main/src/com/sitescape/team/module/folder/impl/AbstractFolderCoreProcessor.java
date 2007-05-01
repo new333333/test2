@@ -434,6 +434,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	 
       }
     public void moveFolderToFolder(Folder source, Folder destination) {
+    	super.moveBinder_mirrored(source, destination);
     	HKey oldKey = source.getFolderHKey();
     	//first remove name
     	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
@@ -445,6 +446,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
 		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
+		boolean resourcePathAffected = false;
+		if(isMirroredAndNotTopLevel(source)) {
+			resourcePathAffected = true;
+			String newPath = getResourceDriverManager().getResourcePath
+			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
+			source.setResourcePath(newPath);
+		}
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         moveLog(source, new HistoryStamp(user));
@@ -457,13 +465,18 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		Folder child = (Folder)binders.get(i);
     		child.setTopFolder(source.getTopFolder());
      		child.setPathName(source.getPathName() + "/" + child.getTitle());
+     		if(resourcePathAffected) {
+				String newPath = getResourceDriverManager().getResourcePath
+				(child.getResourceDriverName(), child.getParentBinder().getResourcePath(), child.getTitle());
+				child.setResourcePath(newPath);    			
+     		}
      		moveLog(child, source.getModification());
-    		fixupMovedChild(child, oldKey, newKey);
+    		fixupMovedChild(child, oldKey, newKey, resourcePathAffected);
     	}
     	indexTree(source, null);
     	
     }
-    protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent) {
+    protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent, boolean resourcePathAffected) {
     	HKey oldKey = child.getFolderHKey();
     	String childSort = oldKey.getSortKey();
     	HKey newKey = new HKey(childSort.replaceFirst(oldParent.getSortKey(), newParent.getSortKey()));
@@ -473,9 +486,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	for (int i=0; i<binders.size(); ++i) {
     		Folder c = (Folder)binders.get(i);
     		c.setTopFolder(child.getTopFolder());
-     		c.setPathName(child.getPathName() + "/" + child.getTitle());
+     		c.setPathName(child.getPathName() + "/" + c.getTitle());
+     		if(resourcePathAffected) {
+				String newPath = getResourceDriverManager().getResourcePath
+				(c.getResourceDriverName(), c.getParentBinder().getResourcePath(), c.getTitle());
+				c.setResourcePath(newPath);    			
+     		}
      		moveLog(c, child.getModification());
-    		fixupMovedChild(c, oldKey, newKey);
+    		fixupMovedChild(c, oldKey, newKey, resourcePathAffected);
     	}
    	
     }
@@ -488,6 +506,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     }
     public void moveFolderToWorkspace(Folder source, Workspace destination) {
+    	super.moveBinder_mirrored(source, destination);
       	if (destination.isZone())
       		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
       	HKey oldKey = source.getFolderHKey();
@@ -501,6 +520,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
 		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
+		boolean resourcePathAffected = false;
+		if(isMirroredAndNotTopLevel(source)) {
+			resourcePathAffected = true;
+			String newPath = getResourceDriverManager().getResourcePath
+			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
+			source.setResourcePath(newPath);
+		}
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         moveLog(source, new HistoryStamp(user));
@@ -514,8 +540,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		Folder child = (Folder)binders.get(i);
     		child.setTopFolder(source);
      		child.setPathName(source.getPathName() + "/" + child.getTitle());
+     		if(resourcePathAffected) {
+				String newPath = getResourceDriverManager().getResourcePath
+				(child.getResourceDriverName(), child.getParentBinder().getResourcePath(), child.getTitle());
+				child.setResourcePath(newPath);    			
+     		}
     		moveLog(child, source.getModification());
-    		fixupMovedChild(child, oldKey, newKey);
+    		fixupMovedChild(child, oldKey, newKey, resourcePathAffected);
     	}
     	indexTree(source, null);
    	

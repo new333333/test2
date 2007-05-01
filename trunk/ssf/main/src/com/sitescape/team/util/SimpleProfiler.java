@@ -77,15 +77,13 @@ public class SimpleProfiler {
     	if(active) {
     		StringBuilder sb = new StringBuilder();
     		long currTime = System.currentTimeMillis();
-    		double elapsedTimeMS = currTime - beginTime;
+    		if(title != null)
+    			sb.append(title).append(": "); 
     		sb.append("Elapsed time (sec) = ")
-    		.append(elapsedTimeMS/1000.0)
-    		.append(Constants.NEWLINE);
+    		.append((double) (currTime - beginTime)/1000.0);
     		for(Map.Entry entry : events.entrySet()) {
     			if(sb.length() > 0)
     				sb.append(Constants.NEWLINE);
-    			if(title != null)
-    				sb.append(title).append("/");
     			sb.append(entry.getKey())
     			.append(": ")
     			.append(entry.getValue().toString());
