@@ -262,7 +262,6 @@ function ss_findUserMouseOutList(prefix) {
 
 
 function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound) {
-    alert('here')
     var iframeDivObj = self.document.getElementById("ss_findIframeDiv");
     var iframeObj = self.document.getElementById("ss_findIframe");
     var iframeDivObjParent = self.parent.document.getElementById("ss_findIframeDiv");
