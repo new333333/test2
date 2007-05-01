@@ -33,6 +33,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.DatedMultipartFile;
@@ -431,6 +432,9 @@ public class FolderUtils {
 		String value = storageElem.attributeValue("value");
 		if(value == null || value.length() == 0) {
 			value = storageElem.attributeValue("default");
+		}
+		if(value == null || value.length() == 0) {
+			value = RepositoryUtil.getDefaultRepositoryName();
 		}
 		return value;
 	}
