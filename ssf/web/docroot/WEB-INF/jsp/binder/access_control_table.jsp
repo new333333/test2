@@ -23,7 +23,7 @@
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <c:if test="${ssUser.displayStyle != 'accessible'}" >
   <a href="#" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
-  ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;"
+  ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
   </c:if>
   
@@ -72,7 +72,7 @@
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
-  <img height="13" width="13" 
+  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
   <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssOwner}">
     src="<html:imagesPath/>pics/sym_s_checkmark.gif"
   </c:if>
@@ -112,7 +112,7 @@
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
 	    <a href="#" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
-	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;"
+	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
 	  </c:if>
@@ -150,7 +150,7 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 <c:if test="${!ssBinder.functionMembershipInherited}">
-  <img height="13" width="13" 
+  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
   <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssGroups[group.id]}">
     src="<html:imagesPath/>pics/sym_s_checkmark.gif"
   </c:if>
@@ -190,7 +190,7 @@
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
 	    <a href="#" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
-	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;"
+	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
 	  </c:if>
   
@@ -227,7 +227,7 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 <c:if test="${!ssBinder.functionMembershipInherited}">
-  <img height="13" width="13" 
+  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/> 
   <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssUsers[user.id]}">
     src="<html:imagesPath/>pics/sym_s_checkmark.gif"
   </c:if>

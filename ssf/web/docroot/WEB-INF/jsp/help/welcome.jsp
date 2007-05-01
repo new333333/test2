@@ -17,18 +17,18 @@
 
 <ul style="list-style: outside;">
   <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Quick Tips.pdf"
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.quickTipsOnUsage"/></span></a>
   </li>
   <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps QuickStart User Guide.pdf"
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore QuickStart User Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.quickStartUserGuide"/></span></a>
   </li>
 <c:if test="${ss_showInstallationGuide}">
   <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcorps Installation Guide.pdf"
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.installationGuide"/></span></a>
   </li>

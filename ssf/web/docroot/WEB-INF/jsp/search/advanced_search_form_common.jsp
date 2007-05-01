@@ -36,7 +36,7 @@
 									<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>>100 words</option>
 								</select>
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
-								<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+								<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>/></a>
 								</c:if>
 							</c:if>
 							
@@ -99,7 +99,7 @@
 			</div>
 			<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 			<div style="text-align: right; padding: 10px;">
-					<a class="ss_searchButton" href="javascript: ss_search();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a> <ssf:nlt tag="searchForm.button.label"/>	
+					<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif" /></a> <ssf:nlt tag="searchForm.button.label"/>	
 			</div>
 			</c:if>
 		</div>

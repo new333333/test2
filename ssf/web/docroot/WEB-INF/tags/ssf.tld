@@ -12,7 +12,7 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
-			<required>treu</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
