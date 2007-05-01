@@ -26,7 +26,7 @@
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
-		caption = "<b>"+caption+"</b><br>";
+		caption = "<b>"+caption+"</b><br/>";
 	}
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}

@@ -84,6 +84,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_onSubmitList = new Array();
 	var ss_onResizeList = new Array();
 	var ss_onLayoutChangeList = new Array();
+	var ss_validatorList = new Array();
 	var ss_menuDivClones = new Array();
 	var divToBeHidden = new Array;
 	var divToBeDelayHidden = new Array;
@@ -684,7 +685,7 @@ function ss_onSubmit(obj) {
             if (!ss_onSubmitList[i].submitRoutine()) {result = false;}
         }
     }
-    return result;
+    return result && ss_validate(obj);
 }
 
 
@@ -4599,16 +4600,17 @@ function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
 }
 
-function ss_checkForDuplicateFileAjax(obj) {
+function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
 	ss_setupStatusMessageDiv();
- 	var url = ss_findEntryForFileUrl; 
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+ 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.addKeyValue("file",obj.value);
+	ajaxRequest.addKeyValue("ss_ajaxId",obj.id);
+	ajaxRequest.addKeyValue("ss_ajaxValue",obj.value);
+	ajaxRequest.addKeyValue("ss_ajaxLabelId",labelId);
+	ajaxRequest.addKeyValue("ss_ajaxMsgId",msgBoxId);
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.sendRequest();  //Send the request
 }
-
 
 //Routine to pop-up a "find user" window
 var ss_launchFindUserWindowElement = null;
@@ -4630,5 +4632,49 @@ function ss_submitViaEnter(evt) {
             return false;
     }
     return true;
+}
+
+function ss_defaultValidationErrorHandler()
+{
+}
+
+function ss_addValidator(idOfEntryToValidate, validateRoutine, message, errorHandlerRoutine) {
+    if(errorHandlerRoutine == null) {
+    	errorHandlerRoutine = ss_defaultValidationErrorHandler;
+    }
+    var next = ss_validatorList.length;
+    ss_validatorList[next] = new ss_validatorObj(idOfEntryToValidate, validateRoutine, message, errorHandlerRoutine);
+}
+
+function ss_validatorObj(id, validateRoutine, message, errorHandler) {
+    this.id = id;
+    this.validateRoutine = validateRoutine;
+    this.message = message;
+    this.errorHandler = errorHandler;
+}
+
+
+//Common validator handler
+//  This function will call the desired routines at form validate time
+//  If any routine returns "false", then this routine returns false.
+function ss_validate(obj) {
+	var errors = new Array();
+    for (var i = 0; i < ss_validatorList.length; i++) {
+        var elt = document.getElementById(ss_validatorList[i].id);
+        if (!ss_validatorList[i].validateRoutine(elt, obj)) {
+        	errors[errors.length] = ss_validatorList[i];
+        }
+    }
+    if(errors.length != 0) {
+   		ss_showPopupDivCentered('ss_validation_errors_div');
+    }
+
+    return (errors.length == 0);
+}
+
+function ss_ajax_result_validator(elt, obj)
+{
+	var result = elt.getAttribute("ss_ajaxResult");
+	return result != "error";
 }
 

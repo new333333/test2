@@ -314,7 +314,6 @@ function ss_AjaxRequest(url) {
             requestURL = requestURL + "?ts=" + new Date().getTime();
         }
 
-
         if(method == "GET") {
             if(queryString.length > 0) {
                 requestURL = requestURL + "&" + queryString;
