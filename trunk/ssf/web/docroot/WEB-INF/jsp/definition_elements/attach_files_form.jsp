@@ -42,16 +42,26 @@ var ss_findEntryForFileUrl = "<ssf:url
 	actionUrl="false" >
 	<ssf:param name="operation" value="find_entry_for_file" />
 	<ssf:param name="folderId" value="${ssFolder.id}" />
-	</ssf:url>"
-</script>
-
-<div class="ss_entryContent" >
-<div id="ss_duplicateFileCheck" style="display:none"><span class="ss_formError"/></div>
-<span class="ss_labelAbove">${property_caption}</span>
+	</ssf:url>";
 <%
 	for (int i = 1; i <= count; i++) {
 %>
-<input type="file" class="ss_text" name="<%= elementName + Integer.toString(i) %>" <%= width %> onchange="javascript:ss_checkForDuplicateFileAjax(this)"/><br>
+ss_addValidator("ss_duplicateFileCheck_<%= elementName + Integer.toString(i) %>", ss_ajax_result_validator);
+var <%= elementName + Integer.toString(i) %>_ok = 1;
+<%
+	}
+%>	
+</script>
+
+<div class="ss_entryContent" >
+<span class="ss_labelAbove"><span id="<%= elementName %>_label">${property_caption}</span></span>
+<%
+	for (int i = 1; i <= count; i++) {
+%>
+<div class="needed-because-of-ie-bug">
+<div id="ss_duplicateFileCheck_<%= elementName + Integer.toString(i) %>" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div>
+</div>
+<input type="file" class="ss_text" name="<%= elementName + Integer.toString(i) %>" id="<%= elementName + Integer.toString(i) %>" <%= width %> onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'<%= elementName %>_label', 'ss_duplicateFileCheck_<%= elementName + Integer.toString(i) %>');"/><br/>
 <%
 	}
 %>

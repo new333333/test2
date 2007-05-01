@@ -25,7 +25,7 @@
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
-		caption = "<b>"+caption+"</b><br>";
+		caption = "<b>"+caption+"</b><br/>";
 	}
 	if (inline == null) {inline = "block";}
 	if (inline.equals("true")) {

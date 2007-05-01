@@ -46,6 +46,10 @@ public class WebKeys {
     public static final String URL_APPEND_TEAM_MEMBERS = "appendTeamMembers";
     public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
+    public static final String URL_AJAX_ID = "ss_ajaxId";
+    public static final String URL_AJAX_VALUE = "ss_ajaxValue";
+    public static final String URL_AJAX_LABEL_ID = "ss_ajaxLabelId";
+    public static final String URL_AJAX_MESSAGE_ID = "ss_ajaxMsgId";
     public static final String URL_ADD_DEFAULT_ENTRY = "addDefaultEntryURL";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
@@ -307,6 +311,8 @@ public class WebKeys {
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
 	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
 	public static final String ADMIN_TREE="ssAdminDomTree";
+	public static final String AJAX_ERROR_MESSAGE="ssAjaxErrorMessage";
+	public static final String AJAX_ERROR_DETAIL="ssAjaxErrorDetail";
 	public static final String ATTACHMENTS_TYPE="attachments";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";

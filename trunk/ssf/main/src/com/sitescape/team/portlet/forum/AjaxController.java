@@ -1975,16 +1975,23 @@ public class AjaxController  extends SAbstractController {
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
-			String path = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE);
-			String fileName = new java.io.File(path).getName();
-			Folder folder = getFolderModule().getFolder(binderId);
-	    	FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
-	    	if(entry != null) {
-	    		model.put(WebKeys.ENTRY_TITLE, entry.getTitle());
-	    	}
+			String path = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
+			if(Validator.isNotNull(path)) {
+				String fileName = new java.io.File(path).getName();
+				Folder folder = getFolderModule().getFolder(binderId);
+				FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+				if(entry != null) {
+					model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
+					model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
+				}
+			}
 		}
+		model.put(WebKeys.URL_AJAX_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_ID));
+		model.put(WebKeys.URL_AJAX_VALUE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,""));
+		model.put(WebKeys.URL_AJAX_LABEL_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_LABEL_ID));
+		model.put(WebKeys.URL_AJAX_MESSAGE_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_MESSAGE_ID));
 		response.setContentType("text/xml");
-		return new ModelAndView("binder/find_entry_for_file_ajax_return", model);	
+		return new ModelAndView("binder/ajax_validate_return", model);	
 	}
 	
 	private void ajaxSaveSearchQuery(ActionRequest request, 

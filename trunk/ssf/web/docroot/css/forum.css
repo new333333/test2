@@ -755,3 +755,26 @@ SPAN.ss_cpTodayTextDisabled
 	border:solid thin #808080;
 	}
 
+
+/******************************************************************************/
+/* Validation Styles
+/******************************************************************************/
+
+#ss_validation_errors_div {
+    background-color: white;
+    border: 1px solid gray;
+    border-bottom: 3px solid black;
+    border-right: 3px solid black;
+	margin: 5px 0 5px 0;
+	padding: 5px;
+}
+
+.ss_formError {
+	color: red;
+}
+
+.ss_text_button {
+	border: 1px solid black;
+}
+
+
