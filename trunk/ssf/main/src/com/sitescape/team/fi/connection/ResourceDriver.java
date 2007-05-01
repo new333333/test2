@@ -58,8 +58,4 @@ public interface ResourceDriver {
 	 * @throws FIException
 	 */
 	public String getResourcePath(String parentResourcePath, String resourceName) throws FIException;
-	
-	public String getParentResourcePath(String resourcePath) throws FIException;
-	
-	public String getResourceName(String resourcePath) throws FIException;
 }
