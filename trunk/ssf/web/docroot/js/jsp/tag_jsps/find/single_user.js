@@ -118,11 +118,14 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
  	if (divObj != null) divObj.style.color = "#cccccc";
 
  	ss_debug("//"+text+"//")
-	var ajaxRequest = new ss_AjaxRequest(ss_findUserSearchUrl[prefix]); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
+	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+		return ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound);
+	}
+	var ajaxRequest = new ss_AjaxRequest(ss_findUserSearchUrl[prefix]); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber[prefix])
@@ -255,4 +258,60 @@ function ss_findUserMouseOverList(prefix) {
 
 function ss_findUserMouseOutList(prefix) {
 	ss___findUserIsMouseOverList[prefix] = false;
+}
+
+
+function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound) {
+    alert('here')
+    var iframeDivObj = self.document.getElementById("ss_findIframeDiv");
+    var iframeObj = self.document.getElementById("ss_findIframe");
+    var iframeDivObjParent = self.parent.document.getElementById("ss_findIframeDiv");
+    var iframeObjParent = self.parent.document.getElementById("ss_findIframe");
+    if (iframeDivObjParent == null && iframeDivObj == null) {
+	    iframeDivObj = self.document.createElement("div");
+	    iframeDivObjParent = iframeDivObj;
+        iframeDivObj.setAttribute("id", "ss_findIframeDiv");
+		iframeDivObj.className = "ss_findIframeDiv";
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_findIframe");
+        iframeObj.style.width = "400px"
+        iframeObj.style.height = "250px"
+		iframeDivObj.appendChild(iframeObj);
+	    var closeDivObj = self.document.createElement("div");
+	    closeDivObj.style.border = "2px solid gray";
+	    closeDivObj.style.marginTop = "1px";
+	    closeDivObj.style.padding = "6px";
+	    iframeDivObj.appendChild(closeDivObj);
+	    var aObj = self.document.createElement("a");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findIframeDiv');");
+	    aObj.style.border = "2px outset black";
+	    aObj.style.padding = "2px";
+	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
+	    closeDivObj.appendChild(aObj);
+		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+    }
+    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
+    if (iframeObj == null) iframeObj = iframeObjParent;
+    if (self.parent == self) {
+    	//var x = dojo.html.getAbsolutePosition(tempObj, true).x
+    	//var y = dojo.html.getAbsolutePosition(tempObj, true).y
+	    //ss_setObjectTop(iframeDivObj, y + "px");
+	    //ss_setObjectLeft(iframeDivObj, x + "px");
+	}
+	ss_showDiv("ss_findIframeDiv");
+	var url = ss_findAjaxUrl;
+	url = ss_replaceSubStrAll(url, "&amp;", "&");
+	url += "&operation=find_user_search";
+	url += "&searchText=" + searchText;
+	url += "&maxEntries=" + "10";
+	url += "&pageNumber=" + ss_findUser_pageNumber[prefix];
+	url += "&findType=" + findUserGroupType;
+	url += "&listDivId=" + "available_" + prefix;
+	url += "&namespace=" + prefix;
+    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
+		self.location.href = url;
+	} else {
+		iframeObj.src = url;
+	}
+	ss_findUserSearchInProgress[prefix] = 0;
 }

@@ -894,7 +894,7 @@ public class AjaxController  extends SAbstractController {
 
 		User u = RequestContextHolder.getRequestContext().getUser();
 		Map options = new HashMap();
-		String view;
+		String view, viewAccessible;
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
@@ -955,12 +955,14 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_places_search";
+			viewAccessible = "forum/find_places_search_accessible";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_entries_search";
+			viewAccessible = "forum/find_entries_search_accessible";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
 			
 			String wordRoot = searchText;
@@ -982,23 +984,32 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.TAGS, tagsPage);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
 			view = "forum/find_tag_search";
+			viewAccessible = "forum/find_tag_search_accessible";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
 			Map entries = getProfileModule().getGroups(u.getParentBinder().getId(), options);
 			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_user_search";
+			viewAccessible = "forum/find_user_search_accessible";
 		} else {
 			Map entries = getProfileModule().getUsers(u.getParentBinder().getId(), options);
 			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_user_search";
+			viewAccessible = "forum/find_user_search_accessible";
 		}
 		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, findType);
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		model.put(WebKeys.DIV_ID, listDivId);
 		model.put(WebKeys.NAMESPACE, namespace);
-		response.setContentType("text/xml");
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (user.getDisplayStyle() != null && 
+				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			view = viewAccessible;
+		} else {
+			response.setContentType("text/xml");
+		}
 		return new ModelAndView(view, model);
 	}
 
