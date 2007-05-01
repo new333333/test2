@@ -46,7 +46,7 @@
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div style="display:block">
-<input type="checkbox" name="ss_library" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span></input>
+<input type="checkbox" name="ss_library" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span></input>
 </div>
 <input type="hidden" name="library" value="${ssDefinitionEntry.library}"/>
 <br/>

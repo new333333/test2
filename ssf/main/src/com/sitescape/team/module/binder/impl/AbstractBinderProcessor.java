@@ -554,10 +554,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle) {
-    	if(isTitleRepresentingDirectory(binder) && !oldTitle.equals(newTitle)) {
+    	if(isMirroredAndNotTopLevel(binder) && !oldTitle.equals(newTitle)) {
 			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
 			try {
-				session.moveFile(getResourceDriverManager().getParentResourcePath(binder.getResourceDriverName(), binder.getResourcePath()), newTitle);
+				session.move(binder.getParentBinder().getResourcePath(), newTitle);
 				
 				// Do not yet update the resource path in the binder, since we 
 				// need old info again shortly.
@@ -567,6 +567,63 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}								
     	}
     }
+    
+    protected void moveBinder_mirrored(Binder source, Binder destination) {
+    	// Post-operation condition: A binder representing a seed resource 
+    	// (ie, a top-level mirrored binder whose parent binder is not a
+    	// mirrored binder) must preserve that attribute after move.
+    	// Likewise, a mirrored binder that is not top-level can not be
+    	// a top-level binder after move. In other words, the characteristic
+    	// of being top-level or not must be preserved. 
+    	// Otherwise, the move is not allowed.
+    	if(source.isMirrored()) {
+    		if(source.getParentBinder().isMirrored()) { // mirrored but not top-level
+    			if(destination.isMirrored()) {
+    				if(source.getResourceDriverName().equals(destination.getResourceDriverName())) {
+    					// We can/must move the resource.
+    					ResourceSession session = getResourceDriverManager().getSession(source.getResourceDriverName(), source.getResourcePath());
+    					try {
+    						session.move(destination.getResourcePath(), source.getTitle());  						
+    						// Do not yet update the resource path in the source, it will be done in fixupPath.
+    					}
+    					finally {
+    						session.close();
+    					}								
+    				}
+    				else {
+    					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+    							+ "] because the resource driver is different");
+    		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    				}
+    			}
+    			else {
+					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+							+ "] because the source is not top-level mirrored and the destination is not mirrored");
+		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));  				
+    			}
+    		}
+    		else { // top-level mirrored
+    			if(destination.isMirrored()) {
+					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+							+ "] because the source is top-level mirrored and the destination is already mirrored");
+		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    			}
+    			else {
+    				// Does not involve resource moving.
+    			}
+    		}
+    	}
+    	else { // not mirrored at all
+    		if(destination.isMirrored()) {
+				logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+						+ "] because the source is not mirrored but the destination is");
+	      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    		}
+    		else {
+    			// Does not involve resource moving.
+    		}
+    	}
+    } 
 
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
@@ -740,6 +797,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (destination.isZone())
       		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
 
+    	moveBinder_mirrored(source, destination);
+    	
     	//first remove name
     	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
 		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
@@ -1167,7 +1226,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	IndexSynchronizationManager.deleteDocuments(new Term(
     			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
     }
-    private boolean isTitleRepresentingDirectory(Binder binder) {
+    protected boolean isMirroredAndNotTopLevel(Binder binder) {
+    	// A mirrored binder's title represents a directory only if the binder
+    	// is not a top-level mirrored binder. 
 		boolean parentIsMirrored = false;
 		if(binder.getParentBinder() != null && binder.getParentBinder().isMirrored())
 			parentIsMirrored = true;
@@ -1186,15 +1247,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		}
 		
 		boolean resourcePathAffected = false;
-		if(isTitleRepresentingDirectory(binder)) {
+		if(isMirroredAndNotTopLevel(binder)) {
 			// A mirrored binder's title actually represents a directory name on the 
 			// external source only when it's parent is also a mirrored folder. 
 			// That is, the top-level mirrored binders' titles bear no resemblance
 			// to the names of the directories they represent. Consequently changing
 			// their titles do not affect the resource names.
 			resourcePathAffected = true;
-			String oldParentPath = getResourceDriverManager().getParentResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
-			String newPath = getResourceDriverManager().getResourcePath(binder.getResourceDriverName(), oldParentPath, binder.getTitle());
+			String newPath = getResourceDriverManager().getResourcePath
+			(binder.getResourceDriverName(), binder.getParentBinder().getResourcePath(), binder.getTitle());
 			binder.setResourcePath(newPath);
 		}
 		

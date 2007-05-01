@@ -50,6 +50,13 @@ public interface ResourceDriver {
 	 */
 	public ResourceSession openSession() throws FIException, UncheckedIOException;
 	
+	/**
+	 * 
+	 * @param parentResourcePath must be non-null.
+	 * @param resourceName
+	 * @return
+	 * @throws FIException
+	 */
 	public String getResourcePath(String parentResourcePath, String resourceName) throws FIException;
 	
 	public String getParentResourcePath(String resourcePath) throws FIException;

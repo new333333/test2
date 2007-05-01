@@ -82,11 +82,14 @@ public interface ResourceSession {
 	public long getContentLength() throws FIException, IllegalStateException;
 	
 	/**
-	 * 
-	 * @param targetDirectoryResourcePath may be <code>null</code>
-	 * @param targetFileName
+	 * Move current resource (which may be either directory or file) into the
+	 * specified target directory. The <code>targetName</code> defines new
+	 * name of the resource being moved.
+	 * @param targetDirectoryResourcePath
+	 * @param targetName
+	 * @param targetName
 	 * @throws FIException
 	 * @throws IllegalStateException
 	 */
-	public void moveFile(String targetDirectoryResourcePath, String targetFileName) throws FIException, IllegalStateException;
+	public void move(String targetDirectoryResourcePath, String targetName) throws FIException, IllegalStateException;
 }
