@@ -36,38 +36,39 @@
 		</li>
 		<li class="ss_calendarNaviBarSeparator"/>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a class="ss_calDaySelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('daydelta'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+			<a class="ss_calDaySelectButton" href="javascript: ;" 
+			  onclick="ss_cal_Events.switchView('daydelta'); return false;">
+				<img <ssf:alt tag="alt.view1Day"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
 			<a class="ss_cal3DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('3daydelta'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.view3Days"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
 			<a class="ss_cal5DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('workweek'); return false;" >
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.view5Days"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
 			<a class="ss_cal7DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('week'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.view1Week"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
 			<a class="ss_cal14DaysSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('fortnight'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.view2Weeks"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
 			<a class="ss_calMonthSelectButton" href="javascript: ;" onclick="ss_cal_Events.switchView('month'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.view1Month"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionBigImg">
 			<a class="ss_calDateDownButton" href="javascript: ;" onclick="ss_cal_Events.switchView('prev'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.viewCalPrev"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calViewDatesDescriptionLi ss_calendarNaviBarOption">
@@ -75,7 +76,7 @@
 		</li>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionBigImg">
 			<a class="ss_calDateUpButton" href="javascript: ;" onclick="ss_cal_Events.switchView('next'); return false;">
-				<img src="<html:imagesPath/>pics/1pix.gif" />
+				<img <ssf:alt tag="alt.viewCalNext"/> src="<html:imagesPath/>pics/1pix.gif" />
 			</a>
 		</li>
 		<li class="ss_calSelectDate ss_calendarNaviBarOption">

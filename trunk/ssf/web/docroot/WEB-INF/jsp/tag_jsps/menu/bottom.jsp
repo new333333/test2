@@ -46,6 +46,6 @@ id="<%= titleId %>" href="javascript: ;"
 	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
 ><%= title %>
 <c:if test="<%= !("".equals(menuImage)) %>">
-	<img src='<html:imagesPath/><%= menuImage %>'/>
+	<img src='<html:imagesPath/><%= menuImage %>' <ssf:alt tag="alt.showMenu"/>/>
 </c:if>
 </a></span>

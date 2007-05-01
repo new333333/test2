@@ -28,7 +28,7 @@ if (isIECheck) strBrowserType = "ie";
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
 		ssSeenMap.setSeen(title_entry);
-		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
 <c:set var="fileHandle" value="${ssDefinitionEntry.customAttributes['_fileEntryTitle'].value}"/>

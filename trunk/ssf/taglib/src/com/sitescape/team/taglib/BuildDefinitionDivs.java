@@ -624,7 +624,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append(Integer.toString(helpDivCount));
 			sb.append("_a\" onClick=\"ss_activateMenuLayerMove('help_div_" + rootElementId);
 			sb.append(Integer.toString(helpDivCount));
-			sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
+			sb.append("');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 		}
 		
 	}
@@ -925,7 +925,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 							sb.append(iconListValue);
 							sb.append("\"").append(checked).append("/>");
-							sb.append("<img border=\"0\" src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
+							sb.append("<img alt=\"\" border=\"0\" src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
 							sb.append("<br/><br/>\n");
 						}
 					
@@ -1164,7 +1164,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(Integer.toString(helpDivCount));
 						sb.append("_a\" onClick=\"ss_activateMenuLayerMove('help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
-						sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
+						sb.append("');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 					}
 					
 					sb.append("<input type=\"hidden\" name=\"propertyName_" + propertyId + "\" ");

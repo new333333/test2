@@ -67,6 +67,8 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 					sb.append(NLT.getDef(this.tag));
 				} else if (tag != null && this.text == null) {
 					sb.append(NLT.get(this.tag, this._values.toArray()));
+				} else if (tag == null && this.text != null) {
+					sb.append(this.text);
 				} else {
 					if (tag != null) sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
 				}

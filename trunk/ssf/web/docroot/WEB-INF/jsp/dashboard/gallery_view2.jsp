@@ -45,7 +45,7 @@
 	    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
 	    </ssf:url>"
 		onClick="return ss_openUrlInWindow(this, '_blank');">
-    <img border="0" src="<ssf:url 
+    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
     webPath="viewFile"
     folderId="${fileEntry._binderId}"
     entryId="${fileEntry._docId}" >
