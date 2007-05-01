@@ -132,4 +132,4 @@
 	});
 	
 </script>
-<div id="ss_loading"><img src="<html:imagesPath/>pics/ajax-loader.gif" /></div>
+<div id="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/ajax-loader.gif" /></div>

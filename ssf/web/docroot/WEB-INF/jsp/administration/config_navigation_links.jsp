@@ -71,7 +71,7 @@
 <c:if test="${empty ssBinderConfig.templateTitle}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${ssBinderConfig.templateTitle}" /><img border="0"
+<c:out value="${ssBinderConfig.templateTitle}" /><img <ssf:alt/> border="0"
   style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[ssBinderConfig.id]}">

@@ -115,7 +115,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="50" 
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" type="text" /> 
-					<a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+					<a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
+					  src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
@@ -267,7 +268,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			<input type="hidden" name="quickSearch" value="true"/>					
 			<input type="hidden" name="operation" value="ss_searchResults"/>
 			  
-			  <a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img src="<html:imagesPath/>pics/1pix.gif" /></a>
+			  <a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
+			    src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a>
 		    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		  </ssHelpSpot>
 		</form>

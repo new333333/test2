@@ -205,8 +205,10 @@ function ${prefix}_toggleRecur(name) {
 
   <div style="text-align:left; ">
      <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
-     <img border="0" src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" /></a>
-     <img border="0" src="<html:imagesPath />pics/sym_s_repeat.gif" /> 
+     <img border="0" <ssf:alt tag="alt.expand"/>
+       src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" /></a>
+     <img border="0" <ssf:alt tag="Loading"/>
+       src="<html:imagesPath />pics/sym_s_repeat.gif" /> 
      <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
      <b><ssf:nlt tag="event.recurrence" /></b></a><br></a>
   </div>
