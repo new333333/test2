@@ -64,7 +64,9 @@ var ss_addTabUrl;
 var ss_not_logged_in;
 var ss_nlt_navigation_normal;
 var ss_nlt_navigation_maximize;
-
+var ss_userDisplayStyle;
+var ss_findButtonClose;
+var ss_findAjaxUrl;
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
@@ -127,6 +129,12 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		<ssf:param name="operation" value="ss_operation_place_holder" />
 		</ssf:url>";
 		
+	ss_findAjaxUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" />";
+
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 	
@@ -146,6 +154,9 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	
 	// Team memmbers text
 	ss_noTeamMembersText = "<ssf:nlt tag="teamMembers.noUsers"/>";
+	
+	ss_userDisplayStyle = "${ssUser.displayStyle}";
+	ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 }
 
 function ss_loadDojoFiles() {
