@@ -62,13 +62,13 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 				if (_values == null) {
 					_values = new ArrayList();
 				}
-				if (this.checkIfTag) {
+				if (tag != null && this.checkIfTag) {
 					//This is a request to see if the tag itself is text or a tag
 					sb.append(NLT.getDef(this.tag));
-				} else if (this.text == null) {
+				} else if (tag != null && this.text == null) {
 					sb.append(NLT.get(this.tag, this._values.toArray()));
 				} else {
-					sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
+					if (tag != null) sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
 				}
 				jspOut.print("ALT=\"" + sb.toString() + "\" ");
 			}
@@ -80,6 +80,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 			_values = null;
 			checkIfTag = null;
 			text = null;
+			tag = null;
 		}
 	    
 		return EVAL_PAGE;

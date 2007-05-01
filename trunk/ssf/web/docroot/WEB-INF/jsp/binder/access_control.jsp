@@ -339,7 +339,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
 
 <c:if test="${!ssBinder.functionMembershipInherited && !empty ss_accessParent.ssBinder}">
 <div>
-<img src="<html:imagesPath/>pics/sym_s_checkmark.gif"/>&nbsp;
+<img src="<html:imagesPath/>pics/sym_s_checkmark.gif" <ssf:alt tag="alt.checkmark"/>/>&nbsp;
 <span class="ss_italic">
 <c:if test="${ss_accessParent.ssBinder.entityType == 'folder'}">
   <ssf:nlt tag="access.designatesFolder"/>
@@ -362,7 +362,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
     <a href="#" onClick="ss_hideDiv('ss_changeOwnerMenu<portlet:namespace/>');return false;">
-      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+      <img border="0" src="<html:imagesPath/>box/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
   <div style="padding:0px 10px 10px 10px;">
@@ -388,7 +388,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
     <a href="#" onClick="ss_hideDiv('ss_addGroupsMenu<portlet:namespace/>');return false;">
-      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+      <img border="0" src="<html:imagesPath/>box/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
   <div style="padding:0px 10px 10px 10px;">
@@ -406,7 +406,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
     <a href="#" onClick="ss_hideDiv('ss_addUsersMenu<portlet:namespace/>');return false;">
-      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+      <img border="0" src="<html:imagesPath/>box/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
   <div style="padding:0px 10px 10px 10px;">
@@ -494,7 +494,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   margin-bottom:10px; padding:4px; background-color:#ffffff;">
   <div align="right">
     <a href="#" onClick="ss_hideDiv('<portlet:namespace/>ss_operations${function.id}');return false;">
-      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+      <img border="0" src="<html:imagesPath/>box/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
   <div>
