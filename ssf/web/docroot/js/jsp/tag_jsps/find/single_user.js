@@ -12,6 +12,7 @@
 function ss_declareFindUserSearchVariables () {
 	window.ss_findUser_searchText = new Array();
 	window.ss_findUser_pageNumber = new Array();
+	window.ss_findUser_pageNumberBefore = new Array();
 	window.ss_findUserDivTopOffset = new Array();
 
 	window.ss_findUserSearchInProgress = new Array();
@@ -35,6 +36,7 @@ function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs
 	}
 	ss_findUser_searchText[prefix] = "";
 	ss_findUser_pageNumber[prefix] = 0;
+	ss_findUser_pageNumberBefore[prefix] = 0;
 	ss_findUserDivTopOffset[prefix] = 2;
 	
 	ss_findUserSearchInProgress[prefix] = 0;
@@ -57,7 +59,10 @@ function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs
 function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text != ss_findUserSearchLastText[prefix]) ss_findUser_pageNumber[prefix] = 0;
+	if (text.trim() != ss_findUserSearchLastText[prefix].trim()) {
+		ss_findUser_pageNumber[prefix] = 0;
+		ss_findUser_pageNumberBefore[prefix] = 0;
+	}
 	ss_setupStatusMessageDiv();
 	ss_moveDivToBody('ss_findUserNavBarDiv' + prefix);
 	//Are we already doing a search?
@@ -227,11 +232,13 @@ function ss_saveFindUserData(prefix) {
 }
 
 function ss_findUserNextPage(prefix) {
+	ss_findUser_pageNumberBefore[prefix] = ss_findUser_pageNumber[prefix];
 	ss_findUser_pageNumber[prefix]++;
 	ss_findUserSearch(prefix, ss_findUserSearchLastTextObjId[prefix], ss_findUserSearchLastElement[prefix], ss_findUserSearchLastfindUserGroupType[prefix]);
 }
 
 function ss_findUserPrevPage(prefix) {
+	ss_findUser_pageNumberBefore[prefix] = ss_findUser_pageNumber[prefix];
 	ss_findUser_pageNumber[prefix]--;
 	if (ss_findUser_pageNumber[prefix] < 0) ss_findUser_pageNumber[prefix] = 0;
 	ss_findUserSearch(prefix, ss_findUserSearchLastTextObjId[prefix], ss_findUserSearchLastElement[prefix], ss_findUserSearchLastfindUserGroupType[prefix]);
@@ -242,7 +249,6 @@ function ss_findUserClose(prefix) {
 	if (textObj == null) {
 		textObj = self.parent.document.getElementById('ss_findUser_searchText_' + prefix);
 	}
-	alert(textObj)
 	if (textObj != null) textObj.focus();
 }
 
@@ -270,17 +276,20 @@ function ss_findUserMouseOutList(prefix) {
 
 function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound) {
 	//In accessibility mode, wait for the user to type cr
-	if (!crFound) return;
+	if (!crFound && parseInt(ss_findUser_pageNumber[prefix]) == 0 && 
+			parseInt(ss_findUser_pageNumberBefore[prefix]) == 0) return;
 	
     var iframeDivObj = self.document.getElementById("ss_findIframeDiv");
     var iframeObj = self.document.getElementById("ss_findIframe");
     var iframeDivObjParent = self.parent.document.getElementById("ss_findIframeDiv");
     var iframeObjParent = self.parent.document.getElementById("ss_findIframe");
+    var textObj = self.document.getElementById('ss_findUser_searchText_bottom_'+prefix);
     if (iframeDivObjParent == null && iframeDivObj == null) {
 	    iframeDivObj = self.document.createElement("div");
 	    iframeDivObjParent = iframeDivObj;
         iframeDivObj.setAttribute("id", "ss_findIframeDiv");
-		iframeDivObj.className = "ss_findIframeDiv";
+		iframeDivObj.className = "ss_popupMenu";
+		iframeDivObj.style.zIndex = ssPopupZ;
         iframeObj = self.document.createElement("iframe");
         iframeObj.setAttribute("id", "ss_findIframe");
         iframeObj.style.width = "400px"
@@ -301,11 +310,11 @@ function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGr
     }
     if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
     if (iframeObj == null) iframeObj = iframeObjParent;
-    if (self.parent == self) {
-    	//var x = dojo.html.getAbsolutePosition(tempObj, true).x
-    	//var y = dojo.html.getAbsolutePosition(tempObj, true).y
-	    //ss_setObjectTop(iframeDivObj, y + "px");
-	    //ss_setObjectLeft(iframeDivObj, x + "px");
+    if (self.parent == self && textObj != null) {
+    	var x = dojo.html.getAbsolutePosition(textObj, true).x
+    	var y = dojo.html.getAbsolutePosition(textObj, true).y
+	    ss_setObjectTop(iframeDivObj, y + "px");
+	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_findIframeDiv");
 	var url = ss_findAjaxUrl;

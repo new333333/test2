@@ -57,12 +57,6 @@
 	    <td nowrap="nowrap" style="white-space:nowrap;">
 	      <ssf:nlt tag="findUser.noneFound"/>
 	    </td></tr>
-        <tr><td align="center">
-          <br/>
-          <a href="#" onClick="parent.ss_findUserClose('${ss_namespace}');return false;"
-          ><ssf:nlt tag="button.close"/></a>
-        </td>
-        </tr>
 	    </tbody></table>
 	  </li>
 	 </ul>

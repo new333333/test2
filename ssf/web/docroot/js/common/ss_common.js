@@ -50,6 +50,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ssHelpPanelZ = 2003;
 	var ssHelpWelcomeZ = 2002;
 	var ssMenuZ = 500;
+	var ssPopupZ = 600;
 	var ssDragOnTopZ = 100000;
 	var ssEntryZ = 50;
 	var ssDragEntryZ = 400;
