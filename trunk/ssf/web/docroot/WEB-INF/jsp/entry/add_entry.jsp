@@ -13,7 +13,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
 <body>
-<div id='ss_validation_errors_div' style="position:absolute; display:none;"><p><ssf:nlt tag="validation.errorMessage"/></p><input type="button" onclick="ss_cancelPopupDiv('ss_validation_errors_div')" name="<ssf:nlt tag="button.close"/>" value="<ssf:nlt tag="button.close"/>"/></div>
 </ssf:ifadapter>
 
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>

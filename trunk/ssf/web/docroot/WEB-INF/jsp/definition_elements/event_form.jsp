@@ -38,7 +38,13 @@
 		required = "";
 	}
 %>
-<span class="ss_labelAbove"><%= caption %><%= required %></span>
+<script type="text/javascript">
+ss_addValidator("dp_<%= elementName %>", ss_date_validator, '<%= elementName %>_startError', '<%= elementName %>_label');
+ss_addValidator("dp2_<%= elementName %>", ss_date_validator, '<%= elementName %>_endError', '<%= elementName %>_label');
+</script>
+<span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
+<div id="<%= elementName %>_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
+<div id="<%= elementName %>_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
 
 <c:choose>
 	<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">

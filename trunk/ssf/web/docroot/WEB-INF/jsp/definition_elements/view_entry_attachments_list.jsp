@@ -49,7 +49,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
 					</c:if>
-					     ><img border="0" <ssf:alt text="${selection.title}"/> src="<ssf:url 
+					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
 		    entryId="${ssDefinitionEntry.id}" >

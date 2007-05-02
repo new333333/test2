@@ -67,6 +67,7 @@ var ss_nlt_navigation_maximize;
 var ss_userDisplayStyle;
 var ss_findButtonClose;
 var ss_findAjaxUrl;
+var ss_validationErrorMessage;
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
@@ -157,6 +158,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	
 	ss_userDisplayStyle = "${ssUser.displayStyle}";
 	ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
+	ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 }
 
 function ss_loadDojoFiles() {
