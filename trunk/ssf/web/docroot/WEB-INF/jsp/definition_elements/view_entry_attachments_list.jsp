@@ -49,7 +49,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
 					</c:if>
-					     ><img border="0" src="<ssf:url 
+					     ><img border="0" <ssf:alt text="${selection.title}"/> src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
 		    entryId="${ssDefinitionEntry.id}" >
@@ -70,7 +70,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					     ><c:out value="${selection.fileItem.name} "/></a>
 			<c:if test="${!empty selection.fileLock}">
 			  <br/>
-			  <img src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
 	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
 			  </ssf:nlt></span>

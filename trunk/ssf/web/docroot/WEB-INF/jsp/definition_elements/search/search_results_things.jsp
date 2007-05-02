@@ -173,7 +173,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<td width="15%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
-					<img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -181,7 +181,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<portlet:param name="operation" value="save_search_page_info"/>
 							<portlet:param name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/>
 							<portlet:param name="tabId" value="${tabId}"/>
-					</portlet:actionURL>"><img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					</portlet:actionURL>"><img <ssf:alt tag="general.nextPage"/>
+					  src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
 					</a>
 				  </c:otherwise>
 				</c:choose>
@@ -211,7 +212,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-					<img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -219,7 +220,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<portlet:param name="operation" value="save_search_page_info"/>
 							<portlet:param name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/>
 							<portlet:param name="tabId" value="${tabId}"/>
-					</portlet:actionURL>"><img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					</portlet:actionURL>"><img <ssf:alt tag="general.nextPage"/> 
+					  src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
 					</a>
 				  </c:otherwise>
 				</c:choose>
@@ -293,10 +295,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	    	<ssf:nlt tag="folder.column.Number"/>
 
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
-			<img src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="alt.showMenu"/> src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
-			<img src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="alt.hideThisMenu"/> src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
 	    <a/>
 	
@@ -323,10 +325,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
 
 	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
-			<img src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="alt.showMenu"/> src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-			<img src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="alt.hideThisMenu"/> src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
 	    <a/>
 	
@@ -353,10 +355,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	    	<ssf:nlt tag="folder.column.State"/>
 
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-			<img src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="alt.showMenu"/> src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-			<img src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="alt.hideThisMenu"/> src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
 	    <a/>
     
@@ -384,10 +386,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<ssf:nlt tag="folder.column.Author"/>
 
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-			<img src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="alt.showMenu"/> src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
-			<img src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="alt.hideThisMenu"/> src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
 	    <a/>
 	
@@ -414,10 +416,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<ssf:nlt tag="folder.column.Date"/>
 
 	    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
-			<img src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="alt.showMenu"/> src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'false'}">
-			<img src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="alt.hideThisMenu"/> src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     	
 	    <a/>
@@ -559,7 +561,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
       </c:if>
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
-    ><img border="0" class="ss_title_menu"
+    ><img <ssf:alt tag="alt.showMenu"/> border="0" class="ss_title_menu"
     onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${entry1._binderId}', '${entry1._entityType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span

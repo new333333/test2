@@ -37,7 +37,8 @@
 <tbody>
 <tr>
 <td valign="top">
-<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>');  <c:forEach var="item" items="${userList}" varStatus="status"> ss_addUserIdToFormElement('${prefix}', '<c:out value="${item.id}"/>');</c:forEach>" />
+<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
+  onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>');  <c:forEach var="item" items="${userList}" varStatus="status"> ss_addUserIdToFormElement('${prefix}', '<c:out value="${item.id}"/>');</c:forEach>" />
   <ssf:find formName="" 
     formElement="searchText" 
     type="${list_type}"
@@ -61,7 +62,7 @@
         <li class="ss_nowrap" id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
           <a href="javascript: ;" 
             onClick="ss_userListRemove('${prefix}', this);return false;"><img border="0" style="padding-left: 10px;" 
-            src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
+            <ssf:alt tag="alt.delete"/> src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
         </li>
       </c:forEach>
     </ul>    

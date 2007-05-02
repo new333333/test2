@@ -19,7 +19,13 @@
 <div class="ss_buddies">
 
 	<div class="ss_buddiesListHeader">		
-		<img border="0" src="<html:imagesPath/>icons/group.gif"/> <span class="ss_largerprint ss_bold"><ssf:nlt tag="teamMembersList.title"><ssf:param name="value" value="${ssBinder.title}"/></ssf:nlt></span> <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
+		<img border="0" <ssf:alt/>
+		  src="<html:imagesPath/>icons/group.gif"/> 
+		  <span class="ss_largerprint ss_bold"><ssf:nlt tag="teamMembersList.title">
+		  <ssf:param name="value" value="${ssBinder.title}"/>
+		  </ssf:nlt></span> 
+		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> 
+		  <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
 	</div>
 	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
@@ -29,7 +35,8 @@
 				<c:forEach var="member" items="${ssTeamMembers}">
 					<tr>
 						<td class="picture">
-							<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" photos="${member.customAttributes['picture'].value}" 
+							<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" 
+							photos="${member.customAttributes['picture'].value}" 
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
 						<td>
@@ -44,7 +51,8 @@
 							    showOptionsInline="false" 
 							    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
 						</td>
-						<td><a class="ss_bold" href="mailto:<c:out value="${member.emailAddress}" />"><c:out value="${member.emailAddress}" /></a></td>
+						<td><a class="ss_bold" href="mailto:<c:out value="${member.emailAddress}" 
+						/>"><c:out value="${member.emailAddress}" /></a></td>
 					</tr>
 				</c:forEach>
 			</c:when>

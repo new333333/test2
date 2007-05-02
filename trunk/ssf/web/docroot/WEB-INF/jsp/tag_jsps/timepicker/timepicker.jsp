@@ -215,7 +215,7 @@ function getTimeMilliseconds(formName, id) {
   </select>&nbsp;
   <a name="${prefix}_anchor" id="${prefix}_anchor"></a>
   <a href="javascript: ;" onClick="${prefix}_popupTimepicker();" >
-   <img border="0" align="middle" src="<html:imagesPath />pics/sym_s_clock.gif"> </a>
+   <img border="0" align="middle" <ssf:nlt tag="alt.selectTime"/> src="<html:imagesPath />pics/sym_s_clock.gif"> </a>
   </td>
    </tr>
    </table>

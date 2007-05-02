@@ -35,7 +35,7 @@
 				<c:choose>
 		  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 						<div class="ss_thumbnail">
-							<img src="<html:imagesPath/>pics/entry_icon.gif"/>
+							<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -106,7 +106,7 @@
 			</c:when>
 	  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
 						<div class="ss_thumbnail">
-							<img src="<html:imagesPath/>pics/attachment_icon.gif"/>
+							<img <ssf:alt tag="alt.attachment"/> src="<html:imagesPath/>pics/attachment_icon.gif"/>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -177,12 +177,14 @@
 
 			<c:when test="${entry._entityType == 'user' && entry._docType == 'entry'}">
 						<div class="ss_thumbnail">
-							<c:if test="${!empty entry._fileID}"><img src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
+							<c:if test="${!empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
+							  src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
 												<ssf:param name="fileId" value="${entry._fileID}"/>
 											    <ssf:param name="viewType" value="thumbnail"/>
 											    </ssf:url>" />
 							</c:if>
-							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
+							<c:if test="${empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
+							  src="<html:imagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -242,7 +244,7 @@
 			
 			<c:when test="${entry._entityType == 'user' && entry._docType == 'attachment'}">
 						<div class="ss_thumbnail">
-							<img src="<html:imagesPath/>pics/attachment_icon.gif"/>
+							<img <ssf:alt tag="alt.attachment"/> src="<html:imagesPath/>pics/attachment_icon.gif"/>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -293,7 +295,8 @@
 			
 			<c:when test="${entry._entityType == 'group'}">
 						<div class="ss_thumbnail">
-							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/group_icon.gif"/></c:if>
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="alt.group"/> src="<html:imagesPath/>pics/group_icon.gif"/></c:if>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -320,7 +323,8 @@
 		
 			<c:when test="${entry._entityType == 'folder'}">
 						<div class="ss_thumbnail">
-							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/folder_icon.gif"/></c:if>
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="general.type.folder"/> src="<html:imagesPath/>pics/folder_icon.gif"/></c:if>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -377,7 +381,8 @@
 		    </c:when>
 		    <c:when test="${entry._entityType == 'workspace'}">
 						<div class="ss_thumbnail">
-							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="general.type.workspace"/> src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -433,7 +438,8 @@
 		    </c:when>
 		    <c:when test="${entry._entityType == 'profiles'}">
 						<div class="ss_thumbnail">
-							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="general.profiles"/> src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">

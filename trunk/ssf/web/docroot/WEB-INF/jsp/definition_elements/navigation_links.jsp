@@ -95,7 +95,7 @@
 <c:if test="${empty ssDefinitionEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${ssDefinitionEntry.title}" /><img border="0"
+<c:out value="${ssDefinitionEntry.title}" /><img border="0" <ssf:alt/>
   style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
 <c:if test="${ssDefinitionEntry.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefinitionEntry.id]}">

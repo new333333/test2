@@ -69,24 +69,6 @@ var ss_history_bar_loaded = 1;
 <table class="${ss_history_bar_table_class}" cellspacing="0" cellpadding="0">
   <tr>
 
-<%
-if (false) {
-%>
-     <td><a  
-          href="<ssf:url
-          adapter="true"
-          portletName="ss_forum" 
-          folderId="${ssFolder.id}"
-          action="view_folder_entry"        
-          operation="entry_previous"
-          actionUrl="true"
-          />"
-          onClick="ss_getLastEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
-          alt="<ssf:nlt tag="nav.firstEntry" text="First entry"/>" id="ss_first"
-          border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a></td>
-<%
-}
-%>
 <c:if test="${ssConfigJspStyle != 'template'}">
      <td><a  
           href="<ssf:url
@@ -117,29 +99,11 @@ if (false) {
 </c:if>
 <c:if test="${ssConfigJspStyle == 'template'}">
 
-     <td><img src="<html:imagesPath/>pics/sym_s_arrow_down.gif"/></td>
+     <td><img alt="" src="<html:imagesPath/>pics/sym_s_arrow_down.gif"/></td>
     <td><span><ssf:nlt tag="nav.view"/></span></td>
-     <td><img src="<html:imagesPath/>pics/sym_s_arrow_up.gif"/></td>
+     <td><img alt="" src="<html:imagesPath/>pics/sym_s_arrow_up.gif"/></td>
 </c:if>
          
-<%
-if (false) {
-%>
-      <td><a 
-          href="<ssf:url
-          adapter="true"
-          portletName="ss_forum" 
-          folderId="${ssFolder.id}"
-          action="view_folder_entry"
-          operation="entry_next"
-          actionUrl="true"
-          />"
-          onClick="ss_getFirstEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
-          alt="<ssf:nlt tag="nav.lastEntry" text="Last entry"/>" id="ss_last"
-          border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a></td>
-<%
-}
-%>
   </tr>
 </table>
 

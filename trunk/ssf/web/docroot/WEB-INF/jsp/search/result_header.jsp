@@ -30,11 +30,13 @@
 			
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
-					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
+					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+					  onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
 				</c:if>
 				<span class="ss_pageNumber">${ss_pageNumber}</span>
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
-					<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
+					<img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
+					  onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
 				</c:if>
 			</c:if>
 			<c:if test="${isDashboard == 'yes'}">
@@ -45,11 +47,13 @@
 					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"><img src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"><img src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>
 			</div>

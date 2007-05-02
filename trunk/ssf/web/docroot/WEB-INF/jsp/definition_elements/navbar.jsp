@@ -23,7 +23,7 @@
     <td>Debug window</td>
     <td align="right">
       <a href="" onClick="ss_turnOffDebugMode();return false;">
-        <img border="0" src="<html:imagesPath/>pics/sym_s_delete.gif">
+        <img <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>pics/sym_s_delete.gif">
       </a>
 <script type="text/javascript">
 function ss_turnOffDebugMode() {
@@ -115,8 +115,9 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="50" 
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" type="text" /> 
-					<a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
-					  src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a>
+					<a class="ss_searchButton" 
+					  href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
+					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/1pix.gif" /></a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
@@ -191,7 +192,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
       onMouseOver="this.style.cursor = 'pointer';">
 		<ssHelpSpot helpId="personal_toolbar/help_button" offsetX="-22" offsetY="6"
 		      title="<ssf:nlt tag="helpSpot.helpButton"/>">
-	        <img src="<html:imagesPath/>pics/1pix.gif" />
+	        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>pics/1pix.gif" />
 		    <div id="ss_navbarHelpButton">
 		      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
 		    </div>
@@ -234,7 +235,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
 	    <div id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;"
-	    ><img border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
+	    ><img <ssf:alt tag="navigation.favorites"/> border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </ssHelpSpot>
 	</div>
   </td>
@@ -245,7 +246,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
       onMouseOver="this.style.cursor = 'pointer';">
 	  <ssHelpSpot helpId="personal_toolbar/help_button" offsetX="-22" offsetY="6"
 	      title="<ssf:nlt tag="helpSpot.helpButton"/>">
-        <img src="<html:imagesPath/>pics/1pix.gif" />
+        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>pics/1pix.gif" />
 	    <div id="ss_navbarHelpButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
 	    </div>
@@ -268,7 +269,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			<input type="hidden" name="quickSearch" value="true"/>					
 			<input type="hidden" name="operation" value="ss_searchResults"/>
 			  
-			  <a class="ss_searchButton" href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
+			  <a class="ss_searchButton" 
+			    href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
 			    src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a>
 		    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		  </ssHelpSpot>
@@ -406,14 +408,14 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_addBinderToFavorites('<portlet:namespace/>');return false;"
-		><img src="<html:imagesPath/>icons/button_new_bookmark.gif" />
+		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:imagesPath/>icons/button_new_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
   </div>
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_showhideFavoritesEditor('<portlet:namespace/>')"
-		><img src="<html:imagesPath/>icons/button_edit_bookmark.gif" />
+		><img <ssf:alt tag="favorites.edit"/> src="<html:imagesPath/>icons/button_edit_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
 
@@ -429,16 +431,19 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 	<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 	  <td>
 		<a class="ss_inlineButton" onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'down')"
-		><img src="<html:imagesPath/>icons/button_move_down.gif" /><span><ssf:nlt tag="favorites.movedown"/></span></a>
+		><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
+		/><span><ssf:nlt tag="favorites.movedown"/></span></a>
   	  </td>	
 	  <td>		
 		<a class="ss_inlineButton" onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'up')"
-		><img src="<html:imagesPath/>icons/button_move_up.gif" /><span><ssf:nlt tag="favorites.moveup"/></span></a>
+		><img <ssf:alt tag="favorites.moveup"/> src="<html:imagesPath/>icons/button_move_up.gif" 
+		/><span><ssf:nlt tag="favorites.moveup"/></span></a>
   	  </td>
 	  <td>
 		
 		<a class="ss_inlineButton" onClick="ss_deleteSelectedFavorites('<portlet:namespace/>')"
-		><img src="<html:imagesPath/>icons/button_delete.gif" /><span><ssf:nlt tag="favorites.delete"/></span></a>
+		><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
+		/><span><ssf:nlt tag="favorites.delete"/></span></a>
 	  </td>
 	 </tr></tbody></table>	
      </div>

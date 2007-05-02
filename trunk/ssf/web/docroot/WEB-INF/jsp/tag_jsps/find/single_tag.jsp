@@ -43,7 +43,7 @@
 	    id="ss_findTag_searchText_${prefix}"
 	    onKeyUp="ss_findTagSearch('${prefix}', this.id, '<%= findTagElementName %>', '<%= findTagType %>');"
 	    onBlur="ss_findTagBlurTextArea('${prefix}');"></textarea>
-	<img src="<html:imagesPath/>pics/1pix.gif" 
+	<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
 			onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:'', '${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
 	/>    
 </div>

@@ -40,7 +40,8 @@
     id="ss_findUser_searchText_${prefix}"
     onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"
     onBlur="ss_findUserBlurTextArea('${prefix}');"></textarea>
-    <img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+    <img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
+      onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 		value="${ssUser.parentBinder.id}"/><ssf:param name="entryId" 
 		value="ss_entryIdPlaceholder"/><ssf:param name="newTab" value="1"/></ssf:url>', ${leaveResultsVisible}, '<ssf:url 
     	adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false" >

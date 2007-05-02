@@ -93,7 +93,7 @@
 					<tr>
 					<td style="background:url(<html:imagesPath/>skins/${ss_user_skin}/uparrows.gif) center no-repeat;"><img 
 					  border="0" style="height:<%= String.valueOf(sliderDivHeight) %>px;" 
-					  src="<html:imagesPath/>pics/1pix.gif"></td>
+					  <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif"></td>
 					</tr></table></div>
 	
 					<div id="ss_showentrydiv" class="ss_style ss_portlet" 

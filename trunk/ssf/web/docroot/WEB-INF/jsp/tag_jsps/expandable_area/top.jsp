@@ -69,11 +69,11 @@ border="0"
 <%
 	if (initOpen) {
 %>
-src="<html:imagesPath />pics/sym_s_collapse.gif" 
+<ssf:alt tag="alt.hide"/> src="<html:imagesPath />pics/sym_s_collapse.gif" 
 <%
 	} else {
 %>
-src="<html:imagesPath />pics/sym_s_expand.gif" 
+<ssf:alt tag="alt.expand"/> src="<html:imagesPath />pics/sym_s_expand.gif" 
 <%
 	}
 %>
