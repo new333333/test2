@@ -95,7 +95,7 @@
         <resource-bundle>content.toolbar</resource-bundle>
     </portlet>
      <portlet>
-        <description xml:lang="en">ICEcorps Blog Summary</description>
+        <description xml:lang="en">ICEcore Blog Summary</description>
         <portlet-name>ss_blog</portlet-name>
         <display-name xml:lang="en">Blog Summary</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>

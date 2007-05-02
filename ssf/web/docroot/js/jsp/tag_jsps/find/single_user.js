@@ -123,7 +123,9 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
 	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
-		return ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound);
+		ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound);
+		ss_findUserSearchInProgress[prefix] = 0;
+		return;
 	}
 	var ajaxRequest = new ss_AjaxRequest(ss_findUserSearchUrl[prefix]); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("searchText", searchText)
@@ -236,7 +238,12 @@ function ss_findUserPrevPage(prefix) {
 }
 
 function ss_findUserClose(prefix) {
-	document.getElementById('ss_findUser_searchText_' + prefix).focus();
+	var textObj = document.getElementById('ss_findUser_searchText_' + prefix);
+	if (textObj == null) {
+		textObj = self.parent.document.getElementById('ss_findUser_searchText_' + prefix);
+	}
+	alert(textObj)
+	if (textObj != null) textObj.focus();
 }
 
 function ss_findUserInitializeForm(formName, prefix) {
@@ -262,6 +269,9 @@ function ss_findUserMouseOutList(prefix) {
 
 
 function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound) {
+	//In accessibility mode, wait for the user to type cr
+	if (!crFound) return;
+	
     var iframeDivObj = self.document.getElementById("ss_findIframeDiv");
     var iframeObj = self.document.getElementById("ss_findIframe");
     var iframeDivObjParent = self.parent.document.getElementById("ss_findIframeDiv");
@@ -274,7 +284,7 @@ function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGr
         iframeObj = self.document.createElement("iframe");
         iframeObj.setAttribute("id", "ss_findIframe");
         iframeObj.style.width = "400px"
-        iframeObj.style.height = "250px"
+        iframeObj.style.height = "300px"
 		iframeDivObj.appendChild(iframeObj);
 	    var closeDivObj = self.document.createElement("div");
 	    closeDivObj.style.border = "2px solid gray";
@@ -282,7 +292,7 @@ function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGr
 	    closeDivObj.style.padding = "6px";
 	    iframeDivObj.appendChild(closeDivObj);
 	    var aObj = self.document.createElement("a");
-	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findIframeDiv');");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findIframeDiv');ss_findUserClose('"+prefix+"');");
 	    aObj.style.border = "2px outset black";
 	    aObj.style.padding = "2px";
 	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
@@ -312,5 +322,4 @@ function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGr
 	} else {
 		iframeObj.src = url;
 	}
-	ss_findUserSearchInProgress[prefix] = 0;
 }
