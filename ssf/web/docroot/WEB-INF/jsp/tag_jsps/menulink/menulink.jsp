@@ -59,7 +59,7 @@ String isFile = ParamUtil.get(request, "isFile", "no");
 <% }%>
 onMouseOver="checkAndCreateMenuObject('<%= linkMenuIdx %>');<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
-><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
+><img <ssf:alt tag="alt.showMenu"/> border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
 onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>', '<%= isFile %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= dashboardType %>');"
 src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>

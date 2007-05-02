@@ -175,7 +175,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<td width="15%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
-					<img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -183,7 +183,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<portlet:param name="operation" value="save_search_page_info"/>
 							<portlet:param name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/>
 							<portlet:param name="tabId" value="${tabId}"/>
-					</portlet:actionURL>"><img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					        </portlet:actionURL>"><img <ssf:alt tag="general.nextPage"/> 
+					  src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
 					</a>
 				  </c:otherwise>
 				</c:choose>
@@ -213,7 +214,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-					<img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -221,7 +222,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<portlet:param name="operation" value="save_search_page_info"/>
 							<portlet:param name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/>
 							<portlet:param name="tabId" value="${tabId}"/>
-					</portlet:actionURL>"><img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					        </portlet:actionURL>"><img <ssf:alt tag="general.nextPage"/> 
+					   src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
 					</a>
 				  </c:otherwise>
 				</c:choose>
@@ -289,46 +291,56 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		<td valign="top" class="ss_searchviewDashboardContainer">
 		  <c:if test="${entry1._entityType == 'user'}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.users" />"/>
+	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" 
+	    		alt="<ssf:nlt tag="general.users" />"/>
 	    	</c:if>
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>icons/user_profile.png" alt="<ssf:nlt tag="general.users" />"/>
+	    		<img border="0" src="<html:imagesPath/>icons/user_profile.png" 
+	    		alt="<ssf:nlt tag="general.users" />"/>
 	    	</c:if>
 	      </c:if>
 	    	
 		  <c:if test="${entry1._entityType == 'profiles'}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.profiles" />"/>
+	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" 
+	    		alt="<ssf:nlt tag="general.profiles" />"/>
 	    	</c:if>
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>icons/profiles.gif" alt="<ssf:nlt tag="general.profiles" />"/>
+	    		<img border="0" src="<html:imagesPath/>icons/profiles.gif" 
+	    		alt="<ssf:nlt tag="general.profiles" />"/>
 	    	</c:if>
 	      </c:if>
 			
 		  <c:if test="${entry1._entityType == 'folder'}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.type.folder" />"/>
+	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" 
+	    		alt="<ssf:nlt tag="general.type.folder" />"/>
 	    	</c:if>
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>icons/folder.gif" alt="<ssf:nlt tag="general.type.folder" />"/>
+	    		<img border="0" src="<html:imagesPath/>icons/folder.gif" 
+	    		alt="<ssf:nlt tag="general.type.folder" />"/>
 	    	</c:if>
 	      </c:if>
 			
 		  <c:if test="${entry1._entityType == 'workspace' && entry1._definitionType != 12}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
+	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" 
+	    		alt="<ssf:nlt tag="general.type.workspace" />"/>
 	    	</c:if>
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
+	    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" 
+	    		alt="<ssf:nlt tag="general.type.workspace" />"/>
 	    	</c:if>			
 		  </c:if>
 			
 		  <c:if test="${entry1._entityType == 'workspace' && entry1._definitionType == 12}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
+	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" 
+	    		alt="<ssf:nlt tag="general.type.workspace" />"/>
 	    	</c:if>
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
-	    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
+	    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" 
+	    		alt="<ssf:nlt tag="general.type.workspace" />"/>
 	    	</c:if>
 	      </c:if>
 	      

@@ -170,7 +170,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<td width="15%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
-					<img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					<img <ssf:alt tag="general.previousPage"/> 
+					src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -185,7 +186,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
 							<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
 							<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
-					</portlet:actionURL>"><img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					</portlet:actionURL>"><img <ssf:alt tag="general.nextPage"/> 
+					src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
 					</a>
 				  </c:otherwise>
 				</c:choose>
@@ -221,7 +223,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<td width="15%" align="right">
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-					<img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					<img  <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -236,7 +238,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
 							<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
 							<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
-					</portlet:actionURL>"><img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					</portlet:actionURL>"><img  <ssf:alt tag="general.nextPage"/>
+					src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
 					</a>
 				  </c:otherwise>
 				</c:choose>

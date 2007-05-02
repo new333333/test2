@@ -14,5 +14,5 @@
   <a href="javascript: ;" 
     onClick="ss_helpSystem.hideHelpPanel(this, 'ss_help_panel');return false;"><img 
     border="0" style="padding-left: 10px;" 
-    src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
+    <ssf:alt tag="alt.exitHelp"/> src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
 </div>

@@ -28,12 +28,13 @@
 <div class="ss_teamMembersPane">
 	<span id="ss_teamMembersLoadLink_${prefix}" onclick="if (window.ss_loadTeamMembersList) ss_loadTeamMembersList('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members" /><ssf:param name="binderId" value="${binderId}" /></ssf:url>', ${prefix}<c:if test="${appendAll == 'true'}">, ${appendAll}</c:if>);"
 		onmouseover="this.style.cursor='pointer'; " onmouseout="this.style.cursor='default'; ">
-		<img id="ss_teamIcon_${prefix}" src="<html:imagesPath/>pics/sym_s_expand.gif" />
+		<img <ssf:alt tag="alt.expand"/> id="ss_teamIcon_${prefix}" src="<html:imagesPath/>pics/sym_s_expand.gif" />
 		<span class="ss_bold"><ssf:nlt tag="sendMail.team" /></span>
 	</span>
 
 	<div id="ss_teamMembersList_${prefix}" class="ss_teamMembersList ss_style" style="display: block;"></div>
 
-	<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_setTeamMembersVariables('${prefix}', '${formElement}'); <c:if test="${appendAll}">$('ss_teamMembersLoadLink_${prefix}').onclick(); </c:if>" />
+	<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
+	  onload="ss_setTeamMembersVariables('${prefix}', '${formElement}'); <c:if test="${appendAll}">$('ss_teamMembersLoadLink_${prefix}').onclick(); </c:if>" />
 
 </div>

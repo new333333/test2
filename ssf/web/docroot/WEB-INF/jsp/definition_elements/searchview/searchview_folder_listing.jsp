@@ -33,7 +33,7 @@
 					</c:if>
 					
 					<div class="ss_thumbnail">
-						<img src="<html:imagesPath/>pics/entry_icon.gif"/>
+						<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
 					</div>
 					<div class="ss_entry_folderListView">
 						<div class="ss_entryHeader">
@@ -41,7 +41,8 @@
 							
 								<%
 									if (!ssSeenMap.checkAndSetSeen(entry, true)) {
-										%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+										%><img <ssf:alt tag="alt.unseen"/> border="0" 
+										src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 									}
 								%>
 							

@@ -22,7 +22,8 @@
    <c:forEach var="place" items="${ssFolderEntryPlaces}">
      <tr>
 		<td style="padding-left:20px;">
-		  <img class="${place.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/>
+		  <img class="${place.searchResultsRatingCSS}" 
+		  <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/sym_m_star.gif"/>
 		</td>
         <td style="padding-left:20px;">
          <a href="<portlet:renderURL>

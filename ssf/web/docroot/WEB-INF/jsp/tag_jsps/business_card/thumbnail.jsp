@@ -25,7 +25,7 @@
 
 <div class="<c:if test="${!empty style}">${style}</c:if><c:if test="${empty style}">ss_thumbnail_small_buddies_list</c:if>"><div>
   	<c:if test="${!empty thumbnail}">
-		<img border="0" src="<ssf:url 
+		<img border="0" <ssf:nlt tag="alt.thumbnail"/> src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${photo_folder}"
 		    entryId="${photo_entry}" >
@@ -34,6 +34,6 @@
 		    </ssf:url>" onerror="ss_buddyPhotoLoadError(this, '<img border=&quot;0&quot; src=&quot;<html:imagesPath/>pics/thumbnail_no_photo.jpg&quot;>');" />
 	</c:if>
 	<c:if test="${empty thumbnail}">
-		<img border="0" src="<html:imagesPath/>pics/thumbnail_no_photo.jpg">
+		<img border="0" <ssf:nlt tag="alt.thumbnail"/> src="<html:imagesPath/>pics/thumbnail_no_photo.jpg">
 	</c:if>
 </div></div>

@@ -14,14 +14,16 @@
 		<div class="ss_rating_box">
 			<div class="ss_rating_box_title">
 				<h4><ssf:nlt tag="searchResult.ratigPlacesTitle"/></h4>
-				<img src="<html:imagesPath/>pics/flip_down16H.gif" onClick="ss_showHideRatingBox('ss_rating_places', this);" class="ss_toogler"/>
+				<img <ssf:alt tag="alt.expand"/> src="<html:imagesPath/>pics/flip_down16H.gif" 
+				  onClick="ss_showHideRatingBox('ss_rating_places', this);" class="ss_toogler"/>
 			</div>
 			<div id="ss_rating_places" class="ss_rating_box_content" style="visibility:visible;display:block;">
 				<table>
 					<tr><th><ssf:nlt tag="search.Rating"/></th><th><ssf:nlt tag="search.Places"/></th></tr>
 					<c:forEach var="place" items="${ssFolderEntryPlaces}">
 						<tr>
-							<td class="ss_star"><img class="${place.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
+							<td class="ss_star"><img <ssf:alt/> class="${place.searchResultsRatingCSS}" 
+							  src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
 							<td>
 							
 							<c:choose>

@@ -85,7 +85,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 					<div id="ss_div_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '<portlet:namespace />'); return false;"><img 
-						  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
+						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>box/close_off.gif"/></a>
 						</div>	
 						<iframe frameborder="0" scrolling="no" id="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" height="70%" width="100%" onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '<portlet:namespace />'); return false;">xxx</iframe>
 					</div>
@@ -93,7 +93,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 					<div id="ss_div_browse${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
 						<a onClick="ss_hideAddAttachmentBrowse('${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;"><img 
-						  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
+						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>box/close_off.gif"/></a>
 						</div>	
 						<iframe frameborder="0" scrolling="no" id="ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>" 
 							name="ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>" 

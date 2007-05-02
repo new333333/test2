@@ -21,7 +21,8 @@
 
  <c:forEach var="user" items="${ssFolderEntryPeople}">
  <tr>
- 	<td style="padding-left:20px;"><img class="${user.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
+ 	<td style="padding-left:20px;"><img class="${user.searchResultsRatingCSS}" 
+ 	  <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
  	<td style="padding-left:20px;">
 	  <ssf:showUser user="${user.ssUser}" /> 
  	</td>
