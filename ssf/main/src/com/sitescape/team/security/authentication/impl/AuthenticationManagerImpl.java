@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
@@ -25,11 +26,11 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.PasswordEncryptor;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
@@ -39,6 +40,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	private CoreDao coreDao;
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
+	private ReportModule reportModule;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -67,14 +69,21 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	public void setProfileModule(ProfileModule profileModule) {
 		this.profileModule = profileModule;
 	}
+	protected ReportModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
 
-	
 	public User authenticate(String zoneName, String userName, String password,
-			boolean passwordAutoSynch, Map updates) 
+			boolean passwordAutoSynch, Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
 		try {
-			user = authenticate(zoneName, userName, password, passwordAutoSynch);
+			user = authenticate(zoneName, userName, password, passwordAutoSynch, authenticatorName);
+			
+			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 			
 			boolean userModify = 
 				SPropsUtil.getBoolean("portal.user.auto.synchronize", false);
@@ -86,14 +95,16 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			boolean userCreate = 
 				SPropsUtil.getBoolean("portal.user.auto.create", false);
  			if (userCreate) {
- 				getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
+ 				user=getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
+ 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
  			else throw nu;
 		} 
 		return user;
 	}
+
 	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch)
+			boolean passwordAutoSynch, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 
@@ -123,7 +134,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		return user;
 	}
 
-	public User authenticate(String zoneName, Long userId, String passwordDigest) 
+	public User authenticate(String zoneName, Long userId, String passwordDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 		try {
@@ -137,8 +148,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		if(!passwordDigest.equals(user.getPasswordDigest())) {
 			throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
 		}
+		
+		getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+
 		return user;
 	}
+	
 	public void checkZone(String zoneName) {
 		//make sure zone exists
 		try {
@@ -151,7 +166,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 					
 		};
 
-		
 	}
-
+	
 }

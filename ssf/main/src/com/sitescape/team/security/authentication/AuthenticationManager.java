@@ -16,14 +16,16 @@ import java.util.Map;
 public interface AuthenticationManager {
 
 	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, Map updates)
+			boolean passwordAutoSynch, Map updates, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException;
 
 	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException;
+			boolean passwordAutoSynch, String authenticatorName)
+	throws PasswordDoesNotMatchException, UserDoesNotExistException;
+
+	public User authenticate(String zoneName, Long userId, String passwordDigest, 
+			String authenticatorName) throws PasswordDoesNotMatchException, 
+			UserDoesNotExistException;
 	
-	public User authenticate(String zoneName, Long userId, String passwordDigest)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException;
 	public void checkZone(String zoneName);
 }

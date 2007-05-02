@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.RequestUtils;
 
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
@@ -44,7 +45,7 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 		String passwordDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, passwordDigest);
+			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, passwordDigest, LoginInfo.AUTHENTICATOR_ICAL);
 			//don't set user, session is not currently active
 			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
 			
