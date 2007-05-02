@@ -392,7 +392,7 @@ public class Datepicker extends TagSupport {
 				  .append("><IMG BORDER=\"0\" SRC=\"")
 				  .append(contextPath)
 				  .append("/images/pics/1pix.gif\" ");
-				sb.append("alt=\"").append(this.altText).append("\"/></A>\n");
+				sb.append("alt=\"").append(this.altText).append("\" title=\"").append(this.altText).append("\"/></A>\n");
 			} else {
 				sb.append("<A NAME=\"anchor_").append(prefix).append("\"");
 				sb.append(" ID=\"anchor_").append(prefix)
