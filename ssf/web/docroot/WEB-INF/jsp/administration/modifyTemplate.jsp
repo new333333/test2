@@ -39,7 +39,7 @@
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 <h2>
 <c:if test="${ssBinderConfig.entityType == 'workspace'}">
@@ -68,7 +68,7 @@
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
 </form>
@@ -94,7 +94,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 		<portlet:param name="operation" value="add"/></portlet:actionURL>" >
 <input type="hidden" name="cfgType" value="-1"/>
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr align="left"><td><ssf:nlt tag="tree.choose_folder"/></td></tr>
@@ -112,7 +112,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	<br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 </form>
 
@@ -133,11 +133,11 @@ function <portlet:namespace/>_onsub(obj) {
 <form method="post" action="<portlet:actionURL><portlet:param 
 		name="action" value="configure_configuration"/>
 		<portlet:param name="operation" value="add"/></portlet:actionURL>" 
-		onSubmit="return(<portlet:namespace/>_onsub(this))">
+		>
 <input type="hidden" name="cfgType" value="${cfgType}"/>
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<portlet:namespace/>_onsub(this.form))">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 <h2><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.add"/></span></h2>
 
@@ -170,8 +170,8 @@ function <portlet:namespace/>_onsub(obj) {
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<portlet:namespace/>_onsub(this.form))">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
 </form>
