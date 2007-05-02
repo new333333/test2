@@ -50,7 +50,8 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 		boolean isAccessible = false;
 		if (rc != null) user = rc.getUser();
 		if (user != null) {
-			if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			String displayStyle = user.getDisplayStyle();
+			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				isAccessible = true;
 			}
 		}
