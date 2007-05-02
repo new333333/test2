@@ -136,7 +136,7 @@ public class BasicLoginModule implements LoginModule {
 
 		try {
 			AuthenticationManagerUtil.authenticate(SZoneConfig
-					.getDefaultZoneName(), username, password, false);
+					.getDefaultZoneName(), username, password, false, "portal");
 
 			// If still here, the authentication was successful.
 			return new String[] { username, password };

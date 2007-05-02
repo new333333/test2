@@ -44,6 +44,7 @@ public class AuthenticationManager {
 		req.setParameter(CrossContextConstants.PASSWORD, password);
 		if(updates != null)
 			req.setAttribute(CrossContextConstants.USER_INFO, updates);
+		req.setParameter(CrossContextConstants.AUTHENTICATOR, "portal");
 		
 		NullServletResponse res = new NullServletResponse();
 		

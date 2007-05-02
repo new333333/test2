@@ -374,6 +374,7 @@
 					<property name="coreDao"><ref local="coreDao"/></property>						
 					<property name="adminModule"><ref local="adminModule"/></property>						
 					<property name="profileModule"><ref local="profileModule"/></property>						
+					<property name="reportModule"><ref local="reportModule"/></property>						
 				</bean>
 			</property>				
 	</bean>	
@@ -627,6 +628,13 @@
 		<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
 	</bean>
 
+	<bean id="reportModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.report.impl.ReportModuleImpl">
+			</bean>	
+		</property>
+	</bean>
+
 	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="controllerDependencyTemplate">
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
@@ -682,6 +690,7 @@
 				     context as well. -->
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<value>aopallianceUserPreloadInterceptor</value>
+				<value>loginInfoInterceptor</value>
 			</list>
 		</property>
 	</bean>
@@ -697,6 +706,10 @@
 	</bean>
 	
 	<bean id="aopallianceMethodInvocationTraceInterceptor" class="com.sitescape.team.util.aopalliance.MethodInvocationTraceInterceptor"/>
+	
+	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.interceptor.LoginInfoInterceptor">
+		<property name="reportModule"><ref local="reportModule"/></property>
+	</bean>
 	
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>
