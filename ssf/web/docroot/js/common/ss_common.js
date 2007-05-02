@@ -4634,25 +4634,82 @@ function ss_submitViaEnter(evt) {
     return true;
 }
 
-function ss_defaultValidationErrorHandler()
+function ss_addClassToElement(elt, clazz)
 {
+	ss_removeClassFromElement(elt, clazz);
+	elt.className = elt.className + ' ' + clazz;
 }
 
-function ss_addValidator(idOfEntryToValidate, validateRoutine, message, errorHandlerRoutine) {
+function ss_removeClassFromElement(elt, clazz)
+{
+	elt.className = elt.className.replace(clazz, "");
+}
+
+function ss_defaultValidationErrorHandler(vObj, isError)
+{
+  if(isError) {
+  	if(vObj.messageId != null && vObj.messageId != '') {
+  		var messageElt = document.getElementById(vObj.messageId);
+  		messageElt.style.visibility='visible';
+  		messageElt.style.display='block';
+  	}
+  	if(vObj.labelId != null && vObj.labelId != '') {
+  		var labelElt = document.getElementById(vObj.labelId);
+  		ss_addClassToElement(labelElt, 'ss_errorLabel');
+  	}
+  } else {
+  	if(vObj.messageId != null && vObj.messageId != '') {
+  		var messageElt = document.getElementById(vObj.messageId);
+  		messageElt.style.visibility='hidden';
+  		messageElt.style.display='none';
+  	}
+  	if(vObj.labelId != null && vObj.labelId != '') {
+  		var labelElt = document.getElementById(vObj.labelId);
+  		ss_removeClassFromElement(labelElt, 'ss_errorLabel');
+  	}
+  }
+}
+
+function ss_addValidator(idOfEntryToValidate, validateRoutine, messageId, labelId, errorHandlerRoutine) {
     if(errorHandlerRoutine == null) {
     	errorHandlerRoutine = ss_defaultValidationErrorHandler;
     }
     var next = ss_validatorList.length;
-    ss_validatorList[next] = new ss_validatorObj(idOfEntryToValidate, validateRoutine, message, errorHandlerRoutine);
+    ss_validatorList[next] = new ss_validatorObj(idOfEntryToValidate, validateRoutine, messageId, labelId, errorHandlerRoutine);
 }
 
-function ss_validatorObj(id, validateRoutine, message, errorHandler) {
+function ss_validatorObj(id, validateRoutine, messageId, labelId, errorHandler) {
     this.id = id;
     this.validateRoutine = validateRoutine;
-    this.message = message;
+    this.messageId = messageId;
+    this.labelId = labelId;
     this.errorHandler = errorHandler;
 }
 
+
+function ss_createValidationErrorsDiv()
+{
+	var vId = document.getElementById('ss_validation_errors_div');
+	if (!vId) {
+		var p = document.createElement("p");
+		p.setAttribute("id", "ss_ved_text");
+		var i = document.createElement("input");
+		i.setAttribute("type", "button");
+		i.setAttribute("onclick", "ss_cancelPopupDiv('ss_validation_errors_div')");
+		i.setAttribute("name", ss_findButtonClose);
+		i.setAttribute("value", ss_findButtonClose);
+		var vDiv = document.createElement("div");
+        vDiv.setAttribute("id", "ss_validation_errors_div");
+        vDiv.style.position = "absolute";
+        vDiv.style.visibility = "hidden";
+        vDiv.style.display = "none";
+        vDiv.appendChild(p);
+        vDiv.appendChild(i);
+    	document.getElementsByTagName("body").item(0).appendChild(vDiv);
+    	p = document.getElementById("ss_ved_text");
+    	p.innerHTML = ss_validationErrorMessage;
+	}
+}
 
 //Common validator handler
 //  This function will call the desired routines at form validate time
@@ -4660,21 +4717,37 @@ function ss_validatorObj(id, validateRoutine, message, errorHandler) {
 function ss_validate(obj) {
 	var errors = new Array();
     for (var i = 0; i < ss_validatorList.length; i++) {
-        var elt = document.getElementById(ss_validatorList[i].id);
-        if (!ss_validatorList[i].validateRoutine(elt, obj)) {
+		ss_validatorList[i].errorHandler(ss_validatorList[i], false);
+    }
+    for (var i = 0; i < ss_validatorList.length; i++) {
+        if (!ss_validatorList[i].validateRoutine(ss_validatorList[i].id, obj)) {
         	errors[errors.length] = ss_validatorList[i];
-        }
+			ss_validatorList[i].errorHandler(ss_validatorList[i], true);
+		}
     }
     if(errors.length != 0) {
+    	ss_createValidationErrorsDiv();
    		ss_showPopupDivCentered('ss_validation_errors_div');
     }
 
     return (errors.length == 0);
 }
 
-function ss_ajax_result_validator(elt, obj)
+function ss_ajax_result_validator(id, obj)
 {
+    var elt = document.getElementById(id);
 	var result = elt.getAttribute("ss_ajaxResult");
 	return result != "error";
 }
 
+function ss_date_validator(id, obj)
+{
+	var yearElt = document.getElementById(id + "_year");
+	var year = yearElt.value;
+	var monthSel = document.getElementById(id + "_month");
+	var month = monthSel.options[monthSel.selectedIndex].value;
+	var daySel = document.getElementById(id + "_date");
+	var day = daySel.options[daySel.selectedIndex].value;
+
+	return isDate(month+"/"+day+"/"+year, "M/d/y");
+}

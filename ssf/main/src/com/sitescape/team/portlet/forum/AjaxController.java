@@ -1980,12 +1980,13 @@ public class AjaxController  extends SAbstractController {
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
+			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, 0L);
 			String path = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
 			if(Validator.isNotNull(path)) {
 				String fileName = new java.io.File(path).getName();
 				Folder folder = getFolderModule().getFolder(binderId);
 				FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
-				if(entry != null) {
+				if(entry != null && (entryId == 0L || entryId != entry.getId().longValue())) {
 					model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
 					model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
 				}

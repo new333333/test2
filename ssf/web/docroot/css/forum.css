@@ -773,6 +773,10 @@ SPAN.ss_cpTodayTextDisabled
 	color: red;
 }
 
+.ss_errorLabel {
+	color: red;
+}
+
 .ss_text_button {
 	border: 1px solid black;
 }

@@ -169,7 +169,9 @@ public class DisplayConfiguration extends TagSupport {
 									
 								StringServletResponse res = new StringServletResponse(httpRes);
 								rd.include(req, res);
+								pageContext.getOut().print("<!-- " + jsp + " -->");
 								pageContext.getOut().print(res.getString());
+								pageContext.getOut().print("<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->");
 
 								//Restore the saved properties
 								for (Element property:itemDefinitionProperties) {
