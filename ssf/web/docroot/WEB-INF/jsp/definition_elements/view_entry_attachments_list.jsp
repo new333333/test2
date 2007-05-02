@@ -43,7 +43,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<a style="text-decoration: none;" href="<ssf:url 
 					    webPath="viewFile"
 					    folderId="${ssDefinitionEntry.parentBinder.id}"
-					    entryId="${ssDefinitionEntry.id}" >
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
 					    <ssf:param name="fileId" value="${selection.id}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
@@ -52,7 +53,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
-		    entryId="${ssDefinitionEntry.id}" >
+		    entryId="${ssDefinitionEntry.id}"
+		    entityType="${ssDefinitionEntry.entityType}" >
 		    <ssf:param name="fileId" value="${selection.id}"/>
 		    <ssf:param name="viewType" value="thumbnail"/>
 		    </ssf:url>"/></a>
@@ -61,7 +63,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td class="ss_att_title" width="25%"><a style="text-decoration: none;" href="<ssf:url 
 					    webPath="viewFile"
 					    folderId="${ssDefinitionEntry.parentBinder.id}"
-					    entryId="${ssDefinitionEntry.id}" >
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
 					    <ssf:param name="fileId" value="${selection.id}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
@@ -82,7 +85,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<a target="_blank" style="text-decoration: none;" href="<ssf:url 
 				    webPath="viewFile"
 				    folderId="${ssDefinitionEntry.parentBinder.id}"
-			   	 	entryId="${ssDefinitionEntry.id}" >
+			   	 	entryId="${ssDefinitionEntry.id}"
+				    entityType="${ssDefinitionEntry.entityType}" >
 			    	<ssf:param name="fileId" value="${selection.id}"/>
 			    	<ssf:param name="viewType" value="html"/>
 			    	</ssf:url>" ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
@@ -142,7 +146,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				  href="<ssf:url 
 				    webPath="viewFile"
 				    folderId="${ssDefinitionEntry.parentBinder.id}"
-				    entryId="${ssDefinitionEntry.id}" >
+				    entryId="${ssDefinitionEntry.id}"
+				    entityType="${ssDefinitionEntry.entityType}" >
 				    <ssf:param name="fileId" value="${selection.id}"/>
 				    <ssf:param name="versionId" value="${fileVersion.id}"/>
 				    </ssf:url>"

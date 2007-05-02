@@ -1331,6 +1331,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
+			<name>entityType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
 			<name>operation</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

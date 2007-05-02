@@ -19,7 +19,8 @@
 <img border="0" src="<ssf:url 
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
-    entryId="${ssDefinitionEntry.id}" >
+    entryId="${ssDefinitionEntry.id}"
+    entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     <ssf:param name="viewType" value="scaled"/>
     </ssf:url>" alt="${property_caption}" />
