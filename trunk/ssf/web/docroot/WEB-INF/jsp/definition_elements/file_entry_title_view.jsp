@@ -38,7 +38,8 @@ if (isIECheck) strBrowserType = "ie";
 <a style="text-decoration: none;" href="<ssf:url 
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
-    entryId="${ssDefinitionEntry.id}" >
+    entryId="${ssDefinitionEntry.id}"
+    entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${fileHandle.id}"/>
     </ssf:url>">
 <c:if test="${empty ssDefinitionEntry.title}">
@@ -71,7 +72,8 @@ if (isIECheck) strBrowserType = "ie";
   href="<ssf:url 
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
-    entryId="${ssDefinitionEntry.id}" >
+    entryId="${ssDefinitionEntry.id}"
+    entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${fileHandle.id}"/>
     <ssf:param name="versionId" value="${fileVersion.id}"/>
     </ssf:url>"><ssf:nlt tag="entry.version"/> ${fileVersion.versionNumber}</a></td>

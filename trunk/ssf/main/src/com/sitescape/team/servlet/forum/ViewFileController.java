@@ -35,6 +35,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
@@ -91,14 +92,18 @@ public class ViewFileController extends SAbstractController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			DefinableEntity entity=null;
 			Binder parent;
-			if (entryId != null) {
-				if (binder instanceof Folder) {
+			String strEntityType = RequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.none.toString());
+			EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
+			if(entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace)) {
+				entity = getBinderModule().getBinder(entryId);
+				parent = (Binder) entity;
+			} else if (entryId != null) {
+				 if (binder instanceof Folder) {
 					entity = getFolderModule().getEntry(binderId, entryId);
 				} else {
 					entity = getProfileModule().getEntry(binderId, entryId);
-					
 				}
-				parent = ((Entry)entity).getParentBinder();
+				parent = entity.getParentBinder();
 			} else {
 				entity = binder;
 				parent = binder;

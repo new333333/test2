@@ -40,6 +40,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	private String action;
     private String binderId;
     private String entryId;
+    private String entityType;
     private String operation;
     private String webPath;
     private boolean adapter=false;
@@ -63,6 +64,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 		//need to reinitialize - class must be cached
 		binderId=null;
 		entryId=null;
+		entityType=null;
 		url = null;
 		action = null;
 		operation=null;
@@ -100,6 +102,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			} 
 			if (!Validator.isNull(entryId)) {
 				params.put(WebKeys.URL_ENTRY_ID, new String[] {entryId});
+			} 
+			if (!Validator.isNull(entityType)) {
+				params.put(WebKeys.URL_ENTITY_TYPE, new String[] {entityType});
 			} 
 			if (!Validator.isNull(operation)) {
 				params.put(WebKeys.URL_OPERATION, new String[] {operation});
@@ -202,6 +207,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	
 	public void setEntryId(String entryId) {
 	    this.entryId = entryId;
+	}
+
+	public void setEntityType(String entityType) {
+	    this.entityType = entityType;
 	}
 
 	public void setWebPath(String webPath) {

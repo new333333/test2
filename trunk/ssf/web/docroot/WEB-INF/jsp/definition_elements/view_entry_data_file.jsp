@@ -29,7 +29,8 @@ if (isIECheck) strBrowserType = "ie";
   href="<ssf:url 
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
-    entryId="${ssDefinitionEntry.id}" >
+    entryId="${ssDefinitionEntry.id}"
+    entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/>
 </a>
