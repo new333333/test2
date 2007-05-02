@@ -41,6 +41,7 @@ import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.TemplateCopyHelper;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
@@ -129,10 +130,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			getBinderModule().deleteBinder(configId);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			if (configId != null) {
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+			if (!WebKeys.OPERATION_ADD.equals(operation)) { //on add - binderId may be 
+				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+				if (configId != null) {
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+				}
 			}
 		} else if (WebKeys.OPERATION_SET_DISPLAY_DEFINITION.equals(operation)) {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -256,7 +259,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.OPERATION, operation);
 				String cfgType = PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW));
 				if (cfgType.equals("-1")) {
-					Document wsTree = getWorkspaceModule().getDomWorkspaceTree(null, new WsDomTreeBuilder(null, true, this), 1);									
+					Document wsTree = getWorkspaceModule().getDomWorkspaceTree(null, new WsDomTreeBuilder(null, true, this, new TemplateCopyHelper()), 1);									
 					model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 				}
 				model.put("cfgType", cfgType);
