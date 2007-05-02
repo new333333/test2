@@ -1956,9 +1956,14 @@ public class AjaxController  extends SAbstractController {
 	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
 	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
 
-			
-			folderEntries = getFolderModule().getEntries(binderId, options);
-			List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+	       	List entries;
+			if (binder instanceof Folder) {
+				folderEntries = getFolderModule().getEntries(binderId, options);
+				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			} else {
+				//a template
+				entries = new ArrayList();
+			}
 			
 			EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response, portletSession);
 		} else {
