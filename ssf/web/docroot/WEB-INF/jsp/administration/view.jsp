@@ -19,8 +19,8 @@
 	<table border="0" width="100%">
 	<tr>
 	  <td>
-	    <ssHelpSpot helpId="admin_portlet/admin_portlet" 
-	      title="<ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>"
+	    <ssHelpSpot helpId="portlets/admin_portlet" 
+	      title="<ssf:nlt tag="helpSpot.adminPortlet" />" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
 	  </td>

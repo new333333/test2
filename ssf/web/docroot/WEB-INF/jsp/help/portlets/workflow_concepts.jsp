@@ -50,6 +50,6 @@
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/workflow_more_defs', 'ss_workflow_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('portlets/workflow_more_defs', 'ss_workflow_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

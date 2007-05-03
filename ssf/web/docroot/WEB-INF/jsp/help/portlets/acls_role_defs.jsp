@@ -44,7 +44,7 @@
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/acls_concepts', 'ss_acls_concepts', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('portlets/acls_concepts', 'ss_acls_concepts', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:4px;">
@@ -52,6 +52,6 @@
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/acls_default_roles', 'ss_acls_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('portlets/acls_default_roles', 'ss_acls_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

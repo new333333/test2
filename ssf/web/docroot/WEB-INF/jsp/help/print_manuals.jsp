@@ -18,7 +18,7 @@
 <p><ssf:nlt tag="help.viewBooks.content.intro"/></p>
 
 <ul style="list-style-type:disc;">
-<!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_install.pdf">
+<!--<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation Guide.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 </li>-->
 

@@ -14,21 +14,24 @@
 <div class="ss_style" align="left">
 <%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.clipboardButton"/></span> (1/1)
+<span class="ss_titlebold"><ssf:nlt tag="help.favoritesicon.content.title"/></span> (4/4)<br/>
+<span style="font-weight:bold;"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></span>
 
-<p><ssf:nlt tag="help.clipboardicon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.favoritesicon.deleting.content.introduceList"/></p>
 
-<p><ssf:nlt tag="help.globalStrings.notimplemented"/></p>
+<ol>
+<li><ssf:nlt tag="help.favoritesicon.deleting.content.clickAndHold"/></li>
+
+<li><ssf:nlt tag="help.favoritesicon.deleting.content.dragAndDrop"/></li>
+
+</ol>
+
 </div>
 <br/>
 
-<script type="text/javascript">
-ss_helpSystem.highlight('ss_navbarClipboardButton');
-</script>
-
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showPreviousHelpSpot();">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/favorites_button_categories', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">

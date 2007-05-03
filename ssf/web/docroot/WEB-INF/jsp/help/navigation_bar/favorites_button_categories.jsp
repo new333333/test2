@@ -36,10 +36,10 @@
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/favorites_button_add', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/favorites_button_delete', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

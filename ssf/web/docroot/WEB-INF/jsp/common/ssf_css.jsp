@@ -868,7 +868,7 @@ div.ss_popup_body {
   border:2px solid black;
   margin:2px;
   padding:2px;
-  width:450px;
+  width:400px;
 }
 .ss_helpToc {
   border: 1px solid ${ss_style_border_color_light};

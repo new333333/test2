@@ -41,7 +41,7 @@ ss_helpSystem.highlight('ss_navbarSearchButton');
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/search_button_strings', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/search_button_strings', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
