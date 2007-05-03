@@ -10,12 +10,7 @@
  */
 package com.sitescape.team.module.binder.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,7 +29,6 @@ import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
@@ -47,9 +41,9 @@ import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
@@ -61,7 +55,6 @@ import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.index.FieldBuilderUtil;
-import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
@@ -74,7 +67,6 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.pipeline.Pipeline;
-import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
@@ -83,8 +75,6 @@ import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
-import com.sitescape.team.util.FilePathUtil;
-import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -403,20 +393,22 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_ICONNAME));
    		}
   		
-   		Boolean mirrored = null;
-   		if(parent.isMirrored())
-   			mirrored = Boolean.TRUE;
-   		else {
-   	   		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_MIRRORED))
-   				mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
-   		}
-   		if(mirrored != null)
-   			entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);   		
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
-   		}
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   		if (binder.isMirroredAllowed()) { //not supported on templates - don't know where target will be
+   			Boolean mirrored = null;
+   			if(parent != null && parent.isMirrored()) //parent null on templates
+   				mirrored = Boolean.TRUE;
+   			else {
+   				if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_MIRRORED))
+   					mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
+   			}
+   			if(mirrored != null)
+   				entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);   		
+   			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
+   				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
+   			}
+   			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
+   				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   			}
    		}
  	}
     //***********************************************************************************************************
@@ -568,62 +560,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
     
-    protected void moveBinder_mirrored(Binder source, Binder destination) {
-    	// Post-operation condition: A binder representing a seed resource 
-    	// (ie, a top-level mirrored binder whose parent binder is not a
-    	// mirrored binder) must preserve that attribute after move.
-    	// Likewise, a mirrored binder that is not top-level can not be
-    	// a top-level binder after move. In other words, the characteristic
-    	// of being top-level or not must be preserved. 
-    	// Otherwise, the move is not allowed.
-    	if(source.isMirrored()) {
-    		if(source.getParentBinder().isMirrored()) { // mirrored but not top-level
-    			if(destination.isMirrored()) {
-    				if(source.getResourceDriverName().equals(destination.getResourceDriverName())) {
-    					// We can/must move the resource.
-    					ResourceSession session = getResourceDriverManager().getSession(source.getResourceDriverName(), source.getResourcePath());
-    					try {
-    						session.move(destination.getResourcePath(), source.getTitle());  						
-    						// Do not yet update the resource path in the source, it will be done in fixupPath.
-    					}
-    					finally {
-    						session.close();
-    					}								
-    				}
-    				else {
-    					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-    							+ "] because the resource driver is different");
-    		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
-    				}
-    			}
-    			else {
-					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-							+ "] because the source is not top-level mirrored and the destination is not mirrored");
-		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));  				
-    			}
-    		}
-    		else { // top-level mirrored
-    			if(destination.isMirrored()) {
-					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-							+ "] because the source is top-level mirrored and the destination is already mirrored");
-		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
-    			}
-    			else {
-    				// Does not involve resource moving.
-    			}
-    		}
-    	}
-    	else { // not mirrored at all
-    		if(destination.isMirrored()) {
-				logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-						+ "] because the source is not mirrored but the destination is");
-	      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
-    		}
-    		else {
-    			// Does not involve resource moving.
-    		}
-    	}
-    } 
 
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
@@ -796,29 +732,145 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				NLT.get("errorcode.notsupported.moveBinder", new String[]{source.getPathName()}));
     	if (destination.isZone())
       		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
-
-    	moveBinder_mirrored(source, destination);
+    	 
+    	Map ctx = moveBinder_setCtx(source, destination, null);
+    	moveBinder_preMove(source, destination, ctx);
+    	boolean resourcePathAffected = moveBinder_mirrored(source, destination, ctx);
+    	moveBinder_move(source, destination, resourcePathAffected, ctx);
+    	moveBinder_postMove(source, destination, resourcePathAffected, ctx);
     	
-    	//first remove name
-    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
-		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
-    	source.getParentBinder().removeBinder(source);
-    	destination.addBinder(source);
-    	//now add name
-		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
-		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
- 		// The path changes since its parent changed.    	
- 		fixupPath(source);
-     	//create history - using timestamp and version from fillIn
-        User user = RequestContextHolder.getRequestContext().getUser();
-        source.setModification(new HistoryStamp(user));
-        source.incrLogVersion();
-    	ChangeLog changes = new ChangeLog(source, ChangeLog.MOVEBINDER);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
-    	indexTree(source, null);
+ 		moveBinder_index(source, ctx);
 
     }
+    protected Map moveBinder_setCtx(Binder source, Binder destination, Map ctx) {
+    	if (ctx == null) ctx = new HashMap();
+    	return ctx;
+    }
+	protected void moveBinder_preMove(Binder source, Binder destination, Map ctx) {
+ 	}
+    protected boolean moveBinder_mirrored(Binder source, Binder destination, Map ctx) {
+    	// Post-operation condition: A binder representing a seed resource 
+    	// (ie, a top-level mirrored binder whose parent binder is not a
+    	// mirrored binder) must preserve that attribute after move.
+    	// Likewise, a mirrored binder that is not top-level can not be
+    	// a top-level binder after move. In other words, the characteristic
+    	// of being top-level or not must be preserved. 
+    	// Otherwise, the move is not allowed.
+    	boolean resourcePathAffected=false;
+    	if(source.isMirrored()) {
+    		if(source.getParentBinder().isMirrored()) { // mirrored but not top-level
+    			if(destination.isMirrored()) {
+    				if(source.getResourceDriverName().equals(destination.getResourceDriverName())) {
+    					// We can/must move the resource.
+    					ResourceSession session = getResourceDriverManager().getSession(source.getResourceDriverName(), source.getResourcePath());
+    					try {
+    						session.move(destination.getResourcePath(), source.getTitle());  	
+    						// Do not yet update the resource path in the source, it will be done by callder.
+    						resourcePathAffected=true;
+    					}
+    					finally {
+    						session.close();
+    					}								
+    				}
+    				else {
+    					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+    							+ "] because the resource driver is different");
+    		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    				}
+    			}
+    			else {
+					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+							+ "] because the source is not top-level mirrored and the destination is not mirrored");
+		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));  				
+    			}
+    		}
+    		else { // top-level mirrored
+    			if(destination.isMirrored()) {
+					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+							+ "] because the source is top-level mirrored and the destination is already mirrored");
+		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    			}
+    			else {
+    				// Does not involve resource moving.
+    			}
+    		}
+    	}
+    	else { // not mirrored at all
+    		if(destination.isMirrored()) {
+				logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+						+ "] because the source is not mirrored but the destination is");
+	      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    		}
+    		else {
+    			// Does not involve resource moving.
+    		}
+    	}
+    	return resourcePathAffected;
+    } 
+	protected void moveBinder_move(Binder source, Binder destination, boolean resourcePathAffected, Map ctx) {
+	   	//Only need to update this on top level of binder tree.  Children relative to the same binder
+		//remove title from old parent
+    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
+		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);		
+		source.getParentBinder().removeBinder(source);
+    	destination.addBinder(source);
+    	//now add name to new parent 
+		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
+		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
+		source.setPathName(destination.getPathName() + "/" + source.getTitle());
+		if (resourcePathAffected) {
+			String newPath = getResourceDriverManager().getResourcePath
+			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
+			source.setResourcePath(newPath);
+		}
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.ChangeLog set owningBinderKey='" +
+				source.getBinderKey().getSortKey() + "' where binderId=" + source.getId());
+	}
+	
+	protected void moveBinder_postMove(Binder source, Binder destination, boolean resourcePathAffected, Map ctx) {
+     	//create history - using timestamp and version from fillIn
+        HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
+        moveBinder_log(source, stamp);
+        moveBinderFixup(source);
+        List<Binder>children = new ArrayList(source.getBinders());
+        while (!children.isEmpty()) {
+        	Binder b = children.get(0);
+        	children.remove(0);
+        	children.addAll(b.getBinders());
+    		//parent has moved, just fix up path and sortKey
+    		b.setPathName(b.getParentBinder().getPathName() + "/" + b.getTitle());
+    		b.setBinderKey(new HKey(b.getParentBinder().getBinderKey(), b.getBinderKey().getLastNumber()));
+			if(resourcePathAffected) {
+				String newPath = getResourceDriverManager().getResourcePath
+				(b.getResourceDriverName(), b.getParentBinder().getResourcePath(), b.getTitle());
+				b.setResourcePath(newPath);
+			}
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.ChangeLog set owningBinderKey='" +
+					source.getBinderKey().getSortKey() + "' where binderId=" + source.getId());
+  	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+   	    	processor.moveBinderFixup(b);
+   	        moveBinder_log(b, stamp);
+
+        }
+	}
+    protected void moveBinder_log(Binder binder, HistoryStamp stamp) {
+    	binder.setModification(stamp);
+ 		binder.incrLogVersion();
+ 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
+
+    }
+    protected void moveBinder_index(Binder binder, Map ctx) {
+    	//delete tree first
+		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
+    	indexTree(binder, null);
+    }
+    //somewhere up the parent chain we have a new parent
+    //don't have to do all the work immediate parent had to do
+	public void moveBinderFixup(Binder binder) {
+	}
+
     //********************************************************************************************************
     public Map getBinders(Binder binder, Map options) {
         //search engine will only return binder you have access to

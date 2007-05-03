@@ -14,16 +14,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.LoginInfo;
-import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
@@ -33,13 +32,14 @@ import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.PasswordEncryptor;
 
-public class AuthenticationManagerImpl implements AuthenticationManager {
+public class AuthenticationManagerImpl implements AuthenticationManager,InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private ProfileDao profileDao;
 	private CoreDao coreDao;
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
+	private String[] userModify;
 	private ReportModule reportModule;
 
 	protected CoreDao getCoreDao() {
@@ -76,20 +76,31 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		this.reportModule = reportModule;
 	}
 
+	/**
+     * Called after bean is initialized.  
+     */
+ 	public void afterPropertiesSet() {
+		userModify = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
+ 	}
+ 	
 	public User authenticate(String zoneName, String userName, String password,
 			boolean passwordAutoSynch, Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
 		try {
 			user = authenticate(zoneName, userName, password, passwordAutoSynch, authenticatorName);
-			
 			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 			
-			boolean userModify = 
-				SPropsUtil.getBoolean("portal.user.auto.synchronize", false);
-			
-			if (userModify && updates != null && !updates.isEmpty())
-				getProfileModule().modifyUserFromPortal(user, updates);
+			if (updates != null && !updates.isEmpty()) {
+				Map mods = new HashMap();
+				for (int i = 0; i<userModify.length; ++i) {
+					Object val = updates.get(userModify[i]);
+					if (val != null) {
+						mods.put(userModify[i], val);
+					}					
+				}
+				if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods);
+			}
 		} 
 		catch (UserDoesNotExistException nu) {
 			boolean userCreate = 
@@ -153,19 +164,5 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
 		return user;
 	}
-	
-	public void checkZone(String zoneName) {
-		//make sure zone exists
-		try {
-			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
-			User user = getProfileDao().loadUser(ws.getCreation().getPrincipal().getId(), zoneName);
-			com.sitescape.team.context.request.RequestContextUtil.setThreadContext(user);
-		} catch (NoWorkspaceByTheNameException nw) {
-			
-		} catch (NoBinderByTheNameException nb) {
-					
-		};
-
-	}
-	
+		
 }

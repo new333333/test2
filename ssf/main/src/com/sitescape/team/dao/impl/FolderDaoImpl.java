@@ -122,7 +122,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
            result = (List)getHibernateTemplate().execute(
                    new HibernateCallback() {
                        public Object doInHibernate(Session session) throws HibernateException {
-                   		int nextPos = Integer.parseInt(entry.getHKey().getRelativeNumber(entry.getDocLevel())) + 1;
+                   		int nextPos = entry.getHKey().getLastNumber() + 1;
                		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
                             return session.createCriteria(FolderEntry.class)
                             	.add(Expression.disjunction()
@@ -173,7 +173,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                  public Object doInHibernate(Session session) throws HibernateException {
                 	 Criteria crit;
                 	 if (entry.getDocLevel() > 1) {
-                		int nextPos = Integer.parseInt(entry.getHKey().getRelativeNumber(entry.getDocLevel())) + 1;
+                		int nextPos = entry.getHKey().getLastNumber() + 1;
                		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
         				crit = session.createCriteria(FolderEntry.class)
         					.add(Expression.conjunction()
@@ -195,39 +195,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      } 
-    /**
-     * Load all entries of a folder that have been updated with a specified range.
-     */
-	public List loadFolderUpdates(Folder folder, Date since, Date before) {
-		return loadFolderUpdates(folder, since, before, new OrderBy(Constants.ID));
-	}
-	/**
-	 * See <code>loadFolderUpdates</code>. Order results as specified.
-	 */
-	public List loadFolderUpdates(final Folder folder, final Date since, final Date before, final OrderBy order) {
-        List entries = (List)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	List results = session.createQuery("from com.sitescape.team.domain.FolderEntry this where parentBinder=:parent and " + 
-                    			" (this.creation.date > :cDate and this.creation.date <= :c2Date) or " +
-									    "(this.modification.date > :mDate and this.modification.date <= :m2Date) or " +
-									    "(this.workflowChange.date > :wDate and this.workflowChange.date <= :w2Date)" +
-								" order by " + order.getOrderByClause("this"))
-								.setLong("parent", folder.getId().longValue())
-								.setTimestamp("cDate", since)
-								.setTimestamp("c2Date", before)
-								.setTimestamp("mDate", since)
-								.setTimestamp("m2Date", before)
-								.setTimestamp("wDate", since)
-								.setTimestamp("w2Date", before)
-								.list();
-													
-                    	return results;
-                    }
-                }
-            );
-		return entries;
-    }
+
     /**
      * Load all entries of a folder and it sub-folders that have been updated with a specified range.
      */
@@ -242,16 +210,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         List entries = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                    	Query q  = session.createQuery("from com.sitescape.team.domain.FolderEntry x where owningFolderSortKey like '" + 
-                    			folder.getFolderHKey().getSortKey() + "%' and ((x.creation.date > ? and x.creation.date <= ?) or " +
-									    "(x.modification.date > ? and x.modification.date <= ?) or " +
-									    "(x.workflowChange.date > ? and x.workflowChange.date <= ?)) order by " + order.getOrderByClause("x"));
+                    	//only need to check for modification date which is the latest
+                    	Query q  = session.createQuery("from com.sitescape.team.domain.FolderEntry x where owningBinderKey like '" + 
+                    			folder.getBinderKey().getSortKey() + "%' and (x.modification.date > ? and x.modification.date <= ?) order by " + order.getOrderByClause("x"));
 						
                 		int i=0;
-						q.setTimestamp(i++, since);
-						q.setTimestamp(i++, before);
-						q.setTimestamp(i++, since);
-						q.setTimestamp(i++, before);
 						q.setTimestamp(i++, since);
 						q.setTimestamp(i++, before);
 						return q.list();
@@ -497,9 +460,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     	
     }
     /** 
-     * Update the owningFolderSortkeys for all entries and their associations.
+     * Update the owningBinderKeys for all entries and their associations.
      * Moving all of the folderEntries with the folder.  The folder has been updated.
-     * The owningFolderSortKey of the entries must change, 
+     * The owningBinderKeys of the entries must change, 
      * but the owningBinderId remains the same.   
      * Sub folder and their entries must be handled separetly
      */
@@ -507,28 +470,28 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
-	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningFolderSortKey=:sortKey where owningBinderId=:id")
-	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.executeUpdate();
-	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningFolderSortKey=:sortKey where owningBinderId=:id")
-	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	       	   			.executeUpdate();
-	       	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningFolderSortKey=:sortKey where owningBinderId=:id")
-	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+	       	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	  	   				.executeUpdate();
-       	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningFolderSortKey=:sortKey where owningBinderId=:id")
-	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	       	   			.executeUpdate();
-       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningFolderSortKey=:sortKey where owningBinderId=:id")
-       	   				.setString("sortKey", folder.getFolderHKey().getSortKey())
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningBinderKey=:sortKey where owningBinderId=:id")
+       	   				.setString("sortKey", folder.getBinderKey().getSortKey())
        	   				.setLong("id", folder.getId().longValue())
        	   				.executeUpdate();
-     	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningFolderSortKey=:sortKey where parentBinder=:id")
-      	   				.setString("sortKey", folder.getFolderHKey().getSortKey())
+     	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningBinderKey=:sortKey where parentBinder=:id")
+      	   				.setString("sortKey", folder.getBinderKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())
       	   				.executeUpdate();
 	       	   		return null;
@@ -549,37 +512,37 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
         			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
-	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningBinderKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
- 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+ 	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	    	   			.executeUpdate();
-	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningBinderKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
- 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+ 	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	       	   			.executeUpdate();
-	       	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+	       	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningBinderKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
- 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+ 	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	  	   				.executeUpdate();
-       	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningBinderKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
- 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+ 	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	       	   			.executeUpdate();
-      	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningFolderSortKey=:sortKey,parentBinder=:id where " +
+      	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningBinderKey=:sortKey,parentBinder=:id where " +
 	    	   				"id in (:pList)")
- 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
+ 	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
       	   				.executeUpdate();

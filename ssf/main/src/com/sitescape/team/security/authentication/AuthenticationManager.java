@@ -27,5 +27,4 @@ public interface AuthenticationManager {
 			String authenticatorName) throws PasswordDoesNotMatchException, 
 			UserDoesNotExistException;
 	
-	public void checkZone(String zoneName);
 }

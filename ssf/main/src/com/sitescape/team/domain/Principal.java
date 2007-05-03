@@ -47,6 +47,7 @@ public abstract class Principal extends Entry  {
     protected List iMemberOf;
     protected String internalId;
     protected String type;
+    protected String emailAddress="";
     
      public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
@@ -127,6 +128,19 @@ public abstract class Principal extends Entry  {
     }
 
  
+    /**
+     * @hibernate.property length="256"
+     * @return Returns the emailAddress.
+     */
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+    /**
+     * @param emailAddress The emailAddress to set.
+     */
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
     /**
      * @hibernate.property length="64"
      * @return Returns the loginName.

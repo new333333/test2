@@ -49,14 +49,12 @@ public interface FolderDao {
     public List loadEntryTree(FolderEntry entry) throws DataAccessException;
     
     /**
-     * Load changed entries in a folder
+     * Load changed entries in a folder and its sub-folders
      * @param folder
      * @param since
      * @param before
      * @return
      */
-	public List loadFolderUpdates(Folder folder, Date since, Date before);
-	public List loadFolderUpdates(Folder folder, Date since, Date before, OrderBy order);
     
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before);
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);

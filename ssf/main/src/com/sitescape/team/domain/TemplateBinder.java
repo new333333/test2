@@ -11,7 +11,6 @@
 package com.sitescape.team.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class TemplateBinder extends Binder {
@@ -24,13 +23,19 @@ public class TemplateBinder extends Binder {
 		super(source);
 		tDescription = new Description(source.getTemplateDescription());
 		tTitle = source.tTitle;
+		mirrored=false;
 	}
 	public TemplateBinder(Binder source) {
 		super(source);
 		tDescription = new Description(source.getDescription());
 		tTitle = source.getTitle();
+		mirrored=false;
 		
 	}
+    public boolean isMirroredAllowed() {
+    	return false;
+    }
+
 	public EntityIdentifier.EntityType getEntityType() {
 		if (definitionType == Definition.FOLDER_VIEW)
 			return EntityIdentifier.EntityType.folder;
@@ -43,13 +48,6 @@ public class TemplateBinder extends Binder {
     }
     public List getViewDefinitions() {
 		return getDefs(definitionType);
-    }
-    public List getChildAclContainers() {
-        return new ArrayList();
-    }
-    
-    public List getChildAclControlled() {
-        return new ArrayList(); // empty
     }
     /**
      * @hibernate.component prefix="tDescription_"

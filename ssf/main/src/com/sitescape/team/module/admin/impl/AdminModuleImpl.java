@@ -327,7 +327,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return config;
 	 }
 	protected Binder copyBinderAttributes(Binder source, Binder destination) {
-		//need read id for linkage
+		//need real id for linkage
 		if (destination.getId() == null) getCoreDao().save(destination);
 		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
 		if (dashboard != null) {
@@ -419,6 +419,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		 template.setModification(template.getCreation());
 		 template.setName(getPropertyValue(config, "name"));
+		 template.setInternalId(getPropertyValue(config, "internalId"));
 		 template.setTemplateDescription(getPropertyValue(config, "templateDescription"));
 		 template.setTemplateTitle(getPropertyValue(config, "templateTitle"));
 		 template.setTitle(getPropertyValue(config, "title"));
@@ -485,6 +486,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 }
 		 
 		 getCoreDao().save(template);
+		 template.setupRoot();
 		 //see if any child configs need to be copied
 		 nodes = config.selectNodes("./property[@name='template']");
 		 for (int i=0; i<nodes.size(); ++i) {
@@ -507,16 +509,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 if (variableEle == null) return null;
 		 return variableEle.getStringValue();   	
 	 }
-	 protected TemplateBinder doAddTemplate(TemplateBinder config, int type, Map updates) {
-		 config.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		 config.setDefinitionType(type);
-		 config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
-		 config.setModification(config.getCreation());
-		 ObjectBuilder.updateObject(config, updates);
-		 if (Validator.isNull(config.getTitle())) config.setTitle(config.getTemplateTitle());
-		 config.setPathName("/" + config.getTitle());
-		 getCoreDao().save(config);
-		 return config;
+	 protected TemplateBinder doAddTemplate(TemplateBinder template, int type, Map updates) {
+		 template.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		 template.setDefinitionType(type);
+		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		 template.setModification(template.getCreation());
+		 ObjectBuilder.updateObject(template, updates);
+		 if (Validator.isNull(template.getTitle())) template.setTitle(template.getTemplateTitle());
+		 template.setPathName("/" + template.getTitle());
+		 getCoreDao().save(template);
+		 template.setupRoot();
+		 return template;
 	 }
 
 	 //clone a top level template as a child of another template
@@ -582,6 +585,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	      	if (parent != null) {
 				parent.addBinder(config);
 	      		getCoreDao().updateFileName(parent, config, null, config.getTitle());
+	      	} else {
+	      		config.setupRoot();
 	      	}
 			if (!config.isFunctionMembershipInherited()) {
 				//copy binders memberships to new Template
@@ -644,8 +649,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
 		//if not null, use icon from template.  Otherwise try icon from definition when binder is created.
 		if (Validator.isNotNull(cfg.getIconName())) entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
-		if (Validator.isNull(name)) name = cfg.getName();	
-		entryData.put(ObjectKeys.FIELD_BINDER_NAME, name);
+		if (Validator.isNotNull(name)) entryData.put(ObjectKeys.FIELD_BINDER_NAME, name);
 		//get binder created
 	   if (cfg.getDefinitionType() == Definition.WORKSPACE_VIEW) {
    			binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinderId, def.getId(), inputData, fileItems), zoneId);

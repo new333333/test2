@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.sitescape.team.InternalException;
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.util.Validator;
@@ -58,6 +59,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected String resourceDriverName;
     protected String resourcePath;
     protected int binderCount=0;
+    protected HKey binderKey;
+    protected int nextBinderNumber=1;
+
     
     public Binder() {
     }
@@ -96,6 +100,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public boolean isRoot() {
     	return getParentBinder() == null;
+    }
+    public void setupRoot() {
+    	if (isRoot()) setBinderKey(new HKey(HKey.generateRootKey(getId()) + "00001"));
     }
     public String getSearchTitle() {
     	return getTitle();
@@ -169,12 +176,13 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	getBinders().add(binder);
  		binder.setParentBinder(this);
  		++binderCount;
+ 		binder.setBinderKey(new HKey(getBinderKey(), nextBinderNumber++));
 	}
     public void removeBinder(Binder binder) {
  		getBinders().remove(binder);
  		binder.setParentBinder(null);
 		--binderCount;
-		
+        binder.setBinderKey(null);	
 	}
     /**
      * @hibernate.property
@@ -209,6 +217,26 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public String getFullName() {
     	if (isRoot()) return name;
     	return getParentBinder().getFullName() + "." + name;
+    }
+    /** 
+     * @hibernate.property 
+     * @return
+     */
+    public int getNextBinderNumber() {
+    	return nextBinderNumber;
+    }
+    public void setNextBinderNumber(int nextBinderNumber) {
+    	this.nextBinderNumber = nextBinderNumber;
+    }   
+
+    /**
+     * @hibernate.component class="com.sitescape.team.domain.HKey" prefix="binderRoot_"
+     */
+    public HKey getBinderKey() {
+    	return binderKey;
+    }
+    public void setBinderKey(HKey binderKey) {
+        this.binderKey = binderKey;
     }
     /**
      * @hibernate.component prefix="notify_"
@@ -449,7 +477,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public abstract List getEntryDefinitions();
     public abstract List getViewDefinitions();
-  
+    public boolean isMirroredAllowed() {
+    	return true;
+    }
 	public boolean isMirrored() {
 		return mirrored;
 	}

@@ -37,6 +37,11 @@ public interface BinderProcessor {
   	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
     public void moveBinder(Binder source, Binder destination);
+    /**
+     * Fix up a binder after its parent have been moved
+     * @param binder
+     */
+    public void moveBinderFixup(Binder binder);
 	public void indexBinder(Binder binder, boolean includeEntries);	
     public Collection indexTree(Binder binder, Collection exclusions);
 	public ChangeLog processChangeLog(Binder binder, String operation);

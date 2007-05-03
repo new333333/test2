@@ -53,49 +53,49 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	public void testAddFolder() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-		assertEquals(folder.getNextFolderNumber(), 1);
+		assertEquals(folder.getNextBinderNumber(), 1);
 		assertNull(folder.getTopFolder());
 		assertNull(folder.getParentFolder());
 		assertEquals(folder.getParentBinder(), top);
-		assertEquals(folder.getFolderHKey().getLevel(), 1);
-		assertEquals(folder.getFolderHKey().getSortKey(), folder.getEntryRootHKey().getSortKey() + "00001");
+		assertEquals(folder.getBinderKey().getLevel(), 2);
+		assertEquals(folder.getBinderKey().getSortKey(), top.getBinderKey().getSortKey() + "00001");
 	}
 	public void testAddSubFolder() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-		int oldCount = folder.getNextFolderNumber();
+		int oldCount = folder.getNextBinderNumber();
  		Folder sub = createFolder(folder, "subFolder1");
-		assertEquals(folder.getNextFolderNumber(), oldCount+1);
+		assertEquals(folder.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub.getTopFolder(), folder);
 		assertEquals(sub.getParentFolder(), folder);
-		assertEquals(sub.getFolderHKey().getLevel(), 2);
-		assertEquals(folder.getFolderHKey().getSortKey() + "0001", sub.getFolderHKey().getSortKey());
+		assertEquals(sub.getBinderKey().getLevel(), 3);
+		assertEquals(folder.getBinderKey().getSortKey() + "0001", sub.getBinderKey().getSortKey());
 		//add another
-		oldCount = folder.getNextFolderNumber();
+		oldCount = folder.getNextBinderNumber();
 		sub = createFolder(folder, "subFolder2");
-		assertEquals(folder.getNextFolderNumber(), oldCount+1);
+		assertEquals(folder.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub.getTopFolder(), folder);
 		assertEquals(sub.getParentFolder(), folder);
-		assertEquals(sub.getFolderHKey().getLevel(), 2);
-		assertEquals(folder.getFolderHKey().getSortKey() + "0002", sub.getFolderHKey().getSortKey());
+		assertEquals(sub.getBinderKey().getLevel(), 3);
+		assertEquals(folder.getBinderKey().getSortKey() + "0002", sub.getBinderKey().getSortKey());
 
-		oldCount = sub.getNextFolderNumber();
+		oldCount = sub.getNextBinderNumber();
 		Folder sub2 = createFolder(sub, "subFolder2.1");
-		assertEquals(sub.getNextFolderNumber(), oldCount+1);
+		assertEquals(sub.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub2.getTopFolder(), folder);
 		assertEquals(sub2.getParentFolder(), sub);
-		assertEquals(sub2.getFolderHKey().getLevel(), 3);
-		assertEquals(sub.getFolderHKey().getSortKey() + "0001", sub2.getFolderHKey().getSortKey());
-		assertEquals(folder.getFolderHKey().getSortKey() + "00020001", sub2.getFolderHKey().getSortKey());
+		assertEquals(sub2.getBinderKey().getLevel(), 4);
+		assertEquals(sub.getBinderKey().getSortKey() + "0001", sub2.getBinderKey().getSortKey());
+		assertEquals(folder.getBinderKey().getSortKey() + "00020001", sub2.getBinderKey().getSortKey());
 
-		oldCount = sub.getNextFolderNumber();
+		oldCount = sub.getNextBinderNumber();
 		sub2 = createFolder(sub, "subFolder2.2");
-		assertEquals(sub.getNextFolderNumber(), oldCount+1);
+		assertEquals(sub.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub2.getTopFolder(), folder);
 		assertEquals(sub2.getParentFolder(), sub);
-		assertEquals(sub2.getFolderHKey().getLevel(), 3);
-		assertEquals(sub.getFolderHKey().getSortKey() + "0002", sub2.getFolderHKey().getSortKey());
-		assertEquals(folder.getFolderHKey().getSortKey() + "00020002", sub2.getFolderHKey().getSortKey());
+		assertEquals(sub2.getBinderKey().getLevel(), 4);
+		assertEquals(sub.getBinderKey().getSortKey() + "0002", sub2.getBinderKey().getSortKey());
+		assertEquals(folder.getBinderKey().getSortKey() + "00020002", sub2.getBinderKey().getSortKey());
 		FilterControls fc = new FilterControls("topFolder", folder);
 		assertEquals(cdi.countObjects(Folder.class, fc), 4);
 	}

@@ -64,17 +64,22 @@ public class ChangeLog {
 	protected Long binderId;
 	protected Long version;
 	protected String docNumber;
+	protected String owningBinderKey;  //used for queries
 	
 	public ChangeLog() {
 	}
 	public ChangeLog(DefinableEntity entity, String operation) {
+		
+		Binder binder;
 		if (entity instanceof Binder) {
-			this.binderId = entity.getId();
+			binder = (Binder)entity;
 		} else {
-			this.binderId = entity.getParentBinder().getId();
+			binder = entity.getParentBinder();
 			if (entity instanceof FolderEntry) 
 				this.docNumber = ((FolderEntry)entity).getDocNumber();
 		}
+		this.binderId = binder.getId();
+		this.owningBinderKey = binder.getBinderKey().getSortKey();
 		this.operation = operation;
 		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
 			WorkflowSupport wfEntry = (WorkflowSupport)entity;
@@ -144,6 +149,16 @@ public class ChangeLog {
     public void setBinderId(Long binderId) {
     	this.binderId = binderId;
     }
+    /**
+     * @hibernate.property length="255" 
+     * @return
+     */
+    public String getOwningBinderKey() {
+        return owningBinderKey;
+    }
+    public void setOwningBinderKey(String owningBinderKey) {
+        this.owningBinderKey = owningBinderKey;
+    } 
     /**
      * @hibernate.property length="512"
      */

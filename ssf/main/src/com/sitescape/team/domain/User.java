@@ -40,7 +40,6 @@ public class User extends Principal {
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
     protected String lastName="";//set by hibernate access="field"
-    protected String emailAddress="";
     protected String organization="";
     protected String phone="";
     protected String zonName="";
@@ -144,19 +143,6 @@ public class User extends Principal {
 	}
 
      
-    /**
-     * @hibernate.property length="256"
-     * @return Returns the emailAddress.
-     */
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-    /**
-     * @param emailAddress The emailAddress to set.
-     */
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
     /**
      * @return Returns the firstName.
      */

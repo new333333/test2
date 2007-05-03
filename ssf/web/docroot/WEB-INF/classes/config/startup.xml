@@ -26,6 +26,7 @@
 		<property name="templateTitle">__configuration_default_folder</property>
 		<property name="templateDescription">__configuration_default_folder_description</property>
 		<property name="name">_discussionFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b0001</property>
 		<property name="entryDef">__discussionFolderList</property>
 		<definition name="_discussionFolderList"/>
 		<definition name="_discussionFolderTable"/>
@@ -39,6 +40,7 @@
 		<property name="templateTitle">__configuration_default_folder_blog</property>
 		<property name="templateDescription">__configuration_default_folder_blog_description</property>
 		<property name="name">_blogFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b000c</property>
 		<property name="entryDef">_blogFolder</property>
 		<definition name="_blogFolder"/>
 		<definition name="_calendarFolder"/>
@@ -52,6 +54,7 @@
 		<property name="templateTitle">__configuration_default_folder_wiki</property>
 		<property name="templateDescription">__configuration_default_folder_wiki_description</property>
 		<property name="name">_wikiFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b000d</property>
 		<property name="entryDef">_wikiFolder</property>
 		<property name="uniqueTitles">true</property>
 		<definition name="_wikiFolder"/>
@@ -66,6 +69,7 @@
 		<property name="templateTitle">__configuration_default_folder_calendar</property>
 		<property name="templateDescription">__configuration_default_folder_calendar_description</property>
 		<property name="name">_calendarFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b000e</property>
 		<property name="entryDef">_calendarFolder</property>
 		<definition name="_calendarFolder"/>
 		<definition name="_blogFolder"/>
@@ -80,6 +84,7 @@
 		<property name="templateDescription">__configuration_default_folder_library_description</property>
 		<property name="library">true</property>
 		<property name="name">_libraryFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b0011</property>
 		<property name="entryDef">_libraryFolder</property>
 		<definition name="_libraryFolder"/>
 		<definition name="_calendarFolder"/>
@@ -90,6 +95,7 @@
 		<property name="templateTitle">__configuration_default_folder_guestbook</property>
 		<property name="templateDescription">__configuration_default_folder_guestbook_description</property>
 		<property name="name">_guestbookFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b000f</property>
 		<property name="entryDef">_guestbookFolder</property>
 		<definition name="_guestbookFolder"/>
 		<definition name="_guestbookEntry"/>
@@ -99,6 +105,7 @@
 		<property name="templateTitle">__configuration_default_folder_photo</property>
 		<property name="templateDescription">__configuration_default_folder_photo_description</property>
 		<property name="name">_photoFolderConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b0010</property>
 		<property name="entryDef">_photoFolder</property>
 		<definition name="_photoFolder"/>
 		<definition name="_photoEntry"/>
@@ -108,6 +115,7 @@
 		<property name="templateTitle">__configuration_default_workspace</property>
 		<property name="templateDescription">__configuration_default_workspace_description</property>
 		<property name="name">_workspaceConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b0002</property>
 		<property name="entryDef">_workspace</property>
 		<definition name="_workspace"/>
 	</template>
@@ -116,6 +124,7 @@
 		<property name="templateTitle">__configuration_default_user_workspace</property>
 		<property name="templateDescription">__configuration_default_user_workspace_description</property>
 		<property name="name">_userWorkspaceConfig</property>
+		<property name="internalId">402883b90d0de1f3010d0df5582b0004</property>
 		<property name="entryDef">_userWorkspace</property>
 		<definition name="_userWorkspace"/>
 		<property name="template">_blogFolderConfig</property>
