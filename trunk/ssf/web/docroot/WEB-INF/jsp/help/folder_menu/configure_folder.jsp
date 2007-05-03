@@ -39,11 +39,11 @@
 
 <ul style="list-style-type:disc;">
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'right', 'bottom');"><ssf:nlt tag="help.configurationOverview.title"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('portlets/config_concepts', 'ss_config_concepts', 'right', 'bottom');"><ssf:nlt tag="help.configurationOverview.title"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/workflow_concepts', 'ss_workflow_concepts', 'right', 'bottom');"><ssf:nlt tag="help.workflowIntro.title"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('portlets/workflow_concepts', 'ss_workflow_concepts', 'right', 'bottom');"><ssf:nlt tag="help.workflowIntro.title"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/workflow_associating', 'ss_workflow_concepts', 'right', 'bottom');"><ssf:nlt tag="help.workflowIntro.subtopic.associatingWorkflows"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('portlets/workflow_associating', 'ss_workflow_concepts', 'right', 'bottom');"><ssf:nlt tag="help.workflowIntro.subtopic.associatingWorkflows"/></a></li>
 
 </ul>
 </div>

@@ -26,9 +26,9 @@
 
 <ul style="list-style-type:disc;">
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/acls_role_defs', 'ss_acls_concepts', '', '');"><ssf:nlt tag="help.accessControlOverview.subtopic.definingRoles"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('portlets/acls_role_defs', 'ss_acls_concepts', '', '');"><ssf:nlt tag="help.accessControlOverview.subtopic.definingRoles"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/acls_default_roles', 'ss_acls_concepts', '', '');"><ssf:nlt tag="help.accessControlOverview.subtopic.defaultRoles"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('portlets/acls_default_roles', 'ss_acls_concepts', '', '');"><ssf:nlt tag="help.accessControlOverview.subtopic.defaultRoles"/></a></li>
 
 </ul>
 
@@ -45,6 +45,6 @@
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/workflow_more_defs', 'ss_acls_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('portlets/workflow_more_defs', 'ss_acls_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

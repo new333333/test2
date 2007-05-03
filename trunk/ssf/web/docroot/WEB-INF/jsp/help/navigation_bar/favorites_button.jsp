@@ -23,11 +23,11 @@
 
 <ul style="list-style-type:disc;">
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.add.current.page"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.add.current.page"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_categories', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.categories"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/favorites_button_categories', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.categories"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/favorites_button_delete', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
 </ul>
 
 </div>
