@@ -49,7 +49,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="action" value="${action}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/><portlet:param 
 		name="operation" value="subscribe"/></portlet:actionURL>";
-var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
