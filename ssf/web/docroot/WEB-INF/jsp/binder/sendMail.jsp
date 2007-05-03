@@ -105,6 +105,7 @@ self.window.resizeTo(width, height);
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.message"/></span>
     <div align="left">
     <ssf:htmleditor name="mailBody" >
+	<br/>
 <c:if test="${!empty ssEntry}">
 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	    configElement="${ssConfigElement}" 
