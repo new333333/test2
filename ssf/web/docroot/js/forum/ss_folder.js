@@ -315,10 +315,3 @@ function ss_showSearchResults(type) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_confirmDeleteFolder() {
-	if (confirm(ss_confirmDeleteFolderText)) {
-		return true
-	} else {
-		return false
-	}
-}
