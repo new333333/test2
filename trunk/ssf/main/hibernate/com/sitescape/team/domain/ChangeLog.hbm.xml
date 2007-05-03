@@ -18,6 +18,7 @@
     <property name="xmlString" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
 	<property name="entityId"/>
    	<property name="entityType" length="16"/>
+ 	<property name="owningBinderKey" length="255" />
     
   </class>
 </hibernate-mapping>

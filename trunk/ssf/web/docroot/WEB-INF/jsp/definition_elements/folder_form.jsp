@@ -61,7 +61,7 @@
 <input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
 
-<c:if test="${ssDefinitionEntry.entityType.value == '2'}">
+<c:if test="${ssDefinitionEntry.mirroredAllowed}">
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.mirrored}" >
 <c:set var="cb_checked" value="checked"/>

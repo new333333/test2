@@ -40,7 +40,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     protected int totalReplyCount=0;
     protected FolderEntry topEntry;
     protected FolderEntry parentEntry;
-    protected String owningFolderSortKey;
+    protected String owningBinderKey;
     // Number of locked files - This refers to all "not-yet-cleared" locks
     // including both effective and expired locks. 
     protected Integer lockedFileCount; // access="field"
@@ -112,14 +112,14 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         return getHKey().getEntryNumber();
     }
     /**
-     * @hibernate.property length="512" 
+     * @hibernate.property length="255" 
      * @return
      */
-    public String getOwningFolderSortKey() {
-        return owningFolderSortKey;
+    public String getOwningBinderKey() {
+        return owningBinderKey;
     }
-    public void setOwningFolderSortKey(String owningFolderSortKey) {
-        this.owningFolderSortKey = owningFolderSortKey;
+    public void setOwningBinderKey(String owningBinderKey) {
+        this.owningBinderKey = owningBinderKey;
     } 
     /**
      * @hibernate.property 
@@ -217,7 +217,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         if (topEntry == null) child.setTopEntry(this); else child.setTopEntry(topEntry);
         child.setHKey(new HKey(docHKey, nextDescendant++));
         child.setParentFolder(getParentFolder());
-        child.setOwningFolderSortKey(owningFolderSortKey);
+        child.setOwningBinderKey(owningBinderKey);
         ++replyCount;
         addAncestor(child);
     }

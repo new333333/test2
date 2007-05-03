@@ -15,6 +15,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.team.domain;
+import com.sitescape.team.InternalException;
 import com.sitescape.util.StringUtil;
 /**
  * @author Janet McCann
@@ -36,11 +37,8 @@ public class HKey {
         
         if (length == 15) { 
             level=0;
-        } else if (length == 20) {
-            level=1;
         } else {
-            level = (length-20)/4;
-            ++level;
+            level = (length-15)/5;
         }
         this.sortKey = sortKey;
         
@@ -48,8 +46,14 @@ public class HKey {
     
  
     public HKey(HKey parent, int eNum) {
-        level = parent.level+1;
-        
+        level = parent.getLevel()+1;
+        setKey(parent.getSortKey(), eNum);
+    }
+    public HKey(String parent, int eNum) {
+        level = (parent.length()/5)-3+1;
+        setKey(parent, eNum);
+    }
+    protected void setKey(String parent, int eNum) {
         StringBuffer key = new StringBuffer(100);
 
         // Base 36 conversion 
@@ -58,16 +62,11 @@ public class HKey {
             eNum = eNum/36;
         }
         int length = key.length();
-        int fillLength=5;
-        if (level>1) {
-            fillLength=4;
-        } 
-        for (int i=length; i<fillLength; ++i) {
+        for (int i=length; i<5; ++i) {
             key.insert(0,"0");            
         }
-        key.insert(0, parent.sortKey);
-        sortKey = key.toString();
-        
+        key.insert(0, parent);
+        sortKey = key.toString();       
         
     }
 
@@ -82,7 +81,7 @@ public class HKey {
         this.level = level;
     }
     /**
-     * @hibernate.property length="512" column="sortKey"
+     * @hibernate.property length="255" column="sortKey"
      * @return
      */
     public String getSortKey() {
@@ -102,7 +101,7 @@ public class HKey {
         int pos=0;
         while (endIndex < sortKey.length()) {
             result[pos++] = sortKey.substring(0,endIndex);
-            endIndex += 4;
+            endIndex += 5;
            
         }
         return result;
@@ -114,9 +113,9 @@ public class HKey {
             //Skip folder root which is first 15 characters
             dottyString.append(B36To10(sortKey.substring(15,20)));
             
-            for (int i=20; i<sortKey.length(); i+=4) {
+            for (int i=20; i<sortKey.length(); i+=5) {
                 dottyString.append(".");
-                dottyString.append(B36To10(sortKey.substring(i,i+4)));
+                dottyString.append(B36To10(sortKey.substring(i,i+5)));
             }
             position = dottyString.toString();
         }
@@ -135,5 +134,32 @@ public class HKey {
     	if (level > levels.length) return null;
     	return levels[level-1];
     }
+    public int getLastNumber() {
+    	String num = B36To10(sortKey.substring(sortKey.length()-5, sortKey.length()));
+    	return Integer.parseInt(num);
+     }
+    /*
+     * Each binder has a unique root sort key that it uses to
+     * generate sortkeys for its child docshareentries.
+     * The root is generated from the folder id.
+     */
+    public static String generateRootKey(Long id) {
+    	//the maximum long value encoded in base 36 will fit in 15 bytes
+    	StringBuffer sortKey = new StringBuffer(15);
+    	if (id == null) throw new InternalException("Entity must be saved");
+    	long start = id.longValue();
+    	
+        // Base 36 conversion 
+        while (start > 0) {
+            sortKey.insert(0,HKey.B10_TO_36.charAt((int)(start%36)));
+            start = start/36;
+        }
+        for (int i=sortKey.length(); i<15; ++i) {
+            sortKey.insert(0,"0");            
+        }
+        
+        return sortKey.toString();
+    }
+
   
 }

@@ -41,9 +41,9 @@
     </set>
     <component name="HKey" class="com.sitescape.team.domain.HKey">
       <property name="level" column="entry_level"/>
-      <property name="sortKey" length="512" column="entry_sortKey" index="entrySortKey"/>
+      <property name="sortKey" length="255" column="entry_sortKey" unique="true"/>
     </component>
-    <property name="owningFolderSortKey" length="512" index="owningFolderSortKey"/>
+ 	<property name="owningBinderKey" length="255" index="owningBinderKey"/>
     <property name="lastActivity"/>
 	<property name="logVersion"/>
     <property name="replyCount"/>

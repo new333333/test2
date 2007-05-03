@@ -13,8 +13,6 @@ package com.sitescape.team.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitescape.team.InternalException;
-
 /**
  * @hibernate.subclass discriminator-value="folder" dynamic-update="true"
  * 
@@ -23,10 +21,8 @@ import com.sitescape.team.InternalException;
  */
 public class Folder extends Binder {
     protected Folder parentFolder;
-    protected HKey folderHKey;
-    protected HKey entryRootHKey;
+    protected String entryRootKey;
     protected Folder topFolder;
-    protected int nextFolderNumber=1;
     protected int nextEntryNumber=1;
     //We don't maintain a list of entries because it is to big and expensive to 
     //maintain.
@@ -75,40 +71,18 @@ public class Folder extends Binder {
     public void setNextEntryNumber(int nextEntryNumber) {
     	this.nextEntryNumber = nextEntryNumber;
     }
-    /** 
-     * @hibernate.property 
-     * @return
-     */
-    public int getNextFolderNumber() {
-    	return nextFolderNumber;
-    }
-    public void setNextFolderNumber(int nextFolderNumber) {
-    	this.nextFolderNumber = nextFolderNumber;
-    }   
-
+ 
     /**
-     * @hibernate.component class="com.sitescape.team.domain.HKey" prefix="folder_"
+     * @hibernate.properoty length="15"
      */
-    public HKey getFolderHKey() {
-       	if (folderHKey != null) return folderHKey;
-    	if (getId() == null) return null;
-    	folderHKey = new HKey(generateFolderRootSortKey());
-    	return folderHKey;
+    public String getEntryRootKey() {
+    	if (entryRootKey != null) return entryRootKey;
+       	if (getId() == null) return null;
+        entryRootKey = HKey.generateRootKey(getId());
+    	return entryRootKey;
     }
-    public void setFolderHKey(HKey folderHKey) {
-        this.folderHKey = folderHKey;
-    }
-    /**
-     * @hibernate.component class="com.sitescape.team.domain.HKey" prefix="entryRoot_"
-     */
-    public HKey getEntryRootHKey() {
-    	if (entryRootHKey != null) return entryRootHKey;
-    	if (getId() == null) return null;
-    	entryRootHKey = new HKey(generateEntryRootSortKey());
-    	return entryRootHKey;
-    }
-    protected void setEntryRootHKey(HKey entryRootHKey) {
-        this.entryRootHKey = entryRootHKey;
+    protected void setEntryRootKey(String entryRootKey) {
+        this.entryRootKey = entryRootKey;
     }
    
     public List getFolders() {
@@ -120,8 +94,6 @@ public class Folder extends Binder {
     public void addFolder(Folder child) {
   		super.addBinder(child);
         if (topFolder == null) child.setTopFolder(this); else child.setTopFolder(topFolder);
-   		//	Set root for subfolders
- 	   	child.setFolderHKey(new HKey(getFolderHKey(), nextFolderNumber++));   			
    	}
     public void removeBinder(Binder binder) {
     	removeFolder((Folder)binder);
@@ -133,7 +105,6 @@ public class Folder extends Binder {
         super.removeBinder(child);
         child.setTopFolder(null);
         child.setParentFolder(null);
-        child.setFolderHKey(null);
     }    
     
     /**
@@ -144,9 +115,8 @@ public class Folder extends Binder {
       entry.setParentEntry(null);
       entry.setTopEntry(null);
       entry.setParentBinder((Folder)this);
-      entry.setOwningFolderSortKey(getFolderHKey().getSortKey());
-      entry.setHKey(new HKey(getEntryRootHKey(), nextEntryNumber++));
-
+      entry.setOwningBinderKey(getBinderKey().getSortKey());
+      entry.setHKey(new HKey(getEntryRootKey(), nextEntryNumber++));
     }
     /**
      * Removes the connection of this entry from the folder.  
@@ -164,7 +134,7 @@ public class Folder extends Binder {
       }
       entry.setParentFolder(null);
       entry.setHKey(null);
-      entry.setOwningFolderSortKey(null);
+      entry.setOwningBinderKey(null);
 
     }    
 
@@ -191,33 +161,7 @@ public class Folder extends Binder {
     		return getDefs(Definition.FOLDER_VIEW);
     }	    
     
-    /*
-     * Each folder has a unique root sort key that it uses to
-     * generate sortkeys for its child docshareentries.
-     * The root is generated from the folder id.
-     */
-    protected String generateEntryRootSortKey() {
-    	//the maximum long value encoded in base 36 will fit in 15 bytes
-    	StringBuffer sortKey = new StringBuffer(15);
-    	Long id = getId();
-    	if (id == null) throw new InternalException("Folder must be saved");
-    	long start = id.longValue();
-    	
-        // Base 36 conversion 
-        while (start > 0) {
-            sortKey.insert(0,HKey.B10_TO_36.charAt((int)(start%36)));
-            start = start/36;
-        }
-        for (int i=sortKey.length(); i<15; ++i) {
-            sortKey.insert(0,"0");            
-        }
-        
-        return sortKey.toString();
-    }
-    protected String generateFolderRootSortKey(){
-    	return generateEntryRootSortKey() + "00001";
-    }
-    /**
+     /**
      * Processor type for folders may be different and dependent on
      * the definition
      * @param processorKey

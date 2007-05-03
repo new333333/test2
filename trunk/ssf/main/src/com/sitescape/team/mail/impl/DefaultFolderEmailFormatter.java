@@ -409,7 +409,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			if (checkDate(entry.getCreation(), notifyDef.getStartDate()) > 0) {
 				element.addAttribute("notifyType", "newEntry");
 				stamp = entry.getCreation();
-			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) > 0) {
+			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) >= 0) {
 				stamp = entry.getWorkflowChange();
 				element.addAttribute("notifyType", "workflowEntry");
 			} else {

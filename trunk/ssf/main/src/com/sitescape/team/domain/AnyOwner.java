@@ -27,8 +27,8 @@ public class AnyOwner {
 	protected FolderEntry folderEntry;
 	protected Principal principal;
 	protected Binder binder;
-   //keep as reference for user queries only 
-    protected String owningFolderSortKey;   
+   //keep as reference for user queries that search sub-trees 
+    protected String owningBinderKey;   
     //optimization to delete associations for entries in a binder, but not associations of the binder itself
     protected Long owningBinderId;
     /**
@@ -57,8 +57,8 @@ public class AnyOwner {
 				Folder f = fEntry.getParentFolder();
 				if (f != null) {
 					//This value is used to help narrow the results of sql reporting queries
-					//You can use this to search a folder of sub-folder heirarchy
-					owningFolderSortKey = f.getFolderHKey().getSortKey();
+					//You can use this to search a folder or sub-folder heirarchy
+					owningBinderKey = f.getBinderKey().getSortKey();
 				}
 			}
   		}
@@ -73,7 +73,7 @@ public class AnyOwner {
    			folderEntry = (FolderEntry)entity;
    			//This value is used to help narrow the results of sql reporting queries
    			//You can use this to search a folder of sub-folder heirarchy
-   			owningFolderSortKey = folderEntry.getParentFolder().getFolderHKey().getSortKey();  	
+   			owningBinderKey = folderEntry.getParentFolder().getBinderKey().getSortKey();  	
    		} else if (entity instanceof Principal) {
    			principal=(Principal)entity;
    		} else if (entity instanceof Binder) {
@@ -188,14 +188,14 @@ public class AnyOwner {
    	this.ownerId = ownerId;
    }
    /**
-    * @hibernate.property length="512" 
+    * @hibernate.property length="255" 
     * @return
     */
-   private String getOwningFolderSortKey() {
-       return owningFolderSortKey;
+   private String getOwningBinderKey() {
+       return owningBinderKey;
    }
-   private void setOwningFolderSortKey(String owningFolderSortKey) {
-       this.owningFolderSortKey = owningFolderSortKey;
+   private void setOwningBinderKey(String owningBinderKey) {
+       this.owningBinderKey = owningBinderKey;
    }   
    public boolean equals(Object obj) {
    		if(this == obj)

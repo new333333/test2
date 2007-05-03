@@ -362,7 +362,7 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="authenticationManager" parent="baseTransactionProxy">
+	<bean id="authenticationManager" parent="baseTransactionProxy" depends-on="sPropsUtil">
 		<property name="transactionAttributes">
 			<props>
 				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>

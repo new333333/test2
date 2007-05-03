@@ -30,7 +30,10 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
@@ -172,6 +175,79 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        					b.setBinderCount(b.getBinders().size());
 	        				}
 	        			}
+	        			if (zone.getBinderKey() == null) {
+	        				//need to rebuild all the binder keys
+	    	        		zone.setupRoot();
+	        				List<Binder> binders = new ArrayList(zone.getBinders());
+	        				while (!binders.isEmpty()) {
+	        					Binder b = binders.get(0);
+	        					binders.remove(0);
+	        					binders.addAll(b.getBinders());
+	        					Binder parent = b.getParentBinder();
+	        					if (b instanceof Folder) {
+	        						//need to do lots of updates
+	        						//this will set the key
+		        					parent.removeBinder(b);
+		        					parent.addBinder(b);
+		        					((Folder)b).getEntryRootKey();  //force key update
+		        					String newKey = b.getBinderKey().getSortKey();
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.Event set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.CustomAttribute set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.Attachment set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.WorkflowState set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+	        	        	
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.WorkflowResponse set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.FolderEntry set owningBinderKey='" +
+	        	        					newKey + "' where parentBinder="+ b.getId());
+	        					} else {
+	        						parent.removeBinder(b);
+	        						parent.addBinder(b);
+	        					}
+	        				}
+	        				//fixup templates
+	        				List<Binder> templates = getCoreDao().loadConfigurations(zone.getId());
+	        				while (!templates.isEmpty()) {
+	        					Binder b = templates.get(0);
+	        					templates.remove(0);
+	        					templates.addAll(b.getBinders());
+	        					if (b.isRoot()) {
+	        						b.setupRoot();
+	        					} else {
+	        						Binder parent = b.getParentBinder();
+	        						parent.removeBinder(b);
+	        						parent.addBinder(b);
+	        					}
+	        					b.setBinderCount(b.getBinders().size());
+	        				}
+	        				//now fixup sortkeys for all replies - top levels okay
+	        				if (i == 0) {  //do all at once = should only be one zone
+	        					List<FolderEntry> entries = getCoreDao().loadObjects("from com.sitescape.team.domain.FolderEntry where HKey.level > 1", null);
+	        					for (FolderEntry fe:entries) {
+	        						String key = fe.getHKey().getSortKey();
+	        						StringBuffer newKey = new StringBuffer(100);
+	        						newKey.append(key.substring(0,20));
+	        						//convert to 5 positions
+	        						for (int pos =20; pos < key.length(); pos+=4) {
+	        							newKey.append("0");
+	        							newKey.append(key.substring(pos, pos+4));
+	        						}
+	        						fe.setHKey(new HKey(newKey.toString()));
+	        					}
+	        				}
+	        				
+	        			}
 	    	        }
 		        	return null;
 	        	}
@@ -211,6 +287,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		//generate id for top and profiles
 	        		getCoreDao().save(top);
 	        		top.setZoneId(top.getId());
+	        		top.setupRoot();
 			
 	        		ProfileBinder profiles = addPersonalRoot(top);
 		

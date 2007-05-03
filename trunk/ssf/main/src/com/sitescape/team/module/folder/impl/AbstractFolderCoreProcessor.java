@@ -311,7 +311,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      	   	//need these changes for index and change log
           	e.setHKey(new HKey(childSort.replaceFirst(oldKey.getSortKey(), fEntry.getHKey().getSortKey())));
           	e.setParentFolder(to);
-          	e.setOwningFolderSortKey(to.getFolderHKey().getSortKey());
+          	e.setOwningBinderKey(to.getBinderKey().getSortKey());
             //just log new location
           	e.setModification(fEntry.getModification());
           	e.incrLogVersion();
@@ -425,132 +425,22 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
-    	if (destination instanceof Folder) 
-    		moveFolderToFolder((Folder)source, (Folder)destination);
-    	else if (destination instanceof Workspace) 
-    		moveFolderToWorkspace((Folder)source, (Workspace)destination);
+    	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
+    		super.moveBinder(source, destination);
     	else throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
-
-    	 
-      }
-    public void moveFolderToFolder(Folder source, Folder destination) {
-    	super.moveBinder_mirrored(source, destination);
-    	HKey oldKey = source.getFolderHKey();
-    	//first remove name
-    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
-		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
-    	source.getParentBinder().removeBinder(source);
-    	destination.addFolder(source);
-    	//now add name
-		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
-		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
-		// The path changes since its parent changed.    	
- 		source.setPathName(destination.getPathName() + "/" + source.getTitle());
-		boolean resourcePathAffected = false;
-		if(isMirroredAndNotTopLevel(source)) {
-			resourcePathAffected = true;
-			String newPath = getResourceDriverManager().getResourcePath
-			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
-			source.setResourcePath(newPath);
+   	 
+    }
+	public void moveBinderFixup(Binder binder) {
+		//Some parentage has changed.
+		Folder folder = (Folder)binder;
+		if (!folder.isTop()) {  //may have had topFolder changed
+			if (folder.getParentFolder().isTop()) folder.setTopFolder(folder.getParentFolder());
+			else folder.setTopFolder(folder.getParentFolder().getTopFolder());
 		}
-     	//create history - using timestamp and version from fillIn
-        User user = RequestContextHolder.getRequestContext().getUser();
-        moveLog(source, new HistoryStamp(user));
-
-    	HKey newKey = source.getFolderHKey();
-    	getFolderDao().moveEntries(source);
-    	//fixup all children
-    	List binders = source.getBinders();
-    	for (int i=0; i<binders.size(); ++i) {
-    		Folder child = (Folder)binders.get(i);
-    		child.setTopFolder(source.getTopFolder());
-     		child.setPathName(source.getPathName() + "/" + child.getTitle());
-     		if(resourcePathAffected) {
-				String newPath = getResourceDriverManager().getResourcePath
-				(child.getResourceDriverName(), child.getParentBinder().getResourcePath(), child.getTitle());
-				child.setResourcePath(newPath);    			
-     		}
-     		moveLog(child, source.getModification());
-    		fixupMovedChild(child, oldKey, newKey, resourcePathAffected);
-    	}
-    	indexTree(source, null);
+		getFolderDao().moveEntries(folder);
     	
-    }
-    protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent, boolean resourcePathAffected) {
-    	HKey oldKey = child.getFolderHKey();
-    	String childSort = oldKey.getSortKey();
-    	HKey newKey = new HKey(childSort.replaceFirst(oldParent.getSortKey(), newParent.getSortKey()));
-    	child.setFolderHKey(newKey);
-    	getFolderDao().moveEntries(child);
-    	List binders = child.getBinders();
-    	for (int i=0; i<binders.size(); ++i) {
-    		Folder c = (Folder)binders.get(i);
-    		c.setTopFolder(child.getTopFolder());
-     		c.setPathName(child.getPathName() + "/" + c.getTitle());
-     		if(resourcePathAffected) {
-				String newPath = getResourceDriverManager().getResourcePath
-				(c.getResourceDriverName(), c.getParentBinder().getResourcePath(), c.getTitle());
-				c.setResourcePath(newPath);    			
-     		}
-     		moveLog(c, child.getModification());
-    		fixupMovedChild(c, oldKey, newKey, resourcePathAffected);
-    	}
-   	
-    }
-    private void moveLog(Binder binder, HistoryStamp stamp) {
-    	binder.setModification(stamp);
- 		binder.incrLogVersion();
- 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
+	}
 
-    }
-    public void moveFolderToWorkspace(Folder source, Workspace destination) {
-    	super.moveBinder_mirrored(source, destination);
-      	if (destination.isZone())
-      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
-      	HKey oldKey = source.getFolderHKey();
-       	//first remove name
-    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
-		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
-     	source.getParentBinder().removeBinder(source);
-    	destination.addFolder(source);
-    	//now add name
-		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
-		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
-		// The path changes since its parent changed.    	
- 		source.setPathName(destination.getPathName() + "/" + source.getTitle());
-		boolean resourcePathAffected = false;
-		if(isMirroredAndNotTopLevel(source)) {
-			resourcePathAffected = true;
-			String newPath = getResourceDriverManager().getResourcePath
-			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
-			source.setResourcePath(newPath);
-		}
-     	//create history - using timestamp and version from fillIn
-        User user = RequestContextHolder.getRequestContext().getUser();
-        moveLog(source, new HistoryStamp(user));
- 
-    	source.setTopFolder(null);
-    	HKey newKey = source.getFolderHKey();
-    	getFolderDao().moveEntries(source);
-    	//fixup all children
-    	List binders = source.getBinders();
-    	for (int i=0; i<binders.size(); ++i) {
-    		Folder child = (Folder)binders.get(i);
-    		child.setTopFolder(source);
-     		child.setPathName(source.getPathName() + "/" + child.getTitle());
-     		if(resourcePathAffected) {
-				String newPath = getResourceDriverManager().getResourcePath
-				(child.getResourceDriverName(), child.getParentBinder().getResourcePath(), child.getTitle());
-				child.setResourcePath(newPath);    			
-     		}
-    		moveLog(child, source.getModification());
-    		fixupMovedChild(child, oldKey, newKey, resourcePathAffected);
-    	}
-    	indexTree(source, null);
-   	
-    }
     //***********************************************************************************************************
     public Set getPrincipalIds(DefinableEntity entity) {
     	Set ids = super.getPrincipalIds(entity);

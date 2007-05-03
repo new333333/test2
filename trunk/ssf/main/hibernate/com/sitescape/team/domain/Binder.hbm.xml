@@ -89,6 +89,12 @@
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>    
     <property name="internalId" length="32"/>
+      <property name="nextBinderNumber" />
+      <component name="binderKey" class="com.sitescape.team.domain.HKey">
+        <property name="level" column="binder_level"/>
+        <property name="sortKey" length="255" column="binder_sortKey" unique="true"/>
+      </component>
+    
     <many-to-one access="field" class="com.sitescape.team.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
     </many-to-one>
@@ -107,16 +113,10 @@
     <subclass name="com.sitescape.team.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
       <many-to-one name="topFolder" />
       <property name="nextEntryNumber"/>
-      <property name="nextFolderNumber"/>
-      <component name="folderHKey" class="com.sitescape.team.domain.HKey">
-        <property name="level" column="folder_level"/>
-        <property name="sortKey" length="512" column="folder_sortKey"/>
-      </component>
-      <component name="entryRootHKey" class="com.sitescape.team.domain.HKey">
-        <property name="level" column="entryRoot_level"/>
-        <property name="sortKey" length="512" column="entryRoot_sortKey"/>
-      </component>
-    </subclass>
+      <property name="entryRootKey">
+ 		<column name="entryRootKey" sql-type="char(15)"/>
+ 	  </property>
+     </subclass>
     <subclass name="com.sitescape.team.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
     	<property name="searchTitle" length="255" access="field"/>
      <subclass name="com.sitescape.team.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
