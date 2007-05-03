@@ -51,6 +51,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
@@ -246,7 +247,12 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		Binder binder = getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		try {
+			binder = getBinderModule().getBinder(binderId);
+		} catch(NoBinderByTheIdException e) {
+		}
+
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
@@ -272,10 +278,11 @@ public class ListFolderController extends  SAbstractController {
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
-		DashboardHelper.getDashboardMap(binder, userProperties, model);
-
-		//See if the user has selected a specific view to use
-		DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+		if(binder != null) {
+			DashboardHelper.getDashboardMap(binder, userProperties, model);
+			//See if the user has selected a specific view to use
+			DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+		}
 		Tabs tabs = BinderHelper.initTabs(request, binder);
 		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
 		model.put(WebKeys.TABS, tabs.getTabs());		
@@ -305,7 +312,11 @@ public class ListFolderController extends  SAbstractController {
 		setupUrlTags(request, tabOptions, options, model);
 
 		String view = null;
-		if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+		if(binder== null) {
+			view = "binder/deleted_binder";
+		} else if(configElement == null) {
+			view = WebKeys.VIEW_NO_DEFINITION;
+		} else if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 			model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
 			view = getTeamMembers(formData, request, response, (Folder)binder, options, model, viewType);
 		} else {
@@ -319,10 +330,11 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 
-		model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
-		model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+		if(binder != null) {
+			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
+			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+		}
 
-		if (configElement == null) 	return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 		try {
 			//won't work on adapter
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");

@@ -1026,6 +1026,11 @@ public class BinderHelper {
 			tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 		} catch(Exception e) {}
 		
+		if(binder == null) {
+			tabs.setCurrentTab(tabId.intValue());
+			return tabs;
+		}
+
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		
 		//What do the newTab values mean?
