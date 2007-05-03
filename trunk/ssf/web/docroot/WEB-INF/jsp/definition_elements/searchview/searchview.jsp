@@ -36,9 +36,16 @@
   border-left:solid #666666 1px;">
 	<table class="ss_actions_bar2_pane">
 		<tr>
-			<td>
+			<td nowrap>
 				<% // Add the toolbar with the navigation widgets, commands and filter %>
 				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+
+					<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
+						<c:set var="ss_history_bar_table_class" 
+						  value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
+						<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+					</ssf:toolbar>
+		
 					<% // Entry toolbar %>
 					<c:if test="${!empty ssEntryToolbar}">
 						<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
