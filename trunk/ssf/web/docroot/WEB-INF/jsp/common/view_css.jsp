@@ -64,6 +64,7 @@ var ss_addTabUrl;
 var ss_not_logged_in;
 var ss_nlt_navigation_normal;
 var ss_nlt_navigation_maximize;
+var ss_confirmDeleteFolderText;
 var ss_userDisplayStyle;
 var ss_findButtonClose;
 var ss_findAjaxUrl;
@@ -142,6 +143,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	//Global toolbar text
 	ss_nlt_navigation_normal = "<ssf:nlt tag="navigation.normal"/>";
 	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
+	ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	
 	//Clipboard text
 	ss_clipboardTitleText = "<ssf:nlt tag="clipboard.title"/>";
