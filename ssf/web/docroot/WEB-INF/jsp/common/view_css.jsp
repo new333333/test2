@@ -359,5 +359,11 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
 }
 </script>
+<c:if test="${!empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+  <a href="${ss_accessibleUrl}"><img 
+    <ssf:alt tag="accessible.enableAccessibleMode"/> 
+    src="<html:imagesPath/>pics/1pix.gif" /></a>
+</c:if>
+
 </c:if>
 </c:if>

@@ -159,12 +159,14 @@ public class BinderHelper {
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
 		
 		PortletURL url = response.createActionURL();
-		if (binder.getEntityType().equals(EntityType.folder)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		else if (binder.getEntityType().equals(EntityType.workspace)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		else if (binder.getEntityType().equals(EntityType.profiles)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+		if (binder != null) {
+			if (binder.getEntityType().equals(EntityType.folder)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			else if (binder.getEntityType().equals(EntityType.workspace)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			else if (binder.getEntityType().equals(EntityType.profiles)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		}
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-		if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		} else {

@@ -31,15 +31,18 @@ import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
@@ -71,6 +74,15 @@ public class ViewController  extends SAbstractController {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 			prefs.store();
 		}
+        User user = RequestContextHolder.getRequestContext().getUser();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		
+		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
+			Map<String,Object> updates = new HashMap<String,Object>();
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+		}
 		response.setRenderParameters(request.getParameterMap());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -95,6 +107,7 @@ public class ViewController  extends SAbstractController {
 		}
 			
         User user = RequestContextHolder.getRequestContext().getUser();
+		BinderHelper.getBinderAccessibleUrl(this, null, null, request, response, model);
 
 		if (FORUM_PORTLET.equals(displayType)) {
 		

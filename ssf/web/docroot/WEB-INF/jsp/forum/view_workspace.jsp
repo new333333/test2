@@ -115,7 +115,7 @@
 				  </a>
 				</c:if>
 				<c:if test="${ss_displayStyle != 'accessible'}">
-				  <a href="${ss_accessibleUrl}" onClick="alert('Accessibility mode is not fully implemented yet.');">
+				  <a href="${ss_accessibleUrl}">
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 				  </a>
 				</c:if>
