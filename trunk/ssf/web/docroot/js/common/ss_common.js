@@ -4752,3 +4752,11 @@ function ss_date_validator(id, obj)
 
 	return isDate(month+"/"+day+"/"+year, "M/d/y");
 }
+
+function ss_confirmDeleteFolder() {
+	if (confirm(ss_confirmDeleteFolderText)) {
+		return true
+	} else {
+		return false
+	}
+}
