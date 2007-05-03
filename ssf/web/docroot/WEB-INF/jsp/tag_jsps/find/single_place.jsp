@@ -21,10 +21,12 @@
 	String findPlacesElementWidth = (String) request.getAttribute("element_width");
 %>
 <c:set var="prefix" value="<%= findPlacesFormName + "_" + findPlacesElementName %>" />
+<c:set var="prefix" value="${prefix}_${renderResponse.namespace}"/>
 <c:if test="${empty ss_find_places_support_stuff_loaded}">
 <script type="text/javascript">
 var ss_findPlaces_searchText = ""
 var ss_findPlaces_pageNumber = 0;
+var ss_findPlaces_pageNumberBefore = 0;
 var ss_findPlacesDivTopOffset = 2;
 
 var ss_findPlacesSearchInProgress = 0;
@@ -38,9 +40,12 @@ var ss___findPlacesIsMouseOverList = false;
 function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text != ss_findPlacesSearchLastText) ss_findPlaces_pageNumber = 0;
+	if (text != ss_findPlacesSearchLastText) {
+		ss_findPlaces_pageNumber = 0;
+		ss_findPlaces_pageNumberBefore = 0;
+	}
 	ss_setupStatusMessageDiv()
-	ss_moveDivToBody('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+	ss_moveDivToBody('ss_findPlacesNavBarDiv_${prefix}');
 	//Are we already doing a search?
 	if (ss_findPlacesSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -90,7 +95,7 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 			placeLink.onclick();
 
 //  next function, called without type, uses permalink - loop problem
-//	ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0]);
+//	ss_findPlacesSelectItem${prefix}(liObjs[0]);
 			return;
 		}
  	}
@@ -103,6 +108,11 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
  	if (divObj != null) divObj.style.color = "#cccccc";
 
  	ss_debug("Page number: " + ss_findPlaces_pageNumber + ", //"+text+"//")
+	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+		ss_findPlaceSearchAccessible_${prefix}(text, elementName, findPlacesType, crFound);
+		ss_findPlacesSearchInProgress = 0;
+		return;
+	}
  	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -120,29 +130,29 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("pageNumber", ss_findPlaces_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
-	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
+	ajaxRequest.addKeyValue("namespace", "${prefix}")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_prefindPlacesRequest);
-	ajaxRequest.setPostRequest(ss_postfindPlacesRequest<portlet:namespace/>);
+	ajaxRequest.setPostRequest(ss_postfindPlacesRequest${prefix});
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setData("savedColor", savedColor)
 	ajaxRequest.setData("crFound", crFound)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postfindPlacesRequest<portlet:namespace/>(obj) {
-	ss_debug('ss_postfindPlacesRequest<portlet:namespace/>')
+function ss_postfindPlacesRequest${prefix}(obj) {
+	ss_debug('ss_postfindPlacesRequest${prefix}')
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
 	ss_findPlacesSearchInProgress = 0;
 
-	var divObj = document.getElementById('ss_findPlacesNavBarDiv_<portlet:namespace/>');
-	ss_moveDivToBody('ss_findPlacesNavBarDiv_<portlet:namespace/>');
-	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findPlaces_searchText_bottom_<portlet:namespace/>") + ss_findPlacesDivTopOffset))
-	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findPlaces_searchText_bottom_<portlet:namespace/>")))
-	ss_showDivActivate('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+	var divObj = document.getElementById('ss_findPlacesNavBarDiv_${prefix}');
+	ss_moveDivToBody('ss_findPlacesNavBarDiv_${prefix}');
+	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findPlaces_searchText_bottom_${prefix}") + ss_findPlacesDivTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findPlaces_searchText_bottom_${prefix}")))
+	ss_showDivActivate('ss_findPlacesNavBarDiv_${prefix}');
 		
  	//Show this at full brightness
  	divObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
@@ -166,11 +176,11 @@ function ss_findPlacesSelectItem0_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}');
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0])
+		ss_findPlacesSelectItem${prefix}(liObjs[0])
 	}
 }
 //Routine called when item is clicked
-function ss_findPlacesSelectItem<portlet:namespace/>(obj, type) {
+function ss_findPlacesSelectItem${prefix}(obj, type) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url="<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="ssActionPlaceHolder"/><portlet:param name="binderId" 
@@ -195,41 +205,101 @@ function ss_savefindPlacesData_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}')
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0]);
+		ss_findPlacesSelectItem${prefix}(liObjs[0]);
 	}
 	return false;
 }
 
-function ss_findPlacesNextPage<portlet:namespace/>() {
+function ss_findPlacesNextPage${prefix}() {
+	ss_findPlaces_pageNumberBefore = ss_findPlaces_pageNumber;
 	ss_findPlaces_pageNumber++;
 	setTimeout("ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);", 100);
 }
 
-function ss_findPlacesPrevPage<portlet:namespace/>() {
+function ss_findPlacesPrevPage${prefix}() {
+	ss_findPlaces_pageNumberBefore = ss_findPlaces_pageNumber;
 	ss_findPlaces_pageNumber--;
 	if (ss_findPlaces_pageNumber < 0) ss_findPlaces_pageNumber = 0;
 	ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);
 }
 
-function ss_findPlacesClose<portlet:namespace/>() {
-	document.getElementById('ss_findPlaces_searchText_<portlet:namespace/>').focus();
+function ss_findPlacesClose${prefix}() {
+	document.getElementById('ss_findPlaces_searchText_${prefix}').focus();
 }
 
 
-function ss_findPlacesBlurTextArea<portlet:namespace/>() {
+function ss_findPlacesBlurTextArea${prefix}() {
 	if (!ss___findPlacesIsMouseOverList) {
-		setTimeout(function() { ss_hideDiv('ss_findPlacesNavBarDiv_<portlet:namespace/>') } , 200);
+		setTimeout(function() { ss_hideDiv('ss_findPlacesNavBarDiv_${prefix}') } , 200);
 	}
 }
 
-function ss_findPlacesMouseOverList<portlet:namespace/>() {
+function ss_findPlacesMouseOverList${prefix}() {
 	ss___findPlacesIsMouseOverList = true;
 }
 
-function ss_findPlacesMouseOutList<portlet:namespace/>() {
+function ss_findPlacesMouseOutList${prefix}() {
 	ss___findPlacesIsMouseOverList = false;
 }
 
+function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPlacesType, crFound) {
+	//In accessibility mode, wait for the user to type cr
+	if (!crFound && parseInt(ss_findPlaces_pageNumber) == 0 && 
+			parseInt(ss_findPlaces_pageNumberBefore) == 0) return;
+	
+    var iframeDivObj = self.document.getElementById("ss_findPlacesIframeDiv");
+    var iframeObj = self.document.getElementById("ss_findPlacesIframe");
+    var iframeDivObjParent = self.parent.document.getElementById("ss_findPlacesIframeDiv");
+    var iframeObjParent = self.parent.document.getElementById("ss_findPlacesIframe");
+    var textObj = self.document.getElementById('ss_findPlaces_searchText_bottom_${prefix}');
+    if (iframeDivObjParent == null && iframeDivObj == null) {
+	    iframeDivObj = self.document.createElement("div");
+	    iframeDivObjParent = iframeDivObj;
+        iframeDivObj.setAttribute("id", "ss_findPlacesIframeDiv");
+		iframeDivObj.className = "ss_popupMenu";
+		iframeDivObj.style.zIndex = ssPopupZ;
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_findPlacesIframe");
+        iframeObj.style.width = "400px"
+        iframeObj.style.height = "300px"
+		iframeDivObj.appendChild(iframeObj);
+	    var closeDivObj = self.document.createElement("div");
+	    closeDivObj.style.border = "2px solid gray";
+	    closeDivObj.style.marginTop = "1px";
+	    closeDivObj.style.padding = "6px";
+	    iframeDivObj.appendChild(closeDivObj);
+	    var aObj = self.document.createElement("a");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findPlacesIframeDiv');ss_findPlacesClose${prefix}();");
+	    aObj.style.border = "2px outset black";
+	    aObj.style.padding = "2px";
+	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
+	    closeDivObj.appendChild(aObj);
+		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+    }
+    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
+    if (iframeObj == null) iframeObj = iframeObjParent;
+    if (self.parent == self && textObj != null) {
+    	var x = dojo.html.getAbsolutePosition(textObj, true).x
+    	var y = dojo.html.getAbsolutePosition(textObj, true).y
+	    ss_setObjectTop(iframeDivObj, y + "px");
+	    ss_setObjectLeft(iframeDivObj, x + "px");
+	}
+	ss_showDiv("ss_findPlacesIframeDiv");
+	var url = ss_findAjaxUrl;
+	url = ss_replaceSubStrAll(url, "&amp;", "&");
+	url += "&operation=find_user_search";
+	url += "&searchText=" + searchText;
+	url += "&maxEntries=" + "10";
+	url += "&pageNumber=" + ss_findPlaces_pageNumber;
+	url += "&findType=" + findPlacesType;
+	url += "&listDivId=" + "available_"+elementName+"_${prefix}";
+	url += "&namespace=" + "${prefix}";
+    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
+		self.location.href = url;
+	} else {
+		iframeObj.src = url;
+	}
+}
 
 </script>
 <c:set var="ss_find_places_support_stuff_loaded" value="1" scope="request"/>
@@ -237,15 +307,15 @@ function ss_findPlacesMouseOutList<portlet:namespace/>() {
 
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
-    name="ss_findPlaces_searchText_<portlet:namespace/>" 
-    id="ss_findPlaces_searchText_<portlet:namespace/>"
+    name="ss_findPlaces_searchText_${prefix}" 
+    id="ss_findPlaces_searchText_${prefix}"
     onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
-    onBlur="ss_findPlacesBlurTextArea<portlet:namespace/>();"></textarea></div>
-<div id="ss_findPlaces_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
-<div id="ss_findPlacesNavBarDiv_<portlet:namespace/>"
+    onBlur="ss_findPlacesBlurTextArea${prefix}();"></textarea></div>
+<div id="ss_findPlaces_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
+<div id="ss_findPlacesNavBarDiv_${prefix}"
     class="ss_findUserList" style="visibility:hidden;"
-    onmouseover="ss_findPlacesMouseOverList<portlet:namespace/>()"
-    onmouseout="ss_findPlacesMouseOutList<portlet:namespace/>()">
+    onmouseover="ss_findPlacesMouseOverList${prefix}()"
+    onmouseout="ss_findPlacesMouseOutList${prefix}()">
     <div id="available_<%= findPlacesElementName %>_${prefix}">
       <ul>
       </ul>
