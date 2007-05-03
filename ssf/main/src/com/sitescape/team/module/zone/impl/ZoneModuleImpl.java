@@ -191,6 +191,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		        					parent.addBinder(b);
 		        					((Folder)b).getEntryRootKey();  //force key update
 		        					String newKey = b.getBinderKey().getSortKey();
+		        					if (((Folder)b).getNextEntryNumber() == 1) continue;
 		        					getCoreDao().executeUpdate(
 	        	        					"update com.sitescape.team.domain.Event set owningBinderKey='" +
 	        	        					newKey + "' where owningBinderId="+ b.getId());
@@ -211,6 +212,27 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		        					getCoreDao().executeUpdate(
 	        	        					"update com.sitescape.team.domain.FolderEntry set owningBinderKey='" +
 	        	        					newKey + "' where parentBinder="+ b.getId());
+	        					} if (b instanceof ProfileBinder) {
+	        						parent.removeBinder(b);
+	        						parent.addBinder(b);
+		        					String newKey = b.getBinderKey().getSortKey();
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.Event set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.CustomAttribute set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.Attachment set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.WorkflowState set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+	        	        	
+		        					getCoreDao().executeUpdate(
+	        	        					"update com.sitescape.team.domain.WorkflowResponse set owningBinderKey='" +
+	        	        					newKey + "' where owningBinderId="+ b.getId());
+	        						
 	        					} else {
 	        						parent.removeBinder(b);
 	        						parent.addBinder(b);
