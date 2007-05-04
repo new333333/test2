@@ -12,6 +12,7 @@
 function ss_declareFindTagSearchVariables () {
 	window.ss_findTag_searchText = new Array();
 	window.ss_findTag_pageNumber = new Array();
+	window.ss_findTag_pageNumberBefore = new Array();
 	window.ss_findTagDivTopOffset = new Array();
 	window.ss_findTagSearchInProgress = new Array();
 	window.ss_findTagSearchWaiting = new Array();
@@ -35,6 +36,7 @@ function ss_confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResul
 	}
 	ss_findTag_searchText[prefix] = "";
 	ss_findTag_pageNumber[prefix] = 0;
+	ss_findTag_pageNumberBefore[prefix] = 0;
 	ss_findTagDivTopOffset[prefix] = 2;
 	ss_findTagSearchInProgress[prefix] = 0;
 	ss_findTagSearchWaiting[prefix] = 0;
@@ -54,7 +56,10 @@ function ss_confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResul
 function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text != ss_findTagSearchLastText[prefix]) ss_findTag_pageNumber[prefix] = 0;
+	if (text != ss_findTagSearchLastText[prefix]) {
+		ss_findTag_pageNumber[prefix] = 0;
+		ss_findTag_pageNumberBefore[prefix] = 0;
+	}
 	ss_setupStatusMessageDiv();
 	ss_moveDivToBody('ss_findTagNavBarDiv'+prefix);
 	//Are we already doing a search?
@@ -115,11 +120,16 @@ function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
  	if (divObj != null) divObj.style.color = "#cccccc";
 
  	ss_debug("//"+text+"//")
- 	var ajaxRequest = new ss_AjaxRequest(ss_findTagSearchUrl[prefix]); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
+	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+		ss_findTagSearchAccessible(prefix, searchText, elementName, findTagType, crFound);
+		ss_findTagSearchInProgress[prefix] = 0;
+		return;
+	}
+ 	var ajaxRequest = new ss_AjaxRequest(ss_findTagSearchUrl[prefix]); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("searchText", searchText);
 	ajaxRequest.addKeyValue("maxEntries", "10");
 	ajaxRequest.addKeyValue("pageNumber", ss_findTag_pageNumber[prefix]);
@@ -217,11 +227,13 @@ function ss_saveFindTagData(prefix) {
 }
 
 function ss_findTagNextPage(prefix) {
+	ss_findTag_pageNumberBefore[prefix] = ss_findTag_pageNumber[prefix];
 	ss_findTag_pageNumber[prefix]++;
 	ss_findTagSearch(prefix, ss_findTagSearchLastTextObjId[prefix], ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix]);
 }
 
 function ss_findTagPrevPage(prefix) {
+	ss_findTag_pageNumberBefore[prefix] = ss_findTag_pageNumber[prefix];
 	ss_findTag_pageNumber[prefix]--;
 	if (ss_findTag_pageNumber[prefix] < 0) ss_findTag_pageNumber[prefix] = 0;
 	ss_findTagSearch(prefix, ss_findTagSearchLastTextObjId[prefix], ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix]);
@@ -250,4 +262,63 @@ function ss_findTagMouseOverList(prefix) {
 
 function ss_findTagMouseOutList(prefix) {
 	ss___findTagIsMouseOverList[prefix] = false;
+}
+
+function ss_findTagSearchAccessible(prefix, searchText, elementName, findTagType, crFound) {
+	//In accessibility mode, wait for the user to type cr
+	if (!crFound && parseInt(ss_findTag_pageNumber[prefix]) == 0 && 
+			parseInt(ss_findTag_pageNumberBefore[prefix]) == 0) return;
+	
+    var iframeDivObj = self.document.getElementById("ss_findTagIframeDiv");
+    var iframeObj = self.document.getElementById("ss_findTagIframe");
+    var iframeDivObjParent = self.parent.document.getElementById("ss_findTagIframeDiv");
+    var iframeObjParent = self.parent.document.getElementById("ss_findTagIframe");
+    var textObj = self.document.getElementById('ss_findTag_searchText_bottom_'+prefix);
+    if (iframeDivObjParent == null && iframeDivObj == null) {
+	    iframeDivObj = self.document.createElement("div");
+	    iframeDivObjParent = iframeDivObj;
+        iframeDivObj.setAttribute("id", "ss_findTagIframeDiv");
+		iframeDivObj.className = "ss_popupMenu";
+		iframeDivObj.style.zIndex = ssPopupZ;
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_findTagIframe");
+        iframeObj.style.width = "400px"
+        iframeObj.style.height = "300px"
+		iframeDivObj.appendChild(iframeObj);
+	    var closeDivObj = self.document.createElement("div");
+	    closeDivObj.style.border = "2px solid gray";
+	    closeDivObj.style.marginTop = "1px";
+	    closeDivObj.style.padding = "6px";
+	    iframeDivObj.appendChild(closeDivObj);
+	    var aObj = self.document.createElement("a");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findTagIframeDiv');ss_findTagClose('"+prefix+"');");
+	    aObj.style.border = "2px outset black";
+	    aObj.style.padding = "2px";
+	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
+	    closeDivObj.appendChild(aObj);
+		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+    }
+    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
+    if (iframeObj == null) iframeObj = iframeObjParent;
+    if (self.parent == self && textObj != null) {
+    	var x = dojo.html.getAbsolutePosition(textObj, true).x
+    	var y = dojo.html.getAbsolutePosition(textObj, true).y
+	    ss_setObjectTop(iframeDivObj, y + "px");
+	    ss_setObjectLeft(iframeDivObj, x + "px");
+	}
+	ss_showDiv("ss_findTagIframeDiv");
+	var url = ss_findAjaxUrl;
+	url = ss_replaceSubStrAll(url, "&amp;", "&");
+	url += "&operation=find_user_search";
+	url += "&searchText=" + searchText;
+	url += "&maxEntries=" + "10";
+	url += "&pageNumber=" + ss_findTag_pageNumber[prefix];
+	url += "&findType=" + findTagType;
+	url += "&listDivId=" + "available_" + prefix;
+	url += "&namespace=" + prefix;
+    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
+		self.location.href = url;
+	} else {
+		iframeObj.src = url;
+	}
 }

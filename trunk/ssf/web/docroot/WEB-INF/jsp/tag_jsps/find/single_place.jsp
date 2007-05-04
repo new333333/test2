@@ -26,7 +26,7 @@
 <script type="text/javascript">
 var ss_findPlaces_searchText = ""
 var ss_findPlaces_pageNumber = 0;
-var ss_findPlaces_pageNumberBefore = 0;
+var ss_findPlaces_pageNumberBefore = -1;
 var ss_findPlacesDivTopOffset = 2;
 
 var ss_findPlacesSearchInProgress = 0;
@@ -42,7 +42,7 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	var text = textObj.value;
 	if (text != ss_findPlacesSearchLastText) {
 		ss_findPlaces_pageNumber = 0;
-		ss_findPlaces_pageNumberBefore = 0;
+		ss_findPlaces_pageNumberBefore = -1;
 	}
 	ss_setupStatusMessageDiv()
 	ss_moveDivToBody('ss_findPlacesNavBarDiv_${prefix}');
@@ -245,7 +245,7 @@ function ss_findPlacesMouseOutList${prefix}() {
 function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPlacesType, crFound) {
 	//In accessibility mode, wait for the user to type cr
 	if (!crFound && parseInt(ss_findPlaces_pageNumber) == 0 && 
-			parseInt(ss_findPlaces_pageNumberBefore) == 0) return;
+			parseInt(ss_findPlaces_pageNumberBefore) == -1) return;
 	
     var iframeDivObj = self.document.getElementById("ss_findPlacesIframeDiv");
     var iframeObj = self.document.getElementById("ss_findPlacesIframe");
