@@ -133,21 +133,72 @@ public class WorkspaceTreeController extends SAbstractController  {
 
 		
 		Map formData = request.getParameterMap();
-		if (binder == null) binder = getBinderModule().getBinder(binderId);
-		BinderHelper.getBinderAccessibleUrl(this, binder, entryId, request, response, model);
+		try {
+			if (binder == null) binder = getBinderModule().getBinder(binderId);
+			BinderHelper.getBinderAccessibleUrl(this, binder, entryId, request, response, model);
 
  
- 		//Check special options in the URL
-		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
-		if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
-			//The user is requesting debug mode to be turned on or off
-			if (debug[0].equals(WebKeys.DEBUG_ON)) {
-				getProfileModule().setUserProperty(user.getId(), 
-						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(true));
-			} else if (debug[0].equals(WebKeys.DEBUG_OFF)) {
-				getProfileModule().setUserProperty(user.getId(), 
-						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(false));
+	 		//Check special options in the URL
+			String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
+			if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
+				//The user is requesting debug mode to be turned on or off
+				if (debug[0].equals(WebKeys.DEBUG_ON)) {
+					getProfileModule().setUserProperty(user.getId(), 
+							ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(true));
+				} else if (debug[0].equals(WebKeys.DEBUG_OFF)) {
+					getProfileModule().setUserProperty(user.getId(), 
+							ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(false));
+				}
 			}
+			//Build the navigation beans
+			BinderHelper.buildNavigationLinkBeans(this, binder, model);
+			//See if this is a user workspace
+			if ((binder.getDefinitionType() != null) && 
+					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+				Principal owner = binder.getOwner();
+				if (owner != null) {
+					//	turn owner into real object = not hibernate proxy
+					try {
+						User u = (User)getProfileModule().getEntry(owner.getParentBinder().getId(), owner.getId());
+						model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
+						Document profileDef = u.getEntryDef().getDefinition();
+						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
+						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+						model.put(WebKeys.USER_WORKSPACE, true);
+					} catch (Exception ex) {} //user may have been deleted, but ws left around
+				}
+			}
+		
+			Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
+			model.put(WebKeys.USER_PROPERTIES, userProperties);
+			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			DashboardHelper.getDashboardMap(binder, userProperties, model);
+			model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
+			String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+			Document searchFilter = null;
+			if (searchFilterName != null && !searchFilterName.equals("")) {
+				Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+				searchFilter = (Document)searchFilters.get(searchFilterName);
+			}
+			//See if the user has selected a specific view to use
+	        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
+			String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
+			
+			
+			if (operation.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
+				getTeamMembers(formData, request, response, (Workspace)binder, model);
+			} else {
+				getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
+			}
+
+			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
+			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+		} catch(NoBinderByTheIdException e) {
 		}
 		
 		model.put(WebKeys.BINDER, binder);
@@ -157,9 +208,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Tabs tabs = BinderHelper.initTabs(request, binder);
 		model.put(WebKeys.TABS, tabs.getTabs());		
 
-		//Build the navigation beans
-		BinderHelper.buildNavigationLinkBeans(this, binder, model);
-		
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -167,53 +215,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 		reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
-		//See if this is a user workspace
-		if ((binder.getDefinitionType() != null) && 
-				(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
-			Principal owner = binder.getOwner();
-			if (owner != null) {
-				//	turn owner into real object = not hibernate proxy
-				try {
-					User u = (User)getProfileModule().getEntry(owner.getParentBinder().getId(), owner.getId());
-					model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
-					Document profileDef = u.getEntryDef().getDefinition();
-					model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
-					model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
-							profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
-					model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
-					model.put(WebKeys.USER_WORKSPACE, true);
-				} catch (Exception ex) {} //user may have been deleted, but ws left around
-			}
+		if(binder == null) {
+			return new ModelAndView("binder/deleted_binder", model);
 		}
-	
-		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		DashboardHelper.getDashboardMap(binder, userProperties, model);
-		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
-		Document searchFilter = null;
-		if (searchFilterName != null && !searchFilterName.equals("")) {
-			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-			searchFilter = (Document)searchFilters.get(searchFilterName);
-		}
-		//See if the user has selected a specific view to use
-        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
-		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 		
-		
-		if (operation.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
-			model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
-			getTeamMembers(formData, request, response, (Workspace)binder, model);
-		} else {
-			getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
-		}
-
-		model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
-		model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
-
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
