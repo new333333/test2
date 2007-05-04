@@ -320,6 +320,19 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 		}
 
+		//Report
+		if (getReportModule().testAccess("report")) {
+			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.report"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_REPORT);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+		}
+		
 		//TODO:temporary for debug - just keep off menu
 		if (getAdminModule().testAccess("addPosting")) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);

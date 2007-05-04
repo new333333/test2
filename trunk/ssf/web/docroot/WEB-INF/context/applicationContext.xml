@@ -61,6 +61,7 @@
 		<property name="rssGenerator"><ref bean="rssGenerator"/></property>
 		<property name="icalGenerator"><ref bean="icalGenerator"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
+		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="icBroker"><ref bean="icBroker"/></property>			
 	</bean>
 

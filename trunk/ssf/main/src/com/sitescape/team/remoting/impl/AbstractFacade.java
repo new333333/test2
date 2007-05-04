@@ -48,6 +48,7 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -81,6 +82,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	private WorkflowModule workflowModule;
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
+	private ReportModule reportModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
 	private IcalGenerator icalGenerator;
@@ -189,6 +191,14 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		return dashboardModule;
 	}
 
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
+	
+	public ReportModule getReportModule() {
+		return reportModule;
+	}
+	
 	public ICBroker getIcBroker() {
 		return icBroker;
 	}

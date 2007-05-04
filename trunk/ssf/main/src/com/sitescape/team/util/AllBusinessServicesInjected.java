@@ -19,6 +19,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
@@ -74,6 +75,10 @@ public interface AllBusinessServicesInjected {
 	void setFileModule(FileModule fileModule);
 
 	FileModule getFileModule();
+
+	void setReportModule(ReportModule reportModule);
+
+	ReportModule getReportModule();
 
 	void setRssGenerator(RssGenerator rssGenerator);
 
