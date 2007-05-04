@@ -170,6 +170,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
+	public static final String ACTION_REPORT="report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
@@ -532,6 +533,7 @@ public class WebKeys {
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String RELOAD_URL_FORCED="ssReloadUrl";
     public static final String REPLY_BLOG_URL="replyBlogUrl";
+    public static final String REPORT="report";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SCHEDULE_INFO2="ssScheduleInfo2";
@@ -657,6 +659,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
+    public static final String VIEW_ADMIN_REPORT="administration/report";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
     public static final String VIEW_BINDER_SENDMAIL="binder/sendMail";
