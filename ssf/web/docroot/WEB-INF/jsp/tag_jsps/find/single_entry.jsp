@@ -30,6 +30,7 @@
 <script type="text/javascript">
 var ss_findEntries_searchText = ""
 var ss_findEntries_pageNumber = 0;
+var ss_findEntries_pageNumberBefore = -1;
 var ss_findEntriesDivTopOffset = 2;
 
 var ss_findEntriesSearchInProgress = 0;
@@ -44,7 +45,10 @@ var ss___findEntriesIsMouseOverList = false;
 function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text != ss_findEntriesSearchLastText) ss_findEntries_pageNumber = 0;
+	if (text != ss_findEntriesSearchLastText) {
+		ss_findEntries_pageNumber = 0;
+		ss_findEntries_pageNumberBefore = -1;
+	}
 	ss_setupStatusMessageDiv()
 	ss_moveDivToBody('ss_findEntriesNavBarDiv_<portlet:namespace/>');
 	//Are we already doing a search?
@@ -105,6 +109,15 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
  	if (divObj != null) divObj.style.color = "#cccccc";
 
  	ss_debug("Page number: " + ss_findEntries_pageNumber + ", //"+text+"//")
+	var searchText = text;
+	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
+		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	}
+	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+		ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEntriesType, crFound);
+		ss_findEntriesSearchInProgress = 0;
+		return;
+	}
  	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -113,10 +126,6 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 		<ssf:param name="operation" value="find_entries_search" />
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	var searchText = text;
-	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
-		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
-	}
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findEntries_pageNumber)
@@ -205,11 +214,13 @@ function ss_savefindEntriesData_${prefix}() {
 }
 
 function ss_findEntriesNextPage<portlet:namespace/>() {
+	ss_findEntries_pageNumberBefore = ss_findEntries_pageNumber;
 	ss_findEntries_pageNumber++;
 	setTimeout("ss_findEntriesSearch_${prefix}(ss_findEntriesSearchLastTextObjId, ss_findEntriesSearchLastElement, ss_findEntriesSearchLastfindEntriesType);", 100);
 }
 
 function ss_findEntriesPrevPage<portlet:namespace/>() {
+	ss_findEntries_pageNumberBefore = ss_findEntries_pageNumber;
 	ss_findEntries_pageNumber--;
 	if (ss_findEntries_pageNumber < 0) ss_findEntries_pageNumber = 0;
 	ss_findEntriesSearch_${prefix}(ss_findEntriesSearchLastTextObjId, ss_findEntriesSearchLastElement, ss_findEntriesSearchLastfindEntriesType);
@@ -231,6 +242,65 @@ function ss_findEntriesMouseOverList<portlet:namespace/>() {
 
 function ss_findEntriesMouseOutList<portlet:namespace/>() {
 	ss___findEntriesIsMouseOverList = false;
+}
+
+function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEntriesType, crFound) {
+	//In accessibility mode, wait for the user to type cr
+	if (!crFound && parseInt(ss_findEntries_pageNumber) == 0 && 
+			parseInt(ss_findEntries_pageNumberBefore) == -1) return;
+	
+    var iframeDivObj = self.document.getElementById("ss_findEntriesIframeDiv");
+    var iframeObj = self.document.getElementById("ss_findEntriesIframe");
+    var iframeDivObjParent = self.parent.document.getElementById("ss_findEntriesIframeDiv");
+    var iframeObjParent = self.parent.document.getElementById("ss_findEntriesIframe");
+    var textObj = self.document.getElementById('ss_findEntries_searchText_bottom_${prefix}');
+    if (iframeDivObjParent == null && iframeDivObj == null) {
+	    iframeDivObj = self.document.createElement("div");
+	    iframeDivObjParent = iframeDivObj;
+        iframeDivObj.setAttribute("id", "ss_findEntriesIframeDiv");
+		iframeDivObj.className = "ss_popupMenu";
+		iframeDivObj.style.zIndex = ssPopupZ;
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_findEntriesIframe");
+        iframeObj.style.width = "400px"
+        iframeObj.style.height = "300px"
+		iframeDivObj.appendChild(iframeObj);
+	    var closeDivObj = self.document.createElement("div");
+	    closeDivObj.style.border = "2px solid gray";
+	    closeDivObj.style.marginTop = "1px";
+	    closeDivObj.style.padding = "6px";
+	    iframeDivObj.appendChild(closeDivObj);
+	    var aObj = self.document.createElement("a");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findEntriesIframeDiv');ss_findEntriesClose${prefix}();");
+	    aObj.style.border = "2px outset black";
+	    aObj.style.padding = "2px";
+	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
+	    closeDivObj.appendChild(aObj);
+		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+    }
+    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
+    if (iframeObj == null) iframeObj = iframeObjParent;
+    if (self.parent == self && textObj != null) {
+    	var x = dojo.html.getAbsolutePosition(textObj, true).x
+    	var y = dojo.html.getAbsolutePosition(textObj, true).y
+	    ss_setObjectTop(iframeDivObj, y + "px");
+	    ss_setObjectLeft(iframeDivObj, x + "px");
+	}
+	ss_showDiv("ss_findEntriesIframeDiv");
+	var url = ss_findAjaxUrl;
+	url = ss_replaceSubStrAll(url, "&amp;", "&");
+	url += "&operation=find_user_search";
+	url += "&searchText=" + searchText;
+	url += "&maxEntries=" + "10";
+	url += "&pageNumber=" + ss_findEntries_pageNumber;
+	url += "&findType=" + findPlacesType;
+	url += "&listDivId=" + "available_"+elementName+"_${prefix}";
+	url += "&namespace=" + "${prefix}";
+    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
+		self.location.href = url;
+	} else {
+		iframeObj.src = url;
+	}
 }
 
 </script>
