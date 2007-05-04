@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.repository.webdav;
+package com.sitescape.team.util;
 
 import java.io.IOException;
 
@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.logging.Log;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.CheckinMethod;
 
@@ -147,5 +148,11 @@ public class SWebdavResource extends WebdavResource {
         
         return location;
     }
+
+	public void logError(Log logger) {
+		// Log the HTTP status code and error message.
+		logger.error("status code=" + this.getStatusCode() + ", " +
+				"status message=[" + this.getStatusMessage() + "]");		
+	}
 
 }

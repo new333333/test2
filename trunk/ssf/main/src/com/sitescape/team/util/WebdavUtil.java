@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.repository.webdav;
+package com.sitescape.team.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +26,6 @@ import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.Property;
 import org.apache.webdav.lib.methods.DepthSupport;
 
-import com.sitescape.team.util.Constants;
 
 
 public class WebdavUtil {

@@ -73,11 +73,9 @@ public interface ResourceSession {
 	 */
 	public String[] listNames() throws FIException, IllegalStateException;
 	
-	public String[] listPaths() throws FIException, IllegalStateException;
+	//public String[] listPaths() throws FIException, IllegalStateException;
 	
 	public ResourceDriver getDriver();
-	
-	public boolean makeDirectory() throws FIException, IllegalStateException;
 	
 	public long getContentLength() throws FIException, IllegalStateException;
 	
