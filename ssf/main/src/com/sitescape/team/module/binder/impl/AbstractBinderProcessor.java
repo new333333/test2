@@ -351,7 +351,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			if(Boolean.TRUE.equals(synchToSource)) {
 				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
 				try {
-					session.makeDirectory();
+					session.createDirectory();
 				}
 				finally {
 					session.close();

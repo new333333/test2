@@ -32,6 +32,8 @@ import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.SWebdavResource;
+import com.sitescape.team.util.WebdavUtil;
 
 public class WebdavRepositorySession implements RepositorySession {
 
@@ -66,7 +68,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			return createResource(wdr, binder, entry, relativeFilePath, 
 					mf.getInputStream(), true);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -77,7 +79,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			return createResource(wdr, binder, entry, relativeFilePath, in, true);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}	
 	}
@@ -87,7 +89,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			createResource(wdr, binder, entry, relativeFilePath, in, false);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}	
 	}
@@ -98,7 +100,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, mf.getInputStream());
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -108,7 +110,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			updateResource(wdr, binder, entry, relativeFilePath, in);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}	
 	}
@@ -118,7 +120,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			deleteResource(wdr, binder, entry, relativeFilePath);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}		
 	}
@@ -128,7 +130,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			deleteResource(wdr, binder, entity);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}		
 	}
@@ -138,7 +140,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			deleteResource(wdr, binder);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}		
 	}
@@ -160,7 +162,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			return wdr.getMethodData(getFileResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -186,7 +188,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			return wdr.getMethodData(versionResourcePath);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -197,7 +199,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			return WebdavUtil.getVersionNames(wdr, getFileResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -216,7 +218,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			return new WebDavDataSource(wdr, versionResourcePath, relativeFilePath, fileTypeMap);
 			
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}	
@@ -235,7 +237,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			return WebdavUtil.getHrefValues(wdr, value, "version-set");
 
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -263,7 +265,7 @@ public class WebdavRepositorySession implements RepositorySession {
 					throw new RepositoryServiceException("Failed to checkout [" + resourcePath + "]");
 			}
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -278,7 +280,7 @@ public class WebdavRepositorySession implements RepositorySession {
 					throw new RepositoryServiceException("Failed to uncheckout [" + resourcePath + "]");
 			}
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -312,7 +314,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			return versionName;
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -325,7 +327,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			return isCheckedOut(wdr, resourcePath);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}*/
@@ -337,7 +339,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			return WebdavUtil.exists(wdr, resourcePath);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new RepositoryServiceException(e);
 		}
 	}*/
@@ -352,7 +354,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			return wdr.getGetContentLength();
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -368,7 +370,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			return wdr.getGetContentLength();
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -387,7 +389,7 @@ public class WebdavRepositorySession implements RepositorySession {
 				return true;
 	
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new RepositoryServiceException(e);
 		}
 	}*/
@@ -410,7 +412,7 @@ public class WebdavRepositorySession implements RepositorySession {
 				return NON_EXISTING_FILE;
 			}
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}	
 	}
@@ -425,7 +427,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			moveResource(wdr, resourcePath, newResourcePath);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -439,7 +441,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			
 			copyResource(wdr, resourcePath, newResourcePath);
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}		
 	}
@@ -456,7 +458,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			if(!result)
 				throw new RepositoryServiceException("Failed to delete [" + versionResourcePath + "]");
 		} catch (IOException e) {
-			logError(wdr);
+			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -720,13 +722,6 @@ public class WebdavRepositorySession implements RepositorySession {
 		//WebdavUtil.dumpAllProps(wdr, resourcePath); 
 		//WebdavUtil.dumpAllProps(wdr, "/slide/history/201"); 
 		//WebdavUtil.dumpAllProps(wdr, "/slide/history/201/1.2"); 
-	}
-	
-	private void logError(SWebdavResource wdr) {
-		// Log the HTTP status code and error message.
-		logger.error("status code=" + wdr.getStatusCode() + ", " +
-				"status message=[" + wdr.getStatusMessage() + "]");
-		// The exception object associated with the error will be logged higher up.		
 	}
 
 	private String getEntityResourcePath(Binder binder, DefinableEntity entry) {

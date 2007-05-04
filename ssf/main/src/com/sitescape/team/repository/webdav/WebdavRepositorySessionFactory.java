@@ -22,6 +22,7 @@ import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.SWebdavResource;
 
 public class WebdavRepositorySessionFactory extends AbstractRepositorySessionFactory
 implements ExclusiveRepositorySessionFactory, WebdavRepositorySessionFactoryMBean {
