@@ -39,6 +39,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
@@ -164,47 +165,52 @@ public class ViewEntryController extends  SAbstractController {
 			} 
 		}
 	
-		FolderEntry fe;
-		if (Validator.isNull(entryId)) {
-			entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
-			model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
-			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
-			if (entries.size() == 1) {
-				FolderEntry entry = (FolderEntry)entries.iterator().next();
-				entryId = entry.getId().toString();
-				fe = getShowEntry(entryId, formData, request, response, folderId, model);
-			} else if (entries.size() == 0) {
-				//There are no entries by this title
-				Folder folder = getFolderModule().getFolder(folderId);
-				buildNoEntryBeans(request, response, folder, entryId, model);
-				return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
+		FolderEntry fe = null;
+		try {
+			if (Validator.isNull(entryId)) {
+				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+				model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
+				Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
+				if (entries.size() == 1) {
+					FolderEntry entry = (FolderEntry)entries.iterator().next();
+					entryId = entry.getId().toString();
+					fe = getShowEntry(entryId, formData, request, response, folderId, model);
+				} else if (entries.size() == 0) {
+					//There are no entries by this title
+					Folder folder = getFolderModule().getFolder(folderId);
+					buildNoEntryBeans(request, response, folder, entryId, model);
+					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
+				} else {
+					//There are multiple matches
+					model.put(WebKeys.FOLDER_ENTRIES, entries);
+					return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
+				}
 			} else {
-				//There are multiple matches
-				model.put(WebKeys.FOLDER_ENTRIES, entries);
-				return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
+				fe = getShowEntry(entryId, formData, request, response, folderId, model);
 			}
-		} else {
-			fe = getShowEntry(entryId, formData, request, response, folderId, model);
-		}
+			buildEntryToolbar(request, response, model, fe, userProperties);
+			setRepliesAccessControl(model, fe);
+
+			//Build the navigation beans
+			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
 				
-		buildEntryToolbar(request, response, model, fe, userProperties);
-		
-		setRepliesAccessControl(model, fe);
+			//only want to update visits when first enter.  Don't want cancels on modifies
+			//to increment count
+			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
+				getFolderModule().setUserVisit(fe);
+			}
+		} catch(NoFolderEntryByTheIdException e) {
+		}
 		
 		//Setup the tabs
 		Tabs tabs = initTabs(request, fe);
 		model.put(WebKeys.TABS, tabs.getTabs());
 
-		//Build the navigation beans
-		BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
-			
-		//only want to update visits when first enter.  Don't want cancels on modifies
-		//to increment count
-		if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
-			getFolderModule().setUserVisit(fe);
+		if(fe == null) {
+			return new ModelAndView("entry/deleted_entry", model);		
+		} else {
+			return new ModelAndView(viewPath, model);
 		}
-
-		return new ModelAndView(viewPath, model);
 	} 
 
 	protected Tabs initTabs(RenderRequest request, FolderEntry folderEntry) throws Exception {
@@ -216,6 +222,11 @@ public class ViewEntryController extends  SAbstractController {
 			tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 		} catch(Exception e) {}
 		
+		if(folderEntry == null) {
+			tabs.setCurrentTab(tabId.intValue());
+			return tabs;
+		}
+
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		
 		//What do the newTab values mean?
