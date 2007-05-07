@@ -20,7 +20,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -44,7 +44,7 @@ public interface EntryProcessor extends BinderProcessor {
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)
     	throws WriteFilesException;
-    public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
+    public FilesErrors modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);

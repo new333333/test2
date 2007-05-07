@@ -8,6 +8,7 @@
 	<bean id="closeWindowController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.CloseWindowController" />
 	<bean id="reloadOpenerController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ReloadOpenerController" />
 	<bean id="editController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.EditController" />
+	<bean id="appletResponseController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AppletResponseController" />
 
 	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AddEntryController" />
 	<bean id="folderAddFolderController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AddFolderController" />
@@ -50,6 +51,7 @@
 					<map>
 						<entry key="build_filter"><ref bean="filterController"/></entry>
 						<entry key="close_window"><ref bean="closeWindowController"/></entry>
+						<entry key="applet_response"><ref bean="appletResponseController"/></entry>
 						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
 						<entry key="configure_definitions"><ref bean="configureController"/></entry>
 						<entry key="definition_builder"><ref bean="definitionController"/></entry>

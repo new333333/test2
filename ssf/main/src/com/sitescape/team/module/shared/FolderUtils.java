@@ -362,7 +362,8 @@ public class FolderUtils {
 		while (itItems.hasNext()) {
 			//Look for the first file-related element that matches the criteria
 			Element itemEle = (Element) itItems.next();
-			if (ITEM_NAMES.containsKey(itemEle.attributeValue("name"))) {
+			String itemName = itemEle.attributeValue("name");
+			if (ITEM_NAMES.containsKey(itemName)) {
 				String repositoryName = getStorageValueFromItemElem(itemEle);				
 				if(!repositoryName.equals(ObjectKeys.FI_ADAPTER)) {
 					item = itemEle;

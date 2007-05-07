@@ -163,6 +163,7 @@ public class WebKeys {
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
+	public static final String ACTION_APPLET_RESPONSE="applet_response";
 	public static final String ACTION_RELOAD_PARENT="reload_parent";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
@@ -435,6 +436,7 @@ public class WebKeys {
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
     public static final String FILE_VIEW_TYPE_UPLOAD_FILE = "ss_viewUploadFile";
     public static final String FILE_VIEW_TYPE_ZIPPED = "zipped";
+    public static final String FILE_PROCESSING_ERRORS = "ss_FileProcessingErrors";
     public static final String FILTER_ENTRY_DEF_ID = "ss_entry_def_id";
     public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";

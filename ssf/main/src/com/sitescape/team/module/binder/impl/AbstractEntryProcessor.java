@@ -446,7 +446,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	modifyEntry(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
     }
     
-    public void modifyEntry(final Binder binder, final Entry entry, 
+    public FilesErrors modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)  
     		throws WriteFilesException {
@@ -516,10 +516,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
-	    		throw new WriteFilesException(filesErrors);
+	    		//throw new WriteFilesException(filesErrors);
+	    		return filesErrors;
 	    	}
 	    	else {
-	    		return;
+	    		return null;
 	    	} 
 	    }finally {
 		    cleanupFiles(fileUploadItems);
