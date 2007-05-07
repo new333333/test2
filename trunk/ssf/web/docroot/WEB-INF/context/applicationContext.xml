@@ -436,6 +436,7 @@
 		<property name="rssGenerator"><ref local="rssGenerator"/></property>
 		<property name="icalGenerator"><ref local="icalGenerator"/></property>
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
@@ -628,13 +629,16 @@
 		<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
 		<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
 	</bean>
-
-	<bean id="reportModule" parent="baseTransactionProxy">
+	
+	<bean id="reportModule"  parent="baseTransactionProxy">
+		<!--  cirular dependences prevent inheriting from moduleDependencyTemplate -->
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.report.impl.ReportModuleImpl">
-			</bean>	
+			<bean class="com.sitescape.team.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+			<property name="accessControlManager"><ref local="accessControlManager"/></property>
+			</bean>
 		</property>
-	</bean>
+	</bean>		
 
 	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="controllerDependencyTemplate">
 		<property name="folderModule"><ref local="folderModule"/></property>

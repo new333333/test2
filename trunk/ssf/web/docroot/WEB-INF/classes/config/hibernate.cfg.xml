@@ -24,7 +24,7 @@
 		<property name="cglib.use_reflection_optimizer">true</property>
 		<property name="cache.provider_class">com.sitescape.team.util.EhCacheProvider</property>
 		<!-- Set the following two properties to false when running under production since it affect performance -->
-<!-- 	<property name="show_sql">true</property>
+<!-- 		<property name="show_sql">true</property>
 		<property name="hibernate.generate_statistics">true</property>
  -->
  		<property name="hibernate.hbm2ddl.auto">update</property>
@@ -32,6 +32,7 @@
 		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Attachment.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/AuditTrail.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Binder.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/ChangeLog.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/CustomAttribute.hbm.xml"/>

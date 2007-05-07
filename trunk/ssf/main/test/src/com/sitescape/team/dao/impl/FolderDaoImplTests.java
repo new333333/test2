@@ -245,11 +245,10 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		//have to clear session cause we are bypassing hibernate cascade.
 		cdi.clear();
 		
-		fdi.deleteEntries(folder);
+		fdi.delete(folder);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((FolderEntry)entries.get(i));
 		}
-		fdi.delete(folder);
 		
 	}
 

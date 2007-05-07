@@ -296,11 +296,10 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		cdi.clear();
 		
 		ProfileBinder p = pdi.getProfileBinder(top.getZoneId());
-		pdi.deleteEntries(p);
+		pdi.delete(p);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((Principal)entries.get(i));
 		}
-		pdi.delete(p);
 		
 	}
 

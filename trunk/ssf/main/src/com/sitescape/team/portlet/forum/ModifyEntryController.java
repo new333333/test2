@@ -101,7 +101,7 @@ public class ModifyEntryController extends SAbstractController {
 
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupViewEntry(response, folderId, entryId);
+			setupReloadOpener(response, folderId, entryId);
 		
 		} else {
 			response.setRenderParameters(formData);		

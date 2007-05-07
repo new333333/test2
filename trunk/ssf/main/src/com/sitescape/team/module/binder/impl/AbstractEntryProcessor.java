@@ -46,6 +46,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.EntryProcessor;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -407,6 +408,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//create history - using timestamp and version from fillIn
 		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
     	processChangeLog(entry, ChangeLog.ADDENTRY);
+    	getReportModule().addAuditTrail(AuditType.add, entry);
     }
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
@@ -708,7 +710,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//create history - using timestamp and version from fillIn
   		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, (String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
     	processChangeLog(entry, ChangeLog.MODIFYENTRY);
- 
+    	getReportModule().addAuditTrail(AuditType.modify, entry);
+
     	if(fileRenamesTo != null)
 	    	for(FileAttachment fa : fileRenamesTo.keySet()) {
 	    		String toName = fileRenamesTo.get(fa);
@@ -775,6 +778,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         entry.setModification(new HistoryStamp(user));
         entry.incrLogVersion();
         processChangeLog(entry, ChangeLog.DELETEENTRY);
+    	getReportModule().addAuditTrail(AuditType.delete, entry);
     }
         
     protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
@@ -907,6 +911,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		if (changes) {
 			getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
 			processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
+	    	getReportModule().addAuditTrail(AuditType.modify, entry);
 			indexEntry(entry);
 		}
     	

@@ -36,6 +36,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
 import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
@@ -370,6 +371,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(binder, ChangeLog.ADDBINDER);
+    	getReportModule().addAuditTrail(AuditType.add, binder);
     	
     }
 
@@ -543,7 +545,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(binder, ChangeLog.MODIFYBINDER);
-    }
+    	getReportModule().addAuditTrail(AuditType.modify, binder);
+   }
     
     protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle) {
     	if(isMirroredAndNotTopLevel(binder) && !oldTitle.equals(newTitle)) {
@@ -673,7 +676,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
     	processChangeLog(binder, ChangeLog.DELETEBINDER);
-     	if ((binder.getDefinitionType() != null) &&
+    	getReportModule().addAuditTrail(AuditType.delete, binder);
+    	if ((binder.getDefinitionType() != null) &&
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
     		if (binder.getOwner() != null) {
@@ -823,8 +827,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
 			source.setResourcePath(newPath);
 		}
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.ChangeLog set owningBinderKey='" +
-				source.getBinderKey().getSortKey() + "' where binderId=" + source.getId());
 	}
 	
 	protected void moveBinder_postMove(Binder source, Binder destination, boolean resourcePathAffected, Map ctx) {
@@ -845,8 +847,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				(b.getResourceDriverName(), b.getParentBinder().getResourcePath(), b.getTitle());
 				b.setResourcePath(newPath);
 			}
-			getCoreDao().executeUpdate("update com.sitescape.team.domain.ChangeLog set owningBinderKey='" +
-					source.getBinderKey().getSortKey() + "' where binderId=" + source.getId());
   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
    	    	processor.moveBinderFixup(b);
    	        moveBinder_log(b, stamp);
@@ -869,6 +869,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //somewhere up the parent chain we have a new parent
     //don't have to do all the work immediate parent had to do
 	public void moveBinderFixup(Binder binder) {
+		getCoreDao().move(binder);
 	}
 
     //********************************************************************************************************

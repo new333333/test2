@@ -154,7 +154,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * not all databases handle on-delete correctly.  
 	 * We are forced to do it ourselves
 	 */
- 	public void deleteEntityAssociations(final String whereClause, final Class clazz) {
+ 	public void deleteEntityAssociations(final String whereClause) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {
 	    	   		public Object doInHibernate(Session session) throws HibernateException {
@@ -168,17 +168,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	       	   		session.createQuery("DELETE com.sitescape.team.domain.CustomAttribute where " + whereClause)
   	   				.executeUpdate();
 /*
- * hibernate can deal with these cause on-delete cascade will work
+ * db servers can deal with these cause on-delete cascade will work
  * 	    	   		session.createQuery("DELETE com.sitescape.team.domain.Event where " + whereClause)
        	   			.executeUpdate();
-	       	   		try {
-	       	   			if (clazz.newInstance() instanceof WorkflowSupport) {
 	       	   			session.createQuery("DELETE com.sitescape.team.domain.WorkflowState where " + whereClause)
 	       	   				.executeUpdate();
 	       	   			session.createQuery("DELETE com.sitescape.team.domain.WorkflowResponse where " + whereClause)
        	   				.executeUpdate();
-	       	   			}
-	       	   		} catch (Exception ex) {};
 */
 	       	   		return null;
 	       	   		}
@@ -192,7 +188,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     }
 	/**
 	 * Delete the binder object and its assocations.
-	 * Entries and child binders should already have been deleted
+	 * Child binders should already have been deleted
 	 * This is an optimized delete.  Deletes associations directly without waiting for hibernate
 	 * to query.
 	 */	
@@ -226,7 +222,41 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			session.createQuery("DELETE com.sitescape.team.domain.LibraryEntry where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
-		   			delete((DefinableEntity)binder);
+		   			//delete associations with binder and its entries - common key
+    	   			deleteEntityAssociations("owningBinderId=" + binder.getId());
+
+		   		    // Delete associations not maintained with foreign-keys = this just handles the binder itself
+	     	   		//delete dashboard
+	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id=:entityId and owner_type=:entityType")
+  		     	   			.setLong("entityId", binder.getId())
+  		     	   			.setParameter("entityType", binder.getEntityType().getValue())
+   		     	   			.executeUpdate();
+		   			//delete ratings/visits for this binder
+		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId=:entityId and entityType=:entityType")
+		   				.setLong("entityId", binder.getId())
+		   			   	.setParameter("entityType", binder.getEntityType().getValue())
+		   			   	.executeUpdate();
+		   			//delete subscriptions to this binder
+		   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId=:entityId and entityType=:entityType")
+		   				.setLong("entityId", binder.getId())
+		   				.setParameter("entityType", binder.getEntityType().getValue())
+		   				.executeUpdate();
+		   			//delete tags on this binder
+		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id=:entityId and entity_type=:entityType")
+		   				.setLong("entityId", binder.getId())
+		   			   	.setParameter("entityType", binder.getEntityType().getValue())
+		   			   	.executeUpdate();
+
+		   			//delete tags owned by this binder
+		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id=:entityId and owner_type=:entityType")
+		   		 		.setLong("entityId", binder.getId())
+		   			  	.setParameter("entityType", binder.getEntityType().getValue())
+		   				.executeUpdate();
+		   			//do ourselves or hibernate will flsuh
+		   			session.createQuery("DELETE  com.sitescape.team.domain.Binder where id=:id")
+		   		    	.setLong("id", binder.getId().longValue())
+		   		    	.executeUpdate();
+		   			
 		   			if (!binder.isRoot()) {
 		   				session.getSessionFactory().evictCollection("com.sitescape.team.domain.Binder.binders", binder.getParentBinder().getId());
 		   			}
@@ -239,65 +269,41 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
  
 	    			
 	}
-
-
-	/**
-     * Delete an object.  Delete associations not maintained with foreign-keys.
-      * @param entry
-     */
-    protected void delete(final DefinableEntity entity) {
-    	getHibernateTemplate().execute(
-    	   	new HibernateCallback() {
-    	   		public Object doInHibernate(Session session) throws HibernateException {
-     	   		EntityIdentifier id = entity.getEntityIdentifier();
-     	   		if (entity instanceof TemplateBinder) {
-     	   			//these associations are based on class, which is not a what we get back with EntityType for template
-        			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by binder
-
-     	   			deleteEntityAssociations("ownerId=" + id.getEntityId() + " and ownerType='template'", entity.getClass());
-    	   			
-     	   		} else {
-     	   			String whereClause = "ownerId=" + id.getEntityId() + " and ownerType='" + id.getEntityType().name() + "'";
-     	   			deleteEntityAssociations(whereClause, entity.getClass());
-     	   		}
-
-     	   		//delete dashboard
-     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id=:entityId and owner_type=:entityType")
-     	   			.setLong("entityId", entity.getId())
-     	   			.setParameter("entityType", entity.getEntityType().getValue())
-     	   			.executeUpdate();
-	   			//delete ratings/visits for this entry
-	   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId=:entityId and entityType=:entityType")
-	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityType().getValue())
+	
+	public void move(final Binder binder) {
+		//this should handle entries also
+		getHibernateTemplate().execute(
+	    	new HibernateCallback() {
+	    		public Object doInHibernate(Session session) throws HibernateException {
+	    			//update binder key for binders attributes only
+	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", binder.getBinderKey().getSortKey())
+	    	   			.setLong("id", binder.getId().longValue())
+	    	   			.executeUpdate();
+	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", binder.getBinderKey().getSortKey())
+	    	   			.setLong("id", binder.getId().longValue())
+	    	   			.executeUpdate();
+	    	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningBinderKey=:sortKey where owningBinderId=:id")
+    	   				.setString("sortKey", binder.getBinderKey().getSortKey())
+    	   				.setLong("id", binder.getId().longValue())
+    	   				.executeUpdate();
+	    			//update binder key for binder and its contents
+	    			session.createQuery("update com.sitescape.team.domain.ChangeLog set owningBinderKey=:sortKey where owningBinderId=:id")
+	    				.setString("sortKey", binder.getBinderKey().getSortKey())
+    	   				.setLong("id", binder.getId().longValue())
+    	   				.executeUpdate();
+	    			session.createQuery("update com.sitescape.team.domain.AuditTrail set owningBinderKey=:sortKey where owningBinderId=:id")
+    				.setString("sortKey", binder.getBinderKey().getSortKey())
+	   				.setLong("id", binder.getId().longValue())
 	   				.executeUpdate();
-	   			//delete subscriptions to this entry
-	   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId=:entityId and entityType=:entityType")
-	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityType().getValue())
-	   				.executeUpdate();
-		   		//delete tags on this entry
-		   		session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id=:entityId and entity_type=:entityType")
- 	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityType().getValue())
-	   				.executeUpdate();
-
-	   			//delete tags owned by this entry
-		   		session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id=:entityId and owner_type=:entityType")
- 	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityType().getValue())
-	   				.executeUpdate();
-    	   		//will this be a problem if the entry is proxied??
-    	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
-    	   			.setLong("id", id.getEntityId().longValue())
-   	   			.executeUpdate();
-		   		session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
-       	   		return null;
+		   			return null;
     	   		}
     	   	}
     	 );    	
-    	
-    } 
+	}
+
+
     public Object load(Class clazz, String id) {
         return getHibernateTemplate().get(clazz, id);
     }

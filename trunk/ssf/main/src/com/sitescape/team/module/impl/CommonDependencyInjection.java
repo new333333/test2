@@ -19,6 +19,7 @@ import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.fi.connection.ResourceDriverManager;
 import com.sitescape.team.ical.IcalGenerator;
+import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;
 import com.sitescape.team.rss.RssGenerator;
@@ -57,6 +58,7 @@ public abstract class CommonDependencyInjection {
 	protected IcalGenerator icalGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	protected ResourceDriverManager resourceDriverManager;
+	protected ReportModule reportModule;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -142,5 +144,11 @@ public abstract class CommonDependencyInjection {
 	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {
 		this.resourceDriverManager = resourceDriverManager;
 	}
-	
+	public ReportModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
+
 }

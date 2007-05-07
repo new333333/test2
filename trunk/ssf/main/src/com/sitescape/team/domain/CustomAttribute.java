@@ -16,27 +16,19 @@
  */
 package com.sitescape.team.domain;
 import java.util.Date;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.util.Validator;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.DocumentException;
-
-import org.apache.commons.codec.binary.Base64;
-import java.io.StringWriter;
-import java.io.StringReader;
-import java.io.IOException;
 /**
  * @hibernate.class table="SS_CustomAttributes" dynamic-update="true" lazy="false" discriminator-value="A"
  * @hibernate.discriminator type="char" column="type"
@@ -325,20 +317,11 @@ public class CustomAttribute  {
          }	else if (value instanceof Document) {
          	clearVals();
          	valueType = XML;
-         	StringWriter sOut = new StringWriter();
-    		XMLWriter xOut = new XMLWriter(sOut, OutputFormat.createPrettyPrint());
-    		try {
-    			xOut.write((Document)value);
-    			xmlValue = new SSClobString(sOut.toString());
-         	} catch (IOException io) {
-         		throw new IllegalArgumentException(io.getLocalizedMessage());
-         	} finally {
-         		try {
-         			xOut.close();
-         			sOut.close();
-         		} catch (IOException io) {};
-         	}
-         		
+         	try {
+         		xmlValue = new SSClobString(XmlFileUtil.writeString((Document)value, OutputFormat.createPrettyPrint()));
+         	} catch (Exception ex) {
+      			throw new IllegalArgumentException(ex.getLocalizedMessage());
+         	}	           		
           } else if (value instanceof Attachment) {
          	clearVals();
          	valueType = ATTACHMENT;
@@ -387,17 +370,11 @@ public class CustomAttribute  {
     		case SERIALIZED:
     		    return serializedValue.getValue();
     		case XML:
-    			StringReader sIn = new StringReader(xmlValue.getText());
-        		SAXReader xIn = new SAXReader();
-        		Document doc;
-        		try {
-        			doc = xIn.read(sIn); 
-        		} catch (DocumentException de) {
-        			throw new IllegalArgumentException(de.getLocalizedMessage());
-        		} finally {
-        			sIn.close();
-        		}
-        		return doc;
+    	    	try {
+    	    		return XmlFileUtil.generateXMLFromString(xmlValue.getText());
+    	    	} catch (Exception ex) {
+           			throw new IllegalArgumentException(ex.getLocalizedMessage());
+    	    	}
     	    case SET:
     	    	Set v = new HashSet();
     	    	if (iValues == null) {

@@ -12,9 +12,11 @@ package com.sitescape.team.util;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +25,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+
+import com.sitescape.team.domain.SSClobString;
 
 public class XmlFileUtil {
 	public static String FILE_ENCODING="UTF-8";
@@ -103,7 +107,24 @@ public class XmlFileUtil {
 	    }
 		
 	}
-	
+	public static String writeString(Document doc, OutputFormat format) 
+		throws Exception {
+     	StringWriter sOut = new StringWriter();
+		XMLWriter xOut = new XMLWriter(sOut, format);
+		try {
+			xOut.write(doc);
+			return sOut.toString();
+     	} catch (Exception ex) {
+	    	logger.error("Can't write XML document, error is: " + ex.getLocalizedMessage());
+	    	throw ex;
+     	} finally {
+     		try {
+     			xOut.close();
+     			sOut.close();
+     		} catch (IOException io) {};
+     	}
+
+	}
 	public static Document generateSAXXMLFromString(String fileContent)
 		throws Exception {
 

@@ -19,10 +19,9 @@ package com.sitescape.team.module.workflow;
  *
  */
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 import org.dom4j.Element;
 import org.jbpm.context.exe.ContextInstance;
@@ -34,7 +33,6 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
@@ -106,9 +104,13 @@ public class EnterExitEvent extends AbstractActionHandler {
 	   				
 	   			}
 			}
+			if (Event.EVENTTYPE_NODE_LEAVE.equals(executionContext.getEvent().getEventType())) {
+				//leaving a state - logit
+				getReportModule().addWorkflowStateHistory(ws, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), false);
+			}
 			//See if other threads conditions are now met.
 			if (check) TransitionUtils.processConditions(entry, token);
-			
+
 		}
 	}
 
@@ -168,7 +170,11 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (thread != null) {
 			//child is active, end it
 			Token childToken = executionContext.getJbpmContext().loadToken(thread.getTokenId().longValue());
-			if (childToken != null)	childToken.end();
+			if (childToken != null)	{
+				childToken.end();
+			}
+			//leaving a state - logit
+			getReportModule().addWorkflowStateHistory(thread, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), true);
 			entry.removeWorkflowState(thread);
 			if (infoEnabled) logger.info("Stoping thread: " + threadName);
 			return true;

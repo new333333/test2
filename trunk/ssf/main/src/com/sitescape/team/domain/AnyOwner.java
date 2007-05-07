@@ -38,7 +38,7 @@ public class AnyOwner {
     public AnyOwner() {		
 	}
 	public AnyOwner(DefinableEntity entity) {
-		setBinderDeleteKey(entity);
+		setBinderKey(entity);
 		setup(entity);
  	}
 	/**
@@ -47,20 +47,11 @@ public class AnyOwner {
 	 * @param setForeignKey
 	 */
 	public AnyOwner(DefinableEntity entity, boolean setForeignKey) {
-		setBinderDeleteKey(entity);
+		setBinderKey(entity);
 		if (setForeignKey)
 			setup(entity);
 		else {
 			setEntity(entity);
-			if (entity instanceof FolderEntry) {
-				FolderEntry fEntry = (FolderEntry)entity;
-				Folder f = fEntry.getParentFolder();
-				if (f != null) {
-					//This value is used to help narrow the results of sql reporting queries
-					//You can use this to search a folder or sub-folder heirarchy
-					owningBinderKey = f.getBinderKey().getSortKey();
-				}
-			}
   		}
 	}
 	/**
@@ -71,20 +62,20 @@ public class AnyOwner {
 		setEntity(entity);
 		if (entity instanceof FolderEntry) {
    			folderEntry = (FolderEntry)entity;
-   			//This value is used to help narrow the results of sql reporting queries
-   			//You can use this to search a folder of sub-folder heirarchy
-   			owningBinderKey = folderEntry.getParentFolder().getBinderKey().getSortKey();  	
-   		} else if (entity instanceof Principal) {
+    		} else if (entity instanceof Principal) {
    			principal=(Principal)entity;
-   		} else if (entity instanceof Binder) {
+  		} else if (entity instanceof Binder) {
    			binder = (Binder)entity;
   		}
 	}
-	private void setBinderDeleteKey(DefinableEntity entity) {
-		if (entity instanceof Binder)
-			setOwningBinderId(null);
-		else 
+	private void setBinderKey(DefinableEntity entity) {
+		if (entity instanceof Binder) {
+			setOwningBinderId(((Binder)binder).getId());
+			setOwningBinderKey(((Binder)binder).getBinderKey().getSortKey());
+		} else { 
 			setOwningBinderId(((Entry)entity).getParentBinder().getId());
+			setOwningBinderKey(((Entry)entity).getParentBinder().getBinderKey().getSortKey());
+		}
 	}
 	/**
 	 * This field servers as a key into the database for quick bulk deletes.
@@ -191,7 +182,7 @@ public class AnyOwner {
     * @hibernate.property length="255" 
     * @return
     */
-   private String getOwningBinderKey() {
+   public String getOwningBinderKey() {
        return owningBinderKey;
    }
    private void setOwningBinderKey(String owningBinderKey) {

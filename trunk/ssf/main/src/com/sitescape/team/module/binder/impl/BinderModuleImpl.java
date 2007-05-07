@@ -317,6 +317,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        			try {
    		        				while (query.hasNext()) {
    		        					Object [] result = (Object[])query.next();
+   		        					//skip files attached to the binder itself
+   		        					if (result[1].equals(binder.getId())) continue;
    		        					LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.FILE, (String)result[0]);
    		        					le.setEntityId((Long)result[1]);
    		        					getCoreDao().save(le);
