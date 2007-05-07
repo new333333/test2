@@ -1,14 +1,21 @@
 package com.sitescape.team.module.report.impl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.InitializingBean;
 import java.util.Set;
-import java.util.HashSet;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
+
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
@@ -21,15 +28,13 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.AuditTrail.AuditType;
-import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
-import com.sitescape.team.security.acl.AclManager;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SPropsUtil;
 
-public class ReportModuleImpl  implements ReportModule,InitializingBean {
+public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
 	protected Set enabledTypes=new HashSet();
 	protected boolean allEnabled=false;
 	protected CoreDao coreDao;
@@ -50,7 +55,7 @@ public class ReportModuleImpl  implements ReportModule,InitializingBean {
     /**
      * Called after bean is initialized.  
      */
- 	public void afterPropertiesSet() {
+	protected void initDao() throws Exception {
  		//build set of enabled types
  		String [] audits = SPropsUtil.getStringArray("audit", ",");
  		for (int i=0; i<audits.length; ++i) {
@@ -106,7 +111,69 @@ public class ReportModuleImpl  implements ReportModule,InitializingBean {
 
     	return report;
 	}
-	
+	/*
+	 * Get all activity in a binder. Includes auditlogs on binder and its entries.  May include child binders and 
+	 * their entries.
+	 */
+	public List<Map<String,Object>> generateReport(final Long binderId, final boolean includeChildren) {
+		checkAccess("generateReport");
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List<AuditTrail>result = (List<AuditTrail>)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+				List<AuditTrail> auditTrail;
+				if (includeChildren) {
+					auditTrail = session.createCriteria(AuditTrail.class)
+						.add(Expression.like("owningBinderKey", binder.getBinderKey().getSortKey()))
+						.addOrder(Order.asc("binderId"))
+						.addOrder(Order.asc("entityType"))
+						.addOrder(Order.asc("entityId"))
+						.list();
+				} else {
+					//child child binders
+					auditTrail = session.createCriteria(AuditTrail.class)
+						.add(Expression.eq("owningBinderId", binder.getId()))
+						.addOrder(Order.asc("binderId"))
+						.addOrder(Order.asc("entityType"))
+						.addOrder(Order.asc("entityId"))
+						.list();
+				}
+				
+				return auditTrail;
+			}});
+		//TODO: actually generate a report 	- this will include workflowStateHistory items also	 
+    	return report;
+	}
+	public List<Map<String,Object>> generateLoginReport(final Date after, final Date before) {
+		checkAccess("generateLoginReport");
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List<LoginInfo>result = (List<LoginInfo>)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+		
+				List<LoginInfo> auditTrail = session.createCriteria(LoginInfo.class)
+					.add(Expression.gt("startDate", after))
+					.add(Expression.lt("endDate", before))
+					.list();
+				return auditTrail;
+			}});
+		//TODO: actually generate a report 
+    	return report;
+	}
+	public List<Map<String,Object>> generateWorkflowStateReport(final String definitionId, final String state) {
+		checkAccess("generateWorkflowStateReport");
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List<WorkflowStateHistory>result = (List<WorkflowStateHistory>)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+		
+				List<WorkflowStateHistory> auditTrail = session.createCriteria(WorkflowStateHistory.class)
+					.add(Expression.eq("definitionId", definitionId))
+					.add(Expression.lt("state", state))
+					.list();
+				return auditTrail;
+			}});
+		//TODO: actually generate a report 
+    	return report;
+	}
 	protected Map<String,Object> generateReport(Binder binder) {
 		HashMap<String,Object> report = new HashMap<String,Object>();
 		

@@ -631,11 +631,12 @@
 	</bean>
 	
 	<bean id="reportModule"  parent="baseTransactionProxy">
-		<!--  cirular dependences prevent inheriting from moduleDependencyTemplate -->
+		<!--  dependences prevent inheriting from moduleDependencyTemplate -->
 		<property name="target">
 			<bean class="com.sitescape.team.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
-				<property name="coreDao"><ref bean="coreDao"/></property>
+			<property name="coreDao"><ref bean="coreDao"/></property>
 			<property name="accessControlManager"><ref local="accessControlManager"/></property>
+			<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 			</bean>
 		</property>
 	</bean>		
