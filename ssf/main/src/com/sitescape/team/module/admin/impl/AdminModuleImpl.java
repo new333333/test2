@@ -501,7 +501,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			 TemplateBinder child = (TemplateBinder)results.get(0);
 			 addTemplate(template, child);
 		 }
-		 
+		 //	need to write this out so binderKey updated incases where this is inside another transaction
+		 //sqlserver complains of uniquekey constraint violations when another template is added before this one is flushed.
+		 getCoreDao().flush();	
 		 return template.getId();
 	 }
 	 private String getPropertyValue(Element element, String name) {
