@@ -10,12 +10,7 @@
  */
 package com.sitescape.team.domain;
 
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Date;
-
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.util.SimpleProfiler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,9 +18,17 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.util.XmlFileUtil;
+/**
+ * @hibernate.class table="SS_ChangeLogs" 
+ * @author Janet McCann
+ * 
+ * Log changes for reporting
+ * We only update rows in this table if a binder moves
+ *
+ */
 public class ChangeLog {
 	public static final String ADDENTRY="addEntry";
 	public static final String MODIFYENTRY="modifyEntry";
@@ -60,9 +63,9 @@ public class ChangeLog {
 	protected Document document=null;
 	protected Long entityId;
 	protected String entityType;
-	protected Long zoneId;
-	protected Long binderId;
+	protected Long owningBinderId;
 	protected Long version;
+	protected Long zoneId;
 	protected String docNumber;
 	protected String owningBinderKey;  //used for queries
 	
@@ -78,7 +81,7 @@ public class ChangeLog {
 			if (entity instanceof FolderEntry) 
 				this.docNumber = ((FolderEntry)entity).getDocNumber();
 		}
-		this.binderId = binder.getId();
+		this.owningBinderId = binder.getId();
 		this.owningBinderKey = binder.getBinderKey().getSortKey();
 		this.operation = operation;
 		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
@@ -132,7 +135,7 @@ public class ChangeLog {
     	this.entityType = entityType;
     }
     /**
-     * @hibernate.property not-null="true"
+     * @hibernate.property 
      */
     public Long getZoneId() {
     	return this.zoneId;
@@ -141,13 +144,13 @@ public class ChangeLog {
     	this.zoneId = zoneId;
     }
     /**
-     * @hibernate.property not-null="true"
+     * @hibernate.property 
      */
-    public Long getBinderId() {
-    	return this.binderId;
+    public Long getOwningBinderId() {
+    	return this.owningBinderId;
     }
-    public void setBinderId(Long binderId) {
-    	this.binderId = binderId;
+    public void setOwningBinderId(Long owningBinderId) {
+    	this.owningBinderId = owningBinderId;
     }
     /**
      * @hibernate.property length="255" 
@@ -236,15 +239,10 @@ public class ChangeLog {
     public String getXmlString() {
     	if ((xmlString == null) && (document != null)) {
     		try {
-    			StringWriter baos = new StringWriter();
-    			if (baos == null) return null;
-    			XMLWriter xOut = new XMLWriter(baos, OutputFormat.createCompactFormat());
-    			xOut.write(document);
-    			xOut.close();
-    			xmlString = baos.toString(); 
-    		} catch (Exception fe) {
-    			logger.error(fe.getLocalizedMessage(), fe);
-    		}
+    			xmlString = XmlFileUtil.writeString(document, OutputFormat.createCompactFormat());
+             } catch (Exception ex) {
+            	 throw new IllegalArgumentException(ex.getLocalizedMessage());
+             }	
     	}
     	return xmlString;
     }
@@ -256,18 +254,13 @@ public class ChangeLog {
     	String xml = null;
     	if (document == null) getDocument();
     	if (document != null) {
-    		try {
-    			StringWriter baos = new StringWriter();
-    			if (baos == null) return null;
-    			OutputFormat format = OutputFormat.createPrettyPrint();
-    			format.setSuppressDeclaration(true);
-    			XMLWriter xOut = new XMLWriter(baos, format);
-    			xOut.write(document);
-    			xOut.close();
-    			xml = baos.toString(); 
-    		} catch (Exception fe) {
-    			logger.error(fe.getLocalizedMessage(), fe);
-    		}
+    		OutputFormat format = OutputFormat.createPrettyPrint();
+			format.setSuppressDeclaration(true);
+   			try {
+   				xml = XmlFileUtil.writeString(document, format);
+   			} catch (Exception ex) {
+   		       	throw new IllegalArgumentException(ex.getLocalizedMessage());
+   			}
     	}
     	return xml;
     }
@@ -276,14 +269,10 @@ public class ChangeLog {
     	if (document != null) return document;
     	if (xmlString == null) return null;
     	try {
-    		StringReader ois = new StringReader(xmlString);
-    		if (ois == null) return null;
-    		SAXReader xIn = new SAXReader();
-    		document = xIn.read(ois);   
-    		ois.close();
-    	} catch (Exception fe) {
-    		logger.error(fe.getLocalizedMessage(), fe);
-    	}
+    		document = XmlFileUtil.generateXMLFromString(xmlString);
+        } catch (Exception ex) {
+        	throw new IllegalArgumentException(ex.getLocalizedMessage());
+       }
         return document;
     }
 

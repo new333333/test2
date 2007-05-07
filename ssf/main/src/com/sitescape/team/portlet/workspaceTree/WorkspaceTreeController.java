@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.NoBinderByTheIdException;
@@ -135,6 +136,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Map formData = request.getParameterMap();
 		try {
 			if (binder == null) binder = getBinderModule().getBinder(binderId);
+			getReportModule().addAuditTrail(AuditType.view, binder);
 			BinderHelper.getBinderAccessibleUrl(this, binder, entryId, request, response, model);
 
  

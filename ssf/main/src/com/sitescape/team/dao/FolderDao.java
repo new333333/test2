@@ -62,11 +62,10 @@ public interface FolderDao {
 	public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException,NoFolderByTheIdException;
   
     public void delete(Folder folder);
-    public void deleteEntries(Folder folder);
     public void deleteEntries(Folder folder, List entries);
     public void deleteEntryWorkflows(Folder folder);
     public void deleteEntryWorkflows(Folder folder, List ids);
-    public void moveEntries(Folder folder);
+    public void move(Folder folder);
     public void moveEntries(Folder folder, List ids);
     public List loadEntryTags(EntityIdentifier ownerIdentifier, Collection ids);
 

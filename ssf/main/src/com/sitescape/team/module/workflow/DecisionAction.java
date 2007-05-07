@@ -9,18 +9,19 @@
  *
  */
 package com.sitescape.team.module.workflow;
-import java.util.Map;
 import java.util.Iterator;
-	
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.util.Validator;
 
 public class DecisionAction extends AbstractActionHandler {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -35,11 +36,13 @@ public class DecisionAction extends AbstractActionHandler {
 			if (infoEnabled) logger.info("Decision begin: at state " + ws.getState() + " thread " + ws.getThreadName());
 			if (WorkflowUtils.isThreadEndState(ws.getDefinition(), ws.getState(), ws.getThreadName())) {
 				if (infoEnabled) logger.info("Decision: end thread");
+				
 				if (!current.isRoot()) {
 					current.end(false);
 				} else {
 					executionContext.getProcessInstance().end();
 				}
+				HistoryStamp endit = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
 				// cleanup any children - should only have children if token is root
 				Map children = current.getChildren();
 				if (children != null) {
@@ -47,10 +50,13 @@ public class DecisionAction extends AbstractActionHandler {
 						Token child = (Token)iter.next();
 						WorkflowState w = entry.getWorkflowState(new Long(child.getId()));
 						if (w != null) {
+							getReportModule().addWorkflowStateHistory(ws, endit, true);
 							entry.removeWorkflowState(w);
 						}
 					}
 				}
+				//log end
+				getReportModule().addWorkflowStateHistory(ws, endit, true);
 				if (!current.isRoot()) {
 					entry.removeWorkflowState(ws);
 					//check all other threads

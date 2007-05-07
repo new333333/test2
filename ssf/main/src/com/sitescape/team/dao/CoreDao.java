@@ -26,10 +26,8 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Tag;
-import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.UserDashboard;
 import com.sitescape.team.domain.Workspace;
 
@@ -52,8 +50,7 @@ public interface CoreDao {
 	public void delete(Binder binder);
 //    public void delete(DefinableEntity entity);
 	public void delete(Definition def);
-	public void deleteEntityAssociations(String whereClause, Class clazz);
-//	public void deleteEntityAssociations(String whereClause, Class clazz);
+	public void deleteEntityAssociations(String whereClause);
 	public List findCompanies();
     public  Long findFileNameEntryId(Binder binder, String name);
 	public Workspace findTopWorkspace(String zoneName);
@@ -110,6 +107,7 @@ public interface CoreDao {
 	public Tag loadTagById(String id);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 
+    public void move(Binder binder);
     public SFQuery queryObjects(ObjectControls objs, FilterControls filter);
 	public void refresh(Object obj);
     public void registerFileName(Binder binder, DefinableEntity entity, String name);

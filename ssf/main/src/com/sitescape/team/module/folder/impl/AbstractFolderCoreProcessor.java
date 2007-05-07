@@ -39,6 +39,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
@@ -174,6 +175,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
    	   		parent.incrLogVersion();
    			processChangeLog(parent, ChangeLog.MODIFYWORKFLOWSTATEONREPLY);
+   	    	getReportModule().addAuditTrail(AuditType.modify, parent);
    		}
     	//Starting a workflow on a reply works the same as for the entry
     	addEntry_startWorkflow(entry, ctx);
@@ -361,7 +363,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						List entries = new ArrayList();
 						SFQuery query = getFolderDao().queryEntries(fc); 
 						try {
 							int count = 0;
@@ -379,15 +380,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 								} catch (Exception ex) {
 									logger.error("Error delete files: " + ex.getLocalizedMessage());
 								}
-								entries.add(entry);
-								//after 100 entries - commit transaction
 								++count;
-								if (count == 100) {
-									//remove folder contents in bulk
-									getFolderDao().deleteEntryWorkflows(folder, entries);
-									getFolderDao().deleteEntries(folder, entries);
-									return Boolean.FALSE;
-								}
+								//commit after 100
+								if (count == 100) return Boolean.FALSE;
 							}
 							//	finally delete the binder and its associations
 							try {
@@ -395,10 +390,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 							} catch (Exception ex) {
 								logger.error("Error delete files: " + ex.getLocalizedMessage());
 							}
-							//remove anything that is left
-							getFolderDao().deleteEntries(folder);
-							//finally remove folder
+							//finally remove folder and its entries
 							getFolderDao().delete(folder);
+							getFolderDao().deleteEntryWorkflows(folder);
 							//delete binder
 							return Boolean.TRUE;
 						} finally {
@@ -437,7 +431,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			if (folder.getParentFolder().isTop()) folder.setTopFolder(folder.getParentFolder());
 			else folder.setTopFolder(folder.getParentFolder().getTopFolder());
 		}
-		getFolderDao().moveEntries(folder);
+		getFolderDao().move(folder);
     	
 	}
 

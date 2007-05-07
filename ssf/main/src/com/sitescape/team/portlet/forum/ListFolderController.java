@@ -45,6 +45,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
@@ -234,6 +235,11 @@ public class ListFolderController extends  SAbstractController {
 			request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())));
 		}
+		Binder binder = null;
+		try {
+			binder = getBinderModule().getBinder(binderId);
+		} catch(NoBinderByTheIdException e) {
+		}
 		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
@@ -244,14 +250,12 @@ public class ListFolderController extends  SAbstractController {
 				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
 				request.setAttribute("ssLoadEntryId", entryId);			
 			}
+		} else {
+	     	getReportModule().addAuditTrail(AuditType.view, binder);
+
 		}
 
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		Binder binder = null;
-		try {
-			binder = getBinderModule().getBinder(binderId);
-		} catch(NoBinderByTheIdException e) {
-		}
 
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put(WebKeys.BINDER, binder);

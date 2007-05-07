@@ -2,40 +2,32 @@ package com.sitescape.team.domain;
 
 import java.util.Date;
 
+import com.sitescape.team.domain.AuditTrail.AuditType;
+
 /**
+ * @hibernate.subclass discriminator-value="L"
+ * 
  * Each instance of this class represents a user login.
  * A user login may be stateful and long-lasting (eg. portal and WebDAV) 
  * or stateless and short-lived (eg. RSS, iCAL and WS). 
  *
  */
-public class LoginInfo {
+public class LoginInfo extends AuditTrail {
 
 	public static final String AUTHENTICATOR_PORTAL	= "portal";
 	public static final String AUTHENTICATOR_WEBDAV	= "webdav";
 	public static final String AUTHENTICATOR_RSS	= "rss";
 	public static final String AUTHENTICATOR_ICAL	= "ical";
 	public static final String AUTHENTICATOR_WS		= "ws";
-	
-	/**
-	 * Name of the (sub)system performing the authentication.
-	 */
-	private String authenticatorName;
-	/**
-	 * Id of the user logged in.
-	 */
-	private Long userId;
-	/**
-	 * Time of login.
-	 */
-	private Date loginTime;
-	
+		
 	public LoginInfo() {
 	}
 
 	public LoginInfo(String authenticatorName, Long userId, Date loginTime) {
-		this.authenticatorName = authenticatorName;
-		this.userId = userId;
-		this.loginTime = loginTime;
+		setAuditType(AuditType.login);
+		setDescription(authenticatorName);
+		setStartBy(userId);
+		setStartDate(loginTime);
 	}
 	
 	public LoginInfo(String authenticatorName, Long userId) {
@@ -43,27 +35,20 @@ public class LoginInfo {
 	}
 	
 	public String getAuthenticatorName() {
-		return authenticatorName;
+		return getDescription();
 	}
 
 	public void setAuthenticatorName(String authenticatorName) {
-		this.authenticatorName = authenticatorName;
+		setDescription(authenticatorName);
 	}
 
 	public Date getLoginTime() {
-		return loginTime;
+		return getStartDate();
 	}
 
 	public void setLoginTime(Date loginTime) {
-		this.loginTime = loginTime;
+		setStartDate(loginTime);
 	}
 
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
 
 }

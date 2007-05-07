@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
@@ -108,7 +109,9 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
 			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
-		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
+		} 
+		Binder binderObj = getBinderModule().getBinder(binderId);
+		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -118,6 +121,8 @@ public class ListProfilesController extends   SAbstractController {
 				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
 				request.setAttribute("ssLoadEntryId", entryId);			
 			}
+		} else {
+			getReportModule().addAuditTrail(AuditType.view, binderObj);
 		}
 
 	   	User user = RequestContextHolder.getRequestContext().getUser();
@@ -141,7 +146,6 @@ public class ListProfilesController extends   SAbstractController {
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE1_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 
-		Binder binderObj = getBinderModule().getBinder(binderId);
 		//initializing tabs
 		Tabs tabs = BinderHelper.initTabs(request, binderObj);
 		Map tabOptions = tabs.getTab(tabs.getCurrentTab());

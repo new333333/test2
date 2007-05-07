@@ -12,65 +12,196 @@ package com.sitescape.team.domain;
 
 import java.util.Date;
 
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
+
 /**
- * @author Jong Kim
+ * @hibernate.class table="SS_AuditTrail"
+ * @hibernate.discriminator type="char" discriminator-value="A" column="type"
  *
  */
-public class AuditTrail extends PersistentObject {
-    // timestamp, who, forum id, type of transaction/operation, description
-    // TODO to be defined
+public class AuditTrail  {
+	public enum AuditType {
+		unknown,
+		view,
+		add, 
+		modify, 
+		delete,
+		workflow,
+		login
+	};
+
+	
+    protected String id;
+	protected Date startDate,endDate;
+    protected Long startBy,endBy;
+	protected Long entityId;
+	protected String entityType;
+	protected Long owningBinderId;
+	protected String owningBinderKey;  //used for queries
+    protected String description; // any additional description
+    protected String transactionType; // type of transaction/operation
+    protected AuditType auditType=AuditType.unknown;
     
-    private Date timestamp;
-    private User who;
-    private String forumId;
-    private String objType; // type of the object to which operation is performed.
-    private String objId; // id of the object to which operation is performed.
-    private String transactionType; // type of transaction/operation
-    private String description; // any additional description
+    public AuditTrail() {
+		
+	}
+	public AuditTrail(AnyOwner owner, HistoryStamp start, HistoryStamp end) {
+    	setEntityId(owner.getOwnerId());
+    	setEntityType(owner.getOwnerType());
+		setOwningBinderId(owner.getOwningBinderId());
+		setOwningBinderKey(owner.getOwningBinderKey());
+		setStart(start);
+		setEnd(end);
+	}
+	public AuditTrail(AuditType what, User user, DefinableEntity entity) {
+		setAuditType(what);
+		setStartBy(user.getId());
+		setStartDate(new Date());
+		setEntityId(entity.getEntityIdentifier().getEntityId());
+		setEntityType(entity.getEntityType().name());
+		if (entity instanceof Binder) {
+			setOwningBinderId(entity.getId());
+			setOwningBinderKey(((Binder)entity).getBinderKey().getSortKey());
+		} else {
+			Binder b = entity.getParentBinder();
+			setOwningBinderId(b.getId());
+			setOwningBinderKey(b.getBinderKey().getSortKey());
+		}
+		
+		
+	}
+	/**
+	 * @hibernate.id generator-class="uuid.hex" unsaved-value="null" node="@id"
+	 * @hibernate.column name="id" sql-type="char(32)"
+	 */    
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Long getEntityId() {
+    	return entityId;
+    }
+    public void setEntityId(Long entityId) {
+    	this.entityId = entityId;
+    }
+    /**
+     * @hibernate.property length="16"
+     * @return
+     */
+    public String getEntityType() {
+    	return entityType;
+    }
+    public void setEntityType(String entityType) {
+    	this.entityType = entityType;
+    }
+    /**
+     * Binder owning the entity - may be null
+     * @hibernate.property 
+     */
+    public Long getOwningBinderId() {
+    	return this.owningBinderId;
+    }
+    public void setOwningBinderId(Long owningBinderId) {
+    	this.owningBinderId = owningBinderId;
+    }
+    /**
+     * query key for owningbinder - may be null
+     * @hibernate.property length="255" 
+     * @return
+     */
+    public String getOwningBinderKey() {
+        return owningBinderKey;
+    }
+    public void setOwningBinderKey(String owningBinderKey) {
+        this.owningBinderKey = owningBinderKey;
+    } 
     
+    /**
+     * - may be null
+     * @hibernate.property length="512"
+     * @return
+     */
     public String getDescription() {
-        return description;
+        return this.description;
     }
     public void setDescription(String description) {
         this.description = description;
     }
-    public String getForumId() {
-        return forumId;
+	/**
+     * @hibernate.property
+     */
+    public Date getStartDate() {
+        return this.startDate;
     }
-    public void setForumId(String forumId) {
-        this.forumId = forumId;
+    public void setStartDate(Date start) {
+        this.startDate = start;
     }
-    public String getObjId() {
-        return objId;
+
+	/**
+     * @hibernate.property
+     */
+    public Long getStartBy() {
+        return this.startBy;
     }
-    public void setObjId(String objId) {
-        this.objId = objId;
+    public void setStartBy(Long startBy) {
+        this.startBy = startBy;
     }
-    public String getObjType() {
-        return objType;
+    public void setStart(HistoryStamp start) {
+    	this.startDate = start.getDate();
+    	this.startBy = start.getPrincipal().getId();
     }
-    public void setObjType(String objType) {
-        this.objType = objType;
+ 	/**
+     * @hibernate.property
+     * - may be null
+     */
+    public Date getEndDate() {
+        return this.endDate;
     }
-    public Date getTimestamp() {
-        return timestamp;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+ 	/**
+     * @hibernate.property
+     * - may be null
+     */
+    public Long getEndBy() {
+        return this.endBy;
     }
-    public String getTransactionType() {
-        return transactionType;
+    public void setEndBy(Long endBy) {
+        this.endBy = endBy;
     }
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
+    public void setEnd(HistoryStamp end) {
+    	this.endDate = end.getDate();
+    	this.endBy = end.getPrincipal().getId();
     }
-    public User getWho() {
-        // Since this class is only used internally and never passed back
-        // to presentation tier, we don't have to worry about protecting 
-        // this field.
-        return who;
+   
+    public AuditType getAuditType() {
+        return auditType;
     }
-    public void setWho(User who) {
-        this.who = who;
+    public void setAuditType(AuditType auditType) {
+        this.auditType = auditType;
     }
+    /**
+	 * Internal hibernate accessor
+     * @hibernate.property length="16"
+     * @return
+     */
+    protected String getTransactionType() {
+    	if (auditType == null) return AuditType.unknown.name();
+        return auditType.name();
+    }
+    protected void setTransactionType(String transactionType) {
+		for (AuditType eT : AuditType.values()) {
+			if (transactionType.equals(eT.name())) {
+				auditType=eT;
+				break;
+			}
+		}
+   }
 }

@@ -23,6 +23,7 @@ import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.module.report.ReportModule;
 
 public abstract class AbstractActionHandler implements ActionHandler {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -34,6 +35,10 @@ public abstract class AbstractActionHandler implements ActionHandler {
 
 	protected ProfileDao getProfileDao() {
 		return (ProfileDao)SpringContextUtil.getBean("profileDao");
+	};
+
+	protected ReportModule getReportModule() {
+		return (ReportModule)SpringContextUtil.getBean("reportModule");
 	};
 
 	protected MailManager getMailManager() {

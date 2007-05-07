@@ -37,6 +37,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.AverageRating;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -242,6 +243,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	protected FileModule getFileModule() {
 		return fileModule;
 	}
+	//set by spring
 	public void setFileModule(FileModule fileModule) {
 		this.fileModule = fileModule;
 	}
@@ -848,7 +850,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
     	// see if title exists for this folder
      	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues));
-     	entry.setPopularity(Long.valueOf(result));		
+     	entry.setPopularity(Long.valueOf(result));
+     	getReportModule().addAuditTrail(AuditTrail.AuditType.view, entry);
 	}
 	
 

@@ -57,12 +57,7 @@ public interface ProfileDao {
 	 * @param entry
 	 */
     public void delete(Principal entry);
-    /**
-     * Delete all principals in the ProfileBinder
-     * @param profile
-     */
-    public void deleteEntries(ProfileBinder profile);
-    /**
+     /**
      * Delete a collection of principals including all their associations
      * @param entries
      */

@@ -23,6 +23,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
@@ -40,6 +41,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.jobs.UserTitleChange;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
@@ -81,6 +83,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void deleteBinder_indexDel(Binder binder, Map ctx) {
      }
     
+    //*******************************************************************/
+  	//not supported
+	public void moveBinder(Binder source, Binder destination) {
+		throw new NotSupportedException("Move not supported on ProfileBinder");
+	
+	}
     //*******************************************************************/
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
@@ -375,6 +383,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	 	       entry.setModification(new HistoryStamp(user));
 	 	       entry.incrLogVersion();
 	 	       processChangeLog(entry, ChangeLog.MODIFYENTRY);
+	 	       getReportModule().addAuditTrail(AuditType.modify, entry);
 
 	        }
 	        return changed;
