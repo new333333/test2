@@ -211,7 +211,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_muted_label_color" value="#666666" scope="request"/>
+	<c:set var="ss_style_muted_label_color" value="#2956B2" scope="request"/>
 	
 	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
 	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
@@ -526,14 +526,10 @@ div.ss_replies div.ss_entryDescription {
   font-size: ${ss_style_font_smallprint};
   }
 .ss_entryDescription {
-  border-left:    2px solid ${ss_entry_description_border_color};
-  border-right:   2px solid ${ss_entry_description_border_color};
-  border-top:     5px solid ${ss_entry_description_border_color};
-  border-bottom:  5px solid ${ss_entry_description_border_color};
-  padding-left: 25px;
-  padding-right: 25px;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   background-color: ${ss_entry_description_background_color};
   font-size: 13px;
   color: ${ss_style_muted_foreground_color};
@@ -618,7 +614,7 @@ table.ss_guestbook {
 .ss_tinyControl {
   font-size: 9px !important;
   font-family: sans-serif;
-  padding: 1px 1px 1px 1px !important;
+  padding: 3px 15px 3px 15px !important;
   margin: 1px 2px 1px 2px !important;
   line-height: 100% !important;
 }
@@ -636,10 +632,10 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   background-color: ${ss_linkbutton_background_color};
   background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
   background-repeat: repeat-x;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
   padding-bottom: 1px;
-  vertical-align: bottom;
+  vertical-align: middle;
   text-decoration: none;
   cursor: pointer;
   }
@@ -656,8 +652,8 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   background-color: ${ss_linkbutton_background_color};
   background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
   background-repeat: repeat-x;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
   padding-bottom: 1px;
   vertical-align: bottom;
   text-decoration: none;
@@ -667,6 +663,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 
 div.ss_iconed_label {
   display: inline;
+  font-family: ${ss_style_title_font_family};
   background-repeat: no-repeat;
   background-position: left center;
   padding-left: 16px;
@@ -1001,10 +998,10 @@ table.ss_blog_title table {
 div.ss_blog_title  {
   background-color:${ss_style_header_bar_background};
   overflow: hidden;
-  border-top: 2px solid ${ss_style_header_bar_background};
-  border-bottom: 2px solid ${ss_style_header_bar_background};
-  border-left: 3px solid ${ss_style_header_bar_background};
-  border-right: 3px solid ${ss_style_header_bar_background};
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 2px;
+  padding-right: 5px;
 }
 
 div.ss_header_bar_timestamp {
