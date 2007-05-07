@@ -154,9 +154,9 @@
 		<url-pattern>/ical/*</url-pattern>
 	</servlet-mapping>	
 
-	<!-- Do NOT ever change this timeout value -->
+    <!-- Important: This value must be equal to or slightly greater than the timeout value of the portal login. -->
 	<session-config>
-		<session-timeout>0</session-timeout>
+		<session-timeout>250</session-timeout>
 	</session-config>
 
 @@TAGLIB_PORTLET@@
