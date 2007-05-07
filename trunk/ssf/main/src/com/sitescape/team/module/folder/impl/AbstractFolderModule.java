@@ -65,6 +65,7 @@ import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.folder.FileLockInfo;
 import com.sitescape.team.module.folder.FilesLockedByOtherUsersException;
 import com.sitescape.team.module.folder.FolderCoreProcessor;
@@ -354,7 +355,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         modifyEntry(folderId, entryId, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
     }
 
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    public FilesErrors modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
     	meCount.incrementAndGet();
@@ -384,8 +385,11 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     		}
     	}
     	Date stamp = entry.getModification().getDate();
-        processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo, filesFromApplet);
+    	
+    	FilesErrors filesErrors = processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo, filesFromApplet);
         if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
+        
+        return filesErrors;
     }    
     
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {

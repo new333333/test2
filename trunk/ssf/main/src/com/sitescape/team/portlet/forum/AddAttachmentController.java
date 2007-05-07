@@ -30,6 +30,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.module.file.FilesErrors;
 
 /**
  * @author Peter Hurley
@@ -62,13 +63,22 @@ public class AddAttachmentController extends SAbstractController {
 				}
 			}
 			Boolean filesFromApplet = new Boolean(true);
-			getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, filesFromApplet);
+			FilesErrors filesErrors = getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, filesFromApplet);
+			
+			String strFilesErrors = "";
+			
+			if (filesErrors != null && filesErrors.getProblems().size() > 0) {
+				strFilesErrors = filesErrors.toString();
+			}
 			
 			if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {
-				setupReloadOpener(response, folderId, entryId);
+				setupAppletResponse(response, folderId, entryId, strFilesErrors);
 			}
 			else {
 				String closeDivFunctionName = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, "");
+				if (closeDivFunctionName != null) {
+					closeDivFunctionName = closeDivFunctionName.replaceAll("strErrorMessage", strFilesErrors);
+				}
 				setupCloseDiv(response, folderId, closeDivFunctionName);
 			}
 			//flag reload of folder listing
@@ -84,6 +94,14 @@ public class AddAttachmentController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, strCloseDivFunctionName);
 	}	
+
+	private void setupAppletResponse(ActionResponse response, Long folderId, Long entryId, String strFilesErrors) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_APPLET_RESPONSE);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, strFilesErrors);
+	}
 	
 	private void setupReloadOpener(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry

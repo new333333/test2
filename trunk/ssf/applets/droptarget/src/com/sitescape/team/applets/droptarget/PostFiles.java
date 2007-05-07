@@ -294,6 +294,7 @@ public class PostFiles extends Thread {
               topFrame.dataSink.fileLoadingEnded();
 			  try {
 				  String reloadFunction = topFrame.getParameter("reloadFunctionName");
+				  
 				  if (reloadFunction.equals(null)) return;
 				  JSObject win = JSObject.getWindow(topFrame);
 				  String args[] = {url};
@@ -301,7 +302,7 @@ public class PostFiles extends Thread {
 				} catch (Exception ignored) { }
               return;
             }
-            
+
             while (true) {
 				byte bytes[] = new byte[5000];
 				// Read available data.
@@ -313,18 +314,25 @@ public class PostFiles extends Thread {
 					writing = true;
 				}
 				url += new String(bytes).toString().trim();
-            }
+				
+				System.out.println("url: "+url);
+				
+            }            
             
             if (writing) {
 				writing = false;
-				url = url.substring(4);
+				if (url == null) {
+					url = "";
+				} else {
+					url = url.trim();
+				}
+				//url = url.substring(4);
 				try {
 					String reloadFunction = topFrame.getParameter("reloadFunctionName");
 					if (reloadFunction.equals(null)) return;
 					JSObject win = JSObject.getWindow(topFrame);
 					String args[] = {url};
 					Object foo = win.call(reloadFunction,args);
-					
 				} catch (Exception ignored) { }
             }
         } catch (IOException e) {

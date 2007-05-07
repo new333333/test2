@@ -13,7 +13,10 @@
 <%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
 
 <script>
-function reloadUrlFromApplet${ssEntryId}${ss_namespace}() {
+function reloadUrlFromApplet${ssEntryId}${ss_namespace}(strErrorMessage) {
+	if (strErrorMessage != "") {
+		alert(strErrorMessage);
+	}
 	parent.ss_hideAddAttachmentDropboxAndAJAXCall('${ssBinderId}', '${ssEntryId}', '${ss_namespace}');
 }
 function ss_hideDropTarget${ssEntryId}${ss_namespace}() {
@@ -71,7 +74,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			    <PARAM NAME = "savePreviousVersions" VALUE="yes"/>
 			    <PARAM NAME = "fileReceiverURL" VALUE="${ssAttachmentFileReceiverURL}" />
 			    <PARAM NAME = "deactivationUrl" VALUE=""/>
-			    <PARAM NAME = "displayUrl" VALUE="0"/>
+			    <PARAM NAME = "displayUrl" VALUE="1"/>
 			    <PARAM NAME = "loadDirectory" VALUE="yes" />
 			    <PARAM NAME = "menuLabelPaste" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
 			    <PARAM NAME = "menuLabelCancel" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />

@@ -25,6 +25,7 @@ import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.fi.FIException;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -135,7 +136,7 @@ public interface FolderModule {
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    public FilesErrors modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;

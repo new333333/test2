@@ -2637,7 +2637,7 @@ function setURLInIFrame(binderId, entryId, namespace) {
 
 	browseURL = url;
 	browseHideAttachment = "ss_hideAddAttachmentBrowse('"+ entryId + "', '" + namespace + "')";
-	browseHideAttachmentAndAjax = "ss_hideAddAttachmentBrowseAndAJAXCall('"+ binderId +"', '"+ entryId + "', '" + namespace + "')";
+	browseHideAttachmentAndAjax = 'ss_hideAddAttachmentBrowseAndAJAXCall("'+ binderId +'", "'+ entryId + '", "' + namespace + '", "strErrorMessage")';
 	//this.frames['ss_iframe_browse'+ entryId + namespace].setURL(url, ss_labelButtonOK, ss_labelButtonCancel, ss_labelEntryChooseFileWarning, "ss_hideAddAttachmentBrowse('"+ entryId + "', '" + namespace + "')", "ss_hideAddAttachmentBrowseAndAJAXCall('"+ binderId +"', '"+ entryId + "', '" + namespace + "')", ss_labelEntryBrowseAddAttachmentHelpText);
 }
 
@@ -2672,7 +2672,11 @@ function ss_hideAddAttachmentBrowse(entryId, namespace) {
 	ss_hideDiv(divId);
 }
 
-function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace) {
+function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, strErrorMessage) {
+	if (strErrorMessage != "") {
+		alert(strErrorMessage);
+	}
+
 	ss_hideAddAttachmentBrowse(entryId, namespace);
 	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
