@@ -26,8 +26,9 @@ iCal4j 1.0-beta2
 Jackrabbit core 1.0.1
 Jaxen 1.1-beta-7
 JAXRPC 1.1
-JBoss App Server 4.0.4.GA jbosssx.jar
-JBoss Portal 2.6 DR1 portal-identity-lib.jar
+JBoss App Server 4.0.5.GA jbosssx.jar
+JBoss Common 1.0.0.GA
+JBoss Portal 2.6 CR2 portal-identity-lib.jar
 JBPM 3.1.4 (not using/shipping jbpm-identity)
 JCR 1.0
 JDOM 1.0
