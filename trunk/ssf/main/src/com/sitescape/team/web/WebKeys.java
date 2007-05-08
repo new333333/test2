@@ -100,6 +100,8 @@ public class WebKeys {
     public static final String URL_PAGE_SIZE="pageSize";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
+	public static final String URL_START_DATE = "ss_startDate";
+	public static final String URL_END_DATE = "ss_endDate";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";

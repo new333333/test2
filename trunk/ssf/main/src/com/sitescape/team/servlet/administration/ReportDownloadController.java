@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.servlet.administration;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +34,10 @@ import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
@@ -40,6 +45,7 @@ import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.SearchTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.util.Validator;
 public class ReportDownloadController extends  SAbstractController {
 	
@@ -47,6 +53,13 @@ public class ReportDownloadController extends  SAbstractController {
             HttpServletResponse response) throws Exception {		
 
 		Map formData = request.getParameterMap();
+		MapInputData inputData = new MapInputData(formData);
+		GregorianCalendar cal = new GregorianCalendar();
+		Date startDate = DateHelper.getDateFromInput(inputData, WebKeys.URL_START_DATE);
+		Date endDate = DateHelper.getDateFromInput(inputData, WebKeys.URL_END_DATE);
+		cal.setTime(endDate);
+		cal.add(Calendar.DATE, 1);
+		endDate = cal.getTime();
 		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			//Get the list of binders for reporting
 			List<Long> ids = new ArrayList();
@@ -76,11 +89,28 @@ public class ReportDownloadController extends  SAbstractController {
 			response.setHeader(
 						"Content-Disposition",
 						"attachment; filename=\"report.csv\"");
-			List<Map<String, Object>> report = getReportModule().generateReport(ids);
+			List<Map<String, Object>> report = getReportModule().generateReport(ids, startDate, endDate);
 			
+			response.getWriter().print(NLT.get("report.columns.id") + ",");
+			response.getWriter().print(NLT.get("report.columns.parent") + ",");
+			response.getWriter().print(NLT.get("report.columns.title") + ",");
+			response.getWriter().print(NLT.get("report.columns.add") + ",");
+			response.getWriter().print(NLT.get("report.columns.view") + ",");
+			response.getWriter().print(NLT.get("report.columns.modify") + ",");
+			response.getWriter().print(NLT.get("report.columns.delete"));
+			response.getWriter().println();
+
 			for(Map<String, Object> row : report) {
 				response.getWriter().print(row.get(ReportModule.BINDER_ID) + ",");
-				response.getWriter().print(row.get(ReportModule.BINDER_NAME));
+				if(row.containsKey(ReportModule.BINDER_PARENT)) {
+					response.getWriter().print(row.get(ReportModule.BINDER_PARENT));
+				}
+				response.getWriter().print(",");
+				response.getWriter().print(row.get(ReportModule.BINDER_TITLE) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.add.name()) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.view.name()) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.modify.name()) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.delete.name()));
 				response.getWriter().println();
 			}
 			response.getWriter().flush();

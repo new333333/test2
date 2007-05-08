@@ -17,17 +17,17 @@
 <%
 String wsTreeName = "search_" + renderResponse.getNamespace();
 %>
+<c:set var="formName"><portlet:namespace />fm</c:set>
 <script type="text/javascript">
 var ssReportURL="<portlet:actionURL><portlet:param 
 		name="action" value="report"/></portlet:actionURL>";
 </script>
 
 <table class="ss_style" width="100%"><tr><td>
-
 <form class="ss_style ss_form" 
 	action="<ssf:url webPath="reportDownload"/>" 
 	method="post" 
-	name="<portlet:namespace />fm">
+	name="${formName}">
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
@@ -45,14 +45,14 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 	var prefix = action+"_";
 	ss_createTreeCheckbox("<%= wsTreeName %>", prefix, forum);
 	var name = prefix + forum;
-	if (self.document.<portlet:namespace />fm[name] && self.document.<portlet:namespace />fm[name].checked) {
-		self.document.<portlet:namespace />fm[name].checked=false;
+	if (self.document.${formName}[name] && self.document.${formName}[name].checked) {
+		self.document.${formName}[name].checked=false;
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
 			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = false;
 		}
 	} else {
-		self.document.<portlet:namespace />fm[name].checked=true
+		self.document.${formName}[name].checked=true
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
 			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = true;
@@ -62,6 +62,17 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 }
 
 </script>
+<div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
+				 popupDivId="ss_startPopup" id="ss_startDate"
+				 immediateMode="false" altText="<ssf:nlt tag='calendar.view.popupAltText'/>"
+				 /></div>
+				 <div id="ss_startPopup" class="ss_calPopupDiv"></div>
+<div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
+				 popupDivId="ss_endPopup" id="ss_endDate"
+				 immediateMode="false" altText="<ssf:nlt tag='calendar.view.popupAltText'/>"
+				 /></div>
+				 <div id="ss_endPopup" class="ss_calPopupDiv"></div>
+				 
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
   multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type_" />
