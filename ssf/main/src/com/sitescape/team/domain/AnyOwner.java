@@ -70,8 +70,8 @@ public class AnyOwner {
 	}
 	private void setBinderKey(DefinableEntity entity) {
 		if (entity instanceof Binder) {
-			setOwningBinderId(((Binder)binder).getId());
-			setOwningBinderKey(((Binder)binder).getBinderKey().getSortKey());
+			setOwningBinderId(((Binder)entity).getId());
+			setOwningBinderKey(((Binder)entity).getBinderKey().getSortKey());
 		} else { 
 			setOwningBinderId(((Entry)entity).getParentBinder().getId());
 			setOwningBinderKey(((Entry)entity).getParentBinder().getBinderKey().getSortKey());

@@ -15,7 +15,8 @@ import com.sitescape.team.domain.WorkflowStateHistory;
 public interface ReportModule {
 
 	public static final String BINDER_ID = "binder_id";
-	public static final String BINDER_NAME = "binder_name";
+	public static final String BINDER_TITLE = "binder_title";
+	public static final String BINDER_PARENT = "binder_parent";
 	
 	public void addAuditTrail(AuditTrail auditTrail);
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
@@ -24,8 +25,7 @@ public interface ReportModule {
 	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory);
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
 	
-	public List<Map<String, Object>> generateReport(Collection ids);
-	public List<Map<String,Object>> generateReport(Long binderId, boolean includeChildren);
+	public List<Map<String, Object>> generateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateLoginReport(Date after, Date before);
 	public List<Map<String,Object>> generateWorkflowStateReport(String definitionId, String state);
 
