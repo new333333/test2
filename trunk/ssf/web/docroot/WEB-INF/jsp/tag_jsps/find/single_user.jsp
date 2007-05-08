@@ -14,6 +14,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.util.ParamUtil" %>
 <%
 	String findUserGroupType = (String) request.getAttribute("list_type");
 	String findUserElementName = (String) request.getAttribute("form_element");
@@ -21,17 +22,15 @@
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
 	String instanceCode = (String) request.getAttribute("instanceCode");
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
+	String label = ParamUtil.get(request, "label", "");
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
 <c:set var="iCode" value="<%= instanceCode %>"/>
 <c:set var="leaveResultsVisible" value="<%= leaveResultsVisible %>"/>
 <c:set var="prefix" value="${renderResponse.namespace}_${iCode}_${iCount}" />
-
-
+<c:set var="label" value="<%= label %>" />
 
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
-
-
 
 <div class="ss_style_trans">
 <div style="margin:0px; padding:0px;"><textarea 
@@ -39,7 +38,11 @@
     name="<%= findUserElementName %>" 
     id="ss_findUser_searchText_${prefix}"
     onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"
-    onBlur="ss_findUserBlurTextArea('${prefix}');"></textarea>
+    onBlur="ss_findUserBlurTextArea('${prefix}');"
+    <c:if test="${!empty label}">
+    	title="${label}"
+    </c:if>
+    ></textarea>
     <img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
       onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 		value="${ssUser.parentBinder.id}"/><ssf:param name="entryId" 

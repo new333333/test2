@@ -14,14 +14,17 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.util.ParamUtil" %>
 <%
 	String findPlacesType = (String) request.getAttribute("list_type");
 	String findPlacesFormName = (String) request.getAttribute("form_name");
 	String findPlacesElementName = (String) request.getAttribute("form_element");
 	String findPlacesElementWidth = (String) request.getAttribute("element_width");
+	String label = ParamUtil.get(request, "label", "");
 %>
 <c:set var="prefix" value="<%= findPlacesFormName + "_" + findPlacesElementName %>" />
 <c:set var="prefix" value="${prefix}_${renderResponse.namespace}"/>
+<c:set var="label" value="<%= label %>" />
 <c:if test="${empty ss_find_places_support_stuff_loaded}">
 <script type="text/javascript">
 var ss_findPlaces_searchText = ""
@@ -310,7 +313,11 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
     name="ss_findPlaces_searchText_${prefix}" 
     id="ss_findPlaces_searchText_${prefix}"
     onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
-    onBlur="ss_findPlacesBlurTextArea${prefix}();"></textarea></div>
+    onBlur="ss_findPlacesBlurTextArea${prefix}();"
+    <c:if test="${!empty label}">
+    	title="${label}"
+    </c:if>
+    ></textarea></div>
 <div id="ss_findPlaces_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findPlacesNavBarDiv_${prefix}"
     class="ss_findUserList" style="visibility:hidden;"

@@ -27,6 +27,9 @@
 </c:if>
 <div class="ss_style" style="padding:4px;">
 
+<ssHelpSpot helpId="portlets/buddy_list_portlet" offsetX="0" offsetY="-10" 
+			    title="<ssf:nlt tag="helpSpot.buddyListPortlet"/>"/>
+
 <div class="ss_portlet_style ss_portlet">
 <table cellpadding="3" style="width:100%;">
 <tr>

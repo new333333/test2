@@ -88,6 +88,7 @@ public interface ObjectKeys {
     	
     
     public static final int LISTING_MAX_PAGE_SIZE = 100;
+    public static final int MAX_TAG_LENGTH = 64;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
     

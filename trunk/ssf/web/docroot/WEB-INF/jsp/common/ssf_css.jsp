@@ -1887,7 +1887,8 @@ div.ss_global_toolbar_maximized {
 
 div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global_toolbar_maximized div.ss_global_toolbar_favs,
  div.ss_global_toolbar_maximized div.ss_global_toolbar_divider, div.ss_global_toolbar_maximized div.ss_global_toolbar_quick,
- div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help {
+ div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help,
+ div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
 	float: left;
 	white-space: nowrap;
 	position: relative;
@@ -1903,6 +1904,9 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
 	height: 43px;
 	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.jpg) no-repeat;	
 	margin: 0 5px 0 5px;	
+}
+
+div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
@@ -1992,6 +1996,20 @@ div.ss_global_toolbar_help {
 	padding-right: 4px;
 	margin-top: 5px;
 	text-align: center;
+}
+.ss_global_toolbar_accessible {
+	margin-top: 0px;
+	padding-left: 6px;
+	background: transparent;
+}
+.ss_global_toolbar_accessible form {
+	background:transparent;
+}
+.ss_global_toolbar_accessible a {
+    background:transparent;
+}
+.ss_global_toolbar_accessible img {
+	background: transparent;
 }
 .ss_global_toolbar_findUser {
 	margin-top: 0px;

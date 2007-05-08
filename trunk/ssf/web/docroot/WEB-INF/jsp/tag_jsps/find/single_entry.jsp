@@ -14,6 +14,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.util.ParamUtil" %>
 <%
 	String findEntriesType = (String) request.getAttribute("list_type");
 	String findEntriesFormName = (String) request.getAttribute("form_name");
@@ -24,8 +25,10 @@
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
 	Boolean leaveResultsVisible = (Boolean) request.getAttribute("leaveResultsVisible");
+	String label = ParamUtil.get(request, "label", "");
 %>
 <c:set var="prefix" value="<%= findEntriesFormName + "_" + findEntriesElementName %>" />
+<c:set var="label" value="<%= label %>" />
 <c:if test="${empty ss_find_entries_support_stuff_loaded}">
 <script type="text/javascript">
 var ss_findEntries_searchText = ""
@@ -312,7 +315,11 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
     name="ss_findEntries_searchText_<portlet:namespace/>" 
     id="ss_findEntries_searchText_<portlet:namespace/>"
     onKeyUp="ss_findEntriesSearch_${prefix}(this.id, '<%= findEntriesElementName %>', '<%= findEntriesType %>');"
-    onBlur="ss_findEntriesBlurTextArea<portlet:namespace/>();"></textarea></div>
+    onBlur="ss_findEntriesBlurTextArea<portlet:namespace/>();"
+    <c:if test="${!empty label}">
+    	title="${label}"
+    </c:if>
+    ></textarea></div>
 <div id="ss_findEntries_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findEntriesNavBarDiv_<portlet:namespace/>"
     class="ss_findUserList" style="visibility:hidden;"
