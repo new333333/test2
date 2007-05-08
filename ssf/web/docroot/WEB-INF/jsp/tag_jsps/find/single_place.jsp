@@ -40,9 +40,9 @@ var ss___findPlacesIsMouseOverList = false;
 function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text != ss_findPlacesSearchLastText) {
+	if (text.trim() != ss_findPlacesSearchLastText.trim()) {
 		ss_findPlaces_pageNumber = 0;
-		ss_findPlaces_pageNumberBefore = -1;
+		ss_findPlaces_pageNumberBefore = 0;
 	}
 	ss_setupStatusMessageDiv()
 	ss_moveDivToBody('ss_findPlacesNavBarDiv_${prefix}');
@@ -245,7 +245,7 @@ function ss_findPlacesMouseOutList${prefix}() {
 function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPlacesType, crFound) {
 	//In accessibility mode, wait for the user to type cr
 	if (!crFound && parseInt(ss_findPlaces_pageNumber) == 0 && 
-			parseInt(ss_findPlaces_pageNumberBefore) == -1) return;
+			parseInt(ss_findPlaces_pageNumberBefore) == 0) return;
 	
     var iframeDivObj = self.document.getElementById("ss_findPlacesIframeDiv");
     var iframeObj = self.document.getElementById("ss_findPlacesIframe");
