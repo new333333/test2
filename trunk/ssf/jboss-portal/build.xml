@@ -57,7 +57,7 @@
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
 	</target>
 	
-	<target name="deploy-jdbc-properties">
+	<!--<target name="deploy-jdbc-properties">
 		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
 		<property file="${project.dir}/tools/sql/database.properties" />
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
@@ -70,7 +70,7 @@
 			token="@@@username" value="${jdbc.username.liferay}"/>
 		<replace file="${deploy.root.file}"
 			token="@@@password" value="${jdbc.password.liferay}"/>		
-	</target>
+	</target>-->
 		
 	<target name="deploy-jboss-jboss-tomcat" depends="clean, init-jboss-portal, clean-app-server">	
 		<unwar src="${project.dir}/war/ssf.war" dest="${app.server.ssf.dir}" />
