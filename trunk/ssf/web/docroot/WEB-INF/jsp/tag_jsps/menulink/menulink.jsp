@@ -26,6 +26,8 @@
 String title = ParamUtil.get(request, "title", "");
 String action = ParamUtil.get(request, "action", "");
 String adapter = ParamUtil.get(request, "adapter", "");
+String isAccessible = ParamUtil.get(request, "isAccessible", "");
+
 boolean blnAdapter = true;
 if ("false".equals(adapter)) {
 	blnAdapter = false;
@@ -47,6 +49,9 @@ String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
 String dashboardType = ParamUtil.get(request, "dashboardType", "");
 String isFile = ParamUtil.get(request, "isFile", "no");
 %>
+
+<% if (isAccessible.equals("false")) { %>
+
 <a class="ss_title_menu" href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
 	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
@@ -63,3 +68,15 @@ onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>', '<%= isFile %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= dashboardType %>');"
 src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
+
+<% } else { %>
+
+<a 
+	<% if ("yes".equals(isFile)) { %>
+		href="<%= url %>" target="_blank"
+	<% } else { %>
+		href="#" onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
+	<% } %>
+><c:if test="<%= (title == null || title.equals("")) %>">
+<span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
+<% } %>
