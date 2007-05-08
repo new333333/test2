@@ -52,6 +52,9 @@ function <portlet:namespace/>_getUnseenCounts() {
 </c:if>
 <div class="ss_style" style="padding:4px;">
 
+<ssHelpSpot helpId="portlets/folder_bookmarks_portlet" offsetX="0" offsetY="-10" 
+			    title="<ssf:nlt tag="helpSpot.folderBookmarksPortlet"/>"/>
+
 <c:if test="${empty ssFolderList}">
 <div align="right">
   <a class="ss_linkButton" 
@@ -64,7 +67,7 @@ function <portlet:namespace/>_getUnseenCounts() {
   <ssf:nlt tag="portlet.notConfigured"/>
 </div>
 </c:if>
- 
+
 <c:if test="${!empty ssFolderList}">
 <div style="padding:5px 0px;">
   <a class="ss_linkButton ss_bold ss_smallprint" 

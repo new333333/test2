@@ -546,6 +546,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	EntityIdentifier uei = user.getEntityIdentifier();
 	   	EntityIdentifier bei = binder.getEntityIdentifier();
 	   	for (int i = 0; i < newTags.length; i++) {
+	   		String tagName = newTags[i].trim();
+	   		if (tagName.length() > ObjectKeys.MAX_TAG_LENGTH) {
+	   			//Truncate the tag so it fits in the database field
+	   			tagName = tagName.substring(0, ObjectKeys.MAX_TAG_LENGTH);
+	   		}
 			Tag tag = new Tag();
 		   	tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(bei);

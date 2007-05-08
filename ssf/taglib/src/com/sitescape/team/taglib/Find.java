@@ -10,7 +10,9 @@
  */
 package com.sitescape.team.taglib;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
@@ -18,6 +20,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.sitescape.team.web.WebKeys;
@@ -29,7 +32,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  * @author Peter Hurley
  *
  */
-public class Find extends TagSupport {
+public class Find extends BodyTagSupport implements ParamAncestorTag {
     private Set userList;    
     private String formName = "";
     private String formElement;
@@ -42,11 +45,23 @@ public class Find extends TagSupport {
     private String binderId = "";
     private Boolean searchSubFolders;
     private Integer instanceCount = 0;
-    
-	public int doStartTag() throws JspException {
+
+	private Map _params;
+
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
+
+	public int doAfterBody() {
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() throws JspException {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+			
+			if (this._params == null) this._params = new HashMap();
 			
 			if (this.userList == null) this.userList = new HashSet();			
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
@@ -82,7 +97,7 @@ public class Find extends TagSupport {
 			rd = httpReq.getRequestDispatcher(jsp);
 
 			ServletRequest req = null;
-			req = new DynamicServletRequest(httpReq);
+			req = new DynamicServletRequest(httpReq, _params);
 			req.setAttribute("user_list", this.userList);			
 			req.setAttribute("form_name", this.formName);
 			req.setAttribute("form_element", this.formElement);
@@ -118,13 +133,29 @@ public class Find extends TagSupport {
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
+			if (_params != null) {
+				_params.clear();
+			}
 		}
 	}
 
-	public int doEndTag() throws JspException {
-		return EVAL_PAGE;
+	public void addParam(String name, String value) {
+		if (_params == null) {
+			_params = new HashMap();
+		}
+
+		String[] values = (String[])_params.get(name);
+		if (values == null) {
+			values = new String[] {value};
+		} else {
+			String[] newValues = new String[values.length + 1];
+			System.arraycopy(values, 0, newValues, 0, values.length);
+			newValues[newValues.length - 1] = value;
+			values = newValues;
+		}
+		_params.put(name, values);
 	}
-	
+
 	public void setUserList(Set userList) {
 	    this.userList = userList;
 	}
