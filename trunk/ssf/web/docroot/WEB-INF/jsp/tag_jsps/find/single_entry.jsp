@@ -45,9 +45,9 @@ var ss___findEntriesIsMouseOverList = false;
 function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text != ss_findEntriesSearchLastText) {
+	if (text.trim() != ss_findEntriesSearchLastText.trim()) {
 		ss_findEntries_pageNumber = 0;
-		ss_findEntries_pageNumberBefore = -1;
+		ss_findEntries_pageNumberBefore = 0;
 	}
 	ss_setupStatusMessageDiv()
 	ss_moveDivToBody('ss_findEntriesNavBarDiv_<portlet:namespace/>');
@@ -247,7 +247,7 @@ function ss_findEntriesMouseOutList<portlet:namespace/>() {
 function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEntriesType, crFound) {
 	//In accessibility mode, wait for the user to type cr
 	if (!crFound && parseInt(ss_findEntries_pageNumber) == 0 && 
-			parseInt(ss_findEntries_pageNumberBefore) == -1) return;
+			parseInt(ss_findEntries_pageNumberBefore) == 0) return;
 	
     var iframeDivObj = self.document.getElementById("ss_findEntriesIframeDiv");
     var iframeObj = self.document.getElementById("ss_findEntriesIframe");
