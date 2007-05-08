@@ -71,7 +71,7 @@ src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null |
 
 <% } else { %>
 
-<a 
+<a class="ss_title_menu" 
 	<% if ("yes".equals(isFile)) { %>
 		href="<%= url %>" target="_blank"
 	<% } else { %>
