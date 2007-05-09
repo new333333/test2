@@ -47,6 +47,8 @@ ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 <table cellspacing="0" cellpadding="0">
 <tr>
 <td valign="middle" nowrap>
+<ssHelpSpot helpId="tools/rating" offsetX="0" 
+  title="<ssf:nlt tag="helpSpot.rating"/>">
 <%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 </td>
 <td>&nbsp;&nbsp;&nbsp;</td>

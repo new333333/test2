@@ -45,6 +45,9 @@ public class ServletRootUrlTag extends TagSupport {
 			logger.error(e);
 			throw new JspTagException(e.getLocalizedMessage());
 		}
+		finally {
+			secure = null;
+		}
 
 		return SKIP_BODY;
 	}

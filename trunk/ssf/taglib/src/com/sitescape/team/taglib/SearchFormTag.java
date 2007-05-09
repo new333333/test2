@@ -83,6 +83,9 @@ public class SearchFormTag extends BodyTagSupport implements ParamAncestorTag {
 		finally {
 			_form = "";
 			_element = "";
+			if (_params != null) {
+				_params.clear();
+			}
 		}
 	}
 

@@ -501,7 +501,7 @@
 		</attribute>		
 		<attribute>
 			<name>browserType</name>
-			<required>false</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
 		</attribute>		
@@ -513,7 +513,7 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>browserType</name>
-			<required>false</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
 		</attribute>		
@@ -555,7 +555,7 @@
 		</attribute>		
 		<attribute>
 			<name>browserType</name>
-			<required>false</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.String</type>
 		</attribute>		
@@ -1196,6 +1196,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>
 		</attribute>			
+		<attribute>
+			<name>showHelpButton</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
 	</tag>
 
 	<tag>

@@ -20,7 +20,7 @@
 	String binderId = (String) request.getAttribute("binderId");
 	String userListFormName = (String) request.getAttribute("form_name");
 	String userListElementName = (String) request.getAttribute("form_element");
-	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String instanceCount = (String) request.getAttribute("instanceCount");
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
 	String clickRoutineArgs = (String) request.getAttribute("clickRoutineArgs");
 %>

@@ -12,6 +12,9 @@
 %>
 <div class="ss_clear"></div>
 <div>
+  <ssHelpSpot helpId="tools/calendar_tools" offsetX="0" 
+    title="<ssf:nlt tag="helpSpot.calendarTools"/>">
+    
 	<ul id="ss_calendarNaviBar">
 		<li class="ss_calendarNaviBarOption">
 			<span class="ss_calHoursSelectorMenu">

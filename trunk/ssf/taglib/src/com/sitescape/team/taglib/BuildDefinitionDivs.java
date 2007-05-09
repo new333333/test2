@@ -129,6 +129,12 @@ public class BuildDefinitionDivs extends TagSupport {
 	    catch(Exception e) {
 	        throw new JspException(e);
 	    }
+	    finally {
+	        option = "";
+	        itemId = "";
+	        itemName = "";
+	        refItemId="";
+	    }
 	    
 		return SKIP_BODY;
 	}

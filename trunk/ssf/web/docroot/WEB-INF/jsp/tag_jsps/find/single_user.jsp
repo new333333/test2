@@ -19,7 +19,7 @@
 	String findUserGroupType = (String) request.getAttribute("list_type");
 	String findUserElementName = (String) request.getAttribute("form_element");
 	String findUserElementWidth = (String) request.getAttribute("element_width");
-	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String instanceCount = (String) request.getAttribute("instanceCount");
 	String instanceCode = (String) request.getAttribute("instanceCode");
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
 	String label = ParamUtil.get(request, "label", "");

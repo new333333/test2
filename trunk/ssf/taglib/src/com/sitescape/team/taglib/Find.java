@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
@@ -44,7 +45,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private String clickRoutineArgs = "";
     private String binderId = "";
     private Boolean searchSubFolders;
-    private Integer instanceCount = 0;
+    private String instanceCount;
 
 	private Map _params;
 
@@ -68,7 +69,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
-			this.instanceCount++;
+			this.instanceCount = UUID.randomUUID().toString();
 			
 			//Output the start of the area
 			RequestDispatcher rd;
@@ -133,6 +134,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
+			this.instanceCount = null;
 			if (_params != null) {
 				_params.clear();
 			}

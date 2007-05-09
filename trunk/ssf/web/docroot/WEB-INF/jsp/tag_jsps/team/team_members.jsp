@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
-	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String instanceCount = (String) request.getAttribute("instanceCount");
 	String binderId = (String) request.getAttribute("binderId");
 	String formElement = (String) request.getAttribute("formElement");
 	String appendAll = ((Boolean) request.getAttribute("appendAll")).toString();
