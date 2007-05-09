@@ -487,6 +487,7 @@ public class WebKeys {
     public static final String HELP_SPOT="helpSpot";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String IS_REFRESH="ssRefresh";
+    public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";

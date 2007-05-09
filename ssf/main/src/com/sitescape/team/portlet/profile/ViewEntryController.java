@@ -51,6 +51,7 @@ public class ViewEntryController extends SAbstractController {
 			RenderResponse response) throws Exception {
 			
 		Map model = new HashMap();	
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Map formData = request.getParameterMap();

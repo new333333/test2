@@ -109,6 +109,9 @@
 			
 			<c:if test="${ss_userWorkspace}">
 				<div align="right" width="100%" style="margin:10px;">
+				  <ssHelpSpot helpId="tools/accessible_mode" offsetY="13" offsetX="0" 
+				      title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
+				  </ssHelpSpot>
 				<c:if test="${ss_displayStyle == 'accessible'}">
 				  <a href="${ss_accessibleUrl}">
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>

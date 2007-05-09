@@ -136,6 +136,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		
 		//Build the reload url
 		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
@@ -470,6 +471,7 @@ public class ViewEntryController extends  SAbstractController {
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);

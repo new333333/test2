@@ -41,6 +41,28 @@ var ss_userSkin = "${ss_user_skin}";
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
      <li id="parent_<%= menuTagDivId %><portlet:namespace/>">
 
+     <% // BEGIN Helpspots for folder menus %>
+     <c:choose>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
+         <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="-16" offsetX="-5" 
+		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
+         <ssHelpSpot helpId="folder_menu/manage_workspace" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
+         <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
+         <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"/>
+         </c:when>
+         <c:otherwise>
+	     </c:otherwise>
+	 </c:choose>
+ 
      <c:choose>
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
@@ -56,20 +78,6 @@ var ss_userSkin = "${ss_user_skin}";
         </c:otherwise>
 	 </c:choose>
 
-     <% // BEGIN Helpspots for folder menus %>
-     <c:choose>
-	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
-         <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="-16" offsetX="-5" 
-		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>">
-         </c:when>
-	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
-         <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>">
-         </c:when>
-         <c:otherwise>
-	     </c:otherwise>
-	 </c:choose>
- 
       <div id="<%= menuTagDivId %><portlet:namespace/>" 
         class="${ss_toolbar_style}_submenu" style="width:<%= menuDivWidth %>;">
       <ul class="${ss_toolbar_style}_submenu">
@@ -134,11 +142,6 @@ var ss_userSkin = "${ss_user_skin}";
       </ul>
       </div>
 
-     <% // END Helpspots for folder menus %>
-     <c:if test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu' || 
-      		toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
-      </ssHelpSpot>
-      </c:if>
 <%
 	nameCount = new Integer(nameCount.intValue() + 1);
 	renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intValue()));
@@ -152,6 +155,29 @@ var ss_userSkin = "${ss_user_skin}";
       <c:if test="${toolbarMenu.value.qualifiers.popup}">
         <c:set var="popup" value="true"/>
       </c:if>
+
+     <% // BEGIN Helpspots for folder menus %> 
+     <c:choose>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
+         <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="-16" offsetX="-5" 
+		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
+         <ssHelpSpot helpId="folder_menu/manage_workspace" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
+         <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
+         <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"/>
+         </c:when>
+         <c:otherwise>
+	     </c:otherwise>
+	 </c:choose>
+ 
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
 	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
