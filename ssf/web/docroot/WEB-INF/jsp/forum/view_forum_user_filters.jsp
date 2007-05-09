@@ -26,7 +26,9 @@
 		renderRequest.setAttribute("ss_searchFilters", searchFilters);
 	}
 %>
-<span class="ss_toolBarItemTxt"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
+<span class="ss_toolBarItemTxt"><ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
+  helpId="tools/folder_control_and_filtering" offsetX="0" 
+  title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"/>&nbsp;</span>
 <ul>
 	<li>
 		<script type="text/javascript">

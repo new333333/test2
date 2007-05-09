@@ -55,6 +55,8 @@
 </div>
 <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
+	  <ssHelpSpot helpId="tools/wiki_controls" offsetX="0" 
+	    title="<ssf:nlt tag="helpSpot.wikiControls"/>">
 
 	    <c:if test="${!empty ss_wikiHomepageEntryId}">
 	    <span class="ss_bold">
