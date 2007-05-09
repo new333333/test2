@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9vewdf" pid="b9vewdf" name="Appendix" level="0" number="A"> <text>Signing up for WebWorkZone</text> </target>
+
+ <target id="b9vewv1" pid="b9vewdf" name="BridgeHead" level="1"> <text>To sign up for a zone:</text> </target>
+
+ <target id="b9vewxg" pid="b9vewdf" name="Procedure" level="1" number="1"> <text> Contact sales@sitescape.com to sign up for WebWorkZone.</text> </target>
+
+ <target id="b9vewxh" pid="b9vewdf" name="Step" level="2" number="1"> <text> Contact sales@sitescape.com to sign up for WebWorkZone.</text> </target>
+
+ <target id="b9vex5f" pid="b9vewdf" name="Step" level="2" number="2"> <text>Enter the URL in the browser window. The URL follows this format:</text> </target>
+
+ <target id="b9vex5h" pid="b9vewdf" name="Step" level="2" number="3"> <text>Enter your username and password, then click Login. (You may want to bookmark the page so that you can access it quickly in the future.)</text> </target>
+
+</targets>

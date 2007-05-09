@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9rtisc" pid="b9rtisc" name="Glossary" level="0"> <text>ICEcorps Glossary</text> </target>
+
+ <target id="b9rth09" pid="b9rtisc" name="GlossEntry" level="1"> <text>buddy list</text> </target>
+
+ <target id="b9rtisd" pid="b9rtisc" name="GlossEntry" level="1"> <text>entry</text> </target>
+
+ <target id="b9rtise" pid="b9rtisc" name="GlossEntry" level="1"> <text>folder</text> </target>
+
+ <target id="b9rtisf" pid="b9rtisc" name="GlossEntry" level="1"> <text>presence</text> </target>
+
+ <target id="b9rtisg" pid="b9rtisc" name="GlossEntry" level="1"> <text>tag</text> </target>
+
+ <target id="b9rtish" pid="b9rtisc" name="GlossEntry" level="1"> <text>tag cloud</text> </target>
+
+ <target id="b9rtisi" pid="b9rtisc" name="GlossEntry" level="1"> <text>workspace</text> </target>
+
+</targets>

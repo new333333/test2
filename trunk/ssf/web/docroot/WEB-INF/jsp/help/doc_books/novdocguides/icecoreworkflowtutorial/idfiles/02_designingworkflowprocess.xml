@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9wujm7" pid="b9wujm7" name="Chapter" level="0" number="2"> <text>Designing a Workflow Process</text> </target>
+
+ <target id="b9wwx6s" pid="b9wujm7" name="BridgeHead" level="1"> <text>What's in this Chapter?</text> </target>
+
+ <target id="b9wx3hq" pid="b9wx3hq" name="Sect1" level="1" number="2.1"> <text>Understand the Business Process</text> </target>
+
+ <target id="b9wx8tr" pid="b9wx3hq" name="FormalPara" level="2"> <text>EXAMPLE:</text> </target>
+
+ <target id="b9wx9il" pid="b9wx3hq" name="BridgeHead" level="2"> <text>Name the Process </text> </target>
+
+ <target id="b9wx9yc" pid="b9wx3hq" name="FormalPara" level="2"> <text>EXAMPLE:</text> </target>
+
+ <target id="b9wxa7f" pid="b9wx3hq" name="BridgeHead" level="2"> <text>Identify the Tasks of the Process</text> </target>
+
+ <target id="b9wxakk" pid="b9wx3hq" name="row" level="3"> <text>Task</text> </target>
+
+ <target id="b9wxakl" pid="b9wx3hq" name="row" level="3"> <text>Complete time off request form</text> </target>
+
+ <target id="b9wxc4d" pid="b9wx3hq" name="row" level="3"> <text>Send request</text> </target>
+
+ <target id="b9wxc4e" pid="b9wx3hq" name="row" level="3"> <text>Review request</text> </target>
+
+ <target id="b9wxc4f" pid="b9wx3hq" name="row" level="3"> <text>Approve request</text> </target>
+
+ <target id="b9wxc4g" pid="b9wx3hq" name="row" level="3"> <text>Deny request</text> </target>
+
+ <target id="b9wxc4h" pid="b9wx3hq" name="row" level="3"> <text>Record request</text> </target>
+
+ <target id="b9wxcl0" pid="b9wx3hq" name="BridgeHead" level="2"> <text>Identify the States of the Process</text> </target>
+
+ <target id="b9wxd3v" pid="b9wx3hq" name="row" level="3"> <text>Task</text> </target>
+
+ <target id="b9wxd3w" pid="b9wx3hq" name="row" level="3"> <text>Complete time off request form</text> </target>
+
+ <target id="b9wxd3x" pid="b9wx3hq" name="row" level="3"> <text>Send request</text> </target>
+
+ <target id="b9wxd3y" pid="b9wx3hq" name="row" level="3"> <text>Review request</text> </target>
+
+ <target id="b9wxd3z" pid="b9wx3hq" name="row" level="3"> <text>Approve request</text> </target>
+
+ <target id="b9wxd40" pid="b9wx3hq" name="row" level="3"> <text>Deny request</text> </target>
+
+ <target id="b9wxd41" pid="b9wx3hq" name="row" level="3"> <text>Record request</text> </target>
+
+ <target id="b9wx68d" pid="b9wx68d" name="Sect1" level="1" number="2.2"> <text>Identify State Transitions</text> </target>
+
+ <target id="b9wxjt8" pid="b9wx68d" name="row" level="2"> <text>Condition</text> </target>
+
+ <target id="b9wxjt9" pid="b9wx68d" name="row" level="2"> <text>Submit</text> </target>
+
+ <target id="b9wxjta" pid="b9wx68d" name="row" level="2"> <text>Review</text> </target>
+
+ <target id="b9wxjtb" pid="b9wx68d" name="row" level="2"> <text>Approve</text> </target>
+
+ <target id="b9wxjtc" pid="b9wx68d" name="row" level="2"> <text>Deny</text> </target>
+
+ <target id="b9wxjtd" pid="b9wx68d" name="row" level="2"> <text>Record</text> </target>
+
+ <target id="b9wxnhw" pid="b9wx68d" name="BridgeHead" level="2"> <text>Identify Conditions that Cause State Transitions</text> </target>
+
+ <target id="b9wxp2d" pid="b9wx68d" name="row" level="3"> <text>Condition</text> </target>
+
+ <target id="b9wxp2e" pid="b9wx68d" name="row" level="3"> <text>The employee enters a Time Off request.</text> </target>
+
+ <target id="b9wxp2f" pid="b9wx68d" name="row" level="3"> <text>The manager indicates receipt.</text> </target>
+
+ <target id="b9wxp2g" pid="b9wx68d" name="row" level="3"> <text>The manager approves the request.</text> </target>
+
+ <target id="b9wxp2h" pid="b9wx68d" name="row" level="3"> <text>The manager denies the request.</text> </target>
+
+ <target id="b9wxp2i" pid="b9wx68d" name="row" level="3"> <text>HR has entered the approved vacation.</text> </target>
+
+ <target id="b9wx68e" pid="b9wx68e" name="Sect1" level="1" number="2.3"> <text>Identify the Process Participants</text> </target>
+
+ <target id="b9wxrqm" pid="b9wx68e" name="row" level="2"> <text>State</text> </target>
+
+ <target id="b9wxrqn" pid="b9wx68e" name="row" level="2"> <text>N/A</text> </target>
+
+ <target id="b9wxrqo" pid="b9wx68e" name="row" level="2"> <text>Submit</text> </target>
+
+ <target id="b9wxrqp" pid="b9wx68e" name="row" level="2"> <text>Review</text> </target>
+
+ <target id="b9wxrqq" pid="b9wx68e" name="row" level="2"> <text>Approve</text> </target>
+
+ <target id="b9wxrqr" pid="b9wx68e" name="row" level="2"> <text>Deny</text> </target>
+
+ <target id="b9wxrqs" pid="b9wx68e" name="row" level="2"> <text>Record</text> </target>
+
+ <target id="b9wxs2e" pid="b9wx68e" name="BridgeHead" level="2"> <text>Identify Participant Access to Specific States</text> </target>
+
+ <target id="b9wxtx3" pid="b9wx68e" name="row" level="3"> <text>State</text> </target>
+
+ <target id="b9wxtx4" pid="b9wx68e" name="row" level="3"> <text>Submit</text> </target>
+
+ <target id="b9wxtx5" pid="b9wx68e" name="row" level="3"> <text>Review</text> </target>
+
+ <target id="b9wxtx6" pid="b9wx68e" name="row" level="3"> <text>Approve</text> </target>
+
+ <target id="b9wxtx7" pid="b9wx68e" name="row" level="3"> <text>Deny</text> </target>
+
+ <target id="b9wxtx8" pid="b9wx68e" name="row" level="3"> <text>Record</text> </target>
+
+ <target id="b9wx68f" pid="b9wx68f" name="Sect1" level="1" number="2.4"> <text>Draw a Flowchart of the Process</text> </target>
+
+ <target id="b9wx68g" pid="b9wx68g" name="Sect1" level="1" number="2.5"> <text>Summary</text> </target>
+
+ <target id="b9wx68h" pid="b9wx68h" name="Sect1" level="1" number="2.6"> <text>Next Steps</text> </target>
+
+</targets>
