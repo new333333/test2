@@ -83,5 +83,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/ical4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ezmorph.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-common.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
