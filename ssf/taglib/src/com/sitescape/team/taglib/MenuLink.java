@@ -71,7 +71,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			User user = null;
 			isAccessible = Boolean.FALSE;
 			if (rc != null) user = rc.getUser();
-			if (user != null) {
+			if (user != null && user.getDisplayStyle() != null) {
 				if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 					isAccessible = Boolean.TRUE;
 				}
