@@ -72,6 +72,8 @@ public class ViewController extends  SAbstractController {
 
 		}
 		
+		if (getAdminModule().testAccess("addFunction")) model.put(WebKeys.IS_SITE_ADMIN, true);
+		
 		PortletURL url;
 		//Build the tree
 		int nextId = 0;

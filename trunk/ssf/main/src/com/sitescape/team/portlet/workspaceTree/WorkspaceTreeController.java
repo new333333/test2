@@ -267,7 +267,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//The "Administration" menu
 		boolean adminMenuCreated=false;
-		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
+		qualifiers = new HashMap();
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageWorkspaceMenu");
+		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"), new HashMap(), qualifiers);
 
 		//	The "Add" menu
 		PortletURL url;
@@ -371,7 +373,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 			}
 			
 			if (showDeleteProfileMenu && showModifyProfileMenu) {
-				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
+				qualifiers = new HashMap();
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"), qualifiers);
 				//	The "Modify" menu item
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
