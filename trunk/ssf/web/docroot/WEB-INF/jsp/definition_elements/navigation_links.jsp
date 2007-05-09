@@ -19,6 +19,9 @@
   <c:set var="ss_breadcrumbsTreeName" value="wsTree" scope="request" />
 </c:if>
 <div class="ss_breadcrumb">
+  <ssHelpSpot helpId="navigation_bar/breadcrumbs" offsetX="0" 
+    title="<ssf:nlt tag="helpSpot.breadCrumbs"/>">
+
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssDefinitionEntry.parentBinder}">
 <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>

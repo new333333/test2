@@ -375,7 +375,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			if (showDeleteProfileMenu && showModifyProfileMenu) {
 				qualifiers = new HashMap();
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"), qualifiers);
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"), new HashMap(), qualifiers);
 				//	The "Modify" menu item
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
