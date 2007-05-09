@@ -55,6 +55,10 @@ var ss_userSkin = "${ss_user_skin}";
          <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
          </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
+         <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
+         </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
          <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"/>
@@ -169,6 +173,10 @@ var ss_userSkin = "${ss_user_skin}";
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
          <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
+         </c:when>
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
+         <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="-16" offsetX="-20" 
+		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
          <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
