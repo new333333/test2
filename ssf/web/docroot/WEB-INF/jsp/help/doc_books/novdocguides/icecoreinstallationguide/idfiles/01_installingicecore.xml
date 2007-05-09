@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9vcafr" pid="b9vcafr" name="Chapter" level="0" number="1"> <text>Installing ICEcore</text> </target>
+
+ <target id="b9vchn5" pid="b9vchn5" name="Sect1" level="1" number="1.1"> <text>Prerequisites</text> </target>
+
+ <target id="b9ptalp" pid="b9vchn5" name="FormalPara" level="2"> <text>Required RAM:</text> </target>
+
+ <target id="b9pt3i1" pid="b9vchn5" name="FormalPara" level="2"> <text>How much disk do you need?</text> </target>
+
+ <target id="b9vchn6" pid="b9vchn6" name="Sect1" level="1" number="1.2"> <text>Steps for Installing Aspen</text> </target>
+
+ <target id="b9ptkcb" pid="b9vchn6" name="Procedure" level="2"> <text>The following sequence shows the steps you want to follow to install Aspen:</text> </target>
+
+ <target id="b9ptkcc" pid="b9vchn6" name="Step" level="3" number="1"> <text>Install JDK</text> </target>
+
+ <target id="b9ptl7r" pid="b9vchn6" name="Step" level="3" number="2"> <text>Install and Configure the Database</text> </target>
+
+ <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="3"> <text>Download the appropriate Aspen kit</text> </target>
+
+ <target id="b9ptlge" pid="b9vchn6" name="Step" level="3" number="4"> <text>Edit the installer.xml file (see Editing the Installer (.xml) File)</text> </target>
+
+ <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="5"> <text>Run the installer (on Linux, do a chmod +x installer.linux to make the installer executable)</text> </target>
+
+ <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="6"> <text>Starting and Stopping Aspen</text> </target>
+
+ <target id="b9ptnu8" pid="b9vchn6" name="Step" level="3" number="7"> <text>Initial Login</text> </target>
+
+ <target id="b9ptnua" pid="b9vchn6" name="Step" level="3" number="8"> <text>Adding Users</text> </target>
+
+ <target id="b9vchn7" pid="b9vchn7" name="Sect1" level="1" number="1.3"> <text>Database Planning</text> </target>
+
+ <target id="b9q3njd" pid="b9vchn7" name="FormalPara" level="2"> <text>MySQL</text> </target>
+
+ <target id="b9q3owh" pid="b9vchn7" name="FormalPara" level="2"> <text>Microsoft SQLserver </text> </target>
+
+ <target id="b9vchn8" pid="b9vchn8" name="Sect1" level="1" number="1.4"> <text>File System Planning</text> </target>
+
+ <target id="b9vchn9" pid="b9vchn9" name="Sect1" level="1" number="1.5"> <text>Editing the Installer (.xml) File</text> </target>
+
+ <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.6"> <text>Run the Installer: Sample Installer Sequence</text> </target>
+
+ <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.7"> <text>Starting and Stopping Aspen</text> </target>
+
+ <target id="b9q35wr" pid="b9vchnb" name="FormalPara" level="2"> <text>Starting Aspen</text> </target>
+
+ <target id="b9q35ws" pid="b9vchnb" name="FormalPara" level="2"> <text>Log Files / Monitoring</text> </target>
+
+ <target id="b9q35wt" pid="b9vchnb" name="FormalPara" level="2"> <text>Stopping Aspen</text> </target>
+
+ <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="1.8"> <text>Initial Logon</text> </target>
+
+ <target id="b9vchnd" pid="b9vchnd" name="Sect1" level="1" number="1.9"> <text>Adding Users</text> </target>
+
+ <target id="b9q4fl9" pid="b9vchnd" name="FormalPara" level="2"> <text>Basic User Management</text> </target>
+
+ <target id="b9q4i4m" pid="b9vchnd" name="FormalPara" level="2"> <text>User Management with LDAP/eDirectory </text> </target>
+
+ <target id="b9q4k6g" pid="b9vchnd" name="FormalPara" level="2"> <text>The Aspen LDAP Configuration Form</text> </target>
+
+ <target id="b9vchne" pid="b9vchne" name="Sect1" level="1" number="1.10"> <text>Mail Setup</text> </target>
+
+ <target id="b9q40iw" pid="b9vchne" name="FormalPara" level="2"> <text>System Configuration</text> </target>
+
+ <target id="b9q41n4" pid="b9vchne" name="FormalPara" level="2"> <text>Setting up Incoming Mail schedule</text> </target>
+
+ <target id="b9q42lb" pid="b9vchne" name="FormalPara" level="2"> <text>Associating an E-mail Address with a Folder</text> </target>
+
+ <target id="b9q43u0" pid="b9vchne" name="FormalPara" level="2"> <text>Establishing a Notification Schedule for a Folder</text> </target>
+
+ <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.11"> <text>Memory Guidelines</text> </target>
+
+ <target id="b9q46ot" pid="b9vchnf" name="FormalPara" level="2"> <text>Hibernate Cache</text> </target>
+
+ <target id="b9q4775" pid="b9vchnf" name="FormalPara" level="2"> <text>Lucene Cache</text> </target>
+
+ <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="1.12"> <text>Document Support</text> </target>
+
+ <target id="b9q4c7t" pid="b9vchng" name="FormalPara" level="2"> <text>Editing Support</text> </target>
+
+</targets>

@@ -1,0 +1,2347 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "ICEcore Installation & Configuration Guide"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 39
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 28
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         415    bookinfo   ICEcore Installation & Configuration Guide
+         450    preface    About This Guide
+        3290    chapter    Installing    ICEcore 
+        2325    chapter    Configuring    ICEcore 
+         943    chapter    Controlling Access
+         331    chapter    Next Steps
+         233    appendix   Signing up for WebWorkZone
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        7987    book       ICEcore Installation & Configuration Guide
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       managementnavlinks_a.png
+           2       filesupporttable.png
+           2       managebyrols_a.png
+           2       managemenus_a.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          24       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           6       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/documentation/gw65
+       http://www.novell.com/documentation
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+       http://www.novell.com/company/legal/patents/
+       http://www.novell.com/info/exports/
+       http://www.novell.com/documentation/lg/dirxmldrivers/index.html
+
+========================================================================-->
+
+<book revision="01/01/03" conformance="none,doc,no,,80" lang="en" id="icecoreinstallationguide">
+
+<bookinfo id="bookinfo" xml:base="front.xml">
+ <title>ICEcore Installation &amp; Configuration Guide</title>
+ <productname>ICEcore</productname>
+ <productnumber>1.1</productnumber>
+ <date>May, 2007</date>
+ <titleabbrev>Installation &amp; Configuration Guide</titleabbrev>
+ <legalnotice id="legalnotices">
+  <title>Legal Notices</title>
+  <para>Novell, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</para>
+  <para>Further, Novell, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to make changes to any and all parts of Novell software, at any time, without any obligation to notify any person or entity of such changes.</para>
+  <para>Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses. See the 
+   <ulink url="http://www.novell.com/info/exports/">Novell International Trade Services Web page</ulink> for more information on exporting Novell software. Novell assumes no responsibility for your failure to obtain any necessary export approvals.
+  </para>
+  <para>Copyright © 2007 Novell, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher.</para>
+  <para>Novell, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document. In particular, and without limitation, these intellectual property rights may include one or more of the U.S. patents listed on the 
+   <ulink url="http://www.novell.com/company/legal/patents/">Novell Legal Patents Web page</ulink> and one or more additional patents or pending patent applications in the U.S. and in other countries.
+  </para>
+  <simplelist>
+   <member>Novell, Inc.</member>
+   <member>404 Wyman Street, Suite 500</member>
+   <member>Waltham, MA 02451</member>
+   <member>U.S.A.</member>
+   <member>www.novell.com</member>
+  </simplelist>
+  <simplelist>
+   <member>
+    <emphasis>Online Documentation:</emphasis> To access the latest online documentation for this and other Novell products, see the 
+    <ulink url="http://www.novell.com/documentation">Novell Documentation Web page</ulink>.
+   </member>
+  </simplelist>
+ </legalnotice>
+ <legalnotice id="trademarks">
+  <title>Novell Trademarks</title>
+  <para>For Novell trademarks, see 
+   <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">the Novell Trademark and Service Mark list</ulink>.
+  </para>
+ </legalnotice>
+ <legalnotice id="thirdparty">
+  <title>Third-Party Materials</title>
+  <simplelist>
+   <member>All third-party trademarks are the property of their respective owners.</member>
+  </simplelist>
+ </legalnotice>
+</bookinfo>
+
+<preface id="preface" xml:base="preface.xml">
+ <title>About This Guide</title>
+ <para>The standard title for a Preface is “About This Guide.” If you are using Frame, the wording in the Preface is created by the authoring tool. For other authoring tools, copy the wording as given here. </para>
+ <remark>The Preface is primarily intended to describe the manual rather than the product. In this introductory paragraph, include a brief description of the purpose of the manual, then add a list of links to the main sections (chapters/appendixes) in the manual. If the manual is divided into parts, link to the parts rather than to the individual chapters. Most chapter titles are self-documenting, so you shouldn’t need to include a description of what’s included in the chapter.</remark>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para/>
+  </listitem>
+  <listitem>
+   <para/>
+  </listitem>
+ </itemizedlist>
+ <bridgehead id="audience">Audience</bridgehead>
+ <para>
+  <remark>Use this section to describe the intended audience. For a complex product, you might include a list of qualifications; for a user guide, you could use a single sentence like the one below.</remark> This guide is intended for GroupWise users.
+ </para>
+ <bridgehead id="usercomments">Feedback</bridgehead>
+ <para>
+  <remark>Required for documentation posted on the Novell Documentation Web site in HTML format.</remark> We want to hear your comments and suggestions about this manual and the other documentation included with this product. Please use the User Comments feature at the bottom of each page of the online documentation, or go to www.novell.com/documentation/feedback.html and enter your comments there.
+ </para>
+ <bridgehead id="docupdates">Documentation Updates</bridgehead>
+ <para>
+  <remark>Required for any documentation that could be updated between major product releases. Use it to direct users to updates for this particular book.</remark> For the most recent version of the 
+  <citetitle>XYZ Guide</citetitle>, visit the 
+  <ulink url="http://www.novell.com/documentation/gw65">XYZ Web site</ulink>.
+ </para>
+ <bridgehead id="additionaldoc">Additional Documentation</bridgehead>
+ <para>
+  <remark>Include this section when there is more than one book for a product or technology. Use cross-references to the other books, or use a ULink to the product documentation Web site. This section isn’t intended for links to other information sources such as deployment guides, white papers, AppNotes articles, or third-party Web sites. You should place those types of links in the body of the manual where they will be most helpful to the user.</remark> For documentation on other DirXML drivers, see the 
+  <ulink url="http://www.novell.com/documentation/lg/dirxmldrivers/index.html">Identity Manager Documentation Web site </ulink>.
+ </para>
+ <remark/>
+ <bridgehead id="docconventions">Documentation Conventions</bridgehead>
+ <para>
+  <remark>Required. In documentation that is for one platform only, the third paragraph can be deleted.</remark> In Novell documentation, a greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.
+ </para>
+ <para>A trademark symbol (®, ™, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark.</para>
+ <para>When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</para>
+</preface>
+
+<chapter id="b9vcafr" lang="en" xml:base="01_installingicecore.xml">
+ <title>Installing 
+  <productname>ICEcore</productname>
+ </title>
+ <para>This chapter describes how to initially install and configure 
+  <productname>ICEcore</productname>:
+ </para>
+ <orderedlist spacing="normal">
+  <listitem>
+   <para><xref linkend="b9vchn5" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn6" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn7" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn8" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn9" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchna" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnb" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnc" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnd" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchne" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnf" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchng" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </orderedlist>
+ <sect1 id="b9vchn5">
+  <title>Prerequisites</title>
+  <para>You need a few things before you install Aspen: </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>A good, solid computer with lots of memory.</para>
+   </listitem>
+   <listitem>
+    <para>JDK 1.5 installed. (Preferably a relatively recent vintage)</para>
+   </listitem>
+   <listitem>
+    <para>A database:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>MySQL 5 for Linux or Windows</para>
+     </listitem>
+     <listitem>
+      <para>SQLserver for Windows</para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+  </orderedlist>
+  <formalpara id="b9ptalp">
+   <title>Required RAM:</title>
+   <para/>
+  </formalpara>
+  <para>2 GB minimum.</para>
+  <note>
+   <para>You may potentially run with less RAM for specific development and testing configurations without simultaneous users, lots of database traffic, etc.</para>
+  </note>
+  <formalpara id="b9pt3i1">
+   <title>How much disk do you need?</title>
+   <para/>
+  </formalpara>
+  <para>This depends on how much data you plan to put into the system. </para>
+  <para>The software takes about 250 MB.</para>
+ </sect1>
+ <sect1 id="b9vchn6">
+  <title>Steps for Installing Aspen</title>
+  <procedure id="b9ptkcb">
+   <para>The following sequence shows the steps you want to follow to install Aspen:</para>
+   <step id="b9ptkcc" performance="required">
+    <para>Install JDK</para>
+   </step>
+   <step id="b9ptl7r" performance="required">
+    <para>Install and Configure the Database</para>
+   </step>
+   <step id="b9ptld7" performance="required">
+    <para>Download the appropriate Aspen kit</para>
+   </step>
+   <step id="b9ptlge" performance="required">
+    <para>Edit the installer.xml file (see <xref linkend="b9vchn9" xrefstyle="RefNoPage"/>)</para>
+   </step>
+   <step id="b9ptlgi" performance="required">
+    <para>Run the installer (on Linux, do a 
+     <literal>chmod +x installer.linux</literal> to make the installer executable)
+    </para>
+   </step>
+   <step id="b9ptlgm" performance="required">
+    <para>Starting and Stopping Aspen</para>
+   </step>
+   <step id="b9ptnu8" performance="required">
+    <para>Initial Login</para>
+   </step>
+   <step id="b9ptnua" performance="required">
+    <para>Adding Users</para>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="b9vchn7">
+  <title>Database Planning</title>
+  <para>Aspen (and LifeRay) uses a separate, dedicated, database within your database server.</para>
+  <para>A set of SQL configuration scripts are used to initialize the database (creating the necessary tables, etc.).</para>
+  <para>Aspen's default database is MySQL. It also supports SQLserver on Windows. (It will support Oracle.)</para>
+  <para>Aspen's database requirements are relatively modest. The bulk of the data uploaded to Aspen is stored in a file repository (see <xref linkend="b9vchn8" xrefstyle="RefNoPage"/> - the database is primarily used for storing metadata and descriptive text.</para>
+  <para>Because the amount of data stored in the database is highly sensitive to the usage patterns of Aspen (which are highly variable) there is no reliable formula for determining disk space usage, but the following can be used as a guideline:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> numberAttachments x averageAttachmentSize = totalAttachmentSpace</para>
+   </listitem>
+   <listitem>
+    <para>totalAttachmentSpace * .04 = sqlDataSpace</para>
+   </listitem>
+   <listitem>
+    <para> sqlDataSpace x 5 = sqlStorageSapce</para>
+   </listitem>
+  </itemizedlist>
+  <formalpara id="b9q3njd">
+   <title>MySQL</title>
+   <para/>
+  </formalpara>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> MySQL 5 is required</para>
+   </listitem>
+   <listitem>
+    <para>Specify 
+     <filename>root</filename> for the administrator password (or make commensurate changes in the Aspen 
+     <filename>installer.xml </filename>file) 
+    </para>
+   </listitem>
+   <listitem>
+    <para> Set the default character set to UTF-8 by selecting “
+     <guimenu>Best support for Multilingualism</guimenu>”
+    </para>
+   </listitem>
+  </itemizedlist>
+  <formalpara id="b9q3owh">
+   <title>Microsoft SQLserver </title>
+   <para/>
+  </formalpara>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> You can use SQLserver 2000 or SQLserver 2005</para>
+   </listitem>
+   <listitem>
+    <para>Make sure to select SQL Server and Windows for authentication (the default is Windows only)</para>
+   </listitem>
+   <listitem>
+    <para>Set the administrator password to “
+     <literal>sa</literal>” (or make commensurate changes in the Aspen 
+     <literal>installer.xml </literal>file)
+    </para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9vchn8">
+  <title>File System Planning</title>
+  <para>Aspen software and configuration files are stored in a tree shared with LifeRay, Tomcat, etc. There are some temporary files also located here, but mainly locks, etc.</para>
+  <para>Aspen data is stored in the database (see <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>) and on the file system. The file system usage is divided up into several functional areas:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>
+     <filename> filerepository</filename> - This is where all attachment files are located, so it tends to be a large consumer of disk space. The tree is roughly organized by zone, binder (folder/workspace), and entry. 
+     <filename>archiveStore</filename> - Only activated in the Enterprise version of Aspen, this is where previous versions of files are stored. The files are stored here to meet compliance and archival goals. 
+     <filename>cachefilestore</filename> - This tree holds information derived from the attachments, such as thumbnails, scaled images, text, and HTML renderings. Depending on the nature of the attachments this tree consumes somewhat less space than the file repository (but it can, conceivably, store more).
+    </para>
+   </listitem>
+   <listitem>
+    <para>
+     <filename>lucene</filename> - This tree holds the search index for the data. It tends to be a fraction of the space consumed by the file repository, but it is also sensitive to the type of information stored.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Other trees - These are other trees that are not configurable and typically consume a small amount of space (relatively speaking).</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>
+       <filename>rss</filename> - Caches of RSS feeds for folders
+      </para>
+     </listitem>
+     <listitem>
+      <para>
+       <filename>temp</filename> - Temporary files
+      </para>
+     </listitem>
+     <listitem>
+      <para>
+       <filename>definitions</filename> - Custom definitions are stored here
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9vchn9">
+  <title>Editing the Installer (.xml) File</title>
+  <para>The 
+   <filename>installer.xml </filename>file provides the Aspen installer with detailed configuration information regarding network, memory, database, file system, e-mail, presence, and other settings. Edit this file with your specific data. An example 
+   <filename>installer.xml </filename>file is shown below:
+  </para>
+
+<screen>
+&lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+&lt;!--           Aspen Installation Configuration File           --&gt;
+</screen>
+
+
+<screen>
+&lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+&lt;AspenConfig&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                   Network Settings                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  The host name or IP address of the server must be      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  specified here.  The default, localhost, is only       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  appropriate for test configurations with no remote     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  access.                                                  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;Network&gt;
+</screen>
+
+
+<screen>
+        &lt;Host name="myhost" port="8080" /&gt;
+</screen>
+
+
+<screen>
+        &lt;WebServices endpoint="http://myhost:8080" /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Network&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Memory (RAM) Settings                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Aspen requires a minimum of 512m to operate.            --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  1g is recommended for basic production.                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  More is better.                                          --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;Memory&gt;
+</screen>
+
+
+<screen>
+        &lt;JavaVirtualMachine mx="1g" /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Memory&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              File System Configuration                    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;FileSystem configName="basic"&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- The basic configuration only requires that you  --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- specify a root directory for the data and       --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- we'll take care of the rest.                    --&gt;
+</screen>
+
+
+<screen>
+      &lt;Config id="basic"&gt;
+</screen>
+
+
+<screen>
+        &lt;RootDirectory path="/home/aspendata"  /&gt;
+</screen>
+
+
+<screen>
+      &lt;/Config&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- The advanced configuration requires that you    --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- specify individual directory locations.         --&gt;
+</screen>
+
+
+<screen>
+      &lt;Config id="advanced"&gt;
+</screen>
+
+
+<screen>
+        &lt;RootDirectory path="/home/aspendata"  /&gt;
+</screen>
+
+
+<screen>
+        &lt;FileRepositories /&gt;
+</screen>
+
+
+<screen>
+        &lt;ArchiveStore   /&gt;
+</screen>
+
+
+<screen>
+        &lt;CacheStore     /&gt;
+</screen>
+
+
+<screen>
+        &lt;LuceneIndex    /&gt;
+</screen>
+
+
+<screen>
+        &lt;Other          /&gt;
+</screen>
+
+
+<screen>
+      &lt;/Config&gt;
+</screen>
+
+
+<screen>
+    &lt;/FileSystem&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Database Configuration                       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Modify the configName to your desired configuration.    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Change the Resources for the configuration if needed    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- (the defaults are pretty good)                            --&gt;
+</screen>
+
+
+<screen>
+    &lt;Database  configName="MySQL_Default"&gt;
+</screen>
+
+
+<screen>
+        &lt;Config id="MySQL_Default" type="MySql"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/lportal?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="aspen"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+        &lt;Config id="SQLServer_Default" type="SQLserver"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/lportal;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+            &lt;Resource for="aspen"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+    &lt;/Database&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Email Configuration Settings                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Edit the Outbound and Inbound settings as required.    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  For inbound mail (postings) you need to specify either --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  pop3 or imap, and fill out the settings for which one  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  you choose.                                              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;EmailSettings&gt;
+</screen>
+
+
+<screen>
+        &lt;Outbound&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource
+</screen>
+
+
+<screen>
+                mail.smtp.host="mailhost.yourcompany.com"
+</screen>
+
+
+<screen>
+                mail.smtp.user="aspen@yourcompany.com."
+</screen>
+
+
+<screen>
+                mail.smtp.password=""
+</screen>
+
+
+<screen>
+                mail.smtp.auth="false"
+</screen>
+
+
+<screen>
+                mail.smtp.port="25"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+         &lt;/Outbound&gt;
+</screen>
+
+
+<screen>
+        &lt;Inbound&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource 
+</screen>
+
+
+<screen>
+                mail.store.protocol="pop3"                     
+</screen>
+
+
+<screen>
+                mail.pop3.host="localhost"
+</screen>
+
+
+<screen>
+                 mail.pop3.auth="true"
+</screen>
+
+
+<screen>
+                mail.pop3.user="popEmailUserId"
+</screen>
+
+
+<screen>
+                mail.pop3.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.pop3.port="110"
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+                mail.imap.host="localhost"
+</screen>
+
+
+<screen>
+                mail.imap.auth="true"
+</screen>
+
+
+<screen>
+                mail.imap.user="imapEmailUserId"
+</screen>
+
+
+<screen>
+                mail.imap.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.imap.port="143"
+</screen>
+
+
+<screen>
+                mail.smtp.user="aspen@sitescape.com"
+</screen>
+
+
+<screen>
+                mail.transport.protocol="smtp"
+</screen>
+
+
+<screen>
+                mail.smtp.host="localhost"
+</screen>
+
+
+<screen>
+                mail.smtp.port="25"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+        &lt;/Inbound&gt;
+</screen>
+
+
+<screen>
+    &lt;/EmailSettings&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Presence Configuration Settings              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;Presence&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+            presence.service.enable="false"
+</screen>
+
+
+<screen>
+            presence.service.jabber.server="zon-server.yourcompany.com"
+</screen>
+
+
+<screen>
+            presence.broker.admin.id="admin"
+</screen>
+
+
+<screen>
+            presence.broker.admin.passwd="admin"
+</screen>
+
+
+<screen>
+            presence.broker.jabber.domain="newzon"
+</screen>
+
+
+<screen>
+            presence.broker.default.community.id="yourcommunity"
+</screen>
+
+
+<screen>
+            presence.broker.zon.url="http://zon-server.yourcompany.com:8000/imidio_api/"        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Presence&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--                Custom Configuration Settings              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Custom properties set here will be placed in the       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ssf-ext.properties file.                                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;CustomProperties&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/CustomProperties&gt;
+</screen>
+
+
+<screen>
+&lt;/AspenConfig&gt; 
+</screen>
+
+ </sect1>
+ <sect1 id="b9vchna">
+  <title>Run the Installer: Sample Installer Sequence</title>
+
+<screen>
+Aspen Installer 0.l.0
+</screen>
+
+
+<screen>
+Installing this software requires agreement to the terms and conditions set forth in the:
+</screen>
+
+
+<screen>
+SiteScape End User License Agreement for Beta Software
+</screen>
+
+
+<screen>
+You can review this agreement again at the download site.
+</screen>
+
+
+<screen>
+Note: You must answer “YES” to install the software.
+</screen>
+
+
+<screen>
+Have you read and agree with the license? : yes
+</screen>
+
+
+<screen>
+JAVA_HOME is set to: C:\Program Files\Java\jdk1.5.0_11
+</screen>
+
+
+<screen>
+Creating installer working directory: C:/aspen/temp-installer
+</screen>
+
+
+<screen>
+Enter the type of installation:
+</screen>
+
+
+<screen>
+  1. Aspen Enterprise 0.1.0 with Liferay/Tomcat - FULL INSTALL
+</screen>
+
+
+<screen>
+  2. Aspen Enterprise 0.1.0 with Liferay/Tomcat - UPDATE
+</screen>
+
+
+<screen>
+  3. Aspen Lucene Server  (Not Available)
+</screen>
+
+
+<screen>
+  4. Apply settings only  (Use with care)
+</screen>
+
+
+<screen>
+Installation type [1]: 1
+</screen>
+
+
+<screen>
+We have to install the software into a dedicated directory
+</screen>
+
+
+<screen>
+Install directory: [C:/aspen-team-0.1.0]:
+</screen>
+
+
+<screen>
+   Directory C:/aspen-team-0.1.0 does not exist.  Creating...
+</screen>
+
+
+<screen>
+Copying deployment kits to work directory...
+</screen>
+
+
+<screen>
+   (this takes about a minute)
+</screen>
+
+
+<screen>
+   ... done
+</screen>
+
+
+<screen>
+Ready to apply kits to the installation directory
+</screen>
+
+
+<screen>
+Enter Y to install, enter N to cancel installation [Y]:
+</screen>
+
+
+<screen>
+Installing Aspen (LifeRay/Tomcat) ... (this will take a minute or so)
+</screen>
+
+
+<screen>
+Installing Aspen converters ...
+</screen>
+
+
+<screen>
+   ... done
+</screen>
+
+
+<screen>
+Applying installation settings...
+</screen>
+
+
+<screen>
+   Loading installer.xml...
+</screen>
+
+
+<screen>
+   Loading current configuration files...
+</screen>
+
+
+<screen>
+   Database settings...
+</screen>
+
+
+<screen>
+      using database configuration: SQLServer_Default
+</screen>
+
+
+<screen>
+      Database type is: SQLServer
+</screen>
+
+
+<screen>
+   File system settings...
+</screen>
+
+
+<screen>
+      using configuration: basic
+</screen>
+
+
+<screen>
+   File system root path: C:/aspendata
+</screen>
+
+
+<screen>
+   Email settings...
+</screen>
+
+
+<screen>
+   Network settings...
+</screen>
+
+
+<screen>
+   Custom settings...
+</screen>
+
+
+<screen>
+   Startup files...
+</screen>
+
+
+<screen>
+   Writing all settings...
+</screen>
+
+
+<screen>
+   Settings applied.
+</screen>
+
+
+<screen>
+New installation selected.  Getting database creation scripts....
+</screen>
+
+
+<screen>
+   Creating Liferay database for SQLServer ...
+</screen>
+
+
+<screen>
+osql -U sa -P Born2test -i C:/aspen/temp-installer/liferay/create/create-sql-server.sql
+</screen>
+
+
+<screen>
+   Creating Aspen database for SQLServer ...
+</screen>
+
+
+<screen>
+osql -U sa -P Born2test -i C:/aspen/temp-installer/aspen/create/create-database-sqlserver.sql
+</screen>
+
+
+<screen>
+   Databases created.
+</screen>
+
+
+<screen>
+Installation completed.
+</screen>
+
+
+<screen>
+You can startup Aspen/Liferay by running the startup script
+</screen>
+
+
+<screen>
+in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
+</screen>
+
+
+<screen>
+
+</screen>
+
+ </sect1>
+ <sect1 id="b9vchnb">
+  <title>Starting and Stopping Aspen</title>
+  <formalpara id="b9q35wr">
+   <title>Starting Aspen</title>
+   <para/>
+  </formalpara>
+  <para>On Windows:</para>
+  <para>
+   <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.bat </literal>
+  </para>
+  <para>On Linux:</para>
+  <para>
+   <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.sh </literal>
+  </para>
+  <note>
+   <para>While this is dependent on your system configuration, it can take upwards of 60 seconds before Aspen/Liferay starts accepting web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software as the JSPs are recompiled as they are referenced. </para>
+  </note>
+  <formalpara id="b9q35ws">
+   <title>Log Files / Monitoring</title>
+   <para/>
+  </formalpara>
+  <para>On Windows:</para>
+  <para>A Tomcat window appears when you issue the startup.bat command. Messages (good and bad) appear here.</para>
+  <para>On Linux: </para>
+  <para>Unlike Windows, the Tomcat process starts as a background process and no window appears. To monitor the messages in real time:</para>
+  <para>
+   <literal> tail -f /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/logs/catalina.out</literal>
+  </para>
+  <formalpara id="b9q35wt">
+   <title>Stopping Aspen</title>
+   <para/>
+  </formalpara>
+  <para>On Windows:</para>
+  <para>
+   <literal>/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.bat </literal>
+  </para>
+  <para>On Linux:</para>
+  <para>
+   <literal>/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.sh </literal>
+  </para>
+ </sect1>
+ <sect1 id="b9vchnc">
+  <title>Initial Logon</title>
+  <para>After installing Aspen/Liferay you need to log in. Liferay predefines a number of accounts, including a system administrator account.</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Access your installation via the following URL: 
+     <literal>http://yourhost.name.here:8080</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <para>At the login screen enter: 
+     <literal> liferay.com.1</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <para>Enter the following Password: 
+     <literal>test</literal>
+    </para>
+    <para>This brings up the initial LifeRay portal window. There are no Aspen portlets predefined for the system administrator account.</para>
+   </listitem>
+   <listitem>
+    <para>Click on the “
+     <guimenu>Add Content</guimenu>” link in the upper-right-hand corner. This brings up a panel of portlets along the left-hand margin. Expand the “
+     <guimenu>ICEcorps</guimenu>” section and add the following portlets:
+    </para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para> ICEcorps Administration</para>
+     </listitem>
+     <listitem>
+      <para>ICEcorps Navigator</para>
+     </listitem>
+    </itemizedlist>
+    <para>The portlets are placed in the narrow column on the left side. For each of the two Aspen portlets mouse down on the title and drag them over the right-hand column above the other portlets. They move to fill the column. Click on the links to initialize the portlets.</para>
+   </listitem>
+  </orderedlist>
+ </sect1>
+ <sect1 id="b9vchnd">
+  <title>Adding Users</title>
+  <para>As this is a teaming product, you probably want to add some people besides yourself. </para>
+  <para>There are two methods of managing users:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Basic User Management - create and manage individual accounts manually</para>
+   </listitem>
+   <listitem>
+    <para>LDAP/eDirectory - synchronize user account management to a corporate directory</para>
+   </listitem>
+  </orderedlist>
+  <para>Regardless of which method you choose it is important to realize that because Aspen is embedded within a portal, a portion of user management is delegated to the portal. For example, the portal is responsible for all user authentications. </para>
+  <formalpara id="b9q4fl9">
+   <title>Basic User Management</title>
+   <para/>
+  </formalpara>
+  <para>This capability comes “out of the box” with the product - no additional setup is required.Using the Liferay “
+   <guimenu>Enterprise Admin</guimenu>” portlet, click on the 
+   <guimenu>Users</guimenu> tab. (Note: Liferay has two portlets, “
+   <guimenu>Enterprise Admin</guimenu>” and “
+   <guimenu>Admin</guimenu>.” Both have “
+   <guimenu>Users</guimenu>” tabs, but they do very different things. Make sure you are using the correct portlet.) This brings up a list of current Liferay accounts. You can refer to the Liferay documentation for more advanced management, but the basic steps needed are:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para> Click 
+     <guimenu>Add</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para> Fill in the 
+     <guimenu>First</guimenu>, 
+     <guimenu>Last Name</guimenu>, assign a 
+     <guimenu>User ID</guimenu>, and specify the e-mail address.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Liferay shows an extended form.</para>
+   </listitem>
+   <listitem>
+    <para>In the second section you can set the timezone and portal window size. While Aspen can operate in an 800x600 pixel window, we recommend the 1024x768 or Full Screen option.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>. 
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click on the 
+     <guimenu>Password</guimenu> tab.
+    </para>
+   </listitem>
+   <listitem>
+    <para> Type in the password.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>.
+    </para>
+   </listitem>
+  </orderedlist>
+  <para>The account is now created and ready for use. The user appears in Aspen when they log in. The first time the user logs in, Aspen creates their user workspace, including a blog, calendar, and file area.</para>
+  <formalpara id="b9q4i4m">
+   <title>User Management with LDAP/eDirectory </title>
+   <para/>
+  </formalpara>
+  <para>If you want to use a corporate directory as the master reference for user accounts you need to configure both Liferay and Aspen in a similar manner. Aspen's LDAP configuration pages are designed to look and work in a similar fashion to Liferay, easing this task significantly. You can refer to the Liferay documentation for more detailed information, but the basic steps needed are:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Using the Liferay “
+     <guimenu>Admin</guimenu>” portlet, click on the 
+     <guimenu>Users</guimenu> tab. (Note: Liferay has two portlets, “
+     <guimenu>Enterprise Admin</guimenu>” and “
+     <guimenu>Admin</guimenu>”. Both have “
+     <guimenu>Users</guimenu>” tabs, but they do very different things. Make sure you are using the correct portlet.)
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click on the 
+     <guimenu>Authentication</guimenu> tab.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click on the 
+     <guimenu>LDAP</guimenu> tab.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Fill out the form with the values needed to map to your corporate directory.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Using the 
+     <guimenu>ICEcorps Administration</guimenu> portlet, click on “
+     <guimenu>Configure LDAP</guimenu>.”
+    </para>
+   </listitem>
+   <listitem>
+    <para>Fill out the form using the corresponding values that were used to configure Liferay. (See below for details on this form). </para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Apply</guimenu>.
+    </para>
+   </listitem>
+  </orderedlist>
+  <formalpara id="b9q4k6g">
+   <title>The Aspen LDAP Configuration Form</title>
+   <para/>
+  </formalpara>
+  <para>This form is similar to the Liferay form but includes additional information on scheduling synchronization of all users and, optionally, groups. </para>
+  <para>Connection settings:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> URL: 
+     <literal>ldap://host:port/dc=foo,dc=bar</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para> e.g., 
+       <literal>ldap://192.168.3.3:389/dc=sleepy,dc=com</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Principal: LDAP principal to authenticate access with</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>e.g., 
+       <literal>cn=admin,o=itdepartment</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Credentials: Above principal's password or authenticating token</para>
+   </listitem>
+  </itemizedlist>
+  <para>Users settings:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Ldap attribute that identifies the user</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>e.g, 
+       <literal>uid</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Attribute mapping - This is how you map the LDAP attribute names of the user record to the Aspen internal identifiers. Syntax is: 
+     <literal>aspenId=ldapAttName</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para> e.g, 
+       <literal>lastName=sn</literal>
+      </para>
+     </listitem>
+     <listitem>
+      <para>e.g., 
+       <literal>name=uid</literal>
+      </para>
+     </listitem>
+     <listitem>
+      <para>AspenIds: 
+       <literal>lastName, firstName, name, description, email, Address, phone</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Select “
+     <guimenu>Synchronize user profiles</guimenu>” (recommended)
+    </para>
+   </listitem>
+   <listitem>
+    <para>Select “
+     <guimenu>Register LDAP user profiles automaticially</guimenu>” (recommended) 
+    </para>
+   </listitem>
+   <listitem>
+    <para>Select others as appropriate </para>
+   </listitem>
+  </itemizedlist>
+  <para>Groups settings:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Register LDAP group profiles automatically (recommended)</para>
+   </listitem>
+   <listitem>
+    <para>Synchronize group membership (recommended)</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9vchne">
+  <title>Mail Setup</title>
+  <para>Aspen e-mail integration is divided into two primary functions:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Notification - e-mail messages generated by Aspen to inform people of events (e.g., new entries, changes) occurring within Aspen.</para>
+   </listitem>
+   <listitem>
+    <para>Posting - the processing of e-mail messages sent to Aspen with the intent of having the e-mail content added to a particular folder (as a new entry or reply).</para>
+   </listitem>
+  </orderedlist>
+  <formalpara id="b9q40iw">
+   <title>System Configuration</title>
+   <para/>
+  </formalpara>
+  <para>As part of installing and configuring Aspen, the system administrator must supply information related to the address and access to the mail system. E-mail integration is not required and the level of integration is configurable. </para>
+  <para>The
+   <filename> installer.xml </filename>file contains sections on e-mail configuration for both notification (Outbound) and posting (Inbound).
+  </para>
+  <para>Outbound configuration requires the basic information for generating SMTP mail messages: server, port, and optional authentication information.</para>
+  <para>Aspen posting works by the system accessing a single e-mail account (sometimes referred to as the “posting account”). Using your e-mail system, multiple e-mail addresses (aliases) can be mapped to this account. Aspen periodically reads e-mail sent to this account and apply the messages to individual folders (more on this below).</para>
+  <para>Create the account using your normal e-mail system management tools. You can configure the posting account to use either POP3 or IMAP. Aspen needs a host, port, e-mail account id and password for the posting feature to work.</para>
+  <formalpara id="b9q41n4">
+   <title>Setting up Incoming Mail schedule</title>
+   <para/>
+  </formalpara>
+  <para>In the 
+   <guimenu>ICEcorps Administration</guimenu> portlet, click on the “
+   <guimenu>Configure site incoming email schedule</guimenu>” link. This brings up a form that instructs Aspen how when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
+  </para>
+  <para>The right-hand side of the setup page lists any aliases and the folder that is using that alias. You set up the alias address to folder mapping within the folders themselves (see next section).</para>
+  <formalpara id="b9q42lb">
+   <title>Associating an E-mail Address with a Folder</title>
+   <para/>
+  </formalpara>
+  <para>If you enable incoming e-mail the final step that you need to take is to associate a particular e-mail alias address with a folder. When this is done, e-mail sent to that address is “read” by the folder and turned into entries (or replies).</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Navigate to the folder you want to receive e-mail and click on the “
+     <guimenu>Manage this folder</guimenu>” menu item, then select “
+     <guimenu>Email settings</guimenu>”.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Enter the e-mail alias address you want to associate with this folder. Click on the 
+     <guimenu>Apply</guimenu> button to save the address. 
+    </para>
+   </listitem>
+  </orderedlist>
+  <para>You can optionally set up the notification schedule for this folder at the same time (see next section). </para>
+  <formalpara id="b9q43u0">
+   <title>Establishing a Notification Schedule for a Folder</title>
+   <para/>
+  </formalpara>
+  <para>You can configure each folder to send out e-mail messages highlighting activity within the folder.</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Navigate to the folder you want to receive e-mail and click on the “
+     <guimenu>Manage this folder</guimenu>” menu item, then select “
+     <guimenu>Email settings</guimenu>”.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Enable outgoing mail and select the type of schedule you want for notification. You can configure the schedule for specific times of the day or a regular frequency. You also need to specify who is to receive the e-mail. This can be a combination of users, groups, and arbitrary e-mail addresses. </para>
+   </listitem>
+   <listitem>
+    <para>Click the 
+     <guimenu>Apply</guimenu> button to save the schedule.
+    </para>
+   </listitem>
+  </orderedlist>
+ </sect1>
+ <sect1 id="b9vchnf">
+  <title>Memory Guidelines</title>
+  <para>Java virtual machine uses a memory pool that is configurable at startup time. (You can see 
+   <filename>catalina.bat/.sh</filename> for all of Tomcat's startup options).
+  </para>
+  <para>Memory settings are defined in the 
+   <filename>installer.xml </filename>file. The default configuration assumes 1GB is available for the Java virtual machine.
+  </para>
+  <para>Virtual memory configurations in excess of 2GB for large production environments are common, therefore 64-bit server systems are recommended.</para>
+  <para>LifeRay has its own (non-trivial) memory pools that needs to be factored in when determining overall memory demands. These are not accounted for in great detail here.</para>
+  <para>Aspen memory usage factors:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Number of sessions (users logged in)</para>
+   </listitem>
+   <listitem>
+    <para>Number of active/concurrent sessions</para>
+   </listitem>
+   <listitem>
+    <para> Hibernate cache (database)</para>
+   </listitem>
+   <listitem>
+    <para>Lucene cache</para>
+   </listitem>
+  </orderedlist>
+  <para>The largest and most important of these are the Hibernate and Lucene caches.</para>
+  <formalpara id="b9q46ot">
+   <title>Hibernate Cache</title>
+   <para/>
+  </formalpara>
+  <para>Hibernate is a software framework that manages the mapping between Java objects and relational databases. Consequently, it has a sophisticated cache system that works on top of any database caching mechanisms.By default Aspen uses the 
+   <filename>ehcache </filename>plug-in, which is a non-clustering cache manager. Fine tuning of the Hibernate cache is done through 
+   <filename>ehcache.xml</filename>.
+  </para>
+  <formalpara id="b9q4775">
+   <title>Lucene Cache</title>
+   <para/>
+  </formalpara>
+  <para>Lucene has a number of tuning parameters. At this time, we have not done any work with them.</para>
+ </sect1>
+ <sect1 id="b9vchng">
+  <title>Document Support</title>
+  <para>When a file is uploaded into Aspen it is processed in a number of ways:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Textual content is extracted and sent to the search engine. For some file types (e.g., word processing documents) the textual content is obvious. For others, such as graphics files, there may be little or no textual content beyond basic metadata.</para>
+   </listitem>
+   <listitem>
+    <para> If possible, a thumbnail (and scaled image - somewhat larger than a thumbnail) of the file is created. The thumbnail of a multi-page document shows the first page.</para>
+   </listitem>
+   <listitem>
+    <para>If possible, an browser-only renderable (HTML) version of the file is created. This allows people who do not have the ability to open the file with its native application to get an idea of what is in the file. The rendering is on a “best effort” basis and the level of detail and fidelity of the rendering varies greatly.</para>
+   </listitem>
+  </orderedlist>
+  <para>The Open and Enterprise versions of Aspen vary greatly in their ability to perform the above tasks.</para>
+  <para>The Open version uses OpenOffice to provide access to common Microsoft and OpenOffice document formats, and that is about it.</para>
+  <para>The Enterprise version uses a licensed technology from the Stellent* company (now part of Oracle*) which provides processing capabilities to a wide spectrum of file types (over 200).</para>
+  <formalpara id="b9q4c7t">
+   <title>Editing Support</title>
+   <para/>
+  </formalpara>
+  <para>There are two ways of editing files stored in Aspen:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Download the file to your desktop. Edit the file. Upload the file to the entry (as an attachment). A new version of the attachment is created reflecting your changes. It is possible to manually “lock” the entry if you want to prevent other people from modifying any of the attached files.</para>
+   </listitem>
+   <listitem>
+    <para> Certain file types provide an [Edit] button which allows for “edit in place”. When available, clicking on the [Edit] button will launch a small Java applet which, in turn, launches the associated edit program for the file. The program accesses the file stored in Aspen through WebDAV and is subject to the individual file locking protocols that WebDAV provides. Saving the file (or exiting the application) creates a new version of the attachment - no interaction with the browser is needed.</para>
+   </listitem>
+  </orderedlist>
+  <para>Because the “edit in place” option requires the WebDAV URL support by the application, which is not universally supported by the operating systems, Aspen must be configured to know which applications are “WebDAV-aware”.</para>
+  <para>The following table (still very much a work in progress) shows the planned default configuration of file/document support in Aspen.</para>
+  <para/>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="filesupporttable.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="filesupporttable.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+ </sect1>
+</chapter>
+
+<chapter conformance="none,doc,no,,80" id="b9vdb7o" revision="01/01/03" lang="en" xml:base="02_configuringicecore.xml">
+ <title>Configuring 
+  <productname>ICEcore</productname>
+ </title>
+ <para>Before using 
+  <productname>ICEcore</productname>, you need to perform the initial configuration tasks described in this chapter to set up 
+  <productname>ICEcore</productname> so that all default features are operable:
+ </para>
+ <orderedlist spacing="normal">
+  <listitem>
+   <para><xref linkend="b9vde7e" xrefstyle="SectTitleOnPage"/></para>
+   <para>After you log in to the zone-management account, you can perform all of the management tasks for the zone and the current workspace.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vdczx" xrefstyle="SectTitleOnPage"/></para>
+   <para>You need to decide who can view the zone workspace, which is the initial workspace in the zone's hierarchy.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7f" xrefstyle="SectTitleOnPage"/></para>
+   <para>You must specify an outgoing e-mail server to be able to invite users to the zone, and to use features such as "I forgot my password," e-mail notifications, and more.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7g" xrefstyle="SectTitleOnPage"/></para>
+   <para>There are various optional features that you can enable or disable to change the zone appearance and functionality to meet the needs of your organization's teams.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7h" xrefstyle="SectTitleOnPage"/></para>
+   <para>After you provide the e-mail addresses of your users, the software sends users a link to pages that guide them through the registration process.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7i" xrefstyle="SectTitleOnPage"/></para>
+   <para>Users cannot receive e-mail notification of new or modified entries in a discussion forum until you enable this feature.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7j" xrefstyle="SectTitleOnPage"/></para>
+   <para>SiteScape provides additional configuration, information-design, and customization information that you can use to enhance your teams' experience of Forum.</para>
+  </listitem>
+ </orderedlist>
+ <sect1 id="b9vde7e">
+  <title>Log in as a Manager</title>
+  <para>You need to log in using a zone-management account in order to set up Forum for your users.</para>
+  <sect2 id="b9vdfym">
+   <title>To log in using the default zone-management account:</title>
+   <procedure id="b9vdg1s">
+    <step id="b9vdg1t" performance="required">
+     <para>Type the following URL in the browser window:</para>
+
+<screen>
+http://&lt;yourCompany.com&gt;/&lt;ssf&gt;/&lt;zone1&gt;/dispatch.cgi
+</screen>
+
+     <note>
+      <para>Replace the variables above with values specified during installation.</para>
+     </note>
+     <para>The login box appears.</para>
+    </step>
+    <step id="b9vdg74" performance="required">
+     <para>In the "Login name" box, type:</para>
+
+<screen>
+wf_admin
+</screen>
+
+    </step>
+    <step id="b9vdg76" performance="required">
+     <para>In the Password box, enter the password specified upon Forum installation.</para>
+    </step>
+    <step id="b9vdg79" performance="required">
+     <para>Click the Login button.</para>
+     <para>The zone-workspace page appears. You are now logged in.</para>
+    </step>
+   </procedure>
+   <para>In the upper-left corner of the page, a SiteScape Forum Manager link appears. This is the name associated with the default management account (wf_admin). When the name appears in the upper-left corner, you are logged into the system. (You can change the name "SiteScape Forum Manager" by modifying the user profile for the wf_admin account.)</para>
+   <para>When you begin managing Forum, there are only two management levels: site managers (who manage the server machine) and zone managers. </para>
+   <para>By default, wf_admin is the only member of the Administrators group for the initial zone; if you create an additional zone, then the zone creator and wf_admin are both members of the Administrators group. Members of the Administrators group have the right to perform zone-management tasks. If you choose, you can add other members to this group, so that they can help manage the zone.</para>
+  </sect2>
+  <sect2 id="b9vdhwi">
+   <title>Management Levels</title>
+   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and forums. At that point, it is helpful to delegate workspace management and the management of individual resources.</para>
+   <para>The Forum management levels and the default tasks that managers at those levels may perform are:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Site Managers</para>
+     <para>Primarily responsible for working with the SiteScape Forum software so that Forum runs smoothly. Tasks include updating the installation on the server, troubleshooting the internal processes of Forum, enabling e-mail for the system, and so on.</para>
+     <para>Because site managers work directly with the server, there is no management menu specifically designed for them. Usually, site managers are also zone managers.</para>
+    </listitem>
+    <listitem>
+     <para>Zone Managers</para>
+     <para>Primarily responsible for performing the initial setup of the zone managing users and groups, creating workspaces, delegating management, customizing the zone using templates, and assisting the discussion-forum managers with the creation of initial custom commands and workflow processes.</para>
+    </listitem>
+    <listitem>
+     <para>Workspace Managers</para>
+     <para>Responsible for creating and deleting forums in a workspace, determining which forums appear in the workspace, viewing auditing information about the workspace, customizing the workspace using templates, and creating or deleting additional workspaces. </para>
+    </listitem>
+    <listitem>
+     <para>Forum Managers</para>
+     <para>Responsible for managing a single forum. The responsibilities vary according to the type of forum being managed (discussion, calendar, tasks, and so on). Forum managers can modify access controls for the forum and allow or prevent viewing, participation, and other actions.</para>
+     <para>Managing a discussion forum requires more effort than managing other kinds of forums. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the forum using templates, running reports about content in the discussion forum, and managing the e-mail posting of forum entries.</para>
+    </listitem>
+   </itemizedlist>
+   <para>Additional information about delegating management is available in the online Manager Help system, in the Workspace Organization section.</para>
+  </sect2>
+  <sect2 id="b9vdjua">
+   <title>Using the Forum Management Menus </title>
+   <para>The Forum management menus are designed to provide you with a maximum amount of flexibility when managing resources for your teams.</para>
+   <para>To access the management menus, click the Manage toolbar item: </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="managemenus_a.png" width="100%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="managemenus_a.png" width="100%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>The Manage drop-down menu provides you with access to pages that allow you to manage:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>The zone</para>
+    </listitem>
+    <listitem>
+     <para> The current workspace</para>
+    </listitem>
+    <listitem>
+     <para>Groups (available across the zone)</para>
+    </listitem>
+    <listitem>
+     <para> Users (available across the zone)</para>
+    </listitem>
+   </itemizedlist>
+   <para>SiteScape provides navigation links at the top of the management pages, which allow you to move quickly from one type of management to another: </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="managementnavlinks_a.png" width="72%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="managementnavlinks_a.png" width="72%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>Use the links shown above to manage zones, workspaces, groups, or users. To return to the current workspace, click the linked title of the workspace located in the top left area of the page. </para>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vdczx">
+  <title>Set Access to the Zone Workspace</title>
+  <para>One of your first tasks as a zone manager is to decide who can view and participate in the zone workspace. For example, you may choose to prevent anonymous users from viewing any entries in the zone.</para>
+  <sect2 id="b9ve155">
+   <title>To change the default access to the zone workspace:</title>
+   <procedure id="b9ve19v">
+    <step id="b9ve19w" performance="required">
+     <para>From the zone-workspace page, click the 
+      <guimenu>Manage</guimenu> toolbar item and choose 
+      <guimenu>This workspace</guimenu>.
+     </para>
+     <para>The zone-management page appears.</para>
+    </step>
+    <step id="b9ve1f5" performance="required">
+     <para>In the "Manage access control" section of the page, click 
+      <guimenu>Set workspace access control</guimenu>.
+     </para>
+    </step>
+    <step id="b9ve1f7" performance="required">
+     <para>In the 
+      <guimenu>Visitors</guimenu> column, deselect the 
+      <guimenu>Anonymous users</guimenu> option to disable anonymous access.
+     </para>
+    </step>
+    <step id="b9ve1fa" performance="required">
+     <para>Click 
+      <guimenu>Remove</guimenu> selected groups from roles.
+     </para>
+     <para>The "
+      <guimenu>Role-based access control</guimenu>" page reappears. Anonymous users are no longer in the Visitors role, so they cannot view any pages in the zone.
+     </para>
+     <para>To return to the zone-workspace page, click the title at the top of the page.</para>
+    </step>
+   </procedure>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vde7f">
+  <title>Specify the Outgoing E-Mail Server</title>
+  <para>You must specify information about the outgoing e-mail server to enable the following Forum features:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> I forgot my password (Forum e-mails you a new password)</para>
+   </listitem>
+   <listitem>
+    <para>Invite users to the zone</para>
+   </listitem>
+   <listitem>
+    <para>Send mail</para>
+   </listitem>
+   <listitem>
+    <para> E-mail notifications from discussion forums</para>
+   </listitem>
+   <listitem>
+    <para>E-mail notifications related to workflow processes</para>
+   </listitem>
+   <listitem>
+    <para> E-mail notifications related to tasks and reminders</para>
+   </listitem>
+  </itemizedlist>
+  <sect2 id="b9ve5qm">
+   <title>To specify the outgoing e-mail server:</title>
+   <procedure id="b9ve68q">
+    <step id="b9ve68r" performance="required">
+     <para>From the zone-management page (
+      <guimenu>Manage &gt; This Workspace</guimenu>), select 
+      <guimenu>Manage outgoing e-mail settings</guimenu> in the 
+      <guimenu>Manage e-mail settings</guimenu> section.
+     </para>
+    </step>
+    <step id="b9ve7js" performance="required">
+     <para>Specify the name of the computer that runs the outgoing SMTP e-mail server software.</para>
+     <para>If you do not know the name, contact your system or network administrator. If the computer on which you installed Forum also runs an e-mail server, specify:</para>
+
+<screen>
+localhost
+</screen>
+
+    </step>
+    <step id="b9ve7k6" performance="required">
+     <para>Change the default port number if necessary.</para>
+     <para>When you complete the form, Forum checks if the server and port information is valid. If it is not correct, contact your system or network administrator.</para>
+    </step>
+    <step id="b9ve7d9" performance="required">
+     <para>Enter a default "from" e-mail address.</para>
+     <para>If the SMTP e-mail server determines that it cannot deliver an e-mail message, it returns the message to this address.</para>
+     <para>If Forum fails to contact the SMTP e-mail server after one day, an e-mail error log is created. (You can check the error logs from the zone-management page, using the View e-mail error logs link.)</para>
+    </step>
+    <step id="b9ve7dd" performance="required">
+     <para>Click 
+      <guimenu>OK</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vde7g">
+  <title>Optional Configuration Choices</title>
+  <para>There are additional, optional ways that you can configure your zone so that it reflects the values or working style of your organization. You may also want to add greetings or instructions to the pages, so that your zone is more inviting to users. Consider using these management pages:</para>
+  <formalpara id="b9veahx">
+   <title>Select features for this zone</title>
+   <para>(zone-management page)</para>
+  </formalpara>
+  <para>Allows you to prevent anonymous users from accessing the zone or registering, to prevent users from uploading files, to prevent the use of bookmarks, to disable the "To-do lists" tab, and more.</para>
+  <formalpara id="b9veb0p">
+   <title>Modify zone name, graphic, fonts, and colors</title>
+   <para>(zone-management page)</para>
+  </formalpara>
+  <para>Allows you to change the name of the zone, upload your company logo for display in the banner, set the color theme, and set the font size. </para>
+  <formalpara id="b9veb0q">
+   <title>Modify workspace appearance</title>
+   <para>(workspace-management page)</para>
+  </formalpara>
+  <para>Allows you to change the name of the current workspace, add different greetings for anonymous and registered users, and add text at the bottom of the workspace page.</para>
+  <para>You can use this page to provide text to orient your users to the zone-workspace page. For example, if you disable anonymous access to the zone, you may want to provide a greeting for anonymous users that includes the e-mail address of the person who can register a username and password for them.</para>
+  <formalpara id="b9veb0r">
+   <title>Set the message of the day</title>
+   <para>(workspace-management page)</para>
+  </formalpara>
+  <para>Allows you to set a brief message for your users that expires after a specified period of time.</para>
+  <sect2 id="b9veeo9">
+   <title>Making the Forum Inviting for New Users:</title>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para> In the discussion forum, modify the folder abstract to include a welcome to users, a description of the purpose of the forum, and instructions for users about which links to click on. Then, add an introductory entry outlining the subjects to be discussed and perhaps some rules for the forum. Add another entry inviting users to "sign in" by adding replies to introduce themselves.</para>
+    </listitem>
+    <listitem>
+     <para>Add some new usage tips to the User Tutorial forum, such as practical advice about using Forum to accomplish tasks specific to your organization.</para>
+    </listitem>
+    <listitem>
+     <para>If you are using the version of Forum that includes Zon support, you can create a discussion topic for those who wish to participate in an online meeting, post information to be read or discussed before the meeting, use the UI to start the meeting from From, and then post the meeting log and materials back into the topic when the meeting is complete.</para>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vde7h">
+  <title>Enable E-mail Notifications</title>
+  <para>One of the most effective ways for users to track new and changed entries in a discussion forum is to have Forum send them e-mail notifications. E-mail notifications provide a summary of recent activities in the forum, along with links to the new or changed entries.</para>
+  <para>To configure the discussion forum to send e-mail notifications:</para>
+  <procedure id="b9veezu">
+   <step id="b9veezv" performance="required">
+    <para>From the discussion forum, access the 
+     <guimenu>Tools</guimenu> toolbar option, and then click 
+     <guimenu>Administration</guimenu>.
+    </para>
+   </step>
+   <step id="b9veg7t" performance="required">
+    <para>In the 
+     <guimenu>E-mail operations </guimenu> section, click 
+     <guimenu>Set e-mail notification schedule</guimenu>.
+    </para>
+   </step>
+   <step id="b9veh0k" performance="required">
+    <para>In the "Set notification message content level" section, click the Send titles only or the Send titles and summaries radio button.</para>
+    <para>If you choose Send titles and summaries, the e-mail message includes a few lines from the entry. You must specify the number of lines to be included. SiteScape recommends that you specify not more than 10 lines so as not to overload the server.</para>
+   </step>
+   <step id="b9veh0o" performance="required">
+    <para> In the "Set the mail notification schedule" section, click the checkboxes of the days on which Forum is to send notifications.</para>
+   </step>
+   <step id="b9veh0r" performance="required">
+    <para>In the same section, specify the time Forum is to send notifications. The times that you specify apply to each day that you selected. Use 24-hour format, and separate the hour value from the minute value using a colon ( : ).</para>
+    <para>For example, this schedule sends notifications every hour and a half during an average working day, according to the time on the server:</para>
+
+<screen>
+09:00   10:30   12:00   13:30   15:00   16:30
+</screen>
+
+   </step>
+   <step id="b9vehr5" performance="required">
+    <para>You can add users to the distribution list. Users can also enable their own notifications from the discussion forum by choosing Set notification from the Tools menu as described in the user Help system.</para>
+   </step>
+   <step id="b9veh0u" performance="required">
+    <para>At the bottom of the form, click OK.</para>
+    <para>The e-mail notification schedule is set for this forum.</para>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="b9vde7i">
+  <title>Invite Users to the Zone</title>
+  <procedure id="b9veirv">
+   <step id="b9veirw" performance="required">
+    <para> If your user profile does not include an e-mail address, you must add one so that users can reply to your invitations if they have questions.</para>
+   </step>
+   <step id="b9veisb" performance="required">
+    <para>From the workspace page or the "My summary" page, click the Wizards toolbar item.</para>
+   </step>
+   <step id="b9veisd" performance="required">
+    <para>On the wizard menu, click the Invite users to join the zone link.</para>
+    <note>
+     <para>If this link does not appear on the Wizard menu and you are running Forum, you must specify your e-mail server.</para>
+    </note>
+   </step>
+   <step id="b9veise" performance="required">
+    <para>Optionally, you can change the default wording of the e-mail message.</para>
+   </step>
+   <step id="b9veisg" performance="required">
+    <para>Enter the e-mail addresses of the people you want to invite to the zone. Use one or both of the following methods:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Enter individual addresses in the "E-mail address" text boxes. To add boxes, click More e-mail addresses.</para>
+     </listitem>
+     <listitem>
+      <para>To add a list of e-mail addresses, copy and paste the list to the "You may also enter multiple e-mail addresses..." text box, then separate the addresses with commas.</para>
+     </listitem>
+    </itemizedlist>
+   </step>
+   <step id="b9veisi" performance="required">
+    <para>Click Next.</para>
+   </step>
+   <step id="b9veism" performance="required">
+    <para> Review the information on the Summary page, and then click Finish.</para>
+   </step>
+   <step id="b9veisp" performance="required">
+    <para>Click Close to exit the Congratulations page.</para>
+   </step>
+  </procedure>
+  <para>Your users receive an e-mail invitation with the text you specified and a link to the Forum registration wizard. They use this wizard to provide a username, password, and additional information. After users register, they are logged in to Forum.</para>
+  <para/>
+ </sect1>
+ <sect1 id="b9vde7j">
+  <title>Facilitate Forum Use</title>
+  <para>Now that you have set up your zone, SiteScape recommends that you learn more about facilitating and optimizing the long-range use of Forum by reading the following online manuals:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Making Teams Work</para>
+    <para>This manual covers issues that go beyond management and configuration, to address how to optimize your teams' use of Forum. One primary concept is to balance providing your teams with structure (such as a workspace hierarchy and dedicated applications created before team members ever access the zone) with a more informal, organic process (one in which teams create norms for Forum use and have input to workflow-process definitions). After deployment of Forum, the result should be an online space that your teams find intuitive, helpful in completing work effectively, flexible in ways that match a team's natural agility, and appropriately open to sharing information within the team and across the organization's matrix of teams. </para>
+   </listitem>
+   <listitem>
+    <para>Getting Started with Workflow </para>
+    <para>This tutorial teaches you how to automate your teams' common business processes, and how to use discussion forums to create powerful, dedicated applications. </para>
+   </listitem>
+  </itemizedlist>
+  <para>To access these manuals, open the Help system and click Getting Started Manuals.</para>
+ </sect1>
+</chapter>
+
+<chapter id="b9vell9" lang="en" xml:base="03_controllingaccess.xml">
+ <title>Controlling Access</title>
+ <para>SiteScape software provides two methods for controlling access to the zone, workspaces, and forums.</para>
+ <para>The default method is called role-based access control. Role-based access control associates groups with a set of access rights. </para>
+ <para>SiteScape's legacy method for controlling access is called managing by rights. This method allows you to map individual rights directly to one or more groups.</para>
+ <para>This chapter provides information about each type of access-control:</para>
+ <itemizedlist role="subtoc" mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="b9vemc3" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vepke" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <para>More detailed information is available in the Access Control topic in the Manager Help.</para>
+ <sect1 id="b9vemc3">
+  <title>Managing by Roles</title>
+  <para>Role-based access control associates groups with a set of related rights; together, this set of rights defines a role. Each role gives the users in the associated groups permission (or rights) to perform each of the tasks in the set. Role-based access control simplifies and speeds access control, because it allows you to assign a broad, general level of access without requiring you to apply every right individually.</para>
+  <para>To manage using roles, click the access-control link on the management pages for discussions, chat rooms, calendars, and workspaces.</para>
+  <para>The default access roles, with their default rights are:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Visitors (read only)</para>
+    <para>Can view information in the resource (forum, workspace, calendar, and so on), but cannot add information or use other tools that are reserved for higher-level roles.</para>
+   </listitem>
+   <listitem>
+    <para> Participants (write)</para>
+    <para>Can view information, add information (such as a topic or reply in a discussion forum), and send e-mail to another registered user.</para>
+   </listitem>
+   <listitem>
+    <para>Moderators (manage, modify, and delete)</para>
+    <para>Can view, modify, or delete all entries, add information, send e-mail to another registered user, and create team workspaces.</para>
+   </listitem>
+   <listitem>
+    <para>Managers (manage, modify, and delete)</para>
+    <para>Can perform management tasks for the resource, such as using the management menu, controlling access to the resource, creating additional resources such as workspaces, and using advanced tools (such as the tool to send e-mail to all registered users).</para>
+   </listitem>
+  </itemizedlist>
+  <para>Each type of resource has a default set of rights for each role. For example, in a zone, Participants can view forums, send e-mail to registered users, and more; in a discussion forum, Participants can add entries and reply to entries.</para>
+  <para>You can change the set of rights allowed to each role (the role definition) locally, from within an individual resource, by clicking the Modify rights button, located in the header row of each column. For example, in a discussion forum, you may want to remove the right to send e-mail from the Participants role. Local changes to the role definition apply only to the current forum.</para>
+  <note>
+   <para>It is also possible to modify role definitions for all forums of a certain type. For more information, click Access Control in the Manager Help table of contents, and then click Manage Role Definitions.</para>
+  </note>
+  <para>You can allow a resource to inherit membership (the groups in each role) from its parent workspace. Changes will be applied automatically through the inheritance hierarchy. For example, if you create a new workspace, it can inherit its role definitions from the main workspace. </para>
+  <para>The following is an example of a "Manage by roles" page, as accessed from the workspace management page:</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="managebyrols_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="managebyrols_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>For more information about inheriting role membership, view the Access Control topic in the online Manager Help system.</para>
+ </sect1>
+ <sect1 id="b9vepke">
+  <title>Managing by Rights</title>
+  <para>Managing by rights is another method for controlling access to resources. When you manage by rights, you work with an "Access Rights" table within an individual resource, such as a workspace or a forum. In the left-most column of the table, group names appear, one group in each row. (Some of the "groups" may be specially defined individual users.) The top row of each table displays the access rights available in that resource, one right in each column. At the intersection of each row and column is a checkbox. When you select or clear the checkbox, you allow or suspend that right for that group.</para>
+  <para>This method of access control allows you to assign to users the same set of rights you can assign using role-based access control. However, you must use the checkboxes in the table to group similar rights manually. This method is more labor-intensive, and does not offer the inheritance feature.</para>
+  <para>You can manage any set of resources using this method of access control.</para>
+  <note>
+   <para>If you upgrade to Version 7.0 from an earlier version, managing by rights is the default method. To use role-based access control, click manage by roles, located toward the top of the page.</para>
+  </note>
+  <para>Below is an example of a "Manage by rights" page, as accessed from the workspace management page:</para>
+  <para/>
+  <sect2 id="b9vescz">
+   <title>Default Users and Groups</title>
+   <para>Both methods of access control use a default set of users and groups:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Registered Users</para>
+     <para>Users who have a registered username.</para>
+    </listitem>
+    <listitem>
+     <para>Forum Creator</para>
+     <para>The user who created the forum. In this context, a "forum" could be a discussion forum, a specialized forum, a calendar, a workspace, or any of the built-in forums such as tasks or calendars.</para>
+    </listitem>
+    <listitem>
+     <para>Forum Owner</para>
+     <para>Initially, this is the same person who created the forum. It is possible to assign a new forum owner. You cannot assign a group as the forum owner.</para>
+    </listitem>
+    <listitem>
+     <para>Anonymous Users</para>
+     <para>Users who are not logged in. These users share one account, whose username is Anonymous.</para>
+    </listitem>
+    <listitem>
+     <para>Administrators</para>
+     <para>Users who have the right to access the management menus in all resources in the zone. By default, the first members of the Administrators group are the wf_admin user and the user who created the zone.</para>
+    </listitem>
+    <listitem>
+     <para>Entry Creator</para>
+     <para>The user who created an entry. In this context, an "entry" could be an entry in a discussion forum, calendar, chat room, meetings forum, or task forum.</para>
+    </listitem>
+    <listitem>
+     <para>Entry Owner</para>
+     <para>The user who owns an entry. By default, this is the person who created the entry, but a new owner can be assigned.</para>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+ </sect1>
+</chapter>
+
+<chapter id="b9veuno" lang="en" xml:base="04_nextsteps.xml">
+ <title>Next Steps</title>
+ <para>SiteScape recommends the following work as the next steps in your management of Forum:</para>
+ <procedure id="b9vev1e">
+  <step id="b9vev1f" performance="required">
+   <para>Read the Making Teams Work manual</para>
+   <para>This manual covers issues that go beyond management and configuration, and that address how to optimize your teams' use of Forum. After deployment of Forum, the result should be an online space that your teams find intuitive, helpful in completing work effectively, and appropriately open to sharing information within the team and across the organization's matrix of teams. </para>
+  </step>
+  <step id="b9vev2q" performance="required">
+   <para>Read the Getting Started with Workflow tutorial </para>
+   <para>This tutorial teaches you how to automate your teams' common business processes, and how to use discussion forums to create powerful, dedicated applications.</para>
+  </step>
+  <step id="b9vev2t" performance="required">
+   <para>Skim the Manager online help system.</para>
+   <para>This table of contents may provide you with other ideas for ways in which to configure Forum for maximum, efficient use by your teams.</para>
+  </step>
+  <step id="b9vev2w" performance="required">
+   <para>Investigate template customizations. </para>
+   <para>This helps you take your customizations to the next level. You can create new commands using a form and a view template. Use the template-support routines to create form elements and to display the values provided by your users on the custom entry page. You can experiment with the added flexibility and power provided by templates, and make decisions about the most appropriate method for creating new commands for your teams.</para>
+   <para>For more information, review the first few topics of the templates Help system (you can access this system from the support forum and from the manager Help system).</para>
+  </step>
+  <step id="b9vev2z" performance="required">
+   <para>Investigate toolkit customizations.</para>
+   <para>In the same way that template customizations introduce a level of flexibility and power beyond the management-page method of creating new commands, Toolkit customizations provide a level of flexibility and power beyond template customizations. Also, there are some types of customizations that should be done using only Toolkit coding (altering the tabs and the application toolbars, for example).</para>
+   <para>For more information, review the first few topics of the Toolkit Help system (you can access this system from the support forum and from the manager Help system).</para>
+  </step>
+ </procedure>
+</chapter>
+
+<appendix id="b9vewdf" xml:base="a1_webworkzone.xml">
+ <title>Signing up for WebWorkZone</title>
+ <para>When using the WebWorkZone hosted service, your first step is to sign up for a zone. </para>
+ <bridgehead id="b9vewv1">To sign up for a zone:</bridgehead>
+ <procedure id="b9vewxg">
+  <step id="b9vewxh" performance="required">
+   <para> Contact sales@sitescape.com to sign up for WebWorkZone.</para>
+   <para>You will receive a URL, username, and password. SiteScape recommends that you print this information for future reference.</para>
+  </step>
+  <step id="b9vex5f" performance="required">
+   <para>Enter the URL in the browser window. The URL follows this format:</para>
+
+<screen>
+http://webworkzone.com/&lt;zonename&gt;
+</screen>
+
+   <note>
+    <para>Replace &lt;zonename&gt; above with the value that you specified when you signed up for the zone.</para>
+   </note>
+   <para>The login box appears.</para>
+  </step>
+  <step id="b9vex5h" performance="required">
+   <para>Enter your username and password, then click Login. (You may want to bookmark the page so that you can access it quickly in the future.)</para>
+   <para>If you forget your password, leave the text boxes blank and click the I forgot my password link. WebWorkZone then sends a new password to the e-mail address that you provided when you signed up.</para>
+  </step>
+ </procedure>
+ <para>Although WebWorkZone is immediately usable, SiteScape recommends that you refer to the Chapter 1: Configuring SiteScape Software chapter in this manual (page 9) to make sure that your zone is optimally configured and ready for your users. For example, you may want to change the access controls to require that registered users be added to a group before they can participate (by default, anonymous users cannot participate). In addition, you might want to change the zone name, colors, and greetings.</para>
+ <para>You can find more information about WebWorkZone at https://webworkzone.com.</para>
+</appendix>
+</book>

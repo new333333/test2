@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9xwsrg" pid="b9xwsrg" name="Appendix" level="0" number="A"> <text>Workflow Planning Worksheet</text> </target>
+
+ <target id="b9xxvoz" pid="b9xxvoz" name="Sect1" level="1" number="A.1"> <text>Identify Components of the Business Process</text> </target>
+
+ <target id="b9xxwh7" pid="b9xxvoz" name="FormalPara" level="2"> <text>Example:</text> </target>
+
+ <target id="b9xxx3m" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3n" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3o" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3p" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3q" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3r" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3s" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3t" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxx3u" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy30q" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy30r" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy30s" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy30t" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy30u" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy30v" pid="b9xxvoz" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxxrn" pid="b9xxxrn" name="Sect1" level="1" number="A.2"> <text>Name the Business Process</text> </target>
+
+ <target id="b9xxydf" pid="b9xxxrn" name="FormalPara" level="2"> <text>UI Mapping:</text> </target>
+
+ <target id="b9xxy39" pid="b9xxxrn" name="FormalPara" level="2"> <text>Example:</text> </target>
+
+ <target id="b9xxyyg" pid="b9xxxrn" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xxzgs" pid="b9xxzgs" name="Sect1" level="1" number="A.3"> <text>Identify the Tasks</text> </target>
+
+ <target id="b9xxzub" pid="b9xxzgs" name="row" level="2"> <text>Task</text> </target>
+
+ <target id="b9xxzuc" pid="b9xxzgs" name="row" level="2"> <text>Example: Send request</text> </target>
+
+ <target id="b9xy30w" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy30x" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy30y" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy30z" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy310" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy311" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy312" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy313" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy314" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy315" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy316" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy317" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy318" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy319" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy31a" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy31b" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy31c" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy31d" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy31e" pid="b9xxzgs" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xy0wm" pid="b9xy0wm" name="Sect1" level="1" number="A.4"> <text>Identify States</text> </target>
+
+ <target id="b9xy13d" pid="b9xy0wm" name="FormalPara" level="2"> <text>UI Mapping:</text> </target>
+
+ <target id="b9xy31f" pid="b9xy0wm" name="row" level="3"> <text>Task</text> </target>
+
+ <target id="b9xy1hh" pid="b9xy0wm" name="row" level="3"> <text>Example: Send request</text> </target>
+
+ <target id="b9xy1hi" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hj" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hk" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hl" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hm" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hn" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1ho" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hp" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hq" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hr" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hs" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1ht" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hu" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hv" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hw" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hx" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hy" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1hz" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy1i0" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31g" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31h" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31i" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31j" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31k" pid="b9xy0wm" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy267" pid="b9xy267" name="Sect1" level="1" number="A.5"> <text>Identify State Transitions</text> </target>
+
+ <target id="b9xy2h0" pid="b9xy267" name="FormalPara" level="2"> <text>UI Mapping:</text> </target>
+
+ <target id="b9xy31l" pid="b9xy267" name="row" level="3"> <text>Task</text> </target>
+
+ <target id="b9xy31m" pid="b9xy267" name="row" level="3"> <text>Example: Send Submit</text> </target>
+
+ <target id="b9xy31n" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31o" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31p" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31q" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31r" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31s" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31t" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31u" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31v" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31w" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31x" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31y" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy31z" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy320" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy321" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy322" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy323" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy324" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy325" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy326" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy327" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy328" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy329" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy32a" pid="b9xy267" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy35x" pid="b9xy35x" name="Sect1" level="1" number="A.6"> <text>Identify Conditions that Cause State Transitions</text> </target>
+
+ <target id="b9xy3gi" pid="b9xy35x" name="FormalPara" level="2"> <text>UI Mapping:</text> </target>
+
+ <target id="b9xy6bq" pid="b9xy35x" name="row" level="3"> <text>Condition</text> </target>
+
+ <target id="b9xy6br" pid="b9xy35x" name="row" level="3"> <text>Examples:</text> </target>
+
+ <target id="b9xy6bs" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6bt" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6bu" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6bv" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6bw" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6bx" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6by" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6bz" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c0" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c1" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c2" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c3" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c4" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c5" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c6" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c7" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c8" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6c9" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy6ca" pid="b9xy35x" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy4ya" pid="b9xy4ya" name="Sect1" level="1" number="A.7"> <text>Identify the Process Participants</text> </target>
+
+ <target id="b9xy5ej" pid="b9xy4ya" name="FormalPara" level="2"> <text>UI Mapping:</text> </target>
+
+ <target id="b9xy5o6" pid="b9xy4ya" name="row" level="3"> <text>State  </text> </target>
+
+ <target id="b9xy5o7" pid="b9xy4ya" name="row" level="3"> <text>Example: Submit</text> </target>
+
+ <target id="b9xy5o8" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5o9" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oa" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5ob" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oc" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5od" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oe" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5of" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5og" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oh" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oi" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oj" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5ok" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5ol" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5om" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5on" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oo" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5op" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xy5oq" pid="b9xy4ya" name="row" level="3"> <text>No Text</text> </target>
+
+ <target id="b9xybu6" pid="b9xybu6" name="Sect1" level="1" number="A.8"> <text>Identify Participant Access to Specific States</text> </target>
+
+ <target id="b9xye68" pid="b9xybu6" name="row" level="2"> <text>State  </text> </target>
+
+ <target id="b9xye69" pid="b9xybu6" name="row" level="2"> <text>Example: Submit</text> </target>
+
+ <target id="b9xye6a" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6b" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6c" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6d" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6e" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6f" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6g" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6h" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6i" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6j" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6k" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6l" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6m" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6n" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6o" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6p" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6q" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6r" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xye6s" pid="b9xybu6" name="row" level="2"> <text>No Text</text> </target>
+
+ <target id="b9xyd0v" pid="b9xyd0v" name="Sect1" level="1" number="A.9"> <text>Draw a Flowchart of the process</text> </target>
+
+</targets>

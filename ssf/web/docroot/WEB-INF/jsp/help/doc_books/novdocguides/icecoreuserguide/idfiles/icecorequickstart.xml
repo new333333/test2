@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9rpufv" pid="b9rpufv" name="Chapter" level="0" number="1"> <text>ICEcorps Quick Start</text> </target>
+
+ <target id="b9rsake" pid="b9rsake" name="Sect1" level="1" number="1.1"> <text>Getting Started</text> </target>
+
+ <target id="b9rsga2" pid="b9rsake" name="Sect2" level="2" number="1.1.1"> <text>Find your way around with the Navigator</text> </target>
+
+ <target id="b9rsga3" pid="b9rsake" name="Sect2" level="2" number="1.1.2"> <text>Explore the Welcome Portlet</text> </target>
+
+ <target id="b9rsga4" pid="b9rsake" name="Sect2" level="2" number="1.1.3"> <text>Buddy List</text> </target>
+
+ <target id="b9rrt57" pid="b9rsake" name="Procedure" level="3" number="1"> <text>Click Add buddies.</text> </target>
+
+ <target id="b9rrt58" pid="b9rsake" name="Step" level="4" number="1"> <text>Click Add buddies.</text> </target>
+
+ <target id="b9rrt7g" pid="b9rsake" name="Step" level="4" number="2"> <text>Start typing a name in either the Users or the Groups box. A dropdown list displays matching names. Select a name and click Apply to add the name to your list.</text> </target>
+
+ <target id="b9rrt7j" pid="b9rsake" name="Step" level="4" number="3"> <text>Add as many names as you want, clicking Apply after each one.</text> </target>
+
+ <target id="b9rrt7l" pid="b9rsake" name="Step" level="4" number="4"> <text>To remove a name, click the x icon after the name; then click Apply.</text> </target>
+
+ <target id="b9rrt7o" pid="b9rsake" name="Step" level="4" number="5"> <text>When you finish, click Close.</text> </target>
+
+ <target id="b9rs9ms" pid="b9rsake" name="Sect3" level="3"> <text>Tips for using your buddy list</text> </target>
+
+ <target id="b9rsf64" pid="b9rsake" name="Sect3" level="3"> <text>Folder Bookmarks Portlet</text> </target>
+
+ <target id="b9rsg6v" pid="b9rsg6v" name="Sect1" level="1" number="1.2"> <text>Configuring Your Workspace</text> </target>
+
+ <target id="b9rska6" pid="b9rsg6v" name="Sect2" level="2" number="1.2.1"> <text>Add info and a photo to your profile</text> </target>
+
+ <target id="b9rsl44" pid="b9rsg6v" name="Procedure" level="3"> <text>In the Navigator, click  My workspace to go to your personal workspace.</text> </target>
+
+ <target id="b9rsl45" pid="b9rsg6v" name="Step" level="4"> <text>In the Navigator, click  My workspace to go to your personal workspace.</text> </target>
+
+ <target id="b9rsl83" pid="b9rsg6v" name="Step" level="4" number="2"> <text>On the menu bar for your workspace, click Modify profile.</text> </target>
+
+ <target id="b9rsl84" pid="b9rsg6v" name="Step" level="4" number="3"> <text>Fill in any missing information. This information is visible to others and is also used by ICEcorps and Zon to contact you by phone, email, or instant messaging.</text> </target>
+
+ <target id="b9rsl86" pid="b9rsg6v" name="Step" level="4" number="4"> <text>Add a picture. Click Browse&#201; to look for a graphics file on your computer.</text> </target>
+
+ <target id="b9rsl88" pid="b9rsg6v" name="Step" level="4" number="5"> <text>Click OK to close the form. </text> </target>
+
+ <target id="b9rssgt" pid="b9rsg6v" name="Sect2" level="2" number="1.2.2"> <text>Remove an image from your profile</text> </target>
+
+ <target id="b9rssm0" pid="b9rsg6v" name="Procedure" level="3" number="1"> <text>To remove an image from your profile, click Modify profile. </text> </target>
+
+ <target id="b9rssm1" pid="b9rsg6v" name="Step" level="4" number="1"> <text>To remove an image from your profile, click Modify profile. </text> </target>
+
+ <target id="b9rsssq" pid="b9rsg6v" name="Step" level="4" number="2"> <text> Select the check box next to each image you want to delete.</text> </target>
+
+ <target id="b9rssst" pid="b9rsg6v" name="Step" level="4" number="3"> <text>Click OK. The images are removed.</text> </target>
+
+ <target id="b9rsuzs" pid="b9rsg6v" name="Sect3" level="3"> <text>Tips for adding photos to your profile</text> </target>
+
+ <target id="b9rsvrp" pid="b9rsvrp" name="Sect1" level="1" number="1.3"> <text>Creating Content</text> </target>
+
+ <target id="b9rsw6j" pid="b9rsvrp" name="Sect2" level="2" number="1.3.1"> <text>Folder types</text> </target>
+
+ <target id="b9rt5vj" pid="b9rsvrp" name="Sect2" level="2" number="1.3.2"> <text>Blogs</text> </target>
+
+ <target id="b9rswgt" pid="b9rsvrp" name="Sect3" level="3"> <text>Start a blog in your workspace</text> </target>
+
+ <target id="b9rt88y" pid="b9rsvrp" name="Procedure" level="4"> <text>Click  My workspace to display your personal workspace.</text> </target>
+
+ <target id="b9rt88z" pid="b9rsvrp" name="Step" level="5"> <text>Click  My workspace to display your personal workspace.</text> </target>
+
+ <target id="b9rt8db" pid="b9rsvrp" name="Step" level="5" number="2"> <text>On the workspace menu bar, click Manage this workspace.</text> </target>
+
+ <target id="b9rt8de" pid="b9rsvrp" name="Step" level="5" number="3"> <text>Select Add new folder. A form for adding a folder appears.</text> </target>
+
+ <target id="b9rt8dg" pid="b9rsvrp" name="Step" level="5" number="4"> <text>In the Title field, enter a title for your blog.</text> </target>
+
+ <target id="b9rt8di" pid="b9rsvrp" name="Step" level="5" number="5"> <text>Under Select a template, choose Blog folder.</text> </target>
+
+ <target id="b9rt8dl" pid="b9rsvrp" name="Step" level="5" number="6"> <text>Click OK to create the blog.</text> </target>
+
+ <target id="b9rt5vk" pid="b9rsvrp" name="Sect2" level="2" number="1.3.3"> <text>Add your first blog entry</text> </target>
+
+ <target id="b9rta04" pid="b9rsvrp" name="Procedure" level="3" number="1"> <text>On the menu bar above the blog calendar, click New and select Blog entry.</text> </target>
+
+ <target id="b9rta05" pid="b9rsvrp" name="Step" level="4" number="1"> <text>On the menu bar above the blog calendar, click New and select Blog entry.</text> </target>
+
+ <target id="b9rta1o" pid="b9rsvrp" name="Step" level="4" number="2"> <text>In the entry form that appears, enter the title of your blog entry in the Title box.</text> </target>
+
+ <target id="b9rta1q" pid="b9rsvrp" name="Step" level="4" number="3"> <text>In the Description box, enter the content of your blog entry, using the rich formatting tools in the editor.</text> </target>
+
+ <target id="b9rta1s" pid="b9rsvrp" name="Step" level="4" number="4"> <text>Click OK to add the entry to your blog.</text> </target>
+
+ <target id="b9rt5vl" pid="b9rsvrp" name="Sect2" level="2" number="1.3.4"> <text>Add a comment to a blog entry</text> </target>
+
+ <target id="b9rtby3" pid="b9rsvrp" name="Procedure" level="3" number="1"> <text>Click the  icon beneath the blog entry.</text> </target>
+
+ <target id="b9rtby4" pid="b9rsvrp" name="Step" level="4" number="1"> <text>Click the  icon beneath the blog entry.</text> </target>
+
+ <target id="b9rtc1f" pid="b9rsvrp" name="Step" level="4" number="2"> <text>In the form that appears, enter the title of your blog comment in the Title box.</text> </target>
+
+ <target id="b9rtc1h" pid="b9rsvrp" name="Step" level="4" number="3"> <text>Enter your comment in the Description box.</text> </target>
+
+ <target id="b9rtc1j" pid="b9rsvrp" name="Step" level="4" number="4"> <text>Click OK. Your comment appears below the blog entry.</text> </target>
+
+ <target id="b9rt5vm" pid="b9rsvrp" name="Sect2" level="2" number="1.3.5"> <text>Rate an entry in a blog, wiki, or discussion</text> </target>
+
+ <target id="b9rtdg0" pid="b9rsvrp" name="Procedure" level="3" number="1"> <text>View an entry in a blog, wiki, or discussion folder</text> </target>
+
+ <target id="b9rtdg1" pid="b9rsvrp" name="Step" level="4" number="1"> <text>View an entry in a blog, wiki, or discussion folder</text> </target>
+
+ <target id="b9rtdlp" pid="b9rsvrp" name="Step" level="4" number="2"> <text>Drag the mouse over the rating stars above the entry to highlight the desired number of stars (1 to 5).</text> </target>
+
+ <target id="b9rtdlr" pid="b9rsvrp" name="Step" level="4" number="3"> <text>Click to register your rating. The average rating and the number of ratings are updated immediately.</text> </target>
+
+ <target id="b9rt47b" pid="b9rsvrp" name="Sect2" level="2" number="1.3.6"> <text>Work with teams</text> </target>
+
+ <target id="b9rt4mr" pid="b9rsvrp" name="Sect3" level="3"> <text>Create a team workspace:</text> </target>
+
+ <target id="b9rtflb" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>In the Navigator, click on the workspace tree to expand it.</text> </target>
+
+ <target id="b9rtflc" pid="b9rsvrp" name="Step" level="5" number="1"> <text>In the Navigator, click on the workspace tree to expand it.</text> </target>
+
+ <target id="b9rtfpx" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Click on the Teams branch of the workspace tree.</text> </target>
+
+ <target id="b9rtfpz" pid="b9rsvrp" name="Step" level="5" number="3"> <text>On the Teams tab that appears, click Manage this workspace.</text> </target>
+
+ <target id="b9rtfq0" pid="b9rsvrp" name="Step" level="5" number="4"> <text>Select Add new workspace.</text> </target>
+
+ <target id="b9rtfq2" pid="b9rsvrp" name="Step" level="5" number="5"> <text> In the Title field, enter the name for your new workspace.</text> </target>
+
+ <target id="b9rtfq3" pid="b9rsvrp" name="Step" level="5" number="6"> <text>Click OK. The new workspace is added to Teams.</text> </target>
+
+ <target id="b9rt5vn" pid="b9rsvrp" name="Sect3" level="3"> <text>Add folders to the team workspace</text> </target>
+
+ <target id="b9rtkne" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>Click on Manage this workspace.</text> </target>
+
+ <target id="b9rtknf" pid="b9rsvrp" name="Step" level="5" number="1"> <text>Click on Manage this workspace.</text> </target>
+
+ <target id="b9rtksm" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Click Add new folder.</text> </target>
+
+ <target id="b9rtksn" pid="b9rsvrp" name="Step" level="5" number="3"> <text>In the form that appears, enter a name in the Title field and select the template for the folder that you want to add (Discussion, Blog folder, Calendar folder, etc.)</text> </target>
+
+ <target id="b9rtksp" pid="b9rsvrp" name="Step" level="5" number="4"> <text>Click OK. The folder is added to the workspace.</text> </target>
+
+ <target id="b9rt5vo" pid="b9rsvrp" name="Sect3" level="3"> <text>Add a team to a workspace or folder:</text> </target>
+
+ <target id="b9rtlgk" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>On the tab for the folder or workspace, click Access control.</text> </target>
+
+ <target id="b9rtlgl" pid="b9rsvrp" name="Step" level="5" number="1"> <text>On the tab for the folder or workspace, click Access control.</text> </target>
+
+ <target id="b9rtv77" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Change the setting for Inherit role membership from the parent folder or workspace to No and click Apply.</text> </target>
+
+ <target id="b9rtv79" pid="b9rsvrp" name="Step" level="5" number="3"> <text> In the Roles table, select Team Member for every user (or group of users) that you want to add to the team.</text> </target>
+
+ <target id="b9rtv7b" pid="b9rsvrp" name="Step" level="5" number="4"> <text>If a user is not shown in the Roles table, click Add a user. Begin typing the user name and select the name from the dropdown list. Then click Team Member for that user.</text> </target>
+
+ <target id="b9rtv7c" pid="b9rsvrp" name="Step" level="5" number="5"> <text>When you have finished adding members, click Save changes, then Close.</text> </target>
+
+ <target id="b9rt5vp" pid="b9rsvrp" name="Sect3" level="3"> <text>View team members:</text> </target>
+
+ <target id="b9rtwmx" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>Select the workspace or folder with which the team is associated.</text> </target>
+
+ <target id="b9rtwmy" pid="b9rsvrp" name="Step" level="5" number="1"> <text>Select the workspace or folder with which the team is associated.</text> </target>
+
+ <target id="b9rtwy0" pid="b9rsvrp" name="Step" level="5" number="2"> <text>On the menu bar, click Team.</text> </target>
+
+ <target id="b9rtwy2" pid="b9rsvrp" name="Step" level="5" number="3"> <text>Click View members.</text> </target>
+
+ <target id="b9rt5vq" pid="b9rsvrp" name="Sect3" level="3"> <text>Creating a team meeting:</text> </target>
+
+ <target id="b9ru006" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>On the menu bar, click Team.</text> </target>
+
+ <target id="b9ru007" pid="b9rsvrp" name="Step" level="5" number="1"> <text>On the menu bar, click Team.</text> </target>
+
+ <target id="b9ru04a" pid="b9rsvrp" name="Step" level="5" number="2"> <text> Click Create a meeting. The Add meeting form appears.</text> </target>
+
+ <target id="b9ru04c" pid="b9rsvrp" name="Step" level="5" number="3"> <text>Click Select all to create a meeting with all team members, or select the individual members to invite.</text> </target>
+
+ <target id="b9ru04e" pid="b9rsvrp" name="Step" level="5" number="4"> <text>Click Start meeting to start a meeting immediately, or click Schedule to arrange a meeting in the future.</text> </target>
+
+ <target id="b9rt5vr" pid="b9rsvrp" name="Sect3" level="3"> <text>Sending mail to your team:</text> </target>
+
+ <target id="b9ru1fb" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>5. On the menu bar, click Team.</text> </target>
+
+ <target id="b9ru1fc" pid="b9rsvrp" name="Step" level="5" number="1"> <text>5. On the menu bar, click Team.</text> </target>
+
+ <target id="b9ru1hy" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Click Send mail to members. The Send email form appears:</text> </target>
+
+ <target id="b9ru1i0" pid="b9rsvrp" name="Step" level="5" number="3"> <text>To send mail to all team members, click Select all.</text> </target>
+
+ <target id="b9ru1i2" pid="b9rsvrp" name="Step" level="5" number="4"> <text>Fill in the Subject and Message.</text> </target>
+
+ <target id="b9ru1i3" pid="b9rsvrp" name="Step" level="5" number="5"> <text>Click OK to send the message. The message contains a link back to your workspace.</text> </target>
+
+ <target id="b9rt5vs" pid="b9rsvrp" name="Sect3" level="3"> <text>Tips for working with teams</text> </target>
+
+ <target id="b9rt559" pid="b9rsvrp" name="Sect2" level="2" number="1.3.7"> <text>Use Favorites for places you visit often</text> </target>
+
+ <target id="b9rt5bv" pid="b9rsvrp" name="Sect3" level="3"> <text>To add a place to Favorites:</text> </target>
+
+ <target id="b9ru4cc" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>Navigate to the workspace or folder that you want to add to your Favorites list.</text> </target>
+
+ <target id="b9ru4cd" pid="b9rsvrp" name="Step" level="5" number="1"> <text>Navigate to the workspace or folder that you want to add to your Favorites list.</text> </target>
+
+ <target id="b9ru4ds" pid="b9rsvrp" name="Step" level="5"> <text>Click  to open the Favorites menu.</text> </target>
+
+ <target id="b9ru4dv" pid="b9rsvrp" name="Step" level="5" number="3"> <text>Click Bookmark this place. The workspace or folder is added at the end of the Favorites list.</text> </target>
+
+ <target id="b9rt5vt" pid="b9rsvrp" name="Sect3" level="3"> <text>To return to one of your Favorites:</text> </target>
+
+ <target id="b9ru8xe" pid="b9rsvrp" name="Procedure" level="4"> <text> Click  to open the Favorites menu.</text> </target>
+
+ <target id="b9ru8xf" pid="b9rsvrp" name="Step" level="5"> <text> Click  to open the Favorites menu.</text> </target>
+
+ <target id="b9ru90m" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Click on the name of a place that you previously added to the Favorites list.</text> </target>
+
+ <target id="b9rt5vu" pid="b9rsvrp" name="Sect3" level="3"> <text>To delete one or more Favorites from your list:</text> </target>
+
+ <target id="b9ru9jr" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>From the Favorites menu, click Edit Favorites. </text> </target>
+
+ <target id="b9ru9js" pid="b9rsvrp" name="Step" level="5" number="1"> <text>From the Favorites menu, click Edit Favorites. </text> </target>
+
+ <target id="b9ru9l9" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Select each of the places to delete.</text> </target>
+
+ <target id="b9ru9lb" pid="b9rsvrp" name="Step" level="5" number="3"> <text>Click Delete, then OK. The places are removed from your Favorites list.</text> </target>
+
+ <target id="b9ru9ld" pid="b9rsvrp" name="Step" level="5" number="4"> <text>Close the Favorites menu.</text> </target>
+
+ <target id="b9rt5vv" pid="b9rsvrp" name="Sect3" level="3"> <text>To change the order of the items in your Favorites list:</text> </target>
+
+ <target id="b9ruai7" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>From the Favorites menu, click Edit Favorites. </text> </target>
+
+ <target id="b9ruai8" pid="b9rsvrp" name="Step" level="5" number="1"> <text>From the Favorites menu, click Edit Favorites. </text> </target>
+
+ <target id="b9ruakf" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Select one or more items in the list.</text> </target>
+
+ <target id="b9ruakh" pid="b9rsvrp" name="Step" level="5" number="3"> <text>Click Down or Up to move the selected items down or up.</text> </target>
+
+ <target id="b9ruakj" pid="b9rsvrp" name="Step" level="5" number="4"> <text>When you finish, click OK.</text> </target>
+
+ <target id="b9ruakl" pid="b9rsvrp" name="Step" level="5" number="5"> <text>Close the Favorites menu.</text> </target>
+
+ <target id="b9rt5gd" pid="b9rsvrp" name="Sect2" level="2" number="1.3.8"> <text>Tagging</text> </target>
+
+ <target id="b9rt5kg" pid="b9rsvrp" name="Sect3" level="3"> <text>To add tags to a workspace, folder, or entry:</text> </target>
+
+ <target id="b9rubl2" pid="b9rsvrp" name="Procedure" level="4"> <text>Start in the place that you want to tag. Any tags already assigned to this place are displayed below the  icon.</text> </target>
+
+ <target id="b9rubl3" pid="b9rsvrp" name="Step" level="5"> <text>Start in the place that you want to tag. Any tags already assigned to this place are displayed below the  icon.</text> </target>
+
+ <target id="b9rubmt" pid="b9rsvrp" name="Step" level="5"> <text> Click  to open the Add/Delete Tags form. Any previously assigned tags are also listed here.</text> </target>
+
+ <target id="b9rubmv" pid="b9rsvrp" name="Step" level="5" number="3"> <text> In either the Personal tags or Shared tags text box, type the new tag and click Add. As you type, a dropdown list displays existing tags that match the letters in the box. When you click Add, the tag is added to the list of tags assigned to this place.</text> </target>
+
+ <target id="b9rubmx" pid="b9rsvrp" name="Step" level="5"> <text>When you finish adding tags, close the Add/Delete Tags form by clicking the x in the upper right corner of the form. You will now see the new tags below the  icon.</text> </target>
+
+ <target id="b9rt5vw" pid="b9rsvrp" name="Sect3" level="3"> <text>To remove tags from a place:</text> </target>
+
+ <target id="b9rudfi" pid="b9rsvrp" name="Procedure" level="4"> <text> Click  to open the Add/Delete Tags form.</text> </target>
+
+ <target id="b9rudfj" pid="b9rsvrp" name="Step" level="5"> <text> Click  to open the Add/Delete Tags form.</text> </target>
+
+ <target id="b9rudi6" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Click Delete for every tag that you want to delete.</text> </target>
+
+ <target id="b9rudi7" pid="b9rsvrp" name="Step" level="5"> <text>When you finish deleting tags, close the Add/Delete Tags form by clicking the x in the upper right corner of the form. The tags that you deleted are removed from the list of tags beneath the  icon.</text> </target>
+
+ <target id="b9rt5vx" pid="b9rsvrp" name="Sect3" level="3"> <text>To use tags in a search:</text> </target>
+
+ <target id="b9rudzz" pid="b9rsvrp" name="Procedure" level="4" number="1"> <text>In the Find tags box in the Navigator, start typing the personal or shared tag that you want to search for. As you type, a dropdown list displays tags that match the letters that you've typed.</text> </target>
+
+ <target id="b9rue00" pid="b9rsvrp" name="Step" level="5" number="1"> <text>In the Find tags box in the Navigator, start typing the personal or shared tag that you want to search for. As you type, a dropdown list displays tags that match the letters that you've typed.</text> </target>
+
+ <target id="b9rue24" pid="b9rsvrp" name="Step" level="5" number="2"> <text>Finish typing the tag (or select it from the list) and press Enter. </text> </target>
+
+ <target id="b9rt5rq" pid="b9rsvrp" name="Sect2" level="2" number="1.3.9"> <text>Relevance Rankings</text> </target>
+
+ <target id="b9rt5uk" pid="b9rsvrp" name="Sect3" level="3"> <text>Tips for working with tags:</text> </target>
+
+</targets>
