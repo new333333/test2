@@ -47,6 +47,7 @@ public class SlidingTableColumnTag extends BodyTagSupport {
 			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
+			_width = null;
 		}
 	}
 	public void setWidth(String width) {

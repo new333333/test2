@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.taglib;
 
+import java.util.UUID;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +32,7 @@ public class TeamMembers extends BodyTagSupport {
 	
 	private String formElement = "";
 
-	private Integer instanceCount = 0;
+	private String instanceCount;
 	
 	private String binderId = "";
 	
@@ -51,7 +53,7 @@ public class TeamMembers extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext
 					.getResponse();
 			
-			this.instanceCount++;
+			this.instanceCount = UUID.randomUUID().toString();
 
 			httpReq.setAttribute("binderId", this.binderId);
 			httpReq.setAttribute("formElement", this.formElement);
@@ -72,6 +74,7 @@ public class TeamMembers extends BodyTagSupport {
 			formElement = "";
 			binderId = "";			
 			appendAll = false;
+			instanceCount = null;
 		}
 
 		return EVAL_PAGE;

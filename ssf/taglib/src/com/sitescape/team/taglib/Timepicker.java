@@ -52,15 +52,10 @@ import com.sitescape.util.servlet.StringServletResponse;
 public class Timepicker extends TagSupport {
 
 	private String contextPath;
-
 	private String id;
-
 	private String formName;
-
 	private Date initDate;
-
 	private String initTimeString;
-
 	private String sequenceNumber;
 
 	public int doStartTag() throws JspException {
@@ -126,6 +121,13 @@ public class Timepicker extends TagSupport {
 
 		catch (Exception e) {
 			throw new JspException(e);
+		}
+		finally {
+			id = null;
+			formName = null;
+			initDate = null;
+			initTimeString = null;
+			sequenceNumber = null;
 		}
 		return SKIP_BODY;
 	}

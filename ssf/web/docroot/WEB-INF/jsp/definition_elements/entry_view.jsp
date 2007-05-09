@@ -28,6 +28,8 @@
 <%
 	}
 %>
+  <ssHelpSpot helpId="tools/entry_toolbar" offsetX="0" 
+    title="<ssf:nlt tag="helpSpot.entryToolbar"/>">
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" />
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>

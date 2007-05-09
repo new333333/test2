@@ -23,7 +23,7 @@
 	String findEntriesBinderId = (String) request.getAttribute("binderId");
 	String findEntriesSearchSubFolders = (String) request.getAttribute("searchSubFolders");
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
-	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String instanceCount = (String) request.getAttribute("instanceCount");
 	Boolean leaveResultsVisible = (Boolean) request.getAttribute("leaveResultsVisible");
 	String label = ParamUtil.get(request, "label", "");
 %>

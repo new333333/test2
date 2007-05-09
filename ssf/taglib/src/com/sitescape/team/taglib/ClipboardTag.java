@@ -12,6 +12,7 @@ package com.sitescape.team.taglib;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.portlet.RenderRequest;
 import javax.servlet.RequestDispatcher;
@@ -41,7 +42,7 @@ public class ClipboardTag extends BodyTagSupport {
 	
 	private String formElement = "";
 	
-	private Integer instanceCount = 0;
+	private String instanceCount;
 	
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -58,7 +59,7 @@ public class ClipboardTag extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext
 					.getResponse();
 
-			this.instanceCount++;
+			this.instanceCount = UUID.randomUUID().toString();
 			
 			RenderRequest renderRequest = (RenderRequest) httpReq.getAttribute("javax.portlet.request");
 			Clipboard clipboard = new Clipboard(renderRequest);
@@ -81,6 +82,7 @@ public class ClipboardTag extends BodyTagSupport {
 		} finally {
 			this.type = null;
 			this.formElement = "";
+			this.instanceCount = null;
 		}
 
 		return EVAL_PAGE;

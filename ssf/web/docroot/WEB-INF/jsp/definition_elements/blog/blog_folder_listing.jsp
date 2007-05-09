@@ -37,6 +37,9 @@
 
      <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
+	  <ssHelpSpot helpId="tools/blog_controls" offsetX="0" 
+	    title="<ssf:nlt tag="helpSpot.blogControls"/>">
+
 		<div class="ss_blog_sidebar_hole">
 		<div id="ss_blog_sidebar_date_popup"></div>
  		 <form name="ss_blog_sidebar_date_form" style="display:inline;">

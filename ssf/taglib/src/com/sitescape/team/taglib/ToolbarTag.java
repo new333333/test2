@@ -46,6 +46,7 @@ public class ToolbarTag extends BodyTagSupport {
 	private SortedMap toolbar = null;
 	private String style = "";
 	private boolean item = false;
+	private boolean showHelpButton = false;
 	private boolean skipSeparator = false;
     
 	public int doStartTag() {
@@ -71,6 +72,7 @@ public class ToolbarTag extends BodyTagSupport {
 			req.setAttribute(WebKeys.TOOLBAR, this.toolbar);
 			req.setAttribute(WebKeys.TOOLBAR_STYLE, this.style);
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
+			req.setAttribute(WebKeys.TOOLBAR_SHOW_HELP_BUTTON, this.showHelpButton);
 			req.setAttribute(WebKeys.TOOLBAR_SKIP_SEPARATOR, this.skipSeparator);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -85,6 +87,7 @@ public class ToolbarTag extends BodyTagSupport {
 			req.setAttribute(WebKeys.TOOLBAR, this.toolbar);
 			req.setAttribute(WebKeys.TOOLBAR_STYLE, this.style);
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
+			req.setAttribute(WebKeys.TOOLBAR_SHOW_HELP_BUTTON, this.showHelpButton);
 			req.setAttribute(WebKeys.TOOLBAR_SKIP_SEPARATOR, this.skipSeparator);
 			res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -99,6 +102,7 @@ public class ToolbarTag extends BodyTagSupport {
 			this.toolbar = null;
 			this.style = "";
 			this.item = false;
+			this.showHelpButton = false;
 			this.skipSeparator = false;
 		}
 	}
@@ -113,6 +117,10 @@ public class ToolbarTag extends BodyTagSupport {
 
 	public void setItem(boolean item) {
 	    this.item = item;
+	}
+
+	public void setShowHelpButton(boolean showHelpButton) {
+	    this.showHelpButton = showHelpButton;
 	}
 
 	public void setSkipSeparator(boolean skipSeparator) {

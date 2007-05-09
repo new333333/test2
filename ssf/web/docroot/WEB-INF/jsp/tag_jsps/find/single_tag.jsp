@@ -21,7 +21,7 @@
 	String findTagElementName = (String) request.getAttribute("form_element");
 	String findTagElementWidth = (String) request.getAttribute("element_width");
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
-	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String instanceCount = (String) request.getAttribute("instanceCount");
 	String instanceCode = (String) request.getAttribute("instanceCode");
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
 	String label = ParamUtil.get(request, "label", "");

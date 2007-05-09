@@ -123,6 +123,13 @@ public class Eventeditor extends TagSupport {
     catch (Exception e) {
       throw new JspException(e);
     }
+    finally {
+	  id = null;
+	  formName = null;
+	  initEvent = null;
+	  hasDuration = new Boolean("false");
+	  hasRecurrence = new Boolean("true");
+    }
     return SKIP_BODY;
   }
 
