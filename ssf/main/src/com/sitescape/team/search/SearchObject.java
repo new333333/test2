@@ -12,7 +12,7 @@ package com.sitescape.team.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
@@ -20,19 +20,28 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
+import com.sitescape.team.lucene.CJKAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.util.SPropsUtil;
 
-public class SearchObject {//implements Serializable {
+public class SearchObject {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
+	
+	private final String CJK = "CJK";
+	private final String ARABIC = "ARABIC";
+	private final String DEFAULT = "DEFAULT";
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	private String queryString = null;
+	private String language = DEFAULT;
 	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
-	private static ThreadLocal queryParser = new ThreadLocal(); 
+	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
+	private static ThreadLocal<QueryParser> queryParserARABIC = new ThreadLocal<QueryParser>();
+	private static ThreadLocal<QueryParser> queryParserCJK = new ThreadLocal<QueryParser>();
+	
 	
 	/**
 	 * 
@@ -74,15 +83,57 @@ public class SearchObject {//implements Serializable {
 	public void setSortBy(SortField[] sortBy) {
 		this.sortBy = sortBy;
 	}
+	
+	public void setLanguage(String lang) {
+		this.language = lang;
+	}
+	
+	private String getLanguage() {
+		return this.language;
+	}
 
+	private QueryParser getParser() {
+		String lang = getLanguage();
+		if (lang.equalsIgnoreCase(DEFAULT))
+			return (QueryParser)queryParser.get();
+		else if (lang.equalsIgnoreCase(CJK)) {
+			if (queryParserCJK.get() == null) {
+				logger.debug("QueryParser instantiating new CJK QP");
+				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new CJKAnalyzer());
+				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
+				queryParserCJK.set(qp);
+				return qp;
+			} else {
+				return (QueryParser)queryParserCJK.get();
+			}
+		} else {
+			if (queryParserARABIC.get() == null) {
+				logger.debug("QueryParser instantiating new ARABIC QP");
+				Analyzer analyzer = new SsfQueryAnalyzer();
+				String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
+				if (!aName.equalsIgnoreCase("")) {
+					//load the arabic analyzer here
+					
+				}
+				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, analyzer);
+				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
+				queryParserARABIC.set(qp);
+				return qp;
+			} else {
+				return (QueryParser)queryParserARABIC.get();
+			}
+		}
+	}
+	
 	/**
 	 * @return Returns the query.
 	 */
 	public synchronized Query getQuery() {
 		try {
 			long startTime = System.currentTimeMillis();
-			Query retQ = ((QueryParser)queryParser.get()).parse(queryString);
+			Query retQ = getParser().parse(queryString);
 			long endTime = System.currentTimeMillis();
+			logger.debug("QueryParser instantiating new QP took " + (endTime - startTime) + " milliseconds");
 			return retQ;
 		} catch (ParseException pe){ 
 			logger.info("Parser exception, can't parse: " + queryString);

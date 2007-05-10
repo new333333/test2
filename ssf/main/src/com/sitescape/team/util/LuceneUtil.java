@@ -10,25 +10,16 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.lucene.SsfIndexAnalyzer;
-import com.sitescape.team.search.LuceneException;
-import com.sitescape.util.StringPool;
-import com.sitescape.util.Validator;
-import com.sitescape.util.lucene.KeywordsUtil;
-
 import java.io.IOException;
 
-import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.FSDirectory;
+
+import com.sitescape.team.lucene.CJKAnalyzer;
+import com.sitescape.team.lucene.SsfIndexAnalyzer;
 
 
 
@@ -37,6 +28,8 @@ public class LuceneUtil {
 	private static final int READSEARCH = 1;
 	private static final int READDELETE = 2;
 	private static final int WRITE = 3;
+	
+	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
 	
 	private static int prevState = READSEARCH;
 	private static IndexWriter indexWriter = null;
@@ -65,8 +58,7 @@ public class LuceneUtil {
 					} else {
 						try {
 							// force unlock of the directory
-							IndexReader.unlock(FSDirectory.getDirectory(indexPath,
-									false));
+							IndexReader.unlock(FSDirectory.getDirectory(indexPath));
 							indexReader = IndexReader.open(indexPath);
 						} catch (IOException e) {
 							throw e;
@@ -94,8 +86,7 @@ public class LuceneUtil {
 					try {
 						if (indexExists(indexPath)) {
 							// force unlock of the directory
-							IndexReader.unlock(FSDirectory.getDirectory(indexPath,
-									false));
+							IndexReader.unlock(FSDirectory.getDirectory(indexPath));
 							indexSearcher = new IndexSearcher(indexPath);
 						} else {
 							if (initializeIndex(indexPath)) {
@@ -131,8 +122,7 @@ public class LuceneUtil {
 				} catch (Exception ie) {
 					try {
 						// force unlock of the directory
-						IndexReader.unlock(FSDirectory.getDirectory(indexPath,
-								false));
+						IndexReader.unlock(FSDirectory.getDirectory(indexPath));
 						indexWriter = new IndexWriter(indexPath, 
 								new SsfIndexAnalyzer(), create);
 					} catch (IOException e) {
@@ -214,9 +204,25 @@ public class LuceneUtil {
 		try {
 			if (indexExists(indexPath)) {
 				// force unlock of the directory
-				IndexReader.unlock(FSDirectory.getDirectory(indexPath, false));
+				IndexReader.unlock(FSDirectory.getDirectory(indexPath));
 			}
 		} catch (Exception e) {
 		}
 	}
+	
+	//return the correct analyzer based on the text passed in.
+	public static Analyzer getAnalyzer(String snippet) {
+		// pass the snippet to the language taster and see which 
+		// analyzer to use
+		String language = LanguageTaster.taste(snippet.toCharArray());
+		if (language.equalsIgnoreCase("DEFAULT")) {
+			return defaultAnalyzer;
+		} else if (language.equalsIgnoreCase("CJK")) {
+			return new CJKAnalyzer();
+		} else {
+			//return new ARABICAnalyzer;
+			return defaultAnalyzer;
+		}
+	}
+	
 }
