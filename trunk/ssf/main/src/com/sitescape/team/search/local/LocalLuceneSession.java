@@ -100,7 +100,7 @@ public class LocalLuceneSession implements LuceneSession {
 		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
 			indexWriter = null;
-
+			String tastingText = getTastingText(doc);
 			try {
 				indexWriter = LuceneUtil.getWriter(indexPath);
 			} catch (IOException e) {
@@ -110,7 +110,7 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 
 			try {
-				indexWriter.addDocument(doc);
+					indexWriter.addDocument(doc, LuceneUtil.getAnalyzer(tastingText));
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not add document to the index [" + indexPath
@@ -136,12 +136,15 @@ public class LocalLuceneSession implements LuceneSession {
 
 		IndexWriter indexWriter;
 		long startTime = System.currentTimeMillis();
-
+		//Runtime rt = Runtime.getRuntime();
+		//rt.gc();
+     	//rt.gc();
+    	//System.out.println("adddoc START Heap size( " + docs.size() + " docs): " + (rt.totalMemory() - rt.freeMemory()));
 
 		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
 			indexWriter = null;
-
+			
 			try {
 				indexWriter = LuceneUtil.getWriter(indexPath);
 			} catch (IOException e) {
@@ -157,7 +160,8 @@ public class LocalLuceneSession implements LuceneSession {
 						throw new LuceneException(
 								"Document must contain a UID with field name "
 										+ BasicIndexUtils.UID_FIELD);
-					indexWriter.addDocument(doc);
+					String tastingText = getTastingText(doc);
+					indexWriter.addDocument(doc, LuceneUtil.getAnalyzer(tastingText));
 				}
 			} catch (IOException e) {
 				throw new LuceneException(
@@ -177,7 +181,9 @@ public class LocalLuceneSession implements LuceneSession {
 		logger.info("LocalLucene: addDocuments took: " + (endTime - startTime) + " milliseconds");
 
 		SimpleProfiler.stopProfiler("LocalLuceneSession.addDocuments");
-
+		//rt.gc();
+     	//rt.gc();
+    	//System.out.println("adddoc END Heap size: " + (rt.totalMemory() - rt.freeMemory()));
 	}
 
 	public void deleteDocument(String uid) {
@@ -647,7 +653,7 @@ public class LocalLuceneSession implements LuceneSession {
 		long startTime = System.currentTimeMillis();
 
 		try {
-			Directory indDir = FSDirectory.getDirectory(indexPath, false);
+			Directory indDir = FSDirectory.getDirectory(indexPath);
 			updater = new IndexUpdater(indDir);
 			DocumentSelection docsel = updater.createDocSelection(q);
 			if (docsel.size() != 0)
@@ -817,4 +823,11 @@ public class LocalLuceneSession implements LuceneSession {
 		logger.info("LocalLucene: clearIndex took: " + (endTime - startTime) + " milliseconds");
 	}
 
+	private String getTastingText(Document doc) {
+		String text = doc.getField(BasicIndexUtils.ALL_TEXT_FIELD).stringValue();
+		if (text.length()> 1024) 
+			return text.substring(0,1024);
+		else return text;
+	}
+	
 }

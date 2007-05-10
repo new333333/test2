@@ -44,6 +44,8 @@ public class QueryBuilder {
 	public static final String ASCENDING_ATTRIBUTE = "ascending";
 
 	public static final String TAG_NAME_ATTRIBUTE = "tagname";
+	
+	public static final String LANGUAGE_ATTRIBUTE = "language";
 
 	public static final String QUERY_ELEMENT = "QUERY";
 
@@ -81,6 +83,8 @@ public class QueryBuilder {
 
 	public static final String FIELD_TERMS_ELEMENT = "TERMS";
 
+	public static final String LANGUAGE_ELEMENT = "LANGUAGE";
+	
 	public static final String ASCENDING_TRUE = "TRUE";
 
 	public static final String INCLUSIVE_TRUE = "TRUE";
@@ -90,6 +94,11 @@ public class QueryBuilder {
 	public static final String TAG_ELEMENT = "TAG";
 
 	private static final long DAYMILLIS = 1000 * 60 * 60 * 24;
+	
+	private static final String DEFAULT = "DEFAULT";
+	private static final String ARABIC = "ARABIC";
+	private static final String CJK = "CJK";
+	
 
 	private Set principalIds;
 
@@ -134,18 +143,6 @@ public class QueryBuilder {
 		}
 		
 		return so;
-		/*
-		 * 	For testing only	
-		 QueryParser qp = new QueryParser("contents", new WhitespaceAnalyzer());
-		 
-		 try {
-		 Query  query = qp.parse(searchObject.getQueryString());
-		 System.out.println("Query is: " + query.toString());
-		 Sort sort = new Sort(searchObject.getSortBy());
-		 System.out.println("Sort is: " + sort.toString());
-		 } catch (ParseException pe) { System.out.println("ParseException thrown, Query was: " + searchObject.getQuery() + " Error was: " + pe.toString());}
-		 */
-
 	}
 
 	private void parseRootElement(Element element, SearchObject so) {
@@ -209,6 +206,8 @@ public class QueryBuilder {
 			qString += "~";
 		} else if (operator.equals(SORTBY_ELEMENT)) {
 			processSORTBY(element, so);
+		} else if (operator.equals(LANGUAGE_ELEMENT)) {
+			processLANG(element,so);
 		} else if (operator.equals(RANGE_ELEMENT)) {
 			qString += "(" + processRANGE(element) + ")";
 		} else if (operator.equals(USERACL_ELEMENT)) {
@@ -278,6 +277,13 @@ public class QueryBuilder {
 			}
 		}
 		so.setSortBy(fields);
+		//return fields;
+	}
+	
+	private void processLANG(Element element, SearchObject so) {
+		String lang = element.attributeValue(LANGUAGE_ATTRIBUTE);
+		if (lang.equals("")) lang = DEFAULT;
+		so.setLanguage(lang);
 		//return fields;
 	}
 
