@@ -59,6 +59,7 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.team.web.util.WebHelper;
@@ -1621,6 +1622,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
 	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor) {
+		SimpleProfiler.startProfiler("walkDefinition");
 		//access check not needed = assumed okay from entry
         Definition def = entry.getEntryDef();
         if(def == null) return;
@@ -1659,5 +1661,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 }
             }
         }
+		SimpleProfiler.stopProfiler("walkDefinition");
     }
 }

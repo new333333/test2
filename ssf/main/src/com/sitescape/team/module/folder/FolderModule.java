@@ -187,7 +187,10 @@ public interface FolderModule {
 	 * 
 	 * @param folderId this should be a mirrored folder; note that mirrored 
 	 * folder is always a library folder (but not the other way around)
+	 * @return returns <code>false</code> if the folder represented by the
+	 * <code>folderId</code> has been deleted as result of the synchronization.
+	 * Otherwise returns <code>true</code>
 	 * @throws FIException
 	 */
-	public void synchronize(Long folderId) throws FIException, UncheckedIOException;
+	public boolean synchronize(Long folderId) throws FIException, UncheckedIOException;
 }

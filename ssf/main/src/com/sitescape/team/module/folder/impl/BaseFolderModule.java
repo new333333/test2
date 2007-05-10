@@ -5,7 +5,7 @@ import com.sitescape.team.fi.FIException;
 
 public class BaseFolderModule extends AbstractFolderModule implements BaseFolderModuleMBean {
 
-	public void synchronize(Long folderId) throws FIException, UncheckedIOException {
+	public boolean synchronize(Long folderId) throws FIException, UncheckedIOException {
 		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
 	}
 }
