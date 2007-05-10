@@ -372,14 +372,21 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			       					obj = ((Object [])obj)[0];
 			 					FolderEntry entry = (FolderEntry)obj;
 					    		//create history - using timestamp and version from folder delete
-								entry.setModification(folder.getModification());
-								entry.incrLogVersion();
-								processChangeLog(entry, ChangeLog.DELETEENTRY);
+								try {
+									entry.setModification(folder.getModification());
+									entry.incrLogVersion();
+									processChangeLog(entry, ChangeLog.DELETEENTRY);
+								} catch (Exception ex) {
+									logger.warn("Error logging entry " + entry.toString(), ex);
+								}
 								try {
 									getFileModule().deleteFiles(folder, entry, false, null);
 								} catch (Exception ex) {
-									logger.error("Error delete files: " + ex.getLocalizedMessage());
+									// but keep going
+									logger.warn("Error delete files for entry " + entry.toString() , ex);
 								}
+								//we handle the entry in a bulk delete with the folder, don't let hibernate 
+								getCoreDao().evict(entry);
 								++count;
 								//commit after 100
 								if (count == 100) return Boolean.FALSE;
@@ -388,12 +395,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 							try {
 								getFileModule().deleteFiles(folder, folder, false, null);
 							} catch (Exception ex) {
-								logger.error("Error delete files: " + ex.getLocalizedMessage());
+								logger.warn("Error delete files: " + folder.getPathName(), ex);
 							}
+							getCoreDao().flush();  //flush before bulk updates
 							//finally remove folder and its entries
 							getFolderDao().delete(folder);
 							getFolderDao().deleteEntryWorkflows(folder);
 							//delete binder
+							return Boolean.TRUE;
+						} catch (Exception ex) {
+							//don't want the transaction to clear the session
+							logger.warn("Error delete folder " + folder.getPathName(), ex);
 							return Boolean.TRUE;
 						} finally {
 							query.close();

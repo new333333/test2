@@ -21,7 +21,8 @@
       <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="com.sitescape.team.domain.Event"/>
     </set>
-    <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="replies">
+    <!-- exclude evict, refresh -->
+    <bag inverse="true" access="field" cascade="persist,merge,delete,save-update,replicate,lock,delete-orphan" optimistic-lock="false" lazy="true" name="replies">
       <key column="parentEntry"/>
       <one-to-many class="com.sitescape.team.domain.FolderEntry"/>
     </bag>

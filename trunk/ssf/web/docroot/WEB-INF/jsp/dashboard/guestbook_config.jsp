@@ -48,9 +48,9 @@ function ${treeName}_showId(forum, obj) {
 <br/>
 <br/>
 <table class="ss_style" width="100%"><tr><td>
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder}">
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
-${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}
+${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinder.title}
 </c:if>
 <br/><br/>
 
@@ -60,6 +60,12 @@ ${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}
 <br>
 <br>
 <div class="ss_indent_large">
+<c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFirst" 
+	<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.chooseFirst}">checked="checked"</c:if>><span>
+  <ssf:nlt tag="dashboard.guestbook.selectFolderRelative"/>
+</span></td></tr></table>
+</c:if>
 <ssf:tree 
   treeName="${treeName}"
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  

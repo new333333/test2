@@ -22,7 +22,8 @@
           <column name="parentBinder" index="owningBinder"/>
     </many-to-one>
     <many-to-one name="owner" access="field"/>
-    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
+    <!-- exclude evict, refresh, delete-orphan-->    
+    <bag inverse="true" access="field" cascade="persist,merge,delete,save-update,replicate,lock" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.team.domain.Binder"/>
@@ -32,7 +33,7 @@
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.team.domain.CustomAttribute"/>
     </map>
-    <map inverse="false" table="SS_WorkflowMap" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" name="workflowAssociations">
+    <map inverse="false" table="SS_WorkflowMap" access="field" cascade="all" lazy="true" name="workflowAssociations">
       <key column="binder"/>
       <map-key type="string" column="entryDefinition" length="32"/>
       <many-to-many class="com.sitescape.team.domain.Definition">
@@ -47,7 +48,7 @@
       <key column="binder" on-delete="cascade"/>
       <one-to-many class="com.sitescape.team.domain.Event"/>
     </set>
-    <list inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" table="SS_DefinitionMap" name="definitions">
+    <list inverse="false" access="field" cascade="all" lazy="true" table="SS_DefinitionMap" name="definitions">
       <cache usage="nonstrict-read-write"/>
       <key column="binder"/>
       <index type="integer" column="position"/>
@@ -60,7 +61,7 @@
     <property name="pathName" length="1024"/>
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
-	  <bag inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
+	  <bag inverse="false" access="field" cascade="all" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
       	<key column="binderId" />
  	     <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="principalId"/>
     	</bag>

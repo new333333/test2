@@ -186,14 +186,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			  	.setEntity("profile", binder)
 		   			  	.setParameterList("tList", types)
 		   				.executeUpdate();
-		   			//remove foreign keys or mysql complains
-        	  		session.createQuery("Update com.sitescape.team.domain.Principal set parentBinder=null where parentBinder=:parent")
-        	  			.setEntity("parent", binder)
-   	   					.executeUpdate();
-        	  		//the delete of the binder in coreDao will handle associations through owningBinderId + LibraryEntries
- 		   			getCoreDao().delete((Binder)binder);			
-		   			session.createQuery("Delete com.sitescape.team.domain.Principal where parentBinder=" + binder.getId())
-	       				.executeUpdate();
+ 		   			//the delete of the binder in coreDao will handle associations through owningBinderId + LibraryEntries + entries
+ 		   			getCoreDao().delete((Binder)binder, Principal.class);			
 	       	   		return null;
 	       		}
 	       	}

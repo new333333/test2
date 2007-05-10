@@ -71,7 +71,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
         if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
             if(parentWorkArea == null)
-                throw new InternalException("Cannot inherit function membership when it has no parent");
+                return new HashSet();  //possible for templates
             else
                 return getWorkAreaAccessControl(parentWorkArea, ownerId, workAreaOperation);
         }

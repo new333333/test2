@@ -57,5 +57,11 @@
 		
 	} else if (itemType.equals("event")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
+	} else if (itemType.equals("entryIcon")) {
+        %>
+        <c:if test="${!empty ssDefinitionEntry.iconName}">
+        <img border="0" src="<html:imagesPath/>${ssDefinitionEntry.iconName}" <ssf:alt/> />
+        </c:if>
+        <%
 	}
 %>

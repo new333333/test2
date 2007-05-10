@@ -190,9 +190,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * Delete the binder object and its assocations.
 	 * Child binders should already have been deleted
 	 * This is an optimized delete.  Deletes associations directly without waiting for hibernate
-	 * to query.
+	 * to query.  Also deleted entries associated by parentBinderId
 	 */	
 	public void delete(final Binder binder) {
+		delete(binder, null);
+	}
+	public void delete(final Binder binder, final Class entryClass) {
 	   	getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
@@ -252,8 +255,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   		 		.setLong("entityId", binder.getId())
 		   			  	.setParameter("entityType", binder.getEntityType().getValue())
 		   				.executeUpdate();
+		   			if (entryClass != null) {
+		   				//finally delete the entries
+		   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
+		       	   				.setEntity("parent", binder)
+		       	   				.executeUpdate();		 		   				
+		   			}
 		   			//do ourselves or hibernate will flsuh
-		   			session.createQuery("DELETE  com.sitescape.team.domain.Binder where id=:id")
+		   			session.createQuery("Delete  com.sitescape.team.domain.Binder where id=:id")
 		   		    	.setLong("id", binder.getId().longValue())
 		   		    	.executeUpdate();
 		   			

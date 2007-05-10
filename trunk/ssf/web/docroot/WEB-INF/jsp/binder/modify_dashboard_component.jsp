@@ -101,7 +101,7 @@
 <div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>" />
 	&nbsp;&nbsp;
-	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"/>
+	<input type="submit" class="ss_submit" name="closeBtn"   value="<ssf:nlt tag="button.close" text="Close"/>"/>
 	&nbsp;&nbsp;
 	<input type="submit" class="ss_submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
 </form>

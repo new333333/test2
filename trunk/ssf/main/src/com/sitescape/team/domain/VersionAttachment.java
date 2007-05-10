@@ -25,13 +25,14 @@ public class VersionAttachment extends FileAttachment {
     private FileAttachment parentAttachment;
     
     public VersionAttachment() {
-    }
-    public void setOwner(AnyOwner owner) {
-    	if(owner != null)
-    		setOwner(owner.getEntity());
-    	else
-    		super.setOwner(owner);
     } 
+
+    public void setOwner(AnyOwner owner) {
+    	//this need to be included here since we are overloading.
+    	//Hibernate calls the wrong one, it isn't present
+    	this.owner = owner;
+    } 
+    
  	public void setOwner(DefinableEntity entry) {
 		//don't set foreign key, so not read in to entry
   		owner = new AnyOwner(entry, false);

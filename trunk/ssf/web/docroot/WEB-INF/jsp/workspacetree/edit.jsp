@@ -13,12 +13,11 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
-//treename must start with editWs
-String wsTreeName = "editWs_" + renderResponse.getNamespace();
+String wsTreeName = renderResponse.getNamespace();
 %>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssBinder}">
-<b><ssf:nlt tag="portlet.workspace.selected.workspace"/></b><br/><br/>
+<b><ssf:nlt tag="portlet.workspace.selected.workspace"/></b>
 <c:out value="${ssBinder.title}" />
 <br/>
 </c:if>

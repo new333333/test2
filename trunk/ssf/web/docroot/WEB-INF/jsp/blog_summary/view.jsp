@@ -20,36 +20,14 @@
 </c:if>
 <div class="ss_style" style="padding:4px;">
 <table class="ss_style" width="100%"><tr><td>
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderIdList}">
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder.parentBinder}">
-<span class="ss_normal">
-<c:if test="${ssDashboard.beans[ssComponentId].ssBinder.parentBinder.entityIdentifier.entityType == 'folder'}">
-  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${ssDashboard.beans[ssComponentId].ssBinder.parentBinder.id}"/></portlet:renderURL>">
-		${ssDashboard.beans[ssComponentId].ssBinder.parentBinder.title}</a> // 
-</c:if>
-<c:if test="ssDashboard.beans[ssComponentId].ssBinder.parentBinder.entityIdentifier.entityType != 'folder'">
-  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_ws_listing"/><portlet:param 
-		name="binderId" value="${ssDashboard.beans[ssComponentId].ssBinder.parentBinder.id}"/></portlet:renderURL>">
-		${ssDashboard.beans[ssComponentId].ssBinder.parentBinder.title}</a> // 
-</c:if>
-</span>
-</c:if>
-<span class="ss_bold">
-<c:set var="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderIdList[0]}"/>
-<a href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${binderId}"/></portlet:renderURL>">
-		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[binderId].title}</a>
-</span>
-</c:if>
+<div class="ss_decor-border5">
+  <div class="ss_decor-border6">
+    <div class="ss_content_window">
 
-<br/><br/>
 
 <%@ include file="/WEB-INF/jsp/dashboard/blog_view.jsp" %>
 
+</div></div></div>
 </td></tr></table>
 <div align="right">
   <a class="ss_linkButton" href="<portlet:renderURL 

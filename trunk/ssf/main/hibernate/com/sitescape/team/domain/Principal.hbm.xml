@@ -40,7 +40,7 @@
 <property name="zoneId" update="false" insert="false"/>
 <property name="foreignName" update="false" insert="false"/>
 </properties>
-    <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
       <cache usage="read-write"/>
       <key column="userId"/>
       <many-to-many fetch="join" node="Group" class="com.sitescape.team.domain.Group" column="groupId" embed-xml="false"/>
@@ -70,7 +70,7 @@
       </many-to-one>
     </component>
     <subclass name="com.sitescape.team.domain.Group" discriminator-value="group" dynamic-update="true">
-      <bag inverse="false" access="field" cascade="persist,merge,save-update" lazy="true" table="SS_PrincipalMembership" name="members">
+      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
         <key column="groupId"/>
         <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="userId"/>
       </bag>

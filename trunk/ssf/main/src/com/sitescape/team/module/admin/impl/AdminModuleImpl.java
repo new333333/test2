@@ -37,6 +37,7 @@ import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
@@ -66,6 +67,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -627,8 +629,27 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//TODO: is there access
 		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
+	
+	public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException {
+	    //after children are added, resolve relative selections
+		Binder binder = addBinderFromTemplateInternal(configId, parentBinderId, title, name);
+		//flush changes so we can use them to fix up dashboards
+		IndexSynchronizationManager.applyChanges();
+		List<Binder>binders = new ArrayList();
+		binders.add(binder);
+		while (!binders.isEmpty()) {
+			Binder b = binders.remove(0);
+			binders.addAll(b.getBinders());
+			EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
+			if (dashboard != null) {
+			//	this should be moved
+				DashboardHelper.resolveRelativeBinders(b, dashboard);
+			}
+		}
+		return binder.getId();
 
-    public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException {
+	}
+	protected Binder addBinderFromTemplateInternal(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException {
     	//modules do the access checking
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 	   TemplateBinder cfg = (TemplateBinder)getCoreDao().loadBinder(configId, zoneId);
@@ -693,9 +714,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    }
 	    List<TemplateBinder> children = cfg.getBinders();    
 	    for (TemplateBinder child: children) {
-	    	addBinderFromTemplate(child.getId(), binder.getId(), NLT.getDef(child.getTitle()), null);	    	
+	    	addBinderFromTemplateInternal(child.getId(), binder.getId(), NLT.getDef(child.getTitle()), null);	    	
 	    }
-	    return binder.getId();
+	    return binder;
 	}
 	
  

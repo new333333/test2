@@ -56,13 +56,14 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
 				jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			}
-			int milliSeconds = hours*60*60*1000;
+	//		int milliSeconds = hours*60*60*1000;
+			int milliSeconds = 2*60*1000;
 			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneId.toString(), FOLDER_DELETE_GROUP);
 			//	see if job exists
 			if (trigger == null) {
 				trigger = new SimpleTrigger(zoneId.toString(), FOLDER_DELETE_GROUP, zoneId.toString(), FOLDER_DELETE_GROUP, new Date(), null, 
 						SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
-				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
+				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
 				trigger.setDescription(FOLDER_DELETE_DESCRIPTION);
 				trigger.setVolatility(false);
 				scheduler.scheduleJob(trigger);				

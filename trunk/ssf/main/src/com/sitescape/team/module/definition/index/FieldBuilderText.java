@@ -10,8 +10,8 @@
  */
 package com.sitescape.team.module.definition.index;
 
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.Field;
 
@@ -23,6 +23,10 @@ import com.sitescape.team.search.BasicIndexUtils;
  */
 public class FieldBuilderText extends AbstractFieldBuilder {
 
+    public String makeFieldName(String dataElemName) {
+        //Just use the data name. It is guaranteed to be unique within its definition
+    	return dataElemName;
+    }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default text implementation ignores args.
@@ -50,9 +54,9 @@ public class FieldBuilderText extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = BasicIndexUtils.allTextField(val);
-        
-            return new Field[] {field};
+            Field allTextField = BasicIndexUtils.allTextField(val);
+           	Field textField = new Field(makeFieldName(dataElemName), val, Field.Store.YES, Field.Index.TOKENIZED); 
+            return new Field[] {allTextField, textField};
         }
     }
 }

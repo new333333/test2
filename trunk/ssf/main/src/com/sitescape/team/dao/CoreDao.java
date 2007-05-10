@@ -48,7 +48,7 @@ public interface CoreDao {
 	public int countObjects(Class clazz, FilterControls filter);
 	public void delete(Object obj);
 	public void delete(Binder binder);
-//    public void delete(DefinableEntity entity);
+	public void delete(Binder binder, Class entryClass);
 	public void delete(Definition def);
 	public void deleteEntityAssociations(String whereClause);
 	public List findCompanies();

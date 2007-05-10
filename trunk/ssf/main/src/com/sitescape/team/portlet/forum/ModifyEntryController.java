@@ -33,6 +33,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.tree.FolderConfigHelper;
 
 /**
  * @author Peter Hurley
@@ -148,7 +149,7 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.BINDER, entry.getParentFolder());
 			Workspace ws = getWorkspaceModule().getTopWorkspace();
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			path = WebKeys.VIEW_MOVE_ENTRY;
 		} else {

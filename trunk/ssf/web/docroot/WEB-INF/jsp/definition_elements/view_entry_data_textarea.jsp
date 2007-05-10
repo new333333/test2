@@ -14,9 +14,11 @@
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
-<span>
+<c:if test="${!empty property_caption}">
+ <span class="ss_bold"><c:out value="${property_caption}" /></span>
+<br/>
+</c:if>
 <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
-</span>
 </div>
 </c:if>
 
