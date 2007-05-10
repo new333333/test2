@@ -26,7 +26,9 @@
 <c:if test="${aclMap[entity.id]['modifyEntry']}">
 <div style="float: right; margin-left: 5px;"><a href="#"
   onClick="ss_editablePopUp('${editUrl}', '<portlet:namespace/>ss_editableDiv${ss_editableDivIdNumber}');return false;"
-  ><span class="ss_fineprint">[<ssf:nlt tag="Edit"/>]</span></a>
+  ><span class="ss_fineprint"><ssHelpSpot 
+    helpId="tools/more_entry_tools" offsetX="0" 
+	title="<ssf:nlt tag="helpSpot.moreEntryTools"/>"/>[<ssf:nlt tag="Edit"/>]</span></a>
   <a style="padding-left:6px;" href="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
