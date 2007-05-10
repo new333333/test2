@@ -12,6 +12,7 @@
 %>
 <% // Toolbar viewer %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%
 String ss_portletNamespace = renderResponse.getNamespace();
 
@@ -29,6 +30,16 @@ String menuDivWidth = "300px";
 
 Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request));
 %>
+
+<c:choose>
+<c:when test="${empty ss_toolbarCount}">
+	<c:set var="ss_toolbarCount" value="0" scope="request"/>
+</c:when>
+<c:otherwise>
+	<c:set var="ss_toolbarCount" value="${ss_toolbarCount + 1}" scope="request"/>
+</c:otherwise>
+</c:choose>
+
 <c:set var="isWebdavSupported" value="<%= webdavSupported %>"/>
 <script type="text/javascript">
 var ss_userSkin = "${ss_user_skin}";
@@ -37,6 +48,9 @@ var ss_userSkin = "${ss_user_skin}";
 <c:if test="${empty ss_toolbar_style}">
   <c:set var="ss_toolbar_style" value="ss_toolbar"/>
 </c:if>
+
+<ssf:skipLink tag="<%= NLT.get("skip.toolbar") %>" id="toolbar_${ss_toolbarCount}_${renderResponse.namespace}">
+
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
      <li id="parent_<%= menuTagDivId %><portlet:namespace/>">
@@ -294,3 +308,5 @@ var ss_userSkin = "${ss_user_skin}";
 	  </c:choose>
     </c:if>
 </c:forEach>
+
+</ssf:skipLink>

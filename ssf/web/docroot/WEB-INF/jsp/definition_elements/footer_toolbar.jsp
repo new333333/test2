@@ -14,9 +14,22 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.context.request.RequestContextHolder" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%
 Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request));
 %>
+
+<c:choose>
+<c:when test="${empty ss_footerToolbarCount}">
+	<c:set var="ss_footerToolbarCount" value="0" scope="request"/>
+</c:when>
+<c:otherwise>
+	<c:set var="ss_footerToolbarCount" value="${ss_footerToolbarCount + 1}" scope="request"/>
+</c:otherwise>
+</c:choose>
+
+<ssf:skipLink tag="<%= NLT.get("skip.footer.toolbar") %>" id="footerToolbar_${ss_footerToolbarCount}_${renderResponse.namespace}">
+
 <c:set var="isWebdavSupported" value="<%= webdavSupportedFooter %>"/>
 <c:if test="${!empty ssFooterToolbar}">
 <div align="center" class="ss_footer_toolbar">
@@ -142,6 +155,7 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 
 </c:if>
 
+</ssf:skipLink>
 <script language="JavaScript">
 var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "false"
 function getWindowBgColor() {

@@ -51,7 +51,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String useBinderFunction = "";
 	private String dashboardType = "";
 	private String isFile = "";
-	private Boolean isAccessible = Boolean.FALSE;
 	
 	private Map _params;
     
@@ -69,10 +68,10 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 		try {
 			RequestContext rc = RequestContextHolder.getRequestContext();
 			User user = null;
-			isAccessible = Boolean.FALSE;
+			Boolean isAccessible = Boolean.FALSE;
 			if (rc != null) user = rc.getUser();
 			if (user != null && user.getDisplayStyle() != null) {
-				if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				if (user.getDisplayStyle() != null && user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 					isAccessible = Boolean.TRUE;
 				}
 			}
@@ -109,7 +108,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				_params.put("dashboardType", new String[] {this.dashboardType});
 				_params.put("isFile", new String[] {this.isFile});
-				_params.put("isAccessible", new String[] {this.isAccessible.toString()});
+				_params.put("isAccessible", new String[] {isAccessible.toString()});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -127,7 +126,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				_params.put("dashboardType", new String[] {this.dashboardType});
 				_params.put("isFile", new String[] {this.isFile});
-				_params.put("isAccessible", new String[] {this.isAccessible.toString()});
+				_params.put("isAccessible", new String[] {isAccessible.toString()});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -254,9 +253,5 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setIsFile(String isFile) {
 	    this.isFile = isFile;
-	}
-
-	public void setIsAccessible(Boolean isAccessible) {
-	    this.isAccessible = isAccessible;
 	}
 }

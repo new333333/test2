@@ -11,11 +11,15 @@
  */
 %>
 <% // Tabs %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="numTabs" value="0"/>
 <c:forEach var="tab" items="${ss_tabs.tablist}">
   <c:set var="numTabs" value="${numTabs + 1}"/>
 </c:forEach>
+
+<ssf:skipLink tag="<%= NLT.get("skip.tabbar") %>" id="tabbar_${renderResponse.namespace}">
+
 <div id="ss_tabbar" class="ss_tabs">
 <!-- Start of tabs -->
   <ssHelpSpot helpId="tools/tabs" offsetX="0" 
@@ -134,3 +138,4 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 <!-- End of tabs -->
 </div>
 
+</ssf:skipLink>

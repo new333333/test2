@@ -943,7 +943,23 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
-	</tag>	
+	</tag>
+	
+	<tag>
+		<name>skipLink</name>
+		<tag-class>com.sitescape.team.taglib.SkipLinkTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>tag</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
 
 	<tag>
 		<name>slidingTable</name>
