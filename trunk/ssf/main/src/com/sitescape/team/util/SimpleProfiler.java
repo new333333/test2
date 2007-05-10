@@ -130,6 +130,13 @@ public class SimpleProfiler {
     		getProfiler().stop(eventName);
     }
     
+    public static String toStr() {
+    	if(getProfiler() != null)
+    		return getProfiler().toString();
+    	else
+    		return null;
+    }
+    
     public static void printProfiler() {
     	if(getProfiler() != null)
     		getProfiler().print();
