@@ -59,6 +59,6 @@
 	</table>
 </div>
 </div>
-<div class="folder" id="ss_guestbook_folder_div">
+<div class="ss_folder" id="ss_guestbook_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/searchview/searchview_folder_listing.jsp" %>
 </div>
