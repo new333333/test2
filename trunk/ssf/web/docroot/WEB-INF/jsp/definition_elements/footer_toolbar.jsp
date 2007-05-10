@@ -20,6 +20,8 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 <c:set var="isWebdavSupported" value="<%= webdavSupportedFooter %>"/>
 <c:if test="${!empty ssFooterToolbar}">
 <div align="center" class="ss_footer_toolbar">
+  <ssHelpSpot helpId="tools/bottom_links" offsetX="0" 
+    title="<ssf:nlt tag="helpSpot.bottomLinks"/>">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ssFooterToolbar}">
       <c:set var="popup" value="false"/>
