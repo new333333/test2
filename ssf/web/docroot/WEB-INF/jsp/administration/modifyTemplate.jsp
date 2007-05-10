@@ -152,20 +152,7 @@ function <portlet:namespace/>_onsub(obj) {
     <ssf:htmleditor name="description" />
   	</div>
 </td></tr>
-<tr><td>
-<c:if test="${cfgType == '5'}">
-<c:set var="iconListPath" value="icons.folder" scope="request"/>
-</c:if>
-<c:if test="${cfgType != '5'}">
-<c:set var="iconListPath" value="icons.workspace" scope="request"/>
-</c:if>
 
-<c:set var="iconValue" value="" scope="request"/>
-<c:set var="property_name" value="iconName" scope="request"/>
-<c:set var="property_caption" value="<%= NLT.get("__icon") %>" scope="request"/>
-<%@ include file="/WEB-INF/jsp/definition_elements/iconForm.jsp" %>
-
-</td></tr>
 </table>
 <div class="ss_formBreak"/>
 
