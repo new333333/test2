@@ -17,6 +17,7 @@ public interface ReportModule {
 	public static final String BINDER_ID = "binder_id";
 	public static final String BINDER_TITLE = "binder_title";
 	public static final String BINDER_PARENT = "binder_parent";
+	public static final String USER_ID = "user_id";
 	
 	public void addAuditTrail(AuditTrail auditTrail);
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
@@ -25,7 +26,8 @@ public interface ReportModule {
 	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory);
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
 	
-	public List<Map<String, Object>> generateReport(Collection ids, Date startDate, Date endDate);
+	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
+	public List<Map<String, Object>> generateUserReport(Date startDate, Date endDate);
 	public List<Map<String,Object>> generateLoginReport(Date after, Date before);
 	public List<Map<String,Object>> generateWorkflowStateReport(String definitionId, String state);
 
