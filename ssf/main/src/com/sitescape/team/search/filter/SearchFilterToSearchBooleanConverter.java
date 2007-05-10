@@ -30,6 +30,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sun.star.beans.GetDirectPropertyTolerantResult;
@@ -43,12 +44,24 @@ public class SearchFilterToSearchBooleanConverter {
 
    	
 
+	private static String checkLanguage(String text, Element qTreeRootElement, String lang) {
+		if (!lang.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
+			return lang;
+		}
+		lang = LanguageTaster.taste(text.toCharArray()); 
+		if (lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
+			return lang;
+		Element langNode = qTreeRootElement.addElement(QueryBuilder.LANGUAGE_ELEMENT);
+		langNode.addAttribute(QueryBuilder.LANGUAGE_ATTRIBUTE, lang);
+		return lang;
+	}
+	
 	//Routine to convert a search filter into the form that Lucene wants 
    	public static Document convertSearchFilterToSearchBoolean(Document searchFilter) {
 		//Build the search query
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		
+		String lang = LanguageTaster.DEFAULT;
 		// create main AND element for all terms 
 		// one terms block is for user defined filters, additional blocks are for acl definitions 
 		// and kind of entry specification e.g. folder, user or workspace, it has sense only with AND
@@ -75,10 +88,13 @@ public class SearchFilterToSearchBooleanConverter {
     	    		Element filterTerm = (Element) liFilterTermsTerm.get(j);
     	    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
     	    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
+    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
     	    			addSearchTextField(block, filterTerm.getText());
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAuthor)) {
+    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
     	    			addAuthorField(block, filterTerm.getText());
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
+    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
     	    			addTagsField(block, filterTerm.getText());
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition) || filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {	    			
     	    			parseAndAddEntryField(block, filterTerm);
@@ -101,8 +117,10 @@ public class SearchFilterToSearchBooleanConverter {
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeElement)) {
     	    			addElementField(block, filterTerm);
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
+    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
     	    			addCommunityTagField(block, filterTerm.getText());
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
+    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
     	    			addPersonalTagField(block, filterTerm.getText());
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
     	    			addEventField(block, filterTerm);    	    			

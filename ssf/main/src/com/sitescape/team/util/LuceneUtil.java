@@ -215,9 +215,9 @@ public class LuceneUtil {
 		// pass the snippet to the language taster and see which 
 		// analyzer to use
 		String language = LanguageTaster.taste(snippet.toCharArray());
-		if (language.equalsIgnoreCase("DEFAULT")) {
+		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
 			return defaultAnalyzer;
-		} else if (language.equalsIgnoreCase("CJK")) {
+		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			return new CJKAnalyzer();
 		} else {
 			//return new ARABICAnalyzer;
