@@ -22,20 +22,18 @@ import org.apache.lucene.search.SortField;
 
 import com.sitescape.team.lucene.CJKAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
+import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.SPropsUtil;
 
 public class SearchObject {
 
 	private static final int DEFAULT_MAX_BOOLEAN_CLAUSES = 10000;
 	
-	private final String CJK = "CJK";
-	private final String ARABIC = "ARABIC";
-	private final String DEFAULT = "DEFAULT";
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	private String queryString = null;
-	private String language = DEFAULT;
+	private String language = LanguageTaster.DEFAULT;
 	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
 	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
@@ -94,9 +92,9 @@ public class SearchObject {
 
 	private QueryParser getParser() {
 		String lang = getLanguage();
-		if (lang.equalsIgnoreCase(DEFAULT))
+		if (lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
 			return (QueryParser)queryParser.get();
-		else if (lang.equalsIgnoreCase(CJK)) {
+		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
 				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new CJKAnalyzer());

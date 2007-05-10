@@ -19,6 +19,10 @@ import java.lang.Character.UnicodeBlock;
 
 public class LanguageTaster {
 	
+	public static String DEFAULT = "DEFAULT";
+	public static String CJK = "CJK";
+	public static String ARABIC = "ARABIC";
+
 	// read thru the char char buffer, figure out 
 	// which unicode codeblock the chars fall into, and 
 	// tally them up to see which analyzer to use.
@@ -63,11 +67,11 @@ public class LanguageTaster {
 			}
 
 			if (defCount >= cjkCount && defCount >= arabicCount) {
-				return "DEFAULT";
+				return DEFAULT;
 			} else if (cjkCount >= defCount && cjkCount >= arabicCount) {
-				return "CJK";
+				return CJK;
 			} else if (arabicCount >= cjkCount && arabicCount >= defCount) {
-				return "ARABIC";
+				return ARABIC;
 			}
 			
 		} catch (Exception e) {
