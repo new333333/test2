@@ -576,6 +576,8 @@ public class WebKeys {
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";
     public static final String SHOW_POSTING="ssShowPosting";
+    public static final String SKIP_LINK_ID="ssSkipLinkId";
+    public static final String SKIP_LINK_TAG="ssSkipLinkTag";
     public static final String SUBSCRIPTION="ssSubscription";
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
