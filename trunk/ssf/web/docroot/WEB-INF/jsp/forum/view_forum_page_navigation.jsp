@@ -11,6 +11,10 @@
  */
 %>
 <% // Common folder page number navigation %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+
+<ssf:skipLink tag="<%= NLT.get("skip.paging.links") %>" id="navigationLinks_${renderResponse.namespace}">
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript">
@@ -249,3 +253,5 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		</tr>
 		</table>
 </c:if>
+
+</ssf:skipLink>

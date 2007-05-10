@@ -4022,10 +4022,17 @@ input.ss_saveQueryName {
 	font-weight: bold;
 }
 
-
 /*
 	Search styles / end
 */
+
+/* skip link */
+
+.ss_skiplink {
+	display:none;
+}
+
+/* skip link - end */
 
 /* Widgets */
 div.ss_selectedItemsContainer {

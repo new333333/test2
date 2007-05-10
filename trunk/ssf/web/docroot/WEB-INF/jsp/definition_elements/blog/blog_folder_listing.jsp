@@ -41,15 +41,18 @@
 	    title="<ssf:nlt tag="helpSpot.blogControls"/>">
 
 		<div class="ss_blog_sidebar_hole">
-		<div id="ss_blog_sidebar_date_popup"></div>
- 		 <form name="ss_blog_sidebar_date_form" style="display:inline;">
-		  <ssf:datepicker id="ss_blog_sidebar_date" 
-            calendarDivId="ss_blog_sidebar_date_popup"
-            formName="ss_blog_sidebar_date_form"
-            immediateMode="true" initDate="${ssFolderEndDate}"
-			callbackRoutine="ss_blog_sidebar_date_callback" />
-          </form>
-         </div>
+			<ssf:ifnotaccessible>
+				<div id="ss_blog_sidebar_date_popup"></div>
+		 		<form name="ss_blog_sidebar_date_form" style="display:inline;">
+					<ssf:datepicker id="ss_blog_sidebar_date" 
+		            	calendarDivId="ss_blog_sidebar_date_popup"
+		            	formName="ss_blog_sidebar_date_form"
+		            	immediateMode="true" initDate="${ssFolderEndDate}"
+						callbackRoutine="ss_blog_sidebar_date_callback" />
+		      	</form>
+			</ssf:ifnotaccessible>
+        </div>
+         
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">

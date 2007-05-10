@@ -11,6 +11,9 @@
  */
 %>
 <% // Navigation links %>
+
+<%@ page import="com.sitescape.team.util.NLT" %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${empty ss_breadcrumbsShowIdRoutine}">
   <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowId" scope="request" />
@@ -18,6 +21,18 @@
 <c:if test="${empty ss_breadcrumbsTreeName}">
   <c:set var="ss_breadcrumbsTreeName" value="wsTree" scope="request" />
 </c:if>
+
+<c:choose>
+<c:when test="${empty ss_nav_linksCount}">
+	<c:set var="ss_nav_linksCount" value="0" scope="request"/>
+</c:when>
+<c:otherwise>
+	<c:set var="ss_nav_linksCount" value="${ss_nav_linksCount + 1}" scope="request"/>
+</c:otherwise>
+</c:choose>
+
+<ssf:skipLink tag="<%= NLT.get("skip.navigation.links") %>" id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
+
 <div class="ss_breadcrumb">
   <ssHelpSpot helpId="navigation_bar/breadcrumbs" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>">
@@ -115,3 +130,4 @@
 </div>
 <div class="ss_clear"></div>
 
+</ssf:skipLink>
