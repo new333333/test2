@@ -182,8 +182,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
  		getBinders().remove(binder);
  		binder.setParentBinder(null);
 		--binderCount;
-        binder.setBinderKey(null);	
-	}
+		//we don't clear to binderKey, cause logging/audits need it
+    }
     /**
      * @hibernate.property
      */

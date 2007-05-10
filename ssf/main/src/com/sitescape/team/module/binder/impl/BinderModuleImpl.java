@@ -12,12 +12,14 @@ package com.sitescape.team.module.binder.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -49,6 +51,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.NotificationDef;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
@@ -58,6 +61,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -197,6 +201,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		// Check if the user has "read" access to the binder.
 		checkAccess(binder, "getBinder"); 
         return binder;        
+	}
+	public Set<Binder> getBinders(Collection<Long> binderIds) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
+       	TreeSet<Binder> result = new TreeSet<Binder>(c);
+		for (Long id:binderIds) {
+			try {//access check done by getFolder
+				//assume most folders are cached
+				result.add(getBinder(id));
+			} catch (NoFolderByTheIdException ex) {
+			} catch (AccessControlException ax) {
+			}
+			
+		}
+		return result;
 	}
 	// Use search engine
 	public Map getBinders(Binder binder, Map options) {

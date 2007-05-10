@@ -39,11 +39,13 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
             return new Field[0];
             
         Field allTextField = BasicIndexUtils.allTextField(text);
-        
-        Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
-
-        
-        return new Field[] {allTextField, descField};
-    }
+        //only real description field is stored as a field
+        if ("description".equals(dataElemName)) {
+        	Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
+            return new Field[] {allTextField, descField};
+        } else {
+            return new Field[] {allTextField};
+       }
+     }
 
 }

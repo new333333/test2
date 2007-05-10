@@ -280,16 +280,12 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
 		   			//remove foreign keys or mysql complains
-        	  		session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry=null,topEntry=null,parentBinder=null where parentBinder=:parent")
+        	  		session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
         	  			.setEntity("parent", folder)
    	   					.executeUpdate();
-        	  		//the delete of the folder in coreDao will handle associations through owningBinderId + LibraryEntries
-        	  	   getCoreDao().delete(folder);
-        	  	   //finally delete the entries
-        	  	   session.createQuery("Delete com.sitescape.team.domain.FolderEntry where parentBinder=:parent")
-       	   				.setEntity("parent", folder)
-       	   				.executeUpdate();
-        	  			//if these are ever cached in secondary cache, clear them out.
+        	  		//the delete of the folder in coreDao will handle associations through owningBinderId + LibraryEntries + entries connected by parentBinder
+        	  	   getCoreDao().delete(folder, FolderEntry.class);
+      	  			//if these are ever cached in secondary cache, clear them out.
 		   	   		return null;
         	   		}
         	   	}

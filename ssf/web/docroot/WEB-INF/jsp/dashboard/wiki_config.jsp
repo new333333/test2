@@ -37,6 +37,12 @@ function ${treeName}_showId(forum, obj) {
 </span>
 <br/>
 <div class="ss_indent_large">
+<c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFirst" 
+	<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.chooseFirst}">checked="checked"</c:if>><span>
+  <ssf:nlt tag="dashboard.wiki.selectFolderRelative"/>
+</span></td></tr></table>
+</c:if>
 <ssf:tree treeName="${treeName}"
 	treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
  	rootOpen="true"

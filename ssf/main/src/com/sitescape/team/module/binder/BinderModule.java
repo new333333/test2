@@ -98,6 +98,12 @@ public interface BinderModule {
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
     /**
+     * Load a list of binders
+     * @param binderIds
+     * @return
+     */
+    public Set<Binder> getBinders(Collection<Long> binderIds);
+    /**
      * Search for child binders - 1 level
      * @param binder
      * @param options

@@ -277,14 +277,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		return folder;        
 	}
 	
-	public Collection getFolders(List folderIds) {
+	public Set<Folder> getFolders(Collection<Long> folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
-       	TreeSet<Binder> result = new TreeSet<Binder>(c);
-		for (int i=0; i<folderIds.size(); ++i) {
+       	TreeSet<Folder> result = new TreeSet<Folder>(c);
+		for (Long id:folderIds) {
 			try {//access check done by getFolder
 				//assume most folders are cached
-				result.add(getFolder((Long)folderIds.get(i)));
+				result.add(getFolder(id));
 			} catch (NoFolderByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}

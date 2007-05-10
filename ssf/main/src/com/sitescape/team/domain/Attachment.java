@@ -63,7 +63,7 @@ public abstract class Attachment extends PersistentTimestampObject
     public void setOwner(AnyOwner owner) {
     	this.owner = owner;
     } 
- 	public void setOwner(DefinableEntity entity) {
+    public void setOwner(DefinableEntity entity) {
   		owner = new AnyOwner(entity);
   	}
     /**

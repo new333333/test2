@@ -117,7 +117,7 @@ public class EditController extends SAbstractController {
 					prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
 					prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 				}
-				DashboardHelper.saveComponentData(request, d, DashboardHelper.PORTLET_COMPONENT_ID);
+				DashboardHelper.saveComponentData(request, d);
 
 			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));

@@ -197,7 +197,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				if (!config.isRoot() || !config.getBinders().isEmpty()) 
 					BinderHelper.buildNavigationLinkBeans(this, config, model, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
 				if (config.getEntityType().equals(EntityType.workspace)) {
-					model.put(WebKeys.WORKSPACE_DOM_TREE, BinderHelper.buildTemplateTreeRoot(this, config, model, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION)));
+					model.put(WebKeys.WORKSPACE_DOM_TREE, BinderHelper.buildTemplateTreeRoot(this, config, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION)));
 
 					if (config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
 						//use current user as prototype
@@ -209,9 +209,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
 					} 
 				} else {
-					model.put(WebKeys.CONFIG_JSP_STYLE, "template");
 					ListFolderController.getShowTemplate(request, response, config, model);
 				}
+				model.put(WebKeys.CONFIG_JSP_STYLE, "template");
 				Tabs tabs = new Tabs(null);
 				tabs.addTab(config);
 				model.put(WebKeys.TABS, tabs.getTabs());
@@ -222,8 +222,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.OPERATION, operation);				
 				
 			} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
-				List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
-				configs.addAll(getAdminModule().getTemplates(Definition.WORKSPACE_VIEW));
+				List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
 				model.put(WebKeys.OPERATION, operation);				
 				model.put(WebKeys.BINDER_CONFIGS, configs);
 			} else if (WebKeys.OPERATION_ADD.equals(operation)) {

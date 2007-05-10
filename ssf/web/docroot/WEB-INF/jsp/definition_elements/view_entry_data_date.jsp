@@ -13,7 +13,7 @@
 <% //Date view %>
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
- <span class="ss_labelLeft"><c:out value="${property_caption}" />:</span>
+ <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
  <span>
  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 

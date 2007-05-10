@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.ActionRequest;
-import javax.portlet.RenderRequest;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -32,6 +31,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
@@ -46,6 +46,7 @@ import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ldap.LdapModule;
@@ -59,12 +60,11 @@ import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
@@ -73,6 +73,7 @@ import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.FolderConfigHelper;
 import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
 public class DashboardHelper implements AllBusinessServicesInjected {
@@ -104,6 +105,8 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	public final static String SearchFormSavedFolderIdList = "__savedFolderIdList";
 	public final static String Users= "users";
 	public final static String Groups= "groups";
+	public final static String TeamOn= "teamOn";
+	public final static String ChooseFirst = "chooseFirst";
 	
 	//Scopes
 	public final static String Local = "local";
@@ -311,18 +314,23 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					//Set up the buddy list bean
-					getInstance().getBuddyListBean(ssDashboard, 
+					getInstance().getBuddyListBean(binder, ssDashboard, 
 							id, component, false);
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
 					//Set up the team members bean
 					getInstance().getTeamMembersBean(binder, 
-							ssDashboard, model, id, component);					
+							ssDashboard, model, id, component, false);					
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean
-					getInstance().getWorkspaceTreeBean(binder, 
-							ssDashboard, model, id, component, new WorkspaceConfigHelper());
+					if ((binder != null) && (binder instanceof TemplateBinder)) {
+						getInstance().getWorkspaceTreeBean(binder, 
+								ssDashboard, model, id, component, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));	
+					} else {
+						getInstance().getWorkspaceTreeBean(binder, 
+							ssDashboard, model, id, component, null);
+					}
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
@@ -344,13 +352,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					//Set up the buddy list bean
-					getInstance().getBuddyListBean(ssDashboard, 
+					getInstance().getBuddyListBean(binder, ssDashboard, 
 							id, component, true);
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
 					//Set up the team members list bean,
 					getInstance().getTeamMembersBean(binder, 
-							ssDashboard, model, id, component);					
+							ssDashboard, model, id, component, true);					
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean,
@@ -366,9 +374,8 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, true);
 				} else  {
 					//Set up the search results bean
-					getInstance().getSearchResultsBean(binder, ssDashboard, 
-							model, id, component, true);
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
+					getInstance().getSummaryConfigBean(binder, ssDashboard, 
+							model, id, component);
 				}
 			}
 		}
@@ -593,7 +600,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	}
 	
 
-	protected void getBuddyListBean(Map ssDashboard, String id, Map component, boolean isConfig) {
+	protected void getBuddyListBean(Binder binder, Map ssDashboard, String id, Map component, boolean isConfig) {
 	   	Map data = (Map)component.get(DashboardHelper.Data);
 	   	if (data != null) {
 	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
@@ -615,6 +622,17 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	    			ids.addAll(getIds(data.get(Groups)));
 	    		}
 	    	}
+	    	if (data.containsKey(TeamOn)) {
+	    		if (isConfig) {
+	    			//keep separate for config
+		    		idData.put(WebKeys.SHOW_TEAM_MEMBERS, data.get(TeamOn));
+	    		} else if (Boolean.TRUE.equals(data.get(TeamOn))){
+	    			//merge into user list if not config
+	    			try {
+	    				ids.addAll(getBinderModule().getTeamMemberIds(binder, false));
+	    			} catch (Exception ex) {};  //skip if don't have access
+	    		}
+	    	}
 			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  	   	}
 	}
@@ -622,7 +640,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		Element child = parent.addElement(Users);
 		child.setText((String)data.get(Users));
 		child = parent.addElement(Groups);
-		child.setText((String)data.get(Groups));	
+		child.setText((String)data.get(Groups));
+		child = parent.addElement(TeamOn);
+		if (data.containsKey(TeamOn)) child.setText(data.get(TeamOn).toString());
+		else child.setText(Boolean.FALSE.toString());
 	}
 	
 	private Set getIds(Object ids) {
@@ -651,21 +672,38 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
     	Document tree = null;
  
-    	if (binder != null && !(binder instanceof TemplateBinder)) {
-    		if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-    			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
-    				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
-    			} else {
-    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, helper),1);
-    				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
+    	if (binder != null) {
+    		if (!(binder instanceof TemplateBinder)) {
+    			if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+    				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
+    					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
+    				} else {
+    					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, helper),1);
+    					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
+    				}
+    			} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+    				Folder topFolder = ((Folder)binder).getTopFolder();
+    				if (topFolder == null) topFolder = (Folder)binder;
+    				Binder workspace = (Binder)topFolder.getParentBinder();
+    				tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this, helper),1);
+    				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
     			}
-    		} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-    			Folder topFolder = ((Folder)binder).getTopFolder();
-    			if (topFolder == null) topFolder = (Folder)binder;
-    			Binder workspace = (Binder)topFolder.getParentBinder();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this, helper),1);
-    			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
-			
+    		} else {
+       			if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+    				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
+    					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
+    				} else {
+    					tree = BinderHelper.buildTemplateTreeRoot(this, (TemplateBinder)binder, helper);
+    					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
+    				}
+    			} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+    				TemplateBinder top = (TemplateBinder)binder;
+    				while (!top.isRoot()) {
+    					top = (TemplateBinder)top.getParentBinder();
+    				}
+   					tree = BinderHelper.buildTemplateTreeRoot(this, top, helper);
+   					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, top.getId().toString());
+    			}			
     		}
     	} else {
     		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
@@ -690,7 +728,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	}
 
 	
-	protected void getTeamMembersBean(Binder binder, Map ssDashboard, Map model, String id, Map component) {
+	protected void getTeamMembersBean(Binder binder, Map ssDashboard, Map model, String id, Map component, boolean isConfig) {
     	Map data = (Map)component.get(DashboardHelper.Data);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
@@ -705,10 +743,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     		idData = new HashMap();
         	beans.put(id, idData);
     	}
-
-		List users = getBinderModule().getTeamMembers(binder.getId(), true);
-		idData.put(WebKeys.TEAM_MEMBERS, users);
-		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+    	if (!isConfig) {
+    		List users = getBinderModule().getTeamMembers(binder.getId(), true);
+    		idData.put(WebKeys.TEAM_MEMBERS, users);
+    		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+    	}
 	}
 	protected void teamMembersToXml(Element parent, Map data) {
 		//nothing to store, determined dynamically
@@ -732,17 +771,57 @@ public class DashboardHelper implements AllBusinessServicesInjected {
         	beans.put(id, idData);
     	}
 		List savedFolderIds = (List)data.get(SearchFormSavedFolderIdList);
-		if (savedFolderIds != null && savedFolderIds.size() > 0) {
+		if (savedFolderIds != null && !savedFolderIds.isEmpty()) {
 			Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)savedFolderIds.get(0)));				
 			idData.put(WebKeys.BINDER, fBinder);
-			String entryId = (String) fBinder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
-			if (entryId != null) {
-				Entry entry = getFolderModule().getEntry(fBinder.getId(), Long.valueOf(entryId));
-				idData.put(WebKeys.DASHBOARD_WIKI_HOMEPAGE_ENTRY, entry);
+			if (!isConfig) {
+				String entryId = (String) fBinder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+				if (entryId != null) {
+					Entry entry = getFolderModule().getEntry(fBinder.getId(), Long.valueOf(entryId));
+					idData.put(WebKeys.DASHBOARD_WIKI_HOMEPAGE_ENTRY, entry);
+				}
 			}
 		}
+		
     }
-    
+    //reduce work
+    protected void getSummaryConfigBean(Binder binder, Map ssDashboard, Map model, 
+    		String id, Map component) {
+    	Map data = (Map)component.get(DashboardHelper.Data);
+    	if (data == null) data = new HashMap();
+    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+    	}
+    	Map idData;
+    	if (beans.containsKey(id)) {
+    		idData = (Map)beans.get(id);
+    	} else {
+    		idData = new HashMap();
+        	beans.put(id, idData);
+    	}
+		//Build the jsp bean (sorted by folder title)
+		List folderIds = new ArrayList();
+		Collection folders=null;
+		List savedFolderIds = (List)data.get(SearchFormSavedFolderIdList);
+		if (savedFolderIds != null) {
+			for (int i = 0; i < savedFolderIds.size(); i++) {
+				folderIds.add(Long.valueOf((String)savedFolderIds.get(i)));
+			}
+			folders = getBinderModule().getBinders(folderIds);		//may have templates		
+			idData.put(WebKeys.FOLDER_LIST, folders);
+		}
+		idData.put(WebKeys.BINDER_ID_LIST, folderIds);
+
+		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+			if ((folders != null) && !folders.isEmpty()) {
+				idData.put(WebKeys.BINDER, folders.iterator().next());					
+			}
+		}
+		getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
+
+    }
     protected void getSearchResultsBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component, boolean isConfig) {
     	Map data = (Map)component.get(DashboardHelper.Data);
@@ -808,66 +887,78 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
 		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
 		List savedFolderIds = (List)data.get(DashboardHelper.SearchFormSavedFolderIdList);
-		if (savedFolderIds == null)
-			searchSearchFormData.put(WebKeys.BINDER_ID_LIST, new ArrayList());
-		else
-			searchSearchFormData.put(WebKeys.BINDER_ID_LIST, savedFolderIds);
-		
-		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
+		if (savedFolderIds == null) savedFolderIds = new ArrayList();
+		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, savedFolderIds);
+
+		boolean doSearch = true;		
+		if (binder instanceof TemplateBinder) {
+			//don't do the search - cannot support links between portlets
+			doSearch = false;
+			searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, new ArrayList());
+			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, Integer.valueOf(0));
+			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, Integer.valueOf(0));
+		}  else {
+			if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
 				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
-			component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
-			//Limit the search to entries only
-			Document searchFilter2 = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter2.addElement(QueryBuilder.AND_ELEMENT);
-        	Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
-           	field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-           	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-           	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-           	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
-        	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
-		}		
-		Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
-		List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-		// entries = BinderHelper.filterEntryAttachmentResults(entries);
-		AdvancedSearchController.checkFileIds(entries);
-		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
-		Integer searchCount = (Integer)retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);
-		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
-		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, (Integer)retMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
-		//Also get the folder titles
-		Set ids = new HashSet();
-		Iterator itEntries = entries.iterator();
-		while (itEntries.hasNext()) {
-			Map r = (Map) itEntries.next();
-			String entityType = (String) r.get("_entityType");
-			if (entityType != null && r.containsKey("_docId") && 
-					(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
-				ids.add(Long.valueOf((String)r.get("_docId")));
-			} else if (r.containsKey("_binderId")) {
-				ids.add(Long.valueOf((String)r.get("_binderId")));				
+				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
+				if (savedFolderIds.isEmpty()) doSearch = false;
+				else {
+					//	Limit the search to entries only
+					Document searchFilter2 = DocumentHelper.createDocument();
+					Element rootElement = searchFilter2.addElement(QueryBuilder.AND_ELEMENT);
+					Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+					field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+					Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+					field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+					field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+					child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+					options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
+				}
 			}
 		}
+		if (doSearch) {
+			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
+			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
+			// 	entries = BinderHelper.filterEntryAttachmentResults(entries);
+			AdvancedSearchController.checkFileIds(entries);
+			searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
+			Integer searchCount = (Integer)retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
+			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, (Integer)retMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
+			//Also get the folder titles
+			Set ids = new HashSet();
+			Iterator itEntries = entries.iterator();
+			while (itEntries.hasNext()) {
+				Map r = (Map) itEntries.next();
+				String entityType = (String) r.get("_entityType");
+				if (entityType != null && r.containsKey("_docId") && 
+					(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
+					ids.add(Long.valueOf((String)r.get("_docId")));
+				} else if (r.containsKey("_binderId")) {
+				ids.add(Long.valueOf((String)r.get("_binderId")));				
+				}
+			}
+			searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
+		}
 	
-		searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
 			
 		//Build the jsp bean (sorted by folder title)
 		List folderIds = new ArrayList();
+		Collection folders=null;
 		if (savedFolderIds != null) {
 			for (int i = 0; i < savedFolderIds.size(); i++) {
 				folderIds.add(Long.valueOf((String)savedFolderIds.get(i)));
 			}
-			Collection folders = getFolderModule().getFolders(folderIds);				
+			folders = getBinderModule().getBinders(folderIds);		//may have templates		
 			idData.put(WebKeys.FOLDER_LIST, folders);
 		}
-		idData.put(WebKeys.BINDER_ID_LIST, folderIds);
+		idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
 
 		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
-			if (savedFolderIds != null && savedFolderIds.size() > 0) {
-				Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)savedFolderIds.get(0)));				
-				searchSearchFormData.put(WebKeys.GUESTBOOK_BINDER, fBinder);					
+			if ((folders != null) && !folders.isEmpty()) {
+				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
 		}
 	
@@ -900,6 +991,12 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			child.addAttribute("name", WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
 			String[] resultsCount = (String[])data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
 			child.setText(resultsCount[0]);
+		}
+		if (data.containsKey(DashboardHelper.ChooseFirst)) {
+			child = parent.addElement("property");
+			child.addAttribute("name", DashboardHelper.ChooseFirst);
+			Boolean resultsCount = (Boolean)data.get(DashboardHelper.ChooseFirst);
+			child.setText(resultsCount.toString());
 		}
 
 
@@ -967,22 +1064,20 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			if (componentId.contains("_")) componentScope = componentId.split("_")[0];
 			if (!componentScope.equals("")) {
 				Dashboard d = getInstance().getDashboardObj(binder, componentScope);
-				getInstance().internSaveComponentData(request, d, componentId);
+				getInstance().internSaveComponentData(request, binder, d, componentId, scope);
 			}
 		}
 	}
+
 	public static void saveComponentData(ActionRequest request, Dashboard d) {
 		//Get the dashboard component
-		getInstance().internSaveComponentData(request, d, PORTLET_COMPONENT_ID);
-	}
-	public static void saveComponentData(ActionRequest request, Dashboard d, String componentId) {
-		getInstance().internSaveComponentData(request, d, componentId);
+		getInstance().internSaveComponentData(request, null, d, PORTLET_COMPONENT_ID, DashboardHelper.Portlet);
 	}
 
 	/*
 	 * No static version because needs a DefinitionModule.
 	 */
-	private void internSaveComponentData(ActionRequest request, Dashboard d, String componentId) {
+	private void internSaveComponentData(ActionRequest request, Binder binder, Dashboard d, String componentId, String scope) {
 
 		//Get the generic data elements that start with the ElementNamePrefix
 		Map formData = request.getParameterMap();
@@ -1025,13 +1120,19 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					if (componentData.containsKey("groups")) {
 					componentData.put(Groups, FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
 					}
+					componentData.put(TeamOn, 
+							Boolean.valueOf(GetterUtil.getBoolean(
+									PortletRequestUtils.getStringParameter(request,DashboardHelper.ElementNamePrefix + "teamOn", "false"), false)));
+
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
+						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName)) {
+					
+					//multi-select	
+					List folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
+					if (folderIds == null) folderIds = new ArrayList();
+					//add first
 					//Get the folderIds out of the formData
 					Iterator itFormData = formData.keySet().iterator();
-					List folderIds = new ArrayList();
 					while (itFormData.hasNext()) {
 						String key = (String)itFormData.next();
 						if (key.matches("^ss_folder_id_[0-9]+$")) {
@@ -1039,22 +1140,73 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 						} else if (key.equals("ss_folder_id")) {
 							String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
 							//single select
-							if (id != null) folderIds.add(id); 
+							if ((id != null) && !folderIds.contains(id)) folderIds.add(id); 
 						}
 
 					}
-					if (folderIds.size() == 0 && 
-							originalComponentData.containsKey(DashboardHelper.SearchFormSavedFolderIdList)) {
-						//There was a list saved in a prior configuration, use it
-						folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
+					//	Get the forums to be deleted
+					itFormData = formData.entrySet().iterator();
+					while (itFormData.hasNext()) {
+						Map.Entry me = (Map.Entry) itFormData.next();
+						if (((String)me.getKey()).startsWith("del_")) {
+							String forumId = ((String)me.getKey()).substring(4);
+							folderIds.remove(forumId);
+						}
 					}
-					if (folderIds.size() > 0) {
+					if (formData.containsKey("chooseFirst")) {
+						boolean chooseFirst = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request, "chooseFirst", "false"), false);
+						if ((binder != null) && (binder instanceof TemplateBinder)) {
+							//save - resolve later
+							componentData.put(DashboardHelper.ChooseFirst, Boolean.valueOf(chooseFirst));
+						} else {
+							//resolve binder now
+							if (DashboardHelper.Binder.equals(scope) || DashboardHelper.Local.equals(scope)) {
+								String id = resolveBinder(binder, cName);
+								if (Validator.isNotNull(id)) folderIds.add(id);
+							}
+						}
+					}
+					
+					if (!folderIds.isEmpty()) {
 						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
 						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 						componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
+					} else {
+						componentData.remove(DashboardHelper.SearchFormSavedSearchQuery);
+						componentData.remove(DashboardHelper.SearchFormSavedFolderIdList);
+						
+					}
+				} else if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
+					//single select
+					List folderIds = new ArrayList();
+					if (formData.containsKey("chooseFirst")) {
+						boolean chooseFirst = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request,"chooseFirst", "false"), false);
+						if ((binder != null) && (binder instanceof TemplateBinder)) {
+							//save - resolve later
+							componentData.put(DashboardHelper.ChooseFirst, Boolean.valueOf(chooseFirst));
+						} else {
+							//resolve binder now
+							if (DashboardHelper.Binder.equals(scope) || DashboardHelper.Local.equals(scope)) {
+								String id = resolveBinder(binder, cName);
+								if (Validator.isNotNull(id)) folderIds.add(id);
+							}
+						}
+					} else {
+						String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
+						if (id != null) folderIds.add(id); 
+					}
+					if (!folderIds.isEmpty()) {
+						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
+						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
+						componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
+					} else {
+						componentData.remove(DashboardHelper.SearchFormSavedSearchQuery);
+						componentData.remove(DashboardHelper.SearchFormSavedFolderIdList);
+						
 					}
 				}
-					
+						
 				//Save the title and data map
 				componentMap.put(DashboardHelper.Component_Title, componentTitle);
 				componentMap.put(DashboardHelper.DisplayStyle, displayStyle);
@@ -1064,7 +1216,72 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			}
 		}						
 	}
+	public static void resolveRelativeBinders(Binder binder, Dashboard d) {
+		Map components = (Map)d.getProperty(Dashboard.Components);
+		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			Map cMap = (Map)me.getValue();
+			if (cMap == null) continue;
+			Map data = (Map)cMap.get(DashboardHelper.Data);
+			if (data.containsKey(DashboardHelper.ChooseFirst)) {
+				String cName = (String)cMap.get(DashboardHelper.Name);
+				if (cName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
+						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY) ||
+						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
+						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+					Boolean chooseFirst = (Boolean)data.get(DashboardHelper.ChooseFirst);
+					if (chooseFirst) {
+						String id = getInstance().resolveBinder(binder, cName);
+						if (Validator.isNotNull(id)) {
+							List<String> folderIds = (List)data.get(DashboardHelper.SearchFormSavedFolderIdList);
+							if (folderIds == null) folderIds = new ArrayList();
+							folderIds.add(id);
+							SearchFilter searchFilter = new SearchFilter();
+							
+							for (Object fId : folderIds) {
+								searchFilter.addFolderId((String)fId);
+							}
+							
+							data.put(DashboardHelper.SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());
+							data.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
+							
+						}
+					}
+				}
+				data.remove(DashboardHelper.ChooseFirst);
+			}
+		}
+		getInstance().getDashboardModule().setProperty(d.getId(), Dashboard.Components, components);
+	}
+	protected String resolveBinder(Binder binder, String name) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		//	get them all
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+		Map results = getBinderModule().getBinders(binder, options);
+		List<Map> binders = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+		for (Map b:binders) {
+			String defId = (String)b.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+			Definition def = getDefinitionModule().getDefinition(defId);
+			String viewType = DefinitionUtils.getViewType(def.getDefinition());
+			if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(name)) {
+				if (Definition.VIEW_STYLE_WIKI.equals(viewType)) 
+					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
+			} else if (ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(name)) {
+				if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) 
+					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
+			} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(name)) {
+				if (Definition.VIEW_STYLE_BLOG.equals(viewType)) 
+					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
+			} else if (ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(name)) {
+				if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) 
+					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
+			}
+		}	
+		return null;
 
+	}
 	public static void deleteComponent(ActionRequest request, Binder binder, String componentId, 
 			String scope) {
 		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {

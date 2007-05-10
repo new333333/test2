@@ -232,13 +232,13 @@ public class BinderHelper {
 			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
 		}
     	while (parentConfig != null) {
-        	Document tree = buildTemplateTreeRoot(bs, parentConfig, model, helper);
+        	Document tree = buildTemplateTreeRoot(bs, parentConfig, helper);
  			navigationLinkMap.put(parentConfig.getId(), tree);
 			parentConfig = (TemplateBinder)parentConfig.getParentBinder();
 		}
 	}
 	//trees should not be deep - do entire thing
-	static public Document buildTemplateTreeRoot(AllBusinessServicesInjected bs, TemplateBinder config, Map model, DomTreeHelper helper) {
+	static public Document buildTemplateTreeRoot(AllBusinessServicesInjected bs, TemplateBinder config, DomTreeHelper helper) {
        	Document tree = DocumentHelper.createDocument();
     	Element element = tree.addElement(DomTreeBuilder.NODE_ROOT);
     	//only need this information if this is the bottom of the tree
@@ -289,8 +289,8 @@ public class BinderHelper {
 			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
 			element.addAttribute("image", icon);
 			element.addAttribute("imageClass", imageClass);
-			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
 			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_TEMPLATE, config));
+			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_TEMPLATE, config));
 					
 		} else {
 			String icon = config.getIconName();
@@ -299,6 +299,7 @@ public class BinderHelper {
 			element.addAttribute("imageClass", "ss_twIcon");
 			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
 			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_TEMPLATE, config));
+			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_TEMPLATE, config));
 		} 
 		
 	}

@@ -120,7 +120,7 @@ public class FileAttachment extends Attachment {
     public void addFileVersion(VersionAttachment v) {
     	if (v == null) return;
     	v.setParentAttachment(this);
-    	v.setOwner(getOwner());
+    	v.setOwner(new AnyOwner(getOwner().getEntity(), false));  //version cannot set foreign key on owner or get read in to attachment collection
     	if (fileVersions == null) fileVersions=new ArrayList();
     	fileVersions.add(v);
     }

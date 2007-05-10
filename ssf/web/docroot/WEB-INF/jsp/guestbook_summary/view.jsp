@@ -24,30 +24,6 @@
 var ss_reloadUrl = "<portlet:renderURL/>";
 </script>
 <table class="ss_style" width="100%"><tr><td>
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder}">
-<span class="ss_normal">
-<c:if test="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.entityIdentifier.entityType == 'folder'}">
-  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.id}"/></portlet:renderURL>">
-		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.title}</a> // 
-</c:if>
-<c:if test="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.entityIdentifier.entityType != 'folder'}">
-  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_ws_listing"/><portlet:param 
-		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.id}"/></portlet:renderURL>">
-		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.title}</a> // 
-</c:if>
-</span>
-<span class="ss_bold">
-<a href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.id}"/></portlet:renderURL>">
-		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}</a>
-</span>
-</c:if>
-
-<br/><br/>
 <div class="ss_decor-border5">
   <div class="ss_decor-border6">
     <div class="ss_content_window">
@@ -63,3 +39,4 @@ var ss_reloadUrl = "<portlet:renderURL/>";
 </div>
 </div>
 </div>
+</table>

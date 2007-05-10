@@ -102,6 +102,7 @@
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 		</jsps>
 	</item>
 	
@@ -112,6 +113,7 @@
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 		</jsps>
 	</item>
 	
@@ -122,6 +124,7 @@
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 		</jsps>
 	</item>
 	
@@ -142,6 +145,7 @@
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_attachments.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 	
@@ -1103,6 +1107,7 @@
 		</options>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -1110,6 +1115,7 @@
 		multipleAllowed="true" category="workspaceViewData">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
 		</jsps>
 	</item>
 	
@@ -1128,12 +1134,14 @@
 				</option_entry_data>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 		</jsps>
 	</item>
 		
@@ -1168,6 +1176,7 @@
 		</options>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -1177,6 +1186,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
 		</jsps>
 	</item>
 			
@@ -1201,30 +1211,6 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
-	</item>
-	
-	<item name="textarea" caption="__simple_text_area" type="data" category="commonEntryData">
-		<properties>
-			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
-			</property>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="width" caption="__textareaWidth" type="text" default="60"/>
-			<property name="rows" caption="__rows" type="text"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
 	</item>
 	

@@ -92,7 +92,7 @@ public interface FolderModule {
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
     public Folder getFolder(Long folderId);
-	public Collection getFolders(List folderIds);
+	public Set<Folder> getFolders(Collection<Long> folderIds);
     public Set getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
 	public Map getFullEntries(Long folderId) throws AccessControlException;
 	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;

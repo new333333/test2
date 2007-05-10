@@ -63,11 +63,11 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
   </td>
   <td valign="top" align="right">
 	<div style="text-align: right; margin: 5px; ">
-		<c:if test="${!empty ssComponentId && !empty ssDashboard.beans[componentId] && !empty ssDashboard.beans[componentId].ssSearchFormData && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0]}">
+		<c:if test="${!empty ssDashboard.beans[componentId].ssBinder && !empty ssDashboard.beans[componentId].ssBinder.entryDefinitions[0]}">
 		<a class="ss_linkButton" href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="add_folder_entry"
-				    binderId="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.id}">
-				    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0].id}" />
+				    binderId="${ssDashboard.beans[componentId].ssBinder.id}">
+				    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssBinder.entryDefinitions[0].id}" />
 		    	    <ssf:param name="newTab" value="1"/>
 		    	    <ssf:param name="addEntryFromIFrame" value="1"/>
 		    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    

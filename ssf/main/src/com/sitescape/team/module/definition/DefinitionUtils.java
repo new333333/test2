@@ -55,7 +55,7 @@ public class DefinitionUtils {
 		Element root = definitionTree.getRootElement();
 		
 		//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
-		Element entryFormItem = (Element)root.selectSingleNode("item[@type='form' or @name='entryForm' or @name='profileEntryForm']");
+		Element entryFormItem = (Element)root.selectSingleNode("item[@type='form']");
 		if (entryFormItem == null) return false;
 		//see if item is generated and save source
 		Element itemEle = (Element)entryFormItem.selectSingleNode(".//item[@name='" + itemTarget + "']");
@@ -66,8 +66,15 @@ public class DefinitionUtils {
 			if (!Validator.isNull(source) && source.equals(itemSource)) return true;
 		}
 		return false;
-
     }
+   public static String getViewType(Document definitionTree) {
+   	if (definitionTree == null) return null;
+	Element root = definitionTree.getRootElement();
+	if (root == null) return null;
+	Element viewItem = (Element)root.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+	if (viewItem == null) return null;
+	return DefinitionUtils.getPropertyValue(viewItem, "type");
+   }
         
     
 }

@@ -205,8 +205,8 @@ function ss_confirmDeleteConfig() {
 		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
 
 <h3><ssf:nlt tag="administration.configure_cfg.existing"/></h3>
-  <c:forEach var="config" items="${ssBinderConfigs}">
-      <input type="radio" name="binderConfigId" value="${config.id}" ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
+  <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+      <input type="radio" name="binderConfigId" value="${config.id}" <c:if test="${status.first}">checked="checked"</c:if>><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 
 <div class="ss_formBreak"/>

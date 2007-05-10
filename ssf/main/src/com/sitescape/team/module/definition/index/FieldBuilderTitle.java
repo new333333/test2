@@ -10,12 +10,10 @@
  */
 package com.sitescape.team.module.definition.index;
 
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.Field;
-
-import com.sitescape.team.module.folder.index.IndexUtils;
 
 /**
  *
