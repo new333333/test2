@@ -57,8 +57,20 @@ public class ModifyBinderController extends AbstractBinderController {
 			getBinderModule().deleteBinder(binderId);
 			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if(op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
-			getFolderModule().synchronize(binderId);
-			setupViewBinder(response, binderId, binderType);
+			// This trick is here to handle the situation where the synchronization
+			// causes the binder to be deleted.
+			Binder binder = getBinderModule().getBinder(binderId);
+			// First, setup the view as if the binder is to be deleted.
+			setupViewOnDelete(response, binder, binderType);
+			if(getFolderModule().synchronize(binderId)) {
+				// The binder was not deleted (typical situation). 
+				// Setup the right view which will override the previous setup.
+				setupViewBinder(response, binderId, binderType);
+			}
+			else {
+				// The binder was indeed deleted.  Finish it up.
+				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");			
+			}
 		} else if (formData.containsKey("okBtn")) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
 				//	The modify form was submitted. Go process it
