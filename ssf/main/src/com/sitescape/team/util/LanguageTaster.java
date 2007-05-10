@@ -66,12 +66,12 @@ public class LanguageTaster {
 				buffCount++;
 			}
 
-			if (defCount >= cjkCount && defCount >= arabicCount) {
-				return DEFAULT;
-			} else if (cjkCount >= defCount && cjkCount >= arabicCount) {
+			if (cjkCount > 0) {
 				return CJK;
-			} else if (arabicCount >= cjkCount && arabicCount >= defCount) {
+			} else if (arabicCount > 0) {
 				return ARABIC;
+			} else {
+				return DEFAULT;
 			}
 			
 		} catch (Exception e) {

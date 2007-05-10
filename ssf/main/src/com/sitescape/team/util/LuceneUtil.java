@@ -12,6 +12,8 @@ package com.sitescape.team.util;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -20,10 +22,13 @@ import org.apache.lucene.store.FSDirectory;
 
 import com.sitescape.team.lucene.CJKAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
+import com.sitescape.team.lucene.SsfQueryAnalyzer;
 
 
 
 public class LuceneUtil {
+	
+	protected static Log logger = LogFactory.getLog(LuceneUtil.class);
 	
 	private static final int READSEARCH = 1;
 	private static final int READDELETE = 2;
@@ -221,7 +226,18 @@ public class LuceneUtil {
 			return new CJKAnalyzer();
 		} else {
 			//return new ARABICAnalyzer;
-			return defaultAnalyzer;
+			Analyzer analyzer = defaultAnalyzer;
+			String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
+			if (!aName.equalsIgnoreCase("")) {
+				//load the arabic analyzer here
+				try {
+					Class arabicClass = ReflectHelper.classForName(aName);
+			 		analyzer = (Analyzer)arabicClass.newInstance();
+				} catch (Exception e) {
+					logger.error("Could not initialize arabic analyzer class: " + e.toString());
+				}
+			}
+			return analyzer;
 		}
 	}
 	

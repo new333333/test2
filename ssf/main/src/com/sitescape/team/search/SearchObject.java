@@ -23,6 +23,7 @@ import org.apache.lucene.search.SortField;
 import com.sitescape.team.lucene.CJKAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.util.LanguageTaster;
+import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 
 public class SearchObject {
@@ -111,7 +112,12 @@ public class SearchObject {
 				String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the arabic analyzer here
-					
+					try {
+						Class arabicClass = ReflectHelper.classForName(aName);
+				 		analyzer = (Analyzer)arabicClass.newInstance();
+					} catch (Exception e) {
+						logger.error("Could not initialize arabic analyzer class: " + e.toString());
+					}
 				}
 				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
