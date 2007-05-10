@@ -60,7 +60,7 @@ public class ReportDownloadController extends  SAbstractController {
 		cal.setTime(endDate);
 		cal.add(Calendar.DATE, 1);
 		endDate = cal.getTime();
-		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		if (formData.containsKey("forumOkBtn") || formData.containsKey("userOkBtn")) {
 			//Get the list of binders for reporting
 			List<Long> ids = new ArrayList();
 			Long profileId = null;
@@ -89,11 +89,14 @@ public class ReportDownloadController extends  SAbstractController {
 			response.setHeader(
 						"Content-Disposition",
 						"attachment; filename=\"report.csv\"");
-			List<Map<String, Object>> report = getReportModule().generateReport(ids, startDate, endDate);
+			List<Map<String, Object>> report = getReportModule().generateReport(ids, formData.containsKey("userOkBtn"), startDate, endDate);
 			
 			response.getWriter().print(NLT.get("report.columns.id") + ",");
 			response.getWriter().print(NLT.get("report.columns.parent") + ",");
 			response.getWriter().print(NLT.get("report.columns.title") + ",");
+			if(formData.containsKey("userOkBtn")) {
+				response.getWriter().print(NLT.get("report.columns.user") + ",");
+			}
 			response.getWriter().print(NLT.get("report.columns.add") + ",");
 			response.getWriter().print(NLT.get("report.columns.view") + ",");
 			response.getWriter().print(NLT.get("report.columns.modify") + ",");
@@ -107,6 +110,9 @@ public class ReportDownloadController extends  SAbstractController {
 				}
 				response.getWriter().print(",");
 				response.getWriter().print(row.get(ReportModule.BINDER_TITLE) + ",");
+				if(formData.containsKey("userOkBtn")) {
+					response.getWriter().print(row.get(ReportModule.USER_ID) + ",");
+				}
 				response.getWriter().print(row.get(AuditTrail.AuditType.add.name()) + ",");
 				response.getWriter().print(row.get(AuditTrail.AuditType.view.name()) + ",");
 				response.getWriter().print(row.get(AuditTrail.AuditType.modify.name()) + ",");
@@ -114,7 +120,33 @@ public class ReportDownloadController extends  SAbstractController {
 				response.getWriter().println();
 			}
 			response.getWriter().flush();
-		} 
+		} else if (formData.containsKey("userOkBtn")) {
+			FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
+			response.setContentType(mimeTypes.getContentType("report.csv"));
+			response.setHeader("Cache-Control", "private");
+			response.setHeader("Pragma", "no-cache");
+			response.setHeader(
+						"Content-Disposition",
+						"attachment; filename=\"report.csv\"");
+			List<Map<String, Object>> report = getReportModule().generateUserReport(startDate, endDate);
+			
+			response.getWriter().print(NLT.get("report.columns.id") + ",");
+			response.getWriter().print(NLT.get("report.columns.add") + ",");
+			response.getWriter().print(NLT.get("report.columns.view") + ",");
+			response.getWriter().print(NLT.get("report.columns.modify") + ",");
+			response.getWriter().print(NLT.get("report.columns.delete"));
+			response.getWriter().println();
+
+			for(Map<String, Object> row : report) {
+				response.getWriter().print(row.get(ReportModule.USER_ID) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.add.name()) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.view.name()) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.modify.name()) + ",");
+				response.getWriter().print(row.get(AuditTrail.AuditType.delete.name()));
+				response.getWriter().println();
+			}
+			response.getWriter().flush();
+		}
 		return null;
 	}
 }

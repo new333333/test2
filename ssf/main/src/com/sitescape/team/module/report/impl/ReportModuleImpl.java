@@ -11,10 +11,11 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -98,7 +99,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		addAuditTrail(new WorkflowStateHistory(state, end, isEnded));		
 	}
 
-	public List<Map<String,Object>> generateReport(Collection binderIds, Date startDate, Date endDate) {
+	public List<Map<String,Object>> generateReport(Collection binderIds, boolean byUser, Date startDate, Date endDate) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
     	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, RequestContextHolder.getRequestContext().getZoneId());
@@ -106,7 +107,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	for (Binder binder:binders) {
     		try {
    			if (binder.isDeleted()) continue;
-    			report.add(generateReport(binder, startDate, endDate));
+    			generateReport(report, binder, byUser, startDate, endDate);
     		} catch (Exception ex) {};
     		
     	}
@@ -114,9 +115,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
-	protected Map<String,Object> generateReport(Binder binder, final Date startDate, final Date endDate) {
-		final HashMap<String,Object> report = new HashMap<String,Object>();
-		
+	private static final String[] activityTypes = new String[]
+	             {AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(),
+				  AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
+	
+	protected void generateReport(List<Map<String, Object>> report, Binder binder, final boolean byUser, final Date startDate, final Date endDate) {
 		checkAccess(binder, "report");
 		final Long binderId = binder.getId();
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
@@ -124,36 +127,89 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 				List auditTrail = null;
 				try {
-				auditTrail = session.createCriteria(AuditTrail.class)
-						.setProjection(Projections.projectionList()
-								.add(Projections.property("owningBinderId"))
-								.add(Projections.rowCount())
-								.add(Projections.groupProperty("transactionType")))
+					ProjectionList proj = Projections.projectionList()
+									.add(Projections.groupProperty("transactionType"))
+									.add(Projections.rowCount());
+					if(byUser) {
+						proj.add(Projections.groupProperty("startBy"));
+					}
+					Criteria crit = session.createCriteria(AuditTrail.class)
+						.setProjection(proj)
 						.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate))
-						.addOrder(Order.asc("owningBinderKey"))
-						.list();
+						.add(Restrictions.in("transactionType", activityTypes));
+					if(byUser) { crit.addOrder(Order.asc("startBy")); }
+					auditTrail = crit.list();
 				} catch(Exception e) {
-					report.put("error", e);
 				}
 				return auditTrail;
 			}});
-		report.put(ReportModule.BINDER_ID, binder.getId());
-		report.put(ReportModule.BINDER_TITLE, binder.getTitle());
-		if(binder.getParentBinder() != null) {
-			report.put(ReportModule.BINDER_PARENT, binder.getParentBinder().getId());
-		}
+		Long lastUserId = new Long(-1);
+		Long userId = null;
+		HashMap<String,Object> row = null;
 		for(Object o : result) {
 			Object[] col = (Object []) o;
-			report.put((String) col[2], col[1]);
-		}
-		for(AuditTrail.AuditType t : AuditTrail.AuditType.values()) {
-			if(! report.containsKey(t.name())) {
-				report.put(t.name(), new Integer(0));
+			if(byUser) { userId = (Long) col[2]; }
+			if(row == null || (byUser && !lastUserId.equals(userId))) {
+				row = new HashMap<String,Object>();
+				row.put(ReportModule.BINDER_ID, binder.getId());
+				row.put(ReportModule.BINDER_TITLE, binder.getTitle());
+				if(binder.getParentBinder() != null) {
+					row.put(ReportModule.BINDER_PARENT, binder.getParentBinder().getId());
+				}
+				if(byUser) {
+					row.put(ReportModule.USER_ID, userId);
+				}
+				for(String t : activityTypes) {
+					row.put(t, new Integer(0));
+				}
+				report.add(row);
+				lastUserId = userId;
 			}
+			row.put((String) col[0], col[1]);
 		}
-		//TODO: actually generate a report for this binder
+	}
+	
+	public List<Map<String,Object>> generateUserReport(final Date startDate, final Date endDate)
+	{	
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List auditTrail = null;
+				try {
+				auditTrail = session.createCriteria(AuditTrail.class)
+						.setProjection(Projections.projectionList()
+								.add(Projections.groupProperty("startBy"))
+								.add(Projections.rowCount())
+								.add(Projections.groupProperty("transactionType")))
+						.add(Restrictions.ge("startDate", startDate))
+						.add(Restrictions.lt("startDate", endDate))
+						.add(Restrictions.in("transactionType", activityTypes))
+						.addOrder(Order.asc("startBy"))
+						.list();
+				} catch(Exception e) {
+				}
+				return auditTrail;
+			}});
+		
+		List<Map<String, Object>> report = new LinkedList<Map<String, Object>>();
+		Long lastId = new Long(-1);
+		HashMap<String,Object> row = null;
+		for(Object o : result) {
+			Object[] col = (Object []) o;
+			Long id = (Long) col[0];
+			if(!id.equals(lastId)) {
+				row = new HashMap<String,Object>();
+				row.put(ReportModule.USER_ID, id);
+				for(String t : activityTypes) {
+					row.put(t, new Integer(0));
+				}
+				report.add(row);
+				lastId = id;
+			}
+			row.put((String) col[2], col[1]);
+		}
+
 		return report;
 	}
 	

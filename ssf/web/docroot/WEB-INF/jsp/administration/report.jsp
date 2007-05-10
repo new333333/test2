@@ -32,22 +32,7 @@ var ssReportURL="<portlet:actionURL><portlet:param
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<portlet:namespace/>fm.action=ssReportURL; document.<portlet:namespace/>fm.submit()">
 </div>
-<br>
-<div id="ss_report" class="ss_tab_container">
- <div id="ss_report_tabs" class="ss_tabbed">
-  <ul>
-    <li><a href="#" onclick="ss_report_selectTab(this, 'ss_report_panel_forum');" class='ss_current_tab' id="ss_report_initial_tab"><span><ssf:nlt tag="administration.report.tab.forum"/></span></a></li>
-    <li><a href="#" onclick="ss_report_selectTab(this, 'ss_report_panel_user');"><span><ssf:nlt tag="administration.report.tab.user"/></span></a></li>
-    <li><a href="#" onclick="ss_report_selectTab(this, 'ss_report_panel_login');"><span><ssf:nlt tag="administration.report.tab.login"/></span></a></li>
-  </ul>
- </div>
- <div id="ss_report_panel" class="ss_tab_pane">
-  <div id="ss_report_panel_forum">
-   <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.forum"/></span>
-   <br/>
-   <br/>
-
+<br/>
    <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
 				 popupDivId="ss_startPopup" id="ss_startDate"
 				 immediateMode="false" altText="<ssf:nlt tag='calendar.view.popupAltText'/>"
@@ -60,7 +45,22 @@ var ssReportURL="<portlet:actionURL><portlet:param
 				 />
    </div>
    <div id="ss_endPopup" class="ss_calPopupDiv"></div>
-				 
+<br/>				 
+<div id="ss_report" class="ss_tab_container">
+ <div id="ss_report_tabs" class="ss_tabbed">
+  <ul>
+    <li><a href="#" onclick="ss_report_selectTab(this, 'ss_report_panel_forum');" class='ss_current_tab' id="ss_report_initial_tab"><span><ssf:nlt tag="administration.report.tab.forum"/></span></a></li>
+    <li><a href="#" onclick="ss_report_selectTab(this, 'ss_report_panel_user');"><span><ssf:nlt tag="administration.report.tab.user"/></span></a></li>
+    <li><a href="#" onclick="ss_report_selectTab(this, 'ss_report_panel_workflow');"><span><ssf:nlt tag="administration.report.tab.workflow"/></span></a></li>
+  </ul>
+ </div>
+ <div id="ss_report_panel" class="ss_tab_pane">
+  <div id="ss_report_panel_forum">
+   <br/>
+   <span class="ss_bold"><ssf:nlt tag="administration.report.forum"/></span>
+   <br/>
+   <br/>
+
    <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
      rootOpen="true" topId="${ssWsDomTreeBinderId}" 
      multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type_" />
@@ -68,7 +68,7 @@ var ssReportURL="<portlet:actionURL><portlet:param
    <br/>
    <br/>
    <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<portlet:namespace/>fm.action=ssReportURL; document.<portlet:namespace/>fm.submit()">
    </div>
@@ -77,10 +77,16 @@ var ssReportURL="<portlet:actionURL><portlet:param
    <br/>
    <span class="ss_bold"><ssf:nlt tag="administration.report.user"/></span>
    <br/>
-  </div>
-  <div id="ss_report_panel_login" style="visibility:hidden; display:none">
    <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.login"/></span>
+   <div class="ss_buttonBarLeft">
+    <input type="submit" class="ss_submit" name="userOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<portlet:namespace/>fm.action=ssReportURL; document.<portlet:namespace/>fm.submit()">
+   </div>
+  </div>
+  <div id="ss_report_panel_workflow" style="visibility:hidden; display:none">
+   <br/>
+   <span class="ss_bold"><ssf:nlt tag="administration.report.workflow"/></span>
    <br/>
   </div>
  </div>
