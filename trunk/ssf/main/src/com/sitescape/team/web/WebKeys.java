@@ -245,6 +245,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String OPERATION_SET_WIKI_HOMEPAGE = "set_wiki_homepage";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
+	public static final String OPERATION_SHOW_MY_TEAMS = "show_my_teams";
 	public static final String OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
 	public static final String OPERATION_UNSEEN_COUNTS = "unseen_counts";
 	public static final String OPERATION_RELOAD_LISTING = "reload_listing";
@@ -496,6 +497,7 @@ public class WebKeys {
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
+    public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
     public static final String NLT_VALUE="value";

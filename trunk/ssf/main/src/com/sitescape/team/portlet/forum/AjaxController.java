@@ -159,6 +159,8 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
 				return new ModelAndView("forum/fetch_url_return", model);
+			} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
+				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
 			response.setContentType("text/xml");			
@@ -279,6 +281,9 @@ public class AjaxController  extends SAbstractController {
 
 		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE)) {
 			return ajaxGetDashboardSearchMore(request, response);
+
+		} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
+			return ajaxGetMyTeams(request, response);
 
 		} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 			return ajaxGetBlogReplies(request, response);
@@ -1542,21 +1547,30 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("definition_elements/blog/view_blog_replies_content", model);
 	}
 	
+	private ModelAndView ajaxGetMyTeams(RenderRequest request, 
+			RenderResponse response) throws Exception {
+	Map model = new HashMap();
+	User user = RequestContextHolder.getRequestContext().getUser();
+	List myTeams = getAdminModule().getTeamMemberships(user.getId());
+	model.put(WebKeys.MY_TEAMS, myTeams);
+	return new ModelAndView("forum/my_teams", model);
+}
+
 	private ModelAndView ajaxGetEntryRating(RenderRequest request, 
-				RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String ratingDivId = PortletRequestUtils.getStringParameter(request, "ratingDivId");
-		model.put(WebKeys.RATING_DIV_ID, ratingDivId);
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		Entry entry = getFolderModule().getEntry(binderId, entryId);
-		if (entry != null) {
-			model.put(WebKeys.DEFINITION_ENTRY, entry);
-		}
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/rating_return", model);
+			RenderResponse response) throws Exception {
+	Map model = new HashMap();
+	String ratingDivId = PortletRequestUtils.getStringParameter(request, "ratingDivId");
+	model.put(WebKeys.RATING_DIV_ID, ratingDivId);
+	Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+	Entry entry = getFolderModule().getEntry(binderId, entryId);
+	if (entry != null) {
+		model.put(WebKeys.DEFINITION_ENTRY, entry);
 	}
-	
+	response.setContentType("text/xml");
+	return new ModelAndView("forum/rating_return", model);
+}
+
 	private ModelAndView ajaxShowHelpPanel(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();

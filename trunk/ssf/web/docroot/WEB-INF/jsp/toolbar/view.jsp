@@ -41,8 +41,38 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	return false;
 }
 
+function ss_showMyTeams<portlet:namespace/>() {
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_myTeams')
+	if (targetDiv != null) {
+		if (targetDiv.style.visibility == 'visible') {
+			targetDiv.style.visibility = 'hidden'
+			targetDiv.style.display = 'none'
+		} else {
+			targetDiv.innerHTML = "<ssf:nlt tag="Loading"/><br/>";
+			targetDiv.style.visibility = 'visible';
+			targetDiv.style.display = 'block';
+			url = "<ssf:url 
+		    	adapter="true" 
+		    	portletName="ss_forum" 
+		    	action="__ajax_request" 
+		    	actionUrl="true" >
+				<ssf:param name="operation" value="show_my_teams" />
+		    	</ssf:url>"
+			url += "\&rn=" + ss_random++
+			ss_fetch_url(url, ss_showMyTeamsCallback<portlet:namespace/>);
+		}
+	}
+}
+function ss_showMyTeamsCallback<portlet:namespace/>(s) {
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_myTeams')
+	if (targetDiv != null) targetDiv.innerHTML = s;
+}
+
 </script>
 
+<table width="100%">
+<tr>
+<td valign="top">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" 
   title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
@@ -69,6 +99,16 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 </div>
 </ssHelpSpot>
+</td>
+<td valign="top">
+<a href="javascript: ;" onClick="ss_showMyTeams<portlet:namespace/>();return false;">
+  <ssf:nlt tag="navigation.myTeams"/>
+</a>
+<div id="<portlet:namespace/>ss_myTeams" 
+  style="display:none; visibility:hidden;"></div>
+</td>
+</tr>
+</table>
 
 </div>
 </c:if>

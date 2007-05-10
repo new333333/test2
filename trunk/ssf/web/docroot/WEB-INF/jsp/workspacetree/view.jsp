@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${empty ss_portletInitialization}">
-<div class="ss_portlet_style ss_portlet">
+<div class="ss_style ss_portlet_style ss_portlet">
 
 <c:if test="${ss_windowState == 'maximized'}">
 <% // Navigation bar %>

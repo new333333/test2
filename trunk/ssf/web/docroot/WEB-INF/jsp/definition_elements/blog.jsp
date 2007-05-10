@@ -144,6 +144,6 @@ function ss_hideBlogReplyIframe<portlet:namespace/>(id, count) {
 
 </div>
 </div>
-<div class="folder" id="ss_blog_folder_div">
+<div class="ss_folder" id="ss_blog_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>

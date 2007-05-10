@@ -86,6 +86,6 @@ function ss_confirmSetWikiHomepage() {
 </ssf:toolbar>
 
 </div>
-<div class="folder" id="ss_wiki_folder_div">
+<div class="ss_folder" id="ss_wiki_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
 </div>

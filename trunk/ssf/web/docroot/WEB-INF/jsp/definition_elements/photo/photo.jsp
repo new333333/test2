@@ -83,6 +83,6 @@ function ss_setPhotoIframeSize<portlet:namespace/>() {
 
 </div>
 </div>
-<div class="folder" id="ss_photo_folder_div">
+<div class="ss_folder" id="ss_photo_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
 </div>
