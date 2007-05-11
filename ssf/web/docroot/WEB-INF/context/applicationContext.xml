@@ -462,7 +462,7 @@
 	<bean id="adminModule" parent="baseTransactionProxy">
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.admin.impl.AdminModuleImpl">
-				<property name="mailManager"><ref local="mailManager"/></property>
+				<property name="mailModule"><ref local="mailModule"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="folderModule"><ref local="folderModule"/></property>
 				<property name="workspaceModule"><ref local="workspaceModule"/></property>
@@ -602,11 +602,11 @@
 			</bean>	
 		</property>
 	</bean>
-	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.team.mail.impl.DefaultFolderEmailFormatter">
+	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
-		<property name="mailManager"><ref local="mailManager"/></property>
+		<property name="mailModule"><ref local="mailModule"/></property>
 	</bean>
 	
 	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler, workflowFactory" >
@@ -829,13 +829,13 @@ application/vnd.stardivision.math                         smf
 	<!-- ================================  Mail Support =============================== -->
 	<!-- this bean is only used to allow setting of initial context properties -->
 	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
-	<bean id="mailSender" class="com.sitescape.team.mail.impl.JavaMailSenderImpl">
+	<bean id="mailSender" class="com.sitescape.team.module.mail.impl.JavaMailSenderImpl">
 		<property name="defaultEncoding"><value>utf-8</value></property>
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
 
 
-	<bean id="mailManager" parent="moduleDependencyTemplate" class="com.sitescape.team.mail.impl.MailManagerImpl">
+	<bean id="mailModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.mail.impl.MailModuleImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
