@@ -24,6 +24,9 @@ function ss_addOption(type) {
 	   case "creator_by_id" :
 	      ss_addAuthor(ss_userOptionsCounter);
 	      break;
+	   case "folder" :
+	      ss_addFolder(ss_userOptionsCounter);
+	      break;
 	   default : alert("Unknown type: "+type);
 	}
 	ss_userOptionsCounter++;
@@ -221,6 +224,23 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
 
+function t_advSearchForm_wsTree_showId(forum, obj) {
+	var searchForm = document.getElementById("ss_advSearchForm");
+	if (searchForm["ss_sf_id_"+forum] && searchForm["ss_sf_id_"+forum].checked) {
+		searchForm["ss_sf_id_"+forum].checked=false;
+	} else {
+		searchForm["ss_sf_id_"+forum].checked=true;
+	}
+	return false;
+}
+
+function ss_addFolderAfterPost(response, bindObjId) {
+	var bindObj = document.getElementById(bindObjId);
+	if (bindObj) {
+		bindObj.innerHTML = response;
+	}
+}
+
 function ss_removeOption(orderNo) {
 	ss_optionsArray[orderNo]="";
 	var parent = document.getElementById('block'+orderNo).parentNode;
@@ -229,7 +249,7 @@ function ss_removeOption(orderNo) {
 
 function ss_search() {
 	ss_prepareAdditionalSearchOptions();
-	document.getElementById('advSearchForm').submit();
+	document.getElementById('ss_advSearchForm').submit();
 }
 
 

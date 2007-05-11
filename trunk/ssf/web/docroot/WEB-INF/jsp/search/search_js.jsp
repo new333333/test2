@@ -10,6 +10,7 @@
  *
  */
 %>
+<%@ page import="java.util.ArrayList" %>
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
 </script>
@@ -34,7 +35,7 @@ var ss_AdvancedSearchURLNoOperation = "<portlet:actionURL windowState="maximized
 				<portlet:param name="tabId" value="${tabId}"/>
 		</portlet:actionURL>";
 var ss_AdvancedSearchURL = ss_AdvancedSearchURLNoOperation + "&operation=viewPage";
-var ss_currentTabId = "${tabId}";		
+var ss_currentTabId = "${tabId}";
 
 var ss_overwriteQuestion = "<ssf:nlt tag="search.save.overwriteQuestion"/>";
 var ss_noNameMsg="<ssf:nlt tag="search.save.noName"/>";

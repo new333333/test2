@@ -698,12 +698,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
             luceneSession.close();
         }
         ArrayList tagList = new ArrayList();
-		for (int j = 0; j < tags.size(); j++) {
-			HashMap tag = new HashMap();
-			String strTag = (String) tags.get(j);
-			tag.put(WebKeys.TAG_NAME, strTag);
-			tagList.add(tag);
-		}
+        if (tags != null) {
+			for (int j = 0; j < tags.size(); j++) {
+				HashMap tag = new HashMap();
+				String strTag = (String) tags.get(j);
+				tag.put(WebKeys.TAG_NAME, strTag);
+				tagList.add(tag);
+			}
+        }
 		return tagList;
 	}
 	

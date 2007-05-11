@@ -1,9 +1,6 @@
 
 function ss_initSearchMainMask() {
 	// fill the search mask form
-	ss_fillSearchMask("searchText_adv", "<ssf:escapeJavaScript value="${ss_filterMap.searchText}"/>");
-	ss_fillSearchMask("searchAuthors", "<ssf:escapeJavaScript value="${ss_filterMap.searchAuthors}"/>");
-	ss_fillSearchMask("searchTags", "<ssf:escapeJavaScript value="${ss_filterMap.searchTags}"/>");
 	<c:if test="${!empty ss_filterMap.searchJoinerAnd && ss_filterMap.searchJoinerAnd}">
 		if (document.getElementById("searchJoinerAnd")) document.getElementById("searchJoinerAnd").checked="true";
 	</c:if>

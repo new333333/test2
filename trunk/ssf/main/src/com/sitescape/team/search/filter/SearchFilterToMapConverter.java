@@ -23,6 +23,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
@@ -97,6 +98,8 @@ public class SearchFilterToMapConverter {
 	    		String searchedText = "";
 	    		String searchedTags = "";
 	    		String searchedAuthors = "";
+	    		List searchFolders = new ArrayList();
+	    		Boolean searchSubfolders = Boolean.FALSE;
 	    		Map blocks = new HashMap();
 	    		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
 	    		if (liFilterTermsTerm.size() > 0) {
@@ -109,6 +112,11 @@ public class SearchFilterToMapConverter {
 	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAuthor)) {
 	    	    			if (searchedAuthors.equals("")) searchedAuthors = filterTerm.getText(); 
 	    	    			else  searchedAuthors = searchedAuthors.concat(" "+filterTerm.getText());
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
+	    	    			searchFolders.addAll(createFolderIdsList(filterTerm));
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
+	    	    			searchFolders.addAll(createFolderIdsList(filterTerm));
+	    	    			searchSubfolders = Boolean.TRUE;
 	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
 	    	    			if (searchedTags.equals("")) searchedTags = filterTerm.getText(); 
 	    	    			else  searchedTags = searchedTags.concat(" "+filterTerm.getText());
@@ -145,6 +153,8 @@ public class SearchFilterToMapConverter {
 	    		convertedQuery.put(SearchFilterKeys.SearchText, searchedText);
 	    		convertedQuery.put(SearchFilterKeys.SearchAuthors, searchedAuthors);
 	    		convertedQuery.put(SearchFilterKeys.SearchTags, searchedTags);
+	    		convertedQuery.put(SearchFilterKeys.SearchFolders, searchFolders);
+	    		convertedQuery.put(SearchFilterKeys.SearchSubfolders, searchSubfolders);
 	    		convertedQuery.put(SearchFilterKeys.SearchJoiner, andJoiner);
 	    		convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
 	    	}
@@ -157,6 +167,21 @@ public class SearchFilterToMapConverter {
 		return result;
 	}
 	
+	private List createFolderIdsList(Element filterTerm) {
+		List folderIds = new ArrayList();
+		
+		if (filterTerm.selectNodes(SearchFilterKeys.FilterFolderId).size() > 0) {
+			Iterator itTermStates = filterTerm.selectNodes(SearchFilterKeys.FilterFolderId).iterator();			
+			while (itTermStates.hasNext()) {
+				String folderId = ((Element) itTermStates.next()).getText();
+				if (!folderId.equals("")) {
+					folderIds.add(folderId);
+				}
+			}
+		}
+		return folderIds;
+	}
+
 	private Map createEntryBlock(Element filterTerm, DefinitionModule definitionModule, ProfileModule profileModule) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));

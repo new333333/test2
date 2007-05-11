@@ -267,7 +267,6 @@ public class AjaxController  extends SAbstractController {
 				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
 			return ajaxGetSearchFormData(request, response);
-
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {

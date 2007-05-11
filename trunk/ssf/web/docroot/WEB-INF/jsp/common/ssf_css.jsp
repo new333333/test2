@@ -4005,7 +4005,12 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
-
+#ss_searchForm_main th, #ss_searchForm_main td {
+	vertical-align: top;
+}
+#ss_searchForm_main table div.ss_additionals {
+	margin-top: 10px;
+}
 input.ss_saveQueryName, input.ss_saveQueryNameUnactive {
 	width: 100px;
 }

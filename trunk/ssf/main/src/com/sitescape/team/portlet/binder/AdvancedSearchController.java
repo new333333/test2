@@ -57,6 +57,7 @@ import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -89,6 +90,8 @@ public class AdvancedSearchController extends AbstractBinderController {
         Workspace top = getWorkspaceModule().getTopWorkspace();
 		BinderHelper.buildNavigationLinkBeans(this, top, model);
 		model.put(WebKeys.DEFINITION_ENTRY, top);
+
+		model.put(WebKeys.SEARCH_TOP_FOLDER_ID, Collections.singletonList(top.getId().toString()));
         
         if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model.putAll(prepareSearchResultData(request));
@@ -117,6 +120,10 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Definition def = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
     	model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
+    	
+		Workspace ws = getWorkspaceModule().getWorkspace();
+		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		model.put(WebKeys.DOM_TREE, tree);
 	}
 
 	private String getUserLocale() {
@@ -232,6 +239,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("quickSearch", false);
+		
+		
+		Workspace ws = getWorkspaceModule().getWorkspace();
+		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		model.put(WebKeys.DOM_TREE, tree);
 		
 		return model;
 	}
