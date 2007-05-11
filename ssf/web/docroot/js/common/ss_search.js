@@ -308,9 +308,69 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 		inputObj.focus();
 		return;
 	}
+	if (!ss_nameAlreadyInUse(queryName) || (ss_overwrite(queryName))) {
+	
+		var url = ss_AjaxBaseUrl;
+		url += "&operation=save_search_query";
+		url += "&queryName=" + queryName;
+		url += "&tabId=" + ss_currentTabId;
+		
+		var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+				if (data.savedQueryName) {
+					ss_addSavedSearchToView(data);
+				} else {
+					alert(ss_not_logged_in);
+				}
+			},
+			preventCache: true,
+			mimetype: "text/json",
+			method: "post"
+		};   
+		dojo.io.bind(bindArgs);	
+	}
+	
+}
+function ss_callRemoveSavedQuery(queryName, errMsg, objToRemove) { 
+	return function(evt) {ss_removeSavedSearchQuery(queryName, errMsg, objToRemove);};
+}
 
+function ss_addSavedSearchToView(data) {
+	if (!ss_nameAlreadyInUse(data.savedQueryName)) {
+		var savedQueriesList = document.getElementById("ss_savedQueriesList");	
+		var newLi = document.createElement("li");
+	
+		var removerLink = document.createElement('a');
+		removerLink.href = "javascript: //;";
+		dojo.event.connect(removerLink, "onclick", ss_callRemoveSavedQuery(data.savedQueryName,'ss_saveQueryErrMsg', newLi));
+		var removerImg = document.createElement('img');
+		removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+		removerLink.appendChild(removerImg);
+		
+		var queryLink = document.createElement("a");
+		queryLink.href = ss_AdvancedSearchURLNoOperation + "&operation=ss_savedQuery&ss_queryName=" + data.savedQueryName;
+		queryLink.innerHTML = data.savedQueryName;
+		
+		newLi.appendChild(removerLink);
+		newLi.appendChild(document.createTextNode(" "))
+		newLi.appendChild(queryLink);
+		
+		savedQueriesList.appendChild(newLi);
+		ss_addToSaved(data.savedQueryName);
+	}
+}
+
+
+function ss_removeSavedSearchQuery(queryName, errMsgBoxId, objToRemove) {
+	if (!queryName) {
+		return;
+	}
 	var url = ss_AjaxBaseUrl;
-	url += "&operation=save_search_query";
+	url += "&operation=remove_search_query";
 	url += "&queryName=" + queryName;
 	url += "&tabId=" + ss_currentTabId;
 	
@@ -320,8 +380,8 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 			alert(ss_not_logged_in);
 		},
 		load: function(type, data, evt) {
-			if (data.savedQueryName) {
-				ss_addSavedSearchToView(data);
+			if (data.removedQueryName) {
+				ss_removeSavedSearchFromView(objToRemove, data.removedQueryName);
 			} else {
 				alert(ss_not_logged_in);
 			}
@@ -333,18 +393,31 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 	dojo.io.bind(bindArgs);	
 }
 
-function ss_addSavedSearchToView(data) {
-	var savedQueriesList = document.getElementById("ss_savedQueriesList");	
-	var newLi = document.createElement("li");
-	
-	var queryLink = document.createElement("a");
-	queryLink.href = ss_AdvancedSearchURLNoOperation + "&operation=ss_savedQuery&ss_queryName=" + data.savedQueryName;
-	queryLink.innerHTML = data.savedQueryName;
-	
-	newLi.appendChild(queryLink);
-	
-	savedQueriesList.appendChild(newLi);
+function ss_removeSavedSearchFromView(objToRemove, queryName) {
+	ss_removeFromSaved(queryName);
+	objToRemove.parentNode.removeChild(objToRemove);
 }
 
+var ss_savedQueries = "|";
 
-
+function ss_addToSaved(queryName) {
+	if (!ss_nameAlreadyInUse(queryName)) {
+		ss_savedQueries = ss_savedQueries+queryName+"|";
+	}
+}
+function ss_overwrite(queryName) {
+	var answer = confirm("Do you want overwrite old query?")
+	if (answer)	return true;
+	else return false;
+}
+function ss_removeFromSaved(queryName){
+	var extendedName = "|"+queryName+"|";
+	ss_savedQueries = ss_savedQueries.replace(extendedName, "|");
+}
+function ss_nameAlreadyInUse(queryName) {
+	if (ss_savedQueries.indexOf("|"+queryName+"|")>-1) {
+		return true;
+	} else {
+		return false;
+	}
+}
