@@ -20,7 +20,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
-import com.sitescape.team.lucene.CJKAnalyzer;
+import com.sitescape.team.lucene.ChineseAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.ReflectHelper;
@@ -98,7 +98,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new CJKAnalyzer());
+				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new ChineseAnalyzer());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
