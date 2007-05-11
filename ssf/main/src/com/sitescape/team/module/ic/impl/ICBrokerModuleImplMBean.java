@@ -10,7 +10,7 @@
  */
 package com.sitescape.team.module.ic.impl;
 
-public interface ICBrokerImplMBean {
+public interface ICBrokerModuleImplMBean {
 
 	public String getAdminId();
 	
