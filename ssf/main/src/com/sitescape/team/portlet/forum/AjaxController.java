@@ -128,6 +128,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxSaveCalendarEventsDisplayType(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
 				ajaxSaveSearchQuery(request, response);
+			} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
+				ajaxRemoveSearchQuery(request, response);
 			}
 		}
 	}
@@ -332,6 +334,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxFindEntryForFile(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
 			return ajaxGetSearchQueryName(request, response);
+		} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
+			return ajaxGetRemovedQueryName(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -2038,6 +2042,23 @@ public class AjaxController  extends SAbstractController {
 		userQueries.put(queryName, query);
 		userProperties.setProperty(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
 	}
+
+	private void ajaxRemoveSearchQuery(ActionRequest request, 
+			ActionResponse response) throws PortletRequestBindingException {
+		String queryName = PortletRequestUtils.getStringParameter(request, "queryName", "");
+		
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = getProfileModule().getUserProperties(currentUser.getId());
+		Map properties = userProperties.getProperties();
+		
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			Map userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+			if (userQueries.containsKey(queryName)) {
+				userQueries.remove(queryName);
+			}
+		}
+	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
 		String queryName = PortletRequestUtils.getStringParameter(request, "queryName", "");
@@ -2062,5 +2083,23 @@ public class AjaxController  extends SAbstractController {
 		
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/searchQuery", model);
-	}		
+	}	
+	private ModelAndView ajaxGetRemovedQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
+		String queryName = PortletRequestUtils.getStringParameter(request, "queryName", "");
+
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = getProfileModule().getUserProperties(currentUser.getId());
+		Map properties = userProperties.getProperties();
+
+		Map model = new HashMap();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			Map userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+			if (!userQueries.containsKey(queryName)) {
+				model.put("ss_queryName", queryName);
+			}
+		}
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/removeSearchQuery", model);		
+	}
 }
