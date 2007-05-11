@@ -284,6 +284,44 @@ function ss_showPermalink(obj) {
 	}
 }
 
+//Routine to fetch a url in a iframe window (for accessibility mode)
+function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
+    var iframeDivObj = self.document.getElementById("ss_reusableIframeDiv");
+    var iframeObj = self.document.getElementById("ss_reusableIframe");
+    var anchorDivObj = self.parent.document.getElementById(anchorDivName);
+    if (iframeDivObj == null) {
+	    iframeDivObj = self.document.createElement("div");
+        iframeDivObj.setAttribute("id", "ss_reusableIframeDiv");
+        iframeDivObj.name = "ss_reusableIframeDiv";
+		iframeDivObj.className = "ss_popupMenu";
+		iframeDivObj.style.zIndex = ssPopupZ;
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_reusableIframe");
+		iframeDivObj.appendChild(iframeObj);
+	    var closeDivObj = self.document.createElement("div");
+	    closeDivObj.style.border = "2px solid gray";
+	    closeDivObj.style.marginTop = "1px";
+	    closeDivObj.style.padding = "6px";
+	    iframeDivObj.appendChild(closeDivObj);
+	    var aObj = self.document.createElement("a");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_reusableIframeDiv');");
+	    aObj.style.border = "2px outset black";
+	    aObj.style.padding = "2px";
+	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
+	    closeDivObj.appendChild(aObj);
+		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+    }
+    iframeObj.style.width = parseInt(width) + "px"
+    iframeObj.style.height = parseInt(height) + "px"
+	ss_showDiv("ss_reusableIframeDiv");
+	var x = dojo.html.getAbsolutePosition(anchorDivObj, true).x
+	var y = dojo.html.getAbsolutePosition(anchorDivObj, true).y
+    ss_setObjectTop(iframeDivObj, y + "px");
+    ss_setObjectLeft(iframeDivObj, x + "px");
+	iframeObj.src = url;
+}
+
+
 //Routine to close a pop-up form window if the cancel button is clicked
 //  This routine checks to see if it is in a pop-up or in an iframe
 function ss_cancelButtonCloseWindow() {

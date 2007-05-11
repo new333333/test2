@@ -373,6 +373,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 <table width="100%" cellpadding="1" cellspacing="0" border="0">
 <tr class="ss_row_txt">
   <td width="75" rowspan="4"><!-- My workspace -->
+<ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace_big" 
       onClick="self.location.href='<portlet:renderURL 
       	windowState="maximized"><portlet:param 
@@ -389,8 +390,27 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    </div>
 	  </ssHelpSpot>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible" >
+	  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="13" offsetX="0" 
+	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+	  </ssHelpSpot>
+	<a href="<portlet:renderURL 
+      	windowState="maximized"><portlet:param 
+      	name="action" value="view_ws_listing"/><portlet:param 
+      	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
+      	name="entryId" value="${ssUser.id}"/><portlet:param 
+      	name="newTab" value="1"/></portlet:renderURL>"
+    ><img <ssf:alt tag="navigation.myWorkspace"/> src="<html:imagesPath/>icons/toolbar_myworkspace_big.jpg"/></a>
+	    <div id="ss_navbarMyWorkspaceButton">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
+	    </div>
+	  </div>
+</ssf:ifaccessible>
   </td>
   <td width="75" rowspan="4"><!-- Favorites -->
+<ssf:ifnotaccessible>
     <div class="ss_global_toolbar_favs_big" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
       onMouseOver="this.style.cursor = 'pointer';"
     >
@@ -403,10 +423,33 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    ><img <ssf:alt tag="navigation.favorites"/> border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </ssHelpSpot>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible">
+      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="0" offsetY="13"  
+          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+	  </ssHelpSpot>
+	<a href="javascript: ss_showFavoritesPane('<portlet:namespace/>');"
+    ><img <ssf:alt tag="navigation.favorites"/> src="<html:imagesPath/>icons/toolbar_favorites_big.jpg"/></a>
+	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
+	    </div>
+	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;clear:both;"
+	    ></div>
+	</div>
+</ssf:ifaccessible>
   </td>
-  <td class="ss_global_toolbar_portlet_box" colspan="3"><span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span></td>
+  
+  <td class="ss_global_toolbar_portlet_box" colspan="3">
+    <span class="ss_global_toolbar_label_text_quickSearch">
+      <label for="ss_searchSearchText<portlet:namespace/>">
+        <ssf:nlt tag="navigation.search"/>
+      </label>
+    </span>
+  </td>
   <td rowspan="4" width="100%"></td>
   <td valign="top" rowspan="4"><!-- Help button -->
+<ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();return false;"
       onMouseOver="this.style.cursor = 'pointer';">
 	  <ssHelpSpot helpId="navigation_bar/help_button" offsetX="-22" offsetY="6"
@@ -417,10 +460,24 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    </div>
 	  </ssHelpSpot>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible">
+	  <ssHelpSpot helpId="navigation_bar/help_button" offsetX="-22" offsetY="6"
+	      title="<ssf:nlt tag="helpSpot.helpButton"/>">
+	  </ssHelpSpot>
+	  <a href="javascript: ss_helpSystem.run();">
+	        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/toolbar_help.gif" /></a>
+		    <div id="ss_navbarHelpButton">
+		      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+		    </div>
+	</div>
+</ssf:ifaccessible>
   </td>
 </tr>
 <tr>
   <td class="ss_global_toolbar_portlet_box" colspan="3"><!-- Search form -->
+<ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>">
 		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
 		  name="ss_simpleSearchForm<portlet:namespace/>" 
@@ -448,6 +505,36 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			</portlet:actionURL>"
 			><ssf:nlt tag="navigation.search.advanced"/></a>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarSearchButton<portlet:namespace/>" >
+	  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="0" offsetY="-10"
+	    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+	  </ssHelpSpot>
+ 		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
+	  		name="ss_simpleSearchForm<portlet:namespace/>" 
+	  		action="<portlet:actionURL windowState="maximized">
+					<portlet:param name="action" value="advanced_search"/>
+					<portlet:param name="newTab" value="1"/>
+					</portlet:actionURL>"
+			style="display: inline;">
+				<input name="searchText" type="text" id="ss_searchSearchText<portlet:namespace/>" /> 
+				<a class="ss_searchButton" 
+				  href="javascript: document.ss_simpleSearchForm<portlet:namespace/>.submit();" ><img 
+				  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" /></a>
+				<input type="hidden" name="searchBtn" value="searchBtn"/>
+				<input type="hidden" name="quickSearch" value="true"/>					
+				<input type="hidden" name="operation" value="ss_searchResults"/>
+		</form>
+		
+		<a class="ss_advanced" href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="advanced_search"/>
+			<portlet:param name="tabTitle" value="SEARCH FORM"/>
+			<portlet:param name="newTab" value="0"/>
+			</portlet:actionURL>"
+			><ssf:nlt tag="navigation.search.advanced"/></a>
+ 	</div>
+</ssf:ifaccessible>
   </td>
 </tr>
 <tr class="ss_row_txt">
@@ -457,6 +544,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 </tr>
 <tr class="ss_row_last">
   <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find people-->
+<ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findUserForm<portlet:namespace/>" name="ss_findUserForm<portlet:namespace/>" 
@@ -472,9 +560,33 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 		  </ssHelpSpot>
 		</form>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindUserButton<portlet:namespace/>">
+	  <ssHelpSpot helpId="navigation_bar/findUser_button" offsetX="0" 
+	    title="<ssf:nlt tag="helpSpot.findUserButton"/>">
+	  </ssHelpSpot>
+		<div>
+			<form method="post" id="ss_findUserForm<portlet:namespace/>" name="ss_findUserForm<portlet:namespace/>" 
+			  action="<portlet:actionURL windowState="maximized">
+				<portlet:param name="action" value="findUser"/>
+				</portlet:actionURL>">
+				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
+				    formElement="searchText" 
+				    type="user"
+				    width="70px" singleItem="true"> 
+				  <ssf:param name="label" useBody="true">
+				    <ssf:nlt tag="navigation.findUser"/>
+				  </ssf:param>
+				  </ssf:find>
+			</form>
+		</div>
+	</div>
+</ssf:ifaccessible>
   </td>
-  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find places form 
-    --><div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<portlet:namespace/>"
+  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find places form -->
+<ssf:ifnotaccessible>
+    <div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findPlacesForm<portlet:namespace/>" name="ss_findPlacesForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
@@ -489,9 +601,33 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 		  </ssHelpSpot>
 		</form>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindPlacesButton<portlet:namespace/>">
+	  <ssHelpSpot helpId="navigation_bar/findPlaces_button" offsetX="0" 
+	    title="<ssf:nlt tag="helpSpot.findPlacesButton"/>">
+	  </ssHelpSpot>
+		<div>
+			<form method="post" id="ss_findPlacesForm<portlet:namespace/>" name="ss_findPlacesForm<portlet:namespace/>" 
+			  action="<portlet:actionURL windowState="maximized"><portlet:param 
+			  	name="action" value="findUser"/></portlet:actionURL>">
+				  <ssf:find 
+				    formName="ss_findPlacesForm${renderResponse.namespace}" 
+				    formElement="searchText" 
+				    type="places"
+				    width="70px" singleItem="true"> 
+				  <ssf:param name="label" useBody="true">
+				    <ssf:nlt tag="navigation.findPlace"/>
+				  </ssf:param>
+				  </ssf:find>
+			</form>
+		</div>
+	</div>
+</ssf:ifaccessible>
   </td>
-  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find tags form 
-   --><div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton<portlet:namespace/>"
+  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find tags form -->
+<ssf:ifnotaccessible>
+   <div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<ssHelpSpot helpId="navigation_bar/findTags_button" offsetX="30" offsetY="-1" 
 		    title="<ssf:nlt tag="helpSpot.findTagsButton"/>">
@@ -506,6 +642,29 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 		</form>
 		</ssHelpSpot>
 	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible" id="ss_navbarFindTagsButton<portlet:namespace/>">
+		<ssHelpSpot helpId="navigation_bar/findTags_button" offsetX="0" offsetY="0" 
+		    title="<ssf:nlt tag="helpSpot.findTagsButton"/>">
+		</ssHelpSpot>
+		<div>
+			<form method="post" id="ss_findTagsForm<portlet:namespace/>" name="ss_findTagsForm<portlet:namespace/>" 
+			  action="<portlet:actionURL windowState="maximized"><portlet:param 
+			  	name="action" value="findUser"/></portlet:actionURL>">
+				  <ssf:find 
+				    formName="ss_findTagsForm${renderResponse.namespace}" 
+				    formElement="searchText" 
+				    type="tags"
+				    width="70px" singleItem="true"> 
+				  <ssf:param name="label" useBody="true">
+				    <ssf:nlt tag="navigation.findTag"/>
+				  </ssf:param>
+				  </ssf:find>
+			</form>
+		</div>
+	</div>
+</ssf:ifaccessible>
   </td>
 </tr>
 </table>
