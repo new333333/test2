@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.ic.impl;
+package com.sitescape.team.module.ic.impl;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -25,8 +25,8 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.ic.ICBrokerModule;
-import com.sitescape.team.ic.ICException;
+import com.sitescape.team.module.ic.ICBrokerModule;
+import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;

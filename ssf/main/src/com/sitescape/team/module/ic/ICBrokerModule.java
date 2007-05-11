@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.ic;
+package com.sitescape.team.module.ic;
 
 import java.util.Set;
 import java.util.Vector;
