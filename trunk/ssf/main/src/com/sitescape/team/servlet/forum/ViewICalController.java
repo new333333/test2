@@ -34,6 +34,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.SpringContextUtil;
@@ -47,8 +48,13 @@ import org.springframework.web.bind.RequestUtils;
 
 public class ViewICalController extends SAbstractController {
 	
-	public void initApplicationContext() {
-		
+	private IcalGenerator icalGenerator;
+	
+	protected IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
 	}
 	
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,

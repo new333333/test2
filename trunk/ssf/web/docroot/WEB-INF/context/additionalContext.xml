@@ -7,7 +7,7 @@
 
 	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
 	
-	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
+	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="reportModule"><ref bean="reportModule"/></property>

@@ -41,10 +41,15 @@ import org.springframework.web.bind.RequestUtils;
 
 public class ViewRssController extends SAbstractController {
 	
-	public void initApplicationContext() {
-		
-	}
+	private RssGenerator rssGenerator;
 	
+	protected RssGenerator getRssGenerator() {
+		return rssGenerator;
+	}
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
+	}
+
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 

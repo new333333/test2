@@ -43,6 +43,8 @@
 	</bean>	
 
 	<!-- Controllers -->
-	<bean id="get" parent="controllerDependencyTemplate" class="com.sitescape.team.ical.servlet.GetController"/>
+	<bean id="get" parent="dependOnAllModulesTemplate" class="com.sitescape.team.ical.servlet.GetController">
+		<property name="icalGenerator"><ref bean="icalGenerator"/></property>
+	</bean>
 
 </beans>

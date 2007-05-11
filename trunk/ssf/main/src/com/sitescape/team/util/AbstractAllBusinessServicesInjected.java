@@ -34,18 +34,8 @@ public class AbstractAllBusinessServicesInjected implements AllBusinessServicesI
 	private LdapModule ldapModule;
 	private ReportModule reportModule;
 	private FileModule fileModule;
-	private RssGenerator rssGenerator;	
 	private DashboardModule dashboardModule;
-	private ICBrokerModule icBroker;
-	private IcalGenerator icalGenerator;
-
-	public RssGenerator getRssGenerator() {
-		return rssGenerator;
-	}
-
-	public void setRssGenerator(RssGenerator rssGenerator) {
-		this.rssGenerator = rssGenerator;
-	}
+	private ICBrokerModule icBrokerModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -143,19 +133,11 @@ public class AbstractAllBusinessServicesInjected implements AllBusinessServicesI
 	}
 	
 	public ICBrokerModule getIcBrokerModule() {
-		return icBroker;
+		return icBrokerModule;
 	}
 
 	public void setIcBrokerModule(ICBrokerModule icBroker) {
-		this.icBroker = icBroker;
+		this.icBrokerModule = icBroker;
 	}
 
-	public IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
-	}
-	
 }

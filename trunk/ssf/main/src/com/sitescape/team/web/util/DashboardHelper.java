@@ -40,24 +40,9 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.ical.IcalGenerator;
-import com.sitescape.team.module.admin.AdminModule;
-import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.dashboard.DashboardModule;
-import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.file.FileModule;
-import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.ic.ICBrokerModule;
-import com.sitescape.team.module.ldap.LdapModule;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.workflow.WorkflowModule;
-import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
-import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.filter.SearchFilter;
@@ -65,7 +50,7 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AbstractAllBusinessServicesInjected;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -76,7 +61,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
-public class DashboardHelper implements AllBusinessServicesInjected {
+public class DashboardHelper extends AbstractAllBusinessServicesInjected {
 	private static DashboardHelper instance; // A singleton instance
 
 	//Dashboard map keys
@@ -119,22 +104,6 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
 	//Form keys
 	public final static String ElementNamePrefix = "data_";
-
-	private EmployeeModule employeeModule;
-	private WorkspaceModule workspaceModule;
-	private FolderModule folderModule;
-	private AdminModule adminModule;
-	private ProfileModule profileModule;
-	private DefinitionModule definitionModule;
-	private WorkflowModule workflowModule;
-	private BinderModule binderModule;
-	private LdapModule ldapModule;
-	private ReportModule reportModule;
-	private FileModule fileModule;
-	private RssGenerator rssGenerator;
-	private IcalGenerator icalGenerator;
-	private DashboardModule dashboardModule;
-	private ICBrokerModule icBroker;
 	
 	public DashboardHelper() {
 		if(instance != null)
@@ -145,122 +114,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     public static DashboardHelper getInstance() {
     	return instance;
     }
-	
-	public RssGenerator getRssGenerator() {
-		return rssGenerator;
-	}
-	/**
-	 * @param rssGenerator The rssGenerator to set.
-	 */
-	public void setRssGenerator(RssGenerator rssGenerator) {
-		this.rssGenerator = rssGenerator;
-	}
-	
-	public IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-	/**
-	 * @param rssGenerator The rssGenerator to set.
-	 */
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
-	}
-
-	public void setEmployeeModule(EmployeeModule employeeModule) {
-		this.employeeModule = employeeModule;
-	}
-	
-	public EmployeeModule getEmployeeModule() {
-		return employeeModule;
-	}
-	public void setBinderModule(BinderModule binderModule) {
-		this.binderModule = binderModule;
-	}
-	
-	public BinderModule getBinderModule() {
-		return binderModule;
-	}
-
-	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
-		this.workspaceModule = workspaceModule;
-	}
-	
-	public WorkspaceModule getWorkspaceModule() {
-		return workspaceModule;
-	}
-
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	
-	public FolderModule getFolderModule() {
-		return folderModule;
-	}
-	
-	public void setAdminModule(AdminModule adminModule) {
-		this.adminModule = adminModule;
-	}
-	
-	public AdminModule getAdminModule() {
-		return adminModule;
-	}
-
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-	
-	public ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	
-	public DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-
-	public WorkflowModule getWorkflowModule() {
-		return workflowModule;
-	}
-
-	public void setWorkflowModule(WorkflowModule workflowModule) {
-		this.workflowModule = workflowModule;
-	}
-	
-	public void setLdapModule(LdapModule ldapModule) {
-		this.ldapModule = ldapModule;
-	}
-	
-	public LdapModule getLdapModule() {
-		return ldapModule;
-	}
-	
-	public void setFileModule(FileModule fileModule) {
-		this.fileModule = fileModule;
-	}
-	
-	public FileModule getFileModule() {
-		return fileModule;
-	}
-	
-	public void setDashboardModule(DashboardModule dashboardModule) {
-		this.dashboardModule = dashboardModule;
-	}
-	
-	public DashboardModule getDashboardModule() {
-		return dashboardModule;
-	}
-
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
-	}
-	
-	public ReportModule getReportModule() {
-		return reportModule;
-	}
-	
+		
     protected static void getDashboardBeans(Binder binder, Map ssDashboard, Map model, boolean isConfig) {
 		//Go through each list and build the needed beans
     	List componentList = new ArrayList();
@@ -1655,12 +1509,6 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			if (wt.size() > 0 || nf.size() > 0 || nv.size() > 0 || wb.size() > 0) dashboardContentExists = true;
 		}
 		return dashboardContentExists;
-	}
-	public ICBrokerModule getIcBrokerModule() {
-		return icBroker;
-	}
-	public void setIcBrokerModule(ICBrokerModule icBroker) {
-		this.icBroker = icBroker;
 	}
 
 	public static boolean checkIfAnyContentExists(Map dashboard) {

@@ -43,10 +43,8 @@ implements AllBusinessServicesInjected {
 	private LdapModule ldapModule;
 	private ReportModule reportModule;
 	private FileModule fileModule;
-	private RssGenerator rssGenerator;
-	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
-	private ICBrokerModule icBroker;
+	private ICBrokerModule icBrokerModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -125,22 +123,6 @@ implements AllBusinessServicesInjected {
 		return fileModule;
 	}
 
-	public void setRssGenerator(RssGenerator rssGenerator) {
-		this.rssGenerator = rssGenerator;
-	}
-	
-	public RssGenerator getRssGenerator() {
-		return rssGenerator;
-	}
-	
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
-	}
-	
-	public IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-	
 	public void setDashboardModule(DashboardModule dashboardModule) {
 		this.dashboardModule = dashboardModule;
 	}
@@ -158,10 +140,10 @@ implements AllBusinessServicesInjected {
 	}
 	
 	public ICBrokerModule getIcBrokerModule() {
-		return icBroker;
+		return icBrokerModule;
 	}
 
-	public void setIcBrokerModule(ICBrokerModule icBroker) {
-		this.icBroker = icBroker;
+	public void setIcBrokerModule(ICBrokerModule icBrokerModule) {
+		this.icBrokerModule = icBrokerModule;
 	}
 }

@@ -4,7 +4,7 @@
 
 	<!-- Controllers -->
 
-	<bean id="welcomeController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.help.WelcomeController" />
+	<bean id="welcomeController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.help.WelcomeController" />
 
 	<!-- Handlers -->
 

@@ -19,11 +19,21 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 
 public class ListController extends SAbstractController {
+
+	private RssGenerator rssGenerator;
+	
+	protected RssGenerator getRssGenerator() {
+		return rssGenerator;
+	}
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
+	}
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

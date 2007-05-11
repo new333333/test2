@@ -74,6 +74,6 @@
 
 	<!-- Controllers -->
 
-	<bean id="portletAdapter" parent="controllerDependencyTemplate" class="com.sitescape.team.portletadapter.servlet.PortletAdapterController"/>
+	<bean id="portletAdapter" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portletadapter.servlet.PortletAdapterController"/>
 
 </beans>

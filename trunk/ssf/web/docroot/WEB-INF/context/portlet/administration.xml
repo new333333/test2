@@ -3,23 +3,23 @@
 <beans>
 
 	<!-- Controllers -->
-	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
-	<bean id="definitionBuilderXmlController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewDefinitionXmlController" />
-	<bean id="adminViewController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ViewController" />
-	<bean id="adminConfigureLdapController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ConfigureLdapController" />
-	<bean id="adminConfigureRolesController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ConfigureRolesController" />
-	<bean id="adminConfigurePostingJobController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
-	<bean id="adminConfigureSearchIndexController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
-	<bean id="adminImportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
-	<bean id="adminExportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ExportDefinitionController" />
-	<bean id="adminConfigureConfigurationController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
-	<bean id="adminImportProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
-	<bean id="adminManageGroupsController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
-	<bean id="adminViewChangeLogController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
-	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
-	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
-	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
-	<bean id="adminReportController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ReportController" />
+	<bean id="definitionBuilderController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
+	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewDefinitionXmlController" />
+	<bean id="adminViewController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewController" />
+	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureRolesController" />
+	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminImportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
+	<bean id="adminExportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ExportDefinitionController" />
+	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
+	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
+	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
+	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
+	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
+	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
+	<bean id="adminReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ReportController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">

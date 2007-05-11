@@ -4,13 +4,13 @@
 
 	<!-- Controllers -->
 
-	<bean id="widgetTestController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.widget_test.WidgetTestController" />
-	<bean id="treeController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.widget_test.TreeController" />
-	<bean id="timepickerController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.widget_test.TimepickerController" />	
-	<bean id="eventController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.widget_test.EventController" />	
-	<bean id="fragmentController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.widget_test.FragmentController" />
-	<bean id="definitionBuilderController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
-	<bean id="flushController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.widget_test.FlushController" />
+	<bean id="widgetTestController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.widget_test.WidgetTestController" />
+	<bean id="treeController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.widget_test.TreeController" />
+	<bean id="timepickerController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.widget_test.TimepickerController" />	
+	<bean id="eventController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.widget_test.EventController" />	
+	<bean id="fragmentController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.widget_test.FragmentController" />
+	<bean id="definitionBuilderController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
+	<bean id="flushController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.widget_test.FlushController" />
 
 	<!-- Handlers -->
 

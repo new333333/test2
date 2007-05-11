@@ -46,8 +46,9 @@
 	</bean>
 	-->
 
-	<!-- Template for the common dependency injection for controllers -->
-	<bean id="controllerDependencyTemplate" lazy-init="true" abstract="true">
+	<!-- Template for expressing dependencies on all modules.
+	     Do NOT ever add to this template any bean that is not a module. -->
+	<bean id="dependOnAllModulesTemplate" lazy-init="true" abstract="true">
 		<property name="adminModule"><ref bean="adminModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
@@ -57,9 +58,7 @@
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
-		<property name="fileModule"><ref bean="fileModule"/></property>
-		<property name="rssGenerator"><ref bean="rssGenerator"/></property>
-		<property name="icalGenerator"><ref bean="icalGenerator"/></property>	
+		<property name="fileModule"><ref bean="fileModule"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
@@ -190,6 +189,7 @@
 	</bean>
 	
 	<bean id="nlt" class="com.sitescape.team.util.NLT"/>
+	
 	<bean id="definitionHelper" class="com.sitescape.team.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
@@ -208,6 +208,7 @@
 			</bean>
 		</property>
 	</bean>
+	
 	<bean id="zoneConfig" class="com.sitescape.team.util.SZoneConfig">
 		<property name="configDocs">
 			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
@@ -414,15 +415,16 @@
 	
 	<!-- =========================== Business Components =========================== -->
 	
-	<!-- Template for the common dependency injection for modules.
+	<!-- Template for expressing dependencies on common services in the system.
 	     This includes DAO components and a variety of other services and managers 
 	     that are commonly used by modules. 
 	     
 	     IMPORTANT: Do NOT ever add module components to this template, since it 
-	     can cause circular dependencies among modules! Instead, dependent modules 
-	     must be specified under respective module bean declarations.  -->
+	     can cause circular dependencies among modules! Instead, inter-module
+	     dependencies must be expressed directly in the bean declaration of the
+	     refering module. -->
 	     
-	<bean id="moduleDependencyTemplate" abstract="true">
+	<bean id="dependOnCommonServicesTemplate" abstract="true">
 		<property name="coreDao"><ref local="coreDao"/></property>
 		<property name="folderDao"><ref local="folderDao"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
@@ -438,19 +440,28 @@
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 	</bean>
 	
-	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
+	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="workflowModule"><ref local="workflowModule"/></property>
+		<property name="fileModule"><ref local="fileModule"/></property>
+		<property name="pipeline"><ref local="docPipeline"/></property>
+		<property name="reportModule"><ref local="reportModule"/></property>
+	</bean>
+	
+	<bean id="employeeModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
 	</bean>
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.workspace.impl.WorkspaceModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workspace.impl.WorkspaceModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
 	</bean>
 
 	<!--  Initialize the zone and checks dependencies -->
-	<bean id="zoneModule"  parent="moduleDependencyTemplate" class="com.sitescape.team.module.zone.impl.ZoneModuleImpl" depends-on="nlt, zoneConfig, binderAccessUtils" >
+	<bean id="zoneModule"  parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.zone.impl.ZoneModuleImpl" depends-on="nlt, zoneConfig, binderAccessUtils" >
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="adminModule"><ref local="adminModule"/></property>
 		<property name="definitionModule"><ref local="definitionModule"/></property>
@@ -461,7 +472,7 @@
 	
 	<bean id="adminModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.admin.impl.AdminModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.admin.impl.AdminModuleImpl">
 				<property name="mailModule"><ref local="mailModule"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="folderModule"><ref local="folderModule"/></property>
@@ -492,7 +503,7 @@
 
 	<bean id="profileModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.profile.impl.ProfileModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
 				<property name="adminModule"><ref local="adminModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
@@ -514,45 +525,17 @@
 		</property>
 	</bean>
 
-	<bean id="defaultWorkspaceCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="workflowModule"><ref local="workflowModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
-		<property name="pipeline"><ref local="docPipeline"/></property>
-		<property name="reportModule"><ref local="reportModule"/></property>
-	</bean>
+	<bean id="defaultWorkspaceCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
 
-	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="workflowModule"><ref local="workflowModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
-		<property name="pipeline"><ref local="docPipeline"/></property>
-		<property name="reportModule"><ref local="reportModule"/></property>
-	</bean>
+	<bean id="defaultFolderCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 
-	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="workflowModule"><ref local="workflowModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
-		<property name="pipeline"><ref local="docPipeline"/></property>
-		<property name="reportModule"><ref local="reportModule"/></property>
-	</bean>
+	<bean id="defaultProfileCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor"/>
 
-	<bean id="defaultTemplateCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.binder.impl.DefaultTemplateCoreProcessor">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="workflowModule"><ref local="workflowModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
-		<property name="pipeline"><ref local="docPipeline"/></property>
-		<property name="reportModule"><ref local="reportModule"/></property>
-	</bean>
+	<bean id="defaultTemplateCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.binder.impl.DefaultTemplateCoreProcessor"/>
 	
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.binder.impl.BinderModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.binder.impl.BinderModuleImpl">
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
@@ -588,7 +571,7 @@
 
 	<bean id="definitionModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref local="workflowModule"/></property>
 				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 			</bean>	
@@ -597,12 +580,12 @@
 
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.dashboard.impl.DashboardModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.dashboard.impl.DashboardModuleImpl">
 				<property name="binderModule"><ref local="binderModule"/></property>
 			</bean>	
 		</property>
 	</bean>
-	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter">
+	<bean id="defaultFolderEmailFormatter" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
@@ -611,17 +594,13 @@
 	
 	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler, workflowFactory" >
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl"/>
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl"/>
 		</property>
 	</bean>	
 
 
-	<bean id="fileModule" class="com.sitescape.team.module.file.impl.FileModuleImpl">
+	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.file.impl.FileModuleImpl">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>		
-		<property name="folderDao"><ref local="folderDao"/></property>		
-		<property name="profileDao"><ref local="profileDao"/></property>
-		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="contentFilter">
 			<bean class="com.sitescape.team.module.file.impl.VirusScanningFilter"/>
 		</property>			
@@ -634,28 +613,21 @@
 	</bean>
 	
 	<bean id="reportModule"  parent="baseTransactionProxy">
-		<!--  dependences prevent inheriting from moduleDependencyTemplate -->
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
 		<property name="target">
 			<bean class="com.sitescape.team.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
-			<property name="coreDao"><ref bean="coreDao"/></property>
-			<property name="accessControlManager"><ref local="accessControlManager"/></property>
-			<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="accessControlManager"><ref local="accessControlManager"/></property>
+				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 			</bean>
 		</property>
-	</bean>		
+	</bean>			
 
-	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="controllerDependencyTemplate">
-		<property name="folderModule"><ref local="folderModule"/></property>
-		<property name="binderModule"><ref local="binderModule"/></property>
-		<property name="dashboardModule"><ref local="dashboardModule"/></property>
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="profileModule"><ref local="profileModule"/></property>
-		<property name="workspaceModule"><ref local="workspaceModule"/></property>
-	</bean>	
+	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
 		
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
 		<property name="target">
-			<bean class="com.sitescape.team.ssfs.server.impl.SiteScapeFileSystemImpl" parent="controllerDependencyTemplate">
+			<bean class="com.sitescape.team.ssfs.server.impl.SiteScapeFileSystemImpl" parent="dependOnAllModulesTemplate">
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 			</bean>
 		</property>
@@ -676,7 +648,7 @@
 	
 	<bean id="wsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="controllerDependencyTemplate" />
+			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="dependOnAllModulesTemplate" />
 		</property>
 		<property name="proxyInterfaces">
 			<value>com.sitescape.team.remoting.Facade</value>
@@ -818,7 +790,7 @@ application/vnd.stardivision.math                         smf
 	</bean>
 	
 	<!-- ================================ Instant Collaboration Support==================== -->
-	<bean id="icBrokerModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.ic.impl.ICBrokerModuleImpl">	
+	<bean id="icBrokerModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ic.impl.ICBrokerModuleImpl">	
 		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
 		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
 		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
@@ -834,7 +806,7 @@ application/vnd.stardivision.math                         smf
 	</bean>
 
 
-	<bean id="mailModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.mail.impl.MailModuleImpl">
+	<bean id="mailModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.MailModuleImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
