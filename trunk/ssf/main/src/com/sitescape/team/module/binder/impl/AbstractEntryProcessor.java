@@ -98,18 +98,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
-    	SimpleProfiler sp = new SimpleProfiler(false);
         final Map ctx = addEntry_setCtx(binder, null);
     	Map entryDataAll;
     	if (!filesFromApplet) {
-        	sp.start("addEntry_toEntryData");
+        	SimpleProfiler.startProfiler("addEntry_toEntryData");
             entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
-            sp.stop("addEntry_toEntryData");
+            SimpleProfiler.stopProfiler("addEntry_toEntryData");
     	}
     	else {
-	    	sp.start("createNewEntryWithAttachmentAndTitle");
+	    	SimpleProfiler.startProfiler("createNewEntryWithAttachmentAndTitle");
 	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems, ctx);
-		    sp.stop("createNewEntryWithAttachmentAndTitle");
+		    SimpleProfiler.stopProfiler("createNewEntryWithAttachmentAndTitle");
     	}        
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -117,51 +116,59 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         try {
         	
-        	sp.start("addEntry_create");
+        	SimpleProfiler.startProfiler("addEntry_create");
         	final Entry entry = addEntry_create(def, clazz, ctx);
-        	sp.stop("addEntry_create");
+        	SimpleProfiler.stopProfiler("addEntry_create");
         
-        	sp.start("addEntry_transactionExecute");
+        	SimpleProfiler.startProfiler("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         		public Object doInTransaction(TransactionStatus status) {
         			//need to set entry/binder information before generating file attachments
         			//Attachments/Events need binder info for AnyOwner
+                	SimpleProfiler.startProfiler("addEntry_fillIn");
         			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
-        			addEntry_preSave(binder, entry, inputData, entryData, ctx);      
-        			addEntry_save(binder, entry, inputData, entryData,ctx);      
+                	SimpleProfiler.stopProfiler("addEntry_fillIn");
+                	SimpleProfiler.startProfiler("addEntry_preSave");
+        			addEntry_preSave(binder, entry, inputData, entryData, ctx);
+                	SimpleProfiler.stopProfiler("addEntry_preSave");
+                	SimpleProfiler.startProfiler("addEntry_save");
+        			addEntry_save(binder, entry, inputData, entryData,ctx);
+        			SimpleProfiler.stopProfiler("addEntry_save");
                    	//After the entry is successfully added, start up any associated workflows
+        			SimpleProfiler.startProfiler("addEntry_startWorkflow");
                 	addEntry_startWorkflow(entry, ctx);
+                	SimpleProfiler.stopProfiler("addEntry_startWorkflow");
+                	SimpleProfiler.startProfiler("addEntry_postSave");
          			addEntry_postSave(binder, entry, inputData, entryData, ctx);
+                	SimpleProfiler.stopProfiler("addEntry_postSave");
        			return null;
         		}
         	});
-        	sp.stop("addEntry_transactionExecute");
+        	SimpleProfiler.stopProfiler("addEntry_transactionExecute");
         	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
-            sp.start("addEntry_filterFiles");
+            SimpleProfiler.startProfiler("addEntry_filterFiles");
         	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-        	sp.stop("addEntry_filterFiles");
+        	SimpleProfiler.stopProfiler("addEntry_filterFiles");
 
-        	sp.start("addEntry_processFiles");
+        	SimpleProfiler.startProfiler("addEntry_processFiles");
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
-        	sp.stop("addEntry_processFiles");
+        	SimpleProfiler.stopProfiler("addEntry_processFiles");
         
  
-        	sp.start("addEntry_indexAdd");
+        	SimpleProfiler.startProfiler("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
-        	sp.stop("addEntry_indexAdd");
+        	SimpleProfiler.stopProfiler("addEntry_indexAdd");
         	
-        	sp.start("addEntry_done");
+        	SimpleProfiler.startProfiler("addEntry_done");
         	addEntry_done(binder, entry, inputData, ctx);
-        	sp.stop("addEntry_done");
-        	
-        	sp.print();
+        	SimpleProfiler.stopProfiler("addEntry_done");
         	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
@@ -452,69 +459,72 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)  
     		throws WriteFilesException {
-    	SimpleProfiler sp = new SimpleProfiler(false);
         final Map ctx = modifyEntry_setCtx(entry, null);
 
     	Map entryDataAll;
     	if (!filesFromApplet) {
-	    	sp.start("modifyEntry_toEntryData");
+	    	SimpleProfiler.startProfiler("modifyEntry_toEntryData");
 	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
-		    sp.stop("modifyEntry_toEntryData");
+		    SimpleProfiler.stopProfiler("modifyEntry_toEntryData");
     	}
     	else {
-	    	sp.start("getFilesUploadedByApplet");
+	    	SimpleProfiler.startProfiler("getFilesUploadedByApplet");
 	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems, ctx);
-		    sp.stop("getFilesUploadedByApplet");
+		    SimpleProfiler.stopProfiler("getFilesUploadedByApplet");
     	}
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         
 	    try {	    	
-	    	sp.start("modifyEntry_transactionExecute");
+	    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
+	    			SimpleProfiler.startProfiler("modifyEntry_fillIn");
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
+	    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
+	    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
 	    	    	modifyEntry_startWorkflow(entry, ctx);
+	    	    	SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
+	    	    	SimpleProfiler.startProfiler("modifyEntry_postFillIn");
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
+	    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
  	    			return null;
 	    		}});
-	    	sp.stop("modifyEntry_transactionExecute");
+	    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
-	        sp.start("modifyBinder_removeAttachments");
+	        SimpleProfiler.startProfiler("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
             modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex, ctx);
-	        sp.stop("modifyBinder_removeAttachments");
+	        SimpleProfiler.stopProfiler("modifyBinder_removeAttachments");
 	    	
-	    	sp.start("modifyEntry_filterFiles");
+	    	SimpleProfiler.startProfiler("modifyEntry_filterFiles");
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-	    	sp.stop("modifyEntry_filterFiles");
+	    	SimpleProfiler.stopProfiler("modifyEntry_filterFiles");
 
-           	sp.start("modifyEntry_processFiles");
+           	SimpleProfiler.startProfiler("modifyEntry_processFiles");
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
-	    	sp.stop("modifyEntry_processFiles");
+	    	SimpleProfiler.stopProfiler("modifyEntry_processFiles");
 
 
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
-	    	sp.start("modifyEntry_indexRemoveFiles");
+	    	SimpleProfiler.startProfiler("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
-	    	sp.stop("modifyEntry_indexRemoveFiles");
+	    	SimpleProfiler.stopProfiler("modifyEntry_indexRemoveFiles");
 	    	
-	    	sp.start("modifyEntry_indexAdd");
+	    	SimpleProfiler.startProfiler("modifyEntry_indexAdd");
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
-	    	sp.stop("modifyEntry_indexAdd");
+	    	SimpleProfiler.stopProfiler("modifyEntry_indexAdd");
 	    	
-	    	sp.start("modifyEntry_done");
+	    	SimpleProfiler.startProfiler("modifyEntry_done");
 	    	modifyEntry_done(binder, entry, inputData,ctx);
-	    	sp.stop("modifyEntry_done");
-	    		   
-	    	sp.print();
+	    	SimpleProfiler.stopProfiler("modifyEntry_done");
 	    	
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -739,33 +749,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Entry entry, boolean deleteMirroredSource) {
-    	SimpleProfiler sp = new SimpleProfiler(false);
     	Map ctx = deleteEntry_setCtx(entry, null);
-    	sp.start("deleteEntry_preDelete");
+    	SimpleProfiler.startProfiler("deleteEntry_preDelete");
         deleteEntry_preDelete(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_preDelete");
+        SimpleProfiler.stopProfiler("deleteEntry_preDelete");
         
-        sp.start("deleteEntry_workflow");
+        SimpleProfiler.startProfiler("deleteEntry_workflow");
         deleteEntry_workflow(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_workflow");
+        SimpleProfiler.stopProfiler("deleteEntry_workflow");
         
-        sp.start("deleteEntry_processFiles");
+        SimpleProfiler.startProfiler("deleteEntry_processFiles");
         deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
-        sp.stop("deleteEntry_processFiles");
+        SimpleProfiler.stopProfiler("deleteEntry_processFiles");
          
-        sp.start("deleteEntry_delete");
+        SimpleProfiler.startProfiler("deleteEntry_delete");
         deleteEntry_delete(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_delete");
+        SimpleProfiler.stopProfiler("deleteEntry_delete");
         
-        sp.start("deleteEntry_postDelete");
+        SimpleProfiler.startProfiler("deleteEntry_postDelete");
         deleteEntry_postDelete(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_postDelete");
+        SimpleProfiler.stopProfiler("deleteEntry_postDelete");
         
-        sp.start("deleteEntry_indexDel");
+        SimpleProfiler.startProfiler("deleteEntry_indexDel");
         deleteEntry_indexDel(parentBinder, entry, ctx);
-        sp.stop("deleteEntry_indexDel");
-        
-        sp.print();
+        SimpleProfiler.stopProfiler("deleteEntry_indexDel");
     }
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	return ctx;

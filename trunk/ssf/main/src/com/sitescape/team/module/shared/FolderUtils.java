@@ -37,6 +37,7 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.DatedMultipartFile;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class FolderUtils {
@@ -387,6 +388,7 @@ public class FolderUtils {
 	}
 
 	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) {
+		SimpleProfiler.startProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
 		Document defDoc = definition.getDefinition();
 		Element root = defDoc.getRootElement();
 		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
@@ -416,16 +418,19 @@ public class FolderUtils {
 		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 		String elementName = nameProperty.attributeValue("value");
 		
+		String[] result;
 		if (item.attributeValue("name").equals(ATTACH_FILES)) {
 			// Since attachment element allows uploading multiple files at the
 			// same (when done through Aspen UI), each file is identified 
 			// uniquely by appending numeric number (1-based) to the element
 			// name. When uploaded through WebDAV, there is always exactly one
 			// file involed. So we use "1".
-			return new String[] {elementName + "1", elementName + "_repos1"};
+			result = new String[] {elementName + "1", elementName + "_repos1"};
 		} else {		
-			return new String[] {elementName, null};
+			result = new String[] {elementName, null};
 		}
+		SimpleProfiler.stopProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
+		return result;
 	}
 
 	private static String getStorageValueFromItemElem(Element itemElem) {

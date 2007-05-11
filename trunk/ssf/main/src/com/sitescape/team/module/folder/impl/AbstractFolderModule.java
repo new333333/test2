@@ -73,6 +73,7 @@ import com.sitescape.team.module.folder.FolderCoreProcessor;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.workflow.WorkflowUtils;
@@ -96,6 +97,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
+    private ReportModule reportModule;
     
     AtomicInteger aeCount = new AtomicInteger();
     AtomicInteger meCount = new AtomicInteger();
@@ -103,7 +105,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     AtomicInteger arCount = new AtomicInteger();
     AtomicInteger afCount = new AtomicInteger();
 
-    /**
+    protected ReportModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
+	
+	/**
      * Called after bean is initialized.  
      */
  	public void afterPropertiesSet() {

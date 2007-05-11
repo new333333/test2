@@ -18,6 +18,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -49,9 +50,12 @@ public class ProcessorManager {
     
     public Object getProcessor(Object model, String processorKey) 
     	throws ProcessorNotFoundException {
+		SimpleProfiler.startProfiler("ProcessorManager.getProcessor");
         String processorClassName = getProcessorClassName(model, processorKey);
         
-        return getProcessor(processorClassName);
+        Object result = getProcessor(processorClassName);
+		SimpleProfiler.stopProfiler("ProcessorManager.getProcessor");
+		return result;
     }
     
 

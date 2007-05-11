@@ -10,6 +10,7 @@
 	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 
 	<!-- ============================== Services ============================= -->

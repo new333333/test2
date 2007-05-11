@@ -39,6 +39,7 @@ import org.springframework.util.FileCopyUtils;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.util.SimpleProfiler;
 
 public abstract class TextConverter extends Converter<String>
 {
@@ -50,10 +51,13 @@ public abstract class TextConverter extends Converter<String>
 	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
 		throws IOException
 	{
+		SimpleProfiler.startProfiler("TextConverter.convert");
 		InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
 		StringWriter textWriter = new StringWriter();
 		FileCopyUtils.copy(new InputStreamReader(textStream), textWriter);
-		return textWriter.toString();
+		String result = textWriter.toString();
+		SimpleProfiler.stopProfiler("TextConverter.convert");
+		return result;
 	}
 	
 	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,

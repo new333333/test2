@@ -1622,7 +1622,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
 	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor) {
-		SimpleProfiler.startProfiler("walkDefinition");
+		SimpleProfiler.startProfiler("DefinitionModuleImpl.walkDefinition");
 		//access check not needed = assumed okay from entry
         Definition def = entry.getEntryDef();
         if(def == null) return;
@@ -1661,6 +1661,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 }
             }
         }
-		SimpleProfiler.stopProfiler("walkDefinition");
+		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
     }
 }
