@@ -23,8 +23,7 @@
 		</property>
 		<property name="urlMap">
 			<map>
-				<entry key="/list"><ref local="list"/></entry>				
-				<entry key="/view"><ref local="view"/></entry>				
+				<entry key="/list"><ref local="list"/></entry>							
 			</map>
 		</property>
 	</bean>
@@ -45,6 +44,5 @@
 
 	<!-- Controllers -->
 	<bean id="list" parent="controllerDependencyTemplate" class="com.sitescape.team.rss.servlet.ListController"/>
-	<bean id="view" parent="controllerDependencyTemplate" class="com.sitescape.team.rss.servlet.ViewController"/>
 
 </beans>
