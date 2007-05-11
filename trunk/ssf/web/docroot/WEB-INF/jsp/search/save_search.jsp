@@ -18,14 +18,26 @@
 		onClick="ss_showHideRatingBox('ss_saved_searches', this);" class="ss_toogler"/>
 	</div>
 	<div id="ss_saved_searches" class="ss_rating_box_content" style="visibility:visible;display:block;">
-		<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="Query name" onmousedown="this.className='ss_saveQueryName'; this.value='';" />
+		<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="Query name" onmousedown="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
 		<a href="javascript: //;" onclick="ss_saveSearchQuery('searchQueryName', 'ss_saveQueryErrMsg');">Save</a>
 		<div id="ss_saveQueryErrMsg" style="visible: hidden;"></div>
 		<ul id="ss_savedQueriesList">
 			
-			<c:foreach var="query" items="${ss_savedQueries}">
-				<li><a href="#">query.key</a></li>
-			</c:foreach>
+			<c:forEach var="query" items="${ss_savedQueries}">
+				<script type="text/javascript">
+					ss_addToSaved("${query}");
+				</script>
+				<li>
+					<a href="#" onclick="ss_removeSavedSearchQuery('${query}','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
+					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="advanced_search"/>
+					<portlet:param name="tabTitle" value="${query}"/>
+					<portlet:param name="newTab" value="0"/>
+					<portlet:param name="operation" value="ss_savedQuery"/>
+					<portlet:param name="ss_queryName" value="${query}"/>
+					</portlet:actionURL>">${query}</a>
+				</li>
+			</c:forEach>
 			
 		</ul>
 	</div>

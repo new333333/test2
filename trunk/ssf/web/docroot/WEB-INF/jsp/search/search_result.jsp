@@ -75,7 +75,7 @@
 								<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
 								
 								<!-- Saved searches -->
-								<% //@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
+								<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
 							</div>
 						</td>
 						
