@@ -303,7 +303,7 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 	var queryName = inputObj.value;
 	if (!queryName || queryName == "" || queryName == "Query name") {
 		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
-		errMsgBoxObj.innerHTML = "Please name the query";
+		errMsgBoxObj.innerHTML = ss_noNameMsg;
 		ss_showDiv(errMsgBoxObj);
 		inputObj.focus();
 		return;
@@ -406,7 +406,7 @@ function ss_addToSaved(queryName) {
 	}
 }
 function ss_overwrite(queryName) {
-	var answer = confirm("Do you want overwrite old query?")
+	var answer = confirm(ss_overwriteQuestion);
 	if (answer)	return true;
 	else return false;
 }
