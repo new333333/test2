@@ -82,7 +82,8 @@ public class ChangeLog {
 				this.docNumber = ((FolderEntry)entity).getDocNumber();
 		}
 		this.owningBinderId = binder.getId();
-		this.owningBinderKey = binder.getBinderKey().getSortKey();
+		if(binder.getBinderKey() != null) // temporary workaround for issue #515
+			this.owningBinderKey = binder.getBinderKey().getSortKey();
 		this.operation = operation;
 		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
 			WorkflowSupport wfEntry = (WorkflowSupport)entity;

@@ -20,7 +20,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 
 import com.sitescape.team.SingletonViolationException;
-import com.sitescape.team.util.SimpleProfiler;
 
 /**
  * Index synchronization interface for searchable objects.
@@ -144,10 +143,7 @@ public class IndexSynchronizationManager {
         //            or batch them in a single request??
         
         try {
-            if(hasWorkToDo()) {
-                SimpleProfiler prof = new SimpleProfiler();
-                prof.start("Index update");
-                
+            if(hasWorkToDo()) {                
 		        LuceneSession luceneSession = getInstance().getLuceneSessionFactory().openSession();
 		        
 		        try {
@@ -156,9 +152,6 @@ public class IndexSynchronizationManager {
 		        finally {
 		            luceneSession.close();
 		        }
-		        
-		        prof.stop("Index update");
-		        prof.logDebug(logger);
             }
         }
         finally {

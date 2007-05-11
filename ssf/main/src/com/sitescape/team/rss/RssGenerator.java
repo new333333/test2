@@ -41,6 +41,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.util.ConfigPropertyNotFoundException;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
@@ -167,6 +168,7 @@ implements RssGeneratorMBean {
 	}
 	
 	public void updateRssFeed(Entry entry) {
+		SimpleProfiler.startProfiler("RssGenerator.updateRssFeed");
 		// See if the feed already exists
 		String rssFileName = getRssFileName(entry.getParentBinder());
 		File rf = new File(rssFileName);
@@ -188,6 +190,7 @@ implements RssGeneratorMBean {
 		channelNode.add(this.createElementFromEntry(entry));
 		
 		writeRssFile(entry.getParentBinder(), doc);
+		SimpleProfiler.stopProfiler("RssGenerator.updateRssFeed");
 	}
 
 	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder, User user) {

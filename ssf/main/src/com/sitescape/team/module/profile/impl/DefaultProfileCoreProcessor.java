@@ -456,6 +456,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	addEntry_startWorkflow(entry, ctx);
     }
    public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
+		SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
 		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
@@ -463,7 +464,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        		Map newEntries = new HashMap();
           			StringBuffer inList = new StringBuffer();
           			for (int i=0; i<inputAccessors.size(); ++i) {
-	        			SimpleProfiler.startProfiler("syncNewEntries:dbTransaction");
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
 	        			Map entryDataAll = syncNewEntries_toEntryData(binder, definition, inputData, null, ctx);
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -483,7 +483,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			newEntries.put(entry, inputData);
 	        			syncNewEntries_startWorkflow(entry, ctx);
 	        			ctx.clear();
-	        			SimpleProfiler.stopProfiler("syncNewEntries:dbTransaction");
 	        		}
         			inList.deleteCharAt(inList.length()-1);
         			//set creator to user, but do in bulk to reduce database update operations
@@ -496,13 +495,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		//we don't have any tags yet, so set to null to prevent database lookup 
 		ctx.put(ObjectKeys.INPUT_FIELD_TAGS, new ArrayList());
 	    for (Iterator i=newEntries.entrySet().iterator(); i.hasNext();) {
-	    	SimpleProfiler.startProfiler("syncNewEntries:indexAdd");
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
 	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, ctx);
-	    	SimpleProfiler.stopProfiler("syncNewEntries:indexAdd");
 	    }
+		SimpleProfiler.stopProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    return new ArrayList(newEntries.keySet()); 
 		
 	}
