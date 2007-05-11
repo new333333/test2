@@ -292,6 +292,8 @@ public class WebKeys {
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	
+	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
+	
 	public static final String OPERATION_SYNCHRONIZE_MIRRORED_FOLDER = "synchronize_mirrored_folder";
 	
 	public static final String OPERATION_SAVE_SEARCH_QUERY="save_search_query";
