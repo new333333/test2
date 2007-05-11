@@ -39,6 +39,7 @@ public class SearchObject {
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
 	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
 	private static ThreadLocal<QueryParser> queryParserARABIC = new ThreadLocal<QueryParser>();
+	private static ThreadLocal<QueryParser> queryParserHEBREW = new ThreadLocal<QueryParser>();
 	private static ThreadLocal<QueryParser> queryParserCJK = new ThreadLocal<QueryParser>();
 	
 	
@@ -105,7 +106,7 @@ public class SearchObject {
 			} else {
 				return (QueryParser)queryParserCJK.get();
 			}
-		} else {
+		} else if (lang.equalsIgnoreCase(LanguageTaster.ARABIC)) {
 			if (queryParserARABIC.get() == null) {
 				logger.debug("QueryParser instantiating new ARABIC QP");
 				Analyzer analyzer = new SsfQueryAnalyzer();
@@ -125,6 +126,27 @@ public class SearchObject {
 				return qp;
 			} else {
 				return (QueryParser)queryParserARABIC.get();
+			}
+		} else {
+			if (queryParserHEBREW.get() == null) {
+				logger.debug("QueryParser instantiating new HEBREW QP");
+				Analyzer analyzer = new SsfQueryAnalyzer();
+				String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
+				if (!aName.equalsIgnoreCase("")) {
+					//load the hebrew analyzer here
+					try {
+						Class hebrewClass = ReflectHelper.classForName(aName);
+				 		analyzer = (Analyzer)hebrewClass.newInstance();
+					} catch (Exception e) {
+						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
+					}
+				}
+				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, analyzer);
+				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
+				queryParserHEBREW.set(qp);
+				return qp;
+			} else {
+				return (QueryParser)queryParserHEBREW.get();
 			}
 		}
 	}

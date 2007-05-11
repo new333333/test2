@@ -22,6 +22,7 @@ public class LanguageTaster {
 	public static String DEFAULT = "DEFAULT";
 	public static String CJK = "CJK";
 	public static String ARABIC = "ARABIC";
+	public static String HEBREW = "HEBREW";
 
 	// read thru the char char buffer, figure out 
 	// which unicode codeblock the chars fall into, and 
@@ -31,6 +32,7 @@ public class LanguageTaster {
 		try {
 			int buffCount = 0;			
 			int arabicCount = 0;
+			int hebrewCount = 0;
 			int cjkCount = 0;
 			int defCount = 0;
 			
@@ -42,6 +44,8 @@ public class LanguageTaster {
 						cu == UnicodeBlock.ARABIC_PRESENTATION_FORMS_A ||
 						cu == UnicodeBlock.ARABIC_PRESENTATION_FORMS_B) {
 					arabicCount++;
+				} else if (cu == UnicodeBlock.HEBREW) {
+					hebrewCount++;
 				} else if (cu == UnicodeBlock.CJK_COMPATIBILITY || 
 						cu == UnicodeBlock.CJK_COMPATIBILITY_FORMS ||
 						cu == UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS || 
@@ -68,6 +72,8 @@ public class LanguageTaster {
 
 			if (cjkCount > 0) {
 				return CJK;
+			} else if (hebrewCount > 0) {
+				return HEBREW;
 			} else if (arabicCount > 0) {
 				return ARABIC;
 			} else {

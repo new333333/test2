@@ -22,7 +22,6 @@ import org.apache.lucene.store.FSDirectory;
 
 import com.sitescape.team.lucene.ChineseAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
-import com.sitescape.team.lucene.SsfQueryAnalyzer;
 
 
 
@@ -224,6 +223,20 @@ public class LuceneUtil {
 			return defaultAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			return new ChineseAnalyzer();
+		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
+			//return new HEBREWAnalyzer;
+			Analyzer analyzer = defaultAnalyzer;
+			String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
+			if (!aName.equalsIgnoreCase("")) {
+				//load the hebrew analyzer here
+				try {
+					Class hebrewClass = ReflectHelper.classForName(aName);
+			 		analyzer = (Analyzer)hebrewClass.newInstance();
+				} catch (Exception e) {
+					logger.error("Could not initialize hebrew analyzer class: " + e.toString());
+				}
+			}
+			return analyzer;
 		} else {
 			//return new ARABICAnalyzer;
 			Analyzer analyzer = defaultAnalyzer;

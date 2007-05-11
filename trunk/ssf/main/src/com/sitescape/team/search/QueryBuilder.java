@@ -22,11 +22,9 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.SPropsUtil;
 
@@ -97,8 +95,7 @@ public class QueryBuilder {
 	private static final long DAYMILLIS = 1000 * 60 * 60 * 24;
 	
 	private static final String DEFAULT = LanguageTaster.DEFAULT;
-	private static final String ARABIC = LanguageTaster.ARABIC;
-	private static final String CJK = LanguageTaster.CJK;
+	
 	
 
 	private Set principalIds;
