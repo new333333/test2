@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -50,7 +50,7 @@ implements AllBusinessServicesInjected {
 	private RssGenerator rssGenerator;
 	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
-	private ICBroker icBroker;
+	private ICBrokerModule icBroker;
 		
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -161,11 +161,11 @@ implements AllBusinessServicesInjected {
 		return reportModule;
 	}
 	
-	public ICBroker getIcBroker() {
+	public ICBrokerModule getIcBroker() {
 		return icBroker;
 	}
 
-	public void setIcBroker(ICBroker icBroker) {
+	public void setIcBroker(ICBrokerModule icBroker) {
 		this.icBroker = icBroker;
 	}
 	

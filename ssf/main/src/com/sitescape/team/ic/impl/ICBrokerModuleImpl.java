@@ -25,15 +25,15 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.ic.ICException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
-public class ICBrokerImpl extends CommonDependencyInjection implements
-		ICBroker, ICBrokerImplMBean, InitializingBean, DisposableBean {
+public class ICBrokerModuleImpl extends CommonDependencyInjection implements
+		ICBrokerModule, ICBrokerImplMBean, InitializingBean, DisposableBean {
 	private final static String AUTHENTICATE_USER = "addressbk.authenticate_user";
 
 	private final static String FIND_USERS = "addressbk.find_users_by_screenname";

@@ -95,8 +95,7 @@ import com.sitescape.util.cal.DayAndPosition;
  * @author Pawel Nowicki
  *
  */
-public class IcalGenerator extends CommonDependencyInjection {
-
+public class IcalGenerator {
 	private static final ProdId PROD_ID = new ProdId("-//SiteScape Inc//ICEcore//EN");
 		
 	protected Log logger = LogFactory.getLog(getClass());

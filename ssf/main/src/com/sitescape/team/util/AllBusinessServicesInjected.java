@@ -10,7 +10,7 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -92,7 +92,7 @@ public interface AllBusinessServicesInjected {
 
 	DashboardModule getDashboardModule();
 	
-	void setIcBroker(ICBroker icBroker);
+	void setIcBroker(ICBrokerModule icBroker);
 
-	ICBroker getIcBroker();	
+	ICBrokerModule getIcBroker();	
 }

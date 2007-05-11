@@ -19,7 +19,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
 
-public interface ICBroker {
+public interface ICBrokerModule {
 	
 	public static final int[] REGULAR_MEETING = new int[] {0, 0, 0};
 	

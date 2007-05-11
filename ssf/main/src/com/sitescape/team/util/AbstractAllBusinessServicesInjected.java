@@ -3,7 +3,7 @@ package com.sitescape.team.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -36,7 +36,7 @@ public class AbstractAllBusinessServicesInjected implements AllBusinessServicesI
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;	
 	private DashboardModule dashboardModule;
-	private ICBroker icBroker;
+	private ICBrokerModule icBroker;
 	private IcalGenerator icalGenerator;
 
 	public RssGenerator getRssGenerator() {
@@ -142,11 +142,11 @@ public class AbstractAllBusinessServicesInjected implements AllBusinessServicesI
 		return reportModule;
 	}
 	
-	public ICBroker getIcBroker() {
+	public ICBrokerModule getIcBroker() {
 		return icBroker;
 	}
 
-	public void setIcBroker(ICBroker icBroker) {
+	public void setIcBroker(ICBrokerModule icBroker) {
 		this.icBroker = icBroker;
 	}
 
