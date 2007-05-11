@@ -33,7 +33,7 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
 public class ICBrokerModuleImpl extends CommonDependencyInjection implements
-		ICBrokerModule, ICBrokerImplMBean, InitializingBean, DisposableBean {
+		ICBrokerModule, ICBrokerModuleImplMBean, InitializingBean, DisposableBean {
 	private final static String AUTHENTICATE_USER = "addressbk.authenticate_user";
 
 	private final static String FIND_USERS = "addressbk.find_users_by_screenname";
