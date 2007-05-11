@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.portlet.mvc.AbstractController;
 
-import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -28,6 +27,7 @@ import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;

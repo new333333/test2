@@ -53,7 +53,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.ic.ICBrokerModule;
+import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;

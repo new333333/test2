@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.ic.impl;
+package com.sitescape.team.module.ic.impl;
 
 public interface ICBrokerImplMBean {
 
