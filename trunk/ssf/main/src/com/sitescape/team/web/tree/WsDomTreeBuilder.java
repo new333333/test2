@@ -24,7 +24,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.web.WebKeys;
@@ -38,7 +38,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 
 	Binder bottom;
 	boolean check;
-	AllBusinessServicesInjected bs;
+	AllModulesInjected bs;
 	DomTreeHelper helper = defaultHelper;
 	String page;
 	List tuple;
@@ -48,12 +48,12 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 	}
 
 	
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs) {
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs) {
 		this.bottom = bottom;
 		this.check = checkChildren;
 		this.bs = bs;
 	}
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs,
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
 			DomTreeHelper helper) {
 		this.bottom = bottom;
 		this.check = checkChildren;
@@ -65,7 +65,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 		}
 		this.helper = helper;
 	}
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs,
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
 			String key) {
 		String page = "";
 		this.bottom = bottom;
@@ -85,7 +85,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
         	logger.error("DomTree missing processor: " + key);
         }
 	}
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs,
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
 			String key, String page) {
 		this.bottom = bottom;
 		this.check = checkChildren;
@@ -212,7 +212,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			if (type == DomTreeBuilder.TYPE_SKIPLIST) {return true;}
 			return false;
 		}
-		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+		public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
 			return bs.getBinderModule().hasBinders((Binder)source);
 		}
 	

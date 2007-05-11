@@ -31,7 +31,7 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.security.function.WorkArea;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -123,7 +123,7 @@ public class AccessControlController extends AbstractBinderController {
 
 	}
 	//used by ajax controller
-	public static void setupAccess(AllBusinessServicesInjected bs, RenderRequest request, RenderResponse response, Binder binder, Map model) {
+	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder binder, Map model) {
 		List functions = bs.getAdminModule().getFunctions();
 		List membership;
 		

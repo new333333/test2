@@ -50,7 +50,7 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
-import com.sitescape.team.util.AbstractAllBusinessServicesInjected;
+import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -61,7 +61,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
-public class DashboardHelper extends AbstractAllBusinessServicesInjected {
+public class DashboardHelper extends AbstractAllModulesInjected {
 	private static DashboardHelper instance; // A singleton instance
 
 	//Dashboard map keys

@@ -23,9 +23,9 @@ import com.sitescape.team.ssfs.NoAccessException;
 import com.sitescape.team.ssfs.NoSuchObjectException;
 import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
-import com.sitescape.team.util.AbstractAllBusinessServicesInjected;
+import com.sitescape.team.util.AbstractAllModulesInjected;
 
-public class SiteScapeFileSystemImpl extends AbstractAllBusinessServicesInjected 
+public class SiteScapeFileSystemImpl extends AbstractAllModulesInjected 
 implements SiteScapeFileSystem {
 
 	private SiteScapeFileSystemInternal ssfsInt;

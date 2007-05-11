@@ -13,7 +13,7 @@ package com.sitescape.team.web.tree;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 //dom tree helper that only issues callbacks for folders
 //used for selecting folders only
 //The tree tag will call _showId routine implemented in jsp
@@ -26,7 +26,7 @@ public class FolderConfigHelper implements DomTreeHelper {
 		if (type == DomTreeBuilder.TYPE_TEMPLATE) {return true;}
 		return false;
 	}
-	public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+	public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
 		return bs.getBinderModule().hasBinders((Binder)source);
 	}
 	

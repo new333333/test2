@@ -53,7 +53,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
@@ -67,7 +67,7 @@ import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 
 public class BinderHelper {
 
-	static public String getViewListingJsp(AllBusinessServicesInjected bs) {
+	static public String getViewListingJsp(AllModulesInjected bs) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("")) {
@@ -90,7 +90,7 @@ public class BinderHelper {
 	//search. For the 'search' display defintion, we should not have the display at bottom (vertical)
 	//option. So when a user chooses display at bottom option, we will be showing the user a overlay display
 	//Along with 'search', we have added 'blog' and 'guestbook' to above check 
-	static public String getViewListingJsp(AllBusinessServicesInjected bs, String displayDefinition) {
+	static public String getViewListingJsp(AllModulesInjected bs, String displayDefinition) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("")) {
@@ -122,7 +122,7 @@ public class BinderHelper {
 	
 	//Routine to save a generic portal url used to build a url to a binder or entry 
 	//  This routine is callable only from a portlet controller
-	static public void setBinderPermaLink(AllBusinessServicesInjected bs, 
+	static public void setBinderPermaLink(AllModulesInjected bs, 
 			RenderRequest request, RenderResponse response) {
 		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
 			User user = RequestContextHolder.getRequestContext().getUser();
@@ -140,7 +140,7 @@ public class BinderHelper {
 	
 	//Routine to get a portal url that points to a binder or entry 
 	//  This routine is callable from an adaptor controller
-	static public String getBinderPermaLink(AllBusinessServicesInjected bs) {
+	static public String getBinderPermaLink(AllModulesInjected bs) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProperties = (UserProperties) bs.getProfileModule().getUserProperties(user.getId());
 		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
@@ -148,7 +148,7 @@ public class BinderHelper {
 		return url;
 	}
 	
-	static public void getBinderAccessibleUrl(AllBusinessServicesInjected bs, Binder binder, Long entryId,
+	static public void getBinderAccessibleUrl(AllModulesInjected bs, Binder binder, Long entryId,
 			RenderRequest request, RenderResponse response, Map model) {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -184,13 +184,13 @@ public class BinderHelper {
 			accessControlMap.put(entity.getId(), new HashMap());
 		return (Map)accessControlMap.get(entity.getId());
 	}
-	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model) {
+	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model) {
 		if (binder instanceof TemplateBinder)
 			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, new ConfigHelper(""));
 		else
 			buildNavigationLinkBeans(bs, binder, model, null);
 	}
-	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
+	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
 		if (binder instanceof TemplateBinder) {
 			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, helper);
 		} else {
@@ -222,7 +222,7 @@ public class BinderHelper {
 		}
 	}
 
-	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, TemplateBinder config, Map model, DomTreeHelper helper) {
+	static public void buildNavigationLinkBeans(AllModulesInjected bs, TemplateBinder config, Map model, DomTreeHelper helper) {
 		TemplateBinder parentConfig = config;
 		Map navigationLinkMap;
 		if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
@@ -238,7 +238,7 @@ public class BinderHelper {
 		}
 	}
 	//trees should not be deep - do entire thing
-	static public Document buildTemplateTreeRoot(AllBusinessServicesInjected bs, TemplateBinder config, DomTreeHelper helper) {
+	static public Document buildTemplateTreeRoot(AllModulesInjected bs, TemplateBinder config, DomTreeHelper helper) {
        	Document tree = DocumentHelper.createDocument();
     	Element element = tree.addElement(DomTreeBuilder.NODE_ROOT);
     	//only need this information if this is the bottom of the tree
@@ -246,7 +246,7 @@ public class BinderHelper {
     	return tree;
 	}
 	//trees should not be deep - do entire thing
-	static public Document buildTemplateTreeRoot(AllBusinessServicesInjected bs, List configs, DomTreeHelper helper) {
+	static public Document buildTemplateTreeRoot(AllModulesInjected bs, List configs, DomTreeHelper helper) {
        	Document tree = DocumentHelper.createDocument();
     	Element element = tree.addElement(DomTreeBuilder.NODE_ROOT);
 	   	element.addAttribute("title", NLT.get("administration.configure_cfg"));
@@ -850,7 +850,7 @@ public class BinderHelper {
 			if (type == DomTreeBuilder.TYPE_TEMPLATE) {return true;}
 			return false;
 		}
-		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+		public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
 			TemplateBinder config = (TemplateBinder)source;
 			return !config.getBinders().isEmpty();
 		}
@@ -866,7 +866,7 @@ public class BinderHelper {
 		public String getPage() {return page;}
 		
 	}
-	public static void buildAccessControlRoleBeans(AllBusinessServicesInjected bs, Map model) {
+	public static void buildAccessControlRoleBeans(AllModulesInjected bs, Map model) {
 		//Add the list of existing functions for this zone
 		model.put(WebKeys.FUNCTIONS, bs.getAdminModule().getFunctions());
 		

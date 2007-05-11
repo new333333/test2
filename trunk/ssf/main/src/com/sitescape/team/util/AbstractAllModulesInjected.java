@@ -3,7 +3,6 @@ package com.sitescape.team.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -17,9 +16,8 @@ import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.rss.RssGenerator;
 
-public class AbstractAllBusinessServicesInjected implements AllBusinessServicesInjected {
+public class AbstractAllModulesInjected implements AllModulesInjected {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 

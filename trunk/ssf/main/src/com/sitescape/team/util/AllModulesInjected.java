@@ -10,7 +10,6 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -24,7 +23,6 @@ import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.rss.RssGenerator;
 
 /**
  * This convenience interface acts as a facade for all business modules and 
@@ -35,7 +33,7 @@ import com.sitescape.team.rss.RssGenerator;
  * @author jong
  *
  */
-public interface AllBusinessServicesInjected {
+public interface AllModulesInjected {
 	void setEmployeeModule(EmployeeModule employeeModule);;
 
 	EmployeeModule getEmployeeModule();;

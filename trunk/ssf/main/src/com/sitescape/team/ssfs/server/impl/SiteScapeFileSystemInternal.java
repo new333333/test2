@@ -57,7 +57,7 @@ import com.sitescape.team.ssfs.NoSuchObjectException;
 import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.DatedMultipartFile;
 import com.sitescape.util.Validator;
 
@@ -69,10 +69,10 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 	private static final String FILE_ATTACHMENT = "fa";
 	private static final String ELEMENT_NAME = "en";
 
-	private AllBusinessServicesInjected bs;
+	private AllModulesInjected bs;
 	private FileTypeMap mimeTypes;
 	
-	SiteScapeFileSystemInternal(AllBusinessServicesInjected bs) {
+	SiteScapeFileSystemInternal(AllModulesInjected bs) {
 		this.bs = bs;
 	}
 	
