@@ -11,6 +11,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<ssf:ifaccessible>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+
+<body class="ss_style_body" onLoad="window.focus();">
+</ssf:ifaccessible>
+
 <div class="ss_indent_medium">
 <c:forEach var="binder" items="${ss_myTeams}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -19,6 +26,17 @@
 		    <ssf:param name="entityType" value="${binder.entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '', '1')">${binder.title}</a><br/>
+<ssf:ifnotaccessible>
+  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '', '1')"
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  onClick="return parent.ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '', '1')"
+</ssf:ifaccessible>
+>${binder.title}</a><br/>
 </c:forEach>
 </div>
+
+<ssf:ifaccessible>
+</body>
+</html>
+</ssf:ifaccessible>
