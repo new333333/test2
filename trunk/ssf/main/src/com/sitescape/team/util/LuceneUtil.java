@@ -20,7 +20,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 
-import com.sitescape.team.lucene.CJKAnalyzer;
+import com.sitescape.team.lucene.ChineseAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 
@@ -223,7 +223,7 @@ public class LuceneUtil {
 		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
 			return defaultAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
-			return new CJKAnalyzer();
+			return new ChineseAnalyzer();
 		} else {
 			//return new ARABICAnalyzer;
 			Analyzer analyzer = defaultAnalyzer;
