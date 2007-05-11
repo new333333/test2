@@ -53,7 +53,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
@@ -317,9 +317,9 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS)) {
 			return addFolderAttachmentOptions(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
-			return ajaxStartMeeting(request, response, ICBroker.REGULAR_MEETING);
+			return ajaxStartMeeting(request, response, ICBrokerModule.REGULAR_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
-			return ajaxStartMeeting(request, response, ICBroker.SCHEDULED_MEETING);
+			return ajaxStartMeeting(request, response, ICBrokerModule.SCHEDULED_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
 			return ajaxGetTeamMembers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_CLIPBOARD_USERS)) {

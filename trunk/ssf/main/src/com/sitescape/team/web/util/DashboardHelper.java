@@ -40,7 +40,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ic.ICBrokerModule;
 import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -134,7 +134,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	private RssGenerator rssGenerator;
 	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
-	private ICBroker icBroker;
+	private ICBrokerModule icBroker;
 	
 	public DashboardHelper() {
 		if(instance != null)
@@ -1656,10 +1656,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		return dashboardContentExists;
 	}
-	public ICBroker getIcBroker() {
+	public ICBrokerModule getIcBroker() {
 		return icBroker;
 	}
-	public void setIcBroker(ICBroker icBroker) {
+	public void setIcBroker(ICBrokerModule icBroker) {
 		this.icBroker = icBroker;
 	}
 
