@@ -75,9 +75,8 @@ dojo.widget.defineWidget(
 				dojo.event.connect(removeIcon, "onclick", callRemove);
 				li.appendChild(removeIcon);
 				this.collectedUl.appendChild(li); 
+				this.actualizeFormValue();
 			}
-			this.actualizeFormValue();
-			
 		},
 		remove : function(liObj, ndx) {
 			this.collectedUl.removeChild(liObj);
