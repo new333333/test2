@@ -4,11 +4,11 @@
 
 	<!-- Controllers -->
 
-	<bean id="employeesController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.EmployeesController" />
+	<bean id="employeesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.EmployeesController" />
 
-	<bean id="employeeSalaryIncrementController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.EmployeeSalaryIncrementController" />
+	<bean id="employeeSalaryIncrementController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.EmployeeSalaryIncrementController" />
 
-    <bean id="employeeEditController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.EmployeeEditController">
+    <bean id="employeeEditController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.EmployeeEditController">
 		<property name="sessionForm"><value>false</value></property>
 		<property name="commandName"><value>employee</value></property>
 		<property name="commandClass"><value>com.sitescape.team.module.sample.Employee</value></property>
@@ -16,7 +16,7 @@
 		<!--property name="validator"><ref bean="employeeValidator"/></property--> 
     </bean>
 
-	<bean id="employeeDeleteController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.EmployeeDeleteController" />
+	<bean id="employeeDeleteController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.EmployeeDeleteController" />
 
 	<bean id="employeesHelpController" class="org.springframework.web.portlet.mvc.ParameterizableViewController">
 		<property name="viewName"><value>sample/employeesHelp</value></property>
@@ -26,9 +26,9 @@
 		<property name="viewName"><value>sample/showXml</value></property>
 	</bean>
 	
-	<bean id="uploadFileController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.UploadFileController"/>
+	<bean id="uploadFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.UploadFileController"/>
 
-	<bean id="downloadFileController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.DownloadFileController"/>
+	<bean id="downloadFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.DownloadFileController"/>
 
 	<!-- Handlers -->
 

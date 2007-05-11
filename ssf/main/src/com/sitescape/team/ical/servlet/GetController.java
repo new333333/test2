@@ -26,6 +26,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
 
@@ -36,6 +37,15 @@ import com.sitescape.team.web.servlet.SAbstractController;
  * @author Pawel Nowicki
  */
 public class GetController extends SAbstractController {
+
+	private IcalGenerator icalGenerator;
+	
+	protected IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
+	}
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

@@ -65,6 +65,7 @@ import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.LockIdMismatchException;
 import com.sitescape.team.module.file.LockedByAnotherUserException;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.repository.RepositoryServiceException;
@@ -109,7 +110,7 @@ import com.sitescape.team.ObjectKeys;
  * @author jong
  *
  */
-public class FileModuleImpl implements FileModule, InitializingBean {
+public class FileModuleImpl extends CommonDependencyInjection implements FileModule, InitializingBean {
 
 	private static final String FAILED_FILTER_FILE_DELETE 			= "DELETE";
 	private static final String FAILED_FILTER_FILE_MOVE 			= "MOVE";
@@ -120,10 +121,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		
 	protected Log logger = LogFactory.getLog(getClass());
 
-	private CoreDao coreDao;
-	private FolderDao folderDao;
-	private ProfileDao profileDao;
-	protected LuceneSessionFactory luceneSessionFactory;
 	private TransactionTemplate transactionTemplate;
 	private ContentFilter contentFilter;
 	private String failedFilterFile;
@@ -132,36 +129,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	private FileStore cacheFileStore;
 	private IHtmlConverterManager htmlConverterManager;
 	private IImageConverterManager imageConverterManager;
-	
-	protected CoreDao getCoreDao() {
-		return coreDao;
-	}
-
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
-	}
-
-	public FolderDao getFolderDao() {
-		return folderDao;
-	}
-	public void setFolderDao(FolderDao folderDao) {
-		this.folderDao = folderDao;
-	}
-	protected ProfileDao getProfileDao() {
-		return profileDao;
-	}
-	
-	public void setProfileDao(ProfileDao profileDao) {
-		this.profileDao = profileDao;
-	}
-	
-	protected LuceneSessionFactory getLuceneSessionFactory() {
-		return luceneSessionFactory;
-	}
-	public void setLuceneSessionFactory(LuceneSessionFactory luceneSessionFactory) {
-		this.luceneSessionFactory = luceneSessionFactory;
-	}
-	
+		
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}

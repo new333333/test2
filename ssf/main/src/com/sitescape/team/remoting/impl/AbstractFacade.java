@@ -11,11 +11,9 @@
 package com.sitescape.team.remoting.impl;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -28,33 +26,16 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.ical.IcalGenerator;
-import com.sitescape.team.module.admin.AdminModule;
-import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
-import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.ic.ICBrokerModule;
-import com.sitescape.team.module.ldap.LdapModule;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.sample.EmployeeModule;
-import com.sitescape.team.module.workflow.WorkflowModule;
-import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.remoting.Facade;
-import com.sitescape.team.rss.RssGenerator;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AbstractAllBusinessServicesInjected;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
@@ -69,143 +50,9 @@ import com.sitescape.util.Validator;
  * @author jong
  *
  */
-public abstract class AbstractFacade implements Facade, AllBusinessServicesInjected {
+public abstract class AbstractFacade extends AbstractAllBusinessServicesInjected implements Facade {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
-	private EmployeeModule employeeModule;
-	private WorkspaceModule workspaceModule;
-	private FolderModule folderModule;
-	private AdminModule adminModule;
-	private ProfileModule profileModule;
-	private DefinitionModule definitionModule;
-	private WorkflowModule workflowModule;
-	private BinderModule binderModule;
-	private LdapModule ldapModule;
-	private ReportModule reportModule;
-	private FileModule fileModule;
-	private RssGenerator rssGenerator;
-	private IcalGenerator icalGenerator;
-	private DashboardModule dashboardModule;
-	private ICBrokerModule icBroker;
-
-	public RssGenerator getRssGenerator() {
-		return rssGenerator;
-	}
-
-	public void setRssGenerator(RssGenerator rssGenerator) {
-		this.rssGenerator = rssGenerator;
-	}
-
-	public IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
-	}
-	public void setEmployeeModule(EmployeeModule employeeModule) {
-		this.employeeModule = employeeModule;
-	}
-	
-	public EmployeeModule getEmployeeModule() {
-		return employeeModule;
-	}
-	public void setBinderModule(BinderModule binderModule) {
-		this.binderModule = binderModule;
-	}
-	
-	public BinderModule getBinderModule() {
-		return binderModule;
-	}
-
-	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
-		this.workspaceModule = workspaceModule;
-	}
-	
-	public WorkspaceModule getWorkspaceModule() {
-		return workspaceModule;
-	}
-
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	
-	public FolderModule getFolderModule() {
-		return folderModule;
-	}
-	
-	public void setAdminModule(AdminModule adminModule) {
-		this.adminModule = adminModule;
-	}
-	
-	public AdminModule getAdminModule() {
-		return adminModule;
-	}
-
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-	
-	public ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	
-	public DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-
-	public WorkflowModule getWorkflowModule() {
-		return workflowModule;
-	}
-
-	public void setWorkflowModule(WorkflowModule workflowModule) {
-		this.workflowModule = workflowModule;
-	}
-	
-	public void setLdapModule(LdapModule ldapModule) {
-		this.ldapModule = ldapModule;
-	}
-	
-	public LdapModule getLdapModule() {
-		return ldapModule;
-	}
-	
-	public void setFileModule(FileModule fileModule) {
-		this.fileModule = fileModule;
-	}
-	
-	public FileModule getFileModule() {
-		return fileModule;
-	}
-	
-	public void setDashboardModule(DashboardModule dashboardModule) {
-		this.dashboardModule = dashboardModule;
-	}
-	
-	public DashboardModule getDashboardModule() {
-		return dashboardModule;
-	}
-
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
-	}
-	
-	public ReportModule getReportModule() {
-		return reportModule;
-	}
-	
-	public ICBrokerModule getIcBrokerModule() {
-		return icBroker;
-	}
-
-	public void setIcBrokerModule(ICBrokerModule icBroker) {
-		this.icBroker = icBroker;
-	}
 	
 	public String getDefinitionAsXML(String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().getRootElement().asXML();

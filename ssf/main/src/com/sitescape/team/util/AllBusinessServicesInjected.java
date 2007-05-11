@@ -80,19 +80,11 @@ public interface AllBusinessServicesInjected {
 
 	ReportModule getReportModule();
 
-	void setRssGenerator(RssGenerator rssGenerator);
-
-	RssGenerator getRssGenerator();
-	
-	void setIcalGenerator(IcalGenerator icalGenerator);
-
-	IcalGenerator getIcalGenerator();
-
 	void setDashboardModule(DashboardModule dashboardModule);
 
 	DashboardModule getDashboardModule();
 	
-	void setIcBrokerModule(ICBrokerModule icBroker);
+	void setIcBrokerModule(ICBrokerModule icBrokerModule);
 
 	ICBrokerModule getIcBrokerModule();	
 }

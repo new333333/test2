@@ -4,7 +4,7 @@
 
 	<!-- Controllers -->
 
-	<bean id="exceptionThrowerController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.ExceptionThrowerController" />
+	<bean id="exceptionThrowerController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.sample.ExceptionThrowerController" />
 
 	<!-- Handlers -->
 

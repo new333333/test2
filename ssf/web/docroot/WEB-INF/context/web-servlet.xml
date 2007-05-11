@@ -96,15 +96,19 @@
 
 	<!-- Controllers -->
 
-	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.sample.DownloadFileController"/>
-	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.sample.UploadFileController"/>
-	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
-	<bean id="rssFeed" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewRssController"/>
-	<bean id="viewiCal" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewICalController"/>
-	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewCssController"/>
-	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.definition.ViewDefinitionXmlController"/>
-	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.widget_test.FragmentController"/>
-	<bean id="reportDownload" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.administration.ReportDownloadController"/>
-	<bean id="errorHandler" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>
+	<bean id="downloadFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.sample.DownloadFileController"/>
+	<bean id="uploadFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.sample.UploadFileController"/>
+	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
+	<bean id="rssFeed" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewRssController">
+		<property name="rssGenerator"><ref bean="rssGenerator"/></property>
+	</bean>
+	<bean id="viewiCal" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewICalController">
+		<property name="icalGenerator"><ref bean="icalGenerator"/></property>
+	</bean>
+	<bean id="viewCss" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewCssController"/>
+	<bean id="viewDefinitionXml" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.definition.ViewDefinitionXmlController"/>
+	<bean id="viewFragment" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.widget_test.FragmentController"/>
+	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ReportDownloadController"/>
+	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>
 
 </beans>
