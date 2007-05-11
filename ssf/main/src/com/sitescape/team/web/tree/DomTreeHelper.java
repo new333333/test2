@@ -9,7 +9,7 @@
  *
  */
 package com.sitescape.team.web.tree;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 
 public interface DomTreeHelper {
 	public boolean supportsType(int type, Object source);
@@ -19,6 +19,6 @@ public interface DomTreeHelper {
 	public String getDisplayOnly(int type, Object source);
 	public String getTreeNameKey();
 	public String getPage();
-	public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type);
+	public boolean hasChildren(AllModulesInjected bs, Object source, int type);
 
 }

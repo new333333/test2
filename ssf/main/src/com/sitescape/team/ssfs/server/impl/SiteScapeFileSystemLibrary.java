@@ -50,7 +50,7 @@ import com.sitescape.team.ssfs.NoSuchObjectException;
 import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LibraryPathUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -65,7 +65,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private static final String PARENT_BINDER 		= "pb";
 	private static final String FILE_ATTACHMENT 	= "fa"; 
 
-	private AllBusinessServicesInjected bs;
+	private AllModulesInjected bs;
 	private FileTypeMap mimeTypes;
 	
 	protected final Log logger = LogFactory.getLog(getClass());
@@ -79,7 +79,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private byte[] helpFileContentInUTF8;
 	private Date currentDate;
 
-	SiteScapeFileSystemLibrary(AllBusinessServicesInjected bs) {
+	SiteScapeFileSystemLibrary(AllModulesInjected bs) {
 		this.bs = bs;
 		
 		this.helpFileName = SPropsUtil.getString(NONLIBRARY_VIRTUAL_HELP_FILE, "").trim();

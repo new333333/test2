@@ -43,7 +43,7 @@ import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;

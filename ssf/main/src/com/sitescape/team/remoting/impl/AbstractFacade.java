@@ -35,7 +35,7 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.Facade;
-import com.sitescape.team.util.AbstractAllBusinessServicesInjected;
+import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
@@ -50,7 +50,7 @@ import com.sitescape.util.Validator;
  * @author jong
  *
  */
-public abstract class AbstractFacade extends AbstractAllBusinessServicesInjected implements Facade {
+public abstract class AbstractFacade extends AbstractAllModulesInjected implements Facade {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 	

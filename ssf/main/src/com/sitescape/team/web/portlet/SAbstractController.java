@@ -36,11 +36,11 @@ import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.rss.RssGenerator;
-import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.XSSCheck;
 
 public abstract class SAbstractController extends AbstractController 
-implements AllBusinessServicesInjected {
+implements AllModulesInjected {
 
 	protected Log logger = LogFactory.getLog(getClass());
 	
