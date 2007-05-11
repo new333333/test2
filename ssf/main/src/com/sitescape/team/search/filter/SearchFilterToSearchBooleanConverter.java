@@ -104,6 +104,12 @@ public class SearchFilterToSearchBooleanConverter {
     	    			parseAndAddWorkflowField(block, filterTerm);
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFolders)) {
     	    			addFolderField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
+    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestry)) {
+    	    			addAncestryField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
+    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
+    	    			addFoldersListField(block, filterTerm);
+    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
+    	    			addAncestriesListField(block, filterTerm);
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryId)) {
     	    			addEntryIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterEntryId, ""));
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeBinderParent)) {
@@ -254,32 +260,59 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 	}
 	
-	private static void addEntryIdField(Element block, String entryId) {
-		Element field;
-		Element child;
+	private static void addFoldersListField(Element block, Element filterTerm) {
 		Element andField = block;
-		if (!entryId.equals("")) {
-			andField = block.addElement(QueryBuilder.AND_ELEMENT);
-			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.DOCID_FIELD);
-	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	child.setText(entryId);
+	
+		if (filterTerm.selectNodes(SearchFilterKeys.FilterFolderId).size() > 0) {
+			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+			Iterator itTermStates = filterTerm.selectNodes(SearchFilterKeys.FilterFolderId).iterator();			
+			while (itTermStates.hasNext()) {
+				String stateName = ((Element) itTermStates.next()).getText();
+				if (!stateName.equals("")) {
+					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDER_ID_FIELD);
+					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child2.setText(stateName);
+				}
+			}
 		}
 	}
 	
-	private static void addBinderParentIdField(Element block, String binderId) {
+	private static void addAncestryField(Element block, String folderId) {
 		Element field;
 		Element child;
 		Element andField = block;
-		if (!binderId.equals("")) {
+		if (!folderId.equals("")) {
 			andField = block.addElement(QueryBuilder.AND_ELEMENT);
 			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
 	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	child.setText(binderId);
+	    	child.setText(folderId);
 		}
 	}
-
+	
+	
+	
+	private static void addAncestriesListField(Element block, Element filterTerm) {
+		Element andField = block;
+	
+		if (filterTerm.selectNodes(SearchFilterKeys.FilterFolderId).size() > 0) {
+			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+			Iterator itTermStates = filterTerm.selectNodes(SearchFilterKeys.FilterFolderId).iterator();			
+			while (itTermStates.hasNext()) {
+				String stateName = ((Element) itTermStates.next()).getText();
+				if (!stateName.equals("")) {
+					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
+					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child2.setText(stateName);
+				}
+			}
+		}
+	}
+	
 	private static void parseAndAddWorkflowField(Element block, Element filterTerm) {
 		//This is a workflow state term. Build booleans from the state name.
 		String defId = filterTerm.attributeValue(SearchFilterKeys.FilterWorkflowDefId, "");
@@ -310,6 +343,34 @@ public class SearchFilterToSearchBooleanConverter {
 			}
 		}
 	}
+	
+	
+	private static void addEntryIdField(Element block, String entryId) {
+		Element field;
+		Element child;
+		Element andField = block;
+		if (!entryId.equals("")) {
+			andField = block.addElement(QueryBuilder.AND_ELEMENT);
+			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.DOCID_FIELD);
+	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	child.setText(entryId);
+		}
+	}
+	
+	private static void addBinderParentIdField(Element block, String binderId) {
+		Element field;
+		Element child;
+		Element andField = block;
+		if (!binderId.equals("")) {
+			andField = block.addElement(QueryBuilder.AND_ELEMENT);
+			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	child.setText(binderId);
+		}
+	}
+
 	private static void addTopEntryField(Element block) {
 		//This is asking for top entries only (e.g., no replies or attachments)
     	//Look only for entryType=entry

@@ -15,7 +15,7 @@
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value=""/>
 					<portlet:param name="newTab" value="0"/>
-					</portlet:actionURL>" method="post" onSubmit="return ss_prepareAdditionalSearchOptions();" id="advSearchForm">
+					</portlet:actionURL>" method="post" onSubmit="return ss_prepareAdditionalSearchOptions();" id="ss_advSearchForm">
 
 	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
 

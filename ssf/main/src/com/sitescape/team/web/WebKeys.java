@@ -261,6 +261,7 @@ public class WebKeys {
 	public static final String OPERATION_START_MEETING = "start_meeting";
 	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
 	public static final String OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
+	public static final String OPERATION_GET_SEARCH_FORM_FOLDERS = "get_search_form_folders";
 	public static final String OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
 	public static final String OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES = "get_searchForm_element_values";
 	public static final String OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA = "get_searchForm_element_value_data";
@@ -560,6 +561,7 @@ public class WebKeys {
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
     public static final String SEARCH_FILTER_MAP = "ss_filterMap";
+    public static final String SEARCH_TOP_FOLDER_ID = "ss_searchTopFolderId";
     public static final String SEARCH_RESULTS="ss_searchResults";
     public static final String SEARCH_RESULTS_COUNT="searchResultsCount";
     public static final String SEARCH_RESULTS_RATING="searchResultsRating";

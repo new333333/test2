@@ -18,6 +18,8 @@ public class SearchFilterKeys {
 	public final static String SearchPersonalTags = "searchPersonalTags";
 //	public final static String SearchTextAndTags = "searchTextAndTags";
 	public final static String SearchTags = "searchTags";
+	public final static String SearchFolders = "searchFolders";
+	public final static String SearchSubfolders = "search_subfolders";
 //	public final static String SearchTagsOr = "searchTagsOr";
 	public final static String SearchAdditionalFilters = "additionalFilters";
 //	public final static String TabTitle = "tabTitle";
@@ -72,6 +74,9 @@ public class SearchFilterKeys {
    	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
+   	public final static String FilterTypeFoldersList = "foldersList";
+   	public final static String FilterTypeAncestry = "ancestry";
+   	public final static String FilterTypeAncestriesList = "ancestriesList";
    	public final static String FilterTypeBinderParent = "binderParent";
    	public final static String FilterTypeTags = "tags";
    	public final static String FilterTypeDocTypes = "docTypes";

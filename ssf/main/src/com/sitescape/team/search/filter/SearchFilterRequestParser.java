@@ -2,7 +2,10 @@ package com.sitescape.team.search.filter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
@@ -12,6 +15,7 @@ import org.dom4j.Document;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class SearchFilterRequestParser {
@@ -46,6 +50,8 @@ public class SearchFilterRequestParser {
 			}
 		}
 		
+		parseFolderIds(request, searchFilter);
+			
 		String[] numbers = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchNumbers, "").split(" ");
 		String[] types = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchTypes, "").split(" ");
 		
@@ -111,6 +117,29 @@ public class SearchFilterRequestParser {
 			}
 		}
 		return searchFilter.getFilter();
+	}
+
+	private static void parseFolderIds(PortletRequest request, SearchFilter searchFilter) {
+		List folderIds = new ArrayList();
+		Map formData = request.getParameterMap();
+		Iterator itFormData = formData.entrySet().iterator();
+		while (itFormData.hasNext()) {
+			Map.Entry me = (Map.Entry) itFormData.next();
+			String key = (String)me.getKey();
+			if (key.startsWith(SearchFilterKeys.SearchFolders)) {
+				String folderId = key.replaceFirst(SearchFilterKeys.SearchFolders + "_", "");
+				folderIds.add(folderId);
+			}
+		}
+
+		boolean searchSubfolders = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchSubfolders, false);		
+
+		if (!searchSubfolders) {
+			searchFilter.addFolderIds(folderIds);
+		} else {
+			searchFilter.addAncestryIds(folderIds);
+		}
+
 	}
 	
 	

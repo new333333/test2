@@ -148,6 +148,44 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterFolderId, folderId);	
 	}
 	
+	public void addFolderIds(List folderIds) {
+		if (folderIds == null) {
+			return;
+		}
+		checkCurrent();
+ 
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeFoldersList);
+		Iterator it = folderIds.iterator();
+		while (it.hasNext()) {
+			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterFolderId);
+			newTerm.setText((String)it.next());
+		}
+	}
+	
+	public void addAncestryId(String folderId) {
+		checkCurrent();
+ 
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeAncestry);
+		filterTerm.addAttribute(SearchFilterKeys.FilterFolderId, folderId);	
+	}
+	
+	public void addAncestryIds(List folderIds) {
+		if (folderIds == null) {
+			return;
+		}
+		checkCurrent();
+ 
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeAncestriesList);
+		Iterator it = folderIds.iterator();
+		while (it.hasNext()) {
+			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterFolderId);
+			newTerm.setText((String)it.next());
+		}
+	}
+	
 	public void addBinderParentId(String binderId) {
 		checkCurrent();
  
