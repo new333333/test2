@@ -36,4 +36,6 @@ var ss_AdvancedSearchURLNoOperation = "<portlet:actionURL windowState="maximized
 var ss_AdvancedSearchURL = ss_AdvancedSearchURLNoOperation + "&operation=viewPage";
 var ss_currentTabId = "${tabId}";		
 
+var ss_overwriteQuestion = "<ssf:nlt tag="search.save.overwriteQuestion"/>";
+var ss_noNameMsg="<ssf:nlt tag="search.save.noName"/>";
 </script>
