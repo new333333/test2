@@ -17,12 +17,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.mail.MailManager;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
-    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
 		mail.receivePostings();
     }
 	public ScheduleInfo getScheduleInfo(Long zoneId) {

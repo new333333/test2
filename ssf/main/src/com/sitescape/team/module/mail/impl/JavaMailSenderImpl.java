@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.mail.impl;
+package com.sitescape.team.module.mail.impl;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -26,7 +26,7 @@ import com.sitescape.util.Validator;
  */
 public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
-		implements com.sitescape.team.mail.JavaMailSender {
+		implements com.sitescape.team.module.mail.JavaMailSender {
 	private String name;
 	protected Transport getTransport(Session session) throws NoSuchProviderException {
 		Transport transport = super.getTransport(session);

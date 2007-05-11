@@ -9,7 +9,7 @@
  *
  */
 
-package com.sitescape.team.mail.impl;
+package com.sitescape.team.module.mail.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,8 +71,6 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.mail.FolderEmailFormatter;
-import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -82,6 +80,8 @@ import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.mail.FolderEmailFormatter;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.DirPath;
@@ -99,7 +99,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     private FolderModule folderModule;
     private BinderModule binderModule;
     protected DefinitionModule definitionModule;
-    protected MailManager mailManager;
+    protected MailModule mailManager;
 	private TransformerFactory transFactory = TransformerFactory.newInstance();
 
 	protected Map transformers = new HashMap();
@@ -114,7 +114,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     public void setBinderModule(BinderModule binderModule) {
     	this.binderModule = binderModule;
     }
- 	public void setMailManager(MailManager mailManager) {
+ 	public void setMailManager(MailModule mailManager) {
 		this.mailManager = mailManager;
 	}
 
@@ -348,7 +348,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getSubject(Folder folder, Notify notify) {
 		String subject = folder.getNotificationDef().getSubject();
 		if (Validator.isNull(subject))
-			subject = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_SUBJECT);
+			subject = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT);
 		//if not specified, us a localized default
 		if (Validator.isNull(subject))
 			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
@@ -358,7 +358,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getFrom(Folder folder, Notify notify) {
 		String from = folder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
-			from = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_FROM);
+			from = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_FROM);
 		return from;
 	}
 
@@ -483,7 +483,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			Source xsltSource = new StreamSource(new File(DirPath.getXsltDirPath(),templateName));
 			trans = transFactory.newTemplates(xsltSource);
 			//replace name with actual template
-			if (GetterUtil.getBoolean(mailManager.getMailProperty(zoneName, MailManager.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
+			if (GetterUtil.getBoolean(mailManager.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
 				transformers.put(zoneName + ":" + type, trans);
 		} 
 		return trans.newTransformer();
@@ -552,7 +552,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
 		
 		return result;
 	}
@@ -587,7 +587,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		doEntry(element, entry, notify, true);
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
 		
 		return result;
 	}
@@ -628,8 +628,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						processMime((MimeMultipart)content, inputData, fileItems);
 					}
 					//parse subject to see if this is a reply
-					if (title.startsWith(MailManager.REPLY_SUBJECT)) {
-						String flag = MailManager.REPLY_SUBJECT+folder.getId().toString()+":";
+					if (title.startsWith(MailModule.REPLY_SUBJECT)) {
+						String flag = MailModule.REPLY_SUBJECT+folder.getId().toString()+":";
 						//see if for this folder
 						if (title.startsWith(flag)) {
 							if (option == PostingDef.RETURN_TO_SENDER) 

@@ -52,7 +52,6 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.EmailPosting;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.jobs.SendEmail;
-import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderComparator;
@@ -61,6 +60,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
@@ -89,15 +89,15 @@ import com.sitescape.util.Validator;
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ZONE, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
-	protected MailManager mailManager;
+	protected MailModule mailManager;
 	/**
 	 * Setup by spring
 	 * @param mailManager
 	 */
-	public void setMailManager(MailManager mailManager) {
+	public void setMailManager(MailModule mailManager) {
     	this.mailManager = mailManager;
     }
-	protected MailManager getMailManager() {
+	protected MailModule getMailManager() {
 		return mailManager;
 	}
     protected DefinitionModule definitionModule;
@@ -237,7 +237,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	getPostingObject().setScheduleInfo(config);
     }	     
     private EmailPosting getPostingObject() {
-    	String emailPostingClass = getMailManager().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.POSTING_JOB);
+    	String emailPostingClass = getMailManager().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();

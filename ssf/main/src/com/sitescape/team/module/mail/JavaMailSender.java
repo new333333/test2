@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.mail;
+package com.sitescape.team.module.mail;
 import javax.mail.Session;
 import org.springframework.beans.factory.BeanNameAware;
 
