@@ -1656,10 +1656,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		return dashboardContentExists;
 	}
-	public ICBrokerModule getIcBroker() {
+	public ICBrokerModule getIcBrokerModule() {
 		return icBroker;
 	}
-	public void setIcBroker(ICBrokerModule icBroker) {
+	public void setIcBrokerModule(ICBrokerModule icBroker) {
 		this.icBroker = icBroker;
 	}
 

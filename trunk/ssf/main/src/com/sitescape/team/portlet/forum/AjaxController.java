@@ -1854,7 +1854,7 @@ public class AjaxController  extends SAbstractController {
 			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
 		}
 		
-		String meetingToken = getIcBroker().addMeeting(memberIds,
+		String meetingToken = getIcBrokerModule().addMeeting(memberIds,
 				binder, entry, "", -1, "", meetingType);
 
 		model.put(WebKeys.MEETING_TOKEN, meetingToken);

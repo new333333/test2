@@ -199,11 +199,11 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		return reportModule;
 	}
 	
-	public ICBrokerModule getIcBroker() {
+	public ICBrokerModule getIcBrokerModule() {
 		return icBroker;
 	}
 
-	public void setIcBroker(ICBrokerModule icBroker) {
+	public void setIcBrokerModule(ICBrokerModule icBroker) {
 		this.icBroker = icBroker;
 	}
 	
