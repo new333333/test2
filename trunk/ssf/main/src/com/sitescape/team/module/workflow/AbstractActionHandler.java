@@ -41,8 +41,8 @@ public abstract class AbstractActionHandler implements ActionHandler {
 		return (ReportModule)SpringContextUtil.getBean("reportModule");
 	};
 
-	protected MailModule getMailManager() {
-		return (MailModule)SpringContextUtil.getBean("mailManager");
+	protected MailModule getMailModule() {
+		return (MailModule)SpringContextUtil.getBean("mailModule");
 	};
 
 	protected WorkflowSupport loadEntry(String type, Long id) {

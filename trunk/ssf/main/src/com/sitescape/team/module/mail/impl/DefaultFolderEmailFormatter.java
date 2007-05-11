@@ -99,7 +99,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     private FolderModule folderModule;
     private BinderModule binderModule;
     protected DefinitionModule definitionModule;
-    protected MailModule mailManager;
+    protected MailModule mailModule;
 	private TransformerFactory transFactory = TransformerFactory.newInstance();
 
 	protected Map transformers = new HashMap();
@@ -114,8 +114,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     public void setBinderModule(BinderModule binderModule) {
     	this.binderModule = binderModule;
     }
- 	public void setMailManager(MailModule mailManager) {
-		this.mailManager = mailManager;
+ 	public void setMailModule(MailModule mailModule) {
+		this.mailModule = mailModule;
 	}
 
 
@@ -348,7 +348,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getSubject(Folder folder, Notify notify) {
 		String subject = folder.getNotificationDef().getSubject();
 		if (Validator.isNull(subject))
-			subject = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT);
+			subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT);
 		//if not specified, us a localized default
 		if (Validator.isNull(subject))
 			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
@@ -358,7 +358,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getFrom(Folder folder, Notify notify) {
 		String from = folder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
-			from = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_FROM);
+			from = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_FROM);
 		return from;
 	}
 
@@ -479,11 +479,11 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		Templates trans;
 		trans = (Templates)transformers.get(zoneName + ":" + type);
 		if (trans == null) {
-			String templateName = mailManager.getMailProperty(zoneName, type);
+			String templateName = mailModule.getMailProperty(zoneName, type);
 			Source xsltSource = new StreamSource(new File(DirPath.getXsltDirPath(),templateName));
 			trans = transFactory.newTemplates(xsltSource);
 			//replace name with actual template
-			if (GetterUtil.getBoolean(mailManager.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
+			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
 				transformers.put(zoneName + ":" + type, trans);
 		} 
 		return trans.newTransformer();
@@ -551,7 +551,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		
 		
-//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
+//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
 		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
 		
 		return result;
@@ -586,7 +586,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element = fElement.addElement("folderEntry");
 		doEntry(element, entry, notify, true);
 		
-//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
+//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
 		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
 		
 		return result;

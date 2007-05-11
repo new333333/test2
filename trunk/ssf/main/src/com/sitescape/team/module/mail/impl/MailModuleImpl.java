@@ -90,7 +90,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class MailManagerImpl extends CommonDependencyInjection implements MailModule {
+public class MailModuleImpl extends CommonDependencyInjection implements MailModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected Map zoneProps = new HashMap();
 	protected Map mailPosters = new HashMap();
@@ -100,7 +100,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMo
 	protected Map defaultProps = new HashMap();
 	private String mailRootDir;
 
-	public MailManagerImpl() {
+	public MailModuleImpl() {
 		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");

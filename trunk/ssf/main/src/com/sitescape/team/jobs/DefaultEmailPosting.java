@@ -22,7 +22,7 @@ import com.sitescape.team.util.SpringContextUtil;
 
 public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		mail.receivePostings();
     }
 	public ScheduleInfo getScheduleInfo(Long zoneId) {

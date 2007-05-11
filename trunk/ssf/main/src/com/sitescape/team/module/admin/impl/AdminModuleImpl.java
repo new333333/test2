@@ -89,16 +89,16 @@ import com.sitescape.util.Validator;
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ZONE, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
-	protected MailModule mailManager;
+	protected MailModule mailModule;
 	/**
 	 * Setup by spring
-	 * @param mailManager
+	 * @param mailModule
 	 */
-	public void setMailManager(MailModule mailManager) {
-    	this.mailManager = mailManager;
+	public void setMailModule(MailModule mailModule) {
+    	this.mailModule = mailModule;
     }
-	protected MailModule getMailManager() {
-		return mailManager;
+	protected MailModule getMailModule() {
+		return mailModule;
 	}
     protected DefinitionModule definitionModule;
 	/**
@@ -237,7 +237,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	getPostingObject().setScheduleInfo(config);
     }	     
     private EmailPosting getPostingObject() {
-    	String emailPostingClass = getMailManager().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB);
+    	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();
@@ -1143,7 +1143,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
  			}
  		}
  				
-		boolean sent = getMailManager().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
+		boolean sent = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
 		if (sent) result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SENT);
 		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);
 		return result;

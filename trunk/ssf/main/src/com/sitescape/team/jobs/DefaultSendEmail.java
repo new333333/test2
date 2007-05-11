@@ -64,7 +64,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		Map message = (Map)jobDataMap.get("mailMessage");
 		String name = (String)jobDataMap.get("mailSender");
 		Date next = context.getNextFireTime();
@@ -102,7 +102,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 
     public boolean sendMail(String mailSenderName, Map message, String comment) {
 		MimeHelper helper = new MimeHelper(message);
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
 			mail.sendMail(mailSenderName, helper);
 			return true;
