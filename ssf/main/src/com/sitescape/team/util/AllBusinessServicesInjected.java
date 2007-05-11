@@ -92,7 +92,7 @@ public interface AllBusinessServicesInjected {
 
 	DashboardModule getDashboardModule();
 	
-	void setIcBroker(ICBrokerModule icBroker);
+	void setIcBrokerModule(ICBrokerModule icBroker);
 
-	ICBrokerModule getIcBroker();	
+	ICBrokerModule getIcBrokerModule();	
 }

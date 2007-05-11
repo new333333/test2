@@ -62,7 +62,7 @@
 		<property name="icalGenerator"><ref bean="icalGenerator"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="reportModule"><ref bean="reportModule"/></property>
-		<property name="icBroker"><ref bean="icBroker"/></property>			
+		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -818,8 +818,7 @@ application/vnd.stardivision.math                         smf
 	</bean>
 	
 	<!-- ================================ Instant Collaboration Support==================== -->
-	<bean id="icBroker" parent="moduleDependencyTemplate" class="com.sitescape.team.ic.impl.ICBrokerImpl">
-		<property name="coreDao"><ref local="coreDao"/></property>		
+	<bean id="icBrokerModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.ic.impl.ICBrokerModuleImpl">	
 		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
 		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
 		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
@@ -875,8 +874,8 @@ application/vnd.stardivision.math                         smf
 	        <entry key="SiteScape:type=Realtime,name=presenceService">
 	          <ref local="presenceService"/>
 	        </entry>
-	        <entry key="SiteScape:type=Realtime,name=icBroker">
-	          <ref local="icBroker"/>
+	        <entry key="SiteScape:type=Module,name=icBrokerModule">
+	          <ref local="icBrokerModule"/>
 	        </entry>
 	        <entry key="SiteScape:type=Hibernate,name=hibernateStatisticsService">
 	          <ref local="hibernateStatisticsService"/>
