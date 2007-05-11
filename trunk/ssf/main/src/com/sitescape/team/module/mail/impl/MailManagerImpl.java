@@ -9,7 +9,7 @@
  *
  */
 
-package com.sitescape.team.mail.impl;
+package com.sitescape.team.module.mail.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -64,12 +64,12 @@ import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.jobs.FailedEmail;
 import com.sitescape.team.jobs.SendEmail;
-import com.sitescape.team.mail.FolderEmailFormatter;
-import com.sitescape.team.mail.JavaMailSender;
-import com.sitescape.team.mail.MailManager;
-import com.sitescape.team.mail.MimeMessagePreparator;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.mail.FolderEmailFormatter;
+import com.sitescape.team.module.mail.JavaMailSender;
+import com.sitescape.team.module.mail.MailModule;
+import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.Constants;
@@ -90,7 +90,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class MailManagerImpl extends CommonDependencyInjection implements MailManager {
+public class MailManagerImpl extends CommonDependencyInjection implements MailModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected Map zoneProps = new HashMap();
 	protected Map mailPosters = new HashMap();
@@ -101,10 +101,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	private String mailRootDir;
 
 	public MailManagerImpl() {
-		defaultProps.put(MailManager.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
-		defaultProps.put(MailManager.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
-		defaultProps.put(MailManager.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
-		defaultProps.put(MailManager.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
+		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
+		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
+		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
+		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
 	}
 
 	public String getMailRootDir() {
@@ -310,7 +310,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		MimeHelper mHelper = new MimeHelper(processor, folder, stamp);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setEntry(entry);
-		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.DEFAULT_TIMEZONE));
+		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 		
 		mHelper.setType(Notify.FULL);
 		mHelper.setSendAttachments(false);
@@ -365,7 +365,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
-		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.DEFAULT_TIMEZONE));
+		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 
 		for (int i=0; i<digestResults.size(); ++i) {
 			Object row[] = (Object [])digestResults.get(i);

@@ -21,8 +21,8 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.report.ReportModule;
 
 public abstract class AbstractActionHandler implements ActionHandler {
@@ -41,8 +41,8 @@ public abstract class AbstractActionHandler implements ActionHandler {
 		return (ReportModule)SpringContextUtil.getBean("reportModule");
 	};
 
-	protected MailManager getMailManager() {
-		return (MailManager)SpringContextUtil.getBean("mailManager");
+	protected MailModule getMailManager() {
+		return (MailModule)SpringContextUtil.getBean("mailManager");
 	};
 
 	protected WorkflowSupport loadEntry(String type, Long id) {

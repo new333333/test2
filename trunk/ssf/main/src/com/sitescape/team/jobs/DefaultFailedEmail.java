@@ -34,8 +34,8 @@ import org.springframework.mail.MailSendException;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.mail.JavaMailSender;
-import com.sitescape.team.mail.MailManager;
+import com.sitescape.team.module.mail.JavaMailSender;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -49,7 +49,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
 		String fileName = (String)jobDataMap.get("mailMessage");
 		//set file name for delete when trigger complete
     	File file = new File(fileName);

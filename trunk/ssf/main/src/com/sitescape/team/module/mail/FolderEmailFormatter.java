@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.mail;
+package com.sitescape.team.module.mail;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Date;

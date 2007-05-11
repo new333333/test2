@@ -46,8 +46,8 @@ import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.mail.MailManager;
-import com.sitescape.team.mail.MimeMessagePreparator;
+import com.sitescape.team.module.mail.MailModule;
+import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.NLT;
@@ -64,7 +64,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
 		Map message = (Map)jobDataMap.get("mailMessage");
 		String name = (String)jobDataMap.get("mailSender");
 		Date next = context.getNextFireTime();
@@ -102,7 +102,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 
     public boolean sendMail(String mailSenderName, Map message, String comment) {
 		MimeHelper helper = new MimeHelper(message);
-    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
 		try {
 			mail.sendMail(mailSenderName, helper);
 			return true;

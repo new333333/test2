@@ -26,7 +26,7 @@ import org.quartz.SimpleTrigger;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.mail.MailManager;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -40,7 +40,7 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
 		Long folderId = new Long(jobDataMap.getLong("binder"));
 		Long entryId = new Long(jobDataMap.getLong("entry"));
 		Date stamp = (Date)jobDataMap.get("when");

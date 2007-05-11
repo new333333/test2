@@ -18,7 +18,7 @@ import org.quartz.JobExecutionException;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.mail.MailManager;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 /**
  *
@@ -26,7 +26,7 @@ import com.sitescape.team.util.SpringContextUtil;
 public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
+    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailManager");
 		try {
 			Date end = mail.sendNotifications(new Long(jobDataMap.getLong("binder")), (Date)jobDataMap.get("lastNotification") );
 			jobDataMap.put("lastNotification", end);

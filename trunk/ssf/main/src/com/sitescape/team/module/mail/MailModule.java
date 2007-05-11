@@ -9,7 +9,7 @@
  *
  */
 
-package com.sitescape.team.mail;
+package com.sitescape.team.module.mail;
 import java.util.Date;
 import java.util.Map;
 import javax.mail.internet.MimeMessage;
@@ -21,7 +21,7 @@ import com.sitescape.team.domain.Binder;
  * @author Janet McCann
  *
  */
-public interface MailManager {
+public interface MailModule {
 	public static String POSTING_JOB="posting.job";
 	public static final String NOTIFY_TEMPLATE_TEXT="notify.mailText";
 	public static final String NOTIFY_TEMPLATE_HTML="notify.mailHtml";
