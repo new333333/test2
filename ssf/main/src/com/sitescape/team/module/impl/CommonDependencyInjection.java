@@ -58,7 +58,6 @@ public abstract class CommonDependencyInjection {
 	protected IcalGenerator icalGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	protected ResourceDriverManager resourceDriverManager;
-	protected ReportModule reportModule;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -143,12 +142,6 @@ public abstract class CommonDependencyInjection {
 	}
 	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {
 		this.resourceDriverManager = resourceDriverManager;
-	}
-	public ReportModule getReportModule() {
-		return reportModule;
-	}
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
 	}
 
 }
