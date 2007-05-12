@@ -30,6 +30,7 @@ var ss_nlt_tagsCommunityTags = "<ssf:nlt tag="tags.communityTags"/>";
 var ss_nlt_tagsPersonalTags = "<ssf:nlt tag="tags.personalTags"/>";
 var ss_searchFormLabelAuthor = "<ssf:nlt tag="searchForm.label.author"/>";
 var ss_searchFormLabelDate = "<ssf:nlt tag="searchForm.label.date"/>";
+var ss_searchFormLabelLastActivity = "<ssf:nlt tag="searchForm.label.lastActivity"/>";
 var ss_AdvancedSearchURLNoOperation = "<portlet:actionURL windowState="maximized" portletMode="view">
 				<portlet:param name="action" value="advanced_search"/>
 				<portlet:param name="tabId" value="${tabId}"/>
@@ -39,4 +40,10 @@ var ss_currentTabId = "${tabId}";
 
 var ss_overwriteQuestion = "<ssf:nlt tag="search.save.overwriteQuestion"/>";
 var ss_noNameMsg="<ssf:nlt tag="search.save.noName"/>";
+var ss_days_0 = "<ssf:nlt tag="searchForm.lastActivity.0"/>"
+var ss_days_1 = "<ssf:nlt tag="searchForm.lastActivity.1"/>"
+var ss_days_3 = "<ssf:nlt tag="searchForm.lastActivity.3"/>"
+var ss_days_7 = "<ssf:nlt tag="searchForm.lastActivity.7"/>"
+var ss_days_30 = "<ssf:nlt tag="searchForm.lastActivity.30"/>"
+var ss_days_90 = "<ssf:nlt tag="searchForm.lastActivity.90"/>"
 </script>

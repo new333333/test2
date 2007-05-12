@@ -51,6 +51,13 @@
 			</p>
 		</c:forEach>
 	</c:if>
+	<c:if test="${!empty ss_filterMap.additionalFilters.last_activity}">
+		<c:forEach var="block" items="${ss_filterMap.additionalFilters.last_activity}">
+			<p><ssf:nlt tag="searchForm.label.lastActivityInDays"/>: 
+			${block.daysNumber}
+			</p>
+		</c:forEach>
+	</c:if>
 	<c:if test="${!empty ss_filterMap.additionalFilters.creation_date}">
 		<c:forEach var="block" items="${ss_filterMap.additionalFilters.creation_date}">
 			<p><ssf:nlt tag="searchForm.label.creationDate"/>: 
