@@ -11,6 +11,7 @@
 package com.sitescape.team.search.filter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,9 +20,11 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.joda.time.DateTime;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
@@ -132,6 +135,11 @@ public class SearchFilterToSearchBooleanConverter {
     	    			addEventField(block, filterTerm);    	    			
     		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
     		    		addDateRange(block, filterTerm.attributeValue(SearchFilterKeys.FilterElementName, ""), filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
+    		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
+    	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
+    	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
+    	    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
+    	    			}
     		    	}
             	}
     		}
@@ -140,7 +148,13 @@ public class SearchFilterToSearchBooleanConverter {
     	return qTree;
 	}
    	
-   	private static void addEventField(Element block, Element filterTerm) {
+   	private static void createRelativeDateRange(Element block, Integer daysNumber) {
+   		DateTime now = new DateTime();
+   		DateTime startDate = now.minusDays(daysNumber);
+   		addDateRange(block, EntityIndexUtils.MODIFICATION_DAY_FIELD, DateTools.dateToString(startDate.toDate(), DateTools.Resolution.DAY), null);
+	}
+
+	private static void addEventField(Element block, Element filterTerm) {
 		Element andField = block;
 		Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
 		Iterator itEventDate = filterTerm.selectNodes(SearchFilterKeys.FilterEventDate).iterator();
