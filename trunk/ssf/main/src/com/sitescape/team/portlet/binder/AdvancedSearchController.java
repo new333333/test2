@@ -86,7 +86,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
         model.put(WebKeys.LOCALE, getUserLocale());
         
-        // this is necessary for the breadcrumbs
+        // this is necessary for the breadcrumbs and places choose
         Workspace top = getWorkspaceModule().getTopWorkspace();
 		BinderHelper.buildNavigationLinkBeans(this, top, model);
 		model.put(WebKeys.DEFINITION_ENTRY, top);

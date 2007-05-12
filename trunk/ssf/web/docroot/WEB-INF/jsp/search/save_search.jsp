@@ -18,7 +18,7 @@
 		onClick="ss_showHideRatingBox('ss_saved_searches', this);" class="ss_toogler"/>
 	</div>
 	<div id="ss_saved_searches" class="ss_rating_box_content" style="visibility:visible;display:block;">
-		<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="Query name" onmousedown="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
+		<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="Query name" onfocus="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
 		<a href="javascript: //;" onclick="ss_saveSearchQuery('searchQueryName', 'ss_saveQueryErrMsg');">Save</a>
 		<div id="ss_saveQueryErrMsg" style="visible: hidden;"></div>
 		<ul id="ss_savedQueriesList">

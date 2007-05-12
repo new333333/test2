@@ -130,7 +130,11 @@ public class SearchUtils {
   			Element rootElement = searchFilter.addElement(SearchFilterKeys.FilterRootName);
   			rootElement.addElement(SearchFilterKeys.FilterTerms);
   		}
-  		org.dom4j.Document qTree = SearchFilterToSearchBooleanConverter.convertSearchFilterToSearchBoolean(searchFilter);
+  		String currentBinderId = null;
+  		if (options != null) {
+  			currentBinderId = (String)options.get(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID);
+  		}
+  		org.dom4j.Document qTree = SearchFilterToSearchBooleanConverter.convertSearchFilterToSearchBoolean(searchFilter, currentBinderId);
    		return qTree;
   	}
   	

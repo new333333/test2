@@ -26,6 +26,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
@@ -33,6 +34,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
@@ -110,6 +112,10 @@ public class FilterController extends AbstractBinderController {
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
 		Map searchFilterData = new HashMap();
 		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
+		
+		Workspace ws = getWorkspaceModule().getWorkspace();
+		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		model.put(WebKeys.DOM_TREE, tree);
 
 		if (formData.containsKey("addBtn")) {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);

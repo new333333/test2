@@ -321,6 +321,19 @@ function ss_showHide(objId){
 	}
 }
 
+function ss_searchToggleFolders(objId, selection) {
+	var obj = document.getElementById(objId);
+	if (obj && obj.style) {
+		if (selection == "dashboard") {
+			obj.style.visibility="hidden";
+			obj.style.display="none";
+		} else {
+			obj.style.visibility="visible";
+			obj.style.display="block";
+		}
+	}
+}
+
 function ss_showAdditionalOptions(objId) {
 	ss_showHide(objId);
 	if (!ss_searchMoreInitialized) {
@@ -396,6 +409,7 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 			load: function(type, data, evt) {
 				if (data.savedQueryName) {
 					ss_addSavedSearchToView(data);
+					inputObj.value = "";
 				} else {
 					alert(ss_not_logged_in);
 				}

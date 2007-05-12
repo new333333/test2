@@ -4005,6 +4005,9 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
+#ss_searchForm_main table {
+	width: 100%;
+}
 #ss_searchForm_main th, #ss_searchForm_main td {
 	vertical-align: top;
 }

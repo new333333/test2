@@ -60,7 +60,7 @@ public class SearchFilterToSearchBooleanConverter {
 	}
 	
 	//Routine to convert a search filter into the form that Lucene wants 
-   	public static Document convertSearchFilterToSearchBoolean(Document searchFilter) {
+   	public static Document convertSearchFilterToSearchBoolean(Document searchFilter, String currentBinderId) {
 		//Build the search query
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
@@ -139,6 +139,8 @@ public class SearchFilterToSearchBooleanConverter {
     	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
     	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
     	    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
+    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
+    	    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
     	    			}
     		    	}
             	}
@@ -152,6 +154,14 @@ public class SearchFilterToSearchBooleanConverter {
    		DateTime now = new DateTime();
    		DateTime startDate = now.minusDays(daysNumber);
    		addDateRange(block, EntityIndexUtils.MODIFICATION_DAY_FIELD, DateTools.dateToString(startDate.toDate(), DateTools.Resolution.DAY), null);
+	}
+   	
+   	private static void createRelativePlace(Element block, String subfolders, String binderId) {
+   		if (Boolean.FALSE.toString().equals(subfolders)) {
+   			addFolderField(block, binderId);
+   		} else {
+   			addAncestryField(block, binderId);
+   		}
 	}
 
 	private static void addEventField(Element block, Element filterTerm) {

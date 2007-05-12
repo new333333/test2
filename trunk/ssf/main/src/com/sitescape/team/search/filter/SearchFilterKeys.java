@@ -18,8 +18,10 @@ public class SearchFilterKeys {
 	public final static String SearchPersonalTags = "searchPersonalTags";
 //	public final static String SearchTextAndTags = "searchTextAndTags";
 	public final static String SearchTags = "searchTags";
+	public final static String SearchFoldersType = "search_folderType";
 	public final static String SearchFolders = "searchFolders";
 	public final static String SearchSubfolders = "search_subfolders";
+	public final static String SearchCurrentFolder = "search_currentFolder";
 //	public final static String SearchTagsOr = "searchTagsOr";
 	public final static String SearchAdditionalFilters = "additionalFilters";
 	
@@ -69,6 +71,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeAuthor = "author";
    	public final static String FilterTypeDate = "date";
+	public final static String FilterTypePlace = "place";
    	public final static String FilterTypeEvent = "event";
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
    	public final static String FilterTypePersonalTagSearch = "personalTag";
