@@ -14,9 +14,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -434,9 +437,10 @@ public class SearchFilter {
 	}
 	
 	private String searchFormated(Date date) {
-		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyyMMdd");
-		String outputDate = outputFormater.format(date);
-		return outputDate;
+		return DateTools.dateToString(date, DateTools.Resolution.DAY);
+//		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyyMMdd");
+//		String outputDate = outputFormater.format(date);
+//		return outputDate;
 	}
 	
 	public void addModificationDateRange(Date startDate, Date endDate) {
@@ -565,7 +569,19 @@ public class SearchFilter {
 		}
 		
 	}
-	
+
+
+	/**
+	 * Adds relative date
+	 * @param daysNumber - how many days in the past (1, 3, 7, 30, 90,...)
+	 */
+	public void addRelativeLastActivityDate(Integer daysNumber) {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeRelative);
+		filterTerm.addAttribute(SearchFilterKeys.FilterRelativeType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addText(daysNumber.toString());
+	}
 
 	/**
 	 * Gets filter name for given search filter document.

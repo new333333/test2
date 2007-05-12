@@ -21,6 +21,11 @@ function ss_initSearchOptions() {
 				ss_addInitializedAuthor("${block.authorId}", "${block.authorTitle}");
 			</c:forEach>
 		</c:if>
+		<c:if test="${!empty ss_filterMap.additionalFilters.last_activity}">
+			<c:forEach var="block" items="${ss_filterMap.additionalFilters.last_activity}">
+				ss_addInitializedLastActivity(${block.daysNumber});
+			</c:forEach>
+		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.creation_date}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creation_date}">
 				ss_addInitializedCreationDate("${block.startDate}", "${block.endDate}");
@@ -62,9 +67,13 @@ function ss_initSearchOptions() {
 		<c:if test="${empty ss_filterMap.additionalFilters.creator_by_id}">
 			ss_addOption('creator_by_id');
 		</c:if>
+		<c:if test="${empty ss_filterMap.additionalFilters.last_activity}">
+			ss_addOption('last_activity');
+		</c:if>
 		<c:if test="${empty ss_filterMap.additionalFilters.entry}">
 			ss_addOption('entry');
 		</c:if>
+		
 	</c:if>
 	<c:if test="${empty ss_filterMap.additionalFilters}">
 		ss_addOption('creation_date');
@@ -73,6 +82,7 @@ function ss_initSearchOptions() {
 		ss_addOption('workflow');
 		ss_addOption('creator_by_id');
 		ss_addOption('entry');
+		ss_addOption('last_activity');
 	</c:if>		
 	  ss_searchMoreInitialized = true;
 }	

@@ -115,6 +115,12 @@ public class SearchFilterRequestParser {
 				if (!personalTag.equals("")) searchFilter.addPersonalTag(personalTag);
 				if (!communityTag.equals("")) searchFilter.addCommunityTag(communityTag);
 			}
+			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeLastActivity)) {
+				Integer daysNumber = PortletRequestUtils.getIntParameter(request, SearchFilterKeys.SearchDaysNumber.concat(numbers[i]), 0);
+				if ((daysNumber != null) && (daysNumber > 0)) {
+					searchFilter.addRelativeLastActivityDate(daysNumber);
+				}
+			}
 		}
 		return searchFilter.getFilter();
 	}

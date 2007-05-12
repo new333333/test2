@@ -24,6 +24,9 @@ function ss_addOption(type) {
 	   case "creator_by_id" :
 	      ss_addAuthor(ss_userOptionsCounter);
 	      break;
+	   case "last_activity" :
+	      ss_addLastActivity(ss_userOptionsCounter);
+	      break;
 	   case "folder" :
 	      ss_addFolder(ss_userOptionsCounter);
 	      break;
@@ -51,6 +54,11 @@ function ss_addInitializedEntry(entryId, fieldName, value, valueLabel) {
 function ss_addInitializedCreationDate(startDate, endDate) {
 	ss_optionsArray[ss_userOptionsCounter]='creation_date';
 	ss_addDate(ss_userOptionsCounter, 'creation', startDate, endDate);
+	ss_userOptionsCounter++;
+}
+function ss_addInitializedLastActivity(daysNumber) {
+	ss_optionsArray[ss_userOptionsCounter]='last_activity';
+	ss_addLastActivity(ss_userOptionsCounter, daysNumber);
 	ss_userOptionsCounter++;
 }
 function ss_addInitializedModificationDate(startDate, endDate) {
@@ -192,6 +200,51 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	}
 }
 
+function ss_addLastActivity(orderNo, initialDaysNumber) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	var remover = document.createElement('img');
+	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	div.appendChild(remover);
+	div.appendChild(document.createTextNode(" " + ss_searchFormLabelLastActivity + ": "));
+	
+	var selectBox = document.createElement('select');
+	selectBox.name="searchDaysNumber"+orderNo;
+	selectBox.id="searchDaysNumber"+orderNo;	
+	var option = document.createElement('option');
+	option.value = 0;
+	option.appendChild(document.createTextNode(ss_days_0));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 1;
+	if (initialDaysNumber && initialDaysNumber==1) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_1));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 3;
+	if (initialDaysNumber && initialDaysNumber==3) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_3));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 7;
+	if (initialDaysNumber && initialDaysNumber==7) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_7));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 30;
+	if (initialDaysNumber && initialDaysNumber==30) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_30));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 90;
+	if (initialDaysNumber && initialDaysNumber==90) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_90));
+	selectBox.appendChild(option);
+	
+	div.appendChild(selectBox);
+	document.getElementById('ss_lastActivities_options').appendChild(div);	
+}
 
 function ss_addDate(orderNo, type, startDate, endDate) {
 	var div = document.createElement('div');

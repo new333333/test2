@@ -22,6 +22,9 @@ public class SearchFilterKeys {
 	public final static String SearchSubfolders = "search_subfolders";
 //	public final static String SearchTagsOr = "searchTagsOr";
 	public final static String SearchAdditionalFilters = "additionalFilters";
+	
+	public final static String SearchDaysNumber = "searchDaysNumber";
+	
 //	public final static String TabTitle = "tabTitle";
 //	
 //   	//Search filter document element names
@@ -53,6 +56,7 @@ public class SearchFilterKeys {
    	public final static String FilterTerms = "filterTerms";
    	public final static String FilterTerm = "filterTerm";
    	public final static String FilterType = "filterType";
+   	public final static String FilterRelativeType = "filterRelativeType";
    	public final static String FilterEntryDefId = "filterEntryDefId";
    	public final static String FilterElementName = "filterElementName";
    	public final static String FilterElementValue = "filterElementValue";
@@ -83,6 +87,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypeEntityTypes = "entityTypes";
    	public final static String FilterTypeEntryTypes = "entryTypes";
    	public final static String FilterTypeElement = "element";
+   	public final static String FilterTypeRelative = "relative";
    	public final static String FilterStartDate = "startDate";
    	public final static String FilterEndDate = "endDate";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";

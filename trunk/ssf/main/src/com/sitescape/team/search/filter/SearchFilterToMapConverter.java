@@ -39,7 +39,10 @@ public class SearchFilterToMapConverter {
 	static final String SearchBlockTypeEntry = "entry";
 	static final String SearchBlockTypeAuthor = "creator_by_id";
 	static final String SearchBlockTypeTag = "tag";
+	static final String SearchBlockTypeLastActivity = "last_activity";
+	
 	static final String SearchBlockType = "type";
+	static final String SearchBlockTypeRelative = "relative";	
 	static final String SearchStartDate = "startDate";
 	static final String SearchEndDate = "endDate";
 	static final String SearchStartDateNotFormated = "startDateNotFormated";
@@ -52,6 +55,7 @@ public class SearchFilterToMapConverter {
 	static final String SearchEntryValuesNotFormatted="entryValuesNotFormatted";
 	static final String SearchAuthor="authorId";
 	static final String SearchAuthorTitle="authorTitle";
+	static final String SearchDaysNumber="daysNumber";
 	static final String SearchTag="tag";
 	static final String SearchPersonalTag="personalTag";
 	static final String SearchCommunityTag="communityTag";
@@ -146,6 +150,12 @@ public class SearchFilterToMapConverter {
 	    	    			} else {
 	    	    				if (blocks.get(SearchBlockTypeModificationDate) == null) blocks.put(SearchBlockTypeModificationDate, new ArrayList());
 	    	    				((List)blocks.get(SearchBlockTypeModificationDate)).add(dateBlock);	    	    				
+	    	    			}
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
+	    	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
+	    	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
+	    	    				if (blocks.get(SearchBlockTypeLastActivity) == null) blocks.put(SearchBlockTypeLastActivity, new ArrayList());
+	    	    				((List)blocks.get(SearchBlockTypeLastActivity)).add(createLastActivityBlock(filterTerm));
 	    	    			}
 	    		    	}
 	            	}
@@ -273,6 +283,14 @@ public class SearchFilterToMapConverter {
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
 		block.put(SearchAuthorTitle, filterTerm.attributeValue(SearchFilterKeys.FilterCreatorTitle, ""));
 		block.put(SearchAuthor, getElementValues(filterTerm).get(0));
+		return block;
+	}
+
+	private Map createLastActivityBlock(Element filterTerm) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
+		block.put(SearchBlockTypeRelative, filterTerm.attributeValue(SearchFilterKeys.FilterTypeRelative, ""));
+		block.put(SearchDaysNumber, filterTerm.getText());
 		return block;
 	}
 

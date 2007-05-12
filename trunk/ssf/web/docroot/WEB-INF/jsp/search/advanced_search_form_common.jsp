@@ -114,6 +114,13 @@
 					<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>				
 				</div>
 			</div>
+			<div id="ss_lastActivities_container" class="ss_options_container">
+				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></h4>
+				<div id="ss_lastActivities_options" class="ss_options"></div>
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('last_activity');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				</div>
+			</div>
 			<div id="ss_creationDates_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></h4>
 				<div id="ss_creationDates_options" class="ss_options"></div>
