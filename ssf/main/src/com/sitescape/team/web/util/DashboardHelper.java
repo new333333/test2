@@ -708,10 +708,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 		}
 		
-		// Map elementData = BinderHelper.getCommonEntryElements();
-		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule());
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
+		
+		Workspace ws = getWorkspaceModule().getWorkspace();
+		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		model.put(WebKeys.DOM_TREE, tree);
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
@@ -727,7 +729,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				String[] resultsCount = (String[])data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
 				pageSize = Integer.valueOf(resultsCount[0]);
 				model.put(WebKeys.PAGE_SIZE, Integer.valueOf(pageSize).toString());
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		}
 		int pageNumber = 0;
 		if (model.containsKey(WebKeys.PAGE_SIZE)) {
@@ -773,6 +777,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 		}
 		if (doSearch) {
+			options.put(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID, binder.getId().toString());
 			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			// 	entries = BinderHelper.filterEntryAttachmentResults(entries);

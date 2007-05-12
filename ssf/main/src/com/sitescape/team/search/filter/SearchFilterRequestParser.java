@@ -50,7 +50,7 @@ public class SearchFilterRequestParser {
 			}
 		}
 		
-		parseFolderIds(request, searchFilter);
+		parsePlaces(request, searchFilter);
 			
 		String[] numbers = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchNumbers, "").split(" ");
 		String[] types = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchTypes, "").split(" ");
@@ -125,27 +125,31 @@ public class SearchFilterRequestParser {
 		return searchFilter.getFilter();
 	}
 
-	private static void parseFolderIds(PortletRequest request, SearchFilter searchFilter) {
-		List folderIds = new ArrayList();
-		Map formData = request.getParameterMap();
-		Iterator itFormData = formData.entrySet().iterator();
-		while (itFormData.hasNext()) {
-			Map.Entry me = (Map.Entry) itFormData.next();
-			String key = (String)me.getKey();
-			if (key.startsWith(SearchFilterKeys.SearchFolders)) {
-				String folderId = key.replaceFirst(SearchFilterKeys.SearchFolders + "_", "");
-				folderIds.add(folderId);
+	private static void parsePlaces(PortletRequest request, SearchFilter searchFilter) {
+		String foldersType = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchFoldersType, "selected");
+		boolean searchSubfolders = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchSubfolders, false);
+		
+		if (foldersType.equals("selected")) {
+			List folderIds = new ArrayList();
+			Map formData = request.getParameterMap();
+			Iterator itFormData = formData.entrySet().iterator();
+			while (itFormData.hasNext()) {
+				Map.Entry me = (Map.Entry) itFormData.next();
+				String key = (String)me.getKey();
+				if (key.startsWith(SearchFilterKeys.SearchFolders)) {
+					String folderId = key.replaceFirst(SearchFilterKeys.SearchFolders + "_", "");
+					folderIds.add(folderId);
+				}
 			}
+
+			if (!searchSubfolders) {
+				searchFilter.addFolderIds(folderIds);
+			} else {
+				searchFilter.addAncestryIds(folderIds);
+			}
+		} else if (foldersType.equals("dashboard")) {
+			searchFilter.addRelativePlace(searchSubfolders);
 		}
-
-		boolean searchSubfolders = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchSubfolders, false);		
-
-		if (!searchSubfolders) {
-			searchFilter.addFolderIds(folderIds);
-		} else {
-			searchFilter.addAncestryIds(folderIds);
-		}
-
 	}
 	
 	

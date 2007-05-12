@@ -46,13 +46,16 @@
 <c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
 
+<c:set var="ss_filterMap" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ss_filterMap}"/>
+
 <div class="ss_style ss_portlet_style">
 
 	<div class="ss_searchContainer">
 		<div id="ss_searchForm_spacer"></div>
 
 		<div id="ss_content">
-			<c:set var="disableSearchButton" value="1"/>		
+			<c:set var="disableSearchButton" value="1"/>
+			<c:set var="activateDashboardFolder" value="true"/>		
 			<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
 		
 		</div>
@@ -60,8 +63,7 @@
 </div>
 <script type="text/javascript">
 ss_createOnSubmitObj('ss_prepareAdditionalSearchOptions', '${ss_dashboard_config_form_name}', ss_prepareAdditionalSearchOptions);
-
-<c:set var="ss_filterMap" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ss_filterMap}"/>	
+	
 <%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 
 dojo.addOnLoad(function() {

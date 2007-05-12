@@ -103,7 +103,8 @@ public class SearchFilterToMapConverter {
 	    		String searchedTags = "";
 	    		String searchedAuthors = "";
 	    		List searchFolders = new ArrayList();
-	    		Boolean searchSubfolders = Boolean.FALSE;
+	    		Boolean searchSubfolders = false;
+	    		Boolean searchCurrentFolder = false;
 	    		Map blocks = new HashMap();
 	    		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
 	    		if (liFilterTermsTerm.size() > 0) {
@@ -156,6 +157,11 @@ public class SearchFilterToMapConverter {
 	    	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
 	    	    				if (blocks.get(SearchBlockTypeLastActivity) == null) blocks.put(SearchBlockTypeLastActivity, new ArrayList());
 	    	    				((List)blocks.get(SearchBlockTypeLastActivity)).add(createLastActivityBlock(filterTerm));
+	    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
+	    	    				searchCurrentFolder = true;
+	    	    				if (filterTerm.getTextTrim().equals(Boolean.TRUE.toString())) {
+	    	    					searchSubfolders = true;
+	    	    				}
 	    	    			}
 	    		    	}
 	            	}
@@ -165,6 +171,7 @@ public class SearchFilterToMapConverter {
 	    		convertedQuery.put(SearchFilterKeys.SearchTags, searchedTags);
 	    		convertedQuery.put(SearchFilterKeys.SearchFolders, searchFolders);
 	    		convertedQuery.put(SearchFilterKeys.SearchSubfolders, searchSubfolders);
+	    		convertedQuery.put(SearchFilterKeys.SearchCurrentFolder, searchCurrentFolder);
 	    		convertedQuery.put(SearchFilterKeys.SearchJoiner, andJoiner);
 	    		convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
 	    	}

@@ -438,9 +438,6 @@ public class SearchFilter {
 	
 	private String searchFormated(Date date) {
 		return DateTools.dateToString(date, DateTools.Resolution.DAY);
-//		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyyMMdd");
-//		String outputDate = outputFormater.format(date);
-//		return outputDate;
 	}
 	
 	public void addModificationDateRange(Date startDate, Date endDate) {
@@ -603,5 +600,18 @@ public class SearchFilter {
 		}
 		return filterName.getText();
 	}
-	
+
+	/**
+	 * It's a currentplace in query call time.
+	 * 
+	 */
+	public void addRelativePlace(boolean searchSubfolders) {
+		checkCurrent();
+		
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeRelative);
+		filterTerm.addAttribute(SearchFilterKeys.FilterRelativeType, SearchFilterKeys.FilterTypePlace);
+		filterTerm.addText(Boolean.toString(searchSubfolders));
+	}
+
 }
