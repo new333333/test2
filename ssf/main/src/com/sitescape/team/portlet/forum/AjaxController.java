@@ -12,6 +12,7 @@ package com.sitescape.team.portlet.forum;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -1237,7 +1238,13 @@ public class AjaxController  extends SAbstractController {
 			model.put("ss_tree_select_type", selectType);
 			if (selectType.equals("2")) {
 				//multi select
-				model.put("ss_tree_select", new ArrayList());
+				String joinedMultiSelect = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_MULTI_SELECT, "");
+				
+				List multiSelect = new ArrayList();
+				if (!joinedMultiSelect.equals("")) {
+					multiSelect = Arrays.asList(joinedMultiSelect.split(","));
+				}
+				model.put("ss_tree_select", multiSelect);
 				model.put("ss_tree_select_id", selectId);
 			} else if (selectType.equals("1")) {
 				//single select, get name and selectedId

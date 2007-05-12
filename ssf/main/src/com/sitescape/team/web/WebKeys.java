@@ -107,6 +107,7 @@ public class WebKeys {
 	public static final String URL_TAG_PERSONAL = "pTag";
 	public static final String URL_TREE_SELECT_TYPE = "tree_select_type";
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
+	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";

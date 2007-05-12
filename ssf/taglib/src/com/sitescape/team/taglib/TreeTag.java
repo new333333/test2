@@ -11,6 +11,7 @@
 package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -111,6 +112,7 @@ public class TreeTag extends TagSupport {
 				//This request is displaying the checkboxes. Remember that in the url
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "2");
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, multiSelectPrefix);
+				adapterUrl.setParameter(WebKeys.URL_TREE_MULTI_SELECT, join(multiSelect, ","));
 			} else if (singleSelectName != null) {
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "1");
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, singleSelectName);
@@ -893,6 +895,18 @@ public class TreeTag extends TagSupport {
 		}
 		return "<span onMouseOver=\"ss_showBucketText(this, '" + text + "');\" >" + result + "</span>";
 	}
+
+   private static String join(Collection s, String delimiter) {
+        StringBuffer buffer = new StringBuffer();
+        Iterator iter = s.iterator();
+        while (iter.hasNext()) {
+            buffer.append(iter.next());
+            if (iter.hasNext()) {
+                buffer.append(delimiter);
+            }
+        }
+        return buffer.toString();
+    }
 }
 
 
