@@ -3,6 +3,7 @@ package com.sitescape.team.search.filter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +55,8 @@ public class SearchFilterRequestParser {
 			
 		String[] numbers = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchNumbers, "").split(" ");
 		String[] types = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchTypes, "").split(" ");
+		
+		parseItemTypes(request, searchFilter);
 		
 		for (int i=0; i<types.length; i++) {
 			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
@@ -123,6 +126,12 @@ public class SearchFilterRequestParser {
 			}
 		}
 		return searchFilter.getFilter();
+	}
+
+	private static void parseItemTypes(PortletRequest request, SearchFilter searchFilter) {
+		List itemTypes = Arrays.asList(PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchItemType));
+		searchFilter.addItemTypes(itemTypes);
+		
 	}
 
 	private static void parsePlaces(PortletRequest request, SearchFilter searchFilter) {

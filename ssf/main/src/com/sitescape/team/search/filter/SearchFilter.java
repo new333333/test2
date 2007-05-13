@@ -49,8 +49,8 @@ public class SearchFilter {
 	}
 	
 	public SearchFilter(Document filter) {
-		this.filter = filter;
-		this.sfRoot = filter.getRootElement(); 
+		this.filter = (Document)filter.clone();
+		this.sfRoot = this.filter.getRootElement(); 
 		
 		Iterator nodes = sfRoot.nodeIterator();
 		while (nodes.hasNext()) {
@@ -152,7 +152,7 @@ public class SearchFilter {
 	}
 	
 	public void addFolderIds(List folderIds) {
-		if (folderIds == null) {
+		if (folderIds == null || folderIds.isEmpty()) {
 			return;
 		}
 		checkCurrent();
@@ -275,25 +275,7 @@ public class SearchFilter {
 			}
 		}
 	}
-	
-//	public void addCommunityTagField (String tag) {
-//		currentFilterTerms = sfRoot.addElement(QueryBuilder.FIELD_ELEMENT);
-//		currentFilterTerms.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.TAG_FIELD);
-//		Element child = currentFilterTerms.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-//		child.setText(tag);
-//	}
-//	
-//	public void addPersonalTagField (String tags) {
-//		Element fieldTag = sfRoot.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
-//	    String [] strTagArray = tags.split("\\s");
-//	    for (int k = 0; k < strTagArray.length; k++) {
-//	    	String strTag = strTagArray[k];
-//	    	if (strTag.equals("")) continue;
-//    		Element childTag = fieldTag.addElement(QueryBuilder.TAG_ELEMENT);
-//    		childTag.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, strTag);
-//	    }
-//	}
-	
+		
 	public void addPlacesFilter(String searchText) {
 		checkCurrent();
 	
@@ -612,6 +594,22 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeRelative);
 		filterTerm.addAttribute(SearchFilterKeys.FilterRelativeType, SearchFilterKeys.FilterTypePlace);
 		filterTerm.addText(Boolean.toString(searchSubfolders));
+	}
+
+	public void addItemTypes(List itemTypes) {
+		if (itemTypes == null || itemTypes.isEmpty()) {
+			return;
+		}
+		checkCurrent();
+		
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeItemTypes);
+		
+		Iterator it = itemTypes.iterator();
+		while (it.hasNext()) {
+			Element itemTypeTerm = filterTerm.addElement(SearchFilterKeys.FilterItemType);
+			itemTypeTerm.setText((String)it.next());
+		}
 	}
 
 }

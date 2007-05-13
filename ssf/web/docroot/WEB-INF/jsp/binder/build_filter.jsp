@@ -46,7 +46,7 @@
 			
 					<div id="ss_content">
 						<c:set var="disableSearchButton" value="1"/>	
-						<c:set var="filterDefinition" value="1"/>				
+						<c:set var="filterDefinition" value="true"/>				
 						<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
 					</div>
 				</div>
