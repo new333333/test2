@@ -7,7 +7,7 @@
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
-				<c:if test="${empty filterDefinition || filterDefinition == 0}">
+				<c:if test="${!filterDefinition}">
 					<h4><ssf:nlt tag="searchForm.advanced.Title"/></h4>
 				</c:if>
 				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
@@ -26,61 +26,63 @@
 						<th><ssf:nlt tag="searchForm.searchTag"/>:</th>
 						<td colspan="2"><input type="text" name="searchTags" id="searchTags" value="${ss_filterMap.searchTags}" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
 					</tr>
-					<tr>
-						<th><ssf:nlt tag="searchForm.searchFolders"/>:</th>
-						<td colspan="2">
-						
-							<c:if test="${activateDashboardFolder}">
-								<input type="radio" onchange="ss_searchToggleFolders('ss_foldersTree_${ssNamespace}', 'dashboard');" 
-										name="search_folderType" value="dashboard" id="search_currentFolder" style="width: 19px; margin: 0; padding: 0; "
-										<c:if test="${ss_filterMap.search_currentFolder}">
-											checked="true"
-										</c:if>
-										/> <label for="search_currentFolder"><ssf:nlt tag="searchForm.searchCurrentFolder"/></label>
-							 
-								<div>
-									<input type="radio" onchange="ss_searchToggleFolders('ss_foldersTree_${ssNamespace}', 'foldersTree');" name="search_folderType" value="selected" id="search_selectedFolders" style="width: 19px; margin: 0; padding: 0; "
-										<c:if test="${!ss_filterMap.search_currentFolder}">
+					<c:if test="${!filterDefinition}">
+						<tr>
+							<th><ssf:nlt tag="searchForm.searchFolders"/>:</th>
+							<td colspan="2">
+							
+								<c:if test="${activateDashboardFolder}">
+									<input type="radio" onchange="ss_searchToggleFolders('ss_foldersTree_${ssNamespace}', 'dashboard');" 
+											name="search_folderType" value="dashboard" id="search_currentFolder" style="width: 19px; margin: 0; padding: 0; "
+											<c:if test="${ss_filterMap.search_currentFolder}">
 												checked="true"
-										</c:if>
-										/> <label for="search_selectedFolders"><ssf:nlt tag="searchForm.searchSelectedFolders"/></label>
+											</c:if>
+											/> <label for="search_currentFolder"><ssf:nlt tag="searchForm.searchCurrentFolder"/></label>
+								 
+									<div>
+										<input type="radio" onchange="ss_searchToggleFolders('ss_foldersTree_${ssNamespace}', 'foldersTree');" name="search_folderType" value="selected" id="search_selectedFolders" style="width: 19px; margin: 0; padding: 0; "
+											<c:if test="${!ss_filterMap.search_currentFolder}">
+													checked="true"
+											</c:if>
+											/> <label for="search_selectedFolders"><ssf:nlt tag="searchForm.searchSelectedFolders"/></label>
+									</div>
+								
+									<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
+								</c:if>
+								
+								<c:choose>
+									<c:when test="${!empty ss_filterMap}">
+										<c:set var="folderIds" value="${ss_filterMap.searchFolders}" />
+									</c:when>
+									<c:otherwise>
+										<c:set var="folderIds" value="<%= new ArrayList() %>" />
+									</c:otherwise>
+								</c:choose>
+	
+								<ssf:tree 
+									  treeName="t_searchForm_wsTree"
+									  treeDocument="${ssDomTree}"  
+									  rootOpen="false" 
+									  multiSelect="${folderIds}" 
+									  multiSelectPrefix="searchFolders_"
+									 showIdRoutine="t_advSearchForm_wsTree_showId"/>
+								
+								<c:if test="${activateDashboardFolder}">
+									</div>
+								</c:if>
+	
+								<div class="ss_additionals">
+								 	<input type="checkbox" name="search_subfolders" id="search_subfolders" value="true" style="width: 19px; margin: 0; padding: 0; " 
+								 		<c:if test="${ss_filterMap.search_subfolders}">
+								 			checked="checked"
+								 		</c:if>
+								 	> <label for="search_subfolders"><ssf:nlt tag="searchForm.searchSubfolders"/></label>
 								</div>
-							
-								<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
-							</c:if>
-							
-							<c:choose>
-								<c:when test="${!empty ss_filterMap}">
-									<c:set var="folderIds" value="${ss_filterMap.searchFolders}" />
-								</c:when>
-								<c:otherwise>
-									<c:set var="folderIds" value="<%= new ArrayList() %>" />
-								</c:otherwise>
-							</c:choose>
-
-							<ssf:tree 
-								  treeName="t_searchForm_wsTree"
-								  treeDocument="${ssDomTree}"  
-								  rootOpen="false" 
-								  multiSelect="${folderIds}" 
-								  multiSelectPrefix="searchFolders_"
-								 showIdRoutine="t_advSearchForm_wsTree_showId"/>
-							
-							<c:if test="${activateDashboardFolder}">
-								</div>
-							</c:if>
-
-							<div class="ss_additionals">
-							 	<input type="checkbox" name="search_subfolders" id="search_subfolders" value="true" style="width: 19px; margin: 0; padding: 0; " 
-							 		<c:if test="${ss_filterMap.search_subfolders}">
-							 			checked="checked"
-							 		</c:if>
-							 	> <label for="search_subfolders"><ssf:nlt tag="searchForm.searchSubfolders"/></label>
-							</div>
- 						</td>
-					</tr>
+	 						</td>
+						</tr>
+					</c:if>
 					
-					<c:if test="${empty filterDefinition || filterDefinition == 0}">
+					<c:if test="${!filterDefinition}">
 						<tr>
 							<td colspan="3" style="text-align: right; ">
 								<select name="data_resultsCount" id="data_resultsCount">
@@ -167,6 +169,43 @@
 					<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>
+			<c:if test="${!filterDefinition}">
+				<div id="ss_itemTypes_container" class="ss_options_container">
+					<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/></h4>
+					<div id="ss_itemType_options" class="ss_options">
+						<input type="checkbox" name="searchItemType" value="workspace" id="ss_itemType_workspace"
+							<c:if test="${ss_filterMap.additionalFilters.item_types.workspace}">
+								checked="true"
+							</c:if>
+						/>&nbsp;<label for="ss_itemType_workspace"><ssf:nlt tag="searchForm.itemType.workspace"/></label>
+						<input type="checkbox" name="searchItemType" value="folder" id="ss_itemType_folder"
+							<c:if test="${ss_filterMap.additionalFilters.item_types.folder}">
+								checked="true"
+							</c:if>
+						/>&nbsp;<label for="ss_itemType_folder"><ssf:nlt tag="searchForm.itemType.folder"/></label>
+						<input type="checkbox" name="searchItemType" value="user" id="ss_itemType_user"
+							<c:if test="${ss_filterMap.additionalFilters.item_types.user}">
+								checked="true"
+							</c:if>					
+						/>&nbsp;<label for="ss_itemType_user"><ssf:nlt tag="searchForm.itemType.user"/></label>
+						<input type="checkbox" name="searchItemType" value="attachment" id="ss_itemType_attachment"
+							<c:if test="${ss_filterMap.additionalFilters.item_types.attachment}">
+								checked="true"
+							</c:if>						
+						/>&nbsp;<label for="ss_itemType_attachment"><ssf:nlt tag="searchForm.itemType.attachment"/></label>
+						<input type="checkbox" name="searchItemType" value="entry" id="ss_itemType_entry"
+							<c:if test="${ss_filterMap.additionalFilters.item_types.entry}">
+								checked="true"
+							</c:if>						
+						/>&nbsp;<label for="ss_itemType_entry"><ssf:nlt tag="searchForm.itemType.entry"/></label>
+						<input type="checkbox" name="searchItemType" value="reply" id="ss_itemType_reply"
+							<c:if test="${ss_filterMap.additionalFilters.item_types.reply}">
+								checked="true"
+							</c:if>						
+						/>&nbsp;<label for="ss_itemType_reply"><ssf:nlt tag="searchForm.itemType.reply"/></label>
+					</div>
+				</div>
+			</c:if>			
 			<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 			<div style="text-align: right; padding: 10px;">
 					<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 

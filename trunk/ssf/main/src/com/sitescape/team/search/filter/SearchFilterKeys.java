@@ -26,6 +26,7 @@ public class SearchFilterKeys {
 	public final static String SearchAdditionalFilters = "additionalFilters";
 	
 	public final static String SearchDaysNumber = "searchDaysNumber";
+	public final static String SearchItemType = "searchItemType";
 	
 //	public final static String TabTitle = "tabTitle";
 //	
@@ -91,11 +92,13 @@ public class SearchFilterKeys {
    	public final static String FilterTypeEntryTypes = "entryTypes";
    	public final static String FilterTypeElement = "element";
    	public final static String FilterTypeRelative = "relative";
+   	public final static String FilterTypeItemTypes = "itemTypes";
    	public final static String FilterStartDate = "startDate";
    	public final static String FilterEndDate = "endDate";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
    	public final static String FilterEventDate = "filterEventDate";
+   	public final static String FilterItemType = "filterItemType";
 
    	public static String MinimumSystemDate = "19000000";
    	public static String MaximumSystemDate = "30000000";

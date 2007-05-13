@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -44,20 +45,6 @@ import com.sun.star.beans.GetDirectPropertyTolerantResult;
  *
  */
 public class SearchFilterToSearchBooleanConverter {  
-
-   	
-
-	private static String checkLanguage(String text, Element qTreeRootElement, String lang) {
-		if (!lang.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
-			return lang;
-		}
-		lang = LanguageTaster.taste(text.toCharArray()); 
-		if (lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
-			return lang;
-		Element langNode = qTreeRootElement.addElement(QueryBuilder.LANGUAGE_ELEMENT);
-		langNode.addAttribute(QueryBuilder.LANGUAGE_ATTRIBUTE, lang);
-		return lang;
-	}
 	
 	//Routine to convert a search filter into the form that Lucene wants 
    	public static Document convertSearchFilterToSearchBoolean(Document searchFilter, String currentBinderId) {
@@ -142,7 +129,9 @@ public class SearchFilterToSearchBooleanConverter {
     	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
     	    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
     	    			}
-    		    	}
+    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
+    	    			addItemTypesField(block, filterTerm);
+    	    		}
             	}
     		}
     	}
@@ -228,14 +217,21 @@ public class SearchFilterToSearchBooleanConverter {
 		Iterator itTermTypes = filterTerm.selectNodes(SearchFilterKeys.FilterDocType).iterator();
 		while (itTermTypes.hasNext()) {
 			String entityTypeName = ((Element) itTermTypes.next()).getText();
-			if (!entityTypeName.equals("")) {
-				Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-				field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.DOC_TYPE_FIELD);
-				field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-				Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-				child2.setText(entityTypeName);
-			}
+			addDocType(orField2, entityTypeName);
 		}
+	}
+	
+	private static void addDocType(Element block, String docType) {
+		if (docType == null || docType.equals("")) {
+			return;
+		}
+		
+		Element field2 = block.addElement(QueryBuilder.FIELD_ELEMENT);
+		field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.DOC_TYPE_FIELD);
+		field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+		Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child2.setText(docType);
+
 	}
 
 	private static void parseAndAddEntityTypesField(Element block, Element filterTerm) {
@@ -245,15 +241,22 @@ public class SearchFilterToSearchBooleanConverter {
 		Iterator itTermTypes = filterTerm.selectNodes(SearchFilterKeys.FilterEntityType).iterator();
 		while (itTermTypes.hasNext()) {
 			String entityTypeName = ((Element) itTermTypes.next()).getText();
-			if (!entityTypeName.equals("")) {
-				Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-				field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTITY_FIELD);
-				field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-				Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-				child2.setText(entityTypeName);
-			}
+			addEntityType(orField2, entityTypeName);
 		}
    	}
+	
+	private static void addEntityType(Element block, String entityType) {
+		if (entityType == null || entityType.equals("")) {
+			return;
+		}
+
+		Element field2 = block.addElement(QueryBuilder.FIELD_ELEMENT);
+		field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTITY_FIELD);
+		field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+		Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child2.setText(entityType);
+   	}
+	
 	
 	private static void parseAndAddEntryTypesField(Element block, Element filterTerm) {
 		//Add an OR field with all of the desired entity types
@@ -262,13 +265,19 @@ public class SearchFilterToSearchBooleanConverter {
 		Iterator itTermTypes = filterTerm.selectNodes(SearchFilterKeys.FilterEntryType).iterator();
 		while (itTermTypes.hasNext()) {
 			String entryTypeName = ((Element) itTermTypes.next()).getText();
-			if (!entryTypeName.equals("")) {
-				Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-				field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_FIELD);
-				Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-				child2.setText(entryTypeName);
-			}
+			addEntryType(orField2, entryTypeName);
 		}
+   	}
+	
+	private static void addEntryType(Element block, String entryType) {
+		if (entryType == null || entryType.equals("")) {
+			return;
+		}
+
+		Element field2 = block.addElement(QueryBuilder.FIELD_ELEMENT);
+		field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_FIELD);
+		Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child2.setText(entryType);
    	}
 	
 	private static void addFolderField(Element block, String folderId) {
@@ -488,6 +497,40 @@ public class SearchFilterToSearchBooleanConverter {
 		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(text);
 	}
-
+	
+	private static void addItemTypesField(Element block, Element filterTerm) {
+		Element subOr = block.addElement(QueryBuilder.OR_ELEMENT);
+		
+		Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterItemType).iterator();
+		while (itTermValues.hasNext()) {
+			String itemType = ((Element) itTermValues.next()).getText();
+			
+			if (itemType.equals("workspace")) {
+				addEntityType(subOr, EntityType.workspace.name());
+			} else if (itemType.equals("folder")) {
+				addEntityType(subOr, EntityType.folder.name());
+			} else if (itemType.equals("user")) {
+				addEntityType(subOr, EntityType.user.name());
+			} else if (itemType.equals("attachment")) {
+				addDocType(subOr, BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+			} else if (itemType.equals("entry")) {
+				addEntryType(subOr, EntityIndexUtils.ENTRY_TYPE_ENTRY);
+			} else if (itemType.equals("reply")) {
+				addEntryType(subOr, EntityIndexUtils.ENTRY_TYPE_REPLY);
+			}
+		}
+	}
+	
+	private static String checkLanguage(String text, Element qTreeRootElement, String lang) {
+		if (!lang.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
+			return lang;
+		}
+		lang = LanguageTaster.taste(text.toCharArray()); 
+		if (lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
+			return lang;
+		Element langNode = qTreeRootElement.addElement(QueryBuilder.LANGUAGE_ELEMENT);
+		langNode.addAttribute(QueryBuilder.LANGUAGE_ATTRIBUTE, lang);
+		return lang;
+	}
 	
 }

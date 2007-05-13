@@ -20,9 +20,11 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
@@ -40,6 +42,7 @@ public class SearchFilterToMapConverter {
 	static final String SearchBlockTypeAuthor = "creator_by_id";
 	static final String SearchBlockTypeTag = "tag";
 	static final String SearchBlockTypeLastActivity = "last_activity";
+	static final String SearchBlockTypeItemTypes = "item_types";
 	
 	static final String SearchBlockType = "type";
 	static final String SearchBlockTypeRelative = "relative";	
@@ -163,7 +166,12 @@ public class SearchFilterToMapConverter {
 	    	    					searchSubfolders = true;
 	    	    				}
 	    	    			}
-	    		    	}
+	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
+	    	    			if (blocks.get(SearchBlockTypeItemTypes) == null) {
+	    	    				blocks.put(SearchBlockTypeItemTypes, new HashMap());
+	    	    			}
+	    	    			((Map)blocks.get(SearchBlockTypeItemTypes)).putAll(createItemTypesBlock(filterTerm));
+	    	    		}
 	            	}
 	    		}
 	    		convertedQuery.put(SearchFilterKeys.SearchText, searchedText);
@@ -344,6 +352,17 @@ public class SearchFilterToMapConverter {
 		block.put(SearchEndDate, formatedEndDate);
 		block.put(SearchStartDateNotFormated, startDateParsed);
 		block.put(SearchEndDateNotFormated, endDateParsed);
+		return block;
+	}
+	
+	private Map createItemTypesBlock(Element filterTerm) {
+		Map block = new HashMap();
+		
+		Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterItemType).iterator();
+		while (itTermValues.hasNext()) {
+			String itemType = ((Element) itTermValues.next()).getText();
+			block.put(itemType, true);
+		}
 		return block;
 	}
 	
