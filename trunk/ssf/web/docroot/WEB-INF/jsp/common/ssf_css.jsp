@@ -4060,6 +4060,15 @@ div.ss_selectedItemsContainer img {
 }
 /* Widgets / end*/
 
+/* Dojo Widgets /start */
+
+.dojoComboBoxItem {
+	text-align: left;
+	padding-left: 12px;
+}
+
+/* Dojo Widgets / end */
+
 /* Administration->Reporting styles */
 .ss_tab_container {
 }
