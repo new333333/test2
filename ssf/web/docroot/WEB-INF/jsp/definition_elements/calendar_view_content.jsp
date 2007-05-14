@@ -29,13 +29,13 @@
 				action="view_folder_entry" 
 				actionUrl="true" />";
 				
-	var ss_changeDisplayEventsType =  "<ssf:url 
+	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
 		    	adapter="true" 
 		    	portletName="ss_forum" 
 		    	action="__ajax_request" 
 		    	actionUrl="true" >
 					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="save_calendar_events_display_type" />
+					<ssf:param name="operation" value="sticky_calendar_display_settings" />
 		    	</ssf:url>";				
 	
 	var ss_addCalendarEntryUrl = "${addDefaultEntryURL}";

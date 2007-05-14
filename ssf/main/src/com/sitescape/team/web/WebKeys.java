@@ -28,6 +28,10 @@ public class WebKeys {
 	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
 	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";
 	public static final String CALENDAR_CURRENT_EVENT_TYPE = "ssCurrentEventType";
+	public static final String CALENDAR_CURRENT_GRID_TYPE = "ssCurrentGridType";
+	public static final String CALENDAR_CURRENT_GRID_SIZE = "ssCurrentGridSize";
+	public static final String CALENDAR_GRID_TYPE = "ssGridType";
+	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
@@ -282,7 +286,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
-	public static final String OPERATION_SAVE_CALENDAR_EVENTS_DISPLAY_TYPE = "save_calendar_events_display_type";
+	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";

@@ -151,7 +151,7 @@ var ss_cal_CalData = {
 		  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
 		  {calsrc: "cal5", box: "#CCCC88", border: "#AAAA66"}]);
     	
-		this.loadEventsByDate("month");
+		this.loadEventsByDate();
     },
     
     loadEventsByDate : function (grid, date, requiredDay) {
@@ -161,6 +161,23 @@ var ss_cal_CalData = {
    			ss_cal_Grid.setFirstDayToShow(date);
     		ss_cal_Grid.activateGrid(grid);
     		ss_cal_Events.redrawAll();
+    		
+    		if (grid) {
+	    		var url = ss_stickyCalendarDisplaySettings;
+				url += "\&ssGridSize=" + ss_cal_Grid.gridSize;
+				url += "\&ssGridType=" + grid;
+				url += "\&randomNumber="+ss_random++;
+				dojo.io.bind({
+			    	url: url,
+					error: function(type, data, evt) {
+						alert(ss_not_logged_in);
+					},
+					load: function(type, data, evt) {},
+					mimetype: "text/json",
+					method: "get"
+				});
+    		}
+    		
     		return;
     	}
 
@@ -176,7 +193,11 @@ var ss_cal_CalData = {
 			url += "\&month=" + m;
 			url += "\&dayOfMonth=" + dateToLoad.getDate();
 		}
-		url += "\&randomNumber="+ss_random++;		
+		url += "\&randomNumber="+ss_random++;	
+		if (grid) {
+			url += "\&ssGridSize=" + ss_cal_Grid.gridSize;
+			url += "\&ssGridType=" + grid;
+		}
 		var bindArgs = {
 	    	url: url,
 			error: function(type, data, evt) {
@@ -192,6 +213,8 @@ var ss_cal_CalData = {
 				Date.monthNamesShort = data.monthNamesShort;
 				Date.monthNames = data.monthNames;
 				
+				ss_cal_Grid.gridSize = data.gridSize;
+				
 				ss_cal_CalData.setToday(data.today);
 				ss_cal_Grid.setCurrentDate(data.currentDate);
 			
@@ -202,7 +225,7 @@ var ss_cal_CalData = {
 				if (date) {
 					ss_cal_Grid.setFirstDayToShow(date);
 				}
-				ss_cal_Grid.activateGrid(grid);
+				ss_cal_Grid.activateGrid(data.gridType);
 				
 				ss_cal_Events.setEventTypeByName(data.eventType);
 				
@@ -1399,7 +1422,7 @@ var ss_cal_Events = {
             	
 	            grid = ss_cal_Grid.currentType;
                 break;
-        }    
+        }
 			
 		ss_cal_CalData.loadEventsByDate(grid, dayToShow, requiredDay);
 		
@@ -1445,7 +1468,7 @@ var ss_cal_Events = {
 			this.eventsType = 0;
 		}
 
-		var url = ss_changeDisplayEventsType;
+		var url = ss_stickyCalendarDisplaySettings;
 		url += "\&eventType=" + this.eventsTypes[this.eventsType];
 		url += "\&randomNumber="+ss_random++;
 		if (oldEventType != this.eventsType) {

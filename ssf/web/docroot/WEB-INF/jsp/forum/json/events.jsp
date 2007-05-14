@@ -43,6 +43,10 @@ currentDate : {year : <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy" ti
 				month : <fmt:formatDate value="${ssCurrentDate}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>,
 				dayOfMonth : <fmt:formatDate value="${ssCurrentDate}" pattern="d" timeZone="${ssUser.timeZone.ID}"/>},
 
+gridType : "${ssCurrentGridType}",
+
+gridSize : "${ssCurrentGridSize}",
+
 monthViewInfo : {year : ${ssCalendarViewBean.monthInfo.year}, 
 				month : ${ssCalendarViewBean.monthInfo.month},
 				numberOfDaysInView: ${ssCalendarViewBean.monthInfo.numberOfDaysInView},
