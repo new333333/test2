@@ -3,6 +3,12 @@
 <deployments>
    <deployment>
       <instance>
+         <instance-id>ss_welcome-instance</instance-id>
+         <portlet-ref>ss_welcome</portlet-ref>
+      </instance>
+   </deployment>
+   <deployment>
+      <instance>
          <instance-id>ss_administration-instance</instance-id>
          <portlet-ref>ss_administration</portlet-ref>
       </instance>
