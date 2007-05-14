@@ -27,6 +27,7 @@ import org.dom4j.Element;
 import org.joda.time.DateTime;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -126,6 +127,8 @@ public class SearchFilterToSearchBooleanConverter {
     	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
     	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
     	    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
+    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
+    	    				createRelativeUser(block);
     	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
     	    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
     	    			}
@@ -139,7 +142,16 @@ public class SearchFilterToSearchBooleanConverter {
     	return qTree;
 	}
    	
-   	private static void createRelativeDateRange(Element block, Integer daysNumber) {
+   	private static void createRelativeUser(Element block) {
+   		Long currentUserId = RequestContextHolder.getRequestContext().getUserId();
+		Element andField = block.addElement(QueryBuilder.AND_ELEMENT);
+		Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATORID_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(currentUserId.toString());
+	}
+
+	private static void createRelativeDateRange(Element block, Integer daysNumber) {
    		DateTime now = new DateTime();
    		DateTime startDate = now.minusDays(daysNumber);
    		addDateRange(block, EntityIndexUtils.MODIFICATION_DAY_FIELD, DateTools.dateToString(startDate.toDate(), DateTools.Resolution.DAY), null);
@@ -455,12 +467,17 @@ public class SearchFilterToSearchBooleanConverter {
 	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
 	    				    	    			
-	    			if (value.contains("*"))
+	    			if (value.contains("*")) {
 	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
-	    			else
+	    			} else {
 	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+	    			}
 	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText(value);
+	    			if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
+	    				child.setText(RequestContextHolder.getRequestContext().getUserId().toString());
+	    			} else {
+	    				child.setText(value);
+	    			}
 				}
 			}
 		}
