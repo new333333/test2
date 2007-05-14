@@ -42,7 +42,6 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 </div>
 
 <div class="ss_content_inner">
-<c:if test="${!ss_showSearchResults}">
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <br/>
@@ -53,10 +52,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" />
-</c:if>
-<c:if test="${ss_showSearchResults}">
-<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
-</c:if>
+
 </div>
 
 <script type="text/javascript">

@@ -58,13 +58,6 @@
 <script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
-
-	<c:if test="${ss_showSearchResults}">
-		<%@ include file="/WEB-INF/jsp/search/search_result.jsp" %>
-	</c:if>
-	
-	<c:if test="${!ss_showSearchResults}">
-
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
 	<% // Navigation bar %>
@@ -97,14 +90,9 @@
 		</div>
 	</div>
 
-
 	<% // Footer toolbar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-	
-	
-	</c:if>
 
-	</div>
 </div>
 
 
