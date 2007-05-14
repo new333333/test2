@@ -408,7 +408,7 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
 		;
-		TreeSet<String> results = new TreeSet<String>();
+		TreeSet<String> results = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 		ArrayList<String> resultTags = new ArrayList<String>();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		long startTime = System.currentTimeMillis();
