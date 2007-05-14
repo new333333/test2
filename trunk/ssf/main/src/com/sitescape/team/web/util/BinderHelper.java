@@ -27,7 +27,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.lucene.search.SortField;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -39,14 +38,11 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -63,27 +59,11 @@ import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 
 public class BinderHelper {
 
 	static public String getViewListingJsp(AllModulesInjected bs) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String displayStyle = user.getDisplayStyle();
-		if (displayStyle == null || displayStyle.equals("")) {
-			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-		}
-		String viewListingJspName;
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
-			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
-		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
-			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
-		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
-		} else {
-			viewListingJspName = WebKeys.VIEW_LISTING_VERTICAL;
-		}
-		return viewListingJspName;
+		return getViewListingJsp(bs, "");
 	}
 
 	//The getViewListingJSP function has been overloaded, to check if the displayDefinition is of type
@@ -97,7 +77,27 @@ public class BinderHelper {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		}
 		String viewListingJspName;
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+		if (displayDefinition != null && displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY)) {
+			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+				if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_DEFAULT) 
+						|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_BLOG)
+						|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_PHOTO_ALBUM)
+						|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_CALENDAR)
+						|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_GUESTBOOK))) {
+					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
+				} else {
+					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_VERTICAL;
+				}
+			} else {
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
+			}
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
@@ -105,7 +105,6 @@ public class BinderHelper {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 			if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_DEFAULT) 
-					|| displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_BLOG)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_PHOTO_ALBUM)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_CALENDAR)

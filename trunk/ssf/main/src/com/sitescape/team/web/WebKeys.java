@@ -701,6 +701,10 @@ public class WebKeys {
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
+    public static final String VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE="entry/view_listing_search_results_accessible";
+    public static final String VIEW_LISTING_SEARCH_RESULTS_IFRAME="entry/view_listing_search_results_iframe";
+    public static final String VIEW_LISTING_SEARCH_RESULTS_POPUP="entry/view_listing_search_results_popup";
+    public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
