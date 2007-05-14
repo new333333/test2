@@ -100,6 +100,8 @@ public class SearchFilterKeys {
    	public final static String FilterEventDate = "filterEventDate";
    	public final static String FilterItemType = "filterItemType";
 
+   	public final static String CurrentUserId="CURRENT_USER_ID";
+   	
    	public static String MinimumSystemDate = "19000000";
    	public static String MaximumSystemDate = "30000000";
    	

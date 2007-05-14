@@ -360,7 +360,12 @@ public class SearchFilter {
 	public void addCreatorById(String userId, String userTitle) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCreatorById);
+		if (userId.equals(SearchFilterKeys.CurrentUserId)) {
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeRelative);
+			filterTerm.addAttribute(SearchFilterKeys.FilterRelativeType, SearchFilterKeys.FilterTypeCreatorById);
+		} else {
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCreatorById);
+		}
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
 		if (userTitle != null && userTitle != "") filterTerm.addAttribute(SearchFilterKeys.FilterCreatorTitle, userTitle);
 		Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);

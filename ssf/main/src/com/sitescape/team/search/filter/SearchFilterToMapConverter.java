@@ -160,6 +160,9 @@ public class SearchFilterToMapConverter {
 	    	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
 	    	    				if (blocks.get(SearchBlockTypeLastActivity) == null) blocks.put(SearchBlockTypeLastActivity, new ArrayList());
 	    	    				((List)blocks.get(SearchBlockTypeLastActivity)).add(createLastActivityBlock(filterTerm));
+	    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
+		    	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
+		    	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
 	    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
 	    	    				searchCurrentFolder = true;
 	    	    				if (filterTerm.getTextTrim().equals(Boolean.TRUE.toString())) {
@@ -247,9 +250,13 @@ public class SearchFilterToMapConverter {
 				Map selectBoxDefinedValues = (Map)((Map)fieldsMap.get(entryFieldId)).get(EntryField.ValuesField);
 				formattedValue = (String)selectBoxDefinedValues.get(value);
 			} else if (valueType.equals("user_list")) {
-				Iterator users = profileModule.getUsers(Collections.singleton(Long.parseLong(value))).iterator();
-				if (users.hasNext()) {
-					formattedValue = ((User)users.next()).getTitle();
+				if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
+					formattedValue = NLT.get("searchForm.currentUserTitle");
+				} else {
+					Iterator users = profileModule.getUsers(Collections.singleton(Long.parseLong(value))).iterator();
+					if (users.hasNext()) {
+						formattedValue = ((User)users.next()).getTitle();
+					}
 				}
 			}
 			

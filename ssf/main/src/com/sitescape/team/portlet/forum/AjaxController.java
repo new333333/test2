@@ -401,7 +401,15 @@ public class AjaxController  extends SAbstractController {
 				prev.put("end", startPageNo - 1);
 				model.put(WebKeys.PAGE_PREVIOUS, prev);
 			}
+			if (startPageNo == 1 && (search.equals("") || search.equals("*"))) {
+				// add relative option "current user"
+				Map currentUserPlaceholder = new HashMap();
+				currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
+				currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
+				users.add(0, currentUserPlaceholder);				
+			}
 		}
+
 		model.put(WebKeys.USERS, users);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_users_widget", model);
