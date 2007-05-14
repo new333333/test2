@@ -125,8 +125,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxSetBinderOwnerId(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
 				ajaxModifyGroup(request, response);
-			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_EVENTS_DISPLAY_TYPE)) {
-				ajaxSaveCalendarEventsDisplayType(request, response);
+			} else if (op.equals(WebKeys.OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS)) {
+				ajaxStickyCalendarDisplaySettings(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
 				ajaxSaveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
@@ -1424,11 +1424,21 @@ public class AjaxController  extends SAbstractController {
 		}
 	}
 	
-	private void ajaxSaveCalendarEventsDisplayType(ActionRequest request, 
+	private void ajaxStickyCalendarDisplaySettings(ActionRequest request, 
 			ActionResponse response) {
-		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		EventsViewHelper.setCalendarDisplayEventType(portletSession, eventType);
+		
+		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
+		if (!"".equals(eventType)) {
+			EventsViewHelper.setCalendarDisplayEventType(portletSession, eventType);
+		}
+		
+		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
+		if (!"".equals(gridType)) {
+			int gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
+			EventsViewHelper.setCalendarGridType(portletSession, gridType);
+			EventsViewHelper.setCalendarGridSize(portletSession, gridSize);
+		}
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
@@ -1960,6 +1970,11 @@ public class AjaxController  extends SAbstractController {
 			currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 			EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
+			
+			String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
+			Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
+			model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, gridType));
+			model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, gridSize));
 			
 			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 

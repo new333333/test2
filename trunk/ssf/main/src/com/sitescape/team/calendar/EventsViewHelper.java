@@ -91,6 +91,15 @@ public class EventsViewHelper {
 
 	public static final String EVENT_TYPE_DEFAULT = EVENT_TYPE_EVENT;
 	
+	
+
+	
+	public static final String GRID_DAY = "day";
+	
+	public static final String GRID_MONTH = "month";
+	
+	public static final String GRID_DEFAULT = GRID_MONTH;
+	
 	public static void getEvents(Date currentDate,
 			CalendarViewRangeDates calendarViewRangeDates, Binder folder,
 			List entrylist, Map model, RenderResponse response, PortletSession portletSession) {
@@ -338,6 +347,38 @@ public class EventsViewHelper {
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
 	}
 
+	public static String setCalendarGridType(PortletSession portletSession, String gridType) {
+		if (gridType == null || !(gridType.equals(GRID_DAY) ||
+				gridType.equals(GRID_MONTH))) {
+			
+			gridType = getCalendarGridType(portletSession);
+			if (gridType == null) {
+				gridType = GRID_DEFAULT;
+			}
+		}
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
+		return gridType;
+	}
+	
+	public static String getCalendarGridType(PortletSession portletSession) {
+		return (String)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID_TYPE);
+	}
+	
+	public static int setCalendarGridSize(PortletSession portletSession, Integer gridSize) {
+		if (gridSize == -1) {
+			gridSize = getCalendarGridSize(portletSession);
+			if (gridSize == null) {
+				gridSize = -1;
+			}
+		}
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
+		return gridSize;
+	}
+	
+	public static Integer getCalendarGridSize(PortletSession portletSession) {
+		return (Integer)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID_SIZE);
+	}
+	
 	public static Date getDate(int year, int month, int dayOfMonth, Date defaultValue) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
