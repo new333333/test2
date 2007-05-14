@@ -40,11 +40,11 @@
    <title>Find your way around with the Navigator</title>
    <para>The Navigator is your navigation center. Using the tools here, you can navigate to anyplace that you need to go:</para>
    <formalpara id="b9yh7oz">
-    <title>My workspace -</title>
+    <title>My Workspace -</title>
     <para>Click 
      <inlinemediaobject>
-      <imageobject role="fo"><imagedata fileref="workspacetreeicon.png" width="11.52pt" format="PNG"/></imageobject>
-      <imageobject role="html"><imagedata fileref="workspacetreeicon.png" width="11.52pt" format="png"/></imageobject>
+      <imageobject role="fo"><imagedata fileref="myworkspaceicon.png" width="10.47pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="myworkspaceicon.png" width="10.47pt" format="png"/></imageobject>
      </inlinemediaobject> to open your personal workspace, which contains your folders, your profile, your 
      <guimenu>Guestbook</guimenu>, and your 
      <guimenu>Dashboard</guimenu>.
@@ -61,7 +61,7 @@
     </para>
    </formalpara>
    <formalpara id="b9yh8jx">
-    <title>Quick Search - </title>
+    <title>Quick Search -</title>
     <para>Enter any type of search term in the 
      <guimenu>Quick search</guimenu> box and click 
      <inlinemediaobject>

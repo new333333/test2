@@ -10,11 +10,11 @@
 
  <target id="b9ygpwl" pid="b20g4u4" name="Sect2" level="2"> <text>Find your way around with the Navigator</text> </target>
 
- <target id="b9yh7oz" pid="b20g4u4" name="FormalPara" level="3"> <text>My workspace -</text> </target>
+ <target id="b9yh7oz" pid="b20g4u4" name="FormalPara" level="3"> <text>My Workspace -</text> </target>
 
  <target id="b9yh8ci" pid="b20g4u4" name="FormalPara" level="3"> <text>Favorites -</text> </target>
 
- <target id="b9yh8jx" pid="b20g4u4" name="FormalPara" level="3"> <text>Quick Search - </text> </target>
+ <target id="b9yh8jx" pid="b20g4u4" name="FormalPara" level="3"> <text>Quick Search -</text> </target>
 
  <target id="b9yh8t6" pid="b20g4u4" name="FormalPara" level="3"> <text>Find people, Find Places, Find tags -</text> </target>
 
