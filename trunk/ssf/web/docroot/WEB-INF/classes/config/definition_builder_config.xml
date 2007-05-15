@@ -72,9 +72,6 @@
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1">
 				<help>__help_mark_as_title</help>
 			</property>
@@ -443,6 +440,7 @@
 			<option name="textarea" />
 			<option name="graphic" />
 			<option name="file" />
+			<option name="user_list" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='folderData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -1199,9 +1197,6 @@
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1243,9 +1238,6 @@
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
 			<property name="size" caption="__size" type="text"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1275,6 +1267,34 @@
 		</jsps>
 	</item>
 
+	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text"
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
+				unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="source" caption="__sourceElementInParentFolder" type="text"/>
+			<property name="multipleAllowed" caption="__allow_multiple"
+				type="boolean" default="false"></property>
+			<property name="size" caption="__size" type="text"/>
+			<property name="required" caption="__required" type="boolean"
+				default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/user_list_selectbox_form.jsp"/>
+		</jsps>
+		<index apply="true"
+			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserListSelect"/>
+		<webService apply="true"
+			elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserListSelect"/>
+		<notify summary="false" full="true"
+			notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserListSelect"/>
+	</item>
+
 	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
@@ -1282,9 +1302,6 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1321,9 +1338,6 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1421,9 +1435,6 @@
 			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
 				<help>__help_storage_media</help>
 			</property>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1442,9 +1453,6 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1464,9 +1472,6 @@
 				<help>__help_data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>

@@ -52,7 +52,7 @@
 	} else if (itemType.equals("graphic")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
 		
-	} else if (itemType.equals("user_list")) {
+	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
 		
 	} else if (itemType.equals("event")) {

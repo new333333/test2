@@ -61,7 +61,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 }
 </script>
 	  <ssHelpSpot helpId="tools/more_folder_navigation" offsetX="0" 
-	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>">
+	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 
 		<table border="0" cellspacing="0px" cellpadding="0px">
 		<tr>

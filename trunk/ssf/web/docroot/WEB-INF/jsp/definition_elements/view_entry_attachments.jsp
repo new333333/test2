@@ -32,7 +32,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 
 	<td valign="top">
   <ssHelpSpot helpId="tools/attachments" offsetX="0" 
-    title="<ssf:nlt tag="helpSpot.attachments"/>">
+    title="<ssf:nlt tag="helpSpot.attachments"/>"></ssHelpSpot>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		<% if (isAppletSupported) { %>

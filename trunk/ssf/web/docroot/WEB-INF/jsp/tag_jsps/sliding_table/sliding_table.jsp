@@ -88,7 +88,7 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
   <ssHelpSpot helpId="tools/folder_table" offsetX="0" 
-    title="<ssf:nlt tag="helpSpot.folderTable"/>">
+    title="<ssf:nlt tag="helpSpot.folderTable"/>"></ssHelpSpot>
 <div id="${ss_slidingTableId}_2" 
  style="margin:2px; padding-bottom:2px; 
  border-left: #CCCCCC 1px solid;

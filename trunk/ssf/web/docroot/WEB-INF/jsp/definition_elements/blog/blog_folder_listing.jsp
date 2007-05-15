@@ -38,7 +38,7 @@
      <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
 	  <ssHelpSpot helpId="tools/blog_controls" offsetX="0" 
-	    title="<ssf:nlt tag="helpSpot.blogControls"/>">
+	    title="<ssf:nlt tag="helpSpot.blogControls"/>"></ssHelpSpot>
 
 		<div class="ss_blog_sidebar_hole">
 			<ssf:ifnotaccessible>

@@ -291,6 +291,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 					}
 				}
 			}
+			else
+				i++;
 		}
     }
     

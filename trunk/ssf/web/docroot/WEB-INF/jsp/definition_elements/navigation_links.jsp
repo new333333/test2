@@ -35,7 +35,7 @@
 
 <div class="ss_breadcrumb">
   <ssHelpSpot helpId="navigation_bar/breadcrumbs" offsetX="0" 
-    title="<ssf:nlt tag="helpSpot.breadCrumbs"/>">
+    title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssDefinitionEntry.parentBinder}">

@@ -59,23 +59,23 @@ var ss_userSkin = "${ss_user_skin}";
      <c:choose>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
          <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="-16" offsetX="-5" 
-		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
+		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
          <ssHelpSpot helpId="folder_menu/manage_workspace" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
+		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
          <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
+		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
          <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
+		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
          <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"/>
+		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"></ssHelpSpot>
          </c:when>
          <c:otherwise>
 	     </c:otherwise>
@@ -178,23 +178,23 @@ var ss_userSkin = "${ss_user_skin}";
      <c:choose>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
          <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="-16" offsetX="-5" 
-		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
+		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
          <ssHelpSpot helpId="folder_menu/manage_workspace" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
+		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
          <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
+		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
          <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
+		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
          <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"/>
+		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"></ssHelpSpot>
          </c:when>
          <c:otherwise>
 	     </c:otherwise>

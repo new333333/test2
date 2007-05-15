@@ -23,7 +23,7 @@
 <div id="ss_tabbar" class="ss_tabs">
 <!-- Start of tabs -->
   <ssHelpSpot helpId="tools/tabs" offsetX="0" 
-    title="<ssf:nlt tag="helpSpot.tabs"/>">
+    title="<ssf:nlt tag="helpSpot.tabs"/>"></ssHelpSpot>
 
 <div id="ss_tabs_variables" style="display:none;">
 <script type="text/javascript">

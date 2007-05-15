@@ -93,7 +93,7 @@
 	    entryId="${ssDefinitionEntry.id}"/>" 
   onClick="ss_openUrlInWindow(this, '_blank');return false;"
 ><div class="ss_iconed_label ss_send_friend"><ssHelpSpot helpId="tools/more_blog_tools" offsetX="0" 
-title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"><ssf:nlt tag="entry.sendtofriend"/></div></a>
+title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
 <a href="javascript: ;" 
   onClick="ss_showPopupDivCentered('<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;"
 ><div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div></a>
