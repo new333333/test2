@@ -17,10 +17,20 @@
       <if-exists>overwrite</if-exists>
       <parent-ref>default.ICEcore</parent-ref>
       <window>
+         <window-name>ss_toolbar-window</window-name>
+         <instance-ref>ss_toolbar-instance</instance-ref>
+         <region>center</region>
+         <height>1</height>
+      </window>
+   </deployment>
+   <deployment>
+      <if-exists>overwrite</if-exists>
+      <parent-ref>default.ICEcore</parent-ref>
+      <window>
          <window-name>ss_forum-window</window-name>
          <instance-ref>ss_forum-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -30,7 +40,7 @@
          <window-name>ss_administration-window</window-name>
          <instance-ref>ss_administration-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -40,7 +50,7 @@
          <window-name>ss_workspacetree-window</window-name>
          <instance-ref>ss_workspacetree-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -50,7 +60,7 @@
          <window-name>ss_presence-window</window-name>
          <instance-ref>ss_presence-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -60,7 +70,7 @@
          <window-name>ss_blog-window</window-name>
          <instance-ref>ss_blog-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -70,7 +80,7 @@
          <window-name>ss_gallery-window</window-name>
          <instance-ref>ss_gallery-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -80,7 +90,7 @@
          <window-name>ss_guestbook-window</window-name>
          <instance-ref>ss_guestbook-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -90,7 +100,7 @@
          <window-name>ss_wiki-window</window-name>
          <instance-ref>ss_wiki-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
    <deployment>
@@ -100,17 +110,7 @@
          <window-name>ss_search-window</window-name>
          <instance-ref>ss_search-instance</instance-ref>
          <region>center</region>
-         <height>1</height>
-      </window>
-   </deployment>
-   <deployment>
-      <if-exists>overwrite</if-exists>
-      <parent-ref>default.ICEcore</parent-ref>
-      <window>
-         <window-name>ss_toolbar-window</window-name>
-         <instance-ref>ss_toolbar-instance</instance-ref>
-         <region>center</region>
-         <height>1</height>
+         <height>2</height>
       </window>
    </deployment>
 </deployments>
