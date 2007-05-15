@@ -19,7 +19,7 @@
 %>
 <c:if test="${! empty ssDefinitionEntry}">
   <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-  <jsp:useBean id="userlist_entry" type="com.sitescape.team.domain.Entry" />
+  <jsp:useBean id="userlist_entry" type="com.sitescape.team.domain.DefinableEntity" />
 <%
 	if (propertyName != null && !propertyName.equals("")) 
 		userList = com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(propertyName));

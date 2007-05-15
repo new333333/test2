@@ -75,7 +75,7 @@ public class DisplayConfiguration extends TagSupport {
 						//get Item from main config document
 						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
-							// (rsordillo) Jsps contained in configDefaultDefinition only, removed code to check Definition
+							// Jsps are contained in the configDefaultDefinition only
 							String jsp = configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (!Validator.isNull(jsp)) {
 								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);

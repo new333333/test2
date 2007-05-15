@@ -1357,6 +1357,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								entryData.put(nameValue, v);
 							}
 						}
+					} else if (itemName.equals("userListSelectbox")) {
+						if (inputData.exists(nameValue)) {
+							String[] userIds = inputData.getValues(nameValue);
+							Set users = new HashSet();
+							for (int i = 0; i < userIds.length; i++) {
+								try {
+									Long.parseLong(userIds[i]);
+									users.add(userIds[i]);
+								} catch (NumberFormatException ne) {}
+							}
+							if (!users.isEmpty()) {
+								CommaSeparatedValue v = new CommaSeparatedValue();
+								v.setValue((String[])users.toArray(userIds));
+								entryData.put(nameValue, v);
+							}
+						}
 					} else if (itemName.equals("selectbox")) {
 						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
 					} else if (itemName.equals("checkbox")) {

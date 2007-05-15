@@ -53,7 +53,7 @@ String isFile = ParamUtil.get(request, "isFile", "no");
 <% if (isAccessible.equals("false")) { %>
 
 <ssHelpSpot helpId="tools/display_entry_control" offsetX="0" 
-  title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"/>
+  title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot>
 <a class="ss_title_menu" href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
 	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 

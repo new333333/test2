@@ -53,7 +53,7 @@ function <portlet:namespace/>_getUnseenCounts() {
 <div class="ss_style" style="padding:4px;">
 
 <ssHelpSpot helpId="portlets/folder_bookmarks_portlet" offsetX="0" offsetY="-10" 
-			    title="<ssf:nlt tag="helpSpot.folderBookmarksPortlet"/>"/>
+			    title="<ssf:nlt tag="helpSpot.folderBookmarksPortlet"/>"></ssHelpSpot>
 
 <c:if test="${empty ssFolderList}">
 <div align="right">
