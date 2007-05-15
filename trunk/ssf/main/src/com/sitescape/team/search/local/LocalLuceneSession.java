@@ -192,29 +192,32 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public void deleteDocuments(Term term) {
 		SimpleProfiler.startProfiler("LocalLuceneSession.deleteDocuments(Term)");
-		IndexReader indexReader;
+		IndexWriter indexWriter;
 
 		long startTime = System.currentTimeMillis();
 
 		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
-			indexReader = null;
+			indexWriter = null;
 
 			try {
-				indexReader = LuceneUtil.getReader(indexPath);
+				indexWriter = LuceneUtil.getWriter(indexPath); 
 			} catch (IOException e) {
 				throw new LuceneException(
-						"Could not open reader on the index [" + this.indexPath
+						"Could not open writer on the index [" + this.indexPath
 								+ "]", e);
 			}
 
 			try {
-				indexReader.deleteDocuments(term);
+				indexWriter.deleteDocuments(term);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not delete documents from the index ["
 								+ indexPath + "]", e);
 			} finally {
+				try {
+					indexWriter.flush();
+				} catch (Exception e) {}
 				/*
 				try {
 					indexReader.close();
