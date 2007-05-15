@@ -6,7 +6,7 @@
  * with the terms of that license. See the license for the specific language
  * governing your rights and limitations under the license.
  *
- * Copyright (c) 2007 SiteScape, Inc.
+ * Copyright (cy6) 2007 SiteScape, Inc.
  *
  */
 %>
@@ -51,7 +51,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_table_background_color_head" value="#D6D6D6" scope="request"/>
 <c:set var="ss_table_background_color_odd_row" value="#E9E9E9" scope="request"/>
 <c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
-<c:set var="ss_table_background_color_row_hover" value="#FFFFB3" scope="request"/>
+<c:set var="ss_table_background_color_row_hover" value="#FFFFAA" scope="request"/>
 
 <c:set var="ss_style_brightest" value="1.0" scope="request"/>
 <c:set var="ss_style_brighter" value="0.8" scope="request"/>
@@ -64,30 +64,29 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 
 <c:set var="ss_style_header_bar_background" value="#787D60" scope="request"/>
-<c:set var="ss_style_header_bar_title_color" value="#000000" scope="request"/>
+<c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
 <c:set var="ss_style_metadata_color" value="#FFFFFF" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_component_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_style_component_toolbar_background_color" value="#FFFFDD" scope="request"/>
 <c:set var="ss_style_border_color" value="#999999" scope="request"/>
-<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
+<c:set var="ss_style_border_color_light" value="#CCCCCC" scope="request"/>
 <c:set var="ss_style_text_color" value="#009900" scope="request"/>
 <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
-<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
+
 <c:set var="ss_style_light_color" value="#999999" scope="request"/>
 <c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 <c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 
-<c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
-<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
+<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
+<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
 <c:set var="ss_entry_description_background_color" value="#CCD583" scope="request"/>
 <c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
 <c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
-<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 <c:set var="edit_text_color" value="#3333FF" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
@@ -102,7 +101,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 
 <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
-<c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
+<c:set var="ss_toolbar_text_color" value="#333333" scope="request"/>
 <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
@@ -111,18 +110,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
 <c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
 
-<c:set var="ss_lightBox_background_color" value="#e5e5e5" scope="request"/>
+<c:set var="ss_lightBox_background_color" value="#CECECE" scope="request"/>
 
 <c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
 <c:set var="ss_blog_summary_title_background_color" value="#cceeff" scope="request"/>
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
-<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
+<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
 
 <c:set var="ss_linkbutton_background_color" value="#DDDD77" scope="request"/>
 <c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 <c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
-<c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
+<c:set var="ss_linkbutton_border_color_in" value="#DEE7C6" scope="request"/>
 <c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
 
 <c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
@@ -150,7 +149,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
 
 <c:set var="ss_tag_color" value="blue" scope="request"/>
-<c:set var="ss_tag_pane_background_color" value="#cecece" scope="request"/>
+<c:set var="ss_tag_pane_background_color" value="#CCCCCC" scope="request"/>
 
 <c:set var="ss_diff_color_added" value="yellow" scope="request"/>
 <c:set var="ss_diff_color_deleted" value="red" scope="request"/>
@@ -160,9 +159,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 //Color theme: "black and white"
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
+
+//FONT STYLES
 	<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
 	<c:set var="ss_style_folder_view_font_family" value="Arial, sans-serif" scope="request"/>
 	<c:set var="ss_style_title_font_family" value="Arial, Helvetica, sans-serif" scope="request"/>
+
+//FONT SIZES
 	<c:set var="ss_style_font_size" value="12px" scope="request"/>
 	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
 	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
@@ -179,68 +182,84 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_dim" value="0.6" scope="request"/>
 	<c:set var="ss_style_very_dim" value="0.4" scope="request"/>
 	
-	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/>
-	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
+//ACCESS CONTROL TABLE
+	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
+	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_table_background_color_head" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_table_background_color_odd_row" value="#ECECEC" scope="request"/>
+	<c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_table_background_color_row_hover" value="#FFFFAA" scope="request"/>
 	
-    <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
-    <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
-    <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>
-
-    <c:set var="ss_style_metadata_color" value="#666666" scope="request"/>
-
-    <c:set var="ss_dashcomp_header_bar_background" value="#CCCCCC" scope="request"/>
-    <c:set var="ss_dashcomp_header_bar_title_color" value="#333333" scope="request"/>
-    <c:set var="ss_dashcomp_header_bar_title_link_color" value="#666666" scope="request"/>
-
-	<c:set var="ss_style_drop_highlight" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_style_drop_shadow" value="#666666" scope="request"/>
-
+//BACKGROUND COLORS
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
-	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
-	<c:set var="ss_style_border_color_light" value="#CECECE" scope="request"/>
-	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
-    <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
-    <c:set var="ss_style_footer_font" value=" normal 11px Arial, Helvetica" scope="request"/>
-	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
-	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
-	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
-	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
-	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
-	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_muted_label_color" value="#2956B2" scope="request"/>
 	
-	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
-	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_table_background_color_head" value="#D6D6D6" scope="request"/>
-	<c:set var="ss_table_background_color_odd_row" value="#E9E9E9" scope="request"/>
-	<c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_table_background_color_row_hover" value="#FFFFB3" scope="request"/>
-
-	<c:set var="ss_folder_border_color" value="#D9D9D9" scope="request"/>
-	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
+//BLOG
+	<c:set var="ss_blog_summary_title_background_color" value="#E8EFF7" scope="request"/>
+	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
+	
+//BORDER COLORS
+	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
+	<c:set var="ss_style_border_color_light" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
+	
+//BOX	
+	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
+	<c:set var="ss_box_title_color" value="#009999" scope="request"/>
+	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
+	
+//BUTTON
+	<c:set var="ss_linkbutton_background_color" value="#CFDF8F" scope="request"/>
+	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_in" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
+	
+//CALENDAR
+	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
+	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
+	
+//DASHBOARD COLORS
+    <c:set var="ss_dashcomp_header_bar_background" value="#CCCCCC" scope="request"/>
+    <c:set var="ss_dashcomp_header_bar_title_color" value="#333333" scope="request"/>
+    <c:set var="ss_dashcomp_header_bar_title_link_color" value="#666666" scope="request"/>
+    <c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
+    
+//ENTRIES	
+	<c:set var="ss_entry_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_entry_description_background_color" value="#E8EFF7" scope="request"/>
 	<c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/>
-	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
-	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
 	
+//FORMS	
 	<c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_form_component_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_form_border_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_form_gray_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_form_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
-	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
-	<c:set var="ss_form_element_color" value="#EEEEEE" scope="request"/>
+	<c:set var="ss_form_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_form_element_color" value="#ECECEC" scope="request"/>
 	<c:set var="ss_form_element_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
+	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/> 
+	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	
-	<c:set var="ss_generic_border_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_generic_border_shadow_color" value="#666666" scope="request"/>
+//FOOTER COLORS
+    <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
+    <c:set var="ss_style_footer_font" value=" normal 11px Arial, Helvetica" scope="request"/>
+    
+//GALLERY
+	<c:set var="ss_gallery_background_color" value="#F0F0F0" scope="request"/>
+	<c:set var="ss_gallery_image_background_color" value="#666666" scope="request"/>
+	<c:set var="ss_gallery_anchor_color" value="#333333" scope="request"/>
+	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
+	<c:set var="ss_gallery_rule_color" value="#CCCCCC" scope="request"/>
+	
+//GUESTBOOK
+	<c:set var="ss_guestbook_rule_color" value="#AFC8E3" scope="request"/>
+	  
+//TOOLBAR
 
 	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
@@ -249,62 +268,95 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/>
 	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>
 
-
-	<c:set var="ss_toolbar2_background_color" value="#D9D9D9" scope="request"/>
+	<c:set var="ss_toolbar2_background_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
 	<c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/>
-
-	<c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
+	
+	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
+	
+//HELP COLORS
+	<c:set var="ss_help_spot_background_color" value="#E8EFF7" scope="request"/>
 	<c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
-
-	<c:set var="ss_lightBox_background_color" value="#e5e5e5" scope="request"/>
-
-	<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
-
-	<c:set var="ss_blog_summary_title_background_color" value="#E8EFF7" scope="request"/>
-	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
-
-	<c:set var="ss_linkbutton_background_color" value="#CFDF8F" scope="request"/>
-	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
-	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
-	<c:set var="ss_linkbutton_border_color_in" value="#60644D" scope="request"/>
-	<c:set var="ss_linkbutton_border_color_out" value="#60644D" scope="request"/>
-
+	<c:set var="ss_lightBox_background_color" value="#ECECEC" scope="request"/>	
+				
+//HEADER COLORS	
+    <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
+    <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
+    <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>	
+    
+//LINK COLORS
+	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
+	<c:set var="ss_style_link_visited_color" value="#663366" scope="request"/>
+	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
 	
-	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
+//METADATA COLORS
+    <c:set var="ss_style_metadata_color" value="#666666" scope="request"/>   
+    
+//MUTED
+	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
+	<c:set var="ss_style_muted_label_color" value="#2956B2" scope="request"/>
+			
+//PORTLET COLORS	
+	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/> 
 	
-	<c:set var="ss_tree_highlight_line_color" value="#999966" scope="request"/>
-	
-	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
-	<c:set var="ss_box_title_color" value="#009999" scope="request"/>
-	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
-	
+//SLIDING TABLE
 	<c:set var="ss_sliding_table_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_sliding_table_border_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_sliding_table_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_sliding_table_row0_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_sliding_table_row1_background_color" value="#EEEEEE" scope="request"/>
-	
-	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
-	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
+	<c:set var="ss_sliding_table_row1_background_color" value="#ECECEC" scope="request"/>
 
-	<c:set var="ss_gallery_background_color" value="#F0F0F0" scope="request"/>
-	<c:set var="ss_gallery_image_background_color" value="#707070" scope="request"/>
-	<c:set var="ss_gallery_anchor_color" value="black" scope="request"/>
-	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
-
+//TAG
 	<c:set var="ss_tag_color" value="#999966" scope="request"/>
 	<c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/>
 
-	<c:set var="ss_diff_color_added" value="yellow" scope="request"/>
+	<c:set var="ss_diff_color_added" value="FFFFAA" scope="request"/>
 	<c:set var="ss_diff_color_deleted" value="red" scope="request"/>
-	<c:set var="ss_diff_color_same" value="lightblue" scope="request"/>
+	<c:set var="ss_diff_color_same" value="lightblue" scope="request"/>	
+
+//TOOLBARs
+	<c:set var="ss_toolbar2_background_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
+	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
+	<c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/>
+	
+	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
+	<c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>	
+	
+	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	 
+	 
+//REPLYS
+	<c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/>
+	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
+	
+//TITLE	
+	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
+
+//TREE	
+	<c:set var="ss_tree_highlight_line_color" value="#999966" scope="request"/>
+
+//??	
+	<c:set var="ss_generic_border_color" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_generic_border_shadow_color" value="#666666" scope="request"/>
+
+//??
+	<c:set var="ss_style_drop_highlight" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_drop_shadow" value="#666666" scope="request"/>
+
 </c:if>
 
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
@@ -346,9 +398,13 @@ body.ss_style_body {
   background-color: transparent;
   color: ${ss_style_text_color};
   }
-
-.ss_style a, .ss_style a:visited {
+  
+//LINKS
+.ss_style a, {
   color: ${ss_style_link_color};
+}
+.ss_style a:visited{
+  color: ${ss_style_link_visited};
 }
 .ss_style a:hover {
   color: ${ss_style_link_hover_color};
@@ -1079,7 +1135,7 @@ a.ss_displaytag {
 div.ss_blog_sidebar_subhead {
 	padding-top: 20px;
 	padding-bottom: 5px;
-	font-size: 13px;
+	font-size: 12px;
 	font-weight: bold;
 }
 
@@ -1191,6 +1247,7 @@ table.ss_mouseOverInfo {
 .ss_folder_border, .ss_folder_border table , .ss_folder_border form {
   background-color: ${ss_folder_border_color} !important;
   }
+
 
 /* Entry */
 .ss_entry_border, .ss_entry_border table {
@@ -2103,7 +2160,7 @@ div.ss_tabs {
 	font-family: ${ss_style_title_font_family};
 	font-weight: bold;
 	font-size:11px;
-	color:#5A3C68;
+	color:#666666;
 	height:25px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.jpg) repeat-x left top;
 	margin:0px;
@@ -2210,7 +2267,7 @@ a.ss_breadcrumb {
 /* title menu: */
 
 .ss_title_menu_dd {
-	background-color: #CECECE;
+	background-color: #CCCCCC;
 	font-weight: normal;
 	font-size: 11px;
 	font-family: Arial;
@@ -2235,7 +2292,7 @@ a.ss_breadcrumb {
 }
 
 .ss_title_menu_dd a {
-  color: #000000;
+  color: #333333;
   text-decoration:none;
 }
 
@@ -2372,7 +2429,7 @@ ul.ss_actions_bar1  {
 	padding:0px !important;
 }
 .ss_actions_bar_history_bar * {
-	color:#5A3C68;
+	color:#0000FF
 }
 
 .ss_actions_bar1 li a:hover {
@@ -2965,23 +3022,23 @@ white-space: nowrap !important;
 /*work around to eliminate borders on nested tables*/
 
 .ss_table_tr_noborder{
-	background-color: #E9E9E9 !important;
-	border: 1px dotted #E9E9E9 !important;
+	background-color: ${ss_table_background_color_odd_row} !important;
+	border: 1px dotted #ECECEC !important;
 	border-collapse: collapse !important;
 	border-bottom: 1px solid black !important;
 	padding: 10px !important;
 }
 .ss_table_td_noborder{
-	background-color: #E9E9E9 !important;
-	border: 1px dotted #E9E9E9 !important;
+	background-color: ${ss_table_background_color_odd_row} !important;
+	border: 1px dotted #ECECEC!important;
 	padding-top: 10px !important;
 	padding-right: 0px !important;
 	padding-bottom: 10px !important;
 	padding-left: 0px !important;	
 }
 .ss_table_noborder_td:hover{
-	background-color:#E9E9E9;
-	border-color:#E9E9E9;
+	background-color:#{ss_table_background_color_odd_row};
+	border-color:#ECECEC;
 }
 
 /*fonts for master file tables*/
@@ -3266,7 +3323,7 @@ div.ss_cal_monthHRule {
 
 /* Day of month numbers */
 div.ss_cal_monthGridDayBadge {
-  background-color: #EEEEEE;
+  background-color: #ECECEC;
   position: absolute;
   height: 11px;
   width: 14.0%;
@@ -3739,58 +3796,53 @@ ul#ss_calendarNaviBar li.ss_calSelectDate {
 }
 
 
-
+//TEAM BUDDIES LIST
 
 div.ss_buddies {
 	padding-bottom: 35px; 
 }
-
 div.ss_buddiesListHeader {
 	padding: 5px;
+	font-family: ${ss_style_title_font_family};
+	font_size: ${ss_style_font_largerprint};
+	font-weight: bold;
 }
-
 div.ss_buddiesListHeader img {
 	vertical-align: text-bottom;
 }
-
 table.ss_buddiesList {
 	width: 100%; 
 	empty-cells: show;
 	padding: 0px; 
 	border-top: 1px solid ${ss_style_text_color};
 }
-
 table.ss_buddiesList td {
-	border-bottom: 1px solid #333;
+	border-bottom: 1px solid ${ss_guestbook_rule_color};
 	padding: 6px 0 7px 0px;
 	height: 50px;
 }
-
 table.ss_buddiesList td.selectable {
 	width: 9px;
 	padding-left: 15px;
 	padding-right: 15px;
 	border: 0;
 }
-
 table.ss_buddiesList td.picture {
-	border-bottom: 1px solid ${ss_style_text_color};
+	border-bottom: 1px solid ${ss_guestbook_rule_color};
 	padding: 6px 15px 7px 8px; 
 	width: 35px;
 }
-
 table.ss_buddiesList tr.options td {
 	border: 0;
 }
-
 table.ss_buddiesList tr.options td.selectall {
 	height: 50px;
 	text-align: center;
 }
-
 div.ss_buddiesListFooter {
 	text-align: right;
 }
+
 
 form.inline {
 	display: inline;
@@ -4023,12 +4075,13 @@ input.ss_saveQueryNameUnactive {
 }
 
 input.ss_saveQueryName {
-	color: #000000;
+	color: #333333;
 }
 
 #ss_saveQueryErrMsg {
 	font-weight: bold;
 }
+
 
 /*
 	Search styles / end
