@@ -2,17 +2,20 @@
 <deployments>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
-      <window>
-         <window-name>ss_welcome-window</window-name>
-         <instance-ref>ss_welcome-instance</instance-ref>
-         <region>center</region>
-         <height>1</height>
-      </window>
+      <parent-ref>default</parent-ref>
+      <page>
+      	  <page-name>ICEcore</page-name>
+	      <window>
+	         <window-name>ss_welcome-window</window-name>
+	         <instance-ref>ss_welcome-instance</instance-ref>
+	         <region>center</region>
+	         <height>0</height>
+	      </window>
+      </page>
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_forum-window</window-name>
          <instance-ref>ss_forum-instance</instance-ref>
@@ -22,7 +25,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_administration-window</window-name>
          <instance-ref>ss_administration-instance</instance-ref>
@@ -32,7 +35,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_workspacetree-window</window-name>
          <instance-ref>ss_workspacetree-instance</instance-ref>
@@ -42,7 +45,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_presence-window</window-name>
          <instance-ref>ss_presence-instance</instance-ref>
@@ -52,7 +55,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_blog-window</window-name>
          <instance-ref>ss_blog-instance</instance-ref>
@@ -62,7 +65,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_gallery-window</window-name>
          <instance-ref>ss_gallery-instance</instance-ref>
@@ -72,7 +75,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_guestbook-window</window-name>
          <instance-ref>ss_guestbook-instance</instance-ref>
@@ -82,7 +85,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_wiki-window</window-name>
          <instance-ref>ss_wiki-instance</instance-ref>
@@ -92,7 +95,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_search-window</window-name>
          <instance-ref>ss_search-instance</instance-ref>
@@ -102,7 +105,7 @@
    </deployment>
    <deployment>
       <if-exists>overwrite</if-exists>
-      <parent-ref>default.default</parent-ref>
+      <parent-ref>default.ICEcore</parent-ref>
       <window>
          <window-name>ss_toolbar-window</window-name>
          <instance-ref>ss_toolbar-instance</instance-ref>
