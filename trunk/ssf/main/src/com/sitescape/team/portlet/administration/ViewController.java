@@ -329,7 +329,7 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
 			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_REPORT);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT);
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());

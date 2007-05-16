@@ -342,6 +342,16 @@ public class WorkspaceTreeController extends SAbstractController  {
 				toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
 			}
 		}
+		//Reporting
+		if (getBinderModule().testAccess(workspace, "report")) {
+			adminMenuCreated=true;
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.report"), url);
+		}
+		
 		//if no menu items were added, remove the empty menu
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
 		

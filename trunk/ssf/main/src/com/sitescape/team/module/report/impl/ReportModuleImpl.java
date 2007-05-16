@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +26,14 @@ import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
@@ -42,6 +45,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected boolean allEnabled=false;
 	protected CoreDao coreDao;
 	protected AccessControlManager accessControlManager;
+	protected BinderModule binderModule;
+	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -54,6 +59,15 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected CoreDao getCoreDao() {
 		return coreDao;
 	}
+	
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+
+	public BinderModule getBinderModule() {
+		return this.binderModule;
+	}
+
 
     /**
      * Called after bean is initialized.  
@@ -119,9 +133,32 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	             {AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(),
 				  AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 	
+	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Binder binder, final boolean byUser, Long userId) {
+		HashMap<String,Object> row = new HashMap<String,Object>();
+		row.put(ReportModule.BINDER_ID, binder.getId());
+		row.put(ReportModule.BINDER_TITLE, binder.getTitle());
+		if(binder.getParentBinder() != null) {
+			row.put(ReportModule.BINDER_PARENT, binder.getParentBinder().getId());
+		}
+		if(byUser && userId != null) {
+			row.put(ReportModule.USER_ID, userId);
+		}
+		for(String t : activityTypes) {
+			row.put(t, new Integer(0));
+		}
+		report.add(row);
+		return row;
+	}
+	
 	protected void generateReport(List<Map<String, Object>> report, Binder binder, final boolean byUser, final Date startDate, final Date endDate) {
-		checkAccess(binder, "report");
+		checkAccess(binder, "generateReport");
 		final Long binderId = binder.getId();
+		final Set<Long> userIds;
+		if(byUser) {
+			userIds = getBinderModule().getTeamMemberIds(binderId, true);
+		} else {
+			userIds = null;
+		}
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
@@ -139,7 +176,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate))
 						.add(Restrictions.in("transactionType", activityTypes));
-					if(byUser) { crit.addOrder(Order.asc("startBy")); }
+					if(byUser) {
+						crit.add(Restrictions.in("startBy", userIds));
+						crit.addOrder(Order.asc("startBy"));
+					}
 					auditTrail = crit.list();
 				} catch(Exception e) {
 				}
@@ -152,82 +192,115 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Object[] col = (Object []) o;
 			if(byUser) { userId = (Long) col[2]; }
 			if(row == null || (byUser && !lastUserId.equals(userId))) {
-				row = new HashMap<String,Object>();
-				row.put(ReportModule.BINDER_ID, binder.getId());
-				row.put(ReportModule.BINDER_TITLE, binder.getTitle());
-				if(binder.getParentBinder() != null) {
-					row.put(ReportModule.BINDER_PARENT, binder.getParentBinder().getId());
-				}
-				if(byUser) {
-					row.put(ReportModule.USER_ID, userId);
-				}
-				for(String t : activityTypes) {
-					row.put(t, new Integer(0));
-				}
-				report.add(row);
+				row = addBlankRow(report, binder, byUser, userId);
 				lastUserId = userId;
+				if(byUser) {
+					userIds.remove(userId);
+				}
 			}
 			row.put((String) col[0], col[1]);
 		}
-	}
-	
-	public List<Map<String,Object>> generateUserReport(final Date startDate, final Date endDate)
-	{	
-		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				List auditTrail = null;
-				try {
-				auditTrail = session.createCriteria(AuditTrail.class)
-						.setProjection(Projections.projectionList()
-								.add(Projections.groupProperty("startBy"))
-								.add(Projections.rowCount())
-								.add(Projections.groupProperty("transactionType")))
-						.add(Restrictions.ge("startDate", startDate))
-						.add(Restrictions.lt("startDate", endDate))
-						.add(Restrictions.in("transactionType", activityTypes))
-						.addOrder(Order.asc("startBy"))
-						.list();
-				} catch(Exception e) {
-				}
-				return auditTrail;
-			}});
-		
-		List<Map<String, Object>> report = new LinkedList<Map<String, Object>>();
-		Long lastId = new Long(-1);
-		HashMap<String,Object> row = null;
-		for(Object o : result) {
-			Object[] col = (Object []) o;
-			Long id = (Long) col[0];
-			if(!id.equals(lastId)) {
-				row = new HashMap<String,Object>();
-				row.put(ReportModule.USER_ID, id);
-				for(String t : activityTypes) {
-					row.put(t, new Integer(0));
-				}
-				report.add(row);
-				lastId = id;
+		if(byUser) {
+			for(Long id : userIds) {
+				addBlankRow(report, binder, byUser, id);
 			}
-			row.put((String) col[2], col[1]);
 		}
-
-		return report;
+		if(!byUser && result.size() == 0) {
+			addBlankRow(report, binder, byUser, null);
+		}
 	}
 	
-	public List<Map<String,Object>> generateLoginReport(final Date after, final Date before) {
+	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate) {
 		checkAccess("generateLoginReport");
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		List<LoginInfo>result = (List<LoginInfo>)getHibernateTemplate().execute(new HibernateCallback() {
+		List result = (List) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 		
-				List<LoginInfo> auditTrail = session.createCriteria(LoginInfo.class)
-					.add(Restrictions.gt("startDate", after))
-					.add(Restrictions.lt("endDate", before))
+				List auditTrail = session.createCriteria(LoginInfo.class)
+					.setProjection(Projections.projectionList()
+									.add(Projections.groupProperty("startBy"))
+									.add(Projections.max("startDate"))
+									.add(Projections.rowCount()))
+						.add(Restrictions.ge("startDate", startDate))
+						.add(Restrictions.lt("startDate", endDate))
 					.list();
 				return auditTrail;
 			}});
 		//TODO: actually generate a report 
+		for(Object o : result) {
+			Object[] cols = (Object[]) o;
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.USER_ID, cols[0]);
+			row.put(ReportModule.LAST_LOGIN, cols[1]);
+			row.put(ReportModule.COUNT, cols[2]);
+		}
     	return report;
 	}
+	
+
+	public List<Map<String,Object>> generateWorkflowHistoryReport(final Long binderId, final Long entryId) {
+		checkAccess("generateWorkflowHistoryReport");
+
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+		
+				List auditTrail = session.createCriteria(WorkflowStateHistory.class)
+						.add(Restrictions.eq("owningBinderId", binderId))
+						.add(Restrictions.eq("entityId", entryId))
+						.addOrder(Order.asc("definitionId"))
+						.addOrder(Order.asc("startDate"))
+						.list();
+				return auditTrail;
+			}});
+		
+		List currentStates = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+		
+				List states = session.createCriteria(WorkflowState.class)
+						.add(Restrictions.eq("owner.owningBinderId", binderId))
+						.add(Restrictions.eq("owner.ownerId", entryId))
+						.addOrder(Order.asc("definition.id"))
+						.list();
+				return states;
+			}});
+		
+		String lastDefinitionId = null;
+		Iterator stateIterator = currentStates.iterator();
+		WorkflowState nextState = (WorkflowState) stateIterator.next();
+		
+		WorkflowStateHistory hist = null;
+		for(Object o : result) {
+			hist = (WorkflowStateHistory) o;
+			if(lastDefinitionId != null && !lastDefinitionId.equals(hist.getDefinitionId()) &&
+					nextState != null && nextState.getDefinition().getId().equals(lastDefinitionId)) {
+				Map<String, Object> row = new HashMap<String, Object>();
+				report.add(row);
+				row.put(ReportModule.STATE, nextState.getState());
+				row.put(ReportModule.START_DATE, hist.getEndDate());
+				row.put(ReportModule.START_BY, hist.getEndBy());
+				nextState = (WorkflowState) stateIterator.next();
+			}
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.STATE, hist.getState());
+			row.put(ReportModule.START_DATE, hist.getStartDate());
+			row.put(ReportModule.START_BY, hist.getStartBy());
+			row.put(ReportModule.END_DATE, hist.getEndDate());
+			row.put(ReportModule.END_BY, hist.getEndBy());
+			lastDefinitionId = hist.getDefinitionId();
+		}
+		if(hist != null && nextState != null && nextState.getDefinition().getId().equals(lastDefinitionId)) {
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.STATE, nextState.getState());
+			row.put(ReportModule.START_DATE, hist.getEndDate());
+			row.put(ReportModule.START_BY, hist.getEndBy());
+		}
+		return report;
+	}
+	
 	public List<Map<String,Object>> generateWorkflowStateReport(final String definitionId, final String state) {
 		checkAccess("generateWorkflowStateReport");
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
@@ -244,6 +317,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
+	public boolean testAccess(FolderEntry entry, String operation) {
+		return testAccess(operation);
+	}
+
 	public boolean testAccess(String operation) {
 		try {
 			checkAccess(operation);
@@ -258,7 +335,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	protected void checkAccess(String operation) {
-		getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+		if(operation.equals("generateLoginReport")) {
+			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+		} else {
+			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.GENERATE_REPORTS);			
+		}
 	}
 
 

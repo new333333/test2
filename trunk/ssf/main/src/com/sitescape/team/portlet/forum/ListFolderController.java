@@ -983,6 +983,16 @@ public class ListFolderController extends  SAbstractController {
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		}
 		
+		//Reporting
+		if (getFolderModule().testAccess(folder, "report")) {
+			adminMenuCreated=true;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.report"), url);
+		}
+		
 		//Definition builder - forms (turned off until local definitions supported)
 		/*
 		adminMenuCreated=true;

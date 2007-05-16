@@ -62,6 +62,7 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
 
@@ -481,6 +482,17 @@ public class ViewEntryController extends  SAbstractController {
 			toolbar.addToolbarMenu("6_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
 		}		
 		
+		if (getReportModule().testAccess(entry, "generateWorkflowHistory")) {
+			accessControlEntryMap.put("generateWorkflowHistory", new Boolean(true));
+
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			String servletUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
+			WebKeys.URL_BINDER_ID + "=" + folderId + "&" + WebKeys.URL_ENTRY_ID + "=" + entryId + "&" +
+			WebKeys.URL_REPORT_TYPE + "=workflow&forumOkBtn=OK"; 
+			toolbar.addToolbarMenu("7_report", NLT.get("toolbar.workflow_history"), servletUrl, qualifiers);
+		}
+
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
 		Map qualifiers = new HashMap();

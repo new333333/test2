@@ -64,6 +64,7 @@ public class WebKeys {
     public static final String URL_BINDER_TYPE="binderType";
     public static final String URL_BLOG_REPLY="blogReply";
     public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";
+    public static final String URL_BY_USER="ss_byUser";
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
 	public static final String URL_DATE_DAY="day";
@@ -77,6 +78,7 @@ public class WebKeys {
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ELEMENT_TO_EDIT = "element";
+	public static final String URL_END_DATE = "ss_endDate";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
@@ -104,8 +106,8 @@ public class WebKeys {
     public static final String URL_PAGE_SIZE="pageSize";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
+	public static final String URL_REPORT_TYPE = "ss_reportType";
 	public static final String URL_START_DATE = "ss_startDate";
-	public static final String URL_END_DATE = "ss_endDate";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";
@@ -138,6 +140,7 @@ public class WebKeys {
 	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
+	public static final String ACTION_ACTIVITY_REPORT="activity_report";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
@@ -168,6 +171,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
+	public static final String ACTION_LOGIN_REPORT="login_report";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_APPLET_RESPONSE="applet_response";
@@ -178,7 +182,6 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
-	public static final String ACTION_REPORT="report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
@@ -548,6 +551,8 @@ public class WebKeys {
     public static final String RELOAD_URL_FORCED="ssReloadUrl";
     public static final String REPLY_BLOG_URL="replyBlogUrl";
     public static final String REPORT="report";
+    public static final String REPORT_END_DATE="endDate";
+    public static final String REPORT_START_DATE="startDate";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SCHEDULE_INFO2="ssScheduleInfo2";
@@ -677,7 +682,6 @@ public class WebKeys {
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
-    public static final String VIEW_ADMIN_REPORT="administration/report";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
     public static final String VIEW_BINDER_SENDMAIL="binder/sendMail";
@@ -706,6 +710,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_SEARCH_RESULTS_POPUP="entry/view_listing_search_results_popup";
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
+    public static final String VIEW_LOGIN_REPORT="administration/login_report";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
@@ -720,6 +725,7 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
+    public static final String VIEW_REPORT="administration/report";
     public static final String VIEW_SEARCH="search/view";
     public static final String VIEW_SEARCH_EDIT="search/edit";
     public static final String VIEW_TEMPLATE="administration/configureConfiguration";
@@ -733,5 +739,6 @@ public class WebKeys {
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
+    public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
     
 }

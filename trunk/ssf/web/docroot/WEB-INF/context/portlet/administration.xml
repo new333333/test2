@@ -19,7 +19,10 @@
 	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
 	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
 	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
-	<bean id="adminReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ReportController" />
+	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
+	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
+	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
+
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -42,7 +45,9 @@
 						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
 						<entry key="configure_definitions"><ref bean="configureController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
-						<entry key="report"><ref bean="adminReportController"/></entry>
+						<entry key="login_report"><ref bean="loginReportController"/></entry>
+						<entry key="activity_report"><ref bean="activityReportController"/></entry>
+						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 						<entry key="view_folder_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="view_ws_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 					</map>
