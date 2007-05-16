@@ -13,7 +13,7 @@
 <% //Entry signature view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<table cellspacing="0" cellpadding="0">
+<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
  <tr>
   <td valign="top" style="padding-left:10px;">
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
@@ -26,7 +26,7 @@
 
 <c:if test="${!empty ssDefinitionEntry.modification.principal && 
   ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
-<table cellspacing="0" cellpadding="0">
+<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
  <tr>
   <td valign="top" style="padding-left:30px;">
 	<div class="ss_entryContent ss_entrySignature">
@@ -57,7 +57,7 @@
 </c:if>
 
 <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
-	<table cellspacing="0" cellpadding="0">
+	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
 	 <tr>
 	  <td valign="top" style="padding-left:30px;">
 		<div class="ss_entryContent ss_entrySignature">
