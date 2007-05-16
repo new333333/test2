@@ -34,29 +34,23 @@
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
-	<table class="ss_actions_bar2_pane">
-		<tr>
-			<td nowrap>
-				<% // Add the toolbar with the navigation widgets, commands and filter %>
-				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+	<% // Add the toolbar with the navigation widgets, commands and filter %>
+	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
 
-					<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
-						<c:set var="ss_history_bar_table_class" 
-						  value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
-						<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-					</ssf:toolbar>
-		
-					<% // Entry toolbar %>
-					<c:if test="${!empty ssEntryToolbar}">
-						<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-					</c:if>
-					<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
-						<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-					</ssf:toolbar>
-				</ssf:toolbar>
-			</td>
-		</tr>
-	</table>
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
+			<c:set var="ss_history_bar_table_class" 
+			  value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+		</ssf:toolbar>
+
+		<% // Entry toolbar %>
+		<c:if test="${!empty ssEntryToolbar}">
+			<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+		</c:if>
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+		</ssf:toolbar>
+	</ssf:toolbar>
 </div>
 </div>
 <div class="ss_folder" id="ss_guestbook_folder_div">
