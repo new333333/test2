@@ -27,7 +27,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 <tr>
 	<td width="40%" valign="top">
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}<portlet:namespace/>" 
-		class="ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
+		class="ss_style ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
 	</td>
 
 	<td valign="top">
