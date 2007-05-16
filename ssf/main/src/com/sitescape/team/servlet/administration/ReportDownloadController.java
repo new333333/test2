@@ -67,13 +67,16 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(AuditTrail.AuditType.view.name(), "report.columns.view");
 		columnNames.put(AuditTrail.AuditType.modify.name(), "report.columns.modify");
 		columnNames.put(AuditTrail.AuditType.delete.name(), "report.columns.delete");
-		columnNames.put(ReportModule.COUNT, "report.columns.login_count");
+		columnNames.put(ReportModule.LOGIN_COUNT, "report.columns.login_count");
 		columnNames.put(ReportModule.LAST_LOGIN, "report.columns.last_login");
 		columnNames.put(ReportModule.STATE, "report.columns.state");
 		columnNames.put(ReportModule.START_DATE, "report.columns.start_date");
 		columnNames.put(ReportModule.END_DATE, "report.columns.end_date");
 		columnNames.put(ReportModule.START_BY, "report.columns.start_by");
 		columnNames.put(ReportModule.END_BY, "report.columns.end_by");
+		columnNames.put(ReportModule.DEFINITION_ID, "report.columns.definition");
+		columnNames.put(ReportModule.AVERAGE, "report.columns.average");
+		columnNames.put(ReportModule.COUNT, "report.columns.count");
 	}
 
 	static private boolean isUserColumn(String column) {
@@ -134,12 +137,56 @@ public class ReportDownloadController extends  SAbstractController {
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("login".equals(reportType)) {
 				report = getReportModule().generateLoginReport(startDate, endDate);
-				columns = new String[] {ReportModule.USER_ID, ReportModule.COUNT, ReportModule.LAST_LOGIN};
+				columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
 			} else if ("workflow".equals(reportType)) {
-				Long binderId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-				Long entryId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-				report = getReportModule().generateWorkflowHistoryReport(binderId, entryId);
-				columns = new String[] {ReportModule.STATE, ReportModule.START_DATE, ReportModule.START_BY };
+				if(RequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("averages")) {
+					//Get the list of binders for reporting
+					List<Long> ids = new ArrayList();
+
+					//Get the binders for reporting
+					Iterator itFormData = formData.entrySet().iterator();
+					while (itFormData.hasNext()) {
+						Map.Entry me = (Map.Entry) itFormData.next();
+						String key = (String)me.getKey();
+						if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
+							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
+							ids.add(Long.valueOf(binderId));
+						} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
+							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
+							ids.add(Long.valueOf(binderId));
+						}
+					}
+
+					report = getReportModule().generateWorkflowStateReport(ids, startDate, endDate);
+					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
+							ReportModule.DEFINITION_ID, ReportModule.STATE, ReportModule.AVERAGE };
+				} else if(RequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("current")) {
+					//Get the list of binders for reporting
+					List<Long> ids = new ArrayList();
+
+					//Get the binders for reporting
+					Iterator itFormData = formData.entrySet().iterator();
+					while (itFormData.hasNext()) {
+						Map.Entry me = (Map.Entry) itFormData.next();
+						String key = (String)me.getKey();
+						if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
+							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
+							ids.add(Long.valueOf(binderId));
+						} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
+							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
+							ids.add(Long.valueOf(binderId));
+						}
+					}
+
+					report = getReportModule().generateWorkflowStateCountReport(ids);
+					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
+							ReportModule.STATE, ReportModule.COUNT };
+				} else {
+					Long binderId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+					Long entryId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+					report = getReportModule().generateWorkflowHistoryReport(binderId, entryId);
+					columns = new String[] {ReportModule.STATE, ReportModule.START_DATE, ReportModule.START_BY };
+				}
 			}
 			printReport(response.getWriter(), report, columns, hasUsers);
 			response.getWriter().flush();
@@ -206,4 +253,3 @@ public class ReportDownloadController extends  SAbstractController {
 		out.flush();
 	}
 }
-
