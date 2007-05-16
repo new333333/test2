@@ -45,14 +45,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <% //FONT SIZES %>
 	<c:set var="ss_style_font_size" value="12px" scope="request"/>
-	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
-	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
-	<c:set var="ss_style_font_smallprint" value="0.9em" scope="request"/>
-	<c:set var="ss_style_font_normalprint" value="1.0em" scope="request"/>
-	<c:set var="ss_style_font_largeprint" value="1.1em" scope="request"/>
-	<c:set var="ss_style_font_largerprint" value="1.2em" scope="request"/>
-	<c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
-	<c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
+	<c:set var="ss_style_font_finestprint" value="9px" scope="request"/>
+	<c:set var="ss_style_font_fineprint" value="10px" scope="request"/>
+	<c:set var="ss_style_font_smallprint" value="11px" scope="request"/>
+	<c:set var="ss_style_font_normalprint" value="12px" scope="request"/>
+	<c:set var="ss_style_font_largeprint" value="13px" scope="request"/>
+	<c:set var="ss_style_font_largerprint" value="14px" scope="request"/>
+	<c:set var="ss_style_font_largestprint" value="15px" scope="request"/>
+	<c:set var="ss_style_font_input_size" value="11px" scope="request"/>
 
 	<c:set var="ss_style_brightest" value="1.0" scope="request"/>
 	<c:set var="ss_style_brighter" value="0.8" scope="request"/>
@@ -290,6 +290,7 @@ body.ss_style_body {
 /* LINKS */
 .ss_style a {
   color: ${ss_style_link_color};
+  text-decoration: none;
 }
 .ss_style a:visited {
   color: ${ss_style_link_visited_color};
@@ -603,6 +604,29 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   text-decoration: none;
   cursor: pointer;
   }
+
+/* styles for labels: required for forms; optional for views */
+.ss_labelAbove {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 0px;
+  display: block;
+  font-weight: bold;
+}
+
+.ss_labelLeft {
+  font-weight: bold;
+  font-size: ${ss_style_font_normalprint};
+  display: inline;
+  padding-right: 2px;
+}
+
+.ss_labelRight {
+  font-weight: bold;
+  display: inline;
+  padding-left: 2px;
+  font-size: ${ss_style_font_normalprint};
+}
 
 
 div.ss_iconed_label {

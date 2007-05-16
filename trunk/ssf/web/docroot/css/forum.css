@@ -20,10 +20,6 @@ div.xportlet-box {
 }
 
 
-/* ss_style is specified in view_css so its colors can be set up
-.ss_style {}
-*/
-
 
 /* This style triggers the Nifty Corners rounding effect. 
    Add "ss_rounded" to any element that is to be rounded. */
@@ -135,26 +131,6 @@ div.ss_formBreak {
   }
 
 
-/* styles for labels: required for forms; optional for views */
-.ss_labelAbove {
-  margin-top: 2px;
-  margin-bottom: 2px;
-  padding: 0px;
-  display: block;
-  font-weight: bold;
-  }
-
-.ss_labelLeft {
-  font-weight: bold;
-  display: inline;
-  padding-right: 2px;
-  }
-
-.ss_labelRight {
-  font-weight: bold;
-  display: inline;
-  padding-left: 2px;
-  }
   
 /* toolbar */
 /* toolbar positioning */
