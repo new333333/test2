@@ -64,7 +64,7 @@ String isFile = ParamUtil.get(request, "isFile", "no");
 <% } else if (useBinderFunction.equals("permalink")) { %>
 	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuIdx %>', '<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
 <% }%>
-onMouseOver="checkAndCreateMenuObject('<%= linkMenuIdx %>');<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
+onMouseOver="checkAndCreateMenuObject('<%= linkMenuIdx %>');<%= linkMenuObj %>.showButton(this, '<%= imageId %>'); ss_setMenuGeneratedURLs('<%= linkMenuIdx %>', '<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', '<%= url %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 ><img <ssf:alt tag="alt.showMenu"/> border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
 onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>', '<%= isFile %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= dashboardType %>');"

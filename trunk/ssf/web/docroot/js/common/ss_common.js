@@ -1158,6 +1158,15 @@ function ss_getElementsByClass(classPattern, node, tag) {
 	return classElements;
 }
 
+function ss_showAccessibleMenu(divId) {
+	var divObj = document.getElementById(divId);
+	ss_showDiv(divId);
+}
+
+function ss_hideAccessibleMenu(divId) {
+	var divObj = document.getElementById(divId);
+	ss_hideDivNone(divId);
+}
 
 // Pop-up menu support
 // clicking anywhere will hide the div
@@ -2930,12 +2939,20 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 		return false;
 	}
 	
-	ss_showForumEntry(obj.href, eval(entryCallBackRoutine+""), isDashboard, entityType);
+	ss_showForumEntry(obj.href, eval(entryCallBackRoutine+""), isDashboard, entityType, linkMenuObj);
 	
 	return false;
 }
 
 function ss_dummyMethodCall() {
+}
+
+function ss_setMenuGeneratedURLs(linkMenu, binderId, entryId, entityType, namespace, url) {
+	var nonAdapterUrl = ss_getGeneratedURL(binderId, entryId, entityType, namespace, "no");
+	
+	var linkMenuObj = ss_linkMenu_arr[linkMenu];
+	linkMenuObj.menuLinkNonAdapterURL = nonAdapterUrl;
+	if (url) linkMenuObj.menuLinkURL = url;
 }
 
 function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, namespace) {
@@ -2952,7 +2969,7 @@ function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, names
 }
 
 var menuLinkAdapterURL = "";
-
+//Gets called when clicking on the menulink image
 function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard, isFile) {
 
 	if (adapterURL) menuLinkAdapterURL = adapterURL;
@@ -3021,9 +3038,7 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 	linkMenuObj.isDashboardLink = isDashboard;
 }
 
-//Routine to go to a permalink without actually using the permalink
-function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
-
+function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab) {
 	var binderUrl = "";
 	var entryUrl = "";
 	//Try to find the base urls from this namespace or from the parent or the opener
@@ -3063,7 +3078,9 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
 		}
 	}
 	
-	if (binderUrl == "" || entryUrl == "") return true;
+	if (!binderUrl || !entryUrl) return "";
+
+	if (binderUrl == "" || entryUrl == "") return "";
 
 	//Build a url to go to
 	var url;
@@ -3092,7 +3109,17 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
 	if (useNewTab && useNewTab == "yes") {
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
 	}
+
+	return url;
+}
+
+//Routine to go to a permalink without actually using the permalink
+function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
+
+	var url = ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab);
 	
+	if (url == "") return true;
+
 	self.location.href = url;
 	return false;
 }
@@ -3741,6 +3768,9 @@ function ss_linkMenuObj() {
 	this.menuLinkShowNewTab;
 
 	this.isDashboardLink;
+	this.menuLinkURL;
+	
+	this.menuLinkNonAdapterURL;
 	
 	this.type_folderEntry = 'folderEntry';
 	this.type_folder = 'folder';
@@ -3875,8 +3905,12 @@ function ss_linkMenuObj() {
 				var menuLinkObj = document.getElementById(this.menuLinkShowNewWindow);
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'none';
-					if (this.currentDefinitionType == this.type_folderEntry && this.fileUrl == "") 
-						menuLinkObj.style.display = 'block';
+					
+					if (self.opener) {}
+					else {
+						if (this.currentDefinitionType == this.type_folderEntry && this.fileUrl == "") 
+							menuLinkObj.style.display = 'block';
+					}
 				}
 			}
 			
@@ -3903,31 +3937,60 @@ function ss_linkMenuObj() {
 		//This is used for overcoming the search tab check
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "3");
 		
-		if (self.opener) {
-			self.opener.location.href = url;
-			self.opener.focus();
-		} else if (self.parent) {
-			self.parent.location.href = url;
-			self.parent.focus();
-		} else {
-			self.location.href = url;
+		var currentWindow = self;
+		var parentWindow;
+		
+		while (true) {
+			if (currentWindow.opener) {
+				parentWindow = currentWindow.opener;
+			} else if (currentWindow.parent) {
+				parentWindow = currentWindow.parent;
+			}
+
+			//No Parent Window
+			if (!parentWindow) {
+				break;
+			} else {
+				if (parentWindow != currentWindow) {
+					currentWindow = parentWindow;
+				} else {
+					break;
+				}
+			}
 		}
+		currentWindow.location.href = url;
+		if (self.opener) setTimeout('self.window.close();', 200);
 	}
 	
 	this.newTab = function() {
 		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
+		
 		var url = this.buildBaseUrl();
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
 		
-		if (self.opener) {
-			self.opener.location.href = url;
-			self.opener.focus();
-		} else if (self.parent) {
-			self.parent.location.href = url;
-			self.parent.focus();
-		} else {
-			self.location.href = url;
+		var currentWindow = self;
+		var parentWindow;
+		
+		while (true) {
+			if (currentWindow.opener) {
+				parentWindow = currentWindow.opener;
+			} else if (currentWindow.parent) {
+				parentWindow = currentWindow.parent;
+			}
+
+			//No Parent Window
+			if (!parentWindow) {
+				break;
+			} else {
+				if (parentWindow != currentWindow) {
+					currentWindow = parentWindow;
+				} else {
+					break;
+				}
+			}
 		}
+		currentWindow.location.href = url;
+		if (self.opener) setTimeout('self.window.close();', 200);
 	}
 
 	this.newWindow = function() {
@@ -3951,7 +4014,7 @@ function ss_linkMenuObj() {
 	}
 	
 	this.showEntry = function() {
-		ss_loadEntry(this.lastShownButton, this.currentId, "", "", this.isDashboardLink)
+		ss_loadEntry(this.lastShownButton, this.currentId, "", "", this.isDashboardLink, this);
 		return false;
 	}
 	
@@ -3974,13 +4037,22 @@ function ss_linkMenuObj() {
 		} else if (this.currentDefinitionType == this.type_profileEntry) {
 			url = this.entryUrl;
 		}
-		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
-		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
 		
-		if (this.currentDefinitionType == this.type_profileEntry) {
-			url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
-		} else {
-			url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
+		if (!url && ss_fallBackPermaLinkURL) {
+			url = ss_fallBackPermaLinkURL;
+			url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
+			url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
+			url = ss_replaceSubStr(url, "ssEntityTypePlaceHolder", this.currentDefinitionType);
+		}
+		else {
+			url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
+			url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
+			
+			if (this.currentDefinitionType == this.type_profileEntry) {
+				url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
+			} else {
+				url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
+			}
 		}
 		
 		ss_debug('buildBaseUrl - '+ url);

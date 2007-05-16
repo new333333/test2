@@ -608,6 +608,7 @@ public class WebKeys {
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
     public static final String TOOLBAR_SHOW_HELP_BUTTON="ss_toolbar_showHelpButton";
     public static final String TOOLBAR_SKIP_SEPARATOR="ss_toolbar_skip_separator";
+    public static final String TOOLBAR_IS_ACCESSIBLE="ss_toolbar_is_accessible";
     public static final String UNAUTHENTICATED_REQUEST = "com.sitescape.unauthenticated.request";
     public static final String USERS="ssUsers";
     public static final String USER_IDS_TO_ADD="ssUsersIdsToAdd";

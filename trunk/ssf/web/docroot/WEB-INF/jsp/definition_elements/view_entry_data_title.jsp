@@ -65,13 +65,30 @@ if (!ss_baseEntryUrl || !ss_baseBinderUrl) {
 }
 
 //This function just reloads the current link
-function ss_showForumEntry(url, callbackRoutine, isDashboard) {
-	//self.location.href = url;
-	self.location.reload(true);
+function ss_showForumEntry(url, callbackRoutine, isDashboard, entityType, linkMenuObj) {
+	if (top == self) {
+		if (self.opener) {
+			self.location.href = linkMenuObj.menuLinkURL;
+		} else {
+			self.location.href = linkMenuObj.menuLinkNonAdapterURL;
+			//self.location.reload(true);
+		}
+	} else {
+		self.location.href = linkMenuObj.menuLinkURL;
+	}
 }
 
-function ss_loadEntry() {
-	self.location.reload(true);
+function ss_loadEntry(strLastButtonShown, currentId, strThree, strFour, strIsDashboardLink, linkMenuObj) {
+	if (top == self) {
+		if (self.opener) {
+			self.location.href = linkMenuObj.menuLinkURL;
+		} else {
+			self.location.href = linkMenuObj.menuLinkNonAdapterURL;
+			//self.location.reload(true);
+		}
+	} else {
+		self.location.href = linkMenuObj.menuLinkURL;
+	}
 }
 
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
