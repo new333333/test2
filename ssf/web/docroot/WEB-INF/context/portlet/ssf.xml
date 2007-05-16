@@ -42,6 +42,10 @@
 	<bean id="meetingController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
 	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 		
+	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
+	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
+	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
+
  	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -85,6 +89,10 @@
 						<entry key="add_meeting"><ref bean="meetingController"/></entry>					
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
+
+						<entry key="login_report"><ref bean="loginReportController"/></entry>
+						<entry key="activity_report"><ref bean="activityReportController"/></entry>
+						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">

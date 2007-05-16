@@ -172,17 +172,22 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		}
 		model.put(WebKeys.ACCESSIBLE_URL, url.toString());
-}
+	}
 
-	static public Map getAccessControlEntityMapBean(Map model, DefinableEntity entity) {
+	static public Map getAccessControlMapBean(Map model) {
 		//Initialize the acl bean
 		if (!model.containsKey(WebKeys.ACCESS_CONTROL_MAP)) 
 			model.put(WebKeys.ACCESS_CONTROL_MAP, new HashMap());
-		Map accessControlMap = (Map)model.get(WebKeys.ACCESS_CONTROL_MAP);
+		return (Map)model.get(WebKeys.ACCESS_CONTROL_MAP);
+	}
+	
+	static public Map getAccessControlEntityMapBean(Map model, DefinableEntity entity) {
+		Map accessControlMap = getAccessControlMapBean(model);
 		if (!accessControlMap.containsKey(entity.getId())) 
 			accessControlMap.put(entity.getId(), new HashMap());
 		return (Map)accessControlMap.get(entity.getId());
 	}
+	
 	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model) {
 		if (binder instanceof TemplateBinder)
 			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, new ConfigHelper(""));
