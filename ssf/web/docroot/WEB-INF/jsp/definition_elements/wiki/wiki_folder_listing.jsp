@@ -143,7 +143,7 @@
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
 %>
-		    <tr><td><div style="margin:0px 4px 4px 8px;">
+		    <tr><td><div style="padding:0px 4px 4px 8px;">
 		    <a 
 		    href="<ssf:url     
 		    adapter="<%= useAdaptor %>" 
@@ -154,9 +154,9 @@
 		    onClick="ss_loadWikiEntry(this, '${entry1._docId}');return false;" 
 		    ><c:if test="${empty entry1.title}"
 		    ><span id="folderLine_${entry1._docId}" class="ss_normal"
-		      style="margin:-8px;" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
+		      style="" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
 		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_normal"
-		      style="margin:-8px;" <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
+		      style="" <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
 		    </td></tr>
 		  </c:forEach>
 		</table>
