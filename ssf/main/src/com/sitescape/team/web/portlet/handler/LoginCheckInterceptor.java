@@ -26,7 +26,10 @@ import com.sitescape.team.web.util.WebHelper;
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
 	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler) throws Exception {
-		if(!WebHelper.isUserLoggedIn(request)) {
+		if(WebHelper.isUnauthenticatedRequest(request)) {
+			return true;
+		}
+		else if(!WebHelper.isUserLoggedIn(request)) {
 			// User not logged in. 
 			// In this case we simply display a friendly message (if possible) 
 			// to the user instead of throwing an exception. In other words we 

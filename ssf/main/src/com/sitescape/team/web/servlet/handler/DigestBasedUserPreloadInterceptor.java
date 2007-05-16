@@ -21,6 +21,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebHelper;
 
 public class DigestBasedUserPreloadInterceptor extends HandlerInterceptorAdapter {
 	private ProfileDao profileDao;
@@ -34,10 +35,7 @@ public class DigestBasedUserPreloadInterceptor extends HandlerInterceptorAdapter
 	}
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		Boolean unathenticatedRequest = (Boolean) request.getAttribute
-		(WebKeys.UNAUTHENTICATED_REQUEST);
-
-		if(Boolean.TRUE.equals(unathenticatedRequest)) {
+		if(WebHelper.isUnauthenticatedRequest(request)) {
 			// The framework says that this request is being made unauthenticated,
 			// that is, in no particular user's context. 
 			// In this case we simply pass up in the interceptor chain. 

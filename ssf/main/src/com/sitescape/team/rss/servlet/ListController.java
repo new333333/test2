@@ -23,6 +23,7 @@ import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.WebHelper;
 
 public class ListController extends SAbstractController {
 
@@ -45,9 +46,7 @@ public class ListController extends SAbstractController {
 		// the request. Don't ever make this decision based on the existence
 		// of request context data, since it may be a stale data from previous
 		// request that for some reason was cleared properly. 
-		Boolean unathenticatedRequest = (Boolean) request.getAttribute
-		(WebKeys.UNAUTHENTICATED_REQUEST);
-		if(!Boolean.TRUE.equals(unathenticatedRequest)) {
+		if(!WebHelper.isUnauthenticatedRequest(request)) {
 			binder = getBinderModule().getBinder(binderId);
 			user = RequestContextHolder.getRequestContext().getUser();
 		}

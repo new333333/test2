@@ -654,4 +654,20 @@ public class WebHelper {
 			return portletURL.toString();
 		}
 	}
+	
+	public static boolean isUnauthenticatedRequest(HttpServletRequest request) {
+		// Check to see if this is a legally unauthenticated request.
+		Boolean unathenticatedRequest = (Boolean) request.getAttribute
+		(WebKeys.UNAUTHENTICATED_REQUEST);
+
+		return Boolean.TRUE.equals(unathenticatedRequest);
+	}
+	
+	public static boolean isUnauthenticatedRequest(PortletRequest request) {
+		// Check to see if this is a legally unauthenticated request.
+		Boolean unathenticatedRequest = (Boolean) request.getAttribute
+		(WebKeys.UNAUTHENTICATED_REQUEST);
+
+		return Boolean.TRUE.equals(unathenticatedRequest);
+	}
 }
