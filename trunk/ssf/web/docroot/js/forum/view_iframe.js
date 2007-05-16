@@ -51,8 +51,8 @@ function ss_showForumEntryInIframe(url) {
 
     return false;
 }
-
-var ss_scrollHeightFudge = 40;
+// If you can't control the box model, you may need to set this to around 40.
+var ss_scrollHeightFudge = 0;
 function ss_positionEntryDiv() {
 	//ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
@@ -104,7 +104,7 @@ function ss_positionEntryDiv() {
 				window.ss_showentryframe.document.body) {
 		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight) + ss_scrollHeightFudge
 		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-		    if (entryHeight > ss_entryHeightHighWaterMark) {
+		    if (entryHeight > (ss_entryHeightHighWaterMark + ss_scrollHeightFudge)) {
 			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 			    ss_entryHeightHighWaterMark = entryHeight;
 			    
