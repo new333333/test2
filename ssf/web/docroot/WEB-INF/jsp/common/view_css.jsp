@@ -283,6 +283,12 @@ var ss_baseFileUrl<portlet:namespace/> = ss_baseFileUrl;
 </ssf:ifnotadapter>
 </c:if>
 
+var ss_fallBackPermaLinkURL = "<ssf:url adapter="true" portletName="ss_forum" action="view_permalink">
+		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
+		<ssf:param name="entryId" value="ssEntryIdPlaceHolder" />
+		<ssf:param name="entityType" value="ssEntityTypePlaceHolder" />
+    </ssf:url>";
+
 var ss_baseAppletFileUploadURL = "<ssf:url adapter="true" portletName="ss_forum" action="add_entry_attachment" actionUrl="true" >
 		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
 		<ssf:param name="entryId" value="ssEntryIdPlaceHolder" />

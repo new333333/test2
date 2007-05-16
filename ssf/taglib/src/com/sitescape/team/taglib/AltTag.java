@@ -35,6 +35,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
     private String text;
     private Boolean checkIfTag;
 	private List _values;
+	private String attName = "ALT";
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -73,7 +74,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 				} else {
 					if (tag != null) sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
 				}
-				jspOut.print("ALT=\"" + sb.toString() + "\" ");
+				jspOut.print(attName + "=\"" + sb.toString() + "\" ");
 			}
 		}
 		catch (Exception e) {
@@ -84,6 +85,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 			checkIfTag = null;
 			text = null;
 			tag = null;
+			attName = "ALT";
 		}
 	    
 		return EVAL_PAGE;
@@ -101,13 +103,14 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 	    this.checkIfTag = value;
 	}
 
+	public void setAttName(String attName) {
+	    this.attName = attName;
+	}
+
 	public void addParam(String name, String value) {
 		if (_values == null) {
 			_values = new ArrayList();
 		}
 		if (name.equals(WebKeys.NLT_VALUE)) _values.add(value);
 	}
-
 }
-
-

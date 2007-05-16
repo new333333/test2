@@ -35,5 +35,12 @@
 </c:if>
 
 <c:if test="${!empty ss_toolbar}">
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+	<c:choose>
+		<c:when test="${ss_toolbar_is_accessible == 'true'}">
+			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_accessible_view.jsp" %>
+		</c:when>
+		<c:otherwise>
+			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+		</c:otherwise>
+	</c:choose>
 </c:if>

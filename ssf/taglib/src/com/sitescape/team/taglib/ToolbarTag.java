@@ -27,6 +27,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.Toolbar;
@@ -64,6 +67,16 @@ public class ToolbarTag extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
+			RequestContext rc = RequestContextHolder.getRequestContext();
+			User user = null;
+			Boolean isAccessible = Boolean.FALSE;
+			if (rc != null) user = rc.getUser();
+			if (user != null) {
+				if (user.getDisplayStyle() != null && user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+					isAccessible = Boolean.TRUE;
+				}
+			}
+			
 			//Output the start of the area
 			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/toolbar/top.jsp");
 
@@ -74,6 +87,8 @@ public class ToolbarTag extends BodyTagSupport {
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
 			req.setAttribute(WebKeys.TOOLBAR_SHOW_HELP_BUTTON, this.showHelpButton);
 			req.setAttribute(WebKeys.TOOLBAR_SKIP_SEPARATOR, this.skipSeparator);
+			req.setAttribute(WebKeys.TOOLBAR_IS_ACCESSIBLE, isAccessible);
+			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -89,6 +104,7 @@ public class ToolbarTag extends BodyTagSupport {
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
 			req.setAttribute(WebKeys.TOOLBAR_SHOW_HELP_BUTTON, this.showHelpButton);
 			req.setAttribute(WebKeys.TOOLBAR_SKIP_SEPARATOR, this.skipSeparator);
+			req.setAttribute(WebKeys.TOOLBAR_IS_ACCESSIBLE, isAccessible);
 			res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
