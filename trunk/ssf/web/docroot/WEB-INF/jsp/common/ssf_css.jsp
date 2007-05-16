@@ -1098,9 +1098,7 @@ div.ss_sliding_table_column {
   font-family: ${ss_style_folder_view_font_family};
 }
 .ss_highlightEntry {
-  background-color: ${ss_folder_line_highlight_color};
-  line-height:15px;
-  font-family: ${ss_style_folder_view_font_family};
+  background-color: ${ss_folder_line_highlight_color} !important;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
