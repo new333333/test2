@@ -30,7 +30,7 @@ var ssReportURL="<portlet:actionURL><portlet:param
 	action="<ssf:url webPath="reportDownload"/>" 
 	method="post" 
 	name="${formName}">
-  <input type="hidden" name="ss_reportType" value="binder"/>
+  <input type="hidden" name="ss_reportType" id="ss_reportType" value="binder"/>
   <div class="ss_buttonBarRight">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -54,15 +54,20 @@ var ssReportURL="<portlet:actionURL><portlet:param
   <br/>				 
   <div id="ss_report_panel_forum">
    <br/>
+   <input type="radio" class="ss_radio" name="reportFlavor" value="activity" checked="checked" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.activity"/></label>
+   <div id="ss_report_activityFlavorOptions" style="margin-left:20px;">
+   <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label"><ssf:nlt tag="administration.report.label.breakDown"/></label>
+   </div>
+   <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.workflow"/></label>
+   <div id="ss_report_workflowFlavorOptions" style="margin-left:20px;">
+     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" checked="checked"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
+     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.current"/></label><br/>   <br/>
+   </div>
+   <br/>
    <br/>
    <span class="ss_bold"><ssf:nlt tag="administration.report.forum"/></span>
    <br/>
    <br/>
-
-   <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label"><ssf:nlt tag="administration.report.breakDown"/></label>
-   <br/>
-   <br/>
-
    <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
      rootOpen="true" topId="${ssWsDomTreeBinderId}" 
      multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type_" />
@@ -81,6 +86,27 @@ var ssReportURL="<portlet:actionURL><portlet:param
 
 <script type="text/javascript">
 
+dojo.addOnLoad(function () {
+  var rb = document.getElementsByName('reportFlavor');
+  for(var i = 0; i < rb.length; i++) {
+    if(rb[i].checked) {showOptions(rb[i]);}
+  } 
+});
+
+function showOptions(sel)
+{
+  var aOpt = document.getElementById('ss_report_activityFlavorOptions');
+  var wOpt = document.getElementById('ss_report_workflowFlavorOptions');
+  if(sel.value == "activity") {
+  	dojo.lfx.html.fadeIn(aOpt, 100).play();
+  	dojo.lfx.html.fade(wOpt,  {end:0.3}, 1000).play();
+  	document.getElementById('ss_reportType').value='binder';
+  } else {
+  	dojo.lfx.html.fade(aOpt,  {end:0.3}, 1000).play();
+  	dojo.lfx.html.fadeIn(wOpt, 100).play();
+  	document.getElementById('ss_reportType').value='workflow';
+  }
+}
 function <%= wsTreeName %>_showId(forum, obj, action) {
 	var prefix = action+"_";
 	ss_createTreeCheckbox("<%= wsTreeName %>", prefix, forum);

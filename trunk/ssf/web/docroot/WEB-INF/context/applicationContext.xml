@@ -619,6 +619,7 @@
 				<property name="coreDao"><ref bean="coreDao"/></property>
 				<property name="accessControlManager"><ref local="accessControlManager"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
 			</bean>
 		</property>
 	</bean>			
