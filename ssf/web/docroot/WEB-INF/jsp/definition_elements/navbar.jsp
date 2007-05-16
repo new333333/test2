@@ -729,6 +729,9 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 
 <div style="padding: 5px 10px 5px 10px;">
+
+<!-- Only show add a place in maximized view  -->
+<c:if test="${ss_navbar_style != 'portlet'}">
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_addBinderToFavorites('<portlet:namespace/>');return false;"
@@ -736,13 +739,13 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
   </div>
+</c:if>
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_showhideFavoritesEditor('<portlet:namespace/>')"
 		><img <ssf:alt tag="favorites.edit"/> src="<html:imagesPath/>icons/button_edit_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
-
   </div>
   <hr style="width: 90%" class="ss_att_divider"/>
   <div class="ss_style_trans" id="ss_favorites<portlet:namespace/>" align="left">
