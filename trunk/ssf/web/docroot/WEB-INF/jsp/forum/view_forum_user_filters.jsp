@@ -56,23 +56,38 @@
 			//		filterName = filterName.substring(0, 6) + "...";
 			//	}
 			%>
+
 			<ssf:menu title="<%= filterName %>" 
 			  titleId="ss_filterTitle" 
 			  titleClass="ss_compact"
 			  menuClass="ss_actions_bar_submenu"
-			  menuImage="pics/menudown.gif"
->
-				<ul class="ss_actions_bar2 ss_actions_bar_submenu ss_actions_bar_filters" style="width:250px;">
-				<li><a href="javascript: ;" 
-				  onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
-				>--<ssf:nlt tag="none" text="none"/>--</a></li>
+			  menuImage="pics/menudown.gif">
+			  
+			  <ssf:ifnotaccessible>
+					<ul class="ss_actions_bar2 ss_actions_bar_submenu ss_actions_bar_filters" style="width:250px;">
+					<li><a href="javascript: ;" 
+					  onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
+					>--<ssf:nlt tag="none" text="none"/>--</a></li>
+					<c:forEach var="filter" items="${ss_searchFilters}">
+					<li><a href="javascript: ;" 
+					  onClick="ss_changeUserFilter(this, '<c:out value="${filter.key}"/>');return false;"
+					><c:out value="${filter.key}"/></a></li>
+					</c:forEach>
+					</ul>
+			  </ssf:ifnotaccessible>
+			  
+			  <ssf:ifaccessible>
+
+				<a href="javascript: ;" onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;">--<ssf:nlt tag="none" text="none"/>--</a>
+
 				<c:forEach var="filter" items="${ss_searchFilters}">
-				<li><a href="javascript: ;" 
-				  onClick="ss_changeUserFilter(this, '<c:out value="${filter.key}"/>');return false;"
-				><c:out value="${filter.key}"/></a></li>
+				<a href="javascript: ;" onClick="ss_changeUserFilter(this, '<c:out value="${filter.key}"/>');return false;"><c:out value="${filter.key}"/></a>
 				</c:forEach>
-				</ul>
+			  
+			  </ssf:ifaccessible>
+				
 			</ssf:menu>
+			
 		
 			<input type="hidden" name="select_filter">
 		</form>

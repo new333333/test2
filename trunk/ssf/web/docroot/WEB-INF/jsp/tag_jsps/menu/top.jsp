@@ -39,10 +39,22 @@ String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String menuClass = ParamUtil.get(request, "menuClass", "ss_toolbar_menu");
 String menuDivWidth = ParamUtil.get(request, "menuWidth", "");
 if (!menuDivWidth.equals("") && menuDivWidth.indexOf("px") == -1) menuDivWidth = menuDivWidth + "px";
+String isAccessible = ParamUtil.get(request, "isAccessible", "false");
 %>
 <c:set var="menuDivWidth" value="<%= menuDivWidth %>"/>
-<div class="<%= menuClass %>" 
-<c:if test="${!empty menuDivWidth}">
-  style="width:${menuDivWidth};" 
+<c:set var="isAccessible" value="<%= isAccessible %>"/>
+<div 
+<c:if test="${isAccessible == 'false'}">
+	class="<%= menuClass %>" 
+	<c:if test="${!empty menuDivWidth}">
+		style="width:${menuDivWidth};" 
+	</c:if>
 </c:if>
+
+<c:if test="${isAccessible == 'true'}">
+	<c:if test="${!empty menuDivWidth}">
+		style="visibility:hidden;display:none;white-space:nowrap;"
+	</c:if>
+</c:if>
+
   id="<%= menuTagDivId %><portlet:namespace/>">
