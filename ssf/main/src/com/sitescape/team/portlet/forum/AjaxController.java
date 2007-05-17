@@ -1533,6 +1533,7 @@ public class AjaxController  extends SAbstractController {
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_GALLERY)) view = "dashboard/gallery_view2";
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_BLOG)) view = "dashboard/blog_view2";
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
+		if (displayType.equals(WebKeys.DISPLAY_STYLE_TASK)) view = "dashboard/task_view2";
 		if (displayType.equals("comments")) view = "dashboard/comments_view2";
 		return new ModelAndView(view, model);
 	}

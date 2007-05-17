@@ -673,6 +673,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
 		}
+		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
+			if ((folders != null) && !folders.isEmpty()) {
+				idData.put(WebKeys.BINDER, folders.iterator().next());					
+			}
+		}
 		getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
 
     }
@@ -758,6 +763,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}  else {
 			if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
 				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
+				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
 				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
 				if (savedFolderIds.isEmpty()) doSearch = false;
 				else {
@@ -816,6 +822,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
 
 		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+			if ((folders != null) && !folders.isEmpty()) {
+				idData.put(WebKeys.BINDER, folders.iterator().next());					
+			}
+		}
+		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
 			if ((folders != null) && !folders.isEmpty()) {
 				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
@@ -1036,7 +1047,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						
 					}
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
+						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
 					//single select
 					List folderIds = new ArrayList();
 					if (formData.containsKey("chooseFirst")) {
@@ -1087,7 +1099,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				if (cName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY) ||
 						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
-						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
+						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
 					Boolean chooseFirst = (Boolean)data.get(DashboardHelper.ChooseFirst);
 					if (chooseFirst) {
 						String id = getInstance().resolveBinder(binder, cName);
@@ -1129,6 +1142,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
 			} else if (ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(name)) {
 				if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) 
+					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
+			} else if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(name)) {
+				if (Definition.VIEW_STYLE_TASK.equals(viewType)) 
 					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
 			} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(name)) {
 				if (Definition.VIEW_STYLE_BLOG.equals(viewType)) 
