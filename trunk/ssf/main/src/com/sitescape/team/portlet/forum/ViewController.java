@@ -61,6 +61,7 @@ public class ViewController  extends SAbstractController {
 	public static final String FORUM_PORTLET="ss_forum";
 	public static final String GALLERY_PORTLET="ss_gallery";
 	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
+	public static final String TASK_SUMMARY_PORTLET="ss_task";
 	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String SEARCH_PORTLET="ss_search";
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
@@ -177,6 +178,8 @@ public class ViewController  extends SAbstractController {
 			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_WIKI);		
 		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_GUESTBOOK_SUMMARY);		
+		} else if (TASK_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_TASK_SUMMARY);		
 		} else if (SEARCH_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_SEARCH);		
 		} else if (GALLERY_PORTLET.equals(displayType)) {
@@ -222,6 +225,8 @@ public class ViewController  extends SAbstractController {
 			return ViewController.GALLERY_PORTLET;
 		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
 			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.TASK_SUMMARY_PORTLET))
+			return ViewController.TASK_SUMMARY_PORTLET;
 		else if (pName.contains(ViewController.SEARCH_PORTLET))
 			return ViewController.SEARCH_PORTLET;
 		else if (pName.contains(ViewController.TOOLBAR_PORTLET))

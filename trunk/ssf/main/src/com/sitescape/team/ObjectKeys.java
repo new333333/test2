@@ -40,6 +40,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_WIKI_CONFIG="402883b90d0de1f3010d0df5582b000d";
 	public static final String DEFAULT_FOLDER_CALENDAR_CONFIG="402883b90d0de1f3010d0df5582b000e";
 	public static final String DEFAULT_FOLDER_GUESTBOOK_CONFIG="402883b90d0de1f3010d0df5582b000f";
+	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883b90cc53079010cc539bf260009";
 	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 	public static final String DEFAULT_FOLDER_LIBRARY_CONFIG="402883b90d0de1f3010d0df5582b0011";
 
@@ -100,6 +101,7 @@ public interface ObjectKeys {
 
     public static final String DASHBOARD_COMPONENT_BLOG_SUMMARY = "blog";
     public static final String DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY = "guestbook";
+    public static final String DASHBOARD_COMPONENT_TASK_SUMMARY = "task";
     public static final String DASHBOARD_COMPONENT_BUDDY_LIST = "buddyList";
     public static final String DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST = "teamMembersList";
     public static final String DASHBOARD_COMPONENT_FOLDER = "folder";

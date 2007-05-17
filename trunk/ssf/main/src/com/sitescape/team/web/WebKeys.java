@@ -407,6 +407,7 @@ public class WebKeys {
     public static final String DISPLAY_STYLE_SEARCH="search";
     public static final String DISPLAY_STYLE_GALLERY="gallery";
     public static final String DISPLAY_STYLE_GUESTBOOK="guestbook";
+    public static final String DISPLAY_STYLE_TASK="task";
     public static final String DISPLAY_STYLE_WIKI="wiki";
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
@@ -706,6 +707,8 @@ public class WebKeys {
     public static final String VIEW_GALLERY_EDIT="gallery/edit";
     public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
+    public static final String VIEW_TASK_SUMMARY="task_summary/view";
+    public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";

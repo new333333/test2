@@ -100,6 +100,7 @@ public class EditController extends SAbstractController {
 
 			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
 					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType) ||
+					ViewController.TASK_SUMMARY_PORTLET.equals(displayType) ||
 					ViewController.WIKI_PORTLET.equals(displayType) ||
 					ViewController.SEARCH_PORTLET.equals(displayType) ||
 					ViewController.GALLERY_PORTLET.equals(displayType)) {
@@ -165,6 +166,8 @@ public class EditController extends SAbstractController {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GALLERY_EDIT, "gallery");			
 		} else if (ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GUESTBOOK_EDIT, "guestbook");			
+		} else if (ViewController.TASK_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_TASK_EDIT, "task");			
 		} else if (ViewController.WIKI_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_WIKI_EDIT, "wiki");
 		} else if (ViewController.SEARCH_PORTLET.equals(displayType)) {
