@@ -32,7 +32,7 @@ public class FieldBuilderCheck extends AbstractFieldBuilder {
         if(val == null) {
             return new Field[0];
         }
-        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
+        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         return new Field[] {field};
     }
 
