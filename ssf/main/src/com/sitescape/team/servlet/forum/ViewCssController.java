@@ -31,6 +31,7 @@ public class ViewCssController extends SAbstractController {
             HttpServletResponse response) throws Exception {
 		
 		String theme = RequestUtils.getStringParameter(request, WebKeys.URL_CSS_THEME, "");
+		String sheet = RequestUtils.getStringParameter(request, WebKeys.URL_CSS_SHEET, "");
 		Map model = new HashMap();
 		if (!theme.equals("")) model.put(WebKeys.CSS_THEME, theme);
 		response.setContentType("text/css");			
@@ -41,6 +42,9 @@ public class ViewCssController extends SAbstractController {
 		response.setHeader(
 				"Last-Modified", df.format(d));
 		String viewPath = "common/ssf_css";
+		if (sheet.equals("editor")) {
+			viewPath = "common/editor_css";
+		}
 		return new ModelAndView(viewPath, model);
 	}
 }

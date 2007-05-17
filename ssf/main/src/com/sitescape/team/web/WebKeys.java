@@ -65,6 +65,7 @@ public class WebKeys {
     public static final String URL_BLOG_REPLY="blogReply";
     public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";
     public static final String URL_BY_USER="ss_byUser";
+	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
 	public static final String URL_DATE_DAY="day";
