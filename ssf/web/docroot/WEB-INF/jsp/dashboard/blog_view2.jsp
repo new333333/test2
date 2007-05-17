@@ -57,17 +57,34 @@
 		          src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
 		      </c:if>
 		  </ssf:param>
-		  <ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
-		  <li><a href="<ssf:url adapter="true" portletName="ss_forum" 
+
+			<ssf:ifnotaccessible>
+				<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
+					<li><a href="<ssf:url adapter="true" portletName="ss_forum" 
+						    action="view_permalink"
+						    binderId="${fileEntry._binderId}">
+						    <ssf:param name="entityType" value="folder" />
+				    	    <ssf:param name="newTab" value="1"/>
+							</ssf:url>" 
+							onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
+						  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}
+						</a>
+					</li>
+				</ul>
+			</ssf:ifnotaccessible>
+			
+			<ssf:ifaccessible>
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="view_permalink"
 				    binderId="${fileEntry._binderId}">
 				    <ssf:param name="entityType" value="folder" />
 		    	    <ssf:param name="newTab" value="1"/>
 					</ssf:url>" 
-					onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">
-					
-		  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
-		  </ul>
+					onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
+				  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}
+				</a>
+			</ssf:ifaccessible>
+
 		</ssf:menu>
      </c:if>
     &nbsp;&nbsp;

@@ -83,7 +83,8 @@ var ss_userSkin = "${ss_user_skin}";
  
      <c:choose>
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
-	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" onClick="ss_showAccessibleMenu('<%= menuTagDivId %><portlet:namespace/>');">
+	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <ssf:title tag="title.showMenu"/> 
+	      onClick="ss_showAccessibleMenu('<%= menuTagDivId %><portlet:namespace/>');">
 	      <span>${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"
 	      > <img border="0" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/></c:if></span></a>
@@ -157,8 +158,9 @@ var ss_userSkin = "${ss_user_skin}";
        </c:forEach>
        
        <div align="center" style="margin:10px 0px 0px 0px;">
-	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" onClick="ss_hideAccessibleMenu('<%= menuTagDivId %><portlet:namespace/>');">
-	      <span><ssf:nlt tag="button.close" /></span></a>
+	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <ssf:title tag="title.closeMenu"/> 
+	      onClick="ss_hideAccessibleMenu('<%= menuTagDivId %><portlet:namespace/>');">
+	      <span><ssf:nlt tag="button.close"/></span></a>
        </div>
 
       </div>
@@ -204,8 +206,14 @@ var ss_userSkin = "${ss_user_skin}";
 	 </c:choose>
  
 	  <c:choose>
+	  
+	  
+	  
 	    <c:when test="${!empty toolbarMenu.value.url}">
 	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
+	      
+	      
+	      
 	      <li><a href="${toolbarMenu.value.url}"
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
 <%
@@ -257,8 +265,16 @@ var ss_userSkin = "${ss_user_skin}";
 		      	<c:out value="${toolbarMenu.value.title}" />
 		  </c:if>
 	      </span></a></li>
+	      
+	      
+	      
+	      
 	      </c:if>
 	    </c:when>
+	    
+	    
+	    
+	    
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
 	      <li><a href="<ssf:url>

@@ -20,6 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -56,9 +60,22 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+
+			RequestContext rc = RequestContextHolder.getRequestContext();
+			User user = null;
+			Boolean isAccessible = Boolean.FALSE;
+			if (rc != null) user = rc.getUser();
+			if (user != null) {
+				if (user.getDisplayStyle() != null && user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+					isAccessible = Boolean.TRUE;
+				}
+			}
 			
 			//Output the start of the area
-			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/top.jsp");
+			RequestDispatcher rd;
+			
+			if (isAccessible) rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/top_accessible.jsp");
+			else rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/top.jsp");
 			
 			if (this._params == null) this._params = new HashMap();
 
@@ -73,6 +90,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 			_params.put("offsetTop", new String[] {this.offsetTop});
 			_params.put("offsetLeft", new String[] {this.offsetLeft});
 			_params.put("menuImage", new String [] {this.menuImage});
+			_params.put("isAccessible", new String [] {isAccessible.toString()});
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq, _params);
@@ -84,7 +102,9 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 			pageContext.getOut().print(_bodyContent);
 
 			//Output the end of the area
-			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/bottom.jsp");
+			if (isAccessible) rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/bottom_accessible.jsp");
+			else rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/bottom.jsp");
+			
 			req = new DynamicServletRequest(httpReq, _params);
 			res = new StringServletResponse(httpRes);
 			rd.include(req, res);
