@@ -21,15 +21,15 @@
 <br/>
 <div class="ss_indent_medium">
 <c:set var="checked" value=""/>
-<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.start[0] || 
-    ssDashboard.dashboard.components[ssComponentId].data.start[0]== 'this'}">
+<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.start || 
+    ssDashboard.dashboard.components[ssComponentId].data.start== 'this'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_start" value="this" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.current"/><br/>
 
 <c:set var="checked" value=""/>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align[0] == 'select'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align == 'select'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_start" value="select" 
@@ -48,15 +48,15 @@
 <br/>
 <div class="ss_indent_medium">
 <c:set var="checked" value=""/>
-<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0] || 
-    ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0]== 'true'}">
+<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen || 
+    ssDashboard.dashboard.components[ssComponentId].data.rootOpen== 'true'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_rootOpen" value="true" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="yes"/><br/>
 
 <c:set var="checked" value=""/>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0] == 'false'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen == 'false'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_rootOpen" value="false" 

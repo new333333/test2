@@ -13,7 +13,7 @@ package com.sitescape.team.domain;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="V" dynamic-update="true"
@@ -75,23 +75,23 @@ public class VersionAttachment extends FileAttachment {
     	return parentAttachment.toString() + ":" + versionNumber;
     }
 	public Element addChangeLog(Element parent) {
-		Element element = parent.addElement("versionAttachment");
-		element.addAttribute(ObjectKeys.XTAG_ID, getId());
+		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONATTACHMENT);
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId());
 		element.addAttribute(ObjectKeys.XTAG_FILE_PARENT, getParentAttachment().getId());
 
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_VERSION_NUMBER, Long.toString(getVersionNumber()));
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_VERSION_NAME, getVersionName());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_VERSION_NUMBER, Long.toString(getVersionNumber()));
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_VERSION_NAME, getVersionName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
 	
 		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
 		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
-		if (!parent.getName().equals("fileAttachment")) {
+		if (!parent.getName().equals(ObjectKeys.XTAG_ELEMENT_TYPE_FILEATTACHMENT)) {
 			//add additional information if logged along
-			if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+			if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
 			
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
 			
 		}
 		return element;

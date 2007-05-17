@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.sitescape.team.InternalException;
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.util.Validator;
@@ -33,7 +32,6 @@ import com.sitescape.util.Validator;
  *
  */
 public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, InstanceLevelProcessorSupport  {
-	protected boolean deleted=false;
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
     protected Map properties;
@@ -73,7 +71,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 if (source.workflowAssociations != null)
   			 //can copy workflow associations since they are shared
   			 workflowAssociations = new HashMap(source.workflowAssociations);
-		 name = source.name;
+//don't copy names		 name = source.name;
 		 zoneId = source.zoneId;
 		 type = source.type;
 		 definitionsInherited=source.definitionsInherited;
@@ -106,15 +104,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public String getSearchTitle() {
     	return getTitle();
-    }
-    /**
-     * @hibernate.property
-     */
-    public boolean isDeleted() {
-    	return deleted;
-    }
-    public void setDeleted(boolean deleted) {
-    	this.deleted = deleted;
     }
  
     /**
@@ -477,6 +466,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public abstract List getEntryDefinitions();
     public abstract List getViewDefinitions();
+    public List getWorkflowDefinitions() {
+    	return getDefs(Definition.WORKFLOW);
+    }	
     public boolean isMirroredAllowed() {
     	return true;
     }

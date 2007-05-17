@@ -31,9 +31,6 @@
 	} else if (itemType.equals("htmlEditorTextarea")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_html_textarea.jsp" %><%
 		
-	} else if (itemType.equals("textarea")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_textarea.jsp" %><%
-		
 	} else if (itemType.equals("checkbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" %><%
 		

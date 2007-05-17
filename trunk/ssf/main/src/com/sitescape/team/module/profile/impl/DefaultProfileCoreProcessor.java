@@ -53,6 +53,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
@@ -514,33 +515,33 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		Element element = ChangeLogUtils.buildLog(changes, entry);
 		//add principal fields
 		Principal prin = (Principal)entry;
-		ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_PRINCIPAL_FOREIGNNAME, prin.getForeignName());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_PRINCIPAL_DISABLED, String.valueOf(prin.isDisabled()));
+		XmlUtils.addAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_PRINCIPAL_FOREIGNNAME, prin.getForeignName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_PRINCIPAL_DISABLED, String.valueOf(prin.isDisabled()));
 		if (!Validator.isNull(prin.getInternalId())) {
-			element.addAttribute(ObjectKeys.XTAG_PRINCIPAL_INTERNALID, prin.getInternalId());
+			element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, prin.getInternalId());
 		}
 		if (prin instanceof User) {
 			User user = (User)prin;
 			//attributes are available through the definintion builder
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_FIRSTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getFirstName());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_MIDDLENAME, ObjectKeys.XTAG_TYPE_STRING, user.getMiddleName());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_LASTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getLastName());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
-			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_FIRSTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getFirstName());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_MIDDLENAME, ObjectKeys.XTAG_TYPE_STRING, user.getMiddleName());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_LASTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getLastName());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
 
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_DISPLAYSTYLE, user.getDisplayStyle());
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_PASSWORD, user.getPassword());
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_DIGESTSEED, user.getDigestSeed());
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DISPLAYSTYLE, user.getDisplayStyle());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_PASSWORD, user.getPassword());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DIGESTSEED, user.getDigestSeed());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
 
 		} else {
 			Group group = (Group)prin;
-  			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, CollectionUtil.toCommaIds(group.getMembers()));
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, CollectionUtil.toCommaIds(group.getMembers()));
 		}
 		getCoreDao().save(changes);
 		return changes;

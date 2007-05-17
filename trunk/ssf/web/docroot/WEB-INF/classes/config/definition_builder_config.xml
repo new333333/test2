@@ -440,7 +440,6 @@
 			<option name="description" initial="true" />
 			<option name="folderIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
-			<option name="textarea" />
 			<option name="graphic" />
 			<option name="file" />
 			<option name="user_list" />
@@ -569,7 +568,6 @@
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="htmlEditorTextarea" />
-			<option name="textarea" />
 			<option name="graphic" />
 			<option name="file" />
 			<option name="attachFiles" />
@@ -1068,7 +1066,6 @@
 			<option name="description" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
-			<option name="textarea" />
 			<option name="graphic" />
 			<option name="file" />
 			<option name="attachFiles" />

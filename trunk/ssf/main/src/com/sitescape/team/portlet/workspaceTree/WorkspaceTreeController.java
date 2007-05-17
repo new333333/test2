@@ -197,9 +197,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 			} else {
 				getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
 			}
-
-			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
-			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+			Map tagResults = getBinderModule().getTags(binder);
+			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		} catch(NoBinderByTheIdException e) {
 		}
 		

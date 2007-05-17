@@ -1,6 +1,6 @@
 package com.sitescape.team.search.filter;
 
-import java.util.List;
+import java.util.Collection;
 
 import javax.portlet.PortletRequest;
 
@@ -19,7 +19,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 public class SearchFiltersBuilder {
 
    	//Routine to parse the results of submitting the blog summary dashboard config form
-   	public static Document buildFolderListQuery (PortletRequest request, List folderIds) {
+   	public static Document buildFolderListQuery (PortletRequest request, Collection folderIds) {
 		SearchFilter searchFilter = new SearchFilter();
 		
 		String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");

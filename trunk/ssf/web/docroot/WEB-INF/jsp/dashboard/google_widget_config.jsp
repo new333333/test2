@@ -31,7 +31,7 @@ href="http://www.google.com/ig/directory?synd=open"
 <br/>
 <br/>
 <textarea id="data_google_widget" name="data_google_widget" rows="3" cols="100"><c:out 
-value="${ssDashboard.dashboard.components[ssComponentId].data.google_widget[0]}"/></textarea>
+value="${ssDashboard.dashboard.components[ssComponentId].data.google_widget}"/></textarea>
 
 <br/>
 <br/>
@@ -41,7 +41,7 @@ value="${ssDashboard.dashboard.components[ssComponentId].data.google_widget[0]}"
 <br>
 <span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/>
 <input type="text" name="data_height" size="6" 
-  value="${ssDashboard.dashboard.components[ssComponentId].data.height[0]}"/>
+  value="${ssDashboard.dashboard.components[ssComponentId].data.height}"/>
 <br/>
 
 </div>

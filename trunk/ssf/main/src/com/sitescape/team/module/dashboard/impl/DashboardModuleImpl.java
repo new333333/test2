@@ -9,11 +9,13 @@
  *
  */
 package com.sitescape.team.module.dashboard.impl;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.dom4j.Element;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -25,11 +27,10 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserDashboard;
-import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
@@ -55,6 +56,14 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 	public EntityDashboard getEntityDashboard(EntityIdentifier ownerId) {
 		return getCoreDao().loadEntityDashboard(ownerId);
 	}
+    public EntityDashboard createEntityDashboard(EntityIdentifier ownerId, Element config) {
+       	EntityDashboard d = new EntityDashboard(ownerId, config);
+        User user = RequestContextHolder.getRequestContext().getUser();
+        d.setCreation(new HistoryStamp(user));
+        d.setModification(d.getCreation());
+        getCoreDao().save(d);
+        return d;
+    }
     public EntityDashboard createEntityDashboard(EntityIdentifier ownerId, Map properties) {
     	EntityDashboard d = new EntityDashboard(ownerId);
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -108,10 +117,10 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     	Dashboard d = getCoreDao().loadDashboard(id);
     	checkAccess(d);
 		
-    	Map components = (Map) d.getProperty(Dashboard.Components);
+    	Map components = (Map) d.getProperty(Dashboard.COMPONENTS);
     	if (components == null) {
     		components = new HashMap();
-    		d.setProperty(Dashboard.Components, components);
+    		d.setProperty(Dashboard.COMPONENTS, components);
     	}
 		int nextComponent = d.getNextComponentId();
 		String cId = scope + "_" + String.valueOf(nextComponent);
@@ -120,9 +129,9 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		
 		//Add this new component to the list
 		Map componentListItem = new HashMap();
-		componentListItem.put(Dashboard.Id, cId);
-		componentListItem.put(Dashboard.Scope, scope);
-		componentListItem.put(Dashboard.Visible, new Boolean(true));
+		componentListItem.put(Dashboard.ID, cId);
+		componentListItem.put(Dashboard.SCOPE, scope);
+		componentListItem.put(Dashboard.VISIBLE, new Boolean(true));
 		List componentList = (List) d.getProperty(listName);
 		if (componentList == null) {
 			componentList = new ArrayList();
@@ -135,10 +144,10 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     	Dashboard d = getCoreDao().loadDashboard(id);
     	checkAccess(d);
 		
-    	Map components = (Map) d.getProperty(Dashboard.Components);
+    	Map components = (Map) d.getProperty(Dashboard.COMPONENTS);
     	if (components == null) {
     		components = new HashMap();
-    		d.setProperty(Dashboard.Components, components);
+    		d.setProperty(Dashboard.COMPONENTS, components);
     	}
     	components.put(componentId, component);
     }
@@ -151,7 +160,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 			List dashboardList = (List) d.getProperty(listName);
 			for (int i = 0; i < dashboardList.size(); i++) {
 				Map component = (Map) dashboardList.get(i);
-				String cId = (String) component.get(Dashboard.Id);
+				String cId = (String) component.get(Dashboard.ID);
 				if (cId.equals(componentId)) {
 					//We have found the component to be deleted
 					dashboardList.remove(i);
@@ -159,12 +168,13 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 			}
 		}
 		//Delete the component itself
-		Map components = (Map) d.getProperty(Dashboard.Components);
+		Map components = (Map) d.getProperty(Dashboard.COMPONENTS);
 		if (components != null && components.containsKey(componentId)) {
 			components.remove(componentId);
 		}
   	
     }
+    
     private void checkAccess(Dashboard d)  {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	if (!(d instanceof EntityDashboard)) return;
@@ -185,7 +195,6 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
        			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     		}
     	}
-    	
     }
 
 }

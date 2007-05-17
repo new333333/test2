@@ -61,7 +61,7 @@ public class TreeTag extends TagSupport {
     private boolean showImages = true;
     private String nodeOpen = "";
     private String highlightNode = "";
-    private List multiSelect;
+    private Collection multiSelect;
     private String multiSelectPrefix; // $type => use type attribute on element
     private String displayStyle;
     private String singleSelectName, singleSelect;
@@ -785,7 +785,7 @@ public class TreeTag extends TagSupport {
 	    this.highlightNode = highlightNode;
 	}
 	
-	public void setMultiSelect(List multiSelect) {
+	public void setMultiSelect(Collection multiSelect) {
 	    this.multiSelect = multiSelect;
 	}
 	

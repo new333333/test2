@@ -40,7 +40,7 @@
 					<c:if test="${!empty ssBinder}">
 						<ssf:teamMembers binderId="${ssBinder.id}" formElement="data_users"/>
 						<br/>
-						<input type="checkbox" name="data_teamOn" <c:if test="${ssDashboard.beans[ssComponentId].ss_showTeamMembers}"> checked="checked" </c:if>/>
+						<input type="checkbox" name="data_teamOn" <c:if test="${!empty ssDashboard.beans[ssComponentId].data.teamOn}"> checked="checked" </c:if>/>
 						<span class="ss_labelLeft"><ssf:nlt tag="presense.include.teamMembers"/></span>
 					</c:if>						
 				</td>

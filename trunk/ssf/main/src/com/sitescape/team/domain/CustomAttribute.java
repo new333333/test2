@@ -25,7 +25,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.util.Validator;
@@ -432,8 +432,8 @@ public class CustomAttribute  {
     public Element addChangeLog(Element parent) {
 		Element element = null;
 	    if (getValueType() == SET ) {
-  			element = parent.addElement(ObjectKeys.XTAG_ATTRIBUTE_SET);
-  			element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+  			element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE_SET);
+  			element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
    	    	if (iValues == null) {
    	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
    	    			((CustomAttributeListElement)iter.next()).addChangeLog(element);
@@ -447,33 +447,33 @@ public class CustomAttribute  {
 	    	switch(getValueType()) {
        			case STRING:
        				if (!Validator.isNull(stringValue))
-       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
+       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
        				else if (description != null)
-       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
+       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
        				break;
        			case DESCRIPTION:
-       				element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_DESCRIPTION, description.getText());
+       				element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_DESCRIPTION, description.getText());
       				break;
        			case COMMASEPARATEDSTRING:
        				if (!Validator.isNull(stringValue))
-       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, stringValue);
+       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, stringValue);
        				else if (description != null)
-       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, description.getText());
+       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, description.getText());
       				break;
        			case BOOLEAN:		
-       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_BOOLEAN, booleanValue.toString());    	
+       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_BOOLEAN, booleanValue.toString());    	
       				break;
        			case LONG:
-       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_LONG, longValue.toString());  
+       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_LONG, longValue.toString());  
       				break;
        			case DATE:
-       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_DATE, dateValue.toString());  
+       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_DATE, dateValue.toString());  
       				break;
        			case SERIALIZED:
-       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_SERIALIZED, serializedValue.toBase64String());
+       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_SERIALIZED, serializedValue.toBase64String());
       				break;
         		case XML:
-        			element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_XML, xmlValue.getText()); 
+        			element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_XML, xmlValue.getText()); 
       				break;
        			case EVENT:
          			Event event = owner.getEntity().getEvent(stringValue);
@@ -481,13 +481,17 @@ public class CustomAttribute  {
       				break;
        			case ATTACHMENT:
        				//attachments are logged separetly
-       				element = ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_FILE, stringValue);
+       				element = XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_FILE, stringValue);
       				break;
       	    }
     	}
     
 
 	    return element;
+    }
+    public void toXml(Element parent) {
+    	//TODO: need to do something about attachments
+    	addChangeLog(parent);
     }
 
 }

@@ -17,7 +17,7 @@
 <div class="ss_form_color" style="border:1px solid #CECECE;">
 <ssf:htmleditor id="data_note" name="data_note" 
 ><c:out
-value="${ssDashboard.dashboard.components[ssComponentId].data.note[0]}"/></ssf:htmleditor>
+value="${ssDashboard.dashboard.components[ssComponentId].data.note}"/></ssf:htmleditor>
 </div>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="dashboard.postitNoteColor"/></span>
@@ -46,7 +46,7 @@ function ss_setRadioCheckedByValue(id, value) {
   	}
   }
 }
-ss_setRadioCheckedByValue('noteColorHandle','${ssDashboard.dashboard.components[ssComponentId].data.noteColor[0]}');
+ss_setRadioCheckedByValue('noteColorHandle','${ssDashboard.dashboard.components[ssComponentId].data.noteColor}');
 </script>
 
 

@@ -420,11 +420,11 @@ public class SearchFilterToMapConverter {
 			prepareTags(convertedQuery);
 			Collection preparedWorkflows = prepareWorkflows(convertedQuery);
 			if (preparedWorkflows != null) {
-				result.put(WebKeys.WORKFLOW_DEFINTION_MAP, preparedWorkflows);
+				result.put(WebKeys.WORKFLOW_DEFINITION_MAP, preparedWorkflows);
 			}
 			Collection preparedEntries = prepareEntries(convertedQuery);
 			if (preparedEntries != null) {
-				result.put(WebKeys.ENTRY_DEFINTION_MAP, preparedEntries);
+				result.put(WebKeys.ENTRY_DEFINITION_MAP, preparedEntries);
 			}
 		}
 		

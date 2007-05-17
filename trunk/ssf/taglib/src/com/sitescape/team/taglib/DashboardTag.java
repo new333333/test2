@@ -64,12 +64,12 @@ public class DashboardTag extends BodyTagSupport {
 			this._configuration.put(WebKeys.DASHBOARD_MAP, dashboard);
 			if (dashboard != null) {
 				// Get the jsp to run
-				Map components = (Map) dashboard.get(Dashboard.Components);
+				Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
 				if (components != null) {
 					if (components.containsKey(this._id)) {
 						Map component = (Map) components.get(this._id);
-						String name = (String) component.get(DashboardHelper.Name);
-						String title = (String) component.get(DashboardHelper.Component_Title);
+						String name = (String) component.get(Dashboard.NAME);
+						String title = (String) component.get(Dashboard.COMPONENT_TITLE);
 						if (title == null) title = "";
 						String jsp = "";
 						if (_type == null || _type.equals("")) _type = "config";

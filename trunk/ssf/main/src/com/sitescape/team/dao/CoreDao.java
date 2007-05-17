@@ -80,6 +80,7 @@ public interface CoreDao {
     public List loadDefinitions(Long zoneId);
     public List loadDefinitions(Long zoneId, int type);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
+    public List loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter);
 	public List loadObjects(Class className, FilterControls filter);
@@ -97,14 +98,14 @@ public interface CoreDao {
 	 * @return
 	 */
 	public List loadObjects(Collection ids, Class className, Long zoneId, List collections);
-	public List loadPersonalEntityTags(EntityIdentifier entityId, EntityIdentifier ownerId);
-	public List loadPersonalTags(EntityIdentifier ownerId);
+	public List loadPersonalTagsByEntity(EntityIdentifier entityId, EntityIdentifier ownerId);
+	public List loadPersonalTagsByOwner(EntityIdentifier ownerId);
     public List loadPostings(Long zoneId);
 	public PostingDef loadPosting(String aliasId, Long zoneId);
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List loadSubscriptionByEntity(final EntityIdentifier entityId);
-	public Tag loadTagById(String id);
+	public Tag loadTag(String id);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 
     public void move(Binder binder);

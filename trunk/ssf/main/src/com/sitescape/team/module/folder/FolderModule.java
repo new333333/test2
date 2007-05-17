@@ -54,6 +54,7 @@ public interface FolderModule {
     		Map fileItems) throws AccessControlException, WriteFilesException;
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException;
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId);
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
 
@@ -78,8 +79,6 @@ public interface FolderModule {
     public void deleteSubscription(Long folderId, Long entryId);
     public void deleteTag(Long binderId, Long entryId, String tagId);
     
-    public List getCommunityTags(Long binderId, Long entryId);
-	public List getCommunityTags(FolderEntry entry);
 	  /**
      * Return Dom tree of folders starting at the topFolder of the specified folder
      * @param folderId
@@ -111,11 +110,16 @@ public interface FolderModule {
     
     
 	public Map getManualTransitions(FolderEntry entry, Long stateId);
-	public List getPersonalTags(Long binderId, Long entryId);
-	public List getPersonalTags(FolderEntry entry);    
     public Set<Folder> getSubfolders(Folder folder);
     public Set<String> getSubfoldersTitles(Folder folder);
 	public Subscription getSubscription(FolderEntry entry); 
+	/**
+	 * Return community tags and the current users personal tags on the entry
+	 * @param entry
+	 * @return Map contain 2 Lists. Indexed by ObjectKeys.COMMUNITY_ENTITY_TAGS
+	 * and ObjectKeys.PERSONAL_ENTITY_TAGS
+	 */
+	public Map getTags(FolderEntry entry);
  	  
 	public Map getUnseenCounts(List folderIds);
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);

@@ -200,6 +200,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
     public static final String OPERATION_ADD="add";
+    public static final String OPERATION_EXPORT="export";
     public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
     public static final String OPERATION_DELETE="delete";
@@ -394,7 +395,6 @@ public class WebKeys {
     public static final String DASHBOARD_TITLE="title";
     public static final String DASHBOARD_WIKI_HOMEPAGE_ENTRY="wikiHomepageEntry";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";
-    public static final String DASHBOARD_WORKSPACE_TOPID="topId";
     public static final String DEBUG_ON="on";
     public static final String DEBUG_OFF="off";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
@@ -436,7 +436,7 @@ public class WebKeys {
     public static final String ENTRIES="ssEntries";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
     public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
-    public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
+    public static final String ENTRY_DEFINITION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_HAS_META_HIT="_entryHasMetaHit";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
@@ -465,7 +465,7 @@ public class WebKeys {
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMNS="folderColumns";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
-    public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
+    public static final String FOLDER_DEFINITION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_ENTRY_WIDTH="folderEntryWidth";
     public static final String FOLDER_ENTRY_TOP="folderEntryTop";
     public static final String FOLDER_ENTRY_LEFT="folderEntryLeft";
@@ -642,7 +642,7 @@ public class WebKeys {
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
-    public static final String WORKFLOW_DEFINTION_MAP="ssWorkflowDefinitionMap";
+    public static final String WORKFLOW_DEFINITION_MAP="ssWorkflowDefinitionMap";
     public static final String WORKFLOW_QUESTIONS="ssWorkflowQuestions";
     public static final String WORKFLOW_QUESTION_TEXT="ssWorkflowQuestionText";
     public static final String WORKFLOW_QUESTION_RESPONSES="ssWorkflowQuestionResponses";

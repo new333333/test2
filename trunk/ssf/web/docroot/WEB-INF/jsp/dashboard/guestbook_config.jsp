@@ -28,9 +28,9 @@ function ${treeName}_showId(forum, obj) {
 
 <br/>
 <br/>
-<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
+<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
-<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
+<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}"/>
 <c:if test="${empty summaryWordCount}"><c:set var="summaryWordCount" value="20"/></c:if>
 <table>
 <tr>
@@ -50,7 +50,7 @@ function ${treeName}_showId(forum, obj) {
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
-${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinder.title}
+${ssDashboard.beans[ssComponentId].ssBinder.title}
 </c:if>
 <br/><br/>
 
@@ -61,8 +61,8 @@ ${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinder.title}
 <br>
 <div class="ss_indent_large">
 <c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
-<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFirst" 
-	<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.chooseFirst}">checked="checked"</c:if>><span>
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
+	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>><span>
   <ssf:nlt tag="dashboard.guestbook.selectFolderRelative"/>
 </span></td></tr></table>
 </c:if>
@@ -70,7 +70,7 @@ ${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinder.title}
   treeName="${treeName}"
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
   rootOpen="true" 
-  singleSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList[0]}" 
+  singleSelect="${ssDashboard.beans[ssComponentId].ssBinder.id}" 
   singleSelectName="ss_folder_id"
 />
 </div>

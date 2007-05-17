@@ -648,8 +648,9 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.BINDER_WEBDAV_URL, strEntryURL);
 		//model.put(WebKeys.BINDER_WEBDAV_URL, strWebDavURL);
-		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(entry));
-		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(entry));
+		Map tagResults = getFolderModule().getTags(entry);
+		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(entry));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {

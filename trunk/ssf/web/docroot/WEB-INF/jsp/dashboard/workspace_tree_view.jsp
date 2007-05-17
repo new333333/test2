@@ -12,12 +12,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start[0] == 'this'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start == 'this'}">
 
 <c:set var="rootOpen" value="true"/>
-<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0]}">
+<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen}">
   <c:set var="rootOpen" 
-    value="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0]}"/>
+    value="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen}"/>
 </c:if>
 
 <c:if test="${empty ssDashboard.beans[ssComponentId].workspaceTree}">
@@ -36,5 +36,5 @@
 </c:if>
 </c:if>
 
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start[0] == 'select'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start == 'select'}">
 </c:if>

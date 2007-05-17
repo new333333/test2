@@ -48,6 +48,7 @@ import com.sitescape.team.module.folder.FolderCoreProcessor;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
@@ -357,16 +358,20 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
     	else {
     		final Folder folder = (Folder)binder;
-    		final FilterControls fc = new FilterControls(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
+    		final FilterControls filter = new FilterControls(
+    				new String[] {ObjectKeys.FIELD_ENTITY_PARENTBINDER, ObjectKeys.FIELD_ENTITY_DELETED},
+					new Object[] {binder, Boolean.FALSE});
+
     		
     		//loop through all entries and record delete
 			Boolean done=Boolean.FALSE;
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						SFQuery query = getFolderDao().queryEntries(fc); 
+						SFQuery query = getFolderDao().queryEntries(filter); 
 						try {
 							int count = 0;
+							List entries = new ArrayList();
 							while (query.hasNext()) {
 			      				Object obj = query.next();
 			       				if (obj instanceof Object[])
@@ -387,11 +392,16 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 									// but keep going
 									logger.warn("Error delete files for entry " + entry.toString() , ex);
 								}
-								//we handle the entry in a bulk delete with the folder, don't let hibernate 
-								getCoreDao().evict(entry);
+								entries.add(entry);
 								++count;
+								
 								//commit after 100
-								if (count == 100) return Boolean.FALSE;
+								if (count == 100) {
+									//mark processed entries as deleted, so not read again
+									//evict entries so not updated
+									getFolderDao().markEntriesDeleted(folder, entries);
+									return Boolean.FALSE;
+								}
 							}
 							//	finally delete the binder and its associations
 							try {
@@ -529,10 +539,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		if (entry instanceof FolderEntry) {
 			FolderEntry fEntry = (FolderEntry)entry;
 
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
-			if (fEntry.getTopEntry() != null) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
-			if (fEntry.getParentEntry() != null) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
-			if (!Validator.isNull(fEntry.getPostedBy())) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
+			if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
+			if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
+			if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
 		}
 		getCoreDao().save(changes);
 		return changes;

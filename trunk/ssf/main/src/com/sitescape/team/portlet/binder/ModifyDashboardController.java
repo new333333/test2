@@ -10,25 +10,20 @@
  */
 package com.sitescape.team.portlet.binder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -56,21 +51,21 @@ public class ModifyDashboardController extends AbstractBinderController {
 			DashboardHelper.setTitle(request, binder, scope);
 			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (formData.containsKey("add_wideTop")) {
-			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Wide_Top, scope);
+			componentId = DashboardHelper.addComponent(request, binder, Dashboard.WIDE_TOP, scope);
 			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Top);
+			response.setRenderParameter("_dashboardList", Dashboard.WIDE_TOP);
 		} else if (formData.containsKey("add_narrowFixed")) {
-			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Narrow_Fixed, scope);
+			componentId = DashboardHelper.addComponent(request, binder, Dashboard.NARROW_FIXED, scope);
 			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", DashboardHelper.Narrow_Fixed);
+			response.setRenderParameter("_dashboardList", Dashboard.NARROW_FIXED);
 		} else if (formData.containsKey("add_narrowVariable")) {
-			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Narrow_Variable, scope);
+			componentId = DashboardHelper.addComponent(request, binder, Dashboard.NARROW_VARIABLE, scope);
 			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", DashboardHelper.Narrow_Variable);
+			response.setRenderParameter("_dashboardList", Dashboard.NARROW_VARIABLE);
 		} else if (formData.containsKey("add_wideBottom")) {
-			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
+			componentId = DashboardHelper.addComponent(request, binder, Dashboard.WIDE_BOTTOM, scope);
 			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Bottom);
+			response.setRenderParameter("_dashboardList", Dashboard.WIDE_BOTTOM);
 		} else if (operation.equals("_modifyComponentData")) {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {

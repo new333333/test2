@@ -55,12 +55,9 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
@@ -537,7 +534,7 @@ public class AjaxController  extends SAbstractController {
 		}
 		
 		Map model = new HashMap();
-		model.put(WebKeys.WORKFLOW_DEFINTION_MAP, workflows);
+		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, workflows);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_workflows_widget", model);
 	}
@@ -757,7 +754,7 @@ public class AjaxController  extends SAbstractController {
 				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
 				entryElements.put(defId, elementData);
 			}
-			model.put(WebKeys.ENTRY_DEFINTION_MAP, entryDefs);
+			model.put(WebKeys.ENTRY_DEFINITION_MAP, entryDefs);
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA_MAP, entryElements);
 		}
 		model.put(WebKeys.FOLDER_COLUMNS, columns);
@@ -826,17 +823,16 @@ public class AjaxController  extends SAbstractController {
 	
 		Map model = new HashMap();
 		
-		EntityType entityType = null;
 		if (binderId != null && binderId.equals(entryId)) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			entityType = binder.getEntityIdentifier().getEntityType();
-		}
-		if (entityType != null && (entityType.equals(EntityType.folder) || entityType.equals(EntityType.workspace))) {
-			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
-			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+			Map tagResults = getBinderModule().getTags(binder);
+			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		} else {
-			model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
-			model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
+			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			Map tagResults = getFolderModule().getTags(entry);
+			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		}
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.TAG_DIV_NUMBER, tagDivNumber);
@@ -1096,9 +1092,9 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.FILTER_TYPE, op2);
 			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
-			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
+			model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
 	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-			model.put(WebKeys.WORKFLOW_DEFINTION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
+			model.put(WebKeys.WORKFLOW_DEFINITION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
 			return new ModelAndView("binder/get_filter_type", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS)) {
 			model.put(WebKeys.FILTER_TYPE, "entry");
@@ -1167,7 +1163,7 @@ public class AjaxController  extends SAbstractController {
 			} else {
 				DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
 		    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-				model.put(WebKeys.WORKFLOW_DEFINTION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
+				model.put(WebKeys.WORKFLOW_DEFINITION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
 			}
 			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
@@ -1533,7 +1529,6 @@ public class AjaxController  extends SAbstractController {
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_GALLERY)) view = "dashboard/gallery_view2";
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_BLOG)) view = "dashboard/blog_view2";
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_TASK)) view = "dashboard/task_view2";
 		if (displayType.equals("comments")) view = "dashboard/comments_view2";
 		return new ModelAndView(view, model);
 	}
@@ -2043,48 +2038,54 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
-			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, 0L);
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String path = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
 			String repositoryName = PortletRequestUtils.getStringParameter(request, WebKeys.REPOSITORY, "");
-			if(Validator.isNotNull(path)) {
+			if(entryId != null && Validator.isNotNull(path)) {
 				String fileName = new java.io.File(path).getName();
-				Folder folder = getFolderModule().getFolder(binderId);
-				FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
-				// First check inter-entry integrity regarding the file name.
-				if(entry != null && (entryId == 0L || entryId != entry.getId().longValue())) {
-					model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
-					model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
-				}
-				// Next check intra-entry integrity
-				else if(Validator.isNotNull(repositoryName)) {
-					if(folder.isMirrored()) {
-						if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
-							model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
+				Binder binder = getBinderModule().getBinder(binderId);
+				if (binder.isLibrary()) {
+					Entry entry = null;
+					if (binder instanceof Folder) {
+						entry = getFolderModule().getLibraryFolderEntryByFileName((Folder)binder, fileName);
+						if (entry != null && !entryId.equals(entry.getId())) {
+							model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
+							model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
 						}
-						else if(entryId != 0L) {
-							// if entry is not null, the above expression guarantees that
-							// its id is equal to entryId. So we don't have to refetch it.
-							if(entry == null)
-								entry = getFolderModule().getEntry(binderId, entryId);
-				   			List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
-		   					for(FileAttachment fa : fas) {
-		   						if(!fileName.equals(fa.getFileItem().getName())) {
-									model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple");
-									model.put(WebKeys.AJAX_ERROR_DETAIL, fa.getFileItem().getName());								
-		   							break;					
-		   						}
-		   					}
+						// Next check intra-entry integrity
+						else if(Validator.isNotNull(repositoryName)) {
+							if(binder.isMirrored()) {
+								if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+									model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
+								}
+								else {
+									// if entry is not null, the above expression guarantees that
+									// its id is equal to entryId. So we don't have to refetch it.
+									if(entry == null)
+										entry = getFolderModule().getEntry(binderId, entryId);
+						   			List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
+				   					for(FileAttachment fa : fas) {
+				   						if(!fileName.equals(fa.getFileItem().getName())) {
+											model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple");
+											model.put(WebKeys.AJAX_ERROR_DETAIL, fa.getFileItem().getName());								
+				   							break;					
+				   						}
+				   					}
+								}
+							}
+							else {
+								if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+									model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
+								}							
+							}
 						}
-					}
-					else {
-						if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
-							model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
-						}							
 					}
 				}
 			}
 		}
+
+		
 		model.put(WebKeys.URL_AJAX_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_ID));
 		model.put(WebKeys.URL_AJAX_VALUE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,""));
 		model.put(WebKeys.URL_AJAX_LABEL_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_LABEL_ID));

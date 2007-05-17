@@ -292,21 +292,42 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         	 );    	
     	
     }
-    public void deleteEntries(final Folder folder, final List entries) {
+   //mark entries deleted - used when deleting entries in bulk and want
+   //to exclude some from future queries
+   //entries evicted from cache
+   public void markEntriesDeleted(final Folder folder, final List<FolderEntry> entries) {
+    	getHibernateTemplate().execute(
+        	   	new HibernateCallback() {
+        	   		public Object doInHibernate(Session session) throws HibernateException {
+               	   	   	Set ids = new HashSet();
+               			
+            			for (FolderEntry p:entries) {
+            	    		ids.add(p.getId());
+            	    		session.evict(p);
+            	    	}
+       		   			session.createQuery("Update com.sitescape.team.domain.FolderEntry set deleted=:delete where id in (:pList)")
+       		   			.setBoolean("delete", Boolean.TRUE)
+    	   				.setParameterList("pList", ids)
+    	   				.executeUpdate();
+               	   		return null;
+        	   		}
+        	   	}
+        	 );    	
+             		 
+   }
+    public void deleteEntries(final Folder folder, final List<FolderEntry> entries) {
     	if (entries.isEmpty()) return;
       	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
                	   	   	Set ids = new HashSet();
                			StringBuffer inList = new StringBuffer();
-               			FolderEntry p;
-            			for (int i=0; i<entries.size(); ++i) {
-            				p = (FolderEntry)entries.get(i); 
+               			for (FolderEntry p:entries) {
             	    		ids.add(p.getId());
             	    		inList.append(p.getId().toString() + ",");
             	    		session.evict(p);
             	    	}
-            			inList.deleteCharAt(inList.length()-1);
+             			inList.deleteCharAt(inList.length()-1);
             			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
     		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
    		   					EntityType.folderEntry.name() + "'");
@@ -363,7 +384,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		  	}
 		);
     }
-    public void deleteEntryWorkflows(Folder folder, final List ids) {
+    public void deleteEntryWorkflows(Folder folder, final List<Long> ids) {
     	//brute force delete of jbpm data structures
 	   	getHibernateTemplate().execute(
 		   	new HibernateCallback() {
@@ -483,7 +504,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * Moving entries to new folder. 
      * 
      */
-    public void moveEntries(final Folder folder, final List ids) {
+    public void moveEntries(final Folder folder, final List<Long> ids) {
     	if (ids.isEmpty()) return;
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
@@ -553,7 +574,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     }
     //load public and private tags for a list of folder entries
     //order by id and name
-    public List loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection ids) {
+    public List loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection<Long> ids) {
     	if (ids.isEmpty()) return new ArrayList();
 	   	return (List)getHibernateTemplate().execute(
 		     	new HibernateCallback() {

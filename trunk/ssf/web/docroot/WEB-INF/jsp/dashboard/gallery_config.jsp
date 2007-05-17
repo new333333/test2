@@ -27,7 +27,7 @@ function ${treeName}_showId(forum, obj) {
 <br/>
 <table class="ss_style" width="100%"><tr><td>
 
-<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
+<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
 <table>
 <tr>
@@ -38,8 +38,8 @@ function ${treeName}_showId(forum, obj) {
 <tr>
 <td><span><ssf:nlt tag="dashboard.gallery.imageSize"/></span></td>
 <td style="padding-left:10px;">
-<input type="radio" id="galleryImageSizeHandle" name="data_galleryImageSize" value="big">Big
-<input type="radio" id="galleryImageSizeHandle" name="data_galleryImageSize" value="small">Small
+<input type="radio" id="galleryImageSizeHandle" name="data_galleryImageSize" value="big"><ssf:nlt tag="dashboard.gallery.imageSize.big"/>
+<input type="radio" id="galleryImageSizeHandle" name="data_galleryImageSize" value="small"><ssf:nlt tag="dashboard.gallery.imageSize.small"/>
 </td>
 </tr>
 </table>
@@ -72,8 +72,8 @@ function ${treeName}_showId(forum, obj) {
 <br>
 <div class="ss_indent_large">
 <c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
-<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFirst" 
-	<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.chooseFirst}">checked="checked"</c:if>><span>
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
+	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>><span>
   <ssf:nlt tag="dashboard.gallery.selectFolderRelative"/>
 </span></td></tr></table>
 </c:if>
@@ -104,5 +104,5 @@ function ss_setRadioCheckedByValue(id, value) {
   	}
   }
 }
-ss_setRadioCheckedByValue('galleryImageSizeHandle','${ssDashboard.dashboard.components[ssComponentId].data.galleryImageSize[0]}');
+ss_setRadioCheckedByValue('galleryImageSizeHandle','${ssDashboard.dashboard.components[ssComponentId].data.galleryImageSize}');
 </script>

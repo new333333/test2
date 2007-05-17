@@ -11,6 +11,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${ssConfigJspStyle != 'template'}">
 <c:if test="${empty ss_tagDivNumber}">
   <c:set var="ss_tagDivNumber" value="0" scope="request"/>
 </c:if>
@@ -175,3 +176,4 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 
 </div>
 
+</c:if>

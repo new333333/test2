@@ -12,6 +12,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div style="padding: 5px; background-color: ${ssDashboard.dashboard.components[ssComponentId].data.noteColor[0]}">
-<c:out value="${ssDashboard.dashboard.components[ssComponentId].data.note[0]}" escapeXml="false"/>
+<div style="padding: 5px; background-color: ${ssDashboard.dashboard.components[ssComponentId].data.noteColor}">
+<c:out value="${ssDashboard.dashboard.components[ssComponentId].data.note}" escapeXml="false"/>
 </div>

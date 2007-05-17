@@ -11,6 +11,8 @@
 package com.sitescape.team.module.dashboard;
 import java.util.Map;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.EntityDashboard;
@@ -26,6 +28,7 @@ public interface DashboardModule {
 	public Dashboard getDashboard(String id);
     public EntityDashboard createEntityDashboard(EntityIdentifier ownerId, Map properties);
     public EntityDashboard getEntityDashboard(EntityIdentifier ownerId);
+    public EntityDashboard createEntityDashboard(EntityIdentifier ownerId, Element config);
     public UserDashboard createUserDashboard(EntityIdentifier ownerId, Long binderId, Map properties);
     public UserDashboard getUserDashboard(EntityIdentifier ownerId, Long binderId);
     public DashboardPortlet createDashboardPortlet(String portletName, Map properties);

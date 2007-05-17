@@ -10,14 +10,12 @@
  */
 package com.sitescape.team.search.filter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
@@ -31,6 +29,16 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 
 public class SearchFilter {
+	protected static List placeTypes = new ArrayList(3);
+	static {	
+		placeTypes.add(EntityIdentifier.EntityType.folder.name());
+		placeTypes.add(EntityIdentifier.EntityType.workspace.name());
+		placeTypes.add(EntityIdentifier.EntityType.profiles.name());
+	}
+	protected static List binderType = new ArrayList(1);
+	static {
+		binderType.add(BasicIndexUtils.DOC_TYPE_BINDER);
+	}
 
 	// default join as 'OR' so joinAnd is false 
 	private Boolean joinAnd = Boolean.FALSE;
@@ -104,7 +112,7 @@ public class SearchFilter {
 		}
 	}
 	
-	public void addAndNestedTerms(String type, String tagType, List searchTerms) {
+	public void addAndNestedTerms(String type, String tagType, Collection searchTerms) {
 		//Add terms to search folders and workspaces
 		
 		newFiltersBlock();
@@ -113,7 +121,7 @@ public class SearchFilter {
 		addNestedTerms(type, tagType, searchTerms);
 	}
 	
-	public void addNestedTerms(String type, String tagType, List searchTerms) {
+	public void addNestedTerms(String type, String tagType, Collection searchTerms) {
 		//Add terms to search folders and workspaces
 		
 		checkCurrent();
@@ -151,7 +159,7 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterFolderId, folderId);	
 	}
 	
-	public void addFolderIds(List folderIds) {
+	public void addFolderIds(Collection folderIds) {
 		if (folderIds == null || folderIds.isEmpty()) {
 			return;
 		}
@@ -174,7 +182,7 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterFolderId, folderId);	
 	}
 	
-	public void addAncestryIds(List folderIds) {
+	public void addAncestryIds(Collection folderIds) {
 		if (folderIds == null) {
 			return;
 		}
@@ -295,15 +303,9 @@ public class SearchFilter {
 			filterTerm.setText(searchText.trim());
 		}
 		
-		List searchTerms = new ArrayList(3);
-		searchTerms.add(EntityIdentifier.EntityType.folder.name());
-		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
-		searchTerms.add(EntityIdentifier.EntityType.profiles.name());
-		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, searchTerms);		
+		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, placeTypes);		
 
-		searchTerms = new ArrayList(1);
-		searchTerms.add(BasicIndexUtils.DOC_TYPE_BINDER);
-		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, searchTerms);		
+		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, binderType);		
 	}
 	
 	
@@ -522,15 +524,9 @@ public class SearchFilter {
 		filterTerm.setText(place.trim());
 		filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 	
-		List searchTerms = new ArrayList(3);
-		searchTerms.add(EntityIdentifier.EntityType.folder.name());
-		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
-		searchTerms.add(EntityIdentifier.EntityType.profiles.name());
-		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, searchTerms);		
+		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, placeTypes);		
 
-		searchTerms = new ArrayList(1);
-		searchTerms.add(BasicIndexUtils.DOC_TYPE_BINDER);
-		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, searchTerms);	
+		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, binderType);	
 	}
 	
 	public  void addEntryAttributeValues(String defId, String attributeName, String[] fieldValues, String valueType) {
@@ -601,7 +597,7 @@ public class SearchFilter {
 		filterTerm.addText(Boolean.toString(searchSubfolders));
 	}
 
-	public void addItemTypes(List itemTypes) {
+	public void addItemTypes(Collection itemTypes) {
 		if (itemTypes == null || itemTypes.isEmpty()) {
 			return;
 		}

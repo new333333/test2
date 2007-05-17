@@ -42,6 +42,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
     protected EntityIdentifier entityIdentifier;
+	protected boolean deleted=false;
     
     public DefinableEntity() {
     }
@@ -129,6 +130,15 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
    	 this.parentBinder = parentBinder;
     }    
     /**
+     * @hibernate.property
+     */
+    public boolean isDeleted() {
+    	return deleted;
+    }
+    public void setDeleted(boolean deleted) {
+    	this.deleted = deleted;
+    }
+   /**
      * @hibernate.property
      * @return
      */

@@ -225,11 +225,11 @@ public class ChangeLog {
 		if (root == null) {
 			root = getDocument().addElement(getEntityType());
 			//add stuff in the database row, so xml is usefull on its own
-			root.addAttribute(ObjectKeys.XTAG_ID, getEntityId().toString());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getEntityId().toString());
 			root.addAttribute(ObjectKeys.XTAG_ENTITY_LOGVERSION, getVersion().toString());
-			root.addAttribute(ObjectKeys.XTAG_OPERATION, getOperation());
-			root.addAttribute(ObjectKeys.XTAG_MODIFIEDBY, getUserName());
-			root.addAttribute(ObjectKeys.XTAG_MODIFIEDON, getOperationDate().toString());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_OPERATION, getOperation());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_MODIFIEDBY, getUserName());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_MODIFIEDON, getOperationDate().toString());
 		}
 		return root;
 	}

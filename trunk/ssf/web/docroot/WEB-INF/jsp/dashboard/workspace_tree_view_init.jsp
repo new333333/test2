@@ -12,7 +12,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start[0] == 'this'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start == 'this'}">
 <script type="text/javascript">
 function wsTreeComponent${ssComponentId}_showId(id, obj, action) {
 	//Build a url to go to

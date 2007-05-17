@@ -20,7 +20,7 @@
 <span class="ss_bold"><ssf:nlt tag="dashboard.url"/></span>
 <br/>
 <input type="text" name="data_url" size="60" 
-  value="${ssDashboard.dashboard.components[ssComponentId].data.url[0]}"/>
+  value="${ssDashboard.dashboard.components[ssComponentId].data.url}"/>
 </td>
 </tr>
 
@@ -28,7 +28,7 @@
 <td valign="top">
 <span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/>
 <input type="text" name="data_height" size="6" 
-  value="${ssDashboard.dashboard.components[ssComponentId].data.height[0]}"/>
+  value="${ssDashboard.dashboard.components[ssComponentId].data.height}"/>
 </td>
 </tr>
 
@@ -37,20 +37,20 @@
 <span class="ss_bold"><ssf:nlt tag="dashboard.alignment"/></span>
 <br/>
 <c:set var="checked" value=""/>
-<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.align[0] || 
-    ssDashboard.dashboard.components[ssComponentId].data.align[0] == 'left'}">
+<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.align || 
+    ssDashboard.dashboard.components[ssComponentId].data.align == 'left'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 &nbsp;&nbsp;&nbsp;<input type="radio" name="data_align" value="left" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.alignment.left"/><br/>
 <c:set var="checked" value=""/>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align[0] == 'center'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align == 'center'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 &nbsp;&nbsp;&nbsp;<input type="radio" name="data_align" value="center" 
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.alignment.center"/><br/>
 <c:set var="checked" value=""/>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align[0] == 'right'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align == 'right'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 &nbsp;&nbsp;&nbsp;<input type="radio" name="data_align" value="right" 

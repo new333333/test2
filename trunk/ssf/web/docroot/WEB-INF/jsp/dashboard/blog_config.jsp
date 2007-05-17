@@ -29,9 +29,9 @@ function ${treeName}_showId(forum, obj) {
 <br/>
 <table class="ss_style" width="100%"><tr><td>
 
-<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
+<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
-<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
+<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}"/>
 <c:if test="${empty summaryWordCount}"><c:set var="summaryWordCount" value="20"/></c:if>
 <table>
 <tr>
@@ -75,8 +75,8 @@ function ${treeName}_showId(forum, obj) {
 
 <div class="ss_indent_large">
 <c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
-<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFirst" 
-	<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.chooseFirst}">checked="checked"</c:if>><span>
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
+	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>><span>
   <ssf:nlt tag="dashboard.blog.selectFolderRelative"/>
 </span></td></tr></table>
 </c:if>

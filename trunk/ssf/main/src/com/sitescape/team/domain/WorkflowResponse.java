@@ -14,8 +14,7 @@ import java.util.Date;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.shared.ChangeLogUtils;
-import com.sitescape.util.Validator;
+import com.sitescape.team.module.shared.XmlUtils;
 
 /**
  * @hibernate.class table="SS_WorkflowResponses" dynamic-update="true" lazy="false" 
@@ -133,13 +132,13 @@ public class WorkflowResponse {
     }
 	public Element addChangeLog(Element parent) {
 		Element element = parent.addElement("workflowResponse");
-		element.addAttribute(ObjectKeys.XTAG_ID, getId().toString());
-		element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
 		
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_DEFINITION, getDefinitionId());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_RESPONDER, getResponderId());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_RESPONSEDATE, getResponseDate());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_RESPONSE, getResponse());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFR_DEFINITION, getDefinitionId());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFR_RESPONDER, getResponderId());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFR_RESPONSEDATE, getResponseDate());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFR_RESPONSE, getResponse());
 		return element;
     	
     }

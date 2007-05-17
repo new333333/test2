@@ -195,9 +195,10 @@ public class DefinitionHelper {
 		
 		}
 		Map defaultFolderDefinitions = getBinderDefsAsMap(binder);
-		model.put(WebKeys.FOLDER_DEFINTION_MAP, defaultFolderDefinitions);
+		model.put(WebKeys.FOLDER_DEFINITION_MAP, defaultFolderDefinitions);
 		Map defaultEntryDefinitions = getEntryDefsAsMap(binder);
-		model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
+		model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
+		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, getWorkflowDefsAsMap(binder)); 
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 	}
 	public static Map getBinderDefsAsMap(Binder binder) {
@@ -213,6 +214,15 @@ public class DefinitionHelper {
 	public static Map getEntryDefsAsMap(Binder binder) {
 		Map defaultEntryDefinitions = new HashMap();
 		Iterator itDefaultEntryDefinitions = binder.getEntryDefinitions().listIterator();
+		while (itDefaultEntryDefinitions.hasNext()) {
+			Definition entryDef = (Definition) itDefaultEntryDefinitions.next();
+			defaultEntryDefinitions.put(entryDef.getId(), entryDef);
+		}
+		return defaultEntryDefinitions;
+	}
+	public static Map getWorkflowDefsAsMap(Binder binder) {
+		Map defaultEntryDefinitions = new HashMap();
+		Iterator itDefaultEntryDefinitions = binder.getWorkflowDefinitions().listIterator();
 		while (itDefaultEntryDefinitions.hasNext()) {
 			Definition entryDef = (Definition) itDefaultEntryDefinitions.next();
 			defaultEntryDefinitions.put(entryDef.getId(), entryDef);

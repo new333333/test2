@@ -66,11 +66,11 @@ public class HistoryStamp {
     
 	public Element addChangeLog(Element parent, String name) {
 		Element element = addChangeLog(parent);
-		element.addAttribute(ObjectKeys.XTAG_NAME, name);
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
 		return element;
 	}
 	public Element addChangeLog(Element parent) {
-		Element element = parent.addElement("historyStamp");
+		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_HISTORYSTAMP);
 		element.addAttribute(ObjectKeys.XTAG_HISTORY_BY, getPrincipal().getId().toString());
 		element.addAttribute(ObjectKeys.XTAG_HISTORY_WHEN, getDate().toGMTString());
 		return element;

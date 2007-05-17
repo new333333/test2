@@ -17,7 +17,7 @@
 <br/>
 <div class="ss_form_color">
 <ssf:htmleditor id="data_html" name="data_html"
-	initText="${ssDashboard.dashboard.components[ssComponentId].data.html[0]}" />
+	initText="${ssDashboard.dashboard.components[ssComponentId].data.html}" />
 </div>
 <br/>
 <script type="text/javascript">

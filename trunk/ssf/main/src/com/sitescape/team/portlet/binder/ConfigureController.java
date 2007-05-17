@@ -95,6 +95,16 @@ public class ConfigureController extends AbstractBinderController {
 				}
 			}
 		}
+		defBinderIds = PortletRequestUtils.getStringParameters(request, "workflowDefinition");
+		//Add the other allowed workflows
+		if (defBinderIds != null) {
+			for (int i = 0; i < defBinderIds.length; i++) {
+				String defId = defBinderIds[i];
+				if (!Validator.isNull(defId)) {
+					definitions.add(defId);
+				}
+			}
+		}
 		//Add the allowed entry types
 		// and the workflow associations
 		String[] defEntryIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");

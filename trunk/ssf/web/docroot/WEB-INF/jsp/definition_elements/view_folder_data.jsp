@@ -28,9 +28,6 @@
 	} else if (itemType.equals("htmlEditorTextarea")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_html_textarea.jsp" %><%
 		
-	} else if (itemType.equals("textarea")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_textarea.jsp" %><%
-		
 	} else if (itemType.equals("file")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_file.jsp" %><%
 		

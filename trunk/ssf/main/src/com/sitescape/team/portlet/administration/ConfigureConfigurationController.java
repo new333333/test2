@@ -9,6 +9,9 @@
  *
  */
 package com.sitescape.team.portlet.administration;
+import java.io.File;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +28,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -39,8 +45,14 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.servlet.forum.ViewFileController;
+import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.TempFileUtil;
+import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.TemplateCopyHelper;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -52,6 +64,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {
@@ -67,6 +80,27 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 					Long configId = getAdminModule().addTemplateFromBinder(binderId);
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				} else if (type == -2) {
+					int i=0;
+					Map errorMap = new HashMap();
+					while (++i>0) {
+						String data;
+						try {
+							data = PortletRequestUtils.getStringParameter(request, "template" + i);
+						} catch (Exception ex) {continue;}
+				    	if (data == null) break;
+				    	try {
+					    	StringReader fIn = new StringReader(data);
+				    		SAXReader xIn = new SAXReader();
+				    		Document doc = xIn.read(fIn);   
+				    		fIn.close();
+				    		getAdminModule().addTemplate(doc);
+				    	} catch (Exception fe) {
+//				    		errorMap.put(entry.getKey(), fe.getLocalizedMessage());	
+				    		logger.error(fe.getLocalizedMessage(), fe);
+				    	}
+					}
+
 				} else {
 					Map updates = new HashMap();
 					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
@@ -79,6 +113,50 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 				}
+			} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {
+				List errors = new ArrayList();
+				HashSet<String> uniqueFilenames = new HashSet<String>();
+				String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + "templates" +
+					File.separator + RequestContextHolder.getRequestContext().getZoneName();
+				FileHelper.mkdirsIfNecessary(dirPath);
+				Iterator itFormData = formData.entrySet().iterator();
+				while (itFormData.hasNext()) {
+					Map.Entry me = (Map.Entry) itFormData.next();
+					if (((String)me.getKey()).startsWith("id_")) {
+						String defId = ((String)me.getKey()).substring(3);
+						if (Validator.isNotNull(defId)) {
+							TemplateBinder binder =null;
+							try {
+								binder = getAdminModule().getTemplate(Long.valueOf(defId));
+								Document doc = getAdminModule().getTemplateAsXml(binder);
+								String name = binder.getName();
+								if (Validator.isNull(name)) name = binder.getTemplateTitle();
+								// explicity set encoding so their is no mistake.
+								//cannot guarentee default will be set to UTF-8
+								String filePath = dirPath + File.separator +  name + ".xml";
+								XmlFileUtil.writeFile(doc, filePath);
+								uniqueFilenames.add(filePath);
+							} catch (Exception ex) {
+								errors.add(ex.getLocalizedMessage()==null ? ex.getMessage() : ex.getLocalizedMessage());
+							}
+						}
+					}
+				}
+				
+				Document listOfFiles = ViewFileController.createFileListingForZipDownload("templates.zip");
+				for(String path : uniqueFilenames) {
+					ViewFileController.addFileToList(listOfFiles, path);
+				}
+				File listOfFilesTempFile = TempFileUtil.createTempFile("exportTemplates");
+				XmlFileUtil.writeFile(listOfFiles, listOfFilesTempFile.getAbsolutePath());
+
+				response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
+						WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
+						listOfFilesTempFile.getName());
+				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				response.setRenderParameter("redirect", "true");
+				
+						
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//	The modify form was submitted. Go process it
@@ -166,6 +244,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		if (!Validator.isNull(request.getParameter("redirect"))) {
+			String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
+			model.put(WebKeys.ERROR_LIST, errors);
+			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
+			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
+		}
 		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
@@ -263,6 +347,28 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				model.put("cfgType", cfgType);
 				path = WebKeys.VIEW_MODIFY_TEMPLATE;
+		} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {
+			List<TemplateBinder> configs = getAdminModule().getTemplates();
+
+			//Build the definition tree
+			Document definitionTree = DocumentHelper.createDocument();
+			Element dtRoot = definitionTree.addElement(DomTreeBuilder.NODE_ROOT);
+			dtRoot.addAttribute("title", NLT.get("administration.configure_cfg"));
+			dtRoot.addAttribute("id", "templates");
+			dtRoot.addAttribute("displayOnly", "true");
+			dtRoot.addAttribute("url", "");
+
+			for (TemplateBinder tb:configs) {
+				Element treeEle = dtRoot.addElement("child");
+				treeEle.addAttribute("type", "template");
+				treeEle.addAttribute("title", NLT.get(tb.getTemplateTitle()));
+				treeEle.addAttribute("id", tb.getId().toString());	
+				treeEle.addAttribute("displayOnly", "false");
+				treeEle.addAttribute("url", "");
+			}
+			
+			model.put(WebKeys.DOM_TREE, definitionTree);
+			model.put(WebKeys.OPERATION, operation);				
 		} else {
 			List<TemplateBinder> configs = getAdminModule().getTemplates();
 			model.put(WebKeys.BINDER_CONFIGS, configs);
