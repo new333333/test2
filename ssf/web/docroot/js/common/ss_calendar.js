@@ -14,6 +14,7 @@ dojo.require("dojo.html.util");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
 dojo.require("dojo.lfx");
+dojo.require("dojo.io.IframeIO");
 
 function ss_fadeAndDestroy(e, t) {
     dojo.lfx.fadeHide(e, t, dojo.lfx.easeIn, function(nodes) {
@@ -891,7 +892,7 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
         eHtml = Date.shortTime(time);
     }
     
-   	eHtml += '<a href="javascript: //">' + title + '</a>';
+   	eHtml += '<a href="javascript: //">' + (title?title:'--no title--') + '</a>';
     
     eHtml += "<br/>" + text;
     // ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?"<":"") +
@@ -969,7 +970,7 @@ function ss_cal_drawMonthEventBlock(containerId, date, eventCount, eventList) {
         ebox.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
 		var viewHref = ss_viewEventUrl;
     	viewHref += "&entryId=" + e.entryId;
-		ebox.innerHTML = '<a href="'+viewHref+'" onClick="'+e.viewOnClick+' return false;">'+e.title+'</a>';
+		ebox.innerHTML = '<a href="'+viewHref+'" onClick="'+e.viewOnClick+' return false;">'+(e.title?e.title:'--no title--')+'</a>';
         container.appendChild(ebox);
         dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        
     }
@@ -1490,3 +1491,105 @@ var ss_cal_Events = {
 function ss_initializeCalendar () {
 	ss_cal_CalData.loadInitial();
 }
+
+
+var ss_calendar_import = {
+	divId : "ss_calendar_import_div",
+	
+	importForm : function(forumId) {
+		
+		// Build the import form
+		var calImportDiv = document.getElementById(this.divId);
+		if (calImportDiv != null) calImportDiv.parentNode.removeChild(calImportDiv);
+		
+		//Build a new calendar_import div
+		calImportDiv = document.createElement("div");
+	    calImportDiv.setAttribute("id", this.divId);
+	    calImportDiv.setAttribute("align", "left");
+	    calImportDiv.style.visibility = "hidden";
+	    calImportDiv.className = "ss_calendar_import_div";
+	    calImportDiv.style.display = "none";
+		calImportDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
+         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title" class="ss_popup_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_import_close" class="ss_popup_close"></div></div>' +
+         '</td></tr><tr><td colspan="3"><div id="ss_calendar_import_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
+         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
+		
+		var brObj = document.createElement("br");
+	
+		// Link into the document tree
+		document.getElementsByTagName("body").item(0).appendChild(calImportDiv);
+		
+		dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(ss_calendarTitleText));
+		
+	    var formObj = document.createElement("form");
+	    formObj.setAttribute("id", "ss_calendar_import_form");
+	    formObj.setAttribute("method", "post");
+	    formObj.setAttribute("enctype", "multipart/form-data");
+	    formObj.setAttribute("name", "ss_calendar_import_form");
+		dojo.byId("ss_calendar_import_inner").appendChild(formObj);
+		dojo.event.connect(formObj, "onsubmit", function(evt) {
+			return dojoformfunction(this);
+	    });
+	    
+	    
+	    var uploadFileDivObj = document.createElement("div");
+		uploadFileDivObj.style.textAlign = "left";
+		uploadFileDivObj.style.width = "100%";
+
+		var inputFileObj = document.createElement("input");
+		inputFileObj.setAttribute("type", "file");
+		inputFileObj.setAttribute("name", "iCalFile");
+		
+		var hiddenInputObj = document.createElement("input");
+		hiddenInputObj.setAttribute("type", "hidden");
+		hiddenInputObj.setAttribute("name", "folderId");
+		hiddenInputObj.value = forumId;
+		formObj.appendChild(hiddenInputObj);
+    
+	    uploadFileDivObj.appendChild(inputFileObj);
+	    formObj.appendChild(uploadFileDivObj);
+    
+    	var submitBtnObj = document.createElement("input");
+	    submitBtnObj.setAttribute("type", "button");
+	    submitBtnObj.setAttribute("value", "Upload");
+		formObj.appendChild(brObj);
+	    formObj.appendChild(submitBtnObj);
+	    
+	   	dojo.event.connect(submitBtnObj, "onclick", function(evt) {
+			ss_calendar_import.uploadFile();
+	    });
+	    
+		dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
+			ss_calendar_import.cancel();
+	    });
+	    
+		ss_showPopupDivCentered(this.divId);
+			    
+		// alert('import form: ' + forumId);
+	},
+	
+	uploadFile : function () {
+		var url = ss_AjaxBaseUrl;
+		url += "\&operation=uploadICalendarFile";
+		url += "\&randomNumber="+ss_random++;
+		dojo.io.bind({
+	    	url: url,
+			error: function(type, data, evt) {
+				ss_calendar_import.cancel();
+			},
+			load: function(type, data, evt) {
+				ss_calendar_import.cancel();
+			},
+			mimetype: "text/json",
+			formNode: dojo.byId("ss_calendar_import_form")
+		});
+
+	},
+	
+	cancel : function () {
+		ss_cancelPopupDiv(this.divId);
+		return false;
+	}
+	
+}
+

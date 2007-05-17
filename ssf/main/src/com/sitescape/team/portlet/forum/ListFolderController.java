@@ -1323,6 +1323,16 @@ public class ListFolderController extends  SAbstractController {
 			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 		}
+		
+		//Folder action menu
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				(viewType.equals(Definition.VIEW_STYLE_CALENDAR))) {
+			
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "');return false;");
+			entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
+
+		}
 
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
@@ -1404,7 +1414,7 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (getBinderModule().testAccess(folder.getId(), "getTeamMembers") ? ", '" + forumId + "'" : "" ) + ");return false;");
-		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
+		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
 		
 		// email
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);

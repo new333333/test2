@@ -288,7 +288,7 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
 	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_findPlacesIframeDiv");
-	var url = ss_findAjaxUrl;
+	var url = ss_AjaxBaseUrl;
 	url = ss_replaceSubStrAll(url, "&amp;", "&");
 	url += "&operation=find_user_search";
 	url += "&searchText=" + searchText;

@@ -4301,7 +4301,6 @@ function ss_Clipboard () {
 		addContrBtnObj.setAttribute("type", "button");
 		addContrBtnObj.setAttribute("name", "add");
 		addContrBtnObj.setAttribute("value", ss_addContributesToClipboardText);
-		// addContrBtnObj.onclick = ss_muster.addContributesToClipboard;
 		dojo.event.connect(addContrBtnObj, "onclick", function(evt) {
 			ss_muster.addContributesToClipboard();
 			return false;
@@ -4311,7 +4310,6 @@ function ss_Clipboard () {
 		addTeamMembersBtnObj.setAttribute("type", "button");
 		addTeamMembersBtnObj.setAttribute("name", "add");
 		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
-		// addTeamMembersBtnObj.onclick = ss_muster.addTeamMembersToClipboard;
 		dojo.event.connect(addTeamMembersBtnObj, "onclick", function(evt) {
 			ss_muster.addTeamMembersToClipboard();
 			return false;
@@ -4335,7 +4333,6 @@ function ss_Clipboard () {
 		deleteBtnObj.setAttribute("type", "button");
 		deleteBtnObj.setAttribute("name", "clear");
 		deleteBtnObj.setAttribute("value", ss_clearClipboardText);
-		// deleteBtnObj.onclick = function () { ss_muster.removeFromClipboard('ss_muster_form'); };
 		dojo.event.connect(deleteBtnObj, "onclick", function(evt) {
 			ss_muster.removeFromClipboard('ss_muster_form');
 			return false;
@@ -4343,7 +4340,6 @@ function ss_Clipboard () {
 
 		deleteBtnObj.style.marginRight = "15px"
 
-//		dojo.byId("ss_muster_close").onclick = ss_muster.cancel;
 		dojo.event.connect(dojo.byId("ss_muster_close"), "onclick", function(evt) {
 			ss_muster.cancel();
 	    });

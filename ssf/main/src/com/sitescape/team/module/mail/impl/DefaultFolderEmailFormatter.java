@@ -71,6 +71,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.ical.IcalParser;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -647,7 +648,17 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 							msgs[i].setFlag(Flags.Flag.DELETED, true);
 						}
 					} else {
-						folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+						List entryIdsFromICalendars = new ArrayList();
+						Iterator fileItemsIt = fileItems.entrySet().iterator();
+						while (fileItemsIt.hasNext()) {
+							Map.Entry me = (Map.Entry)fileItemsIt.next();
+							FileHandler fileHandler = (FileHandler)me.getValue();
+							entryIdsFromICalendars.addAll(IcalParser.parse(binderModule, folderModule, folder.getId(), fileHandler.getInputStream()));
+						}
+							
+						if (entryIdsFromICalendars.isEmpty()) {
+							folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+						}
 						msgs[i].setFlag(Flags.Flag.DELETED, true);
 					}
 

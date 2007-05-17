@@ -22,8 +22,6 @@ dojo.require('dojo.widget.*');
 
 <script type="text/javascript">
 
-
-var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 var ss_nlt_searchFormLabelWorkflow = "<ssf:nlt tag="searchForm.label.workflow"/>";
 var ss_nlt_searchFormLabelEntry = "<ssf:nlt tag="searchForm.label.entry"/>";
 var ss_nlt_tagsCommunityTags = "<ssf:nlt tag="tags.communityTags"/>";
