@@ -44,7 +44,7 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 		}
 		if (!indexNameMap.containsKey(indexName)) {
 			indexNameMap.put(indexName, indexDirPath);
-			LuceneUtil.unlock(indexName);
+			LuceneUtil.unlock(indexDirPath);
 		}
         return new LocalLuceneSession(indexDirPath);
     }
