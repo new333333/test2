@@ -30,6 +30,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -191,6 +192,18 @@ public class FolderUtils {
 	
 	public static boolean isMirroredFolder(Binder binder) {
 		return ((binder instanceof Folder) && ((Folder) binder).isMirrored());
+	}
+	
+	public static String findRepositoryName(Definition def, String elementName) {
+		Document doc = def.getDefinition();
+		Element root = doc.getRootElement();
+		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
+		if(formItem == null)
+			return null;
+		Element itemElem = (Element) formItem.selectSingleNode("//item[@name='" + elementName + "' and @type='data']");
+		if(itemElem == null)
+			return null;
+		return getStorageValueFromItemElem(itemElem);
 	}
 	
 	/**

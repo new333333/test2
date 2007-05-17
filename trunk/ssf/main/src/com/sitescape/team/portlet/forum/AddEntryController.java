@@ -289,6 +289,7 @@ public class AddEntryController extends SAbstractController {
 				model.put(WebKeys.FOLDER, folder);
 				model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
 				model.put(WebKeys.CONFIG_JSP_STYLE, "form");
+				model.put(WebKeys.DEFINITION_ID, entryType);
 				//Make sure the requested definition is legal
 				if (folderEntryDefs.containsKey(entryType)) {
 					DefinitionHelper.getDefinition((Definition)folderEntryDefs.get(entryType), model, "//item[@type='form']");
