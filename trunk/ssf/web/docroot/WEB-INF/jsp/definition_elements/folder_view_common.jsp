@@ -391,11 +391,11 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	       				 eleType2 == 'date'}">
 	       	 <c:out value="${entry1[eleName2]}"/>
 	       </c:if>
-	       <c:if test="${eleType2 == 'user_listxxx' || 
-	       				 eleType2 == 'userListSelectboxxxx'}">
+	       <c:if test="${eleType2 == 'user_list' || 
+	       				 eleType2 == 'userListSelectbox'}">
           	<c:set var="separator" value=""/>
           	<c:forEach var="user" 
-          	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(((SearchFieldResult)entry1.get(eleName2)).getValueSet()) %>"
+          	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(com.sitescape.team.web.util.FindIdsHelper.getIdsAsLongSet((String[])((SearchFieldResult)entry1.get(eleName2)).getValueSet().toArray(new String[0]))) %>"
           	>${separator}${user.title}<c:set 
           	var="separator" value=", "/></c:forEach>
           </c:if>
