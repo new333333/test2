@@ -477,10 +477,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 	}
 	public void setMirrored(boolean mirrored) {
 		this.mirrored = mirrored;
-		if(mirrored) {
-			// We can not have a mirror folder that is not a library folder.
-			setLibrary(true);
-		}
 	}
 	public String getResourcePath() {
 		return resourcePath;

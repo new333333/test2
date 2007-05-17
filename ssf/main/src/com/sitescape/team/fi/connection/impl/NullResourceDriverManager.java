@@ -11,7 +11,15 @@ import com.sitescape.team.fi.connection.ResourceSession;
 
 public class NullResourceDriverManager implements ResourceDriverManager {
 
-	public String getResourcePath(String driverName, String parentResourcePath, String resourceName) throws FIException {
+	public List<ResourceDriver> getResourceDrivers() {
+		return new ArrayList<ResourceDriver>();
+	}
+
+	public String normalizedResourcePath(String driverName, String parentResourcePath, String resourceName) throws FIException {
+		return null;
+	}
+
+	public String normalizedResourcePath(String driverName, String resourcePath) throws FIException {
 		return null;
 	}
 
@@ -23,15 +31,7 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
-	public List<ResourceDriver> getResourceDrivers() {
-		return new ArrayList<ResourceDriver>();
-	}
-
-	public String getParentResourcePath(String driverName, String resourcePath) throws FIException {
-		return null;
-	}
-
-	public String getResourceName(String driverName, String resourcePath) throws FIException {
+	public String getName(String driverName, String resourcePath) throws FIException {
 		return null;
 	}
 }

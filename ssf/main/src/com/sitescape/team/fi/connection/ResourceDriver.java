@@ -51,11 +51,28 @@ public interface ResourceDriver {
 	public ResourceSession openSession() throws FIException, UncheckedIOException;
 	
 	/**
+	 * Returns normalized resource path given its parent path and the resource name.
 	 * 
-	 * @param parentResourcePath must be non-null.
+	 * @param parentResourcePath normalized parent path, must be non-null.
 	 * @param resourceName
-	 * @return
+	 * @return normalized path of the resource
 	 * @throws FIException
 	 */
-	public String getResourcePath(String parentResourcePath, String resourceName) throws FIException;
+	public String normalizedResourcePath(String parentResourcePath, String resourceName) throws FIException;
+	
+	/**
+	 * Returns normalized path of the specified resource.
+	 * 
+	 * @param resourcePath resource path that isn't necessarily normalized
+	 * @return normalized path of the resource
+	 * @throws FIException
+	 */
+	public String normalizedResourcePath(String resourcePath) throws FIException;
+	
+	/**
+	 * Return the last element name of the path.
+	 * @param resourcePath 
+	 * @return
+	 */
+	public String getName(String resourcePath) throws FIException;
 }
