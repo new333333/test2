@@ -259,7 +259,7 @@ public class ListFolderController extends  SAbstractController {
 				request.setAttribute("ssLoadEntryId", entryId);			
 			}
 		} else {
-	     	getReportModule().addAuditTrail(AuditType.view, binder);
+	     	if (binder != null) getReportModule().addAuditTrail(AuditType.view, binder);
 
 		}
 
@@ -343,8 +343,9 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 
 		if(binder != null) {
-			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
-			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+			Map tagResults = getBinderModule().getTags(binder);
+			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		}
 
 		try {
@@ -1478,8 +1479,8 @@ public class ListFolderController extends  SAbstractController {
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
 		List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
-		Map publicTags = (Map)folderEntries.get(ObjectKeys.COMMUNITY_ENTRIES_TAGS);
-		Map privateTags = (Map)folderEntries.get(ObjectKeys.PERSONAL_ENTRIES_TAGS);
+		Map publicTags = (Map)folderEntries.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
+		Map privateTags = (Map)folderEntries.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
 			FolderEntry entry  = (FolderEntry) entryIterator.next();

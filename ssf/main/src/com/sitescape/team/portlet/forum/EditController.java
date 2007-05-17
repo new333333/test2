@@ -32,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.DashboardPortlet;
+import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -114,7 +115,7 @@ public class EditController extends SAbstractController {
 				if (d == null) {
 					PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
 					d = getDashboardModule().createDashboardPortlet( pConfig.getPortletName(), DashboardHelper.getNewDashboardMap());
-					DashboardHelper.addComponent(request, d, DashboardHelper.Wide_Top, DashboardHelper.Portlet);
+					DashboardHelper.addComponent(request, d, Dashboard.WIDE_TOP, DashboardHelper.Portlet);
 					prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
 					prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 				}

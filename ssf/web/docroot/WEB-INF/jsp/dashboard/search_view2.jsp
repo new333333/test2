@@ -18,8 +18,8 @@
 </c:if>
 <c:set var="ss_pageSize" value="${ssDashboard.beans[componentId].ssSearchFormData.ss_pageSize}" />
 <c:set var="summaryWordCount" value="30"/>
-<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}">
-	<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
+<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}">
+	<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}"/>
 </c:if>
 <c:set var="portletNamespace" value=""/>
 <ssf:ifnotadapter>

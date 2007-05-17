@@ -55,7 +55,7 @@ import java.util.Vector;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
@@ -3012,44 +3012,44 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public Element addChangeLog(Element parent) {
-		Element element = parent.addElement("event");
+		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_EVENT);
 		element.addAttribute("id", getId());
 
-		ChangeLogUtils.addLogProperty(element, "start", getDtStartString());
-		ChangeLogUtils.addLogProperty(element, "duration", getDuration()
+		XmlUtils.addProperty(element, "start", getDtStartString());
+		XmlUtils.addProperty(element, "duration", getDuration()
 				.getString());
 
 		if (getCount() > 0) {
-			ChangeLogUtils.addLogProperty(element, "count", getCountString());
+			XmlUtils.addProperty(element, "count", getCountString());
 		} else if (getCount() == -1) {
-			ChangeLogUtils.addLogProperty(element, "until", getUntilString());
+			XmlUtils.addProperty(element, "until", getUntilString());
 		}
 
-		ChangeLogUtils.addLogProperty(element, "frequency",
+		XmlUtils.addProperty(element, "frequency",
 				getFrequencyString());
 
-		ChangeLogUtils.addLogProperty(element, "interval", getIntervalString());
+		XmlUtils.addProperty(element, "interval", getIntervalString());
 
-		ChangeLogUtils.addLogProperty(element, "timeZoneSensitive", Boolean
+		XmlUtils.addProperty(element, "timeZoneSensitive", Boolean
 				.toString(isTimeZoneSensitive()));
 
-		ChangeLogUtils.addLogProperty(element, "bySecond", getBySecondString());
+		XmlUtils.addProperty(element, "bySecond", getBySecondString());
 
-		ChangeLogUtils.addLogProperty(element, "byMinute", getByMinuteString());
+		XmlUtils.addProperty(element, "byMinute", getByMinuteString());
 
-		ChangeLogUtils.addLogProperty(element, "byHour", getByHourString());
+		XmlUtils.addProperty(element, "byHour", getByHourString());
 
-		ChangeLogUtils.addLogProperty(element, "byDay", getByDayString());
+		XmlUtils.addProperty(element, "byDay", getByDayString());
 
-		ChangeLogUtils.addLogProperty(element, "byMonthDay",
+		XmlUtils.addProperty(element, "byMonthDay",
 				getByMonthDayString());
 
-		ChangeLogUtils.addLogProperty(element, "byYearDay",
+		XmlUtils.addProperty(element, "byYearDay",
 				getByYearDayString());
 
-		ChangeLogUtils.addLogProperty(element, "byWeekNo", getByWeekNoString());
+		XmlUtils.addProperty(element, "byWeekNo", getByWeekNoString());
 
-		ChangeLogUtils.addLogProperty(element, "byMonth", getByMonthString());
+		XmlUtils.addProperty(element, "byMonth", getByMonthString());
 
 		if (creation != null)
 			creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);

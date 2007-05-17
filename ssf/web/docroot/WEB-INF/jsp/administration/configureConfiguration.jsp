@@ -18,6 +18,8 @@
 String cTreeName = renderResponse.getNamespace() + "_cTree";
 %>
 <c:if test="${empty ssBinderConfig}">
+<c:if test="${ssOperation != 'export'}">
+
 <script type="text/javascript">
 
 function <%=cTreeName%>_showId(id, obj, action) {
@@ -34,9 +36,9 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <div class="ss_form" style="margin:6px;">
 <div class="ss_rounded">
 <div style="margin:6px;">
-<h3><ssf:nlt tag="administration.configure_cfg" text="Configurations"/></h3>
+<h3><ssf:nlt tag="administration.configure_cfg" text="Templates"/></h3>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:renderURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>add" method="post" action="<portlet:renderURL>
 			<portlet:param name="action" value="configure_configuration"/>
 			<portlet:param name="operation" value="add"/>
 		</portlet:renderURL>" >
@@ -44,11 +46,22 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
 	 <input type="radio" name="cfgType" value="5" ><ssf:nlt tag="general.type.folder"/><br/>
 	 <input type="radio" name="cfgType" value="-1" checked><ssf:nlt tag="administration.configure_cfg.clone"/><br/>
+	 <input type="radio" name="cfgType" value="-2" checked><ssf:nlt tag="administration.configure_cfg.import"/><br/>
 	<br/><br/>
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 
+<br>
+<hr>
+<form class="ss_style ss_form" name="<portlet:namespace/>export" method="post" action="<portlet:renderURL>
+			<portlet:param name="action" value="configure_configuration"/>
+			<portlet:param name="operation" value="export"/>
+		</portlet:renderURL>" >
+<h3><ssf:nlt tag="administration.export.templates"/></h3>
+<br>
+	<input type="submit" class="ss_submit" name="exportBtn" value="<ssf:nlt tag="button.export" text="Export"/>">
+</form>
 <br>
 <hr>
 <br>
@@ -61,7 +74,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	<li><a href="" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty bconfig.templateDescription.text}">
-		<c:out value="<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
+		(<c:out value="<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>" escapeXml="false" />)
 		</c:if>
 		</li>
 	</c:if>
@@ -76,7 +89,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	<li><a href="" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty cconfig.templateDescription.text}">
-		<c:out value="<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
+		(<c:out value="<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>" escapeXml="false" />)
 		</c:if>
 	</li>
 	</c:if>
@@ -92,6 +105,25 @@ function <%=cTreeName%>_showId(id, obj, action) {
 </div>
 </div>
 </div>
+</c:if>
+
+<c:if test="${ssOperation == 'export'}">
+<table class="ss_style" width="100%"><tr><td>
+
+<form class="ss_style ss_form" action="<portlet:actionURL>
+			  <portlet:param name="action" value="configure_configuration"/>
+				<portlet:param name="operation" value="export"/>
+			</portlet:actionURL>" method="post" name="<portlet:namespace />fm">
+
+<br>
+<br>
+<span class="ss_bold"><ssf:nlt tag="administration.export.templates.select"/></span>
+<%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+
+</form>
+<br>
+</td></tr></table>
+</c:if>
 
 </c:if>
 

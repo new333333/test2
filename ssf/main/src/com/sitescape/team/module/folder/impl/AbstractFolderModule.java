@@ -49,6 +49,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.SeenMap;
@@ -199,7 +200,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	    } else if ("deleteEntry".equals(operation)) {
 			AccessUtils.deleteCheck(entry);   		
 		} else if ("modifyEntry".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   		
+			AccessUtils.modifyCheck(entry);   
+		} else if ("addEntryWorkflow".equals(operation)) {
+			AccessUtils.modifyCheck(entry);   
 		} else if ("reserveEntry".equals(operation)) {
 			AccessUtils.modifyCheck(entry);   		
 		} else if ("moveEntry".equals(operation)) {
@@ -266,7 +269,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	private FolderEntry loadEntry(Long folderId, Long entryId) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
-        return (FolderEntry)processor.getEntry(folder, entryId);		
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);		
+		if (entry.isDeleted()) throw new NoFolderEntryByTheIdException(entryId);
+		return entry;
 	}
 	private FolderCoreProcessor loadProcessor(Folder folder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -339,6 +344,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         }
         
         return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems, filesFromApplet).getId();
+    }
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) {
+    	//start a workflow on an entry
+    	FolderEntry entry = loadEntry(folderId, entryId);
+    	checkAccess(entry, "addEntryWorkflow");
+        Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+        FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+        processor.addEntryWorkflow(entry.getParentBinder(), entry, def);
     }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
@@ -565,8 +578,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         	        	
         }
         
-        result.put(ObjectKeys.COMMUNITY_ENTRIES_TAGS, publicTags);
-        result.put(ObjectKeys.PERSONAL_ENTRIES_TAGS, privateTags);
+        result.put(ObjectKeys.COMMUNITY_ENTITY_TAGS, publicTags);
+        result.put(ObjectKeys.PERSONAL_ENTITY_TAGS, privateTags);
         return result;
     }
 
@@ -725,34 +738,30 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		if (s != null) getCoreDao().delete(s);
     }
 
-    public List getCommunityTags(Long binderId, Long entryId) {
-		//getEntry does read check
-    	FolderEntry entry = getEntry(binderId, entryId);
-    	return getCommunityTags(entry);
-	}
-    //If entry already loaded, save time since getEntry bypasses the cache
-	//assume can already read entry
-   public List getCommunityTags(FolderEntry entry) {
-		List<Tag> tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
-    	
-    }
-	public List getPersonalTags(Long binderId, Long entryId) {
-		//getEntry does read check
-		FolderEntry entry = getEntry(binderId, entryId);
-		return getPersonalTags(entry);
-	}
+	public Map getTags(FolderEntry entry) {
+		//have binder - so assume read access
+        Map results = new HashMap();
+		//bulk load tags
+        List<Tag> tags = getCoreDao().loadEntityTags(entry.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
+        List publicTags = new ArrayList();
+        List privateTags = new ArrayList();
+        for (Tag t: tags) {
+        	if (t.isPublic()) {
+       			publicTags.add(t);
+        	} else {
+       			privateTags.add(t);
+         	}
+        }
+        
+        results.put(ObjectKeys.COMMUNITY_ENTITY_TAGS, TagUtil.uniqueTags(publicTags));
+        results.put(ObjectKeys.PERSONAL_ENTITY_TAGS, TagUtil.uniqueTags(privateTags));
 
-	//If entry already loaded, save time since getEntry bypasses the cache
-	//assume can already read entry
-    public List getPersonalTags(FolderEntry entry) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		List<Tag> tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
-    }
+		return results;		
+		
+	}
 	public void modifyTag(Long binderId, Long entryId, String tagId, String newtag) {
 		FolderEntry entry = getEntry(binderId, entryId);
-	   	Tag tag = coreDao.loadTagById(tagId);
+	   	Tag tag = coreDao.loadTag(tagId);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	//if created tag for this entry, by this user- can modify it
 	   	if (tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
@@ -793,7 +802,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	   	User user = RequestContextHolder.getRequestContext().getUser();
    		Tag tag = null;
    		try {
-	   		tag = coreDao.loadTagById(tagId);
+	   		tag = coreDao.loadTag(tagId);
 	   	} catch(Exception e) {
 	   		return;
 	   	}

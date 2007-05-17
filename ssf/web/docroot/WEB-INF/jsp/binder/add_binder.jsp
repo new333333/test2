@@ -38,7 +38,7 @@
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
       <input type="radio" name="binderConfigId" value="${config.id}" 
       <c:if test="${status.count == 1}">checked="checked"</c:if>
-      ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>(<ssf:nlt tag="${config.title}" checkIfTag="true"/>)<br/>
+      ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 <br/>  
 

@@ -18,7 +18,7 @@ import com.sitescape.team.NoObjectByTheIdException;
  *
  */
 public class NoGroupByTheIdException extends NoObjectByTheIdException {
-	   private static final String NoGroupByTheIdException_ErrorCode = "errorcode.no.group.by.the.Id";
+	   private static final String NoGroupByTheIdException_ErrorCode = "errorcode.no.group.by.the.id";
 	    
 	    public NoGroupByTheIdException(Long groupId) {
 	        super(NoGroupByTheIdException_ErrorCode, groupId);

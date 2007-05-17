@@ -450,7 +450,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
     }
  	
-   //***********************************************************************************************************
+    //***********************************************************************************************************
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
@@ -841,7 +841,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
    	
     }
-    //***********************************************************************************************************
+     //***********************************************************************************************************
+     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+ 		if (!(entry instanceof WorkflowSupport)) return;
+  		WorkflowSupport wEntry = (WorkflowSupport)entry;
+  		//set up version for all loggin
+  		entry.incrLogVersion();
+  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition);
+  		processChangeLog(entry, ChangeLog.STARTWORKFLOW);
+  		indexEntry(entry);
+     }
+   //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
 
  		if (!(entry instanceof WorkflowSupport)) return;

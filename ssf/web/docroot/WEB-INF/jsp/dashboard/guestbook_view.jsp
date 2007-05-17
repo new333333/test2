@@ -55,10 +55,10 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 <tr>
   <td>
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${portletNamespace}', 'yes');"
+		onClick="return ${ss_divId}_guestbookurl('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}');"
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
+		onClick="return ${ss_divId}_guestbookurl('${folder.id}', '${folder.id}', 'folder');"
 		><span class="ss_bold">${folder.title}</span></a>
   </td>
   <td valign="top" align="right">
@@ -71,7 +71,7 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 		    	    <ssf:param name="newTab" value="1"/>
 		    	    <ssf:param name="addEntryFromIFrame" value="1"/>
 		    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    
-					</ssf:url>" onClick="ss_signGuestbook('${ssNamespace}', this);return false;">
+					</ssf:url>" onClick="<c:if test="${ssConfigJspStyle != 'template'}">ss_signGuestbook('${ssNamespace}', this);</c:if>return false;">
 		<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
 		</a>
 		</c:if>

@@ -164,6 +164,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        				//	updates cache
 	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
 	        			}
+	        			getCoreDao().executeUpdate("Update com.sitescape.team.domain.FolderEntry set deleted=false where deleted is null");
 	        			//setup binder counts if not done
 	        			if (zone.getBinderCount() == 0) {
 	        				List<Binder> binders = new ArrayList();
@@ -426,21 +427,22 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        	logger.error("Cannot read definition from file: " + file);
 				}
 			}
-			//TODO:: temp to reload everyone
-			List templates = getAdminModule().getTemplates();
-			if (!templates.isEmpty()) return;
 			//Now setup configurations
-			elements = cfg.getRootElement().selectNodes("template");
+			elements = cfg.getRootElement().selectNodes("templateFile");
 			for (int i=0; i<elements.size(); ++i) {
 				Element element = (Element)elements.get(i);
+				String file = element.getTextTrim();
+				reader = new SAXReader(false);  
 				try {
-					getAdminModule().addTemplate(element);
+					Document doc = reader.read(new ClassPathResource(file).getInputStream());
+					getAdminModule().addTemplate(doc);
+					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
-					logger.error("Cannot add template:" + ex.getLocalizedMessage());
+					logger.error("Cannot add template:", ex);
 				}
 			}
 		} catch (Exception ex) {
-			logger.error("Cannot read startup configuration:" + ex.getLocalizedMessage());
+			logger.error("Cannot read startup configuration:", ex);
 		}
 	}
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {

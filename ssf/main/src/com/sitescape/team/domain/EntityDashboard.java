@@ -9,6 +9,7 @@
  *
  */
 package com.sitescape.team.domain;
+import org.dom4j.Element;
 
 /**
  * This object represents a dashboard configured for a binder
@@ -33,7 +34,12 @@ public class EntityDashboard extends Dashboard {
 		setOwnerIdentifier(dashboard.getOwnerIdentifier());
 		
 	}
-    /**
+	public EntityDashboard(EntityIdentifier ownerId, Element config) {
+		super(config);
+		this.ownerId = ownerId;
+	}
+
+	/**
      * The Entity that owns the tag
      * @hibernate.componenent
      * @return

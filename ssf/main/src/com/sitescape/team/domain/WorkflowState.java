@@ -18,7 +18,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.util.Validator;
 
@@ -167,14 +167,14 @@ public class WorkflowState {
    
 	public Element addChangeLog(Element parent) {
 		Element element = parent.addElement("workflowState");
-		element.addAttribute(ObjectKeys.XTAG_ID, getId().toString());
-		element.addAttribute(ObjectKeys.XTAG_NAME, getState());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getState());
 		
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
 		if (getTimerId() != null)
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
 		if (!Validator.isNull(getThreadName())) 
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFS_THREAD, getThreadName());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_THREAD, getThreadName());
 		if (getWorkflowChange() != null) getWorkflowChange().addChangeLog(element, ObjectKeys.XTAG_WF_CHANGE);
 		return element;
     	

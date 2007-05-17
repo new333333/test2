@@ -1304,7 +1304,7 @@
 			<name>multiSelect</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.List</type>
+			<type>java.util.Collection</type>
 		</attribute>		
 		<attribute>
 			<name>multiSelectPrefix</name>

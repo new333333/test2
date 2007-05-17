@@ -26,7 +26,7 @@ import java.util.TreeSet;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.util.Validator;
 
@@ -324,16 +324,16 @@ public class FileAttachment extends Attachment {
 		return addChangeLog(parent, true);
 	}
 	public Element addChangeLog(Element parent, boolean includeVersions) {
-		Element element = parent.addElement("fileAttachment");
-		element.addAttribute(ObjectKeys.XTAG_ID, getId());
-		if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEATTACHMENT);
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId());
+		if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
 		
 		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
 		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_LAST_VERSION, getLastVersion().toString());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_LAST_VERSION, getLastVersion().toString());
 		if (includeVersions) {
 			for (Iterator iter=getFileVersions().iterator(); iter.hasNext();) {
 				VersionAttachment v = (VersionAttachment)iter.next();

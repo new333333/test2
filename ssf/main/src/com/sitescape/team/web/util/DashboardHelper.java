@@ -64,26 +64,11 @@ import com.sitescape.util.Validator;
 public class DashboardHelper extends AbstractAllModulesInjected {
 	private static DashboardHelper instance; // A singleton instance
 
-	//Dashboard map keys
-	public final static String Title = "title";
-	public final static String IncludeBinderTitle = "includeBinderTitle";
-	public final static String DisplayStyle = "displayStyle";
 
+	public final static String[] ComponentLists = {Dashboard.WIDE_TOP, Dashboard.NARROW_FIXED, Dashboard.NARROW_VARIABLE, Dashboard.WIDE_BOTTOM};
+	 
 	public final static String DisplayStyleDefault = "border";
 
-	//Component Order lists
-	public final static String Wide_Top = "wide_top";
-	public final static String Narrow_Fixed = "narrow_fixed";
-	public final static String Narrow_Variable = "narrow_variable";
-	public final static String Wide_Bottom = "wide_bottom";
-	public final static String[] ComponentLists = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
-	 
-	
-	//Component keys
-	public final static String Name = "name";
-	public final static String Component_Title = "title";
-	public final static String Roles = "roles";
-	public final static String Data = "data";
 	
 	//Component data keys
 	public final static String SearchFormSavedSearchQuery = "__savedSearchQuery";
@@ -91,8 +76,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	public final static String Users= "users";
 	public final static String Groups= "groups";
 	public final static String TeamOn= "teamOn";
-	public final static String ChooseFirst = "chooseFirst";
-	
+    public static final String Workspace_topId="topId";
+	//key in component data used to resolve binders by type
+	public final static String ChooseType = "chooseViewType";
+
 	//Scopes
 	public final static String Local = "local";
 	public final static String Binder = "binder";
@@ -129,9 +116,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 			for (int j = 0; j < componentList.size(); j++) {
 				Map component = (Map) componentList.get(j);
-				if ((Boolean)component.get(Dashboard.Visible)) {
+				if ((Boolean)component.get(Dashboard.VISIBLE)) {
 					//Set up the bean for this component
-					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.Id), isConfig);
+					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.ID), isConfig);
 				}
 			}
 		}
@@ -159,11 +146,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
     }
     private static void doComponentSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
-		if (dashboard.containsKey(Dashboard.Components)) {
-			Map components = (Map) dashboard.get(Dashboard.Components);
+		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
+			Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
 			if (components.containsKey(id)) {
 				Map component = (Map) components.get(id);
-				String componentName = (String)component.get(Name);
+				String componentName = (String)component.get(Dashboard.NAME);
 				//See if this component needs a bean
 				if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
@@ -188,49 +175,55 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
-				} else {
+				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component, false);
-				}
+				} 
 			}
 		}
    	
     }
     private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
-		if (dashboard.containsKey(Dashboard.Components)) {
-			Map components = (Map) dashboard.get(Dashboard.Components);
+		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
+			Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
 			if (components.containsKey(id)) {
 				Map component = (Map) components.get(id);
+				String componentName = (String)component.get(Dashboard.NAME);
 				//See if this component needs a bean
-				if (component.get(Name).equals(
+				if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					//Set up the buddy list bean
 					getInstance().getBuddyListBean(binder, ssDashboard, 
 							id, component, true);
-				} else if (component.get(Name).equals(
+				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
 					//Set up the team members list bean,
 					getInstance().getTeamMembersBean(binder, 
 							ssDashboard, model, id, component, true);					
-				} else if (component.get(Name).equals(
+				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean,
 					getInstance().getWorkspaceTreeBean(binder, 
 							ssDashboard, model, id, component, new WorkspaceConfigHelper());
-				} else if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+				} else if (componentName.equals(
+						ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component, true);
-				} else if (component.get(Name).equals(
+				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, true);
-				} else  {
+				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSummaryConfigBean(binder, ssDashboard, 
 							model, id, component);
-				}
+				} 
 			}
 		}
    	
@@ -239,13 +232,13 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
     public static Map getNewDashboardMap() {
     	Map dashboard =  new HashMap();
-		dashboard.put(DashboardHelper.Title, "");
-		dashboard.put(DashboardHelper.IncludeBinderTitle, new Boolean(false));
-		dashboard.put(Dashboard.Components, new HashMap());
-		dashboard.put(DashboardHelper.Wide_Top, new ArrayList());
-		dashboard.put(DashboardHelper.Narrow_Fixed, new ArrayList());
-		dashboard.put(DashboardHelper.Narrow_Variable, new ArrayList());
-		dashboard.put(DashboardHelper.Wide_Bottom, new ArrayList());
+		dashboard.put(Dashboard.TITLE, "");
+		dashboard.put(Dashboard.INCLUDEBINDERTITLE, new Boolean(false));
+		dashboard.put(Dashboard.COMPONENTS, new HashMap());
+		dashboard.put(Dashboard.WIDE_TOP, new ArrayList());
+		dashboard.put(Dashboard.NARROW_FIXED, new ArrayList());
+		dashboard.put(Dashboard.NARROW_VARIABLE, new ArrayList());
+		dashboard.put(Dashboard.WIDE_BOTTOM, new ArrayList());
 		
 		return dashboard;
 	}
@@ -282,43 +275,43 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				String.valueOf(narrowFixedWidth / 2));
 
 		//Get the title for this page
-		String title = (String) dashboard_b.get(Title);
-		Boolean includeBinderTitle = (Boolean) dashboard_b.get(IncludeBinderTitle);
+		String title = (String) dashboard_b.get(Dashboard.TITLE);
+		Boolean includeBinderTitle = (Boolean) dashboard_b.get(Dashboard.INCLUDEBINDERTITLE);
 		if (includeBinderTitle==null) includeBinderTitle=Boolean.FALSE;
-		Boolean includeBinderTitle_l = (Boolean) dashboard.get(IncludeBinderTitle);
+		Boolean includeBinderTitle_l = (Boolean) dashboard.get(Dashboard.INCLUDEBINDERTITLE);
 		if (includeBinderTitle_l==null) includeBinderTitle_l=Boolean.FALSE;
-		if (includeBinderTitle_l || !dashboard.get(Title).equals("")) {
-			title = (String) dashboard.get(Title);
+		if (includeBinderTitle_l || !dashboard.get(Dashboard.TITLE).equals("")) {
+			title = (String) dashboard.get(Dashboard.TITLE);
 			includeBinderTitle = includeBinderTitle_l;
 		}
 		if (Validator.isNull(title) && !includeBinderTitle) {
-			title = (String) dashboard_g.get(Title);
-			includeBinderTitle = (Boolean) dashboard_g.get(IncludeBinderTitle);
+			title = (String) dashboard_g.get(Dashboard.TITLE);
+			includeBinderTitle = (Boolean) dashboard_g.get(Dashboard.INCLUDEBINDERTITLE);
 		}
 		ssDashboard.put(WebKeys.DASHBOARD_TITLE, title);
 		ssDashboard.put(WebKeys.DASHBOARD_INCLUDE_BINDER_TITLE, includeBinderTitle);
 
 		//Build the lists of components
 		if (scope.equals(DashboardHelper.Local)) {
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, getInstance().buildLocalDashboardList(DashboardHelper.Wide_Top, ssDashboard));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, getInstance().buildLocalDashboardList(DashboardHelper.Narrow_Fixed, ssDashboard));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, getInstance().buildLocalDashboardList(DashboardHelper.Narrow_Variable, ssDashboard));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, getInstance().buildLocalDashboardList(DashboardHelper.Wide_Bottom, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, getInstance().buildLocalDashboardList(Dashboard.WIDE_TOP, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, getInstance().buildLocalDashboardList(Dashboard.NARROW_FIXED, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, getInstance().buildLocalDashboardList(Dashboard.NARROW_VARIABLE, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, getInstance().buildLocalDashboardList(Dashboard.WIDE_BOTTOM, ssDashboard));
 		} else if (scope.equals(DashboardHelper.Global)) {
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_g.get(DashboardHelper.Wide_Top)));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_g.get(DashboardHelper.Narrow_Fixed)));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard_g.get(DashboardHelper.Narrow_Variable)));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard_g.get(DashboardHelper.Wide_Bottom)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_g.get(Dashboard.WIDE_TOP)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_g.get(Dashboard.NARROW_FIXED)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard_g.get(Dashboard.NARROW_VARIABLE)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard_g.get(Dashboard.WIDE_BOTTOM)));
 		} else if (scope.equals(DashboardHelper.Binder)) {
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_b.get(DashboardHelper.Wide_Top)));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_b.get(DashboardHelper.Narrow_Fixed)));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard_b.get(DashboardHelper.Narrow_Variable)));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard_b.get(DashboardHelper.Wide_Bottom)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_b.get(Dashboard.WIDE_TOP)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_b.get(Dashboard.NARROW_FIXED)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard_b.get(Dashboard.NARROW_VARIABLE)));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard_b.get(Dashboard.WIDE_BOTTOM)));
 		}
 		
 		//Get the lists of dashboard components that are supported
 		String[] components_list = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
+				"Dashboard.COMPONENTS.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 		
 		List cw = new ArrayList();
 		Map componentTitles = new HashMap();
@@ -359,14 +352,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	//setup for portlet where only 1 element is allowed.  Don't need all the other stuff
 	static public Map getDashboardMap(DashboardPortlet dashboard, Map userProperties, Map model, boolean isConfig) {
-
+		if (dashboard.getVersion() == null) getInstance().fixupDashboard(dashboard);
 		Map ssDashboard = new HashMap();
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, DashboardHelper.Portlet);
 		Map dashboardProps = new HashMap(dashboard.getProperties());
 		ssDashboard.put(WebKeys.DASHBOARD_MAP, dashboardProps);	
 		
-		Map<String, Map> components = (Map) dashboardProps.get(Dashboard.Components);
+		Map<String, Map> components = (Map) dashboardProps.get(Dashboard.COMPONENTS);
 		//should only be one
 		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();			
@@ -392,7 +385,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		List seenList = new ArrayList();
 		for (int i = 0; i < components.size(); i++) {
-			String id = (String) ((Map)components.get(i)).get(Dashboard.Id);
+			String id = (String) ((Map)components.get(i)).get(Dashboard.ID);
 			if (seenList.contains(id) || !checkIfComponentExists(id, ssDashboard)) {
 				//Remove duplicates
 				components.remove(i);
@@ -406,15 +399,15 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		List globalAndBinderComponents = new ArrayList((List)globalDashboard.get(listName));
 		globalAndBinderComponents.addAll((List)binderDashboard.get(listName));
 		for (int i = 0; i < globalAndBinderComponents.size(); i++) {
-			String id = (String) ((Map)globalAndBinderComponents.get(i)).get(Dashboard.Id);
-			String scope = (String) ((Map)globalAndBinderComponents.get(i)).get(Dashboard.Scope);
-			Boolean visible = (Boolean) ((Map)globalAndBinderComponents.get(i)).get(Dashboard.Visible);
+			String id = (String) ((Map)globalAndBinderComponents.get(i)).get(Dashboard.ID);
+			String scope = (String) ((Map)globalAndBinderComponents.get(i)).get(Dashboard.SCOPE);
+			Boolean visible = (Boolean) ((Map)globalAndBinderComponents.get(i)).get(Dashboard.VISIBLE);
 			if (!seenList.contains(id) && checkIfComponentExists(id, ssDashboard) && 
 					!checkIfComponentOnLocalList(id, localDashboard)) {
 				Map newComponent = new HashMap();
-				newComponent.put(Dashboard.Id, id);
-				newComponent.put(Dashboard.Scope, scope);
-				newComponent.put(Dashboard.Visible, visible);
+				newComponent.put(Dashboard.ID, id);
+				newComponent.put(Dashboard.SCOPE, scope);
+				newComponent.put(Dashboard.VISIBLE, visible);
 				components.add(newComponent);
 			}
 			seenList.add(id);
@@ -455,7 +448,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	
 
 	protected void getBuddyListBean(Binder binder, Map ssDashboard, String id, Map component, boolean isConfig) {
-	   	Map data = (Map)component.get(DashboardHelper.Data);
+		//make sure data is reflected in toXml
+		Map data = (Map)component.get(Dashboard.DATA);
 	   	if (data != null) {
 	    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
 	    	if (beans == null) {
@@ -477,10 +471,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	    		}
 	    	}
 	    	if (data.containsKey(TeamOn)) {
-	    		if (isConfig) {
-	    			//keep separate for config
-		    		idData.put(WebKeys.SHOW_TEAM_MEMBERS, data.get(TeamOn));
-	    		} else if (Boolean.TRUE.equals(data.get(TeamOn))){
+	    		if (!isConfig) {
 	    			//merge into user list if not config
 	    			try {
 	    				ids.addAll(getBinderModule().getTeamMemberIds(binder, false));
@@ -489,15 +480,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	    	}
 			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  	   	}
-	}
-	protected void buddyListToXml(Element parent, Map data) {
-		Element child = parent.addElement(Users);
-		child.setText((String)data.get(Users));
-		child = parent.addElement(Groups);
-		child.setText((String)data.get(Groups));
-		child = parent.addElement(TeamOn);
-		if (data.containsKey(TeamOn)) child.setText(data.get(TeamOn).toString());
-		else child.setText(Boolean.FALSE.toString());
 	}
 	
 	private Set getIds(Object ids) {
@@ -509,7 +491,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	protected void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
 	    		String id, Map component, DomTreeHelper helper) {
-    	Map data = (Map)component.get(DashboardHelper.Data);
+		//make sure data is reflected in toXml
+		Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
     	if (beans == null) {
@@ -533,14 +516,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     				} else {
     					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, helper),1);
-    					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
+    					idData.put(Workspace_topId, binder.getId().toString());
     				}
     			} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     				Folder topFolder = ((Folder)binder).getTopFolder();
     				if (topFolder == null) topFolder = (Folder)binder;
     				Binder workspace = (Binder)topFolder.getParentBinder();
     				tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this, helper),1);
-    				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
+    				idData.put(Workspace_topId, workspace.getId().toString());
     			}
     		} else {
        			if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
@@ -548,7 +531,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     				} else {
     					tree = BinderHelper.buildTemplateTreeRoot(this, (TemplateBinder)binder, helper);
-    					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
+    					idData.put(Workspace_topId, binder.getId().toString());
     				}
     			} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     				TemplateBinder top = (TemplateBinder)binder;
@@ -556,34 +539,28 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     					top = (TemplateBinder)top.getParentBinder();
     				}
    					tree = BinderHelper.buildTemplateTreeRoot(this, top, helper);
-   					idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, top.getId().toString());
+   					idData.put(Workspace_topId, top.getId().toString());
     			}			
     		}
     	} else {
-    		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
+    		Long topId = (Long)data.get(Workspace_topId);
     		if (topId == null) {
     			Workspace ws = getWorkspaceModule().getWorkspace();
     			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, helper),1);
-    			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID,ws.getId().toString());
+    			idData.put(Workspace_topId,ws.getId().toString());
     		} else {
     			Workspace ws = getWorkspaceModule().getWorkspace(topId);
     			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new WsDomTreeBuilder(ws, true, this, helper),1);
-    			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, topId.toString());			
+    			idData.put(Workspace_topId, topId.toString());			
     		}
     			
     	}
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     }
-	protected void workspaceTreeToXml(Element parent, Map data) {
-		Element child = parent.addElement(WebKeys.DASHBOARD_WORKSPACE_TOPID);
-   		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
-   		if (topId != null)
-   		child.setText(topId.toString());
-	}
 
 	
 	protected void getTeamMembersBean(Binder binder, Map ssDashboard, Map model, String id, Map component, boolean isConfig) {
-    	Map data = (Map)component.get(DashboardHelper.Data);
+    	Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
     	if (beans == null) {
@@ -603,14 +580,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
     	}
 	}
-	protected void teamMembersToXml(Element parent, Map data) {
-		//nothing to store, determined dynamically
-		return;
-	}
 	
     protected void getWikiHomepageEntryBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component, boolean isConfig) {
-    	Map data = (Map)component.get(DashboardHelper.Data);
+    	Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
     	if (beans == null) {
@@ -624,24 +597,33 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		idData = new HashMap();
         	beans.put(id, idData);
     	}
-		List savedFolderIds = (List)data.get(SearchFormSavedFolderIdList);
-		if (savedFolderIds != null && !savedFolderIds.isEmpty()) {
-			Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)savedFolderIds.get(0)));				
-			idData.put(WebKeys.BINDER, fBinder);
-			if (!isConfig) {
-				String entryId = (String) fBinder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
-				if (entryId != null) {
-					Entry entry = getFolderModule().getEntry(fBinder.getId(), Long.valueOf(entryId));
-					idData.put(WebKeys.DASHBOARD_WIKI_HOMEPAGE_ENTRY, entry);
+    	if (isConfig) getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
+
+    	try {
+    		String binderId = null;
+   			Set <String> savedFolderIds = FindIdsHelper.getIdsAsStringSet((String)data.get(SearchFormSavedFolderIdList));
+   			if (!savedFolderIds.isEmpty()) binderId = savedFolderIds.iterator().next();
+       		if (Validator.isNotNull(binderId)) {
+       			Binder fBinder = getBinderModule().getBinder(Long.valueOf(binderId));				
+    			idData.put(WebKeys.BINDER, fBinder);
+    			if (!isConfig) {
+    				String entryId = (String) fBinder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+    				if (entryId != null) {
+    					Entry entry = getFolderModule().getEntry(fBinder.getId(), Long.valueOf(entryId));
+    					idData.put(WebKeys.DASHBOARD_WIKI_HOMEPAGE_ENTRY, entry);
+    				}
 				}
 			}
+    	
+		} catch (Exception ex) {
+			//just skip = assume binder or entry doesn't exist
 		}
 		
     }
     //reduce work
     protected void getSummaryConfigBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component) {
-    	Map data = (Map)component.get(DashboardHelper.Data);
+    	Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
     	if (beans == null) {
@@ -655,25 +637,21 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		idData = new HashMap();
         	beans.put(id, idData);
     	}
-		//Build the jsp bean (sorted by folder title)
-		List folderIds = new ArrayList();
+		
 		Collection folders=null;
-		List savedFolderIds = (List)data.get(SearchFormSavedFolderIdList);
-		if (savedFolderIds != null) {
-			for (int i = 0; i < savedFolderIds.size(); i++) {
-				folderIds.add(Long.valueOf((String)savedFolderIds.get(i)));
-			}
+		Set <Long> folderIds = FindIdsHelper.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		if (!folderIds.isEmpty()) {
 			folders = getBinderModule().getBinders(folderIds);		//may have templates		
 			idData.put(WebKeys.FOLDER_LIST, folders);
 		}
-		idData.put(WebKeys.BINDER_ID_LIST, folderIds);
+		idData.put(WebKeys.BINDER_ID_LIST, folderIds); //longs
 
-		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+		if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 			if ((folders != null) && !folders.isEmpty()) {
 				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
 		}
-		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
+		if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
 			if ((folders != null) && !folders.isEmpty()) {
 				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
@@ -683,7 +661,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     }
     protected void getSearchResultsBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component, boolean isConfig) {
-    	Map data = (Map)component.get(DashboardHelper.Data);
+    	Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
     	if (beans == null) {
@@ -713,6 +691,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 		}
 		
+		// Map elementData = BinderHelper.getCommonEntryElements();
+		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule());
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
@@ -725,18 +705,18 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.MODIFICATION_DATE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		if (data.containsKey(WebKeys.SEARCH_FORM_MAX_HITS)) {
-			String[] maxHitsStr = (String[])data.get(WebKeys.SEARCH_FORM_MAX_HITS);
-			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxHitsStr[0]));
+			try {
+				String maxHitsStr = (String)data.get(WebKeys.SEARCH_FORM_MAX_HITS);
+				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxHitsStr));
+			} catch (Exception e) {}
 		}
 		int pageSize = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (data.containsKey(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT)) {
 			try {
-				String[] resultsCount = (String[])data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
-				pageSize = Integer.valueOf(resultsCount[0]);
-				model.put(WebKeys.PAGE_SIZE, Integer.valueOf(pageSize).toString());
-			} catch (Exception e) {
-				logger.error(e);
-			}
+				String resultsCount = (String)data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
+				pageSize = Integer.valueOf(resultsCount);
+				model.put(WebKeys.PAGE_SIZE, resultsCount);
+			} catch (Exception e) {}
 		}
 		int pageNumber = 0;
 		if (model.containsKey(WebKeys.PAGE_SIZE)) {
@@ -749,9 +729,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
 		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-		List savedFolderIds = (List)data.get(DashboardHelper.SearchFormSavedFolderIdList);
-		if (savedFolderIds == null) savedFolderIds = new ArrayList();
-		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, savedFolderIds);
+		Set <Long> folderIds = FindIdsHelper.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, folderIds);
 
 		boolean doSearch = true;		
 		if (binder instanceof TemplateBinder) {
@@ -761,11 +740,26 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, Integer.valueOf(0));
 			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, Integer.valueOf(0));
 		}  else {
-			if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
-				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
-				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
-				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
-				if (savedFolderIds.isEmpty()) doSearch = false;
+			if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
+				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
+				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
+				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
+				
+				Collection folders=null;
+				if (folderIds != null) {
+					folders = getBinderModule().getBinders(folderIds);		//may have templates		
+					idData.put(WebKeys.FOLDER_LIST, folders);
+				}
+				idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
+
+				if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
+						component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
+					if ((folders != null) && !folders.isEmpty()) {
+						idData.put(WebKeys.BINDER, folders.iterator().next());					
+					}
+				}
+
+				if (folderIds.isEmpty()) doSearch = false; //don't search everything
 				else {
 					//	Limit the search to entries only
 					Document searchFilter2 = DocumentHelper.createDocument();
@@ -781,9 +775,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
 				}
 			}
-		}
+		}	
+
 		if (doSearch) {
-			options.put(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID, binder.getId().toString());
+			if (binder != null) options.put(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID, binder.getId().toString());
 			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			// 	entries = BinderHelper.filterEntryAttachmentResults(entries);
@@ -809,75 +804,15 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 	
 			
-		//Build the jsp bean (sorted by folder title)
-		List folderIds = new ArrayList();
-		Collection folders=null;
-		if (savedFolderIds != null) {
-			for (int i = 0; i < savedFolderIds.size(); i++) {
-				folderIds.add(Long.valueOf((String)savedFolderIds.get(i)));
-			}
-			folders = getBinderModule().getBinders(folderIds);		//may have templates		
-			idData.put(WebKeys.FOLDER_LIST, folders);
-		}
-		idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
-
-		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
-			if ((folders != null) && !folders.isEmpty()) {
-				idData.put(WebKeys.BINDER, folders.iterator().next());					
-			}
-		}
-		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
-			if ((folders != null) && !folders.isEmpty()) {
-				idData.put(WebKeys.BINDER, folders.iterator().next());					
-			}
-		}
 	
-    }
-    protected void searchResultsToXml(Element parent, Map data) {
-		Element child;
-		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) {
-			child = parent.addElement("property");
-			child.addAttribute("name", DashboardHelper.SearchFormSavedSearchQuery);
-			child.setText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
-		}
-		List savedFolderIds = (List)data.get(SearchFormSavedFolderIdList);
-		if (savedFolderIds != null && savedFolderIds.size() > 0) {
-			child = parent.addElement("property");
-			child.addAttribute("name", DashboardHelper.SearchFormSavedFolderIdList);
-			StringBuffer buf = new StringBuffer();
-			for (int i=0; i<savedFolderIds.size(); ++i) {
-				buf.append((String)savedFolderIds.get(i) + " ");
-			}
-			child.setText(buf.toString());
-		}
-		if (data.containsKey(WebKeys.SEARCH_FORM_MAX_HITS)) {
-			child = parent.addElement("property");
-			child.addAttribute("name", WebKeys.SEARCH_FORM_MAX_HITS);
-			String[] maxHitsStr = (String[])data.get(WebKeys.SEARCH_FORM_MAX_HITS);
-			child.setText(maxHitsStr[0]);
-		}
-		if (data.containsKey(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT)) {
-			child = parent.addElement("property");
-			child.addAttribute("name", WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
-			String[] resultsCount = (String[])data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
-			child.setText(resultsCount[0]);
-		}
-		if (data.containsKey(DashboardHelper.ChooseFirst)) {
-			child = parent.addElement("property");
-			child.addAttribute("name", DashboardHelper.ChooseFirst);
-			Boolean resultsCount = (Boolean)data.get(DashboardHelper.ChooseFirst);
-			child.setText(resultsCount.toString());
-		}
-
-
     }
     
     public static void setTitle(ActionRequest request, Binder binder, String scope) {
 		Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
 		Map updates = new HashMap();
-		updates.put(DashboardHelper.Title, 
+		updates.put(Dashboard.TITLE, 
 				PortletRequestUtils.getStringParameter(request, "title", ""));
-		updates.put(DashboardHelper.IncludeBinderTitle, 
+		updates.put(Dashboard.INCLUDEBINDERTITLE, 
 				PortletRequestUtils.getBooleanParameter(request, "includeBinderTitle", false));
 		
 		getInstance().getDashboardModule().modifyDashboard(dashboard.getId(), updates);
@@ -901,9 +836,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		String componentName = PortletRequestUtils.getStringParameter(request, "componentName", "");
 		if (Validator.isNotNull(componentName)) {
 			Map component = new HashMap();
-			component.put(DashboardHelper.Name, componentName);
-			component.put(DashboardHelper.Roles, 
-					PortletRequestUtils.getStringParameters(request, "roles"));
+			component.put(Dashboard.NAME, componentName);
+			component.put(Dashboard.ROLES, 
+					PortletRequestUtils.getStringParameter(request, "roles", ""));
 						
 			id = getInstance().getDashboardModule().addComponent(dashboard.getId(), scope, listName, component);
 		}
@@ -918,10 +853,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
 		Map dashboard = getNewDashboardMap();
 		ssDashboard.put(WebKeys.DASHBOARD_MAP, getNewDashboardMap());
-		Map components = (Map)dashboard.get(Dashboard.Components);
+		Map components = (Map)dashboard.get(Dashboard.COMPONENTS);
 		Map component = new HashMap();
-		component.put(DashboardHelper.Name, name);
-		component.put(DashboardHelper.Roles, "");
+		component.put(Dashboard.NAME, name);
+		component.put(Dashboard.ROLES, "");
 		components.put(PORTLET_COMPONENT_ID, component);
 		doComponentConfigSetup(ssDashboard, dashboard, null, model, PORTLET_COMPONENT_ID);
 		return ssDashboard;
@@ -957,49 +892,37 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			String key = (String) itKeys.next();
 			if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
 				String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
-				//Save this value for use when displaying the component
-				componentData.put(elementName, formData.get(key));
+				//Save this value as a string for use when displaying the component
+				componentData.put(elementName, PortletRequestUtils.getStringParameter(request, key, ""));
 			}
 		}
 			
 		//Get the component title
 		String componentTitle = PortletRequestUtils.getStringParameter(request, 
-				DashboardHelper.Component_Title, "");
+				Dashboard.COMPONENT_TITLE, "");
 		String displayStyle = PortletRequestUtils.getStringParameter(request, 
-				DashboardHelper.DisplayStyle, DashboardHelper.DisplayStyleDefault);
+				Dashboard.DISPLAYSTYLE, DisplayStyleDefault);
 		
 		//Get the component config data map
-		Map components = (Map)d.getProperty(Dashboard.Components);
+		Map components = (Map)d.getProperty(Dashboard.COMPONENTS);
 		if (components != null) {
 			Map componentMap = (Map) components.get(componentId);
 			if (componentMap != null) {
 				Map originalComponentData = new HashMap();
-				if (componentMap.containsKey(Data)) originalComponentData = (Map) componentMap.get(Data);
-				String cName = (String)componentMap.get(DashboardHelper.Name);
+				if (componentMap.containsKey(Dashboard.DATA)) originalComponentData = (Map) componentMap.get(Dashboard.DATA);
+				String cName = (String)componentMap.get(Dashboard.NAME);
 				//Get any component specific data
 				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName)) {
 					//Get the search query
 					// Document query = FilterHelper.getSearchFilter(request);
 					Document query = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
 					componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-				} else if (componentMap.get(DashboardHelper.Name).
-						equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
-					if (componentData.containsKey("users")) {
-						componentData.put(Users, FindIdsHelper.getIdsAsString((String[])componentData.get("users")));
-					}
-					if (componentData.containsKey("groups")) {
-					componentData.put(Groups, FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
-					}
-					componentData.put(TeamOn, 
-							Boolean.valueOf(GetterUtil.getBoolean(
-									PortletRequestUtils.getStringParameter(request,DashboardHelper.ElementNamePrefix + "teamOn", "false"), false)));
-
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName)) {
 					
 					//multi-select	
-					List folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
-					if (folderIds == null) folderIds = new ArrayList();
+					Set <String> folderIds = FindIdsHelper.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
+
 					//add first
 					//Get the folderIds out of the formData
 					Iterator itFormData = formData.keySet().iterator();
@@ -1023,43 +946,41 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 							folderIds.remove(forumId);
 						}
 					}
-					if (formData.containsKey("chooseFirst")) {
-						boolean chooseFirst = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request, "chooseFirst", "false"), false);
-						if ((binder != null) && (binder instanceof TemplateBinder)) {
+					boolean chooseFolder = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request, "chooseFolder", "false"), false);
+					if (chooseFolder && binder != null) {
+						String type = resolveFolderType(cName);
+						if (binder instanceof TemplateBinder) {
 							//save - resolve later
-							componentData.put(DashboardHelper.ChooseFirst, Boolean.valueOf(chooseFirst));
+							componentData.put(ChooseType, type);
 						} else {
 							//resolve binder now
 							if (DashboardHelper.Binder.equals(scope) || DashboardHelper.Local.equals(scope)) {
-								String id = resolveBinder(binder, cName);
+								String id = resolveBinder(binder, type);
 								if (Validator.isNotNull(id)) folderIds.add(id);
 							}
 						}
 					}
-					
 					if (!folderIds.isEmpty()) {
 						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
-						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-						componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
-					} else {
-						componentData.remove(DashboardHelper.SearchFormSavedSearchQuery);
-						componentData.remove(DashboardHelper.SearchFormSavedFolderIdList);
-						
-					}
+						componentData.put(SearchFormSavedSearchQuery, query.asXML());
+						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
+					} 
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
+
 					//single select
 					List folderIds = new ArrayList();
-					if (formData.containsKey("chooseFirst")) {
-						boolean chooseFirst = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request,"chooseFirst", "false"), false);
-						if ((binder != null) && (binder instanceof TemplateBinder)) {
+					boolean chooseFolder = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request, "chooseFolder", "false"), false);
+					if (chooseFolder && binder != null) {
+						String type = resolveFolderType(cName);
+						if (binder instanceof TemplateBinder) {
 							//save - resolve later
-							componentData.put(DashboardHelper.ChooseFirst, Boolean.valueOf(chooseFirst));
+							componentData.put(ChooseType, type);
 						} else {
 							//resolve binder now
 							if (DashboardHelper.Binder.equals(scope) || DashboardHelper.Local.equals(scope)) {
-								String id = resolveBinder(binder, cName);
+								String id = resolveBinder(binder, type);
 								if (Validator.isNotNull(id)) folderIds.add(id);
 							}
 						}
@@ -1069,63 +990,37 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					}
 					if (!folderIds.isEmpty()) {
 						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
-						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-						componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
-					} else {
-						componentData.remove(DashboardHelper.SearchFormSavedSearchQuery);
-						componentData.remove(DashboardHelper.SearchFormSavedFolderIdList);
-						
-					}
-				}
-						
+						componentData.put(SearchFormSavedSearchQuery, query.asXML());
+						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
+					} 
+		
+				}		
 				//Save the title and data map
-				componentMap.put(DashboardHelper.Component_Title, componentTitle);
-				componentMap.put(DashboardHelper.DisplayStyle, displayStyle);
-				componentMap.put(DashboardHelper.Data, componentData);
+				componentMap.put(Dashboard.COMPONENT_TITLE, componentTitle);
+				componentMap.put(Dashboard.DISPLAYSTYLE, displayStyle);
+				componentMap.put(Dashboard.DATA, componentData);
 				//Save the updated dashboard configuration 
 				getInstance().getDashboardModule().modifyComponent(d.getId(), componentId, componentMap);
 			}
 		}						
 	}
-	public static void resolveRelativeBinders(Binder binder, Dashboard d) {
-		Map components = (Map)d.getProperty(Dashboard.Components);
-		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry me = (Map.Entry)iter.next();
-			Map cMap = (Map)me.getValue();
-			if (cMap == null) continue;
-			Map data = (Map)cMap.get(DashboardHelper.Data);
-			if (data.containsKey(DashboardHelper.ChooseFirst)) {
-				String cName = (String)cMap.get(DashboardHelper.Name);
-				if (cName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
-						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY) ||
-						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
-						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
-						cName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
-					Boolean chooseFirst = (Boolean)data.get(DashboardHelper.ChooseFirst);
-					if (chooseFirst) {
-						String id = getInstance().resolveBinder(binder, cName);
-						if (Validator.isNotNull(id)) {
-							List<String> folderIds = (List)data.get(DashboardHelper.SearchFormSavedFolderIdList);
-							if (folderIds == null) folderIds = new ArrayList();
-							folderIds.add(id);
-							SearchFilter searchFilter = new SearchFilter();
-							
-							for (Object fId : folderIds) {
-								searchFilter.addFolderId((String)fId);
-							}
-							
-							data.put(DashboardHelper.SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());
-							data.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
-							
-						}
-					}
-				}
-				data.remove(DashboardHelper.ChooseFirst);
-			}
+
+	private String resolveFolderType(String name) {
+		if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(name)) {
+			return Definition.VIEW_STYLE_WIKI; 
+		} else if (ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(name)) {
+			return Definition.VIEW_STYLE_GUESTBOOK; 
+		} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(name)) {
+			return Definition.VIEW_STYLE_BLOG; 
+		} else if (ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(name)) {
+			return Definition.VIEW_STYLE_PHOTO_ALBUM;
+		} else if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(name)) {
+			return Definition.VIEW_STYLE_TASK;
 		}
-		getInstance().getDashboardModule().setProperty(d.getId(), Dashboard.Components, components);
+		return Definition.VIEW_STYLE_DEFAULT;
 	}
-	protected String resolveBinder(Binder binder, String name) {
+
+	protected String resolveBinder(Binder binder, String viewType) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
@@ -1136,27 +1031,37 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		for (Map b:binders) {
 			String defId = (String)b.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
 			Definition def = getDefinitionModule().getDefinition(defId);
-			String viewType = DefinitionUtils.getViewType(def.getDefinition());
-			if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(name)) {
-				if (Definition.VIEW_STYLE_WIKI.equals(viewType)) 
-					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
-			} else if (ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(name)) {
-				if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) 
-					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
-			} else if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(name)) {
-				if (Definition.VIEW_STYLE_TASK.equals(viewType)) 
-					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
-			} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(name)) {
-				if (Definition.VIEW_STYLE_BLOG.equals(viewType)) 
-					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
-			} else if (ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(name)) {
-				if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) 
-					return (String)b.get(EntityIndexUtils.DOCID_FIELD);
-			}
+			String type = DefinitionUtils.getViewType(def.getDefinition());
+			if (viewType.equals(type)) return (String)b.get(EntityIndexUtils.DOCID_FIELD);
 		}	
 		return null;
 
 	}
+	public static void resolveRelativeBinders(Binder binder, Dashboard d) {
+		Map components = (Map)d.getProperty(Dashboard.COMPONENTS);
+		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			Map cMap = (Map)me.getValue();
+			if (cMap == null) continue;
+			Map data = (Map)cMap.get(Dashboard.DATA);
+			if (data.containsKey(ChooseType)) {
+				String viewType = (String)data.get(ChooseType);
+				data.remove(ChooseType);
+				String id = getInstance().resolveBinder(binder, viewType);
+				if (Validator.isNotNull(id)) {
+					String savedIds = (String)data.get(DashboardHelper.SearchFormSavedFolderIdList);
+					Set<String> folderIds = FindIdsHelper.getIdsAsStringSet(savedIds);
+					folderIds.add(id);
+					SearchFilter searchFilter = new SearchFilter();
+					searchFilter.addFolderIds(folderIds);
+					data.put(DashboardHelper.SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());
+					data.put(DashboardHelper.SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
+				} 
+			}
+		}
+		getInstance().getDashboardModule().setProperty(d.getId(), Dashboard.COMPONENTS, components);
+	}
+	
 	public static void deleteComponent(ActionRequest request, Binder binder, String componentId, 
 			String scope) {
 		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
@@ -1186,13 +1091,13 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			List dashboardList = (List) ssDashboard.get(dashboardListKey);
 			for (int i = 0; i < dashboardList.size(); i++) {
 				Map component = (Map) dashboardList.get(i);
-				String id = (String) component.get(Dashboard.Id);
+				String id = (String) component.get(Dashboard.ID);
 				if (id.equals(componentId)) {
 					//We have found the component to be shown or hidden
 					if (action.equals("show")) {
-						component.put(Dashboard.Visible, new Boolean(true));
+						component.put(Dashboard.VISIBLE, new Boolean(true));
 					} else if (action.equals("hide")) {
-						component.put(Dashboard.Visible, new Boolean(false));
+						component.put(Dashboard.VISIBLE, new Boolean(false));
 					}
 					//Make sure the list also gets saved (in case it was a generated list)
 					getInstance().getDashboardModule().setProperty(d.getId(), dashboardListKey, dashboardList);
@@ -1217,7 +1122,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			Dashboard d = getInstance().getDashboardObj(binder, scope);	
 			for (int i = 0; i < dashboardList.size(); i++) {
 				Map component = (Map) dashboardList.get(i);
-				String id = (String) component.get(Dashboard.Id);
+				String id = (String) component.get(Dashboard.ID);
 				if (id.equals(componentId)) {
 					//We have found the component to be moved
 					if (direction.equals("up")) {
@@ -1228,9 +1133,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						} else {
 							//Move it into the next higher group
 							String newListKey = "";
-							if (dashboardListKey.equals(DashboardHelper.Narrow_Fixed)) newListKey = DashboardHelper.Wide_Top;
-							if (dashboardListKey.equals(DashboardHelper.Narrow_Variable)) newListKey = DashboardHelper.Narrow_Fixed;
-							if (dashboardListKey.equals(DashboardHelper.Wide_Bottom)) newListKey = DashboardHelper.Narrow_Variable;
+							if (dashboardListKey.equals(Dashboard.NARROW_FIXED)) newListKey = Dashboard.WIDE_TOP;
+							if (dashboardListKey.equals(Dashboard.NARROW_VARIABLE)) newListKey = Dashboard.NARROW_FIXED;
+							if (dashboardListKey.equals(Dashboard.WIDE_BOTTOM)) newListKey = Dashboard.NARROW_VARIABLE;
 							if (!newListKey.equals("")) {
 								List newDashboardList = (List) ssDashboard.get(newListKey);
 								dashboardList.remove(i);
@@ -1249,9 +1154,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						} else {
 							//Move it into the next lower group
 							String newListKey = "";
-							if (dashboardListKey.equals(DashboardHelper.Wide_Top)) newListKey = DashboardHelper.Narrow_Fixed;
-							if (dashboardListKey.equals(DashboardHelper.Narrow_Fixed)) newListKey = DashboardHelper.Narrow_Variable;
-							if (dashboardListKey.equals(DashboardHelper.Narrow_Variable)) newListKey = DashboardHelper.Wide_Bottom;
+							if (dashboardListKey.equals(Dashboard.WIDE_TOP)) newListKey = Dashboard.NARROW_FIXED;
+							if (dashboardListKey.equals(Dashboard.NARROW_FIXED)) newListKey = Dashboard.NARROW_VARIABLE;
+							if (dashboardListKey.equals(Dashboard.NARROW_VARIABLE)) newListKey = Dashboard.WIDE_BOTTOM;
 							if (!newListKey.equals("")) {
 								List newDashboardList = (List) ssDashboard.get(newListKey);
 								dashboardList.remove(i);
@@ -1297,8 +1202,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						componentListOld = (List) d.getProperty(ComponentLists[j1]);
 						for (int j2 = 0; j2 < componentListOld.size(); j2++) {
 							Map component = (Map) componentListOld.get(j2);
-							if (component.containsKey(Dashboard.Id) && 
-									component.get(Dashboard.Id).equals(id)) {
+							if (component.containsKey(Dashboard.ID) && 
+									component.get(Dashboard.ID).equals(id)) {
 								//Found the component; remove it from this list
 								componentListOld.remove(j2);
 								updates.put(ComponentLists[j1], componentListOld);
@@ -1312,9 +1217,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			    		//We didn't find the component on any list; just put it on the right list
 						String scope = id.substring(0, id.indexOf("_"));
 						Map componentListItem = new HashMap();
-						componentListItem.put(Dashboard.Id, id);
-						componentListItem.put(Dashboard.Scope, scope);
-						componentListItem.put(Dashboard.Visible, new Boolean(true));
+						componentListItem.put(Dashboard.ID, id);
+						componentListItem.put(Dashboard.SCOPE, scope);
+						componentListItem.put(Dashboard.VISIBLE, new Boolean(true));
 						componentListNew.add(componentListItem);
 			    	}
 				}
@@ -1338,6 +1243,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		if ((dashboard == null) || (dashboard.getProperties() == null)) {
 			return getNewDashboardMap();
 		} else {
+			if (dashboard.getVersion() == null) {
+				fixupDashboard(dashboard);
+			}
 			//Make a copy of the dashboard so changes won't accidentally bleed through
 			return  new HashMap(dashboard.getProperties());
 		}
@@ -1362,87 +1270,50 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				dashboard = getDashboardModule().createEntityDashboard(binder.getEntityIdentifier(), getNewDashboardMap());
 			}
 		}
+		if ((dashboard != null) && (dashboard.getVersion() == null)) {
+			fixupDashboard(dashboard);
+		}
+
 		return dashboard;
 	}
-	public void toXml(Dashboard dashboard, Element parent) {
-		Element d = parent.addElement("dashboard");
-		d.addAttribute("nextComponentId", String.valueOf(dashboard.getNextComponentId()));
-		d.addAttribute("showComponents", String.valueOf(dashboard.isShowComponents()));
-		Object val = dashboard.getProperty(DashboardHelper.Title);
-		Element p;
-		if (val != null) {
-			p = d.addElement("property");
-			p.addAttribute("name", DashboardHelper.Title);
-			p.addCDATA(val.toString());
-		}
-		val = dashboard.getProperty(DashboardHelper.IncludeBinderTitle);
-		if (val != null) {
-			p = d.addElement("property");
-			p.addAttribute("name", DashboardHelper.IncludeBinderTitle);
-			p.addText(val.toString());
-		}
-		layoutToXml(d, dashboard, DashboardHelper.Wide_Top);
-		layoutToXml(d, dashboard, DashboardHelper.Narrow_Fixed);
-		layoutToXml(d, dashboard, DashboardHelper.Narrow_Variable);
-		layoutToXml(d, dashboard, DashboardHelper.Wide_Bottom);
-		Map components = (Map)dashboard.getProperty(Dashboard.Components);
+	private void fixupDashboard(Dashboard dashboard) {
+		//convert all the string[] to strings
+		//the arrays are wastefull
+		Map components = (Map)dashboard.getProperty(Dashboard.COMPONENTS);
+		if (components == null) return;
+		//loop through components
 		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
-			Map cMap = (Map)me.getValue();
-			if (cMap == null) continue;
-			Element component = d.addElement("component");
-			component.addAttribute("compenentId", me.getKey().toString());
-			componentToXml(component, cMap);
-		}
-		
-	}
-	private void layoutToXml(Element parent, Dashboard dashboard, String name) {
-		List<Map> contents = (List)dashboard.getProperty(name);
-		for (Map cMap:contents) {
-			Element layout = parent.addElement("layout");
-			layout.addAttribute("name", name);
-			for (Iterator iter=cMap.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry me = (Map.Entry)iter.next();
-				Object val = me.getValue();
-				if (val == null) continue;
-				Element p=layout.addElement("property");
-				p.addAttribute("name", (String)me.getKey());
-				p.addText(me.getValue().toString());
-				
-			}
-		}		
-	}
-	private void componentToXml(Element parent, Map component) {
-		String componentName = (String)component.get(Name);
-		for (Iterator iter=component.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry prop = (Map.Entry)iter.next();
-			String propName = prop.getKey().toString();
-			
-			if (Data.equals(propName)) {
-				Element data = parent.addElement(Data);
-				Map val = (Map)prop.getValue();
-				if ((val != null) && !val.isEmpty()) {
-					if (componentName.equals(
-						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
-						getInstance().buddyListToXml(data, val); 
-					} else if (componentName.equals(
-						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
-						getInstance().teamMembersToXml(data, val); 
-					} else if (componentName.equals(
-							ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
-						getInstance().workspaceTreeToXml(data, val); 
+			Map componentMap = (Map)me.getValue();
+			if (componentMap == null) continue;
+			Map data = (Map)componentMap.get(Dashboard.DATA);
+			if (data == null) continue;
+			Map fixedData = new HashMap(data);
+			//loop through data map only
+			for (Iterator iter2=data.entrySet().iterator(); iter2.hasNext();) {
+				Map.Entry prop = (Map.Entry)iter2.next();
+				String propName = (String)prop.getKey();
+				Object propVal = prop.getValue();
+				if (propVal instanceof String[]) {
+					String[] val = (String[])propVal;
+					if (val.length > 0) {
+						fixedData.put(propName, val[0]);
 					} else {
-						getInstance().searchResultsToXml(data, val);
+						fixedData.remove(propName);
+					}
+				} else if (SearchFormSavedFolderIdList.equals(propName)) {
+					//convert from list to string 
+					if (propVal instanceof List) {
+						List propList = (List)propVal;
+						fixedData.put(propName, FindIdsHelper.getIdsAsString(propList));
 					}
 				}
-				
-			} else {
-				Element property = parent.addElement("property");
-				property.addAttribute("name", "propName");
-				String val = prop.getValue().toString();
-				if (Validator.isNotNull(val)) property.setText(val);
 			}
+			componentMap.put(Dashboard.DATA, fixedData);
 		}
+		dashboard.setVersion(Integer.valueOf(1));
+		getDashboardModule().setProperty(dashboard.getId(), Dashboard.COMPONENTS, components);
+
 		
 	}
 
@@ -1453,7 +1324,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		List seenList = new ArrayList();
 		for (int i = 0; i < components.size(); i++) {
-			String id = (String) ((Map)components.get(i)).get(Dashboard.Id);
+			String id = (String) ((Map)components.get(i)).get(Dashboard.ID);
 			if (seenList.contains(id) || !checkIfComponentExists(id, ssDashboard)) {
 				//Remove duplicates or non-existant components
 				components.remove(i);
@@ -1479,7 +1350,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				dashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
 			}
 			if (dashboard != null) {
-				Map components = (Map) dashboard.get(Dashboard.Components);
+				Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
 				if (components.containsKey(id)) return true;
 			}
 		}
@@ -1494,8 +1365,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			if (componentList != null) {
 				for (int i2 = 0; i2 < componentList.size(); i2++) {
 					Map component = (Map) componentList.get(i2);
-					if (component.containsKey(Dashboard.Id) && 
-							component.get(Dashboard.Id).equals(id)) {
+					if (component.containsKey(Dashboard.ID) && 
+							component.get(Dashboard.ID).equals(id)) {
 						//Found the component
 						return true;
 					}

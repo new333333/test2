@@ -67,6 +67,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.SearchUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.pipeline.Pipeline;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -1350,11 +1351,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	public ChangeLog processChangeLog(Binder binder, String operation) {
 		ChangeLog changes = new ChangeLog(binder, operation);
 		Element element = ChangeLogUtils.buildLog(changes, binder);
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
 		//TODO: do we need config info?
 		if (!binder.isFunctionMembershipInherited()) {
-			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
 			List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
 					binder.getZoneId(), binder);
 			for (WorkAreaFunctionMembership wfm: wfms) {

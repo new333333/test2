@@ -23,7 +23,7 @@
 
 <table><tr><td>
 <c:choose>
-<c:when test="${ssDashboard.dashboard.components[componentId].data.galleryImageSize[0] == 'small'}">
+<c:when test="${ssDashboard.dashboard.components[componentId].data.galleryImageSize == 'small'}">
 <div class="ss_thumbnail_gallery ss_thumbnail_small"> 
 </c:when>
 <c:otherwise>

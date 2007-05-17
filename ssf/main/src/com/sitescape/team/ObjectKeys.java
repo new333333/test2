@@ -40,9 +40,9 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_WIKI_CONFIG="402883b90d0de1f3010d0df5582b000d";
 	public static final String DEFAULT_FOLDER_CALENDAR_CONFIG="402883b90d0de1f3010d0df5582b000e";
 	public static final String DEFAULT_FOLDER_GUESTBOOK_CONFIG="402883b90d0de1f3010d0df5582b000f";
-	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883b90cc53079010cc539bf260009";
 	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 	public static final String DEFAULT_FOLDER_LIBRARY_CONFIG="402883b90d0de1f3010d0df5582b0011";
+	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883b90cc53079010cc539bf260009";
 
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
@@ -65,8 +65,8 @@ public interface ObjectKeys {
     public static final String BINDER="binder";
     public static final String SEARCH_ENTRIES="search_entries";
     public static final String FULL_ENTRIES="database_entries";
-    public static final String COMMUNITY_ENTRIES_TAGS="community_entries_tags";
-    public static final String PERSONAL_ENTRIES_TAGS="personal_entries_tags";
+    public static final String COMMUNITY_ENTITY_TAGS="community_entries_tags";
+    public static final String PERSONAL_ENTITY_TAGS="personal_entries_tags";
     public static final String FOLDER_ENTRY_ANCESTORS="folderEntryAncestors";
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";
@@ -187,7 +187,8 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_ICONNAME="iconName";
     public static final String FIELD_ENTITY_CREATE_PRINCIPAL="creation.principal";
     public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
-    
+    public static final String FIELD_ENTITY_DELETED="deleted";
+
     public static final String FIELD_FILE_ID="_fileID";
     
     public static final String FIELD_BINDER_LIBRARY="library";
@@ -209,20 +210,17 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
-    public static final String FIELD_PRINCIPAL_DELETED="deleted";
     public static final String FIELD_GROUP_MEMBERS="members";
  
     
     //xml tags - used in GenerateLdapList (as strings) - keep in sync
-    public static final String XTAG_ID="id";
-    public static final String XTAG_NAME="name";
-    public static final String XTAG_TYPE="type";
-    public static final String XTAG_ATTRIBUTE="attribute";
-    public static final String XTAG_ATTRIBUTE_SET="attribute-set";
-    public static final String XTAG_PROPERTY="property";
-    public static final String XTAG_OPERATION="operation";
-    public static final String XTAG_MODIFIEDBY="modifiedBy";
-    public static final String XTAG_MODIFIEDON="modifiedOn";
+    public static final String XTAG_ATTRIBUTE_ID="databaseId";
+    public static final String XTAG_ATTRIBUTE_NAME="name";
+    public static final String XTAG_ATTRIBUTE_TYPE="type";
+    public static final String XTAG_ATTRIBUTE_OPERATION="operation";
+    public static final String XTAG_ATTRIBUTE_MODIFIEDBY="modifiedBy";
+    public static final String XTAG_ATTRIBUTE_MODIFIEDON="modifiedOn";
+    public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
     
     
     public static final String XTAG_TYPE_STRING="string";
@@ -235,7 +233,22 @@ public interface ObjectKeys {
     public static final String XTAG_TYPE_XML="xml";
     public static final String XTAG_TYPE_EVENT="event";
     public static final String XTAG_TYPE_FILE="file";
+    
+    public static final String XTAG_ELEMENT_TYPE_PROPERTY="property";
+    public static final String XTAG_ELEMENT_TYPE_HISTORYSTAMP="historyStamp";
+    public static final String XTAG_ELEMENT_TYPE_EVENT="event";
+    public static final String XTAG_ELEMENT_TYPE_FILEATTACHMENT="fileAttachment";
+    public static final String XTAG_ELEMENT_TYPE_VERSIONATTACHMENT="versionAttachment";
+    public static final String XTAG_ELEMENT_TYPE_ATTRIBUTE="attribute";
+    public static final String XTAG_ELEMENT_TYPE_ATTRIBUTE_SET="attribute-set";
+    public static final String XTAG_ELEMENT_TYPE_DEFINITION="definition";
+    public static final String XTAG_ELEMENT_TYPE_TEMPLATE="template";
+    public static final String XTAG_ELEMENT_TYPE_DASHBOARD="dashboard";
+    public static final String XTAG_ELEMENT_TYPE_DASHBOARD_COMPONENT="component";
+    public static final String XTAG_ELEMENT_TYPE_DASHBOARD_COMPONENT_DATA="data";
+    public static final String XTAG_ELEMENT_TYPE_DASHBOARD_LAYOUT="layout";
 
+    
     public static final String XTAG_HISTORY_BY="author";
     public static final String XTAG_HISTORY_WHEN="when";
 
@@ -247,13 +260,11 @@ public interface ObjectKeys {
     public static final String XTAG_ENTITY_ICONNAME="iconName";
     public static final String XTAG_ENTITY_CREATION="created";
     public static final String XTAG_ENTITY_MODIFICATION="modified";
-    public static final String XTAG_FIELD_ENTITY_ATTACHMENTS="attachments";
-   
-    
+    public static final String XTAG_ENTITY_ATTACHMENTS="attachments";
+
     public static final String XTAG_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String XTAG_PRINCIPAL_NAME="name";
     public static final String XTAG_PRINCIPAL_DISABLED="disabled";
-    public static final String XTAG_PRINCIPAL_INTERNALID="internalId";
     
     public static final String XTAG_USER_FIRSTNAME="firstName";
     public static final String XTAG_USER_MIDDLENAME="middleName";
@@ -292,9 +303,13 @@ public interface ObjectKeys {
     public static final String XTAG_WA_MEMBERS="members";
 
     
+    public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
     public static final String XTAG_BINDER_LIBRARY="library";
     public static final String XTAG_BINDER_INHERITMEMBERSHIP="inheritMembership";
     public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";
+    
+    public static final String XTAG_TEMPLATE_TITLE="templateTitle";
+    public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
     
     public static final String XTAG_WF_CHANGE="workflowChange";
     public static final String XTAG_WFS_DEFINITION="definition";

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.Description;
@@ -34,7 +35,7 @@ public interface AdminModule {
 
     public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
     public TemplateBinder addDefaultTemplate(int type);
-	public Long addTemplate(Element config);
+	public Long addTemplate(Document document);
 	public Long addTemplate(int type, Map updates);
 	public Long addTemplate(Long parentId, Long srcConfigId);
 	public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
@@ -53,6 +54,8 @@ public interface AdminModule {
     public List getTeamMemberships(Long id);
 	public TemplateBinder getTemplate(Long id); 
 	public List getTemplates();
+	public Document getTemplateAsXml(TemplateBinder template);
+
 	public List getTemplates(int type);
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public List getWorkAreaFunctionMemberships(WorkArea workArea);

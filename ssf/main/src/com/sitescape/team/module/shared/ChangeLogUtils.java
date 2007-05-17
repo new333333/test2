@@ -44,18 +44,16 @@ public class ChangeLogUtils {
 		if (entry.getModification() != null)
 			entry.getModification().addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
 		if (entry.getParentBinder() != null) {
-			addLogProperty(element, ObjectKeys.XTAG_ENTITY_PARENTBINDER, entry.getParentBinder().getId().toString());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_PARENTBINDER, entry.getParentBinder().getId().toString());
 		}
 		Definition def = entry.getEntryDef();
 		if (def != null) {
-			addLogProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION, def.getId());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION, def.getId());
 		}
-		if (!Validator.isNull(entry.getIconName())) {
-			addLogAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
-		}
+		XmlUtils.addAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
 		//process all form items
-		addLogAttribute(element, ObjectKeys.XTAG_ENTITY_TITLE, "string", entry.getTitle());
-		addLogAttributeCData(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, "description", entry.getDescription());
+		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, entry.getTitle());
+		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, entry.getDescription());
 		Set<Map.Entry> mes = entry.getCustomAttributes().entrySet();
 		for (Map.Entry me: mes) {
 			CustomAttribute attr = (CustomAttribute)me.getValue();
@@ -73,8 +71,8 @@ public class ChangeLogUtils {
 		//Just log top level attachments
  		Set<Attachment> atts = entry.getAttachments();
  		if (!atts.isEmpty()) {
- 			Element attachments = element.addElement(ObjectKeys.XTAG_ATTRIBUTE_SET);
- 			attachments.addAttribute(ObjectKeys.XTAG_NAME, ObjectKeys.XTAG_FIELD_ENTITY_ATTACHMENTS);
+ 			Element attachments = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE_SET);
+ 			attachments.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, ObjectKeys.XTAG_ENTITY_ATTACHMENTS);
  			for (Attachment att: atts) {
  				if (att instanceof FileAttachment)
  					((FileAttachment)att).addChangeLog(attachments, false);
@@ -94,48 +92,5 @@ public class ChangeLogUtils {
 		attachment.addChangeLog(element);
 		return element;
 	}
-	public static Element addLogProperty(Element parent, String name, String value) {
-		Element prop = parent.addElement("property");
-		prop.addAttribute(ObjectKeys.XTAG_NAME, name);
-		if (!Validator.isNull(value)) prop.addText(value);
-		return prop;
-	}
-	//force comman date format.  This is a problem cause hibernate returns sql Timestamps which format
-	//differently then java.util.date
-	public static Element addLogProperty(Element parent, String name, Date value) {
-		if (value != null) return addLogProperty(parent, name, value.toGMTString());
-		return addLogProperty(parent, name, (Object)null);
-	}
-	public static Element addLogProperty(Element parent, String name, Object value) {
-		Element prop = parent.addElement("property");
-		prop.addAttribute(ObjectKeys.XTAG_NAME, name);
-		if (value != null) prop.addText(value.toString());
-		return prop;
-	}
-	//attributes are available through the definintion builder
-	public static Element addLogAttribute(Element parent, String name, String type, String value) {
-		if (Validator.isNull(value)) return null;
-		Element prop = parent.addElement("attribute");
-		prop.addAttribute(ObjectKeys.XTAG_NAME, name);
-		prop.addAttribute(ObjectKeys.XTAG_TYPE, type);
-		prop.addText(value);
-		return prop;
-	}
-	//attributes are available through the definintion builder
-	public static Element addLogAttributeCData(Element parent, String name, String type, String value) {
-		if (Validator.isNull(value)) return null;
-		Element prop = parent.addElement("attribute");
-		prop.addAttribute("name", name);
-		prop.addAttribute("type", type);
-		prop.addCDATA(value);
-		return prop;
-	}
-	public static Element addLogAttributeCData(Element parent, String name, String type, Object value) {
-		if (value == null) return null;
-		Element prop = parent.addElement("attribute");
-		prop.addAttribute("name", name);
-		prop.addAttribute("type", type);
-		prop.addCDATA(value.toString());
-		return prop;
-	}
+
 }

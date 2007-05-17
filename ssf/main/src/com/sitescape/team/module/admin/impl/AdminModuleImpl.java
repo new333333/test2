@@ -37,7 +37,7 @@ import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
@@ -46,6 +46,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -56,11 +57,15 @@ import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.binder.BinderProcessor;
+import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.MailModule;
+import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
@@ -77,10 +82,12 @@ import com.sitescape.team.security.function.FunctionExistsException;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.team.web.util.DashboardHelper;
 
 /**
  * @author Janet McCann
@@ -128,6 +135,20 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return folderModule;
 	}
  
+	protected BinderModule binderModule;
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+   	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+	protected DashboardModule dashboardModule;
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
+	}
+   	protected DashboardModule getDashboardModule() {
+		return dashboardModule;
+	}
    	/**
    	 * Use method names as operation so we can keep the logic out of application
 	 * and easisly change the required rights
@@ -407,122 +428,78 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		template.setDefinitionsInherited(false);
 		template.setDefinitions(definitions);
 		template.setFunctionMembershipInherited(true);
+       	String icon = DefinitionUtils.getPropertyValue(entryDef.getDefinition().getRootElement(), "icon");
+       	if (Validator.isNotNull(icon)) template.setIconName(icon);
 		doAddTemplate(template, type, updates);
 	    return template.getId();
 	 }
-	 public Long addTemplate(Element config) {
+	 
+		//add top level template
+	 public Long addTemplate(Document doc) {
 		 checkAccess("addTemplate");
-		 TemplateBinder template = new TemplateBinder();
-		 template.setDefinitionsInherited(false);
-		 template.setFunctionMembershipInherited(true);
-		 template.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		 Integer type = Integer.valueOf(config.attributeValue("type"));
-		 template.setDefinitionType(type);
-		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
-		 template.setModification(template.getCreation());
-		 template.setName(getPropertyValue(config, "name"));
-		 template.setInternalId(getPropertyValue(config, "internalId"));
-		 template.setTemplateDescription(getPropertyValue(config, "templateDescription"));
-		 template.setTemplateTitle(getPropertyValue(config, "templateTitle"));
-		 template.setTitle(getPropertyValue(config, "title"));
-		 if (Validator.isNull(template.getTitle())) template.setTitle(template.getTemplateTitle());
-		 template.setDescription(getPropertyValue(config, "description"));
-		 String bVal = getPropertyValue(config, "library");
-		 if (!Validator.isNull(bVal)) {
-			 template.setLibrary(GetterUtil.get(bVal, false));
-		 }
-		 bVal = getPropertyValue(config, "uniqueTitles");
-		 if (!Validator.isNull(bVal)) {
-			 template.setUniqueTitles(GetterUtil.get(bVal, false));
-		 }	
-		 template.setPathName("/" + template.getTitle());
-		 
-		 String entryDefName = getPropertyValue(config, "entryDef");
-		 Definition def = null;
-		 if (Validator.isNotNull(entryDefName)) {
-			 FilterControls fc = new FilterControls();
-			 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
-			 fc.add("name", entryDefName);
-			 fc.add("type", type);
-			 List results = getCoreDao().loadObjects(Definition.class, fc);
-			 if (!results.isEmpty()) {
-				 def = (Definition)results.get(0);
-			 }			 
-		 }
-		 if (def != null) template.setEntryDef(def);
-		 else template.setEntryDef(getDefinitionModule().addDefaultDefinition(type));
-		 List definitions = new ArrayList();
-		 Map workflows = new HashMap();
-		 //get default definitions for this template
-		 List nodes = config.selectNodes("./definition");
-		 if (nodes.isEmpty()) {
-			 template.setDefinitionsInherited(true);
-		 } else {
-			 for (int i=0; i<nodes.size(); ++i) {
-				 Element element = (Element)nodes.get(i);
-				 String name = element.attributeValue("name");
-				 if (Validator.isNull(name)) continue;
-				 FilterControls fc = new FilterControls();
-				 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
-				 fc.add("name", name);
-				 List<Definition> results = getCoreDao().loadObjects(Definition.class, fc);
-				 if (results.isEmpty()) continue;
-				 Definition cDef = results.get(0);
-				 definitions.add(cDef);
-				 name=element.attributeValue("workflow");
-				 if (Validator.isNotNull(name)) {
-					 //lookup workflow
-					 fc = new FilterControls();
-					 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
-					 fc.add("name", name);
-					 results = getCoreDao().loadObjects(Definition.class, fc);
-					 if (!results.isEmpty()) {
-						 workflows.put(cDef.getId(), results.get(0));
-					 }
-					 
+		 Element config = doc.getRootElement();
+		 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
+		 if (Validator.isNotNull(internalId)) {
+			 try {
+			 //	see if it exists
+				 Binder binder = getCoreDao().loadReservedBinder(internalId, RequestContextHolder.getRequestContext().getZoneId());
+				 if (binder instanceof TemplateBinder) {
+					 //if it exists, delete it
+					 getBinderModule().deleteBinder(binder.getId());
+				 } else {
+					 throw new ConfigurationException("Reserved binder exists with same internal id");
 				 }
-			 }
-			 template.setDefinitionsInherited(false);
-			 template.setDefinitions(definitions);
-			 template.setWorkflowAssociations(workflows);
+			 } catch (NoBinderByTheNameException nb ) {
+				 //	okay doesn't exists
+			 }; 
 		 }
-		 
-		 getCoreDao().save(template);
-		 template.setupRoot();
+		 TemplateBinder template = new TemplateBinder();
+		 template.setInternalId((internalId));
+		 doTemplate(template, config);
 		 //see if any child configs need to be copied
-		 nodes = config.selectNodes("./property[@name='template']");
+		 List nodes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
 		 for (int i=0; i<nodes.size(); ++i) {
 			 Element element = (Element)nodes.get(i);
-			 String name = element.getStringValue();
-			 if (Validator.isNull(name)) continue;
-			 FilterControls fc = new FilterControls();
-			 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
-			 fc.add(ObjectKeys.FIELD_BINDER_NAME, name);
-			 List results = getCoreDao().loadObjects(TemplateBinder.class, fc);
-			 if (results.isEmpty()) continue;
-			 TemplateBinder child = (TemplateBinder)results.get(0);
-			 addTemplate(template, child);
+			 TemplateBinder child = new TemplateBinder();
+			 template.addBinder(child);
+			 doTemplate(child, element);
 		 }
-		 //	need to write this out so binderKey updated incases where this is inside another transaction
-		 //sqlserver complains of uniquekey constraint violations when another template is added before this one is flushed.
-		 getCoreDao().flush();	
+		 //need to flush, if multiple loaded in 1 transaction the binderKey may not have been
+		 //flushed which could result in duplicates on the next save
+		 getCoreDao().flush();
 		 return template.getId();
 	 }
-	 private String getPropertyValue(Element element, String name) {
-		 Element variableEle = (Element)element.selectSingleNode("./property[@name='" + name + "']");
-		 if (variableEle == null) return null;
-		 return variableEle.getStringValue();   	
+	 public void doTemplate(TemplateBinder template, Element config) {
+		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
+
+		 template.setLibrary(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_LIBRARY), false));
+		 template.setUniqueTitles(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_UNIQUETITLES), false));
+		 template.setDefinitionsInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS), false));
+		 template.setFunctionMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP), true));
+		 //get attribute from document
+		 Map updates = XmlUtils.getAttributes(config);
+		 doAddTemplate(template, type, updates);
+		 XmlUtils.getDefinitions(template, config, getCoreDao());
+		 template.setEntryDef(template.getDefaultViewDef());
+		 Element dashboardConfig = (Element)config.selectSingleNode(ObjectKeys.XTAG_ELEMENT_TYPE_DASHBOARD);
+		 if (dashboardConfig != null) {
+			getDashboardModule().createEntityDashboard(template.getEntityIdentifier(), dashboardConfig);
+		 }
 	 }
 	 protected TemplateBinder doAddTemplate(TemplateBinder template, int type, Map updates) {
 		 template.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		 template.setDefinitionType(type);
 		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		 template.setModification(template.getCreation());
-		 ObjectBuilder.updateObject(template, updates);
+		 EntryBuilder.updateEntry(template, updates);
 		 if (Validator.isNull(template.getTitle())) template.setTitle(template.getTemplateTitle());
-		 template.setPathName("/" + template.getTitle());
+		 if (template.isRoot()) {
+			 template.setPathName("/" + template.getTitle());
+		 } else {
+			 template.setPathName(template.getParentBinder().getPathName() + "/" + template.getTitle());
+		 }
 		 getCoreDao().save(template);
-		 template.setupRoot();
+		 if (template.isRoot()) template.setupRoot();
 		 return template;
 	 }
 
@@ -617,6 +594,74 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		TemplateBinder config = (TemplateBinder)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
 		ObjectBuilder.updateObject(config, updates);
 	}
+	public Document getTemplateAsXml(TemplateBinder binder) {
+		Document doc = DocumentHelper.createDocument();
+		Element element = doc.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+		getTemplateAsXml(binder, element);
+		return doc;
+	}
+	protected void getTemplateAsXml(TemplateBinder binder, Element element) {
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, binder.getDefinitionType().toString());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, binder.getInternalId());
+		
+		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTemplateTitle());
+		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_TEMPLATE_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getTemplateDescription());
+		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTitle());
+		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getDescription());
+		XmlUtils.addAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, binder.getIconName());			
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+		Set<Map.Entry> mes = binder.getCustomAttributes().entrySet();
+		for (Map.Entry me: mes) {
+			CustomAttribute attr = (CustomAttribute)me.getValue();
+			attr.toXml(element);
+		}
+		//TODO:write out function memberships
+
+		List<Definition> defs = binder.getDefinitions();
+		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
+			Definition def = binder.getEntryDef();
+			if (def != null) {
+				Element e = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+				e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+				e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+				e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, def.getId().toString());
+			}
+			
+		} else {
+			for (Definition def:defs) {
+				Element e = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+				e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+				e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+				e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, def.getId().toString());
+			}
+		}
+		Map<String,Definition> workflows = binder.getWorkflowAssociations();
+		for (Map.Entry me: workflows.entrySet()) {
+			Element e = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+			Definition def = (Definition)me.getValue();
+			e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+			e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+			e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, def.getId().toString());
+			//log the definitionId the workflow refers to
+			XmlUtils.addProperty(e, ObjectKeys.XTAG_ENTITY_DEFINITION, me.getKey());
+			
+		}
+		
+		
+		Dashboard dashboard = getDashboardModule().getEntityDashboard(binder.getEntityIdentifier());
+		if (dashboard != null) dashboard.asXml(element);
+		
+		List<TemplateBinder> children = binder.getBinders();
+		for (TemplateBinder child:children) {
+			Element childElement = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+			getTemplateAsXml(child, childElement);
+			
+		}
+
+	}
 	public TemplateBinder getTemplate(Long id) {
 		//TODO: is there access
 		return (TemplateBinder)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -642,7 +687,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			binders.addAll(b.getBinders());
 			EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
 			if (dashboard != null) {
-			//	this should be moved
 				DashboardHelper.resolveRelativeBinders(b, dashboard);
 			}
 		}
@@ -751,8 +795,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
-		List binders = new ArrayList();
-		
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
 		
 		Iterator itFunctions = functionMemberships.entrySet().iterator();

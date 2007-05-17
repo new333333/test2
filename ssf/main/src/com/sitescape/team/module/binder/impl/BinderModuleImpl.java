@@ -51,7 +51,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
-import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.domain.NotificationDef;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
@@ -207,10 +207,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
        	TreeSet<Binder> result = new TreeSet<Binder>(c);
 		for (Long id:binderIds) {
-			try {//access check done by getFolder
-				//assume most folders are cached
+			try {//access check done by getBinder
+				//assume most binders are cached
 				result.add(getBinder(id));
-			} catch (NoFolderByTheIdException ex) {
+			} catch (NoObjectByTheIdException ex) {
 			} catch (AccessControlException ax) {
 			}
 			
@@ -521,24 +521,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return binder;
 	}
 	/**
-	 * Get tags owned by this binder
+	 * Get tags owned by this binder or current user
 	 */
 	
-	public List getCommunityTags(Long binderId) {
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "getCommunityTags");
-		List<Tag> tags = getCoreDao().loadCommunityTagsByEntity(binder.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
+	public Map getTags(Binder binder) {
+		//have binder - so assume read access
+        Map results = new HashMap();
+		//bulk load tags
+        List<Tag> tags = getCoreDao().loadEntityTags(binder.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
+        List publicTags = new ArrayList();
+        List privateTags = new ArrayList();
+        for (Tag t: tags) {
+        	if (t.isPublic()) {
+       			publicTags.add(t);
+        	} else {
+       			privateTags.add(t);
+         	}
+        }
+        
+        results.put(ObjectKeys.COMMUNITY_ENTITY_TAGS, TagUtil.uniqueTags(publicTags));
+        results.put(ObjectKeys.PERSONAL_ENTITY_TAGS, TagUtil.uniqueTags(privateTags));
+
+		return results;
 	}
-	
-	public List getPersonalTags(Long binderId) {
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "getPersonalTags");		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		List<Tag> tags = getCoreDao().loadPersonalEntityTags(binder.getEntityIdentifier(),user.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
-	}
-	
 	/**
 	 * Modify tag owned by this binder
 	 * @see com.sitescape.team.module.binder.BinderModule#modifyTag(java.lang.Long, java.lang.String, java.util.Map)
@@ -546,7 +551,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void modifyTag(Long binderId, String tagId, String newTag) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "modifyTag"); 
-	   	Tag tag = coreDao.loadTagById(tagId);
+	   	Tag tag = coreDao.loadTag(tagId);
 	   	tag.setName(newTag);
  	    loadBinderProcessor(binder).indexBinder(binder, false);
 	}
@@ -587,7 +592,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void deleteTag(Long binderId, String tagId) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "deleteTag"); 
-	   	Tag tag = coreDao.loadTagById(tagId);
+	   	Tag tag = coreDao.loadTag(tagId);
 	   	getCoreDao().delete(tag);
 	   	indexBinder(binderId);
 	}

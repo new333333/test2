@@ -61,19 +61,13 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
-<c:if test="${ssConfigJspStyle != 'template'}">
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${portletNamespace}', 'yes');"
+		onClick="return ${ss_divId}_searchurl('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}');"
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
+		onClick="return ${ss_divId}_searchurl('${folder.id}', '${folder.id}', 'folder');"
 		><span class="ss_bold">${folder.title}</span></a></td>
- </c:if>
- <c:if test="${ssConfigJspStyle == 'template'}">
-    <a href="javascript: ;"
-		onClick="return false"><ssf:nlt tag="${folder.parentBinder.title}" checkIfTag="true"/></a> // 
-    <a href="javascript: ;" onClick="return false"><span class="ss_bold"><ssf:nlt tag="${folder.title}" checkIfTag="true"/></span></a></td>
-</c:if>
+
 </tr>
 </c:forEach>
 </table>

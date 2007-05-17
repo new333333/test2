@@ -243,6 +243,28 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/></legend>
+
+    <c:forEach var="item" items="${ssPublicWorkflowDefinitions}">
+	  <c:choose>
+	    <c:when test="${empty ssWorkflowDefinitionMap[item.key]}">
+	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	    </c:when>
+	    <c:otherwise>
+	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	    </c:otherwise>
+	  </c:choose>
+    </c:forEach>
+    <br>
+<c:if test="${!ssBinder.definitionsInherited}">
+      <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+</c:if>
+  </fieldset>
+  <br>
+  
 </c:if>
 
 <c:if test="${ssBinder.entityType == 'profiles'}">

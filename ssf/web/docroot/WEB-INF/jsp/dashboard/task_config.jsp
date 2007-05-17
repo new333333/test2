@@ -35,9 +35,9 @@ function ${treeName}_showId(forum, obj) {
 
 <br/>
 <br/>
-<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/>
+<c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
-<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
+<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}"/>
 <c:if test="${empty summaryWordCount}"><c:set var="summaryWordCount" value="20"/></c:if>
 <table>
 <tr>
@@ -77,7 +77,7 @@ ${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinder.title}
   treeName="${treeName}"
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
   rootOpen="true" 
-  singleSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList[0]}" 
+  singleSelect="${ssDashboard.beans[ssComponentId].ssBinder.id}" 
   singleSelectName="ss_folder_id"
 />
 </div>

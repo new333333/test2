@@ -991,28 +991,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         );  
 	}
 	
-	public List loadCommunityTagsByOwner(final EntityIdentifier ownerId) {
-		return (List)getHibernateTemplate().execute(
-	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	return session.createCriteria(Tag.class)
-                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
-       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
-                 		.add(Expression.eq("public",true))
-                 		.addOrder(Order.asc("name"))
-                  		.list();
-	                }
-	            }
-	        );
-		
-	}
 	
-	public Tag loadTagById(final String tagId) {
+	public Tag loadTag(final String tagId) {
         Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);
         if (t != null) return t;
         throw new NoObjectByTheIdException("errorcode.no.tag.by.the.id", tagId);
 	}
 	//The entries must be of the same type
+	//Used by indexing bulk load
 	public Map loadAllTagsByEntity(final Collection entityIds) {
 		if (entityIds.isEmpty()) return new HashMap();
 		
@@ -1051,6 +1037,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		return result;
 		
 	}
+	//Used by indexing
 	public List loadAllTagsByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
@@ -1065,7 +1052,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	
+	public List loadCommunityTagsByOwner(final EntityIdentifier ownerId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+                 		.add(Expression.eq("public",true))
+                 		.addOrder(Order.asc("name"))
+                  		.list();
+	                }
+	            }
+	        );
+		
+	}
 	public List loadCommunityTagsByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
@@ -1081,7 +1082,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	public List loadPersonalEntityTags(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
+	public List loadPersonalTagsByEntity(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -1098,7 +1099,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	public List loadPersonalTags(final EntityIdentifier ownerId) {
+	public List loadPersonalTagsByOwner(final EntityIdentifier ownerId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -1113,6 +1114,30 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}	
+    //load public and personal private tags for an entity.  Optimization
+    //order by id and name
+    public List loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
+	   	return (List)getHibernateTemplate().execute(
+		     	new HibernateCallback() {
+		       		public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+       					.add(Expression.eq("entityIdentifier.type", entityIdentifier.getEntityType().getValue()))
+                 		.add(Expression.eq("entityIdentifier.entityId", entityIdentifier.getEntityId()))
+                        .add(Expression.disjunction()
+              					.add(Expression.eq("public",true))
+              					.add(Expression.conjunction()
+              							.add(Expression.eq("ownerIdentifier.entityId", ownerIdentifier.getEntityId()))
+              							.add(Expression.eq("ownerIdentifier.type", ownerIdentifier.getEntityType().getValue()))
+              					)
+              			)
+                 		.addOrder(Order.asc("name"))
+	                 	.list();
+	    	   		}
+	    	   	}
+	    	 );    	
+   	
+    }
+	
 	public List loadSubscriptionByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {

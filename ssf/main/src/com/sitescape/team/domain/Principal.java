@@ -37,7 +37,6 @@ import com.sitescape.team.NotSupportedException;
 *
 */
 public abstract class Principal extends Entry  {
-	protected boolean deleted=false;
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
@@ -82,15 +81,6 @@ public abstract class Principal extends Entry  {
     	if (ObjectKeys.SUPER_USER_INTERNALID.equals(internalId)) return true;
     	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(internalId)) return true;
     	return false;
-    }
-    /**
-     * @hibernate.property
-     */
-    public boolean isDeleted() {
-    	return deleted;
-    }
-    public void setDeleted(boolean deleted) {
-    	this.deleted = deleted;
     }
 	/**
      * @hibernate.property 

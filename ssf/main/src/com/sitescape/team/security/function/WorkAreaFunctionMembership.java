@@ -15,7 +15,7 @@ import java.util.Set;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 
@@ -148,10 +148,10 @@ public class WorkAreaFunctionMembership {
     }
     public Element addChangeLog(Element parent) {
 		Element element = parent.addElement("workAreaFunctionMembership");
-		element.addAttribute(ObjectKeys.XTAG_ID, getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
 		
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WA_FUNCTION, getFunctionId());
-		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WA_MEMBERS, CollectionUtil.toCommaIds(getMemberIds()));
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_FUNCTION, getFunctionId());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_MEMBERS, CollectionUtil.toCommaIds(getMemberIds()));
 		return element;
     	
     }

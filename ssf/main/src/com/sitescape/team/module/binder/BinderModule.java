@@ -111,20 +111,6 @@ public interface BinderModule {
      */
     public Map getBinders(Binder binder, Map options);
     /**
-     * Get the list of community tags on the binder
-     * @param binderId
-     * @return
-     * @throws AccessControlException
-     */
-    public List getCommunityTags(Long binderId) throws AccessControlException;
-    /**
-     * Get a list of personal tags on a binder
-     * @param binderId
-     * @return
-     * @throws AccessControlException
-     */
-    public List getPersonalTags(Long binderId) throws AccessControlException;
-    /**
      * Finds a binder by path name. If no binder exists with the path name,
      * it returns <code>null</code>. If a matching binder exists but the
      * user has no access to it, it throws <code>AccessControlException</code>.
@@ -154,6 +140,12 @@ public interface BinderModule {
      * @return
      */
 	public Subscription getSubscription(Long binderId);
+	/**
+	 * Return community tags and the current users personal tags on the binder
+	 * @param binder
+	 * @return Map contain 2 Lists.
+	 */
+	public Map getTags(Binder binder);
 	/**
 	 * Get a list of team members for the given binder
 	 * @param binderId

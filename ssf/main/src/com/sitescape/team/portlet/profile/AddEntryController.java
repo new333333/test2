@@ -83,7 +83,7 @@ public class AddEntryController extends SAbstractController {
 		Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(binder);
 		String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 		model.put(WebKeys.FOLDER, binder);
-		model.put(WebKeys.ENTRY_DEFINTION_MAP, folderEntryDefs);
+		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 		//Make sure the requested definition is legal
 		if (folderEntryDefs.containsKey(entryType)) {
