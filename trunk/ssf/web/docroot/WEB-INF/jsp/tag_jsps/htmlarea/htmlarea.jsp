@@ -18,7 +18,7 @@
 tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
   language: "${language}", 
-  content_css: "<html:rootPath/>css/editor.css", 
+  content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
   relative_urls: false, 
   width: "100%",
 <ssf:ifnotaccessible>
@@ -32,6 +32,7 @@ tinyMCE.init(
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 
+  theme_advanced_styles: "Large=ss_largerprint;Fine=ss_fineprint",
   theme_advanced_buttons2_add: "pastetext,pasteword,ss_addimage,spellchecker",
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
