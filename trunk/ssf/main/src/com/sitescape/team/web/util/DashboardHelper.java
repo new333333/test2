@@ -313,7 +313,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		//Get the lists of dashboard components that are supported
 		String[] components_list = SPropsUtil.getCombinedPropertyList(
-				"Dashboard.COMPONENTS.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
+				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 		
 		List cw = new ArrayList();
 		Map componentTitles = new HashMap();
