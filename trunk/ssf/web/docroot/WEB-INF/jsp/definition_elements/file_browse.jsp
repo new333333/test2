@@ -12,6 +12,7 @@
 %>
 <c:set var="elementName" value="${property_name}"/>
 <c:set var="caption" value="${property_caption}"/>
+<c:set var="repositoryName" value="${property_storage}"/>
 
 <c:set var="width" value=""/>
 <c:if test='${! empty property_width}'>
@@ -62,13 +63,15 @@ var ${eName}_ok = 1;
 
 <div class="ss_entryContent" ${inline}>
 <span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
+<c:out value="${elementName}"/>
+<c:out value="${repositoryName}"/>
 <c:forEach var="i" begin="1" end="${count}">
  <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
  </c:if>
  <c:if test='${! empty ssFolder}'>
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
-  <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width} onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}');"/><br/>
+  <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width} onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"/><br/>
  </c:if>
  <c:if test='${empty ssFolder}'>
   <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width}/><br/>
