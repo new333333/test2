@@ -1204,7 +1204,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("move_item", "1");
 			sb.append("\n<div id=\"move_item\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.selectNewLocation")+"</span><br/>\n");
+			sb.append("<span class=\"ss_bold\">"+NLT.get("definition.selectNewLocation")+"</span><br/>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item')\n");
