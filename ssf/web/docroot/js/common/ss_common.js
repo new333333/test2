@@ -4715,7 +4715,7 @@ function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
 }
 
-function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
+function ss_ajaxValidate(url, obj, labelId, msgBoxId, repositoryName) {
 	ss_setupStatusMessageDiv();
  	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
@@ -4723,6 +4723,7 @@ function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
 	ajaxRequest.addKeyValue("ss_ajaxValue",obj.value);
 	ajaxRequest.addKeyValue("ss_ajaxLabelId",labelId);
 	ajaxRequest.addKeyValue("ss_ajaxMsgId",msgBoxId);
+	ajaxRequest.addKeyValue("repository",repositoryName);
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.sendRequest();  //Send the request
 }
