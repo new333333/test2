@@ -178,6 +178,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
@@ -219,6 +220,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, true);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSummaryConfigBean(binder, ssDashboard, 
