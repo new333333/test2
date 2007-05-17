@@ -39,6 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.module.report.ReportModule;
@@ -52,6 +53,8 @@ import com.sitescape.team.web.tree.SearchTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.module.workflow.WorkflowUtils;
+
 import com.sitescape.util.Validator;
 public class ReportDownloadController extends  SAbstractController {
 	
@@ -76,6 +79,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.END_BY, "report.columns.end_by");
 		columnNames.put(ReportModule.DEFINITION_ID, "report.columns.definition");
 		columnNames.put(ReportModule.AVERAGE, "report.columns.average");
+		columnNames.put(ReportModule.AVERAGE_TI, "report.columns.average_ti");
 		columnNames.put(ReportModule.COUNT, "report.columns.count");
 	}
 
@@ -133,7 +137,7 @@ public class ReportDownloadController extends  SAbstractController {
 
 				report = getReportModule().generateReport(ids, hasUsers, startDate, endDate);
 				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
-						ReportModule.USER_ID, AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(),
+						ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("login".equals(reportType)) {
 				report = getReportModule().generateLoginReport(startDate, endDate);
@@ -159,7 +163,7 @@ public class ReportDownloadController extends  SAbstractController {
 
 					report = getReportModule().generateWorkflowStateReport(ids, startDate, endDate);
 					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
-							ReportModule.DEFINITION_ID, ReportModule.STATE, ReportModule.AVERAGE };
+							ReportModule.DEFINITION_ID, ReportModule.STATE, ReportModule.AVERAGE_TI, ReportModule.AVERAGE };
 				} else if(RequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("current")) {
 					//Get the list of binders for reporting
 					List<Long> ids = new ArrayList();
@@ -196,24 +200,34 @@ public class ReportDownloadController extends  SAbstractController {
 	
 	protected void printReport(PrintWriter out, List<Map<String, Object>> report, String[] columns, boolean hasUsers)
 	{
-		HashMap<Long,Principal> userMap = null;
-		if(hasUsers) {
-			HashSet userIds = new HashSet();
-			for(Map<String, Object> row : report) {
-				if(row.containsKey(ReportModule.USER_ID)) {
-					userIds.add(row.get(ReportModule.USER_ID));
-				}
-				if(row.containsKey(ReportModule.START_BY)) {
-					userIds.add(row.get(ReportModule.START_BY));
-				}
-				if(row.containsKey(ReportModule.END_BY)) {
-					userIds.add(row.get(ReportModule.END_BY));
-				}
+		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
+		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
+
+		HashSet userIds = new HashSet();
+		HashSet<String> definitionIds = new HashSet<String>();
+		for(Map<String, Object> row : report) {
+			if(row.containsKey(ReportModule.USER_ID)) {
+				userIds.add(row.get(ReportModule.USER_ID));
 			}
-			userMap = new HashMap<Long,Principal>();
+			if(row.containsKey(ReportModule.START_BY)) {
+				userIds.add(row.get(ReportModule.START_BY));
+			}
+			if(row.containsKey(ReportModule.END_BY)) {
+				userIds.add(row.get(ReportModule.END_BY));
+			}
+			if(row.containsKey(ReportModule.DEFINITION_ID)) {
+				definitionIds.add((String) row.get(ReportModule.DEFINITION_ID));
+			}
+		}
+		if(userIds.size() > 0) {
 			List<Principal> principals = getProfileModule().getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
 			for(Principal p : principals) {
 				userMap.put(p.getId(), p);
+			}
+		}
+		if(definitionIds.size() > 0) {
+			for(String id : definitionIds) {
+				definitionMap.put(id, getDefinitionModule().getDefinition(id));
 			}
 		}
 
@@ -228,7 +242,15 @@ public class ReportDownloadController extends  SAbstractController {
 		}
 		out.println();
 
+		Definition definition;
 		for(Map<String, Object> row : report) {
+			if(row.containsKey(ReportModule.DEFINITION_ID)) {
+				definition = definitionMap.get(row.get(ReportModule.DEFINITION_ID));
+				row.put(ReportModule.DEFINITION_ID, definition.getTitle());
+				if(row.containsKey(ReportModule.STATE)) {
+					row.put(ReportModule.STATE, WorkflowUtils.getStateCaption(definition, (String) row.get(ReportModule.STATE)));
+				}
+			}
 			for(int i = 0; i < columns.length; i++) {
 				String name = columns[i];
 				if(!isUserColumn(name) || hasUsers) {
@@ -244,7 +266,7 @@ public class ReportDownloadController extends  SAbstractController {
 					Long userId = (Long) row.get(name);
 					Principal user = userMap.get(userId);
 					if(user != null) {
-						out.print(user.getTitle());
+						out.print(user.getTitle() + " (" + user.getName() + ")");
 					}
 				}
 			}

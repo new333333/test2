@@ -28,6 +28,7 @@ public interface ReportModule {
 	public static final String END_BY = "end_by";
 	public static final String DEFINITION_ID = "definition_id";
 	public static final String AVERAGE = "average";
+	public static final String AVERAGE_TI = "average_ti";
 	public static final String COUNT = "count";
 	
 	public void addAuditTrail(AuditTrail auditTrail);

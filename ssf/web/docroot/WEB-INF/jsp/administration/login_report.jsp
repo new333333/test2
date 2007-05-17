@@ -50,6 +50,7 @@ var ssReportURL="<portlet:actionURL><portlet:param
 				 immediateMode="false" altText="<ssf:nlt tag='calendar.view.popupAltText'/>"
 				 />
    </div>
+   <br/>
    <div id="ss_endPopup" class="ss_calPopupDiv"></div>
    <div class="ss_buttonBarLeft">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
