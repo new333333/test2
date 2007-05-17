@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.util;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -206,11 +207,23 @@ public class LuceneUtil {
 	// unlock the index
 	public static void unlock(String indexPath) {
 		try {
+			closeAll();
+		} catch (Exception e) {}
+		try {
 			if (indexExists(indexPath)) {
 				// force unlock of the directory
 				IndexReader.unlock(FSDirectory.getDirectory(indexPath));
 			}
 		} catch (Exception e) {
+			logger.info("Can't unlock Lucene lockfile: " + e.toString());
+		}
+		try {
+			File lockFile = new File(indexPath + "write.lock");
+			if (lockFile.exists()) {
+				lockFile.delete();
+			}
+		} catch (Exception e) {
+			logger.info("Can't delete Lucene lockfile: " + e.toString());
 		}
 	}
 	
