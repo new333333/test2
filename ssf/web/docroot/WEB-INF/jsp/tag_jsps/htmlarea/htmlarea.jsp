@@ -21,7 +21,12 @@ tinyMCE.init(
   content_css: "<html:rootPath/>css/editor.css", 
   relative_urls: false, 
   width: "100%",
+<ssf:ifnotaccessible>
+  accessibility_focus: false,
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
   accessibility_focus: true,
+</ssf:ifaccessible>
   remove_script_host: false,
   plugins: "table,ss_addimage,preview,contextmenu,paste", 
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
