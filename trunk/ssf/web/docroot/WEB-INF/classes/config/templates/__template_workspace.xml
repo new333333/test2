@@ -6,7 +6,7 @@
   <attribute name="title" type="string"><![CDATA[__template_workspace]]></attribute>
   <attribute name="description" type="description"><![CDATA[]]></attribute>
   <attribute name="iconName" type="string">/icons/workspace.gif</attribute>
-  <property name="library">true</property>
+  <property name="library">false</property>
   <property name="uniqueTitle">false</property>
   <property name="inheritMembership">true</property>
   <property name="inheritDefinitions">false</property>
