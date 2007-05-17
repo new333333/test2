@@ -342,7 +342,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			}
  			if(binder.getResourcePath() == null) {
  				if(parent.isMirrored()) {
- 					binder.setResourcePath(getResourceDriverManager().getResourcePath(parent.getResourceDriverName(), parent.getResourcePath(), binder.getTitle()));
+ 					binder.setResourcePath(getResourceDriverManager().normalizedResourcePath(parent.getResourceDriverName(), parent.getResourcePath(), binder.getTitle()));
  				}
  				else {
  					throw new IllegalArgumentException("Resource path must be specified for new binder");
@@ -356,7 +356,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
     protected void addBinder_mirrored(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
-		if(binder.isMirrored()) {
+		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
+			// First, make sure that the resource path we store is normalized.
+			String normalizedResourcePath = getResourceDriverManager().normalizedResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
+			binder.setResourcePath(normalizedResourcePath);
+						
+			// Second, perform outward synchronization, if requested.
 			Boolean synchToSource = Boolean.TRUE;
 			if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
 				synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
@@ -834,7 +839,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
 		source.setPathName(destination.getPathName() + "/" + source.getTitle());
 		if (resourcePathAffected) {
-			String newPath = getResourceDriverManager().getResourcePath
+			String newPath = getResourceDriverManager().normalizedResourcePath
 			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
 			source.setResourcePath(newPath);
 		}
@@ -854,7 +859,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		b.setPathName(b.getParentBinder().getPathName() + "/" + b.getTitle());
     		b.setBinderKey(new HKey(b.getParentBinder().getBinderKey(), b.getBinderKey().getLastNumber()));
 			if(resourcePathAffected) {
-				String newPath = getResourceDriverManager().getResourcePath
+				String newPath = getResourceDriverManager().normalizedResourcePath
 				(b.getResourceDriverName(), b.getParentBinder().getResourcePath(), b.getTitle());
 				b.setResourcePath(newPath);
 			}
@@ -1318,7 +1323,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			// to the names of the directories they represent. Consequently changing
 			// their titles do not affect the resource names.
 			resourcePathAffected = true;
-			String newPath = getResourceDriverManager().getResourcePath
+			String newPath = getResourceDriverManager().normalizedResourcePath
 			(binder.getResourceDriverName(), binder.getParentBinder().getResourcePath(), binder.getTitle());
 			binder.setResourcePath(newPath);
 		}
@@ -1329,7 +1334,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			Binder child = (Binder)children.get(0);
 			child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
 			if(resourcePathAffected) {
-				String newPath = getResourceDriverManager().getResourcePath
+				String newPath = getResourceDriverManager().normalizedResourcePath
 				(child.getResourceDriverName(), child.getParentBinder().getResourcePath(), child.getTitle());
 				child.setResourcePath(newPath);
 			}

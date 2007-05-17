@@ -304,6 +304,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
     	final Binder binder = loadBinder(binderId);
+    	
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED)) {
+   			boolean mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
+   			if(mirrored && binder.getBinderCount() > 0) {
+   				// We allow changing regular binder to mirrored one only when it has no child binders.
+   				// It is ok for the binder to have existing entries though.
+   				throw new NotSupportedException(NLT.get("errorcode.notsupported.not.leaf"));
+   			}
+   		}
+    	
     	//save library flag
     	boolean oldLibrary = binder.isLibrary();
     	boolean oldUnique = binder.isUniqueTitles();

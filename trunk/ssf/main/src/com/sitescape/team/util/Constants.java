@@ -18,6 +18,8 @@ public interface Constants {
 	
 	public static final String SLASH = "/";
 	
+	public static final String BACK_SLASH = "\\";
+	
 	public static final String QUESTION = "?";
 	
 	public static final String COLON = ":";
