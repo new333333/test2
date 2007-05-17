@@ -22,6 +22,7 @@ function ss_showSignGuestbookIframe(namespace, obj) {
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_signGuestbookIframeOffset + "px"
 		}
+		iframeDiv.style.border = "1px solid #CCCCCC";
 	}
 }
 

@@ -89,6 +89,7 @@ function ss_addBlogReply<portlet:namespace/>(obj, id) {
 	targetDiv.style.display = 'block';
 	var iframeDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_iframe_' + id)
 	iframeDiv.src = obj.href;
+	iframeDiv.style.border = "1px solid #CCCCCC";
 }
 var ss_replyIframeOffset = 50;
 function ss_showBlogReplyIframe<portlet:namespace/>(obj, id) {
