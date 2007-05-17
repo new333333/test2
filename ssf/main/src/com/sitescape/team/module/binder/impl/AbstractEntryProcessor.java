@@ -250,8 +250,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		}
     }
     
-    private void checkInputFilesForNonMirroredBinder(Binder nonMirroredBinder,
-			List fileUploadItems, FilesErrors errors) {
+    private void checkInputFilesForNonMirroredBinder(List fileUploadItems, FilesErrors errors) {
 		for (int i = 0; i < fileUploadItems.size();) {
 			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
 			if (fui.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
@@ -259,10 +258,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				errors.addProblem(new FilesErrors.Problem(
 								fui.getRepositoryName(),
 								fui.getOriginalFilename(),
-								FilesErrors.Problem.PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER,
-								new IllegalArgumentException("Binder ["
-										+ nonMirroredBinder.getPathName()
-										+ "] is not a mirrored folder")));
+								FilesErrors.Problem.PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER));
 			} else {
 				i++;
 			}
@@ -280,19 +276,26 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				}
 				else {
 					if(mirroredFileName.equals(fui.getOriginalFilename())) {
+						// This is a very questionable use case. However, since 
+						// the expected post-condition is still stable, we will
+						// let it continue.
 						i++;
 					}
 					else {
 	   					fileUploadItems.remove(i);
 	    				errors.addProblem(new FilesErrors.Problem
 								(fui.getRepositoryName(), fui.getOriginalFilename(), 
-										FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE, 
-										new IllegalArgumentException("The entry already mirrors another file [" + mirroredFileName + "]")));
+										FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE));
 					}
 				}
 			}
-			else
-				i++;
+			else {
+				fileUploadItems.remove(i);
+				errors.addProblem(new FilesErrors.Problem(
+								fui.getRepositoryName(),
+								fui.getOriginalFilename(),
+								FilesErrors.Problem.PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER));			
+			}
 		}
     }
     
@@ -303,7 +306,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		checkInputFileNames(fileUploadItems, nameErrors);
     			 
    		if(!binder.isMirrored()) {
-   			checkInputFilesForNonMirroredBinder(binder, fileUploadItems, nameErrors);
+   			checkInputFilesForNonMirroredBinder(fileUploadItems, nameErrors);
    		}
    		else {
    			checkInputFilesForMirroredBinder(fileUploadItems, nameErrors);
@@ -604,7 +607,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		checkInputFileNames(fileUploadItems, nameErrors);
    		
    		if(!binder.isMirrored()) {
-   			checkInputFilesForNonMirroredBinder(binder, fileUploadItems, nameErrors);
+   			checkInputFilesForNonMirroredBinder(fileUploadItems, nameErrors);
    		}
    		else {
    			List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
@@ -622,9 +625,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	   		   					fileUploadItems.remove(i);
 	   							nameErrors.addProblem(new FilesErrors.Problem
 	   									(fui.getRepositoryName(), fui.getOriginalFilename(), 
-	   											FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE, 
-	   											new IllegalArgumentException("The entry " + entry.getId() + 
-	   													" already mirrors another file [" + fa.getFileItem().getName() + "]")));
+	   											FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE));
 	   							i--;
 	   							break;					
 	   						}

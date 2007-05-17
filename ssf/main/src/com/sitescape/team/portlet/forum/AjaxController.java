@@ -43,6 +43,7 @@ import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
@@ -54,9 +55,12 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
@@ -2041,13 +2045,42 @@ public class AjaxController  extends SAbstractController {
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
 			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, 0L);
 			String path = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
+			String repositoryName = PortletRequestUtils.getStringParameter(request, WebKeys.REPOSITORY, "");
 			if(Validator.isNotNull(path)) {
 				String fileName = new java.io.File(path).getName();
 				Folder folder = getFolderModule().getFolder(binderId);
 				FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+				// First check inter-entry integrity regarding the file name.
 				if(entry != null && (entryId == 0L || entryId != entry.getId().longValue())) {
 					model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
 					model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
+				}
+				// Next check intra-entry integrity
+				else if(Validator.isNotNull(repositoryName)) {
+					if(folder.isMirrored()) {
+						if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+							model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
+						}
+						else if(entryId != 0L) {
+							// if entry is not null, the above expression guarantees that
+							// its id is equal to entryId. So we don't have to refetch it.
+							if(entry == null)
+								entry = getFolderModule().getEntry(binderId, entryId);
+				   			List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
+		   					for(FileAttachment fa : fas) {
+		   						if(!fileName.equals(fa.getFileItem().getName())) {
+									model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple");
+									model.put(WebKeys.AJAX_ERROR_DETAIL, fa.getFileItem().getName());								
+		   							break;					
+		   						}
+		   					}
+						}
+					}
+					else {
+						if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+							model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
+						}							
+					}
 				}
 			}
 		}

@@ -47,6 +47,7 @@ public class FilesErrors implements Serializable {
 	public static class Problem implements Serializable {
 		private static final long serialVersionUID = 1L;
 		
+		// Problem types
 		public static int OTHER_PROBLEM								= 0;
 		public static int PROBLEM_FILTERING							= 1;
 		public static int PROBLEM_STORING_PRIMARY_FILE				= 2;
@@ -64,7 +65,9 @@ public class FilesErrors implements Serializable {
 		public static int PROBLEM_ARCHIVING							= 14;
 		public static int PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER	= 15;
 		public static int PROBLEM_MIRRORED_FILE_MULTIPLE			= 16;
+		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 17;
 		
+		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
 			"file.error.other",
 			"file.error.filtering",
@@ -82,24 +85,31 @@ public class FilesErrors implements Serializable {
 			"file.error.file.exists",
 			"file.error.archiving",
 			"file.error.mirrored.file.in.regular.folder",
-			"file.error.mirrored.file.multiple"
+			"file.error.mirrored.file.multiple",
+			"file.error.regular.file.in.mirrored.folder"
 		};
 		
-		private String repositoryName;
-		private String fileName;
-		private int type; // one of the constants defined above
-		private Exception exception;
+		private String repositoryName; // required
+		private String fileName; // required
+		private int type; // required - one of the constants defined above
+		// at most one of the following two is set.
+		private Exception exception; // may be null
 		
 		public Problem(String repositoryName, String fileName, 
-				int type, Exception exception) {
+				int type) {
 			this.repositoryName = repositoryName;
 			this.fileName = fileName;
 			this.type = type;
+		}
+		
+		public Problem(String repositoryName, String fileName, 
+				int type, Exception exception) {
+			this(repositoryName, fileName, type);
 			this.exception = exception;
 		}
 		
 		public Exception getException() {
-			return exception;
+			return exception; // may be null
 		}
 		
 		public String getFileName() {
@@ -126,8 +136,9 @@ public class FilesErrors implements Serializable {
 				.append(" (")
 				.append(getRepositoryName())
 				.append(")")
-				.append(": ")
-				.append(getException().getLocalizedMessage());
+				.append(": ");
+			if(getException() != null)
+				sb.append(getException().getLocalizedMessage());
 			return sb.toString();
 		}
 	}
