@@ -134,6 +134,9 @@ function ${prefix}_toggleRecur(name) {
   <c:when test="${initEvent.frequencyString == 'MONTHLY'}">
   <c:set var="freqval" value="month" />
   </c:when>
+  <c:when test="${initEvent.frequencyString == 'YEARLY'}">
+  <c:set var="freqval" value="year" />
+  </c:when>
   <c:otherwise>
   <c:set var="freqval" value="none" />
   </c:otherwise>
@@ -346,6 +349,19 @@ function ${prefix}_toggleRecur(name) {
    ><ssf:nlt tag="calendar.day.names.weekendday" /></option> 
    </select> </td>
    </tr>
+   
+   <tr>
+     <td nowrap="nowrap" >
+      <input type="radio" name="${prefix}_repeatUnit" id="repeatyear"
+      value="year" 
+     <c:if test="${freqval == 'year'}"> checked="checked" </c:if>
+     >
+
+      <ssf:nlt tag="event.every" /> <input type="text" class="ss_text" name="${prefix}_everyNyear" size="2" 
+       value="${initEvent.interval}"
+   > <ssf:nlt tag="event.years" /></td>
+    </tr>
+    
    <% /* 
        * Until stuff works like this:
        *   count == 0 means repeats forever
@@ -468,6 +484,7 @@ function ${prefix}_onsub() {
   var dayrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'day');
   var weekrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'week');
   var monthrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'month');
+  var yearrptidx = getRadioButtonIdx(fieldref, '${prefix}_repeatUnit', 'year');
 
   if (fieldref.${prefix}_repeatUnit[dayrptidx].checked) {
       fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNday.value;
@@ -477,6 +494,9 @@ function ${prefix}_onsub() {
   }
   if (fieldref.${prefix}_repeatUnit[monthrptidx].checked) {
       fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNmonth.value;
+  }
+  if (fieldref.${prefix}_repeatUnit[yearrptidx].checked) {
+      fieldref.${prefix}_everyN.value = fieldref.${prefix}_everyNyear.value;
   }
 
   </c:if>

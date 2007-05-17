@@ -31,6 +31,7 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -55,6 +56,9 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.ical.IcalParser;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -116,6 +120,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxChangeDashboardComponent(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				ajaxUploadImageFile(request, response);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
+				ajaxUploadICalendarFile(request, response);
 			} else if (op.equals(WebKeys.OPERATION_ADD_TO_CLIPBOARD)) {
 				ajaxAddToClipboard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_CLEAR_CLIPBOARD)) {
@@ -1351,6 +1357,33 @@ public class AjaxController  extends SAbstractController {
 			"&" + WebKeys.URL_FILE_ID + "=" + fileHandle; 
 
 			response.setRenderParameter(WebKeys.IMAGE_FILE_URL, url);
+		}
+	
+		// And then, here's what you need to do at the time you create an entry.
+		
+		// You can use WebHelper.wrapFileHandleInMultipartFile(fileHandle) method
+		// to create a MultipartFile instance from the file handle and then put
+		// it into a map. Then you can pass it (along with other stuff) to 
+		// addEntry method to create an entry with file attachment, etc. 
+		
+		// When you're done creating an entry, make sure to call 
+		// WebHelper.releaseFileHandle(fileHandle) method to release system 
+		// resources associated with the file handle. 
+	}
+	
+	private void ajaxUploadICalendarFile(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		// Get a handle on the uploaded file
+		String fileHandle = WebHelper.getFileHandleOnUploadedFile(request);
+		if (fileHandle != null) {
+			
+			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+			
+			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
+			
+			List createdEntryIds = IcalParser.parse(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
+			
+			WebHelper.releaseFileHandle(fileHandle);
 		}
 	
 		// And then, here's what you need to do at the time you create an entry.

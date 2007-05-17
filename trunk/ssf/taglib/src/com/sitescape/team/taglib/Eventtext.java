@@ -128,6 +128,20 @@ public class Eventtext extends TagSupport {
       nums[3] = NLT.get("calendar.third");
       nums[4] = NLT.get("calendar.fourth");
       nums[5] = NLT.get("calendar.last");
+      
+      String months[] = new String[12];
+      months[0] = NLT.get("calendar.january");
+      months[1] = NLT.get("calendar.february");
+      months[2] = NLT.get("calendar.march");
+      months[3] = NLT.get("calendar.april");
+      months[4] = NLT.get("calendar.may");
+      months[5] = NLT.get("calendar.june");
+      months[6] = NLT.get("calendar.july");
+      months[7] = NLT.get("calendar.august");
+      months[8] = NLT.get("calendar.september");
+      months[9] = NLT.get("calendar.october");
+      months[10] = NLT.get("calendar.november");
+      months[11] = NLT.get("calendar.december");
 
       SimpleDateFormat sdf = null;
       if (event.hasDuration()) {
@@ -162,14 +176,17 @@ public class Eventtext extends TagSupport {
     		  if (event.getFrequency() == Event.MONTHLY) {
     			  freqString += " months";
     		  }
+    		  if (event.getFrequency() == Event.YEARLY) {
+    			  freqString += " years";
+    		  }
     	  }
-    	  Iterator it = bydays.listIterator();
+    	  Iterator byDaysIt = bydays.listIterator();
     	  
     	  // format weekly events as comma-separated list of ondays
-    	  if (event.getFrequency() == Event.WEEKLY && it.hasNext()) {
+    	  if (event.getFrequency() == Event.WEEKLY && byDaysIt.hasNext()) {
     		  onString += "on ";
-    		  while (it.hasNext()) {
-    			  Integer ii = (Integer) it.next();
+    		  while (byDaysIt.hasNext()) {
+    			  Integer ii = (Integer) byDaysIt.next();
     			  onString += onStringSeparator + days[ii.intValue()];
     			  onStringSeparator = ", ";
     		  }
@@ -177,11 +194,39 @@ public class Eventtext extends TagSupport {
     	  // monthly events include the ondaycard stuff
     	  // note that bydays will now only have one entry (it may be "weekday")
     	  // and bynum will be meaningful here (again, it is a singleton, not a list)
-    	  if (event.getFrequency() == Event.MONTHLY && it.hasNext()) {
-    		  Integer ii = (Integer) it.next();
+    	  if (event.getFrequency() == Event.MONTHLY && byDaysIt.hasNext()) {
+    		  Integer ii = (Integer) byDaysIt.next();
     		  onString += "on the " + nums[bynum.intValue()] + " ";
     		  onString += days[ii.intValue()];
     	  }
+    	  
+    	  if (event.getFrequency() == Event.YEARLY) {
+    		  if (event.getByMonthDay() != null && event.getByMonthDay().length > 0 && 
+    				  event.getByMonth() != null && event.getByMonth().length > 0) {
+    			  for (int i = 0; i < event.getByMonthDay().length; i++) {
+    				  onString += "on " + event.getByMonthDay()[i] + (getNumberSuffix(event.getByMonthDay()[i])) + 
+    				  	(i < (event.getByMonthDay().length - 1)?", ":" ");
+    			  }
+    			  onString += "of ";
+    			  for (int i = 0; i < event.getByMonth().length; i++) {
+    				  onString += months[event.getByMonth()[i]] + (i < (event.getByMonth().length - 1)?", ":" ");
+    			  }
+    		  }
+    		  
+    		  if (byDaysIt.hasNext() && 
+    				  event.getByMonth() != null && event.getByMonth().length > 0) {
+	    		  Integer ii = (Integer) byDaysIt.next();
+	    		  onString += "on the " + nums[bynum.intValue()] + " ";
+	    		  onString += days[ii.intValue()] + " ";
+	    		  
+    			  onString += "of ";
+    			  for (int i = 0; i < event.getByMonth().length; i++) {
+    				  onString += months[event.getByMonth()[i]] + (i < (event.getByMonth().length - 1)?", ":" ");
+    			  }
+    		  }
+    	  }
+    	  
+    	  
       }
       if (event.getFrequencyString() != null) {
     	  untilString += "<br>Repeats: ";
@@ -221,7 +266,18 @@ public class Eventtext extends TagSupport {
     return SKIP_BODY;
   }
 
-  public int doEndTag() throws JspException {
+  private String getNumberSuffix(int i) {
+	if (i == 1) {
+		return "st";
+	} else if (i == 2) {
+		return "nd";
+	} else if (i == 3) {
+		return "rd";
+	}
+	return "th";
+}
+
+public int doEndTag() throws JspException {
       return SKIP_BODY;
   }
 

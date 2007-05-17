@@ -187,25 +187,9 @@ public class IcalGenerator {
 		vEvent.getProperties().add(
 				new Description(entry.getDescription().getText()));
 		
-		
-		// TODO: it's a good idea to add to the Uid domain name (@domain.com) 
 		vEvent.getProperties().add(new Uid(entry.getParentBinder().getId().toString() + "-" +
 											entry.getId().toString() + "-" +
 											event.getId().toString()));
-
-		// TODO: link to the event: do we need this? then uncomment those lines
-//		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-//		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-//		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entry.getParentBinder().getId().toString());
-//		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
-//		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-
-//		try {
-//			vEvent.getProperties().add(
-//					new Url(new URI(adapterUrl.toString())));
-//		} catch (URISyntaxException e) {
-//			logger.error("Error by generating event adapter URL in iCal. ", e);
-//		}
 
 		addRecurrences(vEvent, event);
 
@@ -240,7 +224,8 @@ public class IcalGenerator {
 				recur.setCount(event.getCount());
 			} else {
 				java.util.Calendar until = event.getUntilWithMaxLoopsIfNeeded();
-				// if time is before start time, repeat doesn't occures in calendar view
+				// if time is before start time, repeat doesn't occures in calendar view - ??
+				// TODO: test it again 
 				until.set(java.util.Calendar.HOUR_OF_DAY, 23);
 				until.set(java.util.Calendar.MINUTE, 59);
 				until.set(java.util.Calendar.SECOND, 59);
@@ -315,6 +300,9 @@ public class IcalGenerator {
 					recur.getYearDayList().add(event.getByYearDay()[i]);
 				}
 			}
+			
+			// TODO: recur.setWeekStartDay(arg0);
+			// TODO: recur.setPosList ?
 
 			RRule rrule = new RRule(recur);
 			vEvent.getProperties().add(rrule);

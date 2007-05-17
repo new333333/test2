@@ -200,8 +200,14 @@ public class CalendarViewRangeDates {
 	}
 
 	public static int calculateDifference(Date a, Date b) {
-		DateMidnight firstDate = new DateMidnight(a);
-		DateMidnight secondDate = new DateMidnight(b);
+		DateTime firstDate = new DateTime(a);
+		DateTime secondDate = new DateTime(b);
+		if (secondDate.getMinuteOfHour() == 59) {
+			secondDate = secondDate.plusMillis(1);
+		}
+		if (firstDate.getMinuteOfHour() == 59) {
+			firstDate = firstDate.plusMillis(1);
+		}
 				
 		if (!firstDate.isBefore(secondDate)) {
 			return Days.daysBetween(secondDate, firstDate).getDays();

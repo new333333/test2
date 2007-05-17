@@ -1599,7 +1599,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		if (frequency == HOURLY || (byHour != null && byHour.length > 0)) {
 			return HOURLY;
 		}
-		if (frequency == DAILY || (byDay != null && byDay.length >0) || (byMonthDay != null && byMonth.length >0)
+		if (frequency == DAILY || (byDay != null && byDay.length >0) || (byMonthDay != null && byMonthDay.length >0)
 				|| (byYearDay != null && byYearDay.length > 0)) {
 			return DAILY;
 		} else if (frequency == WEEKLY || (byWeekNo != null && byWeekNo.length > 0)) {
@@ -1993,7 +1993,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		
 		Calendar candidate;
 
-		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < max_count_loops
+		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < 100000
 				&& candidate.getTime().getTime() < max_count_time; loops++, candidate
 				.add(Calendar.SECOND, 1)) {
 			long oldCandidateTime = candidate.getTime().getTime();
@@ -3098,11 +3098,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		List result = new ArrayList();
 
 		int starts_found = 0;
+		int intCount = count != 0 ? count : max_count_loops;
+		
 		int loops;
 
 		Calendar candidate;
 
-		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < max_count_loops
+		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < 100000
 				&& candidate.getTime().getTime() < max_count_time; loops++, candidate
 				.add(Calendar.SECOND, 1)) {
 			long oldCandidateTime = candidate.getTime().getTime();
@@ -3128,7 +3130,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 				result.add(new Calendar[] { candidate, tempEnd });
 				
 				starts_found++;
-				if (starts_found == count) {
+				if (starts_found == intCount) {
 					break;
 				}
 			}
@@ -3163,10 +3165,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 		int starts_found = 0;
 		int loops;
+		
+		int intCount = count != 0 ? count : max_count_loops;
 
 		Calendar candidate;
 
-		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < max_count_loops
+		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < 100000
 				&& candidate.getTime().getTime() < max_count_time; loops++, candidate.add(Calendar.SECOND, 1)) {
 			long oldCandidateTime = candidate.getTime().getTime();
 			
@@ -3194,7 +3198,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 				candidate = (Calendar)((Calendar)datesBetween.get(datesBetween.size() - 1)).clone();
 				
 				starts_found++;
-				if (starts_found == count) {
+				if (starts_found == intCount) {
 					break;
 				}
 			}

@@ -218,12 +218,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			if (Validator.isNull(hostName)) {
 				hostName = session.getProperty("mail.host");
 			}
+			int port = Integer.parseInt(session.getProperty(prefix + "port"));
+			if (Validator.isNull(session.getProperty(prefix + "port"))) {
+				port = Integer.parseInt(session.getProperty("mail.port"));
+			}
 			auth = session.getProperty(prefix + "auth");
 			if (Validator.isNull(auth)) 
 				auth = session.getProperty("mail.auth");
-			String from = session.getProperty(prefix + "user");
-			if (Validator.isNull(from)) 
-				from = session.getProperty("mail.user");
+			String user = session.getProperty(prefix + "user");
+			if (Validator.isNull(user)) 
+				user = session.getProperty("mail.user");
 			javax.mail.Folder mFolder=null;
 			Store store=null;
 			try {
@@ -233,7 +237,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					String password = session.getProperty(prefix + "password");
 					if (Validator.isNull(password)) 
 						password = session.getProperty("mail.password");
-					store.connect(null, null, password);
+					store.connect(hostName, port, user, password);
 				} else {
 					store.connect();
 				}
@@ -257,7 +261,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}				
 
 			} catch (Exception ex) {
-				logger.error("Error posting mail from " + hostName + " " + ex);				
+				logger.error("Error posting mail from [" + hostName + "]", ex);
 			} finally  {
 				//Close connection and expunge
 				if (mFolder != null) try {mFolder.close(true);} catch (Exception ex) {};

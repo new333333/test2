@@ -3015,6 +3015,11 @@ white-space: nowrap !important;
 	position:absolute;
 }
 
+/* Muster div */
+.ss_calendar_import_div {
+	position:absolute;
+}
+
 .ss_miniBusinessCard { 
 	vertical-align: top;
 	width: 2%;

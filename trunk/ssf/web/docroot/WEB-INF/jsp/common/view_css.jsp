@@ -67,7 +67,7 @@ var ss_nlt_navigation_maximize;
 var ss_confirmDeleteFolderText;
 var ss_userDisplayStyle;
 var ss_findButtonClose;
-var ss_findAjaxUrl;
+var ss_AjaxBaseUrl;
 var ss_validationErrorMessage;
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -130,8 +130,8 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		actionUrl="true" >
 		<ssf:param name="operation" value="ss_operation_place_holder" />
 		</ssf:url>";
-		
-	ss_findAjaxUrl = "<ssf:url 
+	
+	ss_AjaxBaseUrl = "<ssf:url 
 		adapter="true" 
 		portletName="ss_forum" 
 		action="__ajax_request" 
@@ -161,6 +161,9 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_userDisplayStyle = "${ssUser.displayStyle}";
 	ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 	ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
+	
+	// calendar
+	ss_calendarTitleText = "<ssf:nlt tag="calendar.import.window.title"/>";
 }
 
 function ss_loadDojoFiles() {
