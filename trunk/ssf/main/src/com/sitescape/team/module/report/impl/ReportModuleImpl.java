@@ -1,5 +1,6 @@
 package com.sitescape.team.module.report.impl;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -353,7 +354,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Map<String,Object> row = addBlankRow(report, binder);
 			row.put(ReportModule.DEFINITION_ID, col[0]);
 			row.put(ReportModule.STATE, col[1]);
-			row.put(ReportModule.AVERAGE, new TimeInterval((Double)col[2], (Double)col[3]));
+			double seconds = ((Double)col[3]).doubleValue() - ((Double)col[2]).doubleValue();
+			row.put(ReportModule.AVERAGE, seconds);
+			row.put(ReportModule.AVERAGE_TI, new TimeInterval(seconds));
 		}
 	}
 
@@ -393,6 +396,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				return states;
 			}});
 
+		long now = Calendar.getInstance().getTime().getTime();
 		for(Object o : result) {
 			Object[] col = (Object []) o;
 			Map<String,Object> row = addBlankRow(report, binder);
@@ -443,9 +447,9 @@ class TimeInterval
 	final long SECONDS_PER_DAY = 24 * SECONDS_PER_HOUR;
 	final long SECONDS_PER_WEEK = 7 * SECONDS_PER_DAY;
 	
-	public TimeInterval(Double start, Double end)
+	public TimeInterval(Double seconds)
 	{
-		setSeconds((long) (end.doubleValue() - start.doubleValue()));
+		setSeconds((long) seconds.doubleValue());
 	}
 	
 	
