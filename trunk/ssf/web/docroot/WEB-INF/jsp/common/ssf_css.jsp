@@ -167,6 +167,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
 	<c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/>
+
+	<c:set var="ss_toolbar4_background_color" value="#DBE6F2" scope="request"/>
+	<c:set var="ss_toolbar4_text_color" value="#666666" scope="request"/>
+	<c:set var="ss_toolbar4_link_hover_color" value="#E8EFF7" scope="request"/>
+	<c:set var="ss_toolbar4_border_color" value="#DBE6F2" scope="request"/>
+	<c:set var="ss_toolbar4_dropdown_menu_color" value="#DBE6F2" scope="request"/>
+	<c:set var="ss_toolbar4_inactive" value="#333333" scope="request"/>
 	
 	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
@@ -268,7 +275,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 </c:if>
 
 body.ss_style_body {
-	margin: 0px 3px 0px 1px;
+	margin: 0px 2px 0px 2px;
 }
 
 .ss_style {
@@ -2242,6 +2249,28 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
 }
+
+table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
+	background-color: ${ss_toolbar4_background_color};
+	width: 100%;
+	height: 26px;
+	padding: 0;
+	margin: 0;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.ss_actions_bar4, table.ss_actions_bar4_pane {
+	background-color: ${ss_toolbar4_background_color};
+}
+
+.ss_actions_bar4 {
+	font-weight: normal;
+	font-size: 11px;
+	font-family: ${ss_style_title_font_family};
+}
+
+
 
 ul.ss_actions_bar1  {
 	background-image: url(<html:imagesPath/>pics/background_actions_bar1.jpg);
