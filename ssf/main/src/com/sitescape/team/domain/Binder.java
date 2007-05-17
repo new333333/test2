@@ -49,7 +49,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     //uuid to identify a reserved binder
     private String internalId;
     //force attachments of all child objects to have unique names.
-    protected boolean library=true;
+    protected boolean library=false;
     //force child objects to have a unique normalized title.  This is an aide to 
     //wikis which link to titles
     protected boolean uniqueTitles=false;

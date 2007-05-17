@@ -21,6 +21,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -43,7 +45,8 @@ import com.sitescape.util.Validator;
 
 
 public class ViewController extends  SAbstractController {
-	
+	protected Log logger = LogFactory.getLog(getClass());
+
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
@@ -335,8 +338,9 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 		}
 		
-		//TODO:temporary for debug - just keep off menu
-		if (getAdminModule().testAccess("addPosting")) {
+		//For debug - keep off everyones menus
+		if (getAdminModule().testAccess("addPosting") &&
+				logger.isDebugEnabled()) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.view_change_log"));
 			element.addAttribute("image", "bullet");

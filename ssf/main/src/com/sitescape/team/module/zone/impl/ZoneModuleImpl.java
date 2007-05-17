@@ -164,7 +164,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        				//	updates cache
 	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
 	        			}
+	        			//The following fixups are for differences between beta1 and beta2
 	        			getCoreDao().executeUpdate("Update com.sitescape.team.domain.FolderEntry set deleted=false where deleted is null");
+	        			getCoreDao().executeUpdate("Update com.sitescape.team.domain.ProfileBinder set library=false");
 	        			//setup binder counts if not done
 	        			if (zone.getBinderCount() == 0) {
 	        				List<Binder> binders = new ArrayList();

@@ -423,6 +423,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		TemplateBinder template = new TemplateBinder();
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
 		template.setEntryDef(entryDef);
+		if (type == Definition.FOLDER_VIEW) template.setLibrary(true);
 		List definitions = new ArrayList();
 		definitions.add(entryDef);
 		template.setDefinitionsInherited(false);
