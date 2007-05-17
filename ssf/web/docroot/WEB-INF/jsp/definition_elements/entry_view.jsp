@@ -29,11 +29,11 @@
 <%
 	}
 %>
-<table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar2_pane">
+<table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar4_pane">
 <tr><td valign="top">
   <ssHelpSpot helpId="tools/entry_toolbar" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
-<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 </td>
 <td valign="top"><a href="javascript: ss_helpSystem.run();"><img border="0"
   <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/toolbar_help.gif" /></a></td>
