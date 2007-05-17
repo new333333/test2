@@ -67,6 +67,7 @@
 				<value>ss_wiki</value>
 				<value>ss_search</value>
 				<value>ss_guestbook</value>
+				<value>ss_task</value>
 				<value>ss_toolbar</value>
 			</list>
 		</property>
