@@ -32,33 +32,17 @@
 	if (methodName == null || methodName.equals("")) {
 		methodName = "post";
 	}
-
-
-	//Get the entry type of this definition (folder, file, or event)
-	String formViewStyle = "form";
-	Element formViewTypeEle = (Element)item.selectSingleNode("properties/property[@name='type']");
-	if (formViewTypeEle != null) formViewStyle = formViewTypeEle.attributeValue("value", "form");
-
 %>
-<c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
-<jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
 
-<c:choose>
-  <c:when test="${ss_formViewStyle == 'guestbook'}">
-		<jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook_form.jsp" />
-  </c:when>
-
-  <c:when test="${ss_formViewStyle == 'task'}">
-		<jsp:include page="/WEB-INF/jsp/definition_elements/task/task_form.jsp" />
-  </c:when>
-
-  <c:otherwise>
-	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
-	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-	  configElement="<%= item %>" 
-	  configJspStyle="${ssConfigJspStyle}" />
-	</form>  
-  </c:otherwise>  
+<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
+  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
   
-</c:choose>
+<c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
+
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="<%= item %>" 
+  configJspStyle="${ssConfigJspStyle}" />
+</form>
+
+
+

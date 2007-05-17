@@ -32,6 +32,8 @@
 
 <li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.guestbook"/></li>
 
+<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.task"/></li>
+
 <li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.more"/></li>
 
 </ul>

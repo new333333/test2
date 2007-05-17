@@ -195,6 +195,7 @@
 				  default="form" value="form">
 				<option name="form" caption="__entry_form" />
 				<option name="guestbook" caption="__entry_form_guestbook" />
+				<option name="task" caption="__entry_form_task" />
 				<help>__help_entry_view_type</help>
 			</property>
 		</properties>
@@ -253,6 +254,7 @@
 				  default="entryView" value="entryView">
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
+				<option name="task" caption="__entry_task" />
 				<help>__help_entry_view_type</help>
 			</property>
 		</properties>
@@ -335,6 +337,7 @@
 				  default="blog" value="blog">
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
+				<option name="task" caption="__entry_task" />
 				<help>__help_entry_view_type</help>
 			</property>
 		</properties>
@@ -479,6 +482,7 @@
 				<option name="photo" caption="__folder_photo" />
 				<option name="file" caption="__folder_file" />
 				<option name="guestbook" caption="__folder_guestbook" />
+				<option name="task" caption="__folder_task" />
 				<help>__help_folder_view_type</help>
 			</property>
 		</properties>

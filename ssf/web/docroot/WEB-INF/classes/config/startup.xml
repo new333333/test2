@@ -10,6 +10,7 @@
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		
 	<definitionFile>config/definitions/_libraryEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_guestbookEntry.xml</definitionFile>		
+	<definitionFile>config/definitions/_taskEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_photoEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_wikiEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_blogFolder.xml</definitionFile>
@@ -18,6 +19,7 @@
 	<definitionFile>config/definitions/_discussionFolderTable.xml</definitionFile>
 	<definitionFile>config/definitions/_libraryFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_guestbookFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_taskFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_photoFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_wikiFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_workspace.xml</definitionFile>
@@ -101,6 +103,16 @@
 		<definition name="_guestbookEntry"/>
 	</template>
 	
+ 	<template type="5">
+		<property name="templateTitle">__configuration_default_folder_task</property>
+		<property name="templateDescription">__configuration_default_folder_task_description</property>
+		<property name="name">_taskFolderConfig</property>
+		<property name="internalId">402883b90cc53079010cc539bf260009</property>
+		<property name="entryDef">_taskFolder</property>
+		<definition name="_taskFolder"/>
+		<definition name="_taskEntry"/>
+	</template>
+
 	<template type="5">
 		<property name="templateTitle">__configuration_default_folder_photo</property>
 		<property name="templateDescription">__configuration_default_folder_photo_description</property>
@@ -131,6 +143,7 @@
 		<property name="template">_calendarFolderConfig</property>
 		<property name="template">_libraryFolderConfig</property>
 		<property name="template">_guestbookFolderConfig</property>
+		<property name="template">_taskFolderConfig</property>
 		<property name="template">_photoFolderConfig</property>
 	</template>
 	

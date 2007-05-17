@@ -4060,6 +4060,22 @@ div.ss_selectedItemsContainer img {
 
 /* Dojo Widgets / end */
 
+/* Charts styles */
+div.ss_chartContainer {
+	border: 1px solid #afc8e3;
+	background-color: #e8eff7;
+	width: 300px;
+	float:left;
+	margin: 3px 0px 3px 0px;
+	padding:0px;
+}
+div.ss_chartContainer div {
+	background-color: #afc8e3;
+	color:#000099;
+
+}
+/* Charts styles - end*/
+
 /* Administration->Reporting styles */
 .ss_tab_container {
 }
