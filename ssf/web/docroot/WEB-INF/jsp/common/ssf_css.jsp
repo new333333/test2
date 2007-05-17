@@ -405,14 +405,13 @@ ul.ss_icon_list li {
   background-color: ${ss_form_background_color};
   }
     
-.ss_replies {
-}
 .ss_replies_background {
   background-color: ${ss_replies_background_color} !important;
   }
       
 div.ss_replies div.ss_entryContent {
 	margin-left: 30px;
+	margin-top: 2px;
 }
 
 div.ss_replies div.ss_entryDescription {
@@ -490,8 +489,8 @@ div.ss_replies div.ss_entryDescription {
 .ss_replies .ss_entryDescription {
   padding-left: 15px;
   padding-right: 15px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
    
 .ss_entryDescriptionLead {
