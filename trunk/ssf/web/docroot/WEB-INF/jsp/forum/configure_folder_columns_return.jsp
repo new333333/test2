@@ -45,6 +45,26 @@
   <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>
   <input type="checkbox" name="author" ${authorChecked}> <ssf:nlt tag="folder.column.Author"/><br/>
   <input type="checkbox" name="date" ${dateChecked}> <ssf:nlt tag="folder.column.LastActivity"/><br/>
+  <br/>
+  
+  
+  <c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
+  	
+  	<c:forEach var="element" items="${def.value}">
+       <c:if test="${element.value.type == 'event' || element.value.type == 'selectbox' || 
+                     element.value.type == 'radio' || element.value.type == 'checkbox' || 
+       				 element.value.type == 'date'  || element.value.type == 'user_list' || 
+       				 element.value.type == 'userListSelectbox'}">
+		<c:set var="checked" value=""/>
+		<c:set var="colName" value="${def.key},${element.value.type},${element.key}"/>
+		<c:if test="${!empty folderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
+         <input type="checkbox" name="customCol_${colName}" ${checked}> 
+         ${ssEntryDefinitionMap[def.key].title} / ${element.value.caption}<br/>
+       </c:if>
+  	</c:forEach>
+  </c:forEach>
+  
+  
   
   <br/>
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">

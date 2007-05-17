@@ -743,6 +743,18 @@ public class AjaxController  extends SAbstractController {
 		} else {
 			userProperties = getProfileModule().getUserProperties(null, binderId);
 			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
+			Binder binder = getBinderModule().getBinder(binderId);
+			Map entryDefs = DefinitionHelper.getEntryDefsAsMap(binder);
+			Map entryElements = new HashMap();
+			Iterator itDefs = entryDefs.entrySet().iterator();
+			while (itDefs.hasNext()) {
+				Map.Entry me = (Map.Entry) itDefs.next();
+				String defId = (String) me.getKey();
+				Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
+				entryElements.put(defId, elementData);
+			}
+			model.put(WebKeys.ENTRY_DEFINTION_MAP, entryDefs);
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA_MAP, entryElements);
 		}
 		model.put(WebKeys.FOLDER_COLUMNS, columns);
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");

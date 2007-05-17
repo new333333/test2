@@ -121,6 +121,14 @@ public class ListFolderController extends  SAbstractController {
 				for (int i = 0; i < columnNames.length; i++) {
 					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
 				}
+				Iterator itFormData = formData.entrySet().iterator();
+				while (itFormData.hasNext()) {
+					Map.Entry me = (Map.Entry) itFormData.next();
+					if (me.getKey().toString().startsWith("customCol_", 0)) {
+						String colName = me.getKey().toString().substring(10, me.getKey().toString().length());
+						columns.put(colName, "on");
+					}
+				}
 				getProfileModule().setUserProperty(user.getId(), binderId, 
 						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
 				//Reset the column positions to the default

@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 
 /**
@@ -40,7 +41,7 @@ public class FieldBuilderUserListSelect extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = new Field(fieldName, val, Field.Store.NO, Field.Index.UN_TOKENIZED);
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        fields[i] = field;
         }
         
