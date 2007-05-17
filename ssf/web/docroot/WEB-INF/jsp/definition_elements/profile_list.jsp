@@ -11,6 +11,7 @@
  */
 %>
 <% // Profile listing %>
+<%@ page import="com.sitescape.team.domain.Principal" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
@@ -97,26 +98,7 @@
 <ssf:slidingTableRow id="<%= folderLineId %>">
 
   <ssf:slidingTableColumn>
-<%
-	if (entry.containsKey("_zonName")) {
-%>
-	<ssf:presenceInfo zonName="<%=(String)entry.get("_zonName")%>"/> 
-<%
-	} else {
-		//No zon name; output a white dude.
-%>
-	<ssf:presenceInfo zonName=""/> 
-<%
-	}
-%>
-  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-  	name="action" value="view_ws_listing"/><portlet:param 
-  	name="binderId" value="${ssBinder.id}"/><portlet:param 
-  	name="entryId" value="<%= docId %>"/></portlet:renderURL>">
-    <c:if test="${empty entry.title}">
-    <span class="ss_fineprint">--no title--</span>
-    </c:if>
-    <span><c:out value="${entry.title}"/></span></a>
+  <ssf:showUser user="<%=(User)entry.get("_principal")%>" />
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn>
