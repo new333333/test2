@@ -246,69 +246,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 	
-
-	public List<Map<String,Object>> generateWorkflowHistoryReport(final Long binderId, final Long entryId) {
-		checkAccess("generateWorkflowHistoryReport");
-
-		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-		
-				List auditTrail = session.createCriteria(WorkflowStateHistory.class)
-						.add(Restrictions.eq("owningBinderId", binderId))
-						.add(Restrictions.eq("entityId", entryId))
-						.addOrder(Order.asc("definitionId"))
-						.addOrder(Order.asc("startDate"))
-						.list();
-				return auditTrail;
-			}});
-		
-		List currentStates = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-		
-				List states = session.createCriteria(WorkflowState.class)
-						.add(Restrictions.eq("owner.owningBinderId", binderId))
-						.add(Restrictions.eq("owner.ownerId", entryId))
-						.addOrder(Order.asc("definition.id"))
-						.list();
-				return states;
-			}});
-		
-		String lastDefinitionId = null;
-		Iterator stateIterator = currentStates.iterator();
-		WorkflowState nextState = (WorkflowState) stateIterator.next();
-		
-		WorkflowStateHistory hist = null;
-		for(Object o : result) {
-			hist = (WorkflowStateHistory) o;
-			if(lastDefinitionId != null && !lastDefinitionId.equals(hist.getDefinitionId()) &&
-					nextState != null && nextState.getDefinition().getId().equals(lastDefinitionId)) {
-				Map<String, Object> row = new HashMap<String, Object>();
-				report.add(row);
-				row.put(ReportModule.STATE, nextState.getState());
-				row.put(ReportModule.START_DATE, hist.getEndDate());
-				row.put(ReportModule.START_BY, hist.getEndBy());
-				nextState = (WorkflowState) stateIterator.next();
-			}
-			Map<String, Object> row = new HashMap<String, Object>();
-			report.add(row);
-			row.put(ReportModule.STATE, hist.getState());
-			row.put(ReportModule.START_DATE, hist.getStartDate());
-			row.put(ReportModule.START_BY, hist.getStartBy());
-			row.put(ReportModule.END_DATE, hist.getEndDate());
-			row.put(ReportModule.END_BY, hist.getEndBy());
-			lastDefinitionId = hist.getDefinitionId();
-		}
-		if(hist != null && nextState != null && nextState.getDefinition().getId().equals(lastDefinitionId)) {
-			Map<String, Object> row = new HashMap<String, Object>();
-			report.add(row);
-			row.put(ReportModule.STATE, nextState.getState());
-			row.put(ReportModule.START_DATE, hist.getEndDate());
-			row.put(ReportModule.START_BY, hist.getEndBy());
-		}
-		return report;
-	}
-	
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection binderIds, Date startDate, Date endDate) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		

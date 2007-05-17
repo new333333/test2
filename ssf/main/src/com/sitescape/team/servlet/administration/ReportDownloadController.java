@@ -21,19 +21,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.activation.FileTypeMap;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,7 +33,6 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
@@ -49,13 +40,9 @@ import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
-import com.sitescape.team.web.tree.SearchTreeHelper;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DateHelper;
-import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 
-import com.sitescape.util.Validator;
 public class ReportDownloadController extends  SAbstractController {
 	
 	static HashMap<String, String> columnNames = null;
@@ -73,10 +60,6 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.LOGIN_COUNT, "report.columns.login_count");
 		columnNames.put(ReportModule.LAST_LOGIN, "report.columns.last_login");
 		columnNames.put(ReportModule.STATE, "report.columns.state");
-		columnNames.put(ReportModule.START_DATE, "report.columns.start_date");
-		columnNames.put(ReportModule.END_DATE, "report.columns.end_date");
-		columnNames.put(ReportModule.START_BY, "report.columns.start_by");
-		columnNames.put(ReportModule.END_BY, "report.columns.end_by");
 		columnNames.put(ReportModule.DEFINITION_ID, "report.columns.definition");
 		columnNames.put(ReportModule.AVERAGE, "report.columns.average");
 		columnNames.put(ReportModule.AVERAGE_TI, "report.columns.average_ti");
@@ -84,9 +67,7 @@ public class ReportDownloadController extends  SAbstractController {
 	}
 
 	static private boolean isUserColumn(String column) {
-		return column.equals(ReportModule.USER_ID) ||
-			column.equals(ReportModule.START_BY) ||
-			column.equals(ReportModule.END_BY);
+		return column.equals(ReportModule.USER_ID);
 	}
 	
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -185,11 +166,6 @@ public class ReportDownloadController extends  SAbstractController {
 					report = getReportModule().generateWorkflowStateCountReport(ids);
 					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
 							ReportModule.STATE, ReportModule.COUNT };
-				} else {
-					Long binderId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-					Long entryId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-					report = getReportModule().generateWorkflowHistoryReport(binderId, entryId);
-					columns = new String[] {ReportModule.STATE, ReportModule.START_DATE, ReportModule.START_BY };
 				}
 			}
 			printReport(response.getWriter(), report, columns, hasUsers);
@@ -208,12 +184,6 @@ public class ReportDownloadController extends  SAbstractController {
 		for(Map<String, Object> row : report) {
 			if(row.containsKey(ReportModule.USER_ID)) {
 				userIds.add(row.get(ReportModule.USER_ID));
-			}
-			if(row.containsKey(ReportModule.START_BY)) {
-				userIds.add(row.get(ReportModule.START_BY));
-			}
-			if(row.containsKey(ReportModule.END_BY)) {
-				userIds.add(row.get(ReportModule.END_BY));
 			}
 			if(row.containsKey(ReportModule.DEFINITION_ID)) {
 				definitionIds.add((String) row.get(ReportModule.DEFINITION_ID));
