@@ -258,24 +258,28 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
     <c:set var="defId" value=""/>
     <c:set var="eleType" value=""/>
     <c:set var="eleName" value=""/>
+    <c:set var="eleCaption" value=""/>
 	<jsp:useBean id="colName" type="java.lang.String" scope="page"/>
 	<jsp:useBean id="defId" type="java.lang.String" scope="page"/>
 	<jsp:useBean id="eleType" type="java.lang.String" scope="page"/>
 	<jsp:useBean id="eleName" type="java.lang.String" scope="page"/>
+	<jsp:useBean id="eleCaption" type="java.lang.String" scope="page"/>
 <%
 	if (colName.contains(",")) {
 		String[] temp = colName.split(",");
-		if (temp.length == 3) {
+		if (temp.length == 4) {
 			defId = temp[0];
 			eleType = temp[1];
 			eleName = temp[2];
+			eleCaption = temp[3];
 		}
 	}
 	if (!defId.equals("")) {
 %>
 	  <c:set var="eleName" value="<%= eleName %>"/>
+	  <c:set var="eleCaption" value="<%= eleCaption %>"/>
 	  <ssf:slidingTableColumn width="20%">
-	    ${eleName}
+	    ${eleCaption}
 	  </ssf:slidingTableColumn>
 <%
 	}
@@ -366,30 +370,46 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
     <c:set var="defId2" value=""/>
     <c:set var="eleType2" value=""/>
     <c:set var="eleName2" value=""/>
+    <c:set var="eleCaption2" value=""/>
 	<jsp:useBean id="colName2" type="java.lang.String" scope="page"/>
 	<jsp:useBean id="defId2" type="java.lang.String" scope="page"/>
 	<jsp:useBean id="eleType2" type="java.lang.String" scope="page"/>
 	<jsp:useBean id="eleName2" type="java.lang.String" scope="page"/>
+	<jsp:useBean id="eleCaption2" type="java.lang.String" scope="page"/>
 <%
 	if (colName2.contains(",")) {
 		String[] temp = colName2.split(",");
-		if (temp.length == 3) {
+		if (temp.length == 4) {
 			defId2 = temp[0];
 			eleType2 = temp[1];
 			eleName2 = temp[2];
+			eleCaption2 = temp[3];
 		}
 	}
 	if (!defId2.equals("")) {
 %>
 	  <c:set var="eleType2" value="<%= eleType2 %>"/>
 	  <c:set var="eleName2" value="<%= eleName2 %>"/>
+	  <c:set var="eleCaption2" value="<%= eleCaption2 %>"/>
 	  <ssf:slidingTableColumn>
          <span <%= seenStyle %>>
          <c:if test="${!empty entry1[eleName2]}">
-	       <c:if test="${eleType2 == 'event' || eleType2 == 'selectbox' || 
-	                     eleType2 == 'radio' || eleType2 == 'checkbox' || 
-	       				 eleType2 == 'date'}">
+	       <c:if test="${eleType2 == 'selectbox' || 
+	                     eleType2 == 'radio' || 
+	                     eleType2 == 'checkbox'}">
 	       	 <c:out value="${entry1[eleName2]}"/>
+	       </c:if>
+	       <c:if test="${eleType2 == 'date'}">
+	       	 <c:if test="${!empty entry1[eleName2]}">
+<%
+	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+    String year = ((String)entry1.get(eleName2)).substring(0,4);
+	String month = ((String)entry1.get(eleName2)).substring(4,6);
+	String day = ((String)entry1.get(eleName2)).substring(6,8);
+	java.util.Date date = formatter.parse(year + "-" + month + "-" + day);
+%>
+	<fmt:formatDate value="<%= date %>" type="date" dateStyle="short" />
+	       	 </c:if>
 	       </c:if>
 	       <c:if test="${eleType2 == 'user_list' || 
 	       				 eleType2 == 'userListSelectbox'}">

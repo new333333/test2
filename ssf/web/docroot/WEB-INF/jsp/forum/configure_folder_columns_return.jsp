@@ -51,12 +51,14 @@
   <c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
   	
   	<c:forEach var="element" items="${def.value}">
-       <c:if test="${element.value.type == 'event' || element.value.type == 'selectbox' || 
-                     element.value.type == 'radio' || element.value.type == 'checkbox' || 
-       				 element.value.type == 'date'  || element.value.type == 'user_list' || 
+       <c:if test="${element.value.type == 'selectbox' || 
+                     element.value.type == 'radio' || 
+                     element.value.type == 'checkbox' || 
+       				 element.value.type == 'date'  || 
+       				 element.value.type == 'user_list' || 
        				 element.value.type == 'userListSelectbox'}">
 		<c:set var="checked" value=""/>
-		<c:set var="colName" value="${def.key},${element.value.type},${element.key}"/>
+		<c:set var="colName" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
 		<c:if test="${!empty folderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
          <input type="checkbox" name="customCol_${colName}" ${checked}> 
          ${ssEntryDefinitionMap[def.key].title} / ${element.value.caption}<br/>
