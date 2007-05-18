@@ -2639,25 +2639,8 @@ div.ss_findUserList {
 	float:none;
 }
 
-a.ss_title_menu {
-	margin-left:16px;
-}
-div.ss_title_menu {
-	display:inline;
-	margin:0px;
-}
 a.ss_title_menu img {
-	position:relative;
-	left:-20px;
-	padding-right:4px;
-	margin:0px;
-}
-
-a.ss_title_menu span {
-	position:relative;
-	margin:0px;
-	padding:0px;
-	left:-16px;
+	margin-right:4px;
 }
 
 ul.ss_title_menu {
@@ -3943,7 +3926,9 @@ div.ss_entry_folderListView {
 	float: left;
 	width: 600px;	
 }
-h3.ss_entryTitle {float:left;margin:0px;}
+h3.ss_entryTitle {
+   /* float:left;margin:0px; */
+}
 h3.ss_entryTitle a:link, h3.ss_entryTitle a:hover, h3.ss_entryTitle a:visited, h3.ss_entryTitle a:active, h3.ss_entryTitle a {
 	color: #0000FF;
 	text-decoration:underline;
