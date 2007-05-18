@@ -14,20 +14,37 @@
 <div class="ss_style" align="left">
 <%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
 
-<span class="ss_titlebold"><ssf:nlt tag="help.getStarted.title"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
 
-<p>xxx</p>
+<p><ssf:nlt tag="help.getStartedProduct.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.getStartedProduct.tools"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.getStartedProduct.portal"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.getStartedProduct.whatToClick"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.getStartedProduct.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<div style="margin-left:25px;">
+
+<a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel', '', '');"><ssf:nlt tag="help.getStartedProduct.workspaces.title"/></a><br />
+
+<a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
+
+</div>
 
 </div>
 
 <br/>
 
 <div align="center">
-<div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/add_folder', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
-</div>
-
-<div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/move_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
-</div>
+<img 
+    border="0" style="padding-left: 10px;" 
+    <ssf:alt tag="general.previous"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif"/> 
+ 1 <a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel', '', '');">2</a> 
+ <a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel', '', '');"><img 
+    border="0" style="padding-left: 10px;" 
+    <ssf:alt tag="general.next"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+    
 </div>
