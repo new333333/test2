@@ -36,7 +36,14 @@
 
 <p><ssf:nlt tag="help.myWorkspaceIcon.intro.alterAccess"/></p>
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.intro.ifNew"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.intro.ifNew"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> 
+<ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/></p>
+
+<div style="margin-left:25px;">
+
+<p><a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/product_intro', 'center', 'top');"><ssf:nlt tag="help.getStarted.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+
+</div>
 
 </div>
 
