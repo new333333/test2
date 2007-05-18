@@ -383,7 +383,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
       	name="newTab" value="1"/></portlet:renderURL>';"
      onMouseOver="this.style.cursor = 'pointer';"
     >
-	  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="25" offsetX="5" 
+	  <ssHelpSpot helpId="navigation_bar/my_workspace_button_portlet" offsetY="25" offsetX="5" 
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
