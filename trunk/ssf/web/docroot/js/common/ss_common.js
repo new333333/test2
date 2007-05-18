@@ -2180,6 +2180,12 @@ var ss_helpSystem = {
 		}
 	},
 	
+	showMoreInfoPanel : function(id, panelId) {
+	    y = parseInt(ss_getDivTop('ss_help_panel') - 25);
+	    x = parseInt(ss_getDivLeft('ss_help_panel') + 25);
+	    this.showHelpPanel(id, panelId, x, y);
+	},
+
 	showHelpPanel : function(id, panelId, x, y, xAlignment, yAlignment) {
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
