@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.ical.servlet;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.ical.IcalGenerator;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
 
@@ -40,34 +42,51 @@ public class GetController extends SAbstractController {
 
 	private IcalGenerator icalGenerator;
 	
-	protected IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
-	}
+	private MailModule mailModule;
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
-		Long entryId = new Long(RequestUtils.getRequiredStringParameter(request, "entry"));
-		Map folderEntries = getFolderModule().getEntryTree(binderId, entryId);
-		FolderEntry entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+		if (binderId == null) {
+			return null;
+		}
 		
-		if (getFolderModule().testAccess(entry, "getEntry")) {
-			response.resetBuffer();
-			response.setContentType("text/calendar; charset=" + XmlFileUtil.FILE_ENCODING);
-			response.setHeader("Cache-Control", "private");
-			response.setHeader("Pragma", "no-cache");
-			
-			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalGenerator().getICalendarForEntryEvents(entry);
-			calendarOutputter.output(calendar, response.getWriter());
-		}	
+		response.resetBuffer();
+		response.setContentType("text/calendar; charset=" + XmlFileUtil.FILE_ENCODING);
+		response.setHeader("Cache-Control", "private");
+		response.setHeader("Pragma", "no-cache");
+		
+		Long entryId = RequestUtils.getLongParameter(request, "entry");
+		if (entryId != null) {
+			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
+			if (getFolderModule().testAccess(entry, "getEntry")) {				
+				CalendarOutputter calendarOutputter = new CalendarOutputter();
+				Calendar calendar = getIcalGenerator().getICalendarForEntryEvents(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				calendarOutputter.output(calendar, response.getWriter());
+			}
+		} else {
+//			Map entries = getFolderModule().getFullEntries(binderId);
+//			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
+//			System.out.println(folderEntries);
+		}
 		
 		response.flushBuffer();
 		return null;
+	}
+	
+	public MailModule getMailModule() {
+		return mailModule;
+	}
+	public void setMailModule(MailModule mailModule) {
+		this.mailModule = mailModule;
+	}
+	
+	protected IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
 	}
 
 }

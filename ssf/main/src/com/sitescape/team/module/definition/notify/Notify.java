@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 
 import net.fortuna.ical4j.model.Calendar;
 
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 
@@ -33,7 +34,7 @@ public class Notify {
 	protected Locale locale;
 	protected DateFormat dateFormat;
 	protected Set files= null;
-	protected Map events= null;// sorted by entry id
+	protected Map events= null;// sorted by entry
 	protected Timestamp startTs;
 	protected boolean includeAttachments=false;
 	
@@ -57,12 +58,12 @@ public class Notify {
 		if (events == null) events = new HashMap();
 		return events;
 	}
-	public void addEvent(Long entryId, Event event) {
+	public void addEvent(DefinableEntity entry, Event event) {
 		Map events = getEvents();
-		if (events.get(entryId) == null) {
-			events.put(entryId, new ArrayList());
+		if (events.get(entry) == null) {
+			events.put(entry, new ArrayList());
 		}
-		List entryEventsList = (List)events.get(entryId);
+		List entryEventsList = (List)events.get(entry);
 		entryEventsList.add(event);
 	}
 	public void clearEvents() {

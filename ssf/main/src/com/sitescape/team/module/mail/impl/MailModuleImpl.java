@@ -56,6 +56,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
@@ -530,14 +531,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		
 		private void prepareICalendars(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			int c = 0;
-			Iterator entryEventsIt = notify.getEvents().values().iterator();
-			while (entryEventsIt.hasNext()) {
-				Calendar iCal = getIcalGenerator().createICalendar();
-				Iterator eventsIt = ((List)entryEventsIt.next()).iterator();
-				while (eventsIt.hasNext()) {
-					Event event = (Event)eventsIt.next();
-					getIcalGenerator().addEventToICalendar(iCal, event.getOwner().getEntity(), event);
-				}
+			Iterator entryEventsIt = notify.getEvents().entrySet().iterator();
+			while (entryEventsIt.hasNext()) { 
+				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
+				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
+				List events = (List)mapEntry.getValue();
+				Calendar iCal = getIcalGenerator().getICalendarForEntryEvents(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				CalendarOutputter calendarOutputter = new CalendarOutputter();
@@ -547,13 +546,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					logger.error(e);
 				} catch (ValidationException e) {
 					logger.error(e);
+					
 				}
 				helper.addAttachment("iCalendar" + c + ".ics", new ByteArrayResource(out.toByteArray()));
 			
 				c++;
-			}	
+			}
 			notify.clearEvents();
 		}
+		
 		private void prepareAttachments(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			if (sendAttachments) {
 				Set atts = notify.getAttachments();

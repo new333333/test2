@@ -114,14 +114,8 @@
 				</properties>
 				<item name="selectboxSelection" caption="__selection" id="31">
 					<properties>
-						<property name="name" value="new"/>
-						<property name="caption" value=""/>
-					</properties>
-				</item>
-				<item name="selectboxSelection" caption="__selection" id="32">
-					<properties>
-						<property name="name" value="assigned"/>
-						<property name="caption" value="assigned"/>
+						<property name="name" value="needs_action"/>
+						<property name="caption" value="needs action"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="33">
@@ -138,8 +132,8 @@
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="35">
 					<properties>
-						<property name="name" value="canceled"/>
-						<property name="caption" value="canceled"/>
+						<property name="name" value="cancelled"/>
+						<property name="caption" value="cancelled"/>
 					</properties>
 				</item>
 			</item>
