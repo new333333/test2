@@ -16,11 +16,9 @@
 
 <c:forEach var="entry" items="${ssFolderEntries}" >
 <table class="ss_guestbook" width="100%">
-		<jsp:useBean id="entry" type="java.util.HashMap" />
-		
 		<tr>
 			<td class="ss_miniBusinessCard" style="padding-bottom: 5px;">
-				<ssf:miniBusinessCard user="<%=(User)entry.get("_principal")%>"/> 
+				<ssf:miniBusinessCard user="${entry._principal}"/> 
 			</td>
 			<td class="ss_guestbookContainer">
 				<span class="ss_entryTitle ss_normalprint">
