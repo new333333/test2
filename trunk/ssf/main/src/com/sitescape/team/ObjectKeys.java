@@ -215,6 +215,8 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_GROUP_MEMBERS="members";
  
+    public static final String TASK_FIELD_ASSIGNMENT="assignment";
+    public static final String TASK_FIELD_EVENT="start_end#EndDate";
     
     //xml tags - used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ATTRIBUTE_ID="databaseId";

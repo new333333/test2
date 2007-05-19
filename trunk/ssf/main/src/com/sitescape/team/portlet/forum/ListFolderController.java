@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -67,12 +68,14 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -316,7 +319,12 @@ public class ListFolderController extends  SAbstractController {
 			//In Blog style we only want to show this entry
 			if (!entryIdToBeShown.equals("")) options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
 		}
-
+		if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+			Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG);
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
+			
+			
+		}
 
 		//Checking the Sort Order that has been set. If not using the Default Sort Order
 		initSortOrder(request, userFolderProperties, tabOptions, options, viewType);
@@ -571,6 +579,10 @@ public class ListFolderController extends  SAbstractController {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
 			}
+			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				//Get the list of all entries with assigned people & due date
+				extendTaskInfo((List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+			}
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));
@@ -596,6 +608,38 @@ public class ListFolderController extends  SAbstractController {
 	}
 	
 
+	private void extendTaskInfo(List folderEntries) {
+		if (folderEntries == null || folderEntries.size() == 0) {
+			return;
+		}
+		Iterator it = folderEntries.iterator();
+		while (it.hasNext()) {
+			 Map entry = (Map) it.next();
+			 
+			 Object assignment = entry.get(ObjectKeys.TASK_FIELD_ASSIGNMENT);
+			 if (assignment != null) {
+				 Iterator usersIt = null;
+				 if (SearchFieldResult.class.isAssignableFrom(assignment.getClass())) {
+					SearchFieldResult sfr = (SearchFieldResult) entry.get(ObjectKeys.TASK_FIELD_ASSIGNMENT);
+					usersIt = sfr.getValueArray().iterator();
+				 } else if (String.class.isAssignableFrom(assignment.getClass())) {
+					usersIt = Collections.singleton(assignment).iterator();
+				 }
+			 
+				 Collection ids = new ArrayList();
+				 while (usersIt.hasNext()) {
+					 Long userId = new Long((String)usersIt.next());
+					 ids.add(userId);
+				 }
+				 if (ids != null && ids.size()>0) {
+					 List assignedUsers = ResolveIds.getPrincipals(ids);
+					 entry.put(WebKeys.ENTRY_USER_LIST, assignedUsers);
+				 }
+			 }
+			 Object event = entry.get(ObjectKeys.TASK_FIELD_EVENT);
+			 entry.put(WebKeys.ENTRY_DUE_DATE, event);
+		}
+	}
 	protected Map getSearchAndPagingModels(Map folderEntries, Map options) {
 		Map model = new HashMap();
 		
