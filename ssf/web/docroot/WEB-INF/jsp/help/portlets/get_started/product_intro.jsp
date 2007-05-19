@@ -16,19 +16,19 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
 
-<p><ssf:nlt tag="help.getStartedProduct.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.tools"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.tools"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.portal"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.portal"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.whatToClick"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.whatToClick"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <div style="margin-left:25px;">
 
-<a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel', '', '');"><ssf:nlt tag="help.getStartedProduct.workspaces.title"/></a><br />
+<a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.subtopic.workspaces"/></a><br />
 
 <a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 
@@ -38,13 +38,9 @@
 
 <br/>
 
-<div align="center">
-<img 
-    border="0" style="padding-left: 10px;" 
-    <ssf:alt tag="general.previous"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif"/> 
- 1 <a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel', '', '');">2</a> 
- <a href="javascript: ss_helpSystem.showHelpPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel', '', '');"><img 
-    border="0" style="padding-left: 10px;" 
-    <ssf:alt tag="general.next"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
-    
+<div align="center" style="margin-bottom:5px;" title="This Help topic has more than one page of information">
+<div style="display:inline;margin-right:10px;"><img border="0" <ssf:alt tag="general.previous"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></div>
+<div style="display:inline;margin-right:10px;">1</div> 
+<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');">2</a></div>
+<div style="display:inline;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');"><img border="0" <ssf:alt tag="general.next"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a></div>
 </div>

@@ -1869,7 +1869,7 @@ div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global
 
 .ss_global_toolbar_help {
 	text-align: center;
-	font-weight: bold;
+/*	font-weight: bold;  */
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
@@ -1964,7 +1964,7 @@ div.ss_global_toolbar_hide_portal {
 	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 }
 div.ss_global_toolbar_help {
-	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat top center;
+	background:url(<html:imagesPath/>icons/help.png) no-repeat top center;
 	width: 30px;
 	padding-right: 4px;
 	margin-top: 5px;
