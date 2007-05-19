@@ -948,6 +948,8 @@ div.ss_clear_float {
 	height: 0px;
 	line-height:0px;
 	clear: both;
+	font-size:0px;
+	border:0px;
 }
 
 .ss_blog_content, .ss_blog_content table {
