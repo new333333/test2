@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -1536,7 +1537,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								
 					//We have the element name, see if it has option values
 					if (itemName.equals("selectbox")) {
-						Map valueMap = new TreeMap();
+						Map valueMap = new LinkedHashMap();
 						Iterator itSelectionItems = nextItem.selectNodes("item[@name='selectboxSelection']").iterator();
 						while (itSelectionItems.hasNext()) {
 							Element selection = (Element) itSelectionItems.next();
