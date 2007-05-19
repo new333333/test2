@@ -41,7 +41,7 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	    		value.setText(notifyDef.getDateFormat().format(event.getDtStart().getTime()));
 	    		value = element.addElement("endDate");
 	    		value.setText(notifyDef.getDateFormat().format(event.getDtEnd().getTime()));
-	    		notifyDef.addEvent(entity.getId(), event);
+	    		notifyDef.addEvent(entity, event);
 	    	} else { 
 	    		element.setText(obj.toString());
 	    	}

@@ -43,6 +43,9 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 	public static final String DEFAULT_FOLDER_LIBRARY_CONFIG="402883b90d0de1f3010d0df5582b0011";
 	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883b90cc53079010cc539bf260009";
+	
+	public static final String DEFAULT_ENTRY_TASK_CONFIG="402883b90cc53079010cc539bf26000a";
+	public static final String DEFAULT_ENTRY_CALENDAR_CONFIG="402883c6115753d80111577dbe29000d";
 
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
