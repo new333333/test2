@@ -316,13 +316,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		
  		EntryBuilder.buildEntry(binder, entryData);
  		
- 		checkConstraintMirrored(parent, binder);
+ 		checkConstraintMirrored(parent, binder, inputData);
     }
 
-    protected void checkConstraintMirrored(Binder parent, Binder binder) {
+    protected void checkConstraintMirrored(Binder parent, Binder binder, InputDataAccessor inputData) {
  		// A little more validation is necessary with respect to mirrored binder.
  		if(binder.isMirrored()) {
- 			if(!binder.isLibrary())
+ 			boolean library;
+ 	   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY))
+ 	   			library = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
+ 	   		else library = binder.isLibrary();
+ 			if(!library)
  				throw new IllegalArgumentException("Mirrored folder must also be a library folder");
  			if(binder.getResourceDriverName() == null) {
  				if(parent.isMirrored()) {
@@ -358,8 +362,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void addBinder_mirrored(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
 		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
 			// First, make sure that the resource path we store is normalized.
-			String normalizedResourcePath = getResourceDriverManager().normalizedResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
-			binder.setResourcePath(normalizedResourcePath);
+	    	normalizeResourcePath(binder, inputData);
 						
 			// Second, perform outward synchronization, if requested.
 			Boolean synchToSource = Boolean.TRUE;
@@ -461,7 +464,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
-	        		modifyBinder_mirrored(binder, oldTitle, newTitle);
+	        		modifyBinder_mirrored(binder, oldTitle, newTitle, inputData);
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
 	        			fixupPath(binder);
@@ -551,7 +554,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                
         EntryBuilder.updateEntry(binder, entryData);
 
- 		checkConstraintMirrored(binder.getParentBinder(), binder);
+ 		checkConstraintMirrored(binder.getParentBinder(), binder, inputData);
     }
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
     		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex, Map ctx) {
@@ -564,7 +567,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	getReportModule().addAuditTrail(AuditType.modify, binder);
    }
     
-    protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle) {
+    protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle, InputDataAccessor inputData) {
+    	if(binder.isMirrored())
+    		normalizeResourcePath(binder, inputData);
+    	
     	if(isMirroredAndNotTopLevel(binder) && !oldTitle.equals(newTitle)) {
 			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
 			try {
@@ -578,8 +584,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}								
     	}
     }
-    
 
+    private void normalizeResourcePath(Binder binder, InputDataAccessor inputData) {
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
+			String normalizedResourcePath = getResourceDriverManager().normalizedResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
+			binder.setResourcePath(normalizedResourcePath);  			
+   		}
+    }
+   		
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {

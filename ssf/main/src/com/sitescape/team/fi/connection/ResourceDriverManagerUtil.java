@@ -10,6 +10,10 @@ public class ResourceDriverManagerUtil {
 		return getResourceDriverManager().getResourceDrivers();
 	}
 	
+	public static List<ResourceDriver> getAllowedResourceDrivers() {
+		return getResourceDriverManager().getAllowedResourceDrivers();
+	}
+	
 	private static ResourceDriverManager getResourceDriverManager() {
 		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}

@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -89,7 +90,17 @@ public class ModifyBinderController extends AbstractBinderController {
 					}
 					
 				}
-				getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap, deleteAtts);
+				MapInputData mid = new MapInputData(formData);
+		   		if (mid.exists(ObjectKeys.FIELD_BINDER_MIRRORED)) {
+		   			boolean mirrored = Boolean.parseBoolean(mid.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
+		   			if(mirrored) {
+		   				Map formDataPlus = new HashMap(formData);
+		   				formDataPlus.put(ObjectKeys.FIELD_BINDER_LIBRARY, "true");
+		   				mid = new MapInputData(formDataPlus);
+		   			}
+		   		}
+
+				getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);
 				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
