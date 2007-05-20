@@ -25,54 +25,78 @@
 <c:set var="portletNamespace" value="${renderResponse.namespace}"/>
 </ssf:ifnotadapter>
 
-<h1>DASHBOARD / TASK VIEW2</h1>
-
-
 <div class="ss_blog">
+<table class="ss_tasks_list">
+	<tr>
+		<th><ssf:nlt tag="task.status"/></th>
+		<th><ssf:nlt tag="task.priority"/></th>
+		<th><ssf:nlt tag="task.done"/></th>		
+		<th><ssf:nlt tag="task.title"/></th>
+		<!-- th><ssf:nlt tag="task.assigned"/></th>
+		<th><ssf:nlt tag="task.dueDate"/></th -->
+	</tr>
 
-<c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
+<c:forEach var="entry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
 
   <c:set var="hitCount" value="${hitCount + 1}"/>
-
-
-  <table class="ss_guestbook" cellspacing="0" cellpadding="0" width="100%">
-	  <tr> 	
-			<td class="ss_miniBusinessCard" style="padding-bottom: 5px;" valign="top">
-				<ssf:miniBusinessCard user="${fileEntry._principal}"/> 
-			</td>		 	
-			<td class="ss_guestbookContainer" valign="top">
-			
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}"
-		    entryId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>"
-			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
-		
-				<span class="ss_entryTitle ss_normalprint">
-					<c:if test="${empty fileEntry.title}">
-				    	${fileEntry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
-				    </c:if>
-					<c:out value="${fileEntry.title}" escapeXml="false"/>
-				</span></a>
-				<span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-				      value="${fileEntry._modificationDate}" type="both" 
-					  timeStyle="short" dateStyle="short" /></span>
-				
-				<c:if test="${!empty fileEntry._desc}">
-				<div class="ss_blockquote_watermark"></div>
-				<div class="ss_blockquote_watermark_content">
-					<span><ssf:markup type="view" binderId="${fileEntry._binderId}" 
-					  entryId="${fileEntry._docId}"><c:out value="${fileEntry._desc}" escapeXml="false"/></ssf:markup></span>
+	<tr>
+		<td>
+			<c:if test="${! empty entry.status}">
+					<img src="<html:imagesPath/>icons/status_${entry.status}.jpg"
+						class="ss_status_inactive">
+			</c:if>
+		</td>
+		<td>
+			<c:if test="${! empty entry.priority}">
+					<img src="<html:imagesPath/>icons/prio_${entry.priority}.jpg"
+						class="ss_prio_inactive">
+			</c:if>
+		</td>
+		<td>
+			<c:if test="${! empty entry.completed}">
+			<div class="ss_c_">
+				<div class="ss_${entry.completed} ss_smallprint">
+						${entry.completed}
 				</div>
-				</c:if>
-			</td>					 	
-		</tr>
-	</table>
-
+			<div>
+			<div class="ss_clear_float"></div>
+			</c:if>			
+		</td>
+		<td>
+			<span class="ss_entryTitle ss_normalprint">
+				<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${entry._docId}" 
+				binderId="${entry._binderId}" entityType="${entry._entityType}" 
+				imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+			    menuDivId="ss_emd_${renderResponse.namespace}"
+				linkMenuObjIdx="${renderResponse.namespace}" 
+				namespace="${renderResponse.namespace}"
+				entryCallbackRoutine="${showEntryCallbackRoutine}">
+				
+					<ssf:param name="url" useBody="true">
+						<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+					</ssf:param>
+				
+					<c:out value="${entry.title}" escapeXml="false"/>
+				</ssf:menuLink>
+			</span>
+		</td>
+		<!-- td>
+			<ul>
+			<c:forEach var="assigned" items="${entry.assignedUsers}">
+				<li><ssf:showUser user="${assigned}" /></li>
+			</c:forEach>
+			</ul>
+		</td>
+		<td>
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			      value="${entry.dueDate}" type="both" 
+				  timeStyle="short" dateStyle="short" />
+		</td -->
+	</tr>
 </c:forEach>
+</table>
+			
 </div>
 
 <div>
