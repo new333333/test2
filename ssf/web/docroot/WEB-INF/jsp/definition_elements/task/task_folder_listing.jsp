@@ -12,62 +12,7 @@
 %>
 <% //View the listing part of a tasks folder %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<style>
-table.ss_tasks_list {
-	width:100%;
-	margin-top:6px;
-	padding: 0px;
-	border-collapse: collapse;
-}
-table.ss_tasks_list th {
-	background-color: #dbe6f2;
-	border:1px solid #afc8e3;
-	text-align: left;
-	padding: 3px 3px 3px 3px;
-}
-table.ss_tasks_list td {
-	padding: 6px  3px 6px 3px;
-	border-bottom: 1px solid #afc8e3;
-}
-table.ss_tasks_list ul, table.ss_tasks_list li {
-	margin:0px;
-	padding:0px;
-	border:0px;
-}
-img.ss_prio_active { border:1px solid #666666;}
-img.ss_prio_inactive {border:1px solid #ffffff;}
-img.ss_status_active { border:1px solid #666666;}
-img.ss_status_inactive {border:1px solid #ffffff;}
 
-div.ss_c_ {
-	border: 1px solid #afc8e3;
-	background-color: #e8eff7;
-	width: 100px;
-	height:15px;
-	line-height:15px;
-	float:left;
-	margin: 3px 0px 3px 0px;
-	padding:0px;
-}
-div.ss_c_ div {
-	background-color: #afc8e3;
-	color:#000099;
-	white-space: nowrap;
-}
-div.ss_c_ div.ss_c_0 { width:0px;}
-div.ss_c_ div.ss_c_10 { width:10px;}
-div.ss_c_ div.ss_c_20 { width:20px;}
-div.ss_c_ div.ss_c_30 { width:30px;}
-div.ss_c_ div.ss_c_40 { width:40px;}
-div.ss_c_ div.ss_c_50 { width:50px;}
-div.ss_c_ div.ss_c_60 { width:60px;}
-div.ss_c_ div.ss_c_70 { width:70px;}
-div.ss_c_ div.ss_c_80 { width:80px;}
-div.ss_c_ div.ss_c_90 { width:90px;}
-div.ss_c_ div.ss_c_100 { width:100px;}
-</style>
-
- ${ssEntryDefinitionElementData} ${ssEntryDefinitionMap.key}
 <table class="ss_tasks_list">
 	<tr>
 		<th><ssf:nlt tag="task.status"/></th>
