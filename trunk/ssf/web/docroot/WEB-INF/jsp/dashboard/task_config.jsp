@@ -1,5 +1,5 @@
 <%
-// The dashboard "guestbook summary" component
+// The dashboard "task summary" component
 /**
  * The contents of this file are governed by the terms of your license
  * with SiteScape, Inc., which includes disclaimers of warranties and
@@ -25,11 +25,6 @@ function ${treeName}_showId(forum, obj) {
 	return false;
 }
 </script>
-
-
-
-<h1>DASHBOARD / TASK CONFIG</h1>
-
 
 
 <br/>
@@ -61,7 +56,7 @@ ${ssDashboard.beans[ssComponentId].ssBinder.title}
 <br/><br/>
 
 <span class="ss_bold">
-  <ssf:nlt tag="dashboard.guestbook.selectGuestbookFolder"/>
+  <ssf:nlt tag="dashboard.task.selectTaskFolder"/>
 </span>
 <br>
 <br>
@@ -69,7 +64,7 @@ ${ssDashboard.beans[ssComponentId].ssBinder.title}
 <c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
 <table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
 	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>><span>
-  <ssf:nlt tag="dashboard.guestbook.selectFolderRelative"/>
+  <ssf:nlt tag="dashboard.task.selectFolderRelative"/>
 </span></td></tr></table>
 </c:if>
 <ssf:tree 

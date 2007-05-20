@@ -47,10 +47,6 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 </script>
 </c:if>
 
-<script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
-
-<h1>DASHBOARD / TASK VIEW</h1>
-
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
 <table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
@@ -63,38 +59,13 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
 		><span class="ss_bold">${folder.title}</span></a>
   </td>
-  <td valign="top" align="right">
-	<div style="text-align: right; margin: 5px; ">
-		<c:if test="${!empty ssDashboard.beans[componentId].ssBinder && !empty ssDashboard.beans[componentId].ssBinder.entryDefinitions[0]}">
-		<a class="ss_linkButton" href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="add_folder_entry"
-				    binderId="${ssDashboard.beans[componentId].ssBinder.id}">
-				    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssBinder.entryDefinitions[0].id}" />
-		    	    <ssf:param name="newTab" value="1"/>
-		    	    <ssf:param name="addEntryFromIFrame" value="1"/>
-		    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    
-					</ssf:url>" onClick="ss_signGuestbook('${ssNamespace}', this);return false;">
-		<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
-		</a>
-		</c:if>
-	</div>
-  </td>
 </tr>
 </c:forEach>
 </table>
 <br/>
 </c:if>
 
-
-
-<div id="${ssNamespace}_add_entry_from_iframe" style="display:none; visibility:hidden;">
-<iframe id="${ssNamespace}_new_guestbook_entry_iframe"
-  name="${ssNamespace}_new_guestbook_entry_iframe"
-  onLoad="ss_showSignGuestbookIframe('${ssNamespace}', this);" 
-  width="100%">xxx</iframe>
-</div>
-
 <div id="${ss_divId}">
-<%@ include file="/WEB-INF/jsp/dashboard/guestbook_view2.jsp" %>
+<%@ include file="/WEB-INF/jsp/dashboard/task_view2.jsp" %>
 </div>
 
