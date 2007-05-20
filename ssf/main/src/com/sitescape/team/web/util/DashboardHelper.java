@@ -175,10 +175,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
+				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)){
+					getInstance().getTasksBean(binder, ssDashboard, model, id, component, false);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
-						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
@@ -186,9 +187,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} 
 			}
 		}
-   	
     }
-    private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
+    private void getTasksBean(Binder binder, Map ssDashboard, Map model, String id, Map component, boolean b) {
+    	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);		
+	}
+	private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
 		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
 			Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
 			if (components.containsKey(id)) {
