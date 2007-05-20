@@ -354,7 +354,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
          
     //***********************************************************************************************************
     public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
-    	logger.info("Deleting binder [" + binder.getPathName() + "]");//$$$
+    	if(logger.isDebugEnabled())
+    		logger.debug("Deleting binder [" + binder.getPathName() + "]");
     	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
     	else {
     		final Folder folder = (Folder)binder;
@@ -377,7 +378,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			       				if (obj instanceof Object[])
 			       					obj = ((Object [])obj)[0];
 			 					FolderEntry entry = (FolderEntry)obj;
-			 					logger.info("Deleting entry [" + entry.getTitle() + "], id=" + entry.getId());
+			 					if(logger.isDebugEnabled())
+			 						logger.debug("Deleting entry [" + entry.getTitle() + "], id=" + entry.getId());
 					    		//create history - using timestamp and version from folder delete
 								try {
 									entry.setModification(folder.getModification());

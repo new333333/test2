@@ -9,6 +9,8 @@ public interface ResourceDriverManager {
 
 	public List<ResourceDriver> getResourceDrivers();
 
+	public List<ResourceDriver> getAllowedResourceDrivers();
+	
 	public ResourceSession getSession(String driverName)
 	throws FIException, UncheckedIOException;
 	
