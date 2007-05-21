@@ -39,10 +39,10 @@
 <div class="ss_indent_medium">
   <input type="radio" name="notifyType" value="1" id="notifyType_${ssSubscription.id.entityId}_1"
   <c:if test="${ssSubscription.style=='1'}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssSubscription.id.entityId}_1"><ssf:nlt tag="subscribe.digest"/></label><br/>
+  /><label for="notifyType_${ssSubscription.id.entityId}_1"><ssf:nlt tag="subscribe.digest"/></label> <ssf:inlineHelp tag="ihelp.email.digest_notify"/><br/>
   <input type="radio" name="notifyType" value="2" id="notifyType_${ssSubscription.id.entityId}_2"
   <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssSubscription.id.entityId}_2"><ssf:nlt tag="subscribe.message"/></label><br/>
+  /><label for="notifyType_${ssSubscription.id.entityId}_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
   <input type="radio" name="notifyType" value="3" id="notifyType_${ssSubscription.id.entityId}_3"
   <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
   /><label for="notifyType_${ssSubscription.id.entityId}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
@@ -50,7 +50,7 @@
 <br/>
   <input type="radio" name="notifyType" value="4" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${ssSubscription.style=='4'}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label><br/>
+  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>
   
   <br/>
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">

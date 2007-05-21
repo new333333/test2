@@ -14,7 +14,7 @@
           <property name="caption" value="__title"/>
           <property name="width" value="60"/>
           <property name="inline" caption="__inline" type="boolean" value="false">
-            <help>__help_mark_as_inline</help>
+            <help>ihelp.designers.mark_as_inline</help>
           </property>
           <property name="generated" value="true"/>
           <property name="itemSource" value="upload"/>
@@ -27,10 +27,10 @@
           <property name="width" value=""/>
           <property name="storage" value="simpleFileRepository"/>
           <property name="inline" caption="__inline" type="boolean" value="false">
-            <help>__help_mark_as_inline</help>
+            <help>ihelp.designers.mark_as_inline</help>
           </property>
           <property name="required" caption="__required" type="boolean" default="false" value="false">
-            <help>__help_required</help>
+            <help>ihelp.designers.required</help>
           </property>
         </properties>
       </item>

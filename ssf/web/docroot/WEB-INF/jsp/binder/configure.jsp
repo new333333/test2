@@ -69,7 +69,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.definitions.inheritance" 
-    text="Definition inheritance"/></legend>
+    text="Definition inheritance"/> <ssf:inlineHelp tag="ihelp.other.inherit_defs"/> </legend>
 <br>
 <c:set var="yes_checked" value=""/>
 <c:set var="no_checked" value=""/>
@@ -116,7 +116,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'workspace'}">
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/> <ssf:inlineHelp tag="ihelp.other.def_view_type"/> </legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
           <c:choose>
@@ -140,7 +140,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'folder'}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed folder views"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:inlineHelp tag="ihelp.other.view_type"/> </legend>
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssPublicBinderDefinitions}">
@@ -165,7 +165,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
   <c:if test="${!empty folderViewCount}">
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default view"/> <ssf:inlineHelp tag="ihelp.other.def_view_type"/> </legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
         <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
@@ -190,7 +190,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
   </c:if>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp tag="ihelp.other.def_entry_type"/> </legend>
 
     <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:choose>
@@ -213,7 +213,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
   <% //only display if have workflows - which covers the case where workflow is not supported %>
 <c:if test="${!empty ssPublicWorkflowDefinitions}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp tag="ihelp.other.workflow_association"/> </legend>
 
 	<table>
 	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
@@ -245,7 +245,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 </c:if>
   </fieldset>
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:inlineHelp tag="ihelp.other.allowed_workflows"/> </legend>
 
     <c:forEach var="item" items="${ssPublicWorkflowDefinitions}">
 	  <c:choose>
@@ -271,7 +271,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'profiles'}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/> <ssf:inlineHelp tag="ihelp.other.profile_view"/> </legend>
 
     <c:forEach var="item" items="${ssPublicBinderDefinitions}">
       <c:choose>
@@ -293,7 +293,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
   <br>
   
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/> <ssf:inlineHelp tag="ihelp.other.profile_type"/> </legend>
 
     <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:choose>

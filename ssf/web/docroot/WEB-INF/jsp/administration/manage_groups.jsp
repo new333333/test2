@@ -24,7 +24,7 @@
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><br/>
+	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.designers.database_name"/><br/>
 	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/>

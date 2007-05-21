@@ -14,7 +14,7 @@
           <property name="caption" value="__title"/>
           <property name="width" value="60"/>
           <property name="inline" caption="__inline" type="boolean" value="false">
-            <help>__help_mark_as_inline</help>
+            <help>ihelp.designers.mark_as_inline</help>
           </property>
           <property name="generated" value="true"/>
           <property name="itemSource" value="photo"/>

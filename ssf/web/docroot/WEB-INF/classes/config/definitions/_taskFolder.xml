@@ -8,10 +8,10 @@
         <property name="caption" value="__title"/>
         <property name="width" value="100"/>
         <property name="inline" caption="__inline" type="boolean" value="false">
-          <help>__help_mark_as_inline</help>
+          <help>ihelp.designers.mark_as_inline</help>
         </property>
         <property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1" value="false">
-          <help>__help_mark_as_title</help>
+          <help>ihelp.designers.mark_as_title</help>
         </property>
       </properties>
     </item>
