@@ -716,9 +716,13 @@ function m_setSubmitRoutine(submitRoutine) {
 
 //Common onSubmit handler
 //  This function will call the desired routines at form submit time
+//  unless the onClick for the submit button called ss_selectButton('cancelBtn').
 //  If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj) {
     var result = true;
+    if(ss_buttonSelected == "cancelBtn") {
+    	return true;
+    }
     for (var i = 0; i < ss_onSubmitList.length; i++) {
         if (ss_onSubmitList[i].formName == obj.name) {
             if (!ss_onSubmitList[i].submitRoutine()) {result = false;}
@@ -727,6 +731,12 @@ function ss_onSubmit(obj) {
     return result && ss_validate(obj);
 }
 
+var ss_buttonSelected = "";
+	
+function ss_buttonSelect(btn) {
+	ss_buttonSelected = btn
+}
+	
 
 //Routine to create a new "onResizeObj" object
 //onResizeObj objects are set up whenever you want to call something at onResize time.
@@ -4732,7 +4742,7 @@ function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
 }
 
-function ss_ajaxValidate(url, obj, labelId, msgBoxId, repositoryName) {
+function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
 	ss_setupStatusMessageDiv();
  	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
@@ -4740,7 +4750,6 @@ function ss_ajaxValidate(url, obj, labelId, msgBoxId, repositoryName) {
 	ajaxRequest.addKeyValue("ss_ajaxValue",obj.value);
 	ajaxRequest.addKeyValue("ss_ajaxLabelId",labelId);
 	ajaxRequest.addKeyValue("ss_ajaxMsgId",msgBoxId);
-	ajaxRequest.addKeyValue("repository",repositoryName);
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.sendRequest();  //Send the request
 }

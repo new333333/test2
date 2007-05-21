@@ -72,12 +72,6 @@
 
 	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>	
 	
-	var ss_buttonSelected = "";
-	
-	function ss_buttonSelect(btn) {
-		ss_buttonSelected = btn
-	}
-	
 	function ss_checkFilterForm() {
 		//Set the term numbers into the form
 		var formObj = document.getElementById("filterData");
