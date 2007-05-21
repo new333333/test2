@@ -1149,14 +1149,12 @@ table.ss_mouseOverInfo {
 }
 .ss_mouseOverInfo td a.ss_title_menu span {
   position:relative;
-  left:-17px;
   top:0px;
   border:1px solid black;
   padding-right:10px;
 }
 .ss_mouseOverInfo td a.ss_title_menu img {
   position:relative;
-  left:-20px;
   top:0px;
 }
 
@@ -2658,6 +2656,10 @@ ul.ss_title_menu li {
   margin-bottom: 0px;
   padding-left: 2px;
 } 
+
+div.ss_title_menu {
+	display:inline;
+}
 
 /* Footer */
 div.ss_bottomlinks {
