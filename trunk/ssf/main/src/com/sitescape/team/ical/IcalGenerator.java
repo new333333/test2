@@ -322,8 +322,10 @@ public class IcalGenerator {
 
 		int priority = 0;
 		if (value != null) {
-			if (value.contains("low")) {
+			if (value.contains("trivial")) {
 				priority = 9;
+			} else if (value.contains("low")) {
+				priority = 8;
 			} else if (value.contains("medium")) {
 				priority = 5;
 			} else if (value.contains("high")) {
