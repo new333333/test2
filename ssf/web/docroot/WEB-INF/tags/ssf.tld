@@ -565,6 +565,16 @@
 		<name>inlineHelp</name>
 		<tag-class>com.sitescape.team.taglib.InlineHelpTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>tag</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>jsp</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 
 	<tag>

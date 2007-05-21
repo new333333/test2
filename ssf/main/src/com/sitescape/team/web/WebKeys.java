@@ -113,6 +113,7 @@ public class WebKeys {
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";
+	public static final String URL_TAG_ID = "tagId";
 	public static final String URL_TREE_SELECT_TYPE = "tree_select_type";
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
@@ -502,6 +503,7 @@ public class WebKeys {
     public static final String GROUPS="ssGroups";
     public static final String HELP_PANEL_ID="ss_help_panel_id";
     public static final String HELP_PANEL_JSP="ss_help_panel_jsp";
+    public static final String HELP_PANEL_TAG="ss_help_panel_tag";
     public static final String HELP_SPOT="helpSpot";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String IS_REFRESH="ssRefresh";

@@ -2186,7 +2186,21 @@ var ss_helpSystem = {
 	    this.showHelpPanel(id, panelId, x, y);
 	},
 
-	showHelpPanel : function(id, panelId, x, y, xAlignment, yAlignment) {
+	showInlineHelpSpotInfo : function(helpSpot, jspId, tagId, xAlignment, yAlignment) {
+		if (xAlignment == null) xAlignment = "";
+		if (yAlignment == null) yAlignment = "";
+		//ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
+		if (helpSpot != null) {
+		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
+		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
+		    var x = parseInt(left + 3);
+		    var y = parseInt(top + 3);
+			this.showHelpPanel(jspId, "ss_help_panel", x, y, xAlignment, yAlignment, tagId)
+		}
+	},
+	
+	showHelpPanel : function(id, panelId, x, y, xAlignment, yAlignment, tagId) {
+		if (tagId == null) tagId = "";
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
 		//ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
@@ -2237,6 +2251,7 @@ var ss_helpSystem = {
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("operation2", id)
 		ajaxRequest.addKeyValue("ss_help_panel_id", panelId)
+		ajaxRequest.addKeyValue("tagId", tagId)
 		ajaxRequest.setData("id", id)
 		ajaxRequest.setData("panelId", panelId)
 		ajaxRequest.setData("x", x)
