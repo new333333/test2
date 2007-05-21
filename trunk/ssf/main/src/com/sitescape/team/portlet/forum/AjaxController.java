@@ -1650,17 +1650,25 @@ public class AjaxController  extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		String helpPanelId = PortletRequestUtils.getStringParameter(request, 
-				WebKeys.HELP_PANEL_ID, "ss_help_panel");
+				WebKeys.HELP_PANEL_ID, "ss_help_panel_id");
 		model.put(WebKeys.HELP_PANEL_ID, helpPanelId);
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		//See if the site has overridden the mapping for this help page
-		String jsp = SPropsUtil.getString("help_system." + op2, "");
-		if (jsp.equals("")) {
-			//There is no override; use the id as the jsp name directly
-			jsp = "/WEB-INF/jsp/help/" + op2 + ".jsp";
+		String tagId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_ID, "");
+		String jsp = "";
+		if (op2.equals("")) {
+			jsp = "/WEB-INF/jsp/tag_jsps/inline_help/tag_ajax.jsp";
+			if (tagId.equals("")) tagId = "help.globalStrings.noHelp";
+		} else {
+			//See if the site has overridden the mapping for this help page
+			jsp = SPropsUtil.getString("help_system." + op2, "");
+			if (jsp.equals("")) {
+				//There is no override; use the id as the jsp name directly
+				jsp = "/WEB-INF/jsp/help/" + op2 + ".jsp";
+			}
 		}
 		response.setContentType("text/xml");
 		model.put(WebKeys.HELP_PANEL_JSP, jsp);
+		model.put(WebKeys.HELP_PANEL_TAG, tagId);
 
 		//Put in the product name
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
