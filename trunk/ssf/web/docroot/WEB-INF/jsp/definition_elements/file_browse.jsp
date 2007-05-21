@@ -35,11 +35,12 @@
 </c:if>
 
 <c:set var="eName" value="${elementName}"/>
-<c:set var="doCheck" value="false"/>
 
-<c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
-<c:if test="${ssDefinitionEntry.parentBinder.library}">
-<c:set var="doCheck" value="true"/>
+<c:if test='${! empty ssFolder}'>
+ <c:set var="entryId" value=""/>
+ <c:if test="${!empty ssEntry}">
+  <c:set var="entryId" value="${ssEntry.id}"/>
+ </c:if>
  <script type="text/javascript">
 var ss_findEntryForFileUrl = "<ssf:url 
 	adapter="true" 
@@ -47,8 +48,8 @@ var ss_findEntryForFileUrl = "<ssf:url
 	action="__ajax_request" 
 	actionUrl="false" >
 	<ssf:param name="operation" value="find_entry_for_file" />
-	<ssf:param name="binderId" value="${ssDefinitionEntry.parentBinder.id}" />
-	<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
+	<ssf:param name="folderId" value="${ssFolder.id}" />
+	<ssf:param name="entryId" value="${entryId}" />
 	</ssf:url>";
   <c:forEach var="i" begin="1" end="${count}">
    <c:if test='${! empty property_number}'>
@@ -59,7 +60,6 @@ var ${eName}_ok = 1;
   </c:forEach>
  </script>
 </c:if>
-</c:if>
 
 <div class="ss_entryContent" ${inline}>
 <span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
@@ -67,12 +67,12 @@ var ${eName}_ok = 1;
  <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
  </c:if>
- <c:if test='${doCheck}'>
+ <c:if test='${! empty ssFolder}'>
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width} onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"/><br/>
  </c:if>
- <c:if test='${!doCheck}'>
-  <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width} /><br/>
+ <c:if test='${empty ssFolder}'>
+  <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width}/><br/>
  </c:if>
 </c:forEach>
 
