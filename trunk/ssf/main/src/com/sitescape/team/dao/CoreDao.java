@@ -72,7 +72,6 @@ public interface CoreDao {
      */
     public Binder loadBinder(Long binderId, Long zoneId);
 	public List loadCommunityTagsByEntity(EntityIdentifier entityId);
-	public List loadCommunityTagsByOwner(EntityIdentifier ownerId);
     public List loadConfigurations(Long zoneId);
     public List loadConfigurations(Long zoneId, int type);
 	public Dashboard loadDashboard(String id);

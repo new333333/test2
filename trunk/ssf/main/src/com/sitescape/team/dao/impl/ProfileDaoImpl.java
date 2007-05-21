@@ -179,7 +179,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			  	.setParameterList("tList", types)
 		   				.executeUpdate();
 	       			
-		   			//delete tags for these principals
+		   			//delete tags for these principals - not likely to exist
  		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id in " + 
  			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
 			  			" p.parentBinder=:profile) and entity_type in (:tList)")
@@ -282,7 +282,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   					.setParameterList("pList", ids)
 	   					.setParameterList("tList", types)
 	   					.executeUpdate();
- 		   			//delete tags on this entity
+ 		   			//delete tags on this entity - not likely to exist
 		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id in (:pList) and entity_type in (:tList)")
    						.setParameterList("pList", ids)
    						.setParameterList("tList", types)

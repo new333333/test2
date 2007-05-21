@@ -171,6 +171,10 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 		} else if ("addFolder".equals(operation)) { 	
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_BINDERS);
+		} else if ("setTag".equals(operation)) { 	
+	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		} else if ("deleteTag".equals(operation)) { 	
+	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		} else {
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		}
@@ -660,7 +664,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     }
 
 	public Map getTags(FolderEntry entry) {
-		//have binder - so assume read access
+		//have Entry - so assume read access
         Map results = new HashMap();
 		//bulk load tags
         List<Tag> tags = getCoreDao().loadEntityTags(entry.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
@@ -680,19 +684,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		return results;		
 		
 	}
-	public void modifyTag(Long binderId, Long entryId, String tagId, String newtag) {
-		FolderEntry entry = getEntry(binderId, entryId);
-	   	Tag tag = coreDao.loadTag(tagId);
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-	   	//if created tag for this entry, by this user- can modify it
-	   	if (tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
-	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
-	   		tag.setName(newtag);
-	   	}
- 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
-	   	//TODO: what access is needed?
-	   	//checkAccess(entry, "deleteTag");
-	}
 	
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
 		if (Validator.isNull(newtag)) return;
@@ -702,13 +693,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		List tags = new ArrayList();
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
-		//TODO: can anyone add a tag?
+		if (community) checkAccess(entry.getParentFolder(), "setTag");
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier eei = entry.getEntityIdentifier();
 		for (int i = 0; i < newTags.length; i++) {
 			Tag tag = new Tag();
-		   	tag.setOwnerIdentifier(uei);
+			//community tags belong to the binder - don't care who created it
+		   	if (!community) tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(eei);
 		    tag.setPublic(community);
 		   	tag.setName(newTags[i]);
@@ -720,21 +712,17 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-   		Tag tag = null;
+  		Tag tag = null;
    		try {
 	   		tag = coreDao.loadTag(tagId);
 	   	} catch(Exception e) {
 	   		return;
 	   	}
+	   	if (tag.isPublic()) checkAccess(entry.getParentFolder(), "deleteTag");
 	   	//if created tag for this entry, by this user- can delete it
-	   	if (tag != null && tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
-	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
-		   	getCoreDao().delete(tag);
-	   	}
+	   	else if (!tag.isOwner(RequestContextHolder.getRequestContext().getUser())) return;
+	   	getCoreDao().delete(tag);
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
-	   	//TODO: what access is needed?
-	   	//checkAccess(entry, "deleteTag");
 	}
 	
 	
@@ -749,7 +737,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		setRating(folder, value);
 	} 
 	protected void setRating(DefinableEntity entity, long value) {
-		//TODO: what access is needed
+		//Have the entity, you can rate it
 		EntityIdentifier id = entity.getEntityIdentifier();
 		//update entity average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};

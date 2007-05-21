@@ -57,8 +57,6 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.ical.IcalParser;
-import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -66,9 +64,8 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
@@ -1278,41 +1275,13 @@ public class AjaxController  extends SAbstractController {
 				model.put("ss_tree_select", PortletRequestUtils.getStringParameter(request, "select", ""));
 			} 
 			Binder binder = getBinderModule().getBinder(binderId);
-			Long topId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_OPERATION2);
 			Document tree;
 			if (binder instanceof Workspace) {
-				if (0 == 1 && (topId != null) && !binder.isRoot()) {
-					//top must be a workspace
-					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), 
-							new WsDomTreeBuilder(binder, true, this, treeKey, page));
-				} else {
-					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
+				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
 							new WsDomTreeBuilder(binder, true, this, treeKey, page),1);
-				}
 			} else {
-				Folder topFolder = ((Folder)binder).getTopFolder();
-				if (topFolder == null) topFolder = (Folder)binder;
-				
-				//must be a folder
-				if (topId == null) {
-					tree = getFolderModule().getDomFolderTree(topFolder.getId(), 
-							new WsDomTreeBuilder(topFolder, false, this, treeKey));
-				} else {
-					Binder top = getBinderModule().getBinder(topId);
-					if (top instanceof Folder)
-						//just load the whole thing
-						tree = getFolderModule().getDomFolderTree(top.getId(), 
-								new WsDomTreeBuilder(top, false, this, treeKey));
-					else {
-						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), 
-								new WsDomTreeBuilder(top, false, this, treeKey));
-						Element topBinderElement = (Element)tree.selectSingleNode("//" + DomTreeBuilder.NODE_CHILD + "[@id='" + topFolder.getId() + "']");
-						Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), 
-								new WsDomTreeBuilder(topFolder, false, this, treeKey));
-						topBinderElement.setContent(folderTree.getRootElement().content());
-					}
-						
-				}
+				tree = getFolderModule().getDomFolderTree(binder.getId(), 
+							new WsDomTreeBuilder(binder, true, this, treeKey), 1);
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 		}
@@ -1768,7 +1737,6 @@ public class AjaxController  extends SAbstractController {
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
 		
-		Tabs tabs = new Tabs(request);
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_ID, binderId);
@@ -1786,7 +1754,6 @@ public class AjaxController  extends SAbstractController {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 
 		Map model = new HashMap();
-		Folder folder = null;
 		FolderEntry entry = null;
 
 		// User context
@@ -1796,9 +1763,6 @@ public class AjaxController  extends SAbstractController {
 
 		if (!entryId.equals("")) {
 			entry  = getFolderModule().getEntry(folderId, Long.valueOf(entryId));
-			folder = entry.getParentFolder();
-		} else {
-			folder = getFolderModule().getFolder(folderId);
 		}
 		
 		model.put(WebKeys.NAMESPACE, namespace);
@@ -1899,7 +1863,6 @@ public class AjaxController  extends SAbstractController {
 		String strRefreshURL = adapterFolderRefreshUrl.toString();
 		//strRefreshURL = strRefreshURL.replaceAll("&", "&amp;");
 		
-		Tabs tabs = new Tabs(request);
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_IS_LIBRARY, library);

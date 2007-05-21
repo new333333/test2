@@ -27,12 +27,13 @@
 
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+</c:if>
 <script type="text/javascript">	
 function ${ss_divId}_wikiurl(binderId, entryId, type) {
 	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
 }
 </script>
-</c:if>
+
 
 <c:if test="${ssConfigJspStyle == 'template'}">
 <script type="text/javascript">
