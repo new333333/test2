@@ -4901,3 +4901,23 @@ function ss_confirmDeleteFolder() {
 		return false
 	}
 }
+
+function ss_confirmStartWorkflow(text) {
+	if (text == null) text = "";
+	if (text != "") text = " " + text;
+	if (confirm(ss_confirmStartWorkflowText + text)) {
+		return true
+	} else {
+		return false
+	}
+}
+
+function ss_confirmStopWorkflow(text) {
+	if (text == null) text = "";
+	if (text != "") text = " " + text;
+	if (confirm(ss_confirmStopWorkflowText + text)) {
+		return true
+	} else {
+		return false
+	}
+}

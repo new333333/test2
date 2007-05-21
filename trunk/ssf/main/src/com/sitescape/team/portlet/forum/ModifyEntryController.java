@@ -24,7 +24,9 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
@@ -61,6 +63,9 @@ public class ModifyEntryController extends SAbstractController {
 			
 		} else if (op.equals(WebKeys.OPERATION_START_WORKFLOW)) {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
+			FolderEntry entry  = getFolderModule().getEntry(folderId, entryId);
+    		Definition wfDef = DefinitionHelper.getDefinition(workflowType);
+    		if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
 			setupViewEntry(response, folderId, entryId);
 			
 		} else if (formData.containsKey("okBtn")) {

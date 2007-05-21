@@ -476,19 +476,45 @@ public class ViewEntryController extends  SAbstractController {
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
 			toolbar.addToolbarMenu("6_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
 			
+			//See if there are workflows running
+			Map runningWorkflowDefs = new HashMap();
+			Iterator itWorkflowStates = entry.getWorkflowStates().iterator();
+			while (itWorkflowStates.hasNext()) {
+				WorkflowState state = (WorkflowState) itWorkflowStates.next();
+				Definition workflowDef = state.getDefinition();
+				if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+					String wfTitle = NLT.getDef(workflowDef.getTitle());
+					String wfTitle1 = wfTitle.replaceAll("'", "\\'");
+					qualifiers = new HashMap();
+					qualifiers.put("onClick", "if (ss_confirmStopWorkflow) {return ss_confirmStopWorkflow('"+wfTitle1+"')} else {return false}");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
+					url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+					toolbar.addToolbarMenuItem("6_workflow", "", 
+							NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
+					runningWorkflowDefs.put(workflowDef.getId(), "1");
+				}
+			}
+			
 			while (itWorkflows.hasNext()) {
 				Definition workflowDef = (Definition) itWorkflows.next();
-				qualifiers = new HashMap();
-				//Add an empty onClick to override the defalut behavior of showing this in a popup
-				qualifiers.put("onClick", ";");
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
-				url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-				toolbar.addToolbarMenuItem("6_workflow", "", 
-						NLT.get("toolbar.menu.startWorkflow", new String[] {NLT.getDef(workflowDef.getTitle())}), url, qualifiers);
+				if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+					String wfTitle = NLT.getDef(workflowDef.getTitle());
+					String wfTitle1 = wfTitle.replaceAll("'", "\\'");
+					qualifiers = new HashMap();
+					qualifiers.put("onClick", "if (ss_confirmStartWorkflow) {return ss_confirmStartWorkflow('"+wfTitle1+"')} else {return false}");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
+					url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+					toolbar.addToolbarMenuItem("6_workflow", "", 
+							NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
+				}
 			}
 		}
 		
