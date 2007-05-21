@@ -63,8 +63,6 @@ var ${eName}_ok = 1;
 
 <div class="ss_entryContent" ${inline}>
 <span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
-<c:out value="${elementName}"/>
-<c:out value="${repositoryName}"/>
 <c:forEach var="i" begin="1" end="${count}">
  <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
