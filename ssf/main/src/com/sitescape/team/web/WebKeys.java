@@ -75,6 +75,7 @@ public class WebKeys {
 	public static final String URL_DATE_TIME="time";
 	public static final String URL_DATE_TIME_DURATION="duration";
 	public static final String URL_DEBUG="enableDebug";
+	public static final String URL_DELETE_SOURCE="deleteSource";
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
@@ -710,6 +711,7 @@ public class WebKeys {
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
+    public static final String VIEW_CONFIRM_DELETE_MIRRRED_BINDER="binder/confirm_delete_mirrored_binder";
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";

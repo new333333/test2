@@ -316,16 +316,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		
  		EntryBuilder.buildEntry(binder, entryData);
  		
- 		checkConstraintMirrored(parent, binder, inputData);
+ 		// If binder is mirrored, ignore user's input and make it a library as well.
+ 		// We don't do the same in modifyBinder since changing non-library to library
+ 		// requires some fixup in the higher up. 
+ 		if(binder.isMirrored())
+ 			binder.setLibrary(true);
+ 		
+ 		checkConstraintMirrored(parent, binder, binder.isLibrary(), inputData);
     }
 
-    protected void checkConstraintMirrored(Binder parent, Binder binder, InputDataAccessor inputData) {
+    protected void checkConstraintMirrored(Binder parent, Binder binder, boolean library, InputDataAccessor inputData) {
  		// A little more validation is necessary with respect to mirrored binder.
  		if(binder.isMirrored()) {
- 			boolean library;
- 	   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY))
- 	   			library = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
- 	   		else library = binder.isLibrary();
  			if(!library)
  				throw new IllegalArgumentException("Mirrored folder must also be a library folder");
  			if(binder.getResourceDriverName() == null) {
@@ -422,8 +424,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_MIRRORED))
    					mirrored = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_MIRRORED));
    			}
-   			if(mirrored != null)
-   				entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);   		
+   			if(mirrored != null) {
+   				entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);
+   			}
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
    			}
@@ -554,7 +557,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                
         EntryBuilder.updateEntry(binder, entryData);
 
- 		checkConstraintMirrored(binder.getParentBinder(), binder, inputData);
+        boolean library;
+	   	if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY))
+ 	   			library = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
+ 	   	else 
+ 	   		library = binder.isLibrary();
+
+ 		checkConstraintMirrored(binder.getParentBinder(), binder, library, inputData);
     }
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
     		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex, Map ctx) {
@@ -726,20 +735,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
     
     protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
-		if(binder.isMirrored() && deleteMirroredSource) {
-			try {
-				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
-				try {
-					session.delete();
-				}
-				finally {
-					session.close();
-				}	
-			}
-			catch(Exception e) {
-				logger.error("Error deleting mirrored source for binder [" + binder.getPathName() + "]", e);
-			}
-		}	
+    	if(deleteMirroredSource && binder.isMirrored()) {
+    		try {
+    			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
+    			try {
+    				session.delete();
+    			}
+    			finally {
+    				session.close();
+    			}	
+    		}
+    		catch(Exception e) {
+    			logger.error("Error deleting source resource for mirrored binder [" + binder.getPathName() + "]", e);
+    		}  	   		
+    	}
      }
     
     protected void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
