@@ -189,7 +189,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
     }
     private void getTasksBean(Binder binder, Map ssDashboard, Map model, String id, Map component, boolean b) {
-    	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);		
+		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG);
+		model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
+    	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);
+    	
+    	List items = (List) ((Map)((Map)((Map)ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP)).get(id)).get(WebKeys.SEARCH_FORM_DATA)).get(WebKeys.SEARCH_FORM_RESULTS);
+    	TaskHelper.extendTaskInfo(items);
 	}
 	private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
 		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
