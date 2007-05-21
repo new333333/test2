@@ -95,6 +95,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td class="ss_att_meta">
 		<c:if test="${ssConfigJspStyle != 'mail'}">
 		
+		<ssf:ifnotaccessible>
+		
 			<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 				<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 					
@@ -125,6 +127,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				
 				</ssf:ifSupportsEditInPlace>
 			</c:if>	
+			
+		</ssf:ifnotaccessible>
 			
 	 	</c:if>
 		</td>

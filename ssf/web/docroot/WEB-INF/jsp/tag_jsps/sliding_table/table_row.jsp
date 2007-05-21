@@ -57,7 +57,7 @@
 			if (width != null && !width.equals("")) widthAttr = "width='" + width + "' ";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-  <th class="ss_bold" align="left" <%= widthAttr %>><%= text %></th>
+  <th scope="col" class="ss_bold" align="left" <%= widthAttr %>><%= text %></th>
 <%
 			} else {
 %>

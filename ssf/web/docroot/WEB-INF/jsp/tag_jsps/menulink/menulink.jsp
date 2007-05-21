@@ -72,11 +72,12 @@ src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null |
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
 
 <% } else { %>
-
 <a class="ss_title_menu" 
 	<% if ("yes".equals(isFile)) { %>
+		<ssf:titleForEntityType entityType="file" text="<%= title %>" />
 		href="<%= url %>" target="_blank"
 	<% } else { %>
+		<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= title %>" />
 		href="#" onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
 	<% } %>
 ><c:if test="<%= (title == null || title.equals("")) %>">

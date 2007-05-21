@@ -45,8 +45,7 @@
 										src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 									}
 								%>
-							
-							
+						
 								<c:out value="${entry._docNum}" escapeXml="false"/>.
 								<ssf:menuLink 
 									displayDiv="false" action="view_folder_entry" 

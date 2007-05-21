@@ -33,14 +33,17 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	<td valign="top">
   <ssHelpSpot helpId="tools/attachments" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.attachments"/>"></ssHelpSpot>
+	<ssf:ifnotaccessible>
 	
-	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		<% if (isAppletSupported) { %>
-			<a class="ss_linkButton ss_tinyControl" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;">
-				<ssf:nlt tag="entry.AttachFilesByApplet"/>
-			</a>
-		<% } %>
-	</c:if>	
+		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+			<% if (isAppletSupported) { %>
+				<a class="ss_linkButton ss_tinyControl" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;">
+					<ssf:nlt tag="entry.AttachFilesByApplet"/>
+				</a>
+			<% } %>
+		</c:if>
+	
+	</ssf:ifnotaccessible>
 		
 	<% if (com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
