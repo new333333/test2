@@ -309,6 +309,13 @@ body.ss_style_body {
 .ss_title_link {
   text-decoration:underline;
 }
+
+div.ss_entryContent a {
+  text-decoration:underline;
+}
+
+
+
 .ss_largestprint {
   font-size: ${ss_style_font_largestprint} !important; 
 }  
