@@ -506,6 +506,7 @@ public class WebKeys {
     public static final String HELP_PANEL_TAG="ss_help_panel_tag";
     public static final String HELP_SPOT="helpSpot";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
+    public static final String IS_ACCESSIBLE="ss_isAccessible";
     public static final String IS_REFRESH="ssRefresh";
     public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
     public static final String LDAP_CONFIG="ssLdapConfig";
