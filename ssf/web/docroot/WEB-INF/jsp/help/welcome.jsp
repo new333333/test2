@@ -12,7 +12,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <script type="text/javascript" src="<html:rootPath/>js/common/common.js"></script>
-
+<div class="ss_portlet_style ss_portlet">
+<div class="ss_style" style="padding:4px;">
 <h1><ssf:nlt tag="welcome.header"/></h1>
 
 <ul style="list-style: outside;">
@@ -38,5 +39,8 @@
 <div align="right">
 <a href="<html:rootPath/>help/${ssUser.locale.language}/welcome.html" 
   onClick="javascript:return ss_openUrlInWindow(this,'help')">[<ssf:nlt tag="general.more"/>]</a>
+</div>
+
+</div>
 </div>
 
