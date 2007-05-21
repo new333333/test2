@@ -1038,7 +1038,6 @@ public class ListFolderController extends  SAbstractController {
 		if (getBinderModule().testAccess(folder, "deleteBinder")) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
-			qualifiers.put("onClick", "return ss_confirmDeleteFolder();");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);

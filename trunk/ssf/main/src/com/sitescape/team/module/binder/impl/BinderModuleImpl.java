@@ -429,7 +429,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, "deleteBinder");
 		
-   		List errors = deleteChildBinders(binder, deleteMirroredSource);
+		boolean deleteMirroredSourceForChildren = deleteMirroredSource;
+		if(binder.isMirrored() && deleteMirroredSource)
+			deleteMirroredSourceForChildren = false;
+			
+   		List errors = deleteChildBinders(binder, deleteMirroredSourceForChildren);
    		if (!errors.isEmpty()) return errors;
    		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource);
    		return null;
@@ -438,13 +442,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	//First process all child folders
     	List binders = new ArrayList(binder.getBinders());
     	List errors = new ArrayList();
+    	boolean deleteMirroredSourceForChildren;
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
     		//see if already taken care of
     		if (b.isDeleted()) continue;
         	try {
         		checkAccess(b, "deleteBinder");
-       			List e = deleteChildBinders(b, deleteMirroredSource);
+        		deleteMirroredSourceForChildren = deleteMirroredSource;
+        		if(b.isMirrored() && deleteMirroredSource)
+        			deleteMirroredSourceForChildren = false;
+       			List e = deleteChildBinders(b, deleteMirroredSourceForChildren);
        			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b, deleteMirroredSource);
        			else errors.addAll(e);
         	} catch (Exception ex) {

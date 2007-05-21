@@ -50,14 +50,8 @@ public class ModifyBinderController extends AbstractBinderController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.OPERATION_DELETE)) {
-			//retrieve binder so we can return to parent
-			Binder binder = getBinderModule().getBinder(binderId);
-			//get view data, before binder is deleted
-			setupViewOnDelete(response, binder, binderType);	
-			getBinderModule().deleteBinder(binderId);
-			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
-		} else if(op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
+		String deleteSource = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DELETE_SOURCE, null);
+		if(op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
 			// This trick is here to handle the situation where the synchronization
 			// causes the binder to be deleted.
 			Binder binder = getBinderModule().getBinder(binderId);
@@ -99,19 +93,29 @@ public class ModifyBinderController extends AbstractBinderController {
 		   				mid = new MapInputData(formDataPlus);
 		   			}
 		   		}
-
-				getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);
-				
+				getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);				
+				setupViewBinder(response, binderId, binderType);	
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
 				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
 				if (destinationId != null) getBinderModule().moveBinder(binderId, new Long(destinationId));
-			}
-			setupViewBinder(response, binderId, binderType);
-			
+				setupViewBinder(response, binderId, binderType);
+			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
+				// The delete-mirrored-binder form was submitted.
+				//retrieve binder so we can return to parent
+				Binder binder = getBinderModule().getBinder(binderId);			
+				//get view data, before binder is deleted
+				setupViewOnDelete(response, binder, binderType);	
+				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource));
+				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+			} else {
+				setupViewBinder(response, binderId, binderType);			
+			}	
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId, binderType);
+		} else if (op.equals(WebKeys.OPERATION_DELETE)) {
+			response.setRenderParameters(formData);
 		} else {
 			response.setRenderParameters(formData);		
 		}
@@ -133,6 +137,10 @@ public class ModifyBinderController extends AbstractBinderController {
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			path = WebKeys.VIEW_MOVE_BINDER;
+		} else if (op.equals(WebKeys.OPERATION_DELETE)) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			path = WebKeys.VIEW_CONFIRM_DELETE_MIRRRED_BINDER;
 		} else {
 			Binder binder = getBinderModule().getBinder(binderId);
 //			String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, "");
