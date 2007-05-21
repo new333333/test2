@@ -72,13 +72,6 @@
   	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
 	</bean>
 
-	<!-- Hibernate session factory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="lobHandler"><ref local="lobHandler"/></property>
-		<property name="configLocation"><value>classpath:config/hibernate.cfg.xml</value></property>
-		
-		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
-	</bean>
 	
 	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
@@ -87,13 +80,9 @@
 	<!-- To utilize Hibernate's statistics service, hibernate.generate_statistics
 	     property must be set to true in the hibernate.cfg.xml file. -->
 	<bean id="hibernateStatisticsService" class="org.hibernate.jmx.StatisticsService">
-		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
-		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
-	</bean> 
-
 	<bean id="springContextUtil" class="com.sitescape.team.util.SpringContextUtil" />
 
 	<bean id="dataSource" class="com.sitescape.team.util.JndiObjectFactoryBean">
@@ -426,7 +415,7 @@
 	     
 	<bean id="dependOnCommonServicesTemplate" abstract="true">
 		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="folderDao"><ref local="folderDao"/></property>
+		<property name="folderDao"><ref bean="folderDao"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
 		<property name="accessControlManager"><ref local="accessControlManager"/></property>
@@ -443,7 +432,7 @@
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="workflowModule"><ref local="workflowModule"/></property>
+		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="fileModule"><ref local="fileModule"/></property>
 		<property name="pipeline"><ref local="docPipeline"/></property>
 		<property name="reportModule"><ref local="reportModule"/></property>
@@ -571,10 +560,10 @@
 		<property name="validating"><value>true</value></property>
 	</bean>
 
-	<bean id="definitionModule" parent="baseTransactionProxy">
+	<bean id="definitionModule" parent="baseTransactionProxy" depends-on="sPropsUtil" >
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
-				<property name="workflowModule"><ref local="workflowModule"/></property>
+				<property name="workflowModule"><ref bean="workflowModule"/></property>
 				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 			</bean>	
 		</property>
@@ -594,12 +583,6 @@
 		<property name="mailModule"><ref local="mailModule"/></property>
 	</bean>
 	
-	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler, workflowFactory" >
-		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl"/>
-		</property>
-	</bean>	
-
 
 	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.file.impl.FileModuleImpl">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
@@ -682,7 +665,7 @@
 	<bean id="aopallianceLoggingInterceptor" class="com.sitescape.team.util.aopalliance.LoggingInterceptor"/>
 	
 	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.team.util.aopalliance.OpenSessionInViewInterceptor">
-		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
 	<bean id="aopallianceUserPreloadInterceptor" class="com.sitescape.team.util.aopalliance.UserPreloadInterceptor">
@@ -742,10 +725,6 @@ application/vnd.stardivision.math                         smf
 	
 	<bean id="coreDao" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-	</bean>
-	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl" depends-on="zoneConfig">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>

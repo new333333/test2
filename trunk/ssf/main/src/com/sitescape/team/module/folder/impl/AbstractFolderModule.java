@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +56,6 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Visits;
-import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.FillEmailSubscription;
 import com.sitescape.team.jobs.FolderDelete;
@@ -66,8 +64,8 @@ import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
-import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.file.FilesErrors;
+import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FileLockInfo;
 import com.sitescape.team.module.folder.FilesLockedByOtherUsersException;
 import com.sitescape.team.module.folder.FolderCoreProcessor;
@@ -77,7 +75,6 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -94,11 +91,11 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractFolderModule extends CommonDependencyInjection 
 implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
-   	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
-    private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
+	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
+	protected String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
-    private ReportModule reportModule;
+    protected ReportModule reportModule;
     
     AtomicInteger aeCount = new AtomicInteger();
     AtomicInteger meCount = new AtomicInteger();
@@ -195,7 +192,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	protected void checkAccess(FolderEntry entry, String operation) throws AccessControlException {
 		if ("getEntry".equals(operation)) {
 	    	AccessUtils.readCheck(entry);			
-		} else if ("addReply".equals(operation)) { 	//TODO: this check is missing workflow checks??
+		} else if ("addReply".equals(operation)) { 
 	    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
 	    } else if ("deleteEntry".equals(operation)) {
 			AccessUtils.deleteCheck(entry);   		
@@ -214,31 +211,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	    }
 
 	}
-    public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
-		try {
-			checkTransitionOutStateAllowed(entry, stateId);
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-    }
-    protected void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-		AccessUtils.checkTransitionOut(entry.getParentBinder(), entry, ws.getDefinition(), ws.getState());   		
-    }
-	
-    public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
-		try {
-			checkTransitionInStateAllowed(entry, stateId, toState);
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-   }
-    protected void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
-    }
 	
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -266,14 +238,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		return folder;
 
 	}
-	private FolderEntry loadEntry(Long folderId, Long entryId) {
+	protected FolderEntry loadEntry(Long folderId, Long entryId) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);		
 		if (entry.isDeleted()) throw new NoFolderEntryByTheIdException(entryId);
 		return entry;
 	}
-	private FolderCoreProcessor loadProcessor(Folder folder) {
+	protected FolderCoreProcessor loadProcessor(Folder folder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
         // com.sitescape.team.module.folder.AbstractfolderCoreProcessor class, not 
@@ -345,14 +317,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         
         return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems, filesFromApplet).getId();
     }
-    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) {
-    	//start a workflow on an entry
-    	FolderEntry entry = loadEntry(folderId, entryId);
-    	checkAccess(entry, "addEntryWorkflow");
-        Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-        FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
-        processor.addEntryWorkflow(entry.getParentBinder(), entry, def);
-    }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
@@ -416,49 +380,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return filesErrors;
     }    
     
-    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
-        Folder folder = loadFolder(folderId);       
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        //access checks
-		checkTransitionOutStateAllowed(entry, stateId);
-		checkTransitionInStateAllowed(entry, stateId, toState);
-    	Date stamp = entry.getWorkflowChange().getDate();
-        processor.modifyWorkflowState(folder, entry, stateId, toState);
-        if (!stamp.equals(entry.getWorkflowChange().getDate())) scheduleSubscription(folder, entry, stamp);
-    }
-	public Map getManualTransitions(FolderEntry entry, Long stateId) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
-		Map transitionData = new LinkedHashMap();
-		for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry me = (Map.Entry)iter.next();
-			try {
-				//access check
-				AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey());  
-				transitionData.put(me.getKey(), me.getValue());
-			} catch (AccessControlException ac) {};
-		}
-		return transitionData;
-    }		
-
-	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-		Map questions = WorkflowUtils.getQuestions(ws.getDefinition(), ws.getState());
-		//TODO - Check if user is allowed to respond (add a user list property to the workflowQuestion item)
-		return questions;
-    }		
-
-    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
-        Folder folder = loadFolder(folderId);       
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        //TODO - Check some access
-    	Date stamp = entry.getWorkflowChange().getDate();
-        processor.setWorkflowResponse(folder, entry, stateId, inputData);
-        if (!stamp.equals(entry.getWorkflowChange().getDate())) scheduleSubscription(folder, entry, stamp);
-        
-    }
 
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
     	return getDomFolderTree(folderId, domTreeHelper, -1);
@@ -827,7 +748,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		Folder folder = getFolder(folderId);
 		setRating(folder, value);
 	} 
-	private void setRating(DefinableEntity entity, long value) {
+	protected void setRating(DefinableEntity entity, long value) {
 		//TODO: what access is needed
 		EntityIdentifier id = entity.getEntityIdentifier();
 		//update entity average
@@ -1038,7 +959,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	return subFolders;    	
     }
     
-    private void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
+    protected void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
   		FillEmailSubscription process = (FillEmailSubscription)processorManager.getProcessor(folder, FillEmailSubscription.PROCESSOR_KEY);
   		//if anyone subscribed to the topLevel entry, notify them of a change
   		FolderEntry parent = entry.getTopEntry();

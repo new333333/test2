@@ -210,7 +210,8 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 </c:if>
   </fieldset>
   <br>
-
+  <% //only display if have workflows - which covers the case where workflow is not supported %>
+<c:if test="${!empty ssPublicWorkflowDefinitions}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/></legend>
 
@@ -263,6 +264,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
+</c:if>
   <br>
   
 </c:if>
