@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.util;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -209,6 +210,12 @@ public class Thumbnail {
 		double scaleHeight = (double) maxHeight / (double) sourceHeight;
 		double scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth;
 
+		// If the image is smaller than the desired image size,
+		// don't bother scaling.
+		if(scale > 1.0d) {
+			scale = 1.0d;
+		}
+		
 		// Determine size of new image. 
 		// One of them should equal maxDim.
 		int scaledW = (int) (scale * sourceWidth);
@@ -220,15 +227,16 @@ public class Thumbnail {
 
 		// Set the scale.
 		AffineTransform tx = new AffineTransform();
-
-		// If the image is smaller than the desired image size,
-		// don't bother scaling.
 		if (scale < 1.0d) {
 			tx.scale(scale, scale);
 		}
 
 		// Paint image.
 		Graphics2D g2d = outImage.createGraphics();
+/*
+		g2d.setBackground(Color.WHITE);
+		g2d.clearRect(0, 0, scaledW, scaledH);
+*/
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
