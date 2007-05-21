@@ -691,25 +691,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		getCoreDao().save(changes);
 	}
 	
-	public void moveFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa, Binder destBinder) 
+	public void moveFiles(Binder binder, DefinableEntity entity, 
+			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
-		// Rename the file in the repository
-		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
-				fa.getFileItem().getName(), destBinder, entity, 
-				fa.getFileItem().getName());
-		
-		if (binder.isLibrary() && !binder.equals(entity))
-			getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
-		if (destBinder.isLibrary() && !destBinder.equals(entity))
-			getCoreDao().registerFileName(destBinder, entity, fa.getFileItem().getName());
-
-
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
-		ChangeLogUtils.buildLog(changes, fa);
-		getCoreDao().save(changes);
+    	List atts = entity.getFileAttachments();
+    	for(int i = 0; i < atts.size(); i++) {
+    		FileAttachment fa = (FileAttachment) atts.get(i);
+    		moveFile(binder, entity, fa, destBinder, destEntity);
+    	}
 	}
-	
+
+	public void copyFiles(Binder binder, DefinableEntity entity, 
+			Binder destBinder, DefinableEntity destEntity)
+	throws UncheckedIOException, RepositoryServiceException {
+		// TODO 
+	}
+
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			VersionAttachment va) throws DeleteVersionException {
 		//List<String> beforeVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
@@ -822,6 +819,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
 	}
 
+	private void moveFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, Binder destBinder, DefinableEntity destEntity) 
+	throws UncheckedIOException, RepositoryServiceException {
+		// Rename the file in the repository
+		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+				fa.getFileItem().getName(), destBinder, destEntity, 
+				fa.getFileItem().getName());
+		
+		if (binder.isLibrary() && !binder.equals(entity))
+			getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
+		if (destBinder.isLibrary() && !destBinder.equals(destEntity))
+			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+
+
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
+		ChangeLogUtils.buildLog(changes, fa);
+		getCoreDao().save(changes);
+	}
+	
 	private void triggerUpdateTransaction() {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  

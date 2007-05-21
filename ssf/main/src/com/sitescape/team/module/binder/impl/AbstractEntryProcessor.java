@@ -1038,11 +1038,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	}
    	
     protected void moveFiles(Binder binder, Entry entry, Binder destination) {
-    	List atts = entry.getFileAttachments();
-    	for(int i = 0; i < atts.size(); i++) {
-    		FileAttachment fa = (FileAttachment) atts.get(i);
-    		getFileModule().moveFile(binder, entry, fa, destination);
-    	}
+    	getFileModule().moveFiles(binder, entry, destination, entry);
     }
    	
     //***********************************************************************************************************
