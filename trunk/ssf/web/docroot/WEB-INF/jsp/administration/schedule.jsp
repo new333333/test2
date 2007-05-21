@@ -20,21 +20,21 @@
     <input type="radio" name="minuteType" id="minuteType" value="repeat" <c:if test="${schedule.repeatMinutes}">checked</c:if>/>
    <span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
    <input type="text" class="ss_text" name="minutesRepeat" id="minutesRepeat" size="2" value="${schedule.minutesRepeat}"/>
-  	&nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.minutes"/></span>
+  	&nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.minutes"/> <ssf:inlineHelp tag="ihelp.schedule.repeat_minutes"/></span>
   	<br/>
     <input type="radio" name="minuteType" id="minuteType" value="absolute" <c:if test="${!schedule.repeatMinutes}">checked</c:if>/>
-    <span class="ss_labelRight"><ssf:nlt tag="schedule.atminutes"/></span>
-   <input type="text" class="ss_text" name="schedMinutes" id="schedMinutes" size="3" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>/>
+    <span class="ss_labelRight"><ssf:nlt tag="schedule.atminutes"/> </span>
+   <input type="text" class="ss_text" name="schedMinutes" id="schedMinutes" size="3" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>/> <ssf:inlineHelp tag="ihelp.schedule.at_minutes"/>
    <br/>
 <hr shade=noshade size=1/>
     <input type="radio"  name="hourType" id="hourType" value="repeat" <c:if test="${schedule.repeatHours}">checked</c:if>/>
     <span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
   <input type="text" class="ss_text"  name="hoursRepeat" id="hoursRepeat" size="2" value="${schedule.hoursRepeat}"/>
-  &nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.hours"/></span>
+  &nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.hours"/>  <ssf:inlineHelp tag="ihelp.schedule.repeat_hours"/></span>
   <br/>
    <input type="radio"  name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>
    <span class="ss_labelRight"><ssf:nlt tag="schedule.athours"/></span>
-   <input type="text" class="ss_text"  name="schedHours" id="schedHours" size="5" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>/>
+   <input type="text" class="ss_text"  name="schedHours" id="schedHours" size="5" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>/>  <ssf:inlineHelp tag="ihelp.schedule.at_hours"/>
    <br/>
 <hr shade=noshade size=1/>
    <input type="radio"  name="schedType" id="schedType" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 

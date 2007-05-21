@@ -303,7 +303,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   		name="action" value="configure_access_control"/><portlet:param 
   		name="binderType" value="${ssBinder.entityType}"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
-  <ssf:nlt tag="binder.configure.access_control.inherit"/>
+  <ssf:nlt tag="binder.configure.access_control.inherit"/> <ssf:inlineHelp tag="ihelp.other.inherit_roles"/>
   <br/>
   &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
   <ssf:nlt tag="answer.yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

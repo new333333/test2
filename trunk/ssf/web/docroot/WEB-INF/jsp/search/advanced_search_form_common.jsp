@@ -8,7 +8,7 @@
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<c:if test="${!filterDefinition}">
-					<h4><ssf:nlt tag="searchForm.advanced.Title"/></h4>
+					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:inlineHelp tag="ihelp.other.advanced_search"/></h4>
 				</c:if>
 				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 				<div class="ss_clear"></div>

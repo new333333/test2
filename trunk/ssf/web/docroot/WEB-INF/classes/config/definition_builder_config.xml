@@ -68,25 +68,25 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="title" 
 			  readonly="true" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
 			<property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1">
-				<help>__help_mark_as_title</help>
 			</property>
 			<property name="itemSource" caption="__file_items_from_the_entry_form_for_title" definitionType="1" type="selectbox">
 				<option name="ss_none" caption="__none"/>
 			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" 
 					optionCaption="__file_items_from_the_entry_form_for_title"/>
+				<help>ihelp.designers.source_data</help>					
 			</property>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
 		</jsps>
-		<help>__help_title_field</help>
+		<help>ihelp.designers.title_field</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
 	</item>
 
 <!-- shared view items ie)no category -->
@@ -196,7 +196,7 @@
 				<option name="form" caption="__entry_form" />
 				<option name="guestbook" caption="__entry_form_guestbook" />
 				<option name="task" caption="__entry_form_task" />
-				<help>__help_entry_view_type</help>
+				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -223,6 +223,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
 		</jsps>
+		<help>ihelp.designers.icon</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
@@ -231,18 +232,21 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
-			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true"/>
+			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true">
+				<help>ihelp.designers.recur</help>
+			</property>	
 			<property name="required" caption="__required" type="boolean" default="false" >
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
 		</jsps>
+		<help>ihelp.designers.event</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
 	    <webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEvent" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
@@ -255,7 +259,7 @@
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="task" caption="__entry_task" />
-				<help>__help_entry_view_type</help>
+				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
 
@@ -338,7 +342,7 @@
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="task" caption="__entry_task" />
-				<help>__help_entry_view_type</help>
+				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
 
@@ -482,7 +486,7 @@
 				<option name="file" caption="__folder_file" />
 				<option name="guestbook" caption="__folder_guestbook" />
 				<option name="task" caption="__folder_task" />
-				<help>__help_folder_view_type</help>
+				<help>ihelp.other.folder_view_type</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -734,7 +738,7 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="name" 
 			  readonly="true" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
@@ -752,7 +756,7 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="timeZone" 
 			  readonly="true" unique="//item[@type='data']">
-				<help>__help_timeZone_name</help>
+				<help>ihelp.designers.timeZone_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
 		</properties>
@@ -769,7 +773,7 @@
 			<property name="caption" caption="__caption" type="text" value="__firstName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -787,7 +791,7 @@
 			<property name="caption" caption="__caption" type="text" value="__lastName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -804,7 +808,7 @@
 			<property name="caption" caption="__caption" type="text" value="__middleName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -822,7 +826,7 @@
 			<property name="caption" caption="__caption" type="text" value="__organization"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -839,7 +843,7 @@
 			<property name="caption" caption="__caption" type="text" value="__emailAddress"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -856,7 +860,7 @@
 			<property name="caption" caption="__caption" type="text" value="__zonName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -873,7 +877,7 @@
 			<property name="caption" caption="__caption" type="text" value="__phone"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -891,14 +895,14 @@
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="maxWidth" caption="__max_graphic_width" type="text"
 				characterMask="^[0-9]*$" default="200">
-				<help>__help_graphic_constraints</help>
+				<help>ihelp.other.graphic_constraints</help>
 			</property>
 			<property name="maxHeight" caption="__max_graphic_height" type="text"
 				characterMask="^[0-9]*$" default="200">
-				<help>__help_graphic_constraints</help>
+				<help>ihelp.other.graphic_constraints</help>
 			</property>
 			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
-				<help>__help_storage_media</help>
+				<help>ihelp.designers.storage_media</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1001,11 +1005,11 @@
 		    </property>
 			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
 				characterMask="^[0-9]*$" default="200">
-				<help>__help_graphic_constraints</help>
+				<help>ihelp.other.graphic_constraints</help>
 			</property>
 			<property name="maxHeight" caption="__max_profile_picture_height" type="text"
 				characterMask="^[0-9]*$" default="200">
-				<help>__help_graphic_constraints</help>
+				<help>ihelp.other.graphic_constraints</help>
 			</property>
 		</properties>
 
@@ -1194,12 +1198,12 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1214,12 +1218,12 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1234,13 +1238,13 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
 			<property name="size" caption="__size" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<options>
@@ -1249,6 +1253,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
+		<help>ihelp.designers.selectbox</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
@@ -1257,10 +1262,10 @@
 	<item name="selectboxSelection" caption="__selection">
 		<properties>
 			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
-				<help>__help_selection_data_name</help>
+				<help>ihelp.designers.selection_data_name</help>
 			</property>
 			<property name="caption" caption="__selection_string" type="text">
-				<help>__help_selection_string</help>
+				<help>ihelp.designers.selection_string</help>
 			</property>			
 		</properties>
 		<jsps>
@@ -1273,7 +1278,7 @@
 			<property name="name" caption="__data_name" type="text"
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
 				unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="source" caption="__sourceElementInParentFolder" type="text"/>
@@ -1282,7 +1287,7 @@
 			<property name="size" caption="__size" type="text"/>
 			<property name="required" caption="__required" type="boolean"
 				default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1300,11 +1305,11 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<options>
@@ -1313,6 +1318,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
+		<help>ihelp.designers.radio_buttons</help>		
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
@@ -1321,10 +1327,10 @@
 	<item name="radioSelection" caption="__radio_button">
 		<properties>
 			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
-				<help>__help_selection_data_name</help>
+				<help>ihelp.designers.selection_data_name</help>
 			</property>
 			<property name="caption" caption="__selection_string" type="text">
-				<help>__help_radio_string</help>
+				<help>ihelp.designers.radio_string</help>
 			</property>			
 		</properties>
 		<jsps>
@@ -1336,11 +1342,11 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1355,20 +1361,20 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="maxWidth" caption="__max_graphic_width" type="text"
 				characterMask="^[0-9]*$">
-				<help>__help_graphic_constraints</help>
+				<help>ihelp.other.graphic_constraints</help>
 			</property>
 			<property name="maxHeight" caption="__max_graphic_height" type="text"
 				characterMask="^[0-9]*$">
-				<help>__help_graphic_constraints</help>
+				<help>ihelp.other.graphic_constraints</help>
 			</property>
 			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
-				<help>__help_storage_media</help>
+				<help>ihelp.designers.storage_media</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1395,7 +1401,7 @@
 				    the current version, the software is not capable of computing
 				    this master list dynamically. So it must be listed explicitly.
 				-->   
-				<help>__help_storage_media</help>
+				<help>ihelp.designers.storage_media</help>
 			</property>
 			<property name="hide" caption="__hideFormElement" type="boolean" default="false"/>
 		</properties>
@@ -1409,12 +1415,12 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  value="description" readonly="true" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1429,15 +1435,15 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
-				<help>__help_storage_media</help>
+				<help>ihelp.designers.storage_media</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1451,11 +1457,11 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1470,11 +1476,11 @@
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
@@ -1516,7 +1522,7 @@
 		    <property name="alignment" caption="__alignment" type="selectbox" default="left">
 				<option name="left" caption="__left" />
 				<option name="right" caption="__right" />
-			    <help>__help_form_button_alignment</help>
+			    <help>ihelp.designers.form_button_alignment</help>
 		    </property>
 		</properties>
 		<options>
@@ -1612,6 +1618,7 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
+		<help>ihelp.designers.expand_area</help>
 	</item>
 		
 	<item name="fieldset" caption="__fieldset" category="generalLayout">
@@ -1648,6 +1655,7 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
+		<help>ihelp.designers.divider</help>
 	</item>
 		
 	<item name="table2" caption="__two_column_table" category="generalLayout">
@@ -1655,7 +1663,7 @@
 			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -1687,7 +1695,7 @@
 			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -1767,6 +1775,7 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<help>ihelp.designers.custom_jsp</help>
 	</item>
 <!-- General layout views -->	
 	<item name="boxView" caption="__box" category="generalViewLayout">
@@ -1827,6 +1836,7 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
+		<help>ihelp.designers.expand_area</help>
 	</item>
 		
 	<item name="fieldsetView" caption="__fieldset" category="generalViewLayout">
@@ -1868,7 +1878,7 @@
 			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -1898,7 +1908,7 @@
 			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
-				<help>__help_required</help>
+				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -2001,7 +2011,7 @@
 	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
 		<properties>
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="description" caption="__description" type="textarea" />
@@ -2043,13 +2053,14 @@
 	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true">
 		<properties>
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
-				<help>__help_data_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
 			<property name="endState" caption="__endState" type="itemSelect" 
 				path="//item[@name='state']" multipleAllowed="true"/>
 		</properties>
+		<help>ihelp.workflow.parallel</help>
 	</item>
 	
 	<item name="transitionOnModify" caption="__transition_on_modify" type="transition">
@@ -2093,7 +2104,7 @@
 			<option name="workflowEntryDataValue" />
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
-		<help>__help_workflow_condition</help>
+		<help>ihelp.workflow.condition</help>
 	</item>
 	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition">
 		<properties>
@@ -2118,6 +2129,7 @@
 		<options>
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
+		<help>ihelp.workflow.trans_variable</help>
 	</item>
 	
 	<item name="workflowEntryDataValue" caption="__workflow_entry_data_value" 
@@ -2219,6 +2231,7 @@
 			<option name="stopParallelThread" />
 			<option name="notifications" />
 		</options>
+		<help>ihelp.workflow.on_entry</help>
 	</item>
 	
 	<item name="onExit" caption="__onExit" unique="./item[@name='onExit']">

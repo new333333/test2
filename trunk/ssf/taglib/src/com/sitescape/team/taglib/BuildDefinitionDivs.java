@@ -624,7 +624,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			hb.append(Integer.toString(helpDivCount));
 			hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 			hb.append("<span>");
-			hb.append(NLT.getDef(help.getText()));
+			hb.append(NLT.get(help.getText()));
 			hb.append("</span>\n</div>\n");
 			sb.append(" <a name=\"help_div_" + rootElementId);
 			sb.append(Integer.toString(helpDivCount));
@@ -1164,7 +1164,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						hb.append(Integer.toString(helpDivCount));
 						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");
-						hb.append(NLT.getDef(help.getText()));
+						hb.append(NLT.get(help.getText()));
 						hb.append("</span>\n</div>\n");
 						sb.append("<a name=\"help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
@@ -1263,7 +1263,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									hb.append(Integer.toString(helpDivCount));
 									hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 									hb.append("<span>");
-									hb.append(NLT.getDef(help.getText()));
+									hb.append(NLT.get(help.getText()));
 									hb.append("</span>\n</div>\n");
 								}
 								optionsSeen.put(optionName, optionName);
@@ -1302,7 +1302,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									hb.append(Integer.toString(helpDivCount));
 									hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 									hb.append("<span>");
-									hb.append(NLT.getDef(help.getText()));
+									hb.append(NLT.get(help.getText()));
 									hb.append("</span>\n</div>\n");
 								}
 								optionsSeen.put(optionSelectName, optionSelectName);
@@ -1332,7 +1332,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						hb.append(Integer.toString(helpDivCount));
 						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");
-						hb.append(NLT.getDef(help.getText()));
+						hb.append(NLT.get(help.getText()));
 						hb.append("</span>\n</div>\n");
 					}
 				}

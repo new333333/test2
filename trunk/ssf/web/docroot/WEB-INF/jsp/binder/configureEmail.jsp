@@ -80,7 +80,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"
 <c:if test="${!ssShowPosting}">
 disabled="disabled"
-</c:if>/> <c:if test="${!ssScheduleInfo2.enabled}"><ssf:nlt tag="incoming.disabled"/></c:if>
+</c:if>/> <ssf:inlineHelp tag="ihelp.email.from"/><c:if test="${!ssScheduleInfo2.enabled}"><br/><ssf:nlt tag="incoming.disabled"/></c:if>
 
 </td>
 <td class="ss_buttonBarRight">
@@ -95,7 +95,7 @@ disabled="disabled"
 <table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
 <tr>
 <th><ssf:nlt tag="notify.schedule"/></th>
-<th><ssf:nlt tag="notify.distribution.list"/></th>
+<th><ssf:nlt tag="notify.distribution.list"/> <ssf:inlineHelp tag="ihelp.email.notification_list"/></th>
 </tr>
 <tr>
 <td valign="top">

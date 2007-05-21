@@ -227,9 +227,9 @@ function ss_showForumEntryInPopupWindow(definitionType) {
 	  <div style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
         <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
-        <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
+        <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br>
         <c:if test="${ssDashboard.sharedModificationAllowed}">
-          <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/><br>
+          <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br>
         </c:if>
         <br/>
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>

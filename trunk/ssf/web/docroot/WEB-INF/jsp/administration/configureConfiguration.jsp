@@ -45,7 +45,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 		
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
 	 <input type="radio" name="cfgType" value="5" ><ssf:nlt tag="general.type.folder"/><br/>
-	 <input type="radio" name="cfgType" value="-1" checked><ssf:nlt tag="administration.configure_cfg.clone"/><br/>
+	 <input type="radio" name="cfgType" value="-1" checked><ssf:nlt tag="administration.configure_cfg.clone"/> <ssf:inlineHelp tag="ihelp.designers.new_template"/><br/>
 	 <input type="radio" name="cfgType" value="-2" checked><ssf:nlt tag="administration.configure_cfg.import"/><br/>
 	<br/><br/>
 
@@ -65,7 +65,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br>
 <hr>
 <br>
-<h3><ssf:nlt tag="administration.configure_cfg.existing" text="Currently defined configurations"/></h3>
+<h3><ssf:nlt tag="administration.configure_cfg.existing" text="Currently defined templates"/> <ssf:inlineHelp tag="ihelp.designers.current_templates"/></h3>
 <span class="labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span>
 <ul class="ss_square">
 <c:forEach var="bconfig" items="${ssBinderConfigs}">

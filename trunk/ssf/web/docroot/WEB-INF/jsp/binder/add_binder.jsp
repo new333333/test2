@@ -33,7 +33,7 @@
   
 	<span class="ss_labelLeft"><ssf:nlt tag="folder.label.title" text="Title"/></span>
 	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
-  <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span>
+  <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span> <ssf:inlineHelp tag="ihelp.other.select_template"/>
   <br/>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
       <input type="radio" name="binderConfigId" value="${config.id}" 

@@ -118,12 +118,12 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
   <input type="radio" name="notifyType" id="notifyType_${entryIdString}_2" value="2"
   <c:if test="${ssBlogEntries[entryIdString].ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><label for="notifyType_${entryIdString}_2"><ssf:nlt tag="subscribe.message"/></label><br/>
+  /><label for="notifyType_${entryIdString}_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
   <input type="radio" name="notifyType" id="notifyType_${entryIdString}_3" value="3"
   <c:if test="${ssBlogEntries[entryIdString].ssSubscription.style=='3'}"> checked="checked"</c:if>
   /><label for="notifyType_${entryIdString}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
 <c:if test="${!empty ssBlogEntries[entryIdString].ssSubscription}">
-  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_delete" value="-1"/><label for="notifyType_${entryIdString}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
+  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_delete" value="-1"/><label for="notifyType_${entryIdString}_delete"><ssf:nlt tag="subscribe.delete"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>
 </c:if>
   <br/>
   <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">
