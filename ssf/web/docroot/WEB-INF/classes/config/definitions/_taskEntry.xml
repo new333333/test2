@@ -74,6 +74,12 @@
 						<property name="caption" value="Low"/>
 					</properties>
 				</item>
+				<item name="selectboxSelection" caption="__selection" id="27">
+					<properties>
+						<property name="name" value="trivial"/>
+						<property name="caption" value="Trivial"/>
+					</properties>
+				</item>
 				<properties>
 					<property name="name" value="priority"/>
 					<property name="caption" value="Priority"/>
