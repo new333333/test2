@@ -190,6 +190,7 @@ public class WebKeys {
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_START_WORKFLOW="start_workflow";
+	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_ADD_MEETING="add_meeting";
 	
@@ -299,6 +300,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";
+	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";

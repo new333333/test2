@@ -65,6 +65,8 @@ var ss_not_logged_in;
 var ss_nlt_navigation_normal;
 var ss_nlt_navigation_maximize;
 var ss_confirmDeleteFolderText;
+var ss_confirmStartWorkflowText;
+var ss_confirmStopWorkflowText;
 var ss_userDisplayStyle;
 var ss_findButtonClose;
 var ss_AjaxBaseUrl;
@@ -144,6 +146,8 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_nlt_navigation_normal = "<ssf:nlt tag="navigation.normal"/>";
 	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
 	ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
+	ss_confirmStartWorkflowText = "<ssf:nlt tag="entry.confirmStartWorkflow"/>";
+	ss_confirmStopWorkflowText = "<ssf:nlt tag="entry.confirmStopWorkflow"/>";
 	
 	//Clipboard text
 	ss_clipboardTitleText = "<ssf:nlt tag="clipboard.title"/>";
