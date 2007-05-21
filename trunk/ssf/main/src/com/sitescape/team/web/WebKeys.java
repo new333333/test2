@@ -120,6 +120,7 @@ public class WebKeys {
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
+	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
@@ -187,6 +188,7 @@ public class WebKeys {
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
+	public static final String ACTION_START_WORKFLOW="start_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_ADD_MEETING="add_meeting";
 	
@@ -295,6 +297,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
+	public static final String OPERATION_START_WORKFLOW = "start_workflow";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";

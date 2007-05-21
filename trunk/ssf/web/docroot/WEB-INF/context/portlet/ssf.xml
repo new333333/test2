@@ -75,6 +75,7 @@
 						<entry key="add_entry_attachment"><ref bean="addAttachmentEntryController"/></entry>
 						<entry key="lock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="unlock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="start_workflow"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
 						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
 						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
