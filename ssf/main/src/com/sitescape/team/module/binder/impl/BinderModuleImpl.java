@@ -26,7 +26,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -35,6 +34,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -51,7 +51,6 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
-import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.domain.NotificationDef;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
@@ -98,13 +97,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("moveBinder", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setProperty", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setDefinitions", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("modifyTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("deleteTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setNotificationConfig", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
 		operations.put("accessControl", new WorkAreaOperation[]{WorkAreaOperation.CHANGE_ACCESS_CONTROL});
+		operations.put("setTag", new WorkAreaOperation[]{WorkAreaOperation.ADD_COMMUNITY_TAGS});
+		operations.put("deleteTag", new WorkAreaOperation[]{WorkAreaOperation.ADD_COMMUNITY_TAGS});
 	}
  
 	private TransactionTemplate transactionTemplate;
@@ -496,7 +495,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (workflowAssociations != null) {
 			for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry me = (Map.Entry)iter.next();
-				//	TODO:(not implemented yet) getAccessControlManager().checkAcl(def, AccessType.READ);
 				try {
 					def = getCoreDao().loadDefinition((String)me.getValue(), 
 							RequestContextHolder.getRequestContext().getZoneId());
@@ -519,7 +517,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				try {
 					def = getCoreDao().loadDefinition((String)definitionIds.get(i), 
 							RequestContextHolder.getRequestContext().getZoneId());
-					//	TODO:	(not implemented yet) getAccessControlManager().checkAcl(def, AccessType.READ);
 					definitions.add(def);
 				} catch (NoDefinitionByTheIdException nd) {}
 			}
@@ -554,24 +551,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 
 		return results;
 	}
+
 	/**
-	 * Modify tag owned by this binder
-	 * @see com.sitescape.team.module.binder.BinderModule#modifyTag(java.lang.Long, java.lang.String, java.util.Map)
-	 */
-	public void modifyTag(Long binderId, String tagId, String newTag) {
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "modifyTag"); 
-	   	Tag tag = coreDao.loadTag(tagId);
-	   	tag.setName(newTag);
- 	    loadBinderProcessor(binder).indexBinder(binder, false);
-	}
-	/**
-	 * Add a new tag, owned by this binder
+	 * Add a new tag, to binder
 	 */
 	public void setTag(Long binderId, String newTag, boolean community) {
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "setTag"); 
 		if (Validator.isNull(newTag)) return;
+		Binder binder = loadBinder(binderId);
+		if (community) checkAccess(binder, "setTag"); 
 		newTag = newTag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
 		String[] newTags = newTag.split(" ");
 		if (newTags.length == 0) return;
@@ -586,7 +573,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   			tagName = tagName.substring(0, ObjectKeys.MAX_TAG_LENGTH);
 	   		}
 			Tag tag = new Tag();
-		   	tag.setOwnerIdentifier(uei);
+			//community tags belong to the binder - don't care who created it
+		   	if (!community) tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(bei);
 		   	tag.setPublic(community);
 	   		tag.setName(newTags[i]);
@@ -597,14 +585,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
 	/**
-	 * Delete a tag owned by this binder
+	 * Delete a tag on this binder
 	 */
 	public void deleteTag(Long binderId, String tagId) {
 		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "deleteTag"); 
-	   	Tag tag = coreDao.loadTag(tagId);
+	   	Tag tag;
+	   	try {
+	   		tag = coreDao.loadTag(tagId);
+	   	} catch (Exception ex) {return;}
+	   	if (tag.isPublic()) checkAccess(binder, "deleteTag"); 
+	   	else if (!tag.isOwner(RequestContextHolder.getRequestContext().getUser())) return;
 	   	getCoreDao().delete(tag);
-	   	indexBinder(binderId);
+ 	    loadBinderProcessor(binder).indexBinder(binder, false);
 	}
 	
     public void addSubscription(Long binderId, int style) {
@@ -696,10 +688,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		SearchObject so = null;
 		if (!user.isSuper()) {		
 			// Top of query doc 
-			Document qTree = DocumentHelper.createDocument();
-			Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-			//qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
-				
+			Document qTree = DocumentHelper.createDocument();				
 	    	//Create the query
 	    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
 			so = qb.buildQuery(qTree);

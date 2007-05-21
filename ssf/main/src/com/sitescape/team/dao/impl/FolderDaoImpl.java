@@ -273,12 +273,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
- 		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id in " + 
- 			   				"(select p.id from com.sitescape.team.domain.FolderEntry p where " +
-		   			  			" p.parentBinder=:folder) and owner_type=:entityType")
-		   			  	.setEntity("folder", folder)
-		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
-		   				.executeUpdate();
 		   			//remove foreign keys or mysql complains
         	  		session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
         	  			.setEntity("parent", folder)

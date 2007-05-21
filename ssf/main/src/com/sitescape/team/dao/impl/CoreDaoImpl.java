@@ -250,11 +250,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			   	.setParameter("entityType", binder.getEntityType().getValue())
 		   			   	.executeUpdate();
 
-		   			//delete tags owned by this binder
-		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id=:entityId and owner_type=:entityType")
-		   		 		.setLong("entityId", binder.getId())
-		   			  	.setParameter("entityType", binder.getEntityType().getValue())
-		   				.executeUpdate();
 		   			if (entryClass != null) {
 		   				//finally delete the entries
 		   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
@@ -1052,21 +1047,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	public List loadCommunityTagsByOwner(final EntityIdentifier ownerId) {
-		return (List)getHibernateTemplate().execute(
-	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	return session.createCriteria(Tag.class)
-                 		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
-       					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
-                 		.add(Expression.eq("public",true))
-                 		.addOrder(Order.asc("name"))
-                  		.list();
-	                }
-	            }
-	        );
-		
-	}
+
 	public List loadCommunityTagsByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {

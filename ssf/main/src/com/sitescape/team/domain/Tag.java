@@ -67,7 +67,7 @@ public class Tag  {
     public void setOwnerIdentifier(EntityIdentifier ownerId) {
     	this.ownerId = ownerId;
     }
- 	public boolean isOwner(DefinableEntity entity) {
+	public boolean isOwner(DefinableEntity entity) {
  		if (entity == null) return false;
  		if (entity.getEntityIdentifier().equals(ownerId)) return true;
  		return false;
@@ -89,7 +89,6 @@ public class Tag  {
 	}	
 	/**
 	 * @hibernate.property
-	 * @hibernate.column name="isPublic"
 	 */
 	public boolean isPublic() {
 		return isPublic;

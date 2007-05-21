@@ -232,14 +232,6 @@ public interface BinderModule {
      * @param principals
      */
     public void modifyNotification(Long binderId, Map updates, Collection principals); 
-    /**
-     * Change the name of an existing tag. 
-     * @param binderId
-     * @param tagId
-     * @param newTag
-     * @throws AccessControlException
-     */
-	public void modifyTag(Long binderId, String tagId, String newTag) throws AccessControlException; 
 	/**
 	 * Move a binder, all of its entries and sub-binders
 	 * @param fromId - the binder to move
