@@ -33,4 +33,4 @@
 </c:choose>
 
 <input type="submit" class="ss_submit" name="cancelBtn" value="${property_caption}" 
-  onClick="${onClick}" />
+  onClick="ss_buttonSelect('cancelBtn'); ${onClick}" />
