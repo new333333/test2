@@ -2079,54 +2079,51 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-			String path = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
-			String repositoryName = PortletRequestUtils.getStringParameter(request, WebKeys.REPOSITORY, "");
-			if(entryId != null && Validator.isNotNull(path)) {
-				String fileName = new java.io.File(path).getName();
-				Binder binder = getBinderModule().getBinder(binderId);
-				if (binder.isLibrary()) {
-					Entry entry = null;
-					if (binder instanceof Folder) {
-						entry = getFolderModule().getLibraryFolderEntryByFileName((Folder)binder, fileName);
-						if (entry != null && !entryId.equals(entry.getId())) {
-							model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
-							model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
+			Binder binder = getBinderModule().getBinder(binderId);
+			if ((binder instanceof Folder) && binder.isLibrary()) {
+				Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, 0L);
+				String path = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
+				String repositoryName = PortletRequestUtils.getStringParameter(request, WebKeys.REPOSITORY, "");
+				if(Validator.isNotNull(path)) {
+					String fileName = new java.io.File(path).getName();
+					Folder folder = (Folder)binder;
+					FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+					// First check inter-entry integrity regarding the file name.
+					if(entry != null && (entryId == 0L || entryId != entry.getId().longValue())) {
+						model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.duplicateFileInLibrary");
+						model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
+					}
+					// 	Next check intra-entry integrity
+					else if(Validator.isNotNull(repositoryName)) {
+						if(folder.isMirrored()) {
+							if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
+							}
+							else if(entryId != 0L) {
+							// 	if entry is not null, the above expression guarantees that
+							// 	its id is equal to entryId. So we don't have to refetch it.
+								if(entry == null)
+									entry = getFolderModule().getEntry(binderId, entryId);
+								List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
+								for(FileAttachment fa : fas) {
+									if(!fileName.equals(fa.getFileItem().getName())) {
+										model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple");
+										model.put(WebKeys.AJAX_ERROR_DETAIL, fa.getFileItem().getName());								
+										break;					
+									}
+								}
+							}
 						}
-						// Next check intra-entry integrity
-						else if(Validator.isNotNull(repositoryName)) {
-							if(binder.isMirrored()) {
-								if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
-									model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
-								}
-								else {
-									// if entry is not null, the above expression guarantees that
-									// its id is equal to entryId. So we don't have to refetch it.
-									if(entry == null)
-										entry = getFolderModule().getEntry(binderId, entryId);
-						   			List<FileAttachment> fas = entry.getFileAttachments(ObjectKeys.FI_ADAPTER); // should be at most 1 in size
-				   					for(FileAttachment fa : fas) {
-				   						if(!fileName.equals(fa.getFileItem().getName())) {
-											model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileMultiple");
-											model.put(WebKeys.AJAX_ERROR_DETAIL, fa.getFileItem().getName());								
-				   							break;					
-				   						}
-				   					}
-								}
-							}
-							else {
-								if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
-									model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
-								}							
-							}
+						else {
+							if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
+							}							
 						}
 					}
 				}
 			}
 		}
-
-		
 		model.put(WebKeys.URL_AJAX_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_ID));
 		model.put(WebKeys.URL_AJAX_VALUE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,""));
 		model.put(WebKeys.URL_AJAX_LABEL_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_LABEL_ID));
