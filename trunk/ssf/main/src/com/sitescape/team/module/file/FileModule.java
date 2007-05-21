@@ -338,15 +338,54 @@ public interface FileModule {
 	 * 
 	 * @param binder
 	 * @param entity
-	 * @param destination
+	 * @param destBinder
+	 * @param destEntity
 	 * @param fa
 	 * @throws UncheckedIOException
 	 * @throws RepositoryServiceException
 	 */
-	public void moveFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa, Binder destBinder) 
-	throws UncheckedIOException, RepositoryServiceException;
+	//public void moveFile(Binder binder, DefinableEntity entity, 
+	//		FileAttachment fa, Binder destBinder, DefinableEntity destEntity) 
+	//throws UncheckedIOException, RepositoryServiceException;
 
+	/**
+	 * Moves the files.
+	 * 
+	 * Important: Unlike many other methods in this class, this method
+	 * assumes that the caller is responsible for transaction demarcation
+	 * with respect to updating the metadata in the database. 
+	 * This inconsistency is here merely for improved efficiency.
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param destBinder
+	 * @param destEntity
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
+	public void moveFiles(Binder binder, DefinableEntity entity, 
+			Binder destBinder, DefinableEntity destEntity)
+	throws UncheckedIOException, RepositoryServiceException;
+	
+	/**
+	 * Copy the files.
+	 * 
+	 * Important: Unlike many other methods in this class, this method
+	 * assumes that the caller is responsible for transaction demarcation
+	 * with respect to updating the metadata in the database. 
+	 * This inconsistency is here merely for improved efficiency.
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param destBinder
+	 * @param destEntity
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
+	public void copyFiles(Binder binder, DefinableEntity entity, 
+			Binder destBinder, DefinableEntity destEntity)
+	throws UncheckedIOException, RepositoryServiceException;
+	
 	/**
 	 * Delete the specified version. 
 	 * If it is the only remaining version for the file, the request fails and 
