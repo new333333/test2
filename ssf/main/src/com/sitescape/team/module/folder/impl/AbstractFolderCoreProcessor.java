@@ -240,15 +240,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
         
     protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
-    	if (parentBinder.isDeleted()) return;  //will handle in bulk way
-    	List replies = (List)ctx.get(this.getClass().getName());
-    	List ids = new ArrayList();
-      	for (int i=0; i<replies.size(); ++i) {
-    		ids.add(((FolderEntry)replies.get(i)).getId());
-    	}
-      	ids.add(entry.getId());
-      	//use optimized bulk delete
-   		getFolderDao().deleteEntryWorkflows((Folder)parentBinder, ids);
+    	//folder Dao will handle
     }
     
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
@@ -414,7 +406,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 							getCoreDao().flush();  //flush before bulk updates
 							//finally remove folder and its entries
 							getFolderDao().delete(folder);
-							getFolderDao().deleteEntryWorkflows(folder);
 							//delete binder
 							return Boolean.TRUE;
 						} catch (Exception ex) {

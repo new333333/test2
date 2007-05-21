@@ -12,12 +12,7 @@
 package com.sitescape.team.jobs;
 
 import java.util.Date;
-import java.util.Iterator;
-import java.util.HashSet;
 
-import org.jbpm.JbpmContext;
-import org.jbpm.db.SchedulerSession;
-import org.jbpm.scheduler.exe.Timer;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -29,7 +24,6 @@ import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.module.workflow.WorkflowModule;
-import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -44,37 +38,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 		WorkflowModule work = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
-    	JbpmContext jContext = WorkflowFactory.getContext();
-   		HashSet<Long>timers = new HashSet();
-   	   	try {
-    		SchedulerSession schedulerSession = jContext.getSchedulerSession();
-    	      
-    		logger.debug("checking for timers");
-    		//collect timer info and close context,
-    		//otherwise something messes up with closing the iterator.
-    		Iterator iter = schedulerSession.findTimersByDueDate(100);
-    		boolean isDueDateInPast=true; 
-    		while( (iter.hasNext()) && (isDueDateInPast)) {
-    			Timer timer = (Timer) iter.next();
-    			if(logger.isDebugEnabled())
-    				logger.debug("found timer "+timer);
-    			//Do work inside a transaction in the workflowModule
-    			// if this timer is due
-    			if (timer.isDue()) {
-    				if(logger.isDebugEnabled())
-    					logger.debug("executing timer '"+timer+"'");
-    				timers.add(new Long(timer.getId()));
- 
-    			} else { // this is the first timer that is not yet due
-    				isDueDateInPast = false;
-    			}
-   	      	}
-    	} finally {
-    		jContext.close();
-    	}
-		for (Long id:timers) {
-			work.modifyWorkflowStateOnTimeout(id);
-		}
+		work.processTimers();
 	}
 
 	

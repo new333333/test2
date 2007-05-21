@@ -63,8 +63,6 @@ public interface FolderDao {
   
     public void delete(Folder folder);
     public void deleteEntries(Folder folder, List<FolderEntry> entries);
-    public void deleteEntryWorkflows(Folder folder);
-    public void deleteEntryWorkflows(Folder folder, List<Long> ids);
     public void markEntriesDeleted(Folder folder, List<FolderEntry> entries);
     public void move(Folder folder);
     public void moveEntries(Folder folder, List<Long> ids);
