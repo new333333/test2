@@ -21,7 +21,7 @@ public class WorkspaceConfigHelper implements DomTreeHelper {
 		return false;
 	}
 	public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
-		return bs.getBinderModule().hasBinders((Binder)source, EntityType.workspace);
+		return ((Binder)source).getBinderCount() > 0;
 	}
 	
 

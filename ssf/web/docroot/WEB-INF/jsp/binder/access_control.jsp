@@ -502,8 +502,8 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function.operations}">
-			<c:if test="${roleOperation.name == operation.key}">
-				<c:out value="${operation.value}"/><br>
+			<c:if test="${roleOperation.name == operation.value}">
+				<c:out value="${operation.key}"/><br>
 			</c:if>
 		</c:forEach>
 	</c:forEach>	

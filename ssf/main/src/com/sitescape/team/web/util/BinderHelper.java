@@ -876,11 +876,12 @@ public class BinderHelper {
 		model.put(WebKeys.FUNCTIONS, bs.getAdminModule().getFunctions());
 		
 		//Add the list of workAreaOperations that can be added to each function
-		Map operations = new HashMap();
+		//title must by map key to keep alphabetical
+		Map operations = new TreeMap();
 		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
 		while (itWorkAreaOperations.hasNext()) {
 			String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
-			operations.put(operationName, NLT.get("workarea_operation." + operationName));
+			operations.put(NLT.get("workarea_operation." + operationName),operationName);
 		}
 		model.put(WebKeys.WORKAREA_OPERATIONS, operations);
 	}
