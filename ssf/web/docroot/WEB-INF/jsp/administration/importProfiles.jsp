@@ -26,7 +26,7 @@
 <br>
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
 <tr><td>
-<input type="file" class="ss_text" name="profiles" ><br>
+<input type="file" size="80" class="ss_text" name="profiles" ><br>
 </td></tr></table>
 <div class="ss_divider"></div>
 

@@ -469,6 +469,29 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 		
+		Iterator itWorkflows = binder.getWorkflowDefinitions().iterator();
+		if (itWorkflows.hasNext() && getFolderModule().testAccess(entry, "modifyEntry")) {
+			//The "Workflow" menu
+			Map qualifiers = new HashMap();
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
+			toolbar.addToolbarMenu("6_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
+			
+			while (itWorkflows.hasNext()) {
+				Definition workflowDef = (Definition) itWorkflows.next();
+				qualifiers = new HashMap();
+				//Add an empty onClick to override the defalut behavior of showing this in a popup
+				qualifiers.put("onClick", ";");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
+				url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+				toolbar.addToolbarMenuItem("6_workflow", "", 
+						NLT.get("toolbar.menu.startWorkflow", new String[] {NLT.getDef(workflowDef.getTitle())}), url, qualifiers);
+			}
+		}
+		
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
@@ -479,7 +502,7 @@ public class ViewEntryController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-			toolbar.addToolbarMenu("6_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+			toolbar.addToolbarMenu("7_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
 		}		
 
 		//The "Footer" menu
