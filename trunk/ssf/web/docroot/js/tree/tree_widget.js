@@ -217,7 +217,15 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
     	//alert("ss_treeOpen id: " + tObj.id)
     }
     if (tObj == null) {
-    	return;
+		//nothing came back treat as empty
+		//this happens when don't have access or binder type when go to get data
+		if (jObj != null) {
+			if (bottom == '0') {
+				jObj.className = "ss_twJoin";
+			} else  {
+				jObj.className = "ss_twJoinBottom";	
+			} 
+		}
     } else {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';

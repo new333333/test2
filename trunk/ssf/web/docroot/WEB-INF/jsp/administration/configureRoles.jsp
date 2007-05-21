@@ -30,8 +30,8 @@
 	<input type="text" class="ss_text" size="70" name="roleName"><br>
 		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
-		<input type="checkbox" name="<c:out value="${operation.key}"/>">
-		<c:out value="${operation.value}"/><br>
+		<input type="checkbox" name="<c:out value="${operation.value}"/>">
+		<c:out value="${operation.key}"/><br>
 	</c:forEach>		
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
@@ -53,12 +53,12 @@
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function.operations}">
-			<c:if test="${roleOperation.name == operation.key}">
+			<c:if test="${roleOperation.name == operation.value}">
 				<c:set var="checked" value="checked"/>
 			</c:if>
 		</c:forEach>
-		<input type="checkbox" name="<c:out value="${operation.key}"/>" <c:out value="${checked}"/>>
-		<c:out value="${operation.value}"/><br>
+		<input type="checkbox" name="<c:out value="${operation.value}"/>" <c:out value="${checked}"/>>
+		<c:out value="${operation.key}"/><br>
 	</c:forEach>		
 	<input type="hidden" name="roleId" value="${function.id}">
 <div class="ss_buttonBarLeft">

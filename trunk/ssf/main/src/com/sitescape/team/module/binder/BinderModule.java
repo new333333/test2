@@ -164,19 +164,6 @@ public interface BinderModule {
 	 * @return
 	 */
 	public Set getTeamMemberIds(Binder binder, boolean explodeGroups);
-	/**
-	 * See if have there are any child binders.  Checks access
-	 * @param binder
-	 * @return
-	 */
-	public boolean hasBinders(Binder binder);
-	/**
-	 * Same as <code>hasBinders</code>, but checks for a specific type
-	 * @param binder
-	 * @param binderType
-	 * @return
-	 */
-    public boolean hasBinders(Binder binder, EntityType binderType);
     
 	public boolean hasTeamMembers(Long binderId, boolean explodeGroups) throws AccessControlException;	
 	/**

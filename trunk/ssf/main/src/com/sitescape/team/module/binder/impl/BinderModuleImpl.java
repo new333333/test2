@@ -222,26 +222,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		BinderProcessor processor = loadBinderProcessor(binder);
 		return processor.getBinders(binder, options);
 	}
-    public boolean hasBinders(Binder binder) {
-    	List binders = binder.getBinders();
-    	for (int i=0; i<binders.size(); ++i) {
-    		Binder b = (Binder)binders.get(i);
-    		if (b.isDeleted()) continue;
-            if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES)) return true;    	       		
-    	}
-    	return false;
-    }	
-    public boolean hasBinders(Binder binder, EntityIdentifier.EntityType binderType) {
-    	List binders = binder.getBinders();
-    	for (int i=0; i<binders.size(); ++i) {
-    		Binder b = (Binder)binders.get(i);
-    		if (b.isDeleted()) continue;
-    		//only check for specific types
-    		if (b.getEntityType().equals(binderType)) 
-    			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES)) return true;    	       		
-    	}
-    	return false;
-    }	
+
     public Collection indexTree(Long binderId) {
     	List ids = new ArrayList();
     	ids.add(binderId);

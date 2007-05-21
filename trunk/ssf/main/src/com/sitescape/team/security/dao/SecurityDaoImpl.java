@@ -22,6 +22,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -62,13 +63,19 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                        List results = session.createCriteria(Function.class)
+                        List<Function> results = session.createCriteria(Function.class)
                         	.add(Expression.eq(ZONE_ID, zoneId))
                         	.setFetchMode("operationNames", FetchMode.JOIN)
                         	.setCacheable(true)
+                        	.addOrder(Order.asc("name"))
                         	.list();
                     	//since we eagerly fetch, results are not unique
-                    	return new ArrayList(new HashSet(results));
+                    	List sorted = new ArrayList();
+                    	for (Function f:results) {
+                    		//keep orderd
+                    		if (!sorted.contains(f)) sorted.add(f);                    		
+                    	}
+                    	return sorted;
                     }
                 }
             );

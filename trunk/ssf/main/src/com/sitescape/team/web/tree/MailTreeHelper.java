@@ -22,7 +22,7 @@ public class MailTreeHelper implements DomTreeHelper {
 		return false;
 	}
 	public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
-		return bs.getBinderModule().hasBinders((Binder)source);
+		return ((Binder)source).getBinderCount() > 0;
 	}
 
 	public String getAction(int type, Object source) {
