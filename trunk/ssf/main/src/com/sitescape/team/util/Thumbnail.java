@@ -233,10 +233,6 @@ public class Thumbnail {
 
 		// Paint image.
 		Graphics2D g2d = outImage.createGraphics();
-/*
-		g2d.setBackground(Color.WHITE);
-		g2d.clearRect(0, 0, scaledW, scaledH);
-*/
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
