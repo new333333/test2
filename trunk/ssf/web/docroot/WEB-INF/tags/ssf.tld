@@ -1212,6 +1212,22 @@
 	</tag>
 
 	<tag>
+		<name>titleForEntityType</name>
+		<tag-class>com.sitescape.team.taglib.TitleTagForEntityType</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>entityType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>toolbar</name>
 		<tag-class>com.sitescape.team.taglib.ToolbarTag</tag-class>
 		<body-content>JSP</body-content>

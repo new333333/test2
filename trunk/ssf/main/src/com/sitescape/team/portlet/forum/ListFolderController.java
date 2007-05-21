@@ -1465,8 +1465,14 @@ public class ListFolderController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
+        
+        boolean isAccessible = false;
+		String displayStyle = user.getDisplayStyle();
+		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			isAccessible = true;
+		}
 		
-		if (isAppletSupported && getFolderModule().testAccess(folder, "addEntry")) {
+		if (isAppletSupported && getFolderModule().testAccess(folder, "addEntry") && !isAccessible) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);

@@ -20,7 +20,6 @@
 	}
 %>
 
-
 <div class="ss_blog">
 
   <div class="ss_blog_content_container1">
@@ -66,8 +65,16 @@
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
 		    entryId="${ss_wikiHomepageEntryId}" 
-		    actionUrl="true" />" 
-		    onClick="ss_loadWikiEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
+		    actionUrl="true"><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+		    
+		    <ssf:ifnotaccessible>
+		    	onClick="ss_loadWikiEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
+		    </ssf:ifnotaccessible>
+		    
+		    <ssf:ifaccessible>
+		    	onClick="ss_loadWikiEntryInParent(this, '${ss_wikiHomepageEntryId}');return false;" 		    	
+		    </ssf:ifaccessible>
+		    
 		><ssf:nlt tag="wiki.homePage"/></a>
 	    </span>
 	    <br/>
@@ -150,8 +157,16 @@
 		    portletName="ss_forum" 
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
-		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-		    onClick="ss_loadWikiEntry(this, '${entry1._docId}');return false;" 
+		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+
+		    <ssf:ifnotaccessible>
+		    	onClick="ss_loadWikiEntry(this, '${entry1._docId}');return false;" 		    	
+		    </ssf:ifnotaccessible>
+		    
+		    <ssf:ifaccessible>
+			    onClick="ss_loadWikiEntryInParent(this, '${entry1._docId}');return false;" 
+		    </ssf:ifaccessible>
+		    
 		    ><c:if test="${empty entry1.title}"
 		    ><span id="folderLine_${entry1._docId}" class="ss_normal"
 		      style="" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span

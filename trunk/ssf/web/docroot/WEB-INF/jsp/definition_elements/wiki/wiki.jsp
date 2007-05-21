@@ -24,6 +24,10 @@ function ss_loadWikiEntry(obj,id) {
 	return false;
 }
 
+function ss_loadWikiEntryInParent(obj,id) {
+	self.parent.location.href = obj.href;
+}
+
 //Routine called when "find wiki page" is clicked
 function ss_loadWikiEntryId<portlet:namespace/>(id) {
 	var url = "<ssf:url     
