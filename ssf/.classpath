@@ -29,14 +29,14 @@
 	<classpathentry exported="true" kind="lib" path="lib/jta.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
+	<classpathentry exported="true" sourcepath="C:/quartz-1.4.5/src/java/main" kind="lib" path="lib/quartz.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/trove.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
+	<classpathentry exported="true" sourcepath="C:/hibernate-3.1/src" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-portlet.jar"/>
+	<classpathentry exported="true" sourcepath="C:/spring-portlet/src" kind="lib" path="lib/spring-portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portal-ejb.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
@@ -44,7 +44,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/dbunit-2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/easymock.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-mock.jar"/>
@@ -52,7 +51,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring.jar"/>
+	<classpathentry exported="true" sourcepath="C:/spring-framework-1.2.2/src" kind="lib" path="lib/spring.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wss4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/addressing.jar"/>
