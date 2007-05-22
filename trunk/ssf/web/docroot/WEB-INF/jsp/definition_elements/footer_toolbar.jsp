@@ -188,8 +188,8 @@ function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
 		iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "true";
 	}
 
-	divObj.style.width = "350px";
-	divObj.style.height = "125px";
+	divObj.style.width = "400px";
+	divObj.style.height = "180px";
 
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }

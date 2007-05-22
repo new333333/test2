@@ -187,10 +187,10 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<td class="ss_entrySignature">
 				<div id="ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
 				<c:if test="${ssBinderIsLibrary == 'false'}">
-					<ssf:nlt tag="note"/>: <ssf:nlt tag="folder.dropboxAddNonLibraryFolderHelpText"/>
+					<b><ssf:nlt tag="note"/>:</b> <ssf:nlt tag="folder.dropboxAddNonLibraryFolderHelpText"/>
 				</c:if>
 				<c:if test="${ssBinderIsLibrary == 'true'}">
-					<ssf:nlt tag="note"/>: <ssf:nlt tag="folder.dropboxAddLibraryFolderHelpText"/>
+					<b><ssf:nlt tag="note"/>:</b> <ssf:nlt tag="folder.dropboxAddLibraryFolderHelpText"/>
 				</c:if>
 				</div>
 			</td>
