@@ -9,13 +9,9 @@
  *
  */
 package com.sitescape.team.module.workflow;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -23,7 +19,6 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.WfAcl;
-import com.sitescape.team.domain.WfNotify;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
@@ -36,17 +31,12 @@ import com.sitescape.util.Validator;
  *
  */
 public class WorkflowUtils {
-    // Defines variable names
-    public final static String ENTRY_TYPE = "__entryType";
-    public final static String ENTRY_ID = "__entryId";
-    public final static String BINDER_ID = "__binderId";
-       
+        
     public static Map getManualTransitions(Definition wfDef, String stateName) {
 		Map transitionData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
 			//Build a list of all manual transitions for this state
 			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
@@ -56,19 +46,11 @@ public class WorkflowUtils {
 					String toStateCaption = "";
 					if (!Validator.isNull(toStateValue)) {
 						//We have a transition. get the caption;
-						Element toStateEle = (Element) wfRoot.selectSingleNode(
-									"//item[@name='workflowProcess']/item[@name='state']"+
-									"/properties/property[@name='name' and @value='"+toStateValue+"']");
+						Element toStateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", toStateValue);
 						if (toStateEle != null) {
-							Element toStateCaptionEle = 
-								(Element) toStateEle.selectSingleNode("../property[@name='caption']");
-							if (toStateCaptionEle != null) {
-								toStateCaption = toStateCaptionEle.attributeValue("value", "");
-							}
+							toStateCaption = DefinitionUtils.getPropertyValue(toStateEle, "caption");
 						}
-						if (toStateCaption.equals("")) toStateCaption = toStateValue;
-						//TODO Check that the user has the right to execute this transition
-							
+						if (Validator.isNull(toStateCaption)) toStateCaption = toStateValue;
 						//Ok, add this transition to the map
 						transitionData.put(toStateValue, toStateCaption);
 					}
@@ -77,31 +59,12 @@ public class WorkflowUtils {
 		}
 		return transitionData;
     }
-    public static Set getQuestionNames(Definition wfDef, String stateName) {
-    	Set qNames = new HashSet();
-    	Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all questions for this state
-			List questions = stateEle.selectNodes("./item[@name='workflowQuestion']");
-			if (questions != null) {
-				for (int j = 0; j < questions.size(); j++) {
-					String questionName = DefinitionUtils.getPropertyValue((Element)questions.get(j), "name");
-					qNames.add(questionName);
-				}
-			}
-		}
-		return qNames;
-    	
-    }
+
     public static Map getQuestions(Definition wfDef, String stateName) {
 		Map questionsData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
 		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
 			//Build a list of all questions for this state
 			List questions = stateEle.selectNodes("./item[@name='workflowQuestion']");
@@ -146,123 +109,12 @@ public class WorkflowUtils {
     	}
     	return stateCaption;
     }    
-    /**
-     * Return the set of states that this state can transition to
-     * @param wfDef
-     * @param stateName
-     * @return transition to states
-     */
-    public static Set getAllTransitions(Definition wfDef, String stateName) {
-		Set transitionData = new HashSet();
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all manual transitions for this state
-			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@type='transition']");
-			if (transitions != null) {
-				for (int j = 0; j < transitions.size(); j++) {
-					Element toStateEle = (Element) ((Element) 
-							transitions.get(j)).selectSingleNode("./properties/property[@name='toState']");
-					if (toStateEle != null) {
-						String toStateValue = toStateEle.attributeValue("value", "");
-						if (!toStateValue.equals("")) {
-							transitionData.add(toStateValue);
-						}
-					}
-				}
-			}
-		}
-		return transitionData;
-    }    
-    /**
-     * Get transitions triggered by a condition, ie) not manual
-     * 
-     * @param wfDef
-     * @param stateName
-     * @return Return the Dom elements
-     */
-    public static List getConditionElements(Definition wfDef, String stateName) {
-    	List conditions=null;
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all conditional transitions for this state
-			conditions = stateEle.selectNodes("./item[@name='transitions']/item[@name!='transitionManual']");
-		}
-		if (conditions == null) conditions = new ArrayList();
-		return conditions;
-    }
-    /**
-     * Get transitions triggered by a manual request
-     * 
-     * @param wfDef
-     * @param stateName
-     * @return Return the Dom elements
-     */
-    public static List getManualElements(Definition wfDef, String stateName) {
-    	List conditions=null;
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		//Find the current state in the definition
-		Element stateEle = getState(wfRoot, stateName);
-		if (stateEle != null) {
-			//Build a list of all conditional transitions for this state
-			conditions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
-		}
-		if (conditions == null) conditions = new ArrayList();
-		return conditions;
-    }
-   
 
-    public static String getInitialState(Definition wfDef) {
-		Document workflowDoc = wfDef.getDefinition();
-		String initialState="";
-		if (workflowDoc != null) {
-			Element workflowRoot = workflowDoc.getRootElement();
-			Element initialStateProperty = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/properties/property[@name='initialState']");
-			if (initialStateProperty != null) {
-				initialState = initialStateProperty.attributeValue("value", "");
-				//Validate that this is an existing state
-				if (!Validator.isNull(initialState)) {
-					Element state = (Element)getState(workflowRoot, initialState);
-					if (state == null) initialState = "";
-				}
-			}
-			//See if the workflow definition actually defined an initial state
-			if (Validator.isNull(initialState)) {
-				//There is no defined initial state, so use the first state in the list
-				initialStateProperty = (Element) workflowRoot.selectSingleNode("./item[@name='workflowProcess']/item[@name='state']/properties/property[@name='name']");
-				initialState = initialStateProperty.attributeValue("value", "");
-			}
-		}
-		return initialState;
-    }
-    public static boolean isThreadEndState(Definition wfDef, String stateName, String threadName) {
-		Document wfDoc = wfDef.getDefinition();
-		Element wfRoot = wfDoc.getRootElement();
-		if (Validator.isNull(threadName)) {
-			List ends = (List)wfRoot.selectNodes("./item[@name='workflowProcess']/properties/property[@name='endState' and @value='"+stateName+"']");
-    		if ((ends == null) || ends.isEmpty()) return false;
-    		return true;
-    	} else {
-    		Element threadEle = (Element) wfRoot.selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+threadName+"']");
-    		if (threadEle != null) {
-    			Element properties = threadEle.getParent();
-    			List ends = properties.selectNodes("./property[@name='endState' and @value='"+stateName+"']");
-        		if ((ends == null) || ends.isEmpty()) return false;
-        		return true;
-			}
-		}
-		return false;
-    } 
+
     public static WfAcl getStateAcl(Definition wfDef, String stateName, WfAcl.AccessType type) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
 			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
 			if (accessControls != null) {
@@ -281,29 +133,7 @@ public class WorkflowUtils {
 		}
 		return getAcl(null, type);
     }
-    public static Map getAcls(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		Map results = new HashMap();
-		if (stateEle != null) {
-			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
-			if (accessControls != null) {
-				results.put(WfAcl.AccessType.read, 
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"), WfAcl.AccessType.read));
-				results.put(WfAcl.AccessType.write, 
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"), WfAcl.AccessType.write));
-				results.put(WfAcl.AccessType.delete, 
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"), WfAcl.AccessType.delete));
-				results.put(WfAcl.AccessType.transitionOut,
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"), WfAcl.AccessType.transitionOut));
-				results.put(WfAcl.AccessType.transitionIn,
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"), WfAcl.AccessType.transitionIn ));
-			}
-			
-		}
-		return results;
-    }
+
     private static WfAcl getAcl(Element aclElement, WfAcl.AccessType type) {
     	WfAcl result = new WfAcl(type);
     	if (aclElement == null) return result;
@@ -320,102 +150,6 @@ public class WorkflowUtils {
     	}
     	return result;
     }
-    public static List getEnterNotifications(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		if (stateEle != null) {  	
-			List notifications = (List)stateEle.selectNodes("./item[@name='onEntry']/item[@name='notifications']");
-			return getNotifications(notifications);
-		}
-		return new ArrayList();
-
-    }
-    public static List getExitNotifications(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		if (stateEle != null) {  	
-			List notifications = (List)stateEle.selectNodes("./item[@name='onExit']/item[@name='notifications']");
-			return getNotifications(notifications);
-		}
-		return new ArrayList();
-
-    }
-    private static List getNotifications(List notifications) {
-    	List result = new ArrayList();
-    	if ((notifications == null) || notifications.isEmpty()) return result;
-    	Element prop, notify;
-    	List props;
-    	String name, value;
-    	for (int i=0; i<notifications.size(); ++i) {
-    		WfNotify n = new WfNotify();
-    		notify = (Element)notifications.get(i);
-    		props = notify.selectNodes("./properties/property");
-    		if ((props == null) || props.isEmpty()) continue;
-    		for (int j=0; j<props.size(); ++j) {
-    			prop = (Element)props.get(j);
-    			name = prop.attributeValue("name","");
-    			value = prop.attributeValue("value","");
-    			if ("entryCreator".equals(name)) {
-    				n.setCreatorEnabled(GetterUtil.getBoolean(value, false));
-    			} else if ("subjText".equals(name)) {
-    				n.setSubject(value);
-    			} else if ("appendTitle".equals(name)) {
-    				n.setAppendTitle(GetterUtil.getBoolean(value, false));
-    			} else if ("bodyText".equals(name)) {
-    				n.setBody(value);
-    			} else if ("appendBody".equals(name)) {
-    				n.setAppendBody(GetterUtil.getBoolean(value, false));
-    			} else if ("userGroupNotification".equals(name)) {
-    				n.setPrincipalIds(value);
-    			}
-    		}
-    		result.add(n);
-    	}
-    	return result;
-    	
-    }
-    public static List getOnEntry(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		if (stateEle != null) {  	
-			List items = (List)stateEle.selectNodes("./item[@name='onEntry']/item");
-			return items;
-		}
-		return new ArrayList();
-
-    }
-    public static List getOnExit(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		if (stateEle != null) {  	
-			List items = (List)stateEle.selectNodes("./item[@name='onExit']/item");
-			return items;
-		}
-		return new ArrayList();
-
-    } 
-    private static Element getState(Element wfRoot, String stateName) {
-		//Find the current state in the definition
-		Element statePropertyEle = (Element) wfRoot.selectSingleNode(
-				"//item[@name='workflowProcess']/item[@name='state']"+
-				"/properties/property[@name='name' and @value='"+stateName+"']");
-		if (statePropertyEle != null) {
-			return statePropertyEle.getParent().getParent();
-		}
-		return null;
-
-    }
-    public static List getItems(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-    	Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		List items = stateEle.selectNodes("./item");
-		if (items == null) return new ArrayList();
-		return items;
-    }
+ 
  
 }

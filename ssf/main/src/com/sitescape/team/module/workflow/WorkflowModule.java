@@ -17,6 +17,10 @@ import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 
 public interface WorkflowModule {
+	   // Defines variable names
+    public final static String ENTRY_TYPE = "__entryType";
+    public final static String ENTRY_ID = "__entryId";
+    public final static String BINDER_ID = "__binderId";
 	/**
 	 * Start workflow on entry.
 	 * @param entry
