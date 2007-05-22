@@ -24,5 +24,5 @@
 <iframe id="<portlet:namespace/>_new_guestbook_entry_iframe"
   name="<portlet:namespace/>_new_guestbook_entry_iframe"
   onLoad="ss_showSignGuestbookIframe('<portlet:namespace/>', this);" 
-  width="100%">xxx</iframe>
+  width="100%" frameBorder="0">xxx</iframe>
 </div>
