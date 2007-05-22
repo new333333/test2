@@ -2840,7 +2840,7 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	frameObj.style.visibility = "visible";
 
 	divObj.style.width = "300px";
-	divObj.style.height = "75px";
+	divObj.style.height = "100px";
 
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
