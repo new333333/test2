@@ -2083,6 +2083,12 @@ var ss_helpSystem = {
 		} else {
 			ulObj = uls.item(0);
 		}
+		// Don't add nodes with duplicate titles.
+		for (var i=0; i<ulObj.childNodes.length; i++) {
+		    if (dojo.dom.textContent(ulObj.childNodes[i]) == title) {
+		    	return;
+		    }
+		}
 		var liObj = document.createElement("li");
 		var aObj = document.createElement("a");
 		aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "', '" + xAlignment + "', '" + yAlignment + "');");
