@@ -227,7 +227,8 @@ public class IndexSynchronizationManager {
         if(((Boolean) autoFlushTL.get()).booleanValue())
             luceneSession.flush();
         
-        logger.info("Update to index: add [" + addCount + "], delete [" + deleteCount + "] docs");
+		if(logger.isDebugEnabled())
+			logger.debug("Update to index: add [" + addCount + "], delete [" + deleteCount + "] docs");
     }
     
     private static void clear() {

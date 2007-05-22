@@ -80,6 +80,8 @@ public class LocalLuceneSession implements LuceneSession {
 	private static final Log logger = LogFactory
 			.getLog(LocalLuceneSession.class);
 
+	private static boolean debugEnabled = logger.isDebugEnabled();
+	
 	private String indexPath;
 
 	public LocalLuceneSession(String indexPath) {
@@ -125,7 +127,8 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: addDocument took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: addDocument took: " + (endTime - startTime) + " milliseconds");
 
 		SimpleProfiler.stopProfiler("LocalLuceneSession.addDocument");
 
@@ -178,7 +181,8 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: addDocuments took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: addDocuments took: " + (endTime - startTime) + " milliseconds");
 
 		SimpleProfiler.stopProfiler("LocalLuceneSession.addDocuments");
 		//rt.gc();
@@ -228,7 +232,8 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: deleteDocuments(term) took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: deleteDocuments(term) took: " + (endTime - startTime) + " milliseconds");
 
 		SimpleProfiler.stopProfiler("LocalLuceneSession.deleteDocuments(Term)");
 
@@ -267,7 +272,8 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: deleteDocuments(query) took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: deleteDocuments(query) took: " + (endTime - startTime) + " milliseconds");
 
 		SimpleProfiler.stopProfiler("LocalLuceneSession.deleteDocuments");
 
@@ -334,7 +340,8 @@ public class LocalLuceneSession implements LuceneSession {
 					.transfer(hits, offset, size);
 			tempHits.setTotalHits(hits.length());
 			long endTime = System.currentTimeMillis();
-			logger.info("LocalLucene: search took: " + (endTime - startTime) + " milliseconds");
+			if(debugEnabled)
+				logger.debug("LocalLucene: search took: " + (endTime - startTime) + " milliseconds");
 			return tempHits;
 		} catch (IOException e) {
 			throw new LuceneException("Error searching index [" + indexPath
@@ -383,7 +390,8 @@ public class LocalLuceneSession implements LuceneSession {
 					.transfer(hits, offset, size);
 			tempHits.setTotalHits(hits.length());
 			long endTime = System.currentTimeMillis();
-			logger.info("LocalLucene: search took: " + (endTime - startTime) + " milliseconds");
+			if(debugEnabled)
+				logger.debug("LocalLucene: search took: " + (endTime - startTime) + " milliseconds");
 			return tempHits;
 		} catch (IOException e) {
 			throw new LuceneException("Error searching index [" + indexPath
@@ -502,7 +510,8 @@ public class LocalLuceneSession implements LuceneSession {
 				while (iter.hasNext())
 					resultTags.add((String)iter.next());
 				long endTime = System.currentTimeMillis();
-				logger.info("LocalLucene: getTags took: " + (endTime - startTime) + " milliseconds");
+				if(debugEnabled)
+					logger.debug("LocalLucene: getTags took: " + (endTime - startTime) + " milliseconds");
 
 				return resultTags;
 			}
@@ -583,7 +592,8 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: deleteDocs took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: deleteDocs took: " + (endTime - startTime) + " milliseconds");
 
 		return length;
 	}
@@ -616,7 +626,8 @@ public class LocalLuceneSession implements LuceneSession {
 			} 
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: updateDocs(query) took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: updateDocs(query) took: " + (endTime - startTime) + " milliseconds");
 	}
 
 	private void updateDocs(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
@@ -648,7 +659,8 @@ public class LocalLuceneSession implements LuceneSession {
 			} 
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: updateDocs(list) took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: updateDocs(list) took: " + (endTime - startTime) + " milliseconds");
 	}
 
 	private void doUpdate(Query q, String fieldname, String fieldvalue) {
@@ -677,7 +689,8 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: doUpdate took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: doUpdate took: " + (endTime - startTime) + " milliseconds");
 	}
 	
 	/**
@@ -789,7 +802,8 @@ public class LocalLuceneSession implements LuceneSession {
 					resultTitles.add(tuple);
 				}
 				long endTime = System.currentTimeMillis();
-				logger.info("LocalLucene: getNormTitles took: " + (endTime - startTime) + " milliseconds");
+				if(debugEnabled)
+					logger.debug("LocalLucene: getNormTitles took: " + (endTime - startTime) + " milliseconds");
 
 				return resultTitles;
 			}
