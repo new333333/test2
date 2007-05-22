@@ -24,7 +24,7 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 <c:if test="${aclMap[entity.id]['modifyEntry']}">
-<div style="float: right; margin-left: 5px;"><a href="#"
+<div class="ss_editableTab"><a href="#"
   onClick="ss_editablePopUp('${editUrl}', '<portlet:namespace/>ss_editableDiv${ss_editableDivIdNumber}');return false;"
   ><span class="ss_fineprint"><ssHelpSpot 
     helpId="tools/more_entry_tools" offsetX="0" 
