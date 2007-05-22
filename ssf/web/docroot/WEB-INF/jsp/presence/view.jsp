@@ -10,13 +10,18 @@
  *
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ss_portletInitialization}">
-<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-<c:if test="${!empty ssComponentId}">
-<c:set var="ssNamespace" value="${renderResponse.namespace}_${ssComponentId}"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 </c:if>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<c:if test="${!empty ssUsers || ss_windowState == 'maximized'}">
+  <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
+  <c:if test="${!empty ssComponentId}">
+  <c:set var="ssNamespace" value="${renderResponse.namespace}_${ssComponentId}"/>
+  </c:if>
+  <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+</c:if>
+
 <c:set var="userIdList" value=""/>
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
@@ -30,31 +35,32 @@
 <ssHelpSpot helpId="portlets/buddy_list_portlet" offsetX="0" offsetY="-10" 
 			    title="<ssf:nlt tag="helpSpot.buddyListPortlet"/>"></ssHelpSpot>
 
-<div class="ss_portlet_style ss_portlet">
-<table cellpadding="3" style="width:100%;">
-<tr>
-<td>
-<a class="ss_linkButton ss_bold ss_smallprint" href=""
-  onClick="if (${ssNamespace}_getPresence) {${ssNamespace}_getPresence('')};return false;"
-><ssf:nlt tag="general.Refresh"/></a>
-</td>
-<td align="right">
-<div id="${ssNamespace}_refreshDate">
-<span class="ss_smallprint ss_light"><ssf:nlt 
-tag="presence.last.refresh"/> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= new java.util.Date() %>" 
-type="time" /></span>
-</div>
-</td>
-</tr>
-</table>
-</div>
+<c:if test="${!empty ssUsers || ss_windowState == 'maximized'}">
+  <div class="ss_portlet_style ss_portlet">
+  <table cellpadding="3" style="width:100%;">
+  <tr>
+  <td>
+  <a class="ss_linkButton ss_bold ss_smallprint" href=""
+    onClick="if (${ssNamespace}_getPresence) {${ssNamespace}_getPresence('')};return false;"
+  ><ssf:nlt tag="general.Refresh"/></a>
+  </td>
+  <td align="right">
+  <div id="${ssNamespace}_refreshDate">
+  <span class="ss_smallprint ss_light"><ssf:nlt 
+  tag="presence.last.refresh"/> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= new java.util.Date() %>" 
+  type="time" /></span>
+  </div>
+  </td>
+  </tr>
+  </table>
+  </div>
 
-<c:if test="${!empty ssDashboard}">
+  <c:if test="${!empty ssDashboard}">
 	<c:set var="ssUsers" value="${ssDashboard.beans[ssComponentId].ssUsers}"/>
 	<c:set var="ssGroups" value="${ssDashboard.beans[ssComponentId].ssGroups}"/>
-</c:if>
-<table border="0" cellpadding="4" cellspacing="0" width="100%">
-<tr>
+  </c:if>
+  <table border="0" cellpadding="4" cellspacing="0" width="100%">
+  <tr>
 	<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
@@ -96,8 +102,9 @@ type="time" /></span>
 		</tr>
 		</table>
 	</td>
-</tr>
-</table>
+  </tr>
+  </table>
+</c:if>
 <c:if test="${empty ss_dashboard_context}">
 <div align="right">
   <a class="ss_linkButton" href="<portlet:renderURL 
@@ -143,4 +150,3 @@ ${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300
 </form>
 
 </div>
-</c:if>
