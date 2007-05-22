@@ -36,7 +36,7 @@
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 </td>
 <td valign="top"><a href="javascript: ss_helpSystem.run();"><img border="0"
-  <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/toolbar_help.gif" /></a></td>
+  <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a></td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="0" width="100%">
