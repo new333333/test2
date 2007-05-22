@@ -512,8 +512,20 @@ div.ss_replies div.ss_entryDescription {
   background-color: ${ss_entry_description_background_color};
   font-size: 13px;
   color: ${ss_style_muted_foreground_color};
-  }
+}
+.ss_entryDescription p {
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
 
+.ss_editableTab {
+  background-color: ${ss_entry_description_background_color};
+  float: right;
+  margin-left: 5px;
+  padding-bottom: 3px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
 
 div.ss_workflow { 
   border: 1px #666666 solid;
