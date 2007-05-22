@@ -28,12 +28,12 @@
 <div class="ss_blog">
 <table class="ss_tasks_list">
 	<tr>
-		<th><ssf:nlt tag="task.status"/></th>
-		<th><ssf:nlt tag="task.priority"/></th>
-		<th><ssf:nlt tag="task.done"/></th>		
-		<th><ssf:nlt tag="task.title"/></th>
-		<th><ssf:nlt tag="task.assigned"/></th>
 		<th><ssf:nlt tag="task.dueDate"/></th>
+		<th><ssf:nlt tag="task.priority"/></th>
+		<th><ssf:nlt tag="task.title"/></th>
+		<th><ssf:nlt tag="task.status"/></th>
+		<th><ssf:nlt tag="task.assigned"/></th>
+		<th><ssf:nlt tag="task.done"/></th>		
 	</tr>
 
 <c:forEach var="entry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
@@ -42,19 +42,9 @@
 
 	<tr>
 		<td>
-			<c:if test="${! empty entry.status}">
-				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
-					<img src="<html:imagesPath/>icons/status_${status.key}.jpg"
-						<c:if test="${entry.status == status.key}">
-						class="ss_status_active" 
-						</c:if>
-						<c:if test="${entry.status != status.key}">
-						class="ss_status_inactive"
-						</c:if>
-					>
-				</c:forEach>
-				
-			</c:if>
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			      value="${entry.dueDate}" type="both" 
+				  timeStyle="short" dateStyle="short" />
 		</td>
 		<td>
 			<c:if test="${! empty entry.priority}">
@@ -69,20 +59,6 @@
 					>
 				</c:forEach>
 			</c:if>
-		</td>
-		<td>
-			<c:if test="${! empty entry.completed}">
-			<div class="ss_c_">
-				<div class="ss_${entry.completed} ss_smallprint">
-					<c:forEach var="done" items="${ssEntryDefinitionElementData.completed.values}">
-						<c:if test="${entry.completed == done.key}">
-							${done.value}
-						</c:if>
-					</c:forEach>
-				</div>
-			<div>
-			<div class="ss_clear_float"></div>
-			</c:if>			
 		</td>
 		<td>
 			<span class="ss_entryTitle ss_normalprint">
@@ -104,6 +80,21 @@
 			</span>
 		</td>
 		<td>
+			<c:if test="${! empty entry.status}">
+				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
+					<img src="<html:imagesPath/>icons/status_${status.key}.jpg"
+						<c:if test="${entry.status == status.key}">
+						class="ss_status_active" 
+						</c:if>
+						<c:if test="${entry.status != status.key}">
+						class="ss_status_inactive"
+						</c:if>
+					>
+				</c:forEach>
+				
+			</c:if>
+		</td>
+		<td>
 			<ul>
 			<c:forEach var="assigned" items="${entry.assignedUsers}">
 				<li><ssf:showUser user="${assigned}" /></li>
@@ -111,10 +102,19 @@
 			</ul>
 		</td>
 		<td>
-			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			      value="${entry.dueDate}" type="both" 
-				  timeStyle="short" dateStyle="short" />
-		</td>
+			<c:if test="${! empty entry.completed}">
+			<div class="ss_c_">
+				<div class="ss_${entry.completed} ss_smallprint">
+					<c:forEach var="done" items="${ssEntryDefinitionElementData.completed.values}">
+						<c:if test="${entry.completed == done.key}">
+							${done.value}
+						</c:if>
+					</c:forEach>
+				</div>
+			<div>
+			<div class="ss_clear_float"></div>
+			</c:if>			
+		</td>		
 	</tr>
 
 </c:forEach>
