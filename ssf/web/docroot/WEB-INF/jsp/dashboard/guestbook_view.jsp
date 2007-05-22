@@ -89,7 +89,7 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 <iframe id="${ssNamespace}_new_guestbook_entry_iframe"
   name="${ssNamespace}_new_guestbook_entry_iframe"
   onLoad="ss_showSignGuestbookIframe('${ssNamespace}', this);" 
-  width="100%">xxx</iframe>
+  width="100%" frameBorder="0">xxx</iframe>
 </div>
 
 <div id="${ss_divId}">

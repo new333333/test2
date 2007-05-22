@@ -9,7 +9,7 @@
  *
  */
 
-var ss_signGuestbookIframeOffset = 50;
+var ss_signGuestbookIframeOffset = 20;
 
 function ss_showSignGuestbookIframe(namespace, obj) {
 	var targetDiv = document.getElementById(namespace + '_add_entry_from_iframe');
@@ -20,7 +20,7 @@ function ss_showSignGuestbookIframe(namespace, obj) {
 
 		var iframeHeight = parseInt(iframeDoc.body.scrollHeight);
 		if (iframeHeight > 0) {
-			iframeDiv.style.height = iframeHeight + ss_signGuestbookIframeOffset + "px"
+			iframeDiv.style.height = iframeHeight + ss_signGuestbookIframeOffset + "px"			
 		}
 		iframeDiv.style.border = "1px solid #CCCCCC";
 	}
