@@ -33,13 +33,62 @@
 
 
 <c:set var="ssResultEntries" value="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}"/>
-<c:set var="ssTotalRecords" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}" />
+<c:set var="ssResultTotalRecords" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}" />
 <c:set var="ssPageEndIndex" value="${ss_pageNumber * ss_pageSize + ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}" />
 <c:set var="ssPageStartIndex" value="${ss_pageNumber * ss_pageSize + 1}" />
 <c:set var="isDashboard" value="yes"/>
 
-<%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
-
+		<div id="ss_searchResult_header">
+			<div id="ss_searchResult_numbers">			
+				<c:choose>
+				  <c:when test="${ssResultTotalRecords == '0'}">
+					<ssf:nlt tag="search.NoResults" />
+				  </c:when>
+				  <c:otherwise>
+					<ssf:nlt tag="search.results">
+					<ssf:param name="value" value="${ssPageStartIndex}"/>
+					<ssf:param name="value" value="${ssPageEndIndex}"/>
+					<ssf:param name="value" value="${ssResultTotalRecords}"/>
+					</ssf:nlt>
+				  </c:otherwise>
+				</c:choose>
+			</div>
+			<div id="ss_paginator"> 
+			
+			<c:if test="${empty isDashboard || isDashboard == 'no'}">
+				<c:if test="${ss_pageNumber > 1}">
+					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+					  onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
+				</c:if>
+				<span class="ss_pageNumber">${ss_pageNumber}</span>
+				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
+					<img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
+					  onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
+				</c:if>
+			</c:if>
+			<c:if test="${isDashboard == 'yes'}">
+				<c:if test="${ssDashboard.scope != 'portlet'}">
+					<c:set var="binderId" value="${ssBinder.id}"/>
+				</c:if>
+				<c:if test="${ssDashboard.scope == 'portlet'}">
+					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+				</c:if>
+				<c:if test="${ss_pageNumber > 0}">
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
+				</c:if>
+				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
+				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+				</c:if>
+			</c:if>
+			</div>
+			<div class="ss_clear"></div>
+		</div>
+		
+		
+		
 		<ul id="ss_searchResult">
 		<c:forEach var="entry" items="${ssResultEntries}" varStatus="status">
 		
