@@ -48,6 +48,7 @@ function ss_showMyTeams<portlet:namespace/>() {
     	action="__ajax_request" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="show_my_teams" />
+		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
     	</ssf:url>"
 	url += "\&rn=" + ss_random++;
 	
