@@ -43,9 +43,9 @@
 <br>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="  OK  "/>" >&nbsp;&nbsp;&nbsp;
+  value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" 
-  value="<ssf:nlt tag="button.cancel" text="Cancel"/>" >
+  value="<ssf:nlt tag="button.cancel" text="Cancel"/>"  onClick="ss_buttonSelect('cancelBtn');">
 <br>
 <br>
 </div>
