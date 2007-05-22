@@ -288,7 +288,6 @@ body.ss_style_body {
 
 .ss_style td, .ss_style th {
   font-family: ${ss_style_font_family};
-  font-weight: inherit;
   font-size: ${ss_style_font_size}; 
   color: ${ss_style_text_color};
 }
