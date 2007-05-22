@@ -43,6 +43,8 @@ import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
 public abstract class CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
+	protected boolean debugEnabled = logger.isDebugEnabled();
+	protected boolean infoEnabled = logger.isInfoEnabled();
 
 	protected CoreDao coreDao;
 	protected ProfileDao profileDao;
