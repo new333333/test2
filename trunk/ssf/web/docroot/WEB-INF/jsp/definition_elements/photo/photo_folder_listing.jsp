@@ -63,6 +63,27 @@
 			    </div>
 			 </c:if>
 			
+			  <c:if test="${empty fileEntry._fileID}">
+			
+			    <div>
+			    <img <ssf:alt text="${fileEntry.title}"/> border="0" 
+			      src="<html:imagesPath/>thumbnails/NoImage.jpeg"/><br/>
+			    <a 
+				    href="<ssf:url     
+				    adapter="true" 
+				    portletName="ss_forum" 
+				    folderId="${ssFolder.id}" 
+				    action="view_folder_entry" 
+				    entryId="${fileEntry._docId}" actionUrl="true" />" 
+				    onClick="ss_loadEntry(this, '${fileEntry._docId}');return false;" 
+				    ><c:if test="${empty fileEntry.title}"
+				    ><span id="folderLine_${fileEntry._docId}" <%= seenStyleFine %>
+				    >--<ssf:nlt tag="entry.noTitle"/>--</span
+				    ></c:if><span id="folderLine_${fileEntry._docId}" <%= seenStyle %>
+				    ><c:out value="${fileEntry.title}"/></span></a>
+			    </div>
+			 </c:if>
+			
 			</c:forEach>
 			</div>
 			</table>
