@@ -32,7 +32,7 @@
 
 
 
-<c:set var="ssFolderEntries" value="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}"/>
+<c:set var="ssResultEntries" value="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}"/>
 <c:set var="ssTotalRecords" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}" />
 <c:set var="ssPageEndIndex" value="${ss_pageNumber * ss_pageSize + ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}" />
 <c:set var="ssPageStartIndex" value="${ss_pageNumber * ss_pageSize + 1}" />
@@ -40,4 +40,493 @@
 
 <%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
+		<ul id="ss_searchResult">
+		<c:forEach var="entry" items="${ssResultEntries}" varStatus="status">
+		
+			<jsp:useBean id="entry" type="java.util.HashMap" />
+			
+			<jsp:useBean id="isDashboard" type="java.lang.String" />
+			
+			<%
+				String strUseBinderMethod = "yes";
+				String strEntityType = (String) entry.get("_entityType");
+				if (strEntityType == null) strEntityType = "";
+				if ( strEntityType.equals("folderEntry") || strEntityType.equals("reply") ) {
+					strUseBinderMethod = "no";
+				} else if ( isDashboard.equals("yes") && (strEntityType.equals("user") || strEntityType.equals("folder") || strEntityType.equals("workspace") || strEntityType.equals("profiles")) ) {
+					strUseBinderMethod = "permalink";
+				}
+			%>
+				
+			<li>
+				<c:choose>
+		  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
+						<div class="ss_thumbnail">
+							<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+
+									<ssf:menuLink 
+										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										
+										<ssf:param name="url" useBody="true">
+											<c:if test="${isDashboard == 'yes'}">
+												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+												action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+											</c:if>
+											
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+					      						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+											</c:if>
+										</ssf:param>
+									
+									    <c:if test="${empty entry.title}">
+									    	(<ssf:nlt tag="entry.noTitle"/>)
+									    </c:if>
+								    	<c:out value="${entry.title}"/>
+									</ssf:menuLink>
+
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+							<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+									${entry._desc}
+								</ssf:textFormat>
+							</ssf:markup>
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+							<c:if test="${!empty entry._workflowStateCaption}">
+								<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> <c:out value="${entry._workflowStateCaption}" /></p>
+							</c:if>
+							<c:if test="${!empty entry.binderTitle}">
+								<ssf:nlt tag="searchResult.label.binder" />: <a 
+								<c:if test="${isDashboard == 'yes'}">
+									href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
+										<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
+									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
+								</c:if>
+								<c:if test="${empty isDashboard || isDashboard == 'no'}">
+							     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
+					    			<ssf:param name="binderId" value="${entry._binderId}"/>
+    	  							<ssf:param name="newTab" value="1"/>
+    	  							</ssf:url>" 
+    	  						</c:if>
+								class="ss_parentPointer">
+								${entry.binderTitle}
+								</a>
+							</c:if>
+						</div>
+			</c:when>
+	  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
+						<div class="ss_thumbnail">
+							<img <ssf:alt tag="alt.attachment"/> src="<html:imagesPath/>pics/attachment_icon.gif"/>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+										<ssf:menuLink 
+											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
+											
+											<ssf:param name="url" useBody="true">
+												<ssf:url webPath="viewFile" binderId="${entry._binderId}">
+													<ssf:param name="entryId" value="${entry._docId}"/>
+													<ssf:param name="fileId" value="${entry._fileID}"/>
+												</ssf:url>
+											</ssf:param>
+											
+									    	<c:out value="${entry._fileName}"/>
+										</ssf:menuLink>
+										
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+							<p><ssf:nlt tag="searchResult.label.entry" />:
+									<c:if test="${isDashboard == 'yes'}">
+										<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}">
+											<ssf:param name="entityType" value="${entry._entityType}"/><ssf:param name="newTab" value="1"/></ssf:url>"
+										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}', 'yes');"
+									</c:if>
+									<c:if test="${empty isDashboard || isDashboard == 'no'}">
+								     <a href="<ssf:url adapter="false" portletName="ss_forum" entryId="${entry._docId}" action="view_folder_entry" actionUrl="false" >
+						    			<ssf:param name="binderId" value="${entry._binderId}"/>
+	    	  							<ssf:param name="newTab" value="1"/>
+	    	  							</ssf:url>" 
+	    	  						</c:if>
+									class="ss_parentPointer">
+									<c:out value="${entry.title}"/>
+								</a>
+							</p>
+							<c:if test="${!empty entry.binderTitle}">
+								<ssf:nlt tag="searchResult.label.binder" />: 
+								<a 
+								<c:if test="${isDashboard == 'yes'}">
+									href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
+										<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
+									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
+								</c:if>
+								<c:if test="${empty isDashboard || isDashboard == 'no'}">
+							     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
+					    			<ssf:param name="binderId" value="${entry._binderId}"/>
+    	  							<ssf:param name="newTab" value="1"/>
+    	  							</ssf:url>" 
+    	  						</c:if>
+								class="ss_parentPointer">
+								${entry.binderTitle}
+								</a>
+							</c:if>
+							
+						</div>
+		    </c:when>
+
+			<c:when test="${entry._entityType == 'user' && entry._docType == 'entry'}">
+						<div class="ss_thumbnail">
+							<c:if test="${!empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
+							  src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
+												<ssf:param name="fileId" value="${entry._fileID}"/>
+											    <ssf:param name="viewType" value="thumbnail"/>
+											    </ssf:url>" />
+							</c:if>
+							<c:if test="${empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
+							  src="<html:imagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+
+									<ssf:menuLink 
+										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										
+										<ssf:param name="url" useBody="true">
+										
+											<c:if test="${isDashboard == 'yes'}">
+												<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+													binderId="${entry._principal.workspaceId}" entryId="${entry._principal.workspaceId}">
+													<ssf:param name="entityType" value="workspace" />
+													<ssf:param name="newTab" value="1"/>
+												</ssf:url>
+											</c:if>
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+												<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._principal.workspaceId}" 
+													entryId="${entry._docId}" action="view_ws_listing" actionUrl="false" >
+							    					<ssf:param name="binderId" value="${entry._binderId}"/>
+		    	  									<ssf:param name="newTab" value="1"/>
+		    	  								</ssf:url>
+											</c:if>
+											
+										</ssf:param>
+									
+									    <c:if test="${empty entry.title}">
+									    	(<ssf:nlt tag="entry.noTitle"/>)
+									    </c:if>
+								    	<c:out value="${entry.title}"/>
+									</ssf:menuLink>
+
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+							
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>
+
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						</div>
+			</c:when>
+			
+			<c:when test="${entry._entityType == 'user' && entry._docType == 'attachment'}">
+						<div class="ss_thumbnail">
+							<img <ssf:alt tag="alt.attachment"/> src="<html:imagesPath/>pics/attachment_icon.gif"/>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+									<ssf:menuLink 
+										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
+										
+										<ssf:param name="url" useBody="true">
+											<ssf:url webPath="viewFile" binderId="${entry._binderId}">
+												<ssf:param name="entryId" value="${entry._docId}"/>
+												<ssf:param name="fileId" value="${entry._fileID}"/>
+											</ssf:url>
+										</ssf:param>
+
+								    	<c:out value="${entry._fileName}"/>
+									</ssf:menuLink>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+							<p><ssf:nlt tag="searchResult.label.user" />:
+									<c:if test="${isDashboard == 'yes'}">
+										<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._principal.workspaceId}" entryId="${entry._principal.workspaceId}">
+											<ssf:param name="entityType" value="workspace" /><ssf:param name="newTab" value="1"/></ssf:url>"
+										onClick="return ss_gotoPermalink('${entry._principal.workspaceId}','${entry._principal.workspaceId}', 'workspace', '${portletNamespace}', 'yes');"
+									</c:if>
+									<c:if test="${empty isDashboard || isDashboard == 'no'}">
+								     <a href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._principal.workspaceId}" entryId="${entry._docId}" action="view_ws_listing" actionUrl="false" >
+						    			<ssf:param name="binderId" value="${entry._binderId}"/>
+	    	  							<ssf:param name="newTab" value="1"/>
+	    	  							</ssf:url>"
+	    	  						</c:if>
+									class="ss_parentPointer">
+									<c:out value="${entry.title}"/>
+								</a>
+							</p>
+						</div>
+			</c:when>
+			
+			<c:when test="${entry._entityType == 'group'}">
+						<div class="ss_thumbnail">
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="alt.group"/> src="<html:imagesPath/>pics/group_icon.gif"/></c:if>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+									<c:out value="${entry.title}"/>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						</div>
+			</c:when>
+		
+			<c:when test="${entry._entityType == 'folder'}">
+						<div class="ss_thumbnail">
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="general.type.folder"/> src="<html:imagesPath/>pics/folder_icon.gif"/></c:if>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+									<ssf:menuLink 
+										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										
+										<ssf:param name="url" useBody="true">
+										
+											<c:if test="${isDashboard == 'yes'}">
+												<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+													binderId="${entry._binderId}" entryId="${entry._docId}">
+													<ssf:param name="entityType" value="${entry._entityType}"/>
+													<ssf:param name="newTab" value="1"/>
+												</ssf:url>
+											</c:if>
+										
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+												<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" 
+													action="view_folder_listing" actionUrl="false" >
+					    							<ssf:param name="binderId" value="${entry._docId}"/>
+		  											<ssf:param name="newTab" value="1"/>
+		  										</ssf:url>
+	  										</c:if>
+	  										
+										</ssf:param>
+									
+									    <c:if test="${empty entry.title}">
+									    	(<ssf:nlt tag="entry.noTitle"/>)
+									    </c:if>
+								    	<c:out value="${entry.title}"/>
+									</ssf:menuLink>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>							
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						</div>
+		    </c:when>
+		    <c:when test="${entry._entityType == 'workspace'}">
+						<div class="ss_thumbnail">
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="general.type.workspace"/> src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+									<ssf:menuLink 
+										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										
+										<ssf:param name="url" useBody="true">
+										
+											<c:if test="${isDashboard == 'yes'}">
+												<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+													binderId="${entry._binderId}" entryId="${entry._docId}">
+													<ssf:param name="entityType" value="${entry._entityType}" />
+													<ssf:param name="newTab" value="1"/>
+												</ssf:url>
+											</c:if>
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+												<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" 
+								     				action="view_ws_listing" actionUrl="false" >
+						    						<ssf:param name="binderId" value="${entry._docId}"/>
+			  										<ssf:param name="newTab" value="1"/>
+			  									</ssf:url>
+		  									</c:if>
+		  									
+										</ssf:param>
+									
+									    <c:if test="${empty entry.title}">
+									    	(<ssf:nlt tag="entry.noTitle"/>)
+									    </c:if>
+								    	<c:out value="${entry.title}"/>
+									</ssf:menuLink>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>							
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						</div>
+		    </c:when>
+		    <c:when test="${entry._entityType == 'profiles'}">
+						<div class="ss_thumbnail">
+							<c:if test="${empty entry._fileID}"><img 
+							<ssf:alt tag="general.profiles"/> src="<html:imagesPath/>pics/workspace_icon.gif"/></c:if>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+									<ssf:menuLink 
+										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										
+										<ssf:param name="url" useBody="true">
+										
+											<c:if test="${isDashboard == 'yes'}">
+												<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+													binderId="${entry._binderId}" entryId="${entry._docId}">
+													<ssf:param name="entityType" value="${entry._entityType}" />
+													<ssf:param name="newTab" value="1"/>
+												</ssf:url>
+											</c:if>
+										
+											<c:if test="${empty isDashboard || isDashboard == 'no'}">
+												<ssf:url folderId="${entry._docId}" binderId="${entry._docId}" action="view_profile_listing">
+													<ssf:param name="newTab" value="1"/> 
+												</ssf:url>
+											</c:if>
+											
+										</ssf:param>
+									
+									    <c:if test="${empty entry.title}">
+									    	(<ssf:nlt tag="entry.noTitle"/>)
+									    </c:if>
+								    	<c:out value="${entry.title}"/>
+									</ssf:menuLink>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+							<p id="summary_${status.count}">
+								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>							
+							</p>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						</div>
+		    </c:when>
+		    <c:otherwise>
+		    </c:otherwise>
+			</c:choose>	
+			</li>
+		</c:forEach>
+		</ul>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
+	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+	namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
+</ssf:menuLink>		
