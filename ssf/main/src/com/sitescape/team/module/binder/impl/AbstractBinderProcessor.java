@@ -50,6 +50,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
@@ -183,6 +184,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	entryData.put("title", title);
 	        }
 	        if (Validator.isNull(title)) throw new TitleException("");
+    		if (Validator.containsPathCharacters(title)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{title}){};
 	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
@@ -467,6 +469,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
+	        		if (Validator.containsPathCharacters(newTitle)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{newTitle}){};
 	        		modifyBinder_mirrored(binder, oldTitle, newTitle, inputData);
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {

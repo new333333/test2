@@ -365,4 +365,8 @@ public class Validator {
 		return isNumber(PhoneNumber.strip(phoneNumber));
 	}
 
+	public static final String pathCharacterRegex = ".*[\\\\/*:?<>|\"].*";
+	public static boolean containsPathCharacters(String str) {
+		return str.matches(pathCharacterRegex);
+	}
 }
