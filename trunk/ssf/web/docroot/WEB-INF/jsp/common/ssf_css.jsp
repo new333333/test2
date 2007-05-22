@@ -284,15 +284,22 @@ body.ss_style_body {
   font-size: ${ss_style_font_size}; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
-  }
+}
 
-.ss_style_trans {
+.ss_style td, .ss_style th {
+  font-family: ${ss_style_font_family};
+  font-weight: inherit;
+  font-size: ${ss_style_font_size}; 
+  color: ${ss_style_text_color};
+}
+
+.ss_style_trans , .ss_style_trans td, .ss_style_trans th{
   font-family: ${ss_style_font_family};
   font-weight: inherit;
   font-size: ${ss_style_font_size}; 
   background-color: transparent;
   color: ${ss_style_text_color};
-  }
+}
   
 /* LINKS */
 .ss_style a {
@@ -492,6 +499,14 @@ div.ss_replies div.ss_entryDescription {
   font-size: 13px;
   color: ${ss_style_muted_foreground_color};
   }
+
+
+div.ss_workflow { 
+  border: 1px #666666 solid;
+  padding: 2px;
+}
+
+
 
 .ss_replies .ss_entryDescription {
   padding-left: 15px;
