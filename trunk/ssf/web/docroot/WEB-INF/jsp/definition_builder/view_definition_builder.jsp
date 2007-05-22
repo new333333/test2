@@ -745,12 +745,12 @@ function ss_saveUserGroupResults(s) {
 <c:if test="<%= !isIE %>">
 <applet CODE = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" 
   JAVA_CODEBASE = "<html:rootPath/>applets" 
-  ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
+  ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" 
   WIDTH = "100%" HEIGHT = "600">
 </c:if>
     <PARAM NAME = CODE VALUE = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" >
     <PARAM NAME = CODEBASE VALUE = "<html:rootPath/>applets" >
-    <PARAM NAME = ARCHIVE VALUE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" >
+    <PARAM NAME = ARCHIVE VALUE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" >
     <param name="type" value="application/x-java-applet;version=1.5">
     <param name="scriptable" value="false">
 	<param name="xmlGetUrl" value="<ssf:url 
