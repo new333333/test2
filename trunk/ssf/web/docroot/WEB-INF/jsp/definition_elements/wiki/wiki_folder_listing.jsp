@@ -144,10 +144,10 @@
 <%
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 	String seenStyle = "";
-	String seenStyleFine = "class=\"ss_finePrint\"";
+	String seenStyleFine = "ss_finePrint";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_unseen\"";
-		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
+		seenStyle = "ss_unseen";
+		seenStyleFine = "ss_unseen ss_fineprint";
 	}
 %>
 		    <tr><td><div style="padding:0px 4px 4px 8px;">
@@ -168,10 +168,10 @@
 		    </ssf:ifaccessible>
 		    
 		    ><c:if test="${empty entry1.title}"
-		    ><span id="folderLine_${entry1._docId}" class="ss_normal"
-		      style="" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
-		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_normal"
-		      style="" <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
+		    ><span id="folderLine_${entry1._docId}" class="ss_normal <%= seenStyleFine %>"
+		      >--<ssf:nlt tag="entry.noTitle"/>--</span
+		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_normal <%= seenStyle %>"
+		      ><c:out value="${entry1.title}"/></span></a>
 		    </td></tr>
 		  </c:forEach>
 		</table>
