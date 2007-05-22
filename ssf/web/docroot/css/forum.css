@@ -347,15 +347,6 @@ div.ss_widgetContent {
   text-align: left;
   }
 
-div.ss_workflow { 
-  border: 1px #666666 solid;
-  padding: 2px;
-  background:inherit !important;
-  }
-.ss_workflow table { 
-  background:inherit !important;
-  }
-
 .ss_dragable, .ss_dragableLink {
   position: relative;
   }
