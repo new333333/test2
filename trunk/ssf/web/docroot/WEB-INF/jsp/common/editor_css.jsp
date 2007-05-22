@@ -17,7 +17,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 body {
   font-family: Lucida Sans Unicode,Arial,sans-serif;
-  font-size: 12px;
+  font-size: 13px;
 }
  
 table tr td { border: 1px solid #BBBBBB; }
