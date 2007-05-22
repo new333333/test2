@@ -25,21 +25,20 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 
 <table width="100%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
-	<td width="40%" valign="top">
+	<td valign="top">
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}<portlet:namespace/>" 
 		class="ss_style ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
 	</td>
 
-	<td valign="top">
+	<td valign="top" width="100%" align="left">
   <ssHelpSpot helpId="tools/attachments" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.attachments"/>"></ssHelpSpot>
 	<ssf:ifnotaccessible>
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 			<% if (isAppletSupported) { %>
-				<a class="ss_linkButton ss_tinyControl" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;">
-					<ssf:nlt tag="entry.AttachFilesByApplet"/>
-				</a>
+				<a id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;"
+				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>"><img class="ss_icon_link" src="<html:imagesPath/>icons/upload_applet.gif"/></a>
 			<% } %>
 		</c:if>
 	
@@ -48,29 +47,25 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	<% if (com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
 		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-		<a class="ss_linkButton ss_tinyControl" 
+		<a class="" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>" src="<html:imagesPath/>icons/upload_webdav.gif"/>
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		  href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		  target="_blank">
-			<ssf:nlt tag="entry.AttachFilesByWebDav"/>
-		</a>		
+		  target="_blank"><img class="ss_icon_link"</a>		
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
-		<a class="ss_linkButton ss_tinyControl" 
+		<a class=""  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssWebDavURL}" href="${ssWebDavURL}" 
-		  target="_blank">
-			<ssf:nlt tag="entry.AttachFilesByWebDav"/>
-		</a>		
+		  target="_blank"
+		  ><img class="ss_icon_link" src="<html:imagesPath/>icons/upload_webdav.gif"/></a>		
 	</c:if>
 	<% } %>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 
-		<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;">
-			<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
-		</a>
+		<a class="" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<portlet:namespace/>'); return false;"
+		  ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_browser.gif"/></a>
 	
 	</c:if>
 	
@@ -82,11 +77,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	</td>	
 </tr>
 <tr>
-	<td colspan="5" width="100%">
-		<table width="100%" cellpadding="0" cellspacing="0">
-			<tr>
-				<td width="40%"></td>
-				<td width="60%">
+	<td style="padding-left: 30px;" colspan="2" align="left" width="100%">
 					<div id="ss_div_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '<portlet:namespace />'); return false;"><img 
@@ -104,9 +95,6 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 							name="ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>" 
 							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" height="75%" width="100%">xxx</iframe>
 					</div>
-				</td>
-			</tr>
-		</table>
 	</td>	
 </tr>
 </table>

@@ -320,7 +320,9 @@ div.ss_entryContent a {
   text-decoration:underline;
 }
 
-
+a img.ss_icon_link {
+  border: 0px solid black;
+}
 
 .ss_largestprint {
   font-size: ${ss_style_font_largestprint} !important; 
