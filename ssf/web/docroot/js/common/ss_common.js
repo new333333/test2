@@ -2196,15 +2196,17 @@ var ss_helpSystem = {
 	    this.showHelpPanel(id, panelId, x, y);
 	},
 
-	showInlineHelpSpotInfo : function(helpSpot, jspId, tagId, xAlignment, yAlignment) {
+	showInlineHelpSpotInfo : function(helpSpot, jspId, tagId, dx, dy, xAlignment, yAlignment) {
+		if (dx == "") dx = 0;
+		if (dy == "") dy = 0;
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
 		//ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
 		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
-		    var x = parseInt(left + 3);
-		    var y = parseInt(top + 3);
+		    var x = parseInt(left + 3 + parseInt(dx));
+		    var y = parseInt(top + 3 + parseInt(dy));
 			this.showHelpPanel(jspId, "ss_help_panel", x, y, xAlignment, yAlignment, tagId)
 		}
 	},
@@ -2213,7 +2215,7 @@ var ss_helpSystem = {
 		if (tagId == null) tagId = "";
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
-		//ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
+		ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
 		if (ss_helpSystemRequestInProgress == 1) {
 			ss_helpSystemQueuedId = id;
 			ss_helpSystemQueuedPanelId = panelId;

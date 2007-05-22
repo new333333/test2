@@ -165,7 +165,7 @@ public class ViewController  extends SAbstractController {
 			Workspace binder = getWorkspaceModule().getWorkspace();
 			Document wsTree;
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, this), 0);
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, this), 1);
 			} else {
 				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, this), 1);									
 			}
