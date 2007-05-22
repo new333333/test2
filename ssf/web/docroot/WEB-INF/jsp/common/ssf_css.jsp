@@ -1890,9 +1890,15 @@ div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global
 	position: relative;
 }
 
-.ss_global_toolbar_help {
+div.ss_global_toolbar_help {
 	text-align: center;
-/*	font-weight: bold;  */
+    <c:if test="<%= !isIE %>">
+    padding-top: 15px;
+    </c:if>
+}
+
+div#ss_navbarHelpButton {
+    margin-left: 5px;
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
