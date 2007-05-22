@@ -84,9 +84,11 @@ import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
+import com.sitescape.util.Validator;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.ObjectKeys;
@@ -704,7 +706,34 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void copyFiles(Binder binder, DefinableEntity entity, 
 			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
-		// TODO 
+		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
+    	List atts = entity.getFileAttachments();
+    	FileUploadItem fui;
+    	FileAttachment fa;
+    	String name;
+    	SimpleMultipartFile file;
+    	for(int i = 0; i < atts.size(); i++) {
+    		fa = (FileAttachment) atts.get(i);
+    		name = fa.getName(); 
+    		int type = FileUploadItem.TYPE_FILE;
+    		if(Validator.isNull(name))
+    			type = FileUploadItem.TYPE_ATTACHMENT;
+    		file = new SimpleMultipartFile(fa.getFileItem().getName(),
+    				readFile(binder, entity, fa));
+    		fui = new FileUploadItem(type, name, file, fa.getRepositoryName());
+    		fuis.add(fui);
+    	}
+    	try {	
+    		writeFiles(destBinder, destEntity, fuis, null);
+    	}
+    	finally {
+	    	for(FileUploadItem f : fuis) {
+	    		try {
+	    			f.delete();
+	    		}
+	    		catch(IOException ignore) {}
+	    	}
+    	}
 	}
 
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
