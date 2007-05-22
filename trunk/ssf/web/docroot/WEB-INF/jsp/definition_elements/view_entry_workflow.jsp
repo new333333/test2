@@ -44,7 +44,13 @@
 	        text="Transition to:"/></b>
 	      </td>
 	      <td valign="top" style="padding:0px 0px 4px 4px;">
-		  <form class="ss_style ss_form" method="post" action="" 
+		  <form class="ss_style ss_form" method="post" 
+		    action="<ssf:url adapter="true" 
+				        portletName="ss_forum" 
+				        folderId="${ssDefinitionEntry.parentFolder.id}" 
+						action="view_folder_entry" 
+						entryId="${ssDefinitionEntry.id}" 
+						actionUrl="true" />" 
 		    style="display:inline; background: inherit !important;">
 		  <input type="hidden" name="tokenId" value="${workflow.id}">
 		  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
@@ -67,7 +73,13 @@
 	      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;"></td>
 	      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;">
 		  <c:forEach var="question" items="${ssWorkflowQuestions[workflow.id]}">
-		    <form class="ss_style ss_form" method="post" action="" 
+		    <form class="ss_style ss_form" method="post" 
+		      action="<ssf:url adapter="true" 
+				        portletName="ss_forum" 
+				        folderId="${ssDefinitionEntry.parentFolder.id}" 
+						action="view_folder_entry" 
+						entryId="${ssDefinitionEntry.id}" 
+						actionUrl="true" />" 
 		      style="display:inline; background: inherit !important;">
 		    <input type="hidden" name="tokenId" value="${workflow.id}">
 		    <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
@@ -97,7 +109,13 @@
 			        <b><ssf:nlt tag="workflow.transitionTo" 
 			        text="Transition to:"/></b></td>
 			      <td valign="top" style="padding:0px 0px 4px 4px;">
-				  <form class="ss_style ss_form" method="post" action="" 
+				  <form class="ss_style ss_form" method="post" 
+				    action="<ssf:url adapter="true" 
+				        portletName="ss_forum" 
+				        folderId="${ssDefinitionEntry.parentFolder.id}" 
+						action="view_folder_entry" 
+						entryId="${ssDefinitionEntry.id}" 
+						actionUrl="true" />" 
 				    style="display:inline; background: inherit !important;">
 				  <input type="hidden" name="tokenId" value="${workflow2.id}">
 				  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
@@ -119,7 +137,13 @@
 			      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;"></td>
 			      <td valign="top" colspan="2" style="padding:0px 0px 4px 30px;">
 				  <c:forEach var="question" items="${ssWorkflowQuestions[workflow.id]}">
-				    <form class="ss_style ss_form" method="post" action="" 
+				    <form class="ss_style ss_form" method="post" 
+				      action="<ssf:url adapter="true" 
+				        portletName="ss_forum" 
+				        folderId="${ssDefinitionEntry.parentFolder.id}" 
+						action="view_folder_entry" 
+						entryId="${ssDefinitionEntry.id}" 
+						actionUrl="true" />" 
 				      style="display:inline; background: inherit !important;">
 				    <input type="hidden" name="tokenId" value="${workflow.id}">
 				    <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
