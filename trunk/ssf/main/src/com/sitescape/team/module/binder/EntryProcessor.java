@@ -19,6 +19,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
@@ -39,6 +40,7 @@ public interface EntryProcessor extends BinderProcessor {
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Boolean filesFromApplet)
 		throws WriteFilesException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition);   public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource);
+    public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
     public Entry getEntry(Binder binder, Long entryId);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)

@@ -21,13 +21,18 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	 */
 	public boolean testAccess(FolderEntry entry, String operation) {
 		if ("addEntryWorkflow".equals(operation)) return false;
+		if ("deleteEntryWorkflow".equals(operation)) return false;
 		return super.testAccess(entry, operation);
 	}
 
    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) {
 		throw new UnsupportedOperationException("Workflow is not supported in the base edition");
     }
-    public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+   public void deleteEntryWorkflow(Long parentFolderId, Long entryId, String definitionId) 
+   			throws AccessControlException {
+	   
+   }
+   public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
 		return false;
     }
 	

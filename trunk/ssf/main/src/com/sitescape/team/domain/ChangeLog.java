@@ -39,6 +39,7 @@ public class ChangeLog {
 	public static final String ADDWORKFLOWRESPONSE="addWorkflowResponse";
 	public static final String WORKFLOWTIMEOUT="timeoutWorkflow";
 	public static final String MODIFYWORKFLOWSTATEONREPLY="modifyWorkflowStateOnReply";
+	public static final String ENDWORKFLOW="endWorkflow";
 	public static final String ADDBINDER="addBinder";
 	public static final String MODIFYBINDER="modifyBinder";
 	public static final String DELETEBINDER="deleteBinder";
