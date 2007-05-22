@@ -116,6 +116,8 @@
 </c:if>
 
 </div>
+
+<c:if test="${!empty ssUsers || ss_windowState == 'maximized'}">
 <script type="text/javascript">
 function ${ssNamespace}_getPresence (timeout) {
 	ss_setupStatusMessageDiv();
@@ -148,5 +150,5 @@ ${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300
 <input type="hidden" name="ssNamespace" value="${ssNamespace}">
 <input type="hidden" name="ssComponentId" value="${ssComponentId}">
 </form>
-
+</c:if>
 </div>
