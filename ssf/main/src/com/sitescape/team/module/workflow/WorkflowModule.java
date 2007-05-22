@@ -25,10 +25,22 @@ public interface WorkflowModule {
 	 */
 	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef);
 	/**
-	 * Delete workflow associated with an entry
+	 * Delete all workflows associated with an entry
 	 * @param entry
 	 */
 	public void deleteEntryWorkflow(WorkflowSupport entry);
+	/**
+	 * Delete a specific workflow token
+	 * @param wEntry
+	 * @param state
+	 */
+	public void deleteEntryWorkflow(WorkflowSupport wEntry, WorkflowState state);
+	/**
+	 * Delete all tokens associated with a definition
+	 * @param wEntry
+	 * @param def
+	 */
+	public void deleteEntryWorkflow(WorkflowSupport wEntry, Definition def);
 	/**
 	 * Delete a process definition by name.  
 	 * Use use UUID as the name

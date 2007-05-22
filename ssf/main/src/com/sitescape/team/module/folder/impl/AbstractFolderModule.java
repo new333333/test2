@@ -204,10 +204,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			AccessUtils.modifyCheck(entry);   
 		} else if ("addEntryWorkflow".equals(operation)) {
 			AccessUtils.modifyCheck(entry);   
+		} else if ("modifyEntryWorkflow".equals(operation)) {
+			AccessUtils.modifyCheck(entry);   
 		} else if ("reserveEntry".equals(operation)) {
 			AccessUtils.modifyCheck(entry);   		
 		} else if ("moveEntry".equals(operation)) {
 			AccessUtils.modifyCheck(entry);
+		} else if ("deleteEntryWorkflow".equals(operation)) {
+			AccessUtils.modifyCheck(entry);			
 	    } else if ("overrideReserveEntry".equals(operation)) {
 	    	AccessUtils.overrideReserveEntryCheck(entry);
 	    } else {

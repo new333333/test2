@@ -63,14 +63,12 @@ public class ModifyEntryController extends SAbstractController {
 			
 		} else if (op.equals(WebKeys.OPERATION_START_WORKFLOW)) {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
-			FolderEntry entry  = getFolderModule().getEntry(folderId, entryId);
-    		Definition wfDef = DefinitionHelper.getDefinition(workflowType);
-    		if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
+    		getFolderModule().addEntryWorkflow(folderId, entryId, workflowType);
 			setupViewEntry(response, folderId, entryId);
 			
 		} else if (op.equals(WebKeys.OPERATION_STOP_WORKFLOW)) {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
-			FolderEntry entry  = getFolderModule().getEntry(folderId, entryId);
+    		getFolderModule().deleteEntryWorkflow(folderId, entryId, workflowType);
 			setupViewEntry(response, folderId, entryId);
 			
 		} else if (formData.containsKey("okBtn")) {

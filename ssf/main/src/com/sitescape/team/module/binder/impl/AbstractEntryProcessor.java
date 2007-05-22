@@ -851,6 +851,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		processChangeLog(entry, ChangeLog.STARTWORKFLOW);
   		indexEntry(entry);
      }
+     //***********************************************************************************************************
+     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+ 		if (!(entry instanceof WorkflowSupport)) return;
+  		WorkflowSupport wEntry = (WorkflowSupport)entry;
+  		//set up version for all loggin
+  		entry.incrLogVersion();
+  		
+  		getWorkflowModule().deleteEntryWorkflow(wEntry, definition);
+  		processChangeLog(entry, ChangeLog.ENDWORKFLOW);
+   		indexEntry(entry);
+     }
    //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
 

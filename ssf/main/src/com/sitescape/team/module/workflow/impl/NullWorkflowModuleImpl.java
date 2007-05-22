@@ -22,16 +22,19 @@ public class NullWorkflowModuleImpl extends CommonDependencyInjection implements
    public void startScheduledJobs(Workspace zone) {	   
     }
 
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef) {
+	}
+	public void deleteEntryWorkflow(WorkflowSupport entry) {
+	}	
+	public void deleteEntryWorkflow(WorkflowSupport wEntry, WorkflowState state) {
+	}
+	public void deleteEntryWorkflow(WorkflowSupport wEntry, Definition def)  {
+	}
 	public void deleteProcessDefinition(String name) {
 	};
-
 	//Routine to build (or modify) a workflow process definition from a Definition
 	public void modifyProcessDefinition(String definitionName, Definition def) {		
 	}
-
-	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef) {
-	}
-	
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
 	}
 
@@ -43,8 +46,6 @@ public class NullWorkflowModuleImpl extends CommonDependencyInjection implements
 	}
 	public boolean modifyWorkflowStateOnReply(WorkflowSupport entry) {
 		return false;	
-	}	
-	public void deleteEntryWorkflow(WorkflowSupport entry) {
 	}	
 	public void processTimers() {
 		
