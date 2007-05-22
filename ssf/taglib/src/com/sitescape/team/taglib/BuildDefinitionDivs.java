@@ -677,7 +677,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						List propertyNameElements = (List) properties.selectNodes("property[@name='"+propertyId+"']");
 						if (propertyNameElements != null) {
 							for (int i = 0; i < propertyNameElements.size(); i++) {
-								String propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
+								String propertyValue = "";
+								if (((Element)propertyNameElements.get(i)).hasContent()) {
+									propertyValue = ((Element)propertyNameElements.get(i)).getText();
+								} else {
+									propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
+								}
 								if (!propertyValue.equals("")) {
 									//Add this value to the list so it can be used to set "selected" or "checked" values later
 									propertyValues.add(propertyValue);
@@ -694,7 +699,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
 							sb.append("\n<br/>\n");
 						}
-						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+propertyValue0+"</textarea>\n<br/>\n");
+						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+Html.formatTo(propertyValue0)+"</textarea>\n<br/>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
 						String checked = "";
