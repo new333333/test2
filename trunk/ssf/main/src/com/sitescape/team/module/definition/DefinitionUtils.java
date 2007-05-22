@@ -75,6 +75,15 @@ public class DefinitionUtils {
 	if (viewItem == null) return null;
 	return DefinitionUtils.getPropertyValue(viewItem, "type");
    }
-        
+   public static Element getItemByPropertyName(Element item, String itemType, String nameValue) {
+		//Find the item in the definition
+		Element propertyEle = (Element) item.selectSingleNode(
+				"//item[@name='" + itemType + "']/properties/property[@name='name' and @value='"+nameValue+"']");
+		if (propertyEle != null) {
+			return propertyEle.getParent().getParent();
+		}
+		return null;
+
+   }
     
 }
