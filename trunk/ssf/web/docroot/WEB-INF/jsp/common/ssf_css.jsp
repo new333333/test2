@@ -188,7 +188,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
     <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>	
     
+<%  //LINK COLORS   %>
+	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
+	<c:set var="ss_style_link_visited_color" value="#663366" scope="request"/>	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
+	
+<%  //search    %>
+	
+	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
+	<c:set var="ss_style_link_visited_color" value="#663366" scope="request"/>
+	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
+	
+<%  //breadcrumbs   %>
+	
 <% //METADATA COLORS %>
+
     <c:set var="ss_style_metadata_color" value="#666666" scope="request"/>   
     
 <% //MUTED %>
