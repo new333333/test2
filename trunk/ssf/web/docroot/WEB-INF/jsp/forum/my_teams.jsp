@@ -27,10 +27,10 @@
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
 <ssf:ifnotaccessible>
-  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '', '1')"
+  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '${ss_namespace}', '1')"
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-  onClick="return parent.ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '', '1')"
+  onClick="return parent.ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '${ss_namespace}', '1')"
 </ssf:ifaccessible>
 >${binder.title}</a><br/>
 </c:forEach>

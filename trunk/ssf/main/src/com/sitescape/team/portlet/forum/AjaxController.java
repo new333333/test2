@@ -1598,6 +1598,8 @@ public class AjaxController  extends SAbstractController {
 	User user = RequestContextHolder.getRequestContext().getUser();
 	List myTeams = getAdminModule().getTeamMemberships(user.getId());
 	model.put(WebKeys.MY_TEAMS, myTeams);
+	String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+	model.put(WebKeys.NAMESPACE, namespace);
 	return new ModelAndView("forum/my_teams", model);
 }
 
