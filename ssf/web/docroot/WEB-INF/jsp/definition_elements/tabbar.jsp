@@ -12,6 +12,8 @@
 %>
 <% // Tabs %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="com.sitescape.team.util.ConfigPropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="numTabs" value="0"/>
 <c:forEach var="tab" items="${ss_tabs.tablist}">
@@ -39,6 +41,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 <tbody>
 <tr id="ss_tabbar_tr">
 <c:forEach var="tab" items="${ss_tabs.tablist}">
+<jsp:useBean id="tab" type="java.util.HashMap" />
   <c:set var="active" value=""/>
   <c:if test="${ss_tabs.current_tab == tab.tabId}">
     <c:set var="active" value="_active"/>
@@ -114,7 +117,21 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		   <img border="0" style="position:relative; left: 0px; vertical-align: bottom;" 
 		     <ssf:alt/> src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
-		   <span>${tab.title}</span></a>
+<%
+	// Truncate long tab titles to 20 characters
+	int maxTitle = 20;
+
+	try {
+		maxTitle = SPropsUtil.getInt("tabs.max.title");
+	} catch (ConfigPropertyNotFoundException e) {
+	}
+
+	String tabTitle = (String) tab.get("title");
+	if (tabTitle.length() > maxTitle) {
+		tabTitle = tabTitle.substring(0, maxTitle) + "...";
+	}
+%>	
+		   <span><%= tabTitle %></span></a>
 	<c:if test="${numTabs > 1}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
 		  <img border="0" style="position:relative; vertical-align: bottom;" 
