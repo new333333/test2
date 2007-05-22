@@ -23,13 +23,13 @@
       <span><ssf:nlt tag="welcome.quickTipsOnUsage"/></span></a>
   </li>
   <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore QuickStart User Guide.pdf"
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore User Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.quickStartUserGuide"/></span></a>
   </li>
 <c:if test="${ss_showInstallationGuide}">
   <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation Guide.pdf"
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.installationGuide"/></span></a>
   </li>
