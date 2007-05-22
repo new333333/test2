@@ -16,27 +16,25 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span>
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.intro.explainIcon"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <ul style="list-style-type:disc;">
 
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.pictures"/></li>
+<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.pictures"/></li>
 
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.contactInfo"/></li>
+<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.contactInfo"/></li>
 
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.blog"/></li>
+<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.blog"/></li>
 
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.task"/></li>
+<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.task"/></li>
 
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.guestbook"/></li>
+<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.guestbook"/></li>
 
-<li><ssf:nlt tag="help.myWorkspaceIcon.intro.listItem.more"/></li>
+<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.more"/></li>
 
 </ul>
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.intro.alterAccess"/></p>
-
-<p><ssf:nlt tag="help.myWorkspaceIcon.intro.ifNew"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.content.alterAccess"/></p>
 
 </div>
 
