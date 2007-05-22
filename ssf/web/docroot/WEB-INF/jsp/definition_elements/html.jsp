@@ -11,8 +11,9 @@
  */
 %>
 <% // html %>
-<c:out value="${property_htmlTop}"/>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:out value="${property_htmlTop}" escapeXml="false"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
-<c:out value="${property_htmlBottom}"/>
+<c:out value="${property_htmlBottom}" escapeXml="false"/>
