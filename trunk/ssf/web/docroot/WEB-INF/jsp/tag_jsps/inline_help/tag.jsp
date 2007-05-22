@@ -27,5 +27,5 @@
   <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
-<a href="javascript: ;" onClick="ss_helpSystem.showInlineHelpSpotInfo(this, '${jsp}', '${tag}', 10, 10);return false;"
+<a href="javascript: ;" onClick="ss_helpSystem.showInlineHelpSpotInfo(this, '${jsp}', '${tag}', 0, 0, 10, 10);return false;"
 ><img border="0" alt="${alt}" src="<html:imagesPath/>pics/sym_s_help.gif"/></a>

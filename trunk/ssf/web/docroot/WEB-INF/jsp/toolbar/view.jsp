@@ -78,7 +78,7 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 
 <table width="100%">
 <tr>
-<td valign="top">
+<td valign="top" width="50%">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" 
   title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
@@ -89,7 +89,7 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 	<ssf:tree treeName="<%= wsTreeName %>" 
 	  topId="${ssWsDomTreeBinderId}" 
 	  treeDocument="<%= ssWsDomTree %>"  
-	  rootOpen="false"
+	  rootOpen="true"
 	  showIdRoutine="<%= wsTreeName + "_showId" %>"
 	   />
 </c:when>
@@ -106,11 +106,31 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 </div>
 </ssHelpSpot>
 </td>
-<td valign="top">
+<td valign="top" width="30%">
+<div style="padding-top:10px;">
 <a href="javascript: ;" onClick="ss_showMyTeams<portlet:namespace/>();return false;">
   <ssf:nlt tag="navigation.myTeams"/>
 </a>
 <div id="<portlet:namespace/>ss_myTeams"></div>
+</div>
+</td>
+<td valign="top" width="20%">
+<div style="padding-top:10px;">
+<c:if test="${empty ss_inlineHelpDivIdNumber}">
+  <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
+</c:if>
+<c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
+<a href="javascript: ;" 
+  onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'navigation_bar/create_team_button', '', 0, 20, '', '');return false;"
+><ssf:nlt tag="navigation.createTeam"/></a>
+<div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
+<div align="right"><a href="#" 
+  onClick="ss_hideDivNone('<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
+  border="0" alt="<ssf:nlt tag="button.close"/>" 
+  src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>
+<div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}"></div>
+</div>
+</div>
 </td>
 </tr>
 </table>
