@@ -10,7 +10,7 @@
  */
 package com.sitescape.team.util;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -32,7 +32,7 @@ public class SimpleProfiler {
     private long beginTime; // time in ms
     
     public SimpleProfiler() {
-    	events = new HashMap<String,Event>();
+    	events = new TreeMap<String,Event>();
     	beginTime = System.currentTimeMillis();
     }
     public SimpleProfiler(String title) {
