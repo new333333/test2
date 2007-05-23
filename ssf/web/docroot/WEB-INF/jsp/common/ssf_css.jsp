@@ -934,7 +934,7 @@ div.ss_blog_sidebar_container {
 <c:if test="${ss_sidebar_side == 'left'}">
 
 div.ss_blog_content_container1 {
-	margin-left: -188px;
+	margin-left: -190px;
 	float: right;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
 	background-position: left;
@@ -946,7 +946,7 @@ div.ss_blog_content_container2 {
 
 div.ss_blog_sidebar_container {
 	float: left;
-	padding-right: 5px;
+	padding-right: 3px;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
 	background-position: left;
 }
@@ -961,7 +961,7 @@ div.ss_blog_content {
 <c:if test="${ss_sidebar_side == 'right'}">
 
 div.ss_blog_content_container1 {
-	margin-right: -188px;
+	margin-right: -190px;
 	float: left;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
 	background-position: right;
