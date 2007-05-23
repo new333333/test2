@@ -16,9 +16,9 @@
 <table class="ss_tasks_list">
 	<tr>
 		<th><ssf:nlt tag="task.dueDate"/></th>
-		<th><ssf:nlt tag="task.status"/></th>
-		<th><ssf:nlt tag="task.title"/></th>
 		<th><ssf:nlt tag="task.priority"/></th>
+		<th><ssf:nlt tag="task.title"/></th>
+		<th><ssf:nlt tag="task.status"/></th>
 		<th><ssf:nlt tag="task.assigned"/></th>
 		<th><ssf:nlt tag="task.done"/></th>		
 	</tr>
@@ -30,18 +30,17 @@
 				  timeStyle="short" dateStyle="short" />
 		</td>
 		<td>
-			<c:if test="${! empty entry.status}">
-				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
-					<img src="<html:imagesPath/>icons/status_${status.key}.jpg"
-						<c:if test="${entry.status == status.key}">
-						class="ss_status_active" 
+			<c:if test="${! empty entry.priority}">
+				<c:forEach var="prio" items="${ssEntryDefinitionElementData.priority.values}">
+					<img 
+						<c:if test="${entry.priority == prio.key}">
+						src="<html:imagesPath/>icons/prio_${prio.key}.gif" class="ss_prio_active" 
 						</c:if>
-						<c:if test="${entry.status != status.key}">
-						class="ss_status_inactive"
+						<c:if test="${entry.priority != prio.key}">
+						src="<html:imagesPath/>icons/prio_${prio.key}_f3.gif" class="ss_prio_inactive"
 						</c:if>
 					>
 				</c:forEach>
-				
 			</c:if>
 		</td>
 		<td>
@@ -64,17 +63,18 @@
 			</span>
 		</td>
 		<td>
-			<c:if test="${! empty entry.priority}">
-				<c:forEach var="prio" items="${ssEntryDefinitionElementData.priority.values}">
-					<img src="<html:imagesPath/>icons/prio_${prio.key}.jpg"
-						<c:if test="${entry.priority == prio.key}">
-						class="ss_prio_active" 
+			<c:if test="${! empty entry.status}">
+				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
+					<img 
+						<c:if test="${entry.status == status.key}">
+						src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_status_active" 
 						</c:if>
-						<c:if test="${entry.priority != prio.key}">
-						class="ss_prio_inactive"
+						<c:if test="${entry.status != status.key}">
+						src="<html:imagesPath/>icons/status_${status.key}_f3.gif" class="ss_status_inactive"
 						</c:if>
 					>
 				</c:forEach>
+				
 			</c:if>
 		</td>
 		<td>
