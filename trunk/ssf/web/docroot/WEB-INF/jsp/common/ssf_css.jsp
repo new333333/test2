@@ -4146,10 +4146,10 @@ table.ss_tasks_list ul, table.ss_tasks_list li {
 	padding:0px;
 	border:0px;
 }
-img.ss_prio_active { border:1px solid #666666;}
-img.ss_prio_inactive {border:1px solid #ffffff;}
-img.ss_status_active { border:1px solid #666666;}
-img.ss_status_inactive {border:1px solid #ffffff;}
+img.ss_prio_active {}
+img.ss_prio_inactive {}
+img.ss_status_active {}
+img.ss_status_inactive {}
 
 div.ss_c_ {
 	border: 1px solid #afc8e3;
