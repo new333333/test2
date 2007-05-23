@@ -12,6 +12,7 @@
 %>
 <% //Title form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test='${ssBinderMarker}'>
  <script type="text/javascript">
 var ss_checkTitleUrl = "<ssf:url 
 	adapter="true" 
@@ -22,6 +23,7 @@ var ss_checkTitleUrl = "<ssf:url
 	</ssf:url>";
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
  </script>
+</c:if>
 
 <c:choose>
   <c:when test="${ss_formViewStyle == 'guestbook'}">
