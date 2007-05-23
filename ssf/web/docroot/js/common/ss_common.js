@@ -2848,13 +2848,15 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 var editClicked = "false";
 function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, strURLValue) {
 
+	var escapedURL = escape(strURLValue);
+
 	var url = ss_baseAjaxRequestWithOS;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "open_webdav_file");
 	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
 	url = ss_replaceSubStr(url, "ssOSPlaceHolder", OSInfo);
-    url = url + "&ssEntryAttachmentURL="+strURLValue;
+    url = url + "&ssEntryAttachmentURL="+escapedURL;
 
 	var divId = "ss_div_fileopen" + entryId + namespace;
 	var divObj = document.getElementById(divId);
