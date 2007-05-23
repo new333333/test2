@@ -53,7 +53,7 @@
   </c:when>
 
   <c:otherwise>
-	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
+	<form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
 	  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
