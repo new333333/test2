@@ -77,13 +77,21 @@ public class EntryVersionController extends  SAbstractController {
 				Map attributesMap = (Map) entityTypeMap.get("attributes");
 				if (attributesMap.get("logVersion").equals(item1)) {
 					Map attributeMap = (Map) entityTypeMap.get("attribute");
-					title1 = ((String)attributeMap.get("title")).trim();
-					description1 = ((String)attributeMap.get("description")).trim();
+					title1 = ((String)attributeMap.get("title"));
+					if (title1 == null) title1 = "";
+					title1 = title1.trim();
+					description1 = ((String)attributeMap.get("description"));
+					if (description1 == null) description1 = "";
+					description1 = description1.trim();
 				}
 				if (attributesMap.get("logVersion").equals(item2)) {
 					Map attributeMap = (Map) entityTypeMap.get("attribute");
-					title2 = ((String)attributeMap.get("title")).trim();
-					description2 = ((String)attributeMap.get("description")).trim();
+					title2 = ((String)attributeMap.get("title"));
+					if (title2 == null) title2 = "";
+					title2 = title2.trim();
+					description2 = ((String)attributeMap.get("description"));
+					if (description2 == null) description2 = "";
+					description2 = description2.trim();
 				}
 			}
 			StringDiffUtil titleDiff = new StringDiffUtil();
