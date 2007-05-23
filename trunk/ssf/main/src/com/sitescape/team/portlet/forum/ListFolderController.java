@@ -97,6 +97,36 @@ import com.sitescape.util.Validator;
  */
 public class ListFolderController extends  SAbstractController {
 	
+	public static final String[] monthNames = { 
+		NLT.get("calendar.january"),
+		NLT.get("calendar.february"),
+		NLT.get("calendar.march"),
+		NLT.get("calendar.april"),
+		NLT.get("calendar.may"),
+		NLT.get("calendar.june"),
+		NLT.get("calendar.july"),
+		NLT.get("calendar.august"),
+		NLT.get("calendar.september"),
+		NLT.get("calendar.october"),
+		NLT.get("calendar.november"),
+		NLT.get("calendar.december")
+	};
+
+public static final String[] monthNamesShort = { 
+	NLT.get("calendar.abbreviation.january"),
+	NLT.get("calendar.abbreviation.february"),
+	NLT.get("calendar.abbreviation.march"),
+	NLT.get("calendar.abbreviation.april"),
+	NLT.get("calendar.abbreviation.may"),
+	NLT.get("calendar.abbreviation.june"),
+	NLT.get("calendar.abbreviation.july"),
+	NLT.get("calendar.abbreviation.august"),
+	NLT.get("calendar.abbreviation.september"),
+	NLT.get("calendar.abbreviation.october"),
+	NLT.get("calendar.abbreviation.november"),
+	NLT.get("calendar.abbreviation.december")
+};
+
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
@@ -330,6 +360,7 @@ public class ListFolderController extends  SAbstractController {
 		//Checking the Sort Order that has been set. If not using the Default Sort Order
 		initSortOrder(request, userFolderProperties, tabOptions, options, viewType);
 
+		setupUrlCalendar(request, tabOptions, options, model);
 		setupUrlTags(request, tabOptions, options, model);
 
 		String view = null;
@@ -479,6 +510,69 @@ public class ListFolderController extends  SAbstractController {
 		
 	}
 	
+	protected void setupUrlCalendar(RenderRequest request, Map tabOptions, Map options, Map model) {
+		// TODO: is this in use?
+		
+		//See if the url contains an ending date
+		Calendar cal = Calendar.getInstance(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
+		String day = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_DAY, "");
+		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
+		String year = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_YEAR, "");
+		if (!day.equals("") || !month.equals("") || !year.equals("")) {
+			String strDate = DateHelper.getDateStringFromDMY(day, month, year);
+			options.put(ObjectKeys.SEARCH_END_DATE, strDate);
+			tabOptions.put(Tabs.END_DATE, strDate);
+			tabOptions.put(Tabs.YEAR_MONTH, "");
+			tabOptions.put(Tabs.TAG_COMMUNITY, "");
+			tabOptions.put(Tabs.TAG_PERSONAL, "");	
+			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
+			model.put(WebKeys.URL_DATE_DAY, day);
+			model.put(WebKeys.URL_DATE_MONTH, month);
+			model.put(WebKeys.URL_DATE_YEAR, year);
+		}
+		else if (tabOptions.containsKey(Tabs.END_DATE)) {
+			String strEndDate = (String) tabOptions.get(Tabs.END_DATE);
+			if (strEndDate != null && !"".equals(strEndDate)) {
+				options.put(ObjectKeys.SEARCH_END_DATE, strEndDate);
+				model.put(WebKeys.URL_DATE_DAY, day);
+				model.put(WebKeys.URL_DATE_MONTH, month);
+				model.put(WebKeys.URL_DATE_YEAR, year);
+			}
+		}
+		
+		//See if this is a request for a specific year/month
+		String yearMonth = PortletRequestUtils.getStringParameter(request, WebKeys.URL_YEAR_MONTH, "");
+		if (!yearMonth.equals("")) {
+			options.put(ObjectKeys.SEARCH_YEAR_MONTH, yearMonth);
+			tabOptions.put(Tabs.END_DATE, "");
+			tabOptions.put(Tabs.YEAR_MONTH, yearMonth);
+			tabOptions.put(Tabs.TAG_COMMUNITY, "");
+			tabOptions.put(Tabs.TAG_PERSONAL, "");	
+			model.put(WebKeys.URL_YEAR_MONTH, yearMonth);
+
+			String strYear = yearMonth.substring(0, 4);
+			String strMonth = yearMonth.substring(4, 6);
+			int intMonth = Integer.parseInt(strMonth);
+			String strMonthName = monthNames[intMonth-1];
+			
+			model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
+		}
+		else if (tabOptions.containsKey(Tabs.YEAR_MONTH)) {
+			String strYearMonth = (String) tabOptions.get(Tabs.YEAR_MONTH);
+			if (strYearMonth != null && !"".equals(strYearMonth)) {
+				options.put(ObjectKeys.SEARCH_YEAR_MONTH, strYearMonth);
+				model.put(WebKeys.URL_YEAR_MONTH, strYearMonth);
+				String strYear = strYearMonth.substring(0, 4);
+				String strMonth = strYearMonth.substring(4, 6);
+				int intMonth = Integer.parseInt(strMonth);
+				String strMonthName = monthNames[intMonth-1];
+				
+				model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
+			}
+		}
+		
+	}
 	protected void setupUrlTags(RenderRequest request, Map tabOptions, Map options, Map model) {
 		//See if the url has tags 
 		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, "");
