@@ -10,11 +10,18 @@
  *
  */
 %>
+<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
+<%
+	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+											(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(property_name)).getValue());
+%>
+<c:set var="caption" value="<%= caption %>"/>
+
 <% //Radio view %>
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_labelRight"><c:out value="${property_caption}" /></span>
-<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+<c:out value="${caption}" escapeXml="false"/>
 </div>
 </c:if>
 
@@ -26,8 +33,8 @@
   </td>
   <td valign="top">
 	<span class="ss_bold">
-	  <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+	  <c:out value="${caption}" escapeXml="false"/>
 	</span>
   </td>
-</tr>
+  </tr>
 </c:if>
