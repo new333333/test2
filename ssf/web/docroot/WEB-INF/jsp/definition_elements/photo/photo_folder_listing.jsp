@@ -31,20 +31,23 @@
 	}
 %>
 			  <c:if test="${not empty fileEntry._fileID}">
-			
+<%
+	String _fileId = fileEntry.get("_fileID").toString();
+	if (_fileId.contains(",")) _fileId = _fileId.substring(0, _fileId.indexOf(","));
+%>			
 			    <div>
 			    <a href="<ssf:url 
 				    webPath="viewFile"
 				    folderId="${fileEntry._binderId}"
 				    entryId="${fileEntry._docId}" >
-				    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
+				    <ssf:param name="fileId" value="<%= _fileId %>"/>
 				    </ssf:url>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
 			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
 			    webPath="viewFile"
 			    folderId="${fileEntry._binderId}"
 			    entryId="${fileEntry._docId}" >
-			    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
+			    <ssf:param name="fileId" value="<%= _fileId %>"/>
 			    <ssf:param name="viewType" value="thumbnail"/>
 			    </ssf:url>"></a><br\>
 			    <a 
