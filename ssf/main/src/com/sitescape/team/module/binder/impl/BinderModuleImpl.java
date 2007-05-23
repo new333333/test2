@@ -678,6 +678,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (!user.isSuper()) {		
 			// Top of query doc 
 			Document qTree = DocumentHelper.createDocument();				
+			qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 	    	//Create the query
 	    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
 			so = qb.buildQuery(qTree);
