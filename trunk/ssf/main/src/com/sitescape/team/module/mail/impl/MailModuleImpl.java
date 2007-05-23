@@ -14,7 +14,6 @@ package com.sitescape.team.module.mail.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,12 +51,12 @@ import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -91,11 +90,11 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class MailModuleImpl extends CommonDependencyInjection implements MailModule {
+public class MailModuleImpl extends CommonDependencyInjection implements MailModule, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected Map zoneProps = new HashMap();
 	protected Map mailPosters = new HashMap();
-	protected Map mailSenders = new HashMap();
+	protected Map<String, JavaMailSender> mailSenders = new HashMap();
 	protected JavaMailSender mailSender;
 	protected JndiAccessor jndiAccessor;
 	protected Map defaultProps = new HashMap();
@@ -125,6 +124,31 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void setMailSender(JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}
+	/**
+	 * Called after bean is initialized.  
+	 */
+	public void afterPropertiesSet() {
+		//preload mailSenders so retry mail will work.  Needs name availailable 
+		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration//notify");
+		for (Element sEle:senders) {
+			String jndiName = sEle.attributeValue("session");
+			if (Validator.isNotNull(jndiName)) {
+				try {
+					jndiName = PortabilityUtil.getJndiName(jndiName);
+					JavaMailSender sender = (JavaMailSender)mailSender.getClass().newInstance();				
+					SpringContextUtil.applyDependencies(sender, "mailSender");
+					sender.setSession((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
+					sender.setName(jndiName);		
+					mailSenders.put(jndiName, sender);
+				
+				} catch (Exception ex) {
+					logger.error("Error locating " + jndiName + " " + ex.getLocalizedMessage());
+				}
+			}		
+		}
+		
+	}
+
 	public File getMailDirPath(Binder binder) {
 		return new File(new StringBuffer(mailRootDir).append(RequestContextHolder.getRequestContext().getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
 	}
@@ -141,45 +165,28 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return result.attributeValue(name);
 	}
 
-	public String getMailAttribute(Binder binder, String node, String name) {
-		String result = getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
-		if (result != null) return result;
-		if (!binder.isRoot()) return getMailAttribute(binder.getParentBinder(), node, name);
-		return getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), node, name);
+// Think this is overkill
+//	public String getMailAttribute(Binder binder, String node, String name) {
+//		String result = getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
+//		if (result != null) return result;
+//		if (!binder.isRoot()) return getMailAttribute(binder.getParentBinder(), node, name);
+//		return getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), node, name);
 
-	}
-	private synchronized JavaMailSender getSender(String jndiName) {
-		if (mailSenders.containsKey(jndiName)) 
-			return (JavaMailSender)mailSenders.get(jndiName);
-		try {
-			JavaMailSender sender = (JavaMailSender)mailSender.getClass().newInstance();
-		
-			SpringContextUtil.applyDependencies(sender, "mailSender");
-			sender.setSession((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
-			sender.setName(jndiName);		
-			mailSenders.put(jndiName, sender);
-			return sender;
-		} catch (Exception ex) {
-			logger.error("Error locating " + jndiName + " " + ex.getLocalizedMessage());
-			return null;
-		}
+//	}
+	protected JavaMailSender getMailSender(String jndiName) {
+		JavaMailSender sender=null;
+		sender = mailSenders.get(jndiName);
+		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
+		return sender;
 	}
 	public JavaMailSender getMailSender(Binder binder) {
-		JavaMailSender sender=null;
-		String jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder, "notify", "session"));
-		if (!Validator.isNull(jndiName)) 
-	    sender = getSender(jndiName);
-		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
-		return sender;
+		String jndiName;
+		if (binder.isZone()) jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder.getName(), "notify", "session"));
+		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "notify", "session"));
+//		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder, "notify", "session"));
+		return getMailSender(jndiName);
 	}
 
-	public JavaMailSender getMailSender(String zoneName) {
-		JavaMailSender sender=null;
-		String jndiName = PortabilityUtil.getJndiName(getMailAttribute(zoneName, "notify", "session"));
-	    sender = getSender(jndiName);
-		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
-		return sender;
-	}
 	public synchronized List getMailPosters(String zoneName) {
 		//posting map is indexed by zoneName.  Value is a list of mail sessions
 		List result = (List)mailPosters.get(zoneName);
@@ -399,11 +406,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
     //used for re-try mail.  MimeMessage has been serialized 
     public void sendMail(String mailSenderName, java.io.InputStream input) {
-    	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
+    	JavaMailSender mailSender = getMailSender(mailSenderName);
     	try {
-    		if (mailSender == null) {// TODO: test only, remove this!
-    			logger.error("MAIL SENDER ["+mailSenderName+"] IS NULL!");
-    		}
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
@@ -412,19 +416,19 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     }
     //prepare mail and send it - caller must retry if desired
     public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
-    	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
+    	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
 		//Use spring callback to wrap exceptions into something more useful than javas 
 		mailSender.send(mHelper);
 	}
     //used to send prepared mail now.
     public void sendMail(MimeMessage mailMsg) {
-       	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-        sendMail(getMailSender(zoneName).getName(), mailMsg);
+       	Binder zone = RequestContextHolder.getRequestContext().getZone();
+        sendMail(getMailSender(zone).getName(), mailMsg);
     }
     //used to send prepared mail now.    
     public void sendMail(String mailSenderName, MimeMessage mailMsg) {
-    	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
+    	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mailSender.send(mailMsg);
     }
     //send mail now, if fails, reschedule
