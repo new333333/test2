@@ -63,7 +63,7 @@ public class SZoneConfig {
 	}
 	
 	
-	public static List getElements(String key) {
+	public static List<Element> getElements(String key) {
 		
 		return getElements(RequestContextHolder.getRequestContext().getZoneName(), key);
 	}
@@ -85,32 +85,39 @@ public class SZoneConfig {
 			return val;		
 	}
 	
-	
+	//we don't have multiple zones, so just skip this step for now
 	private static String get(String zoneName, String key) {
 		Element root = getInstance().root;			
-		String value = null;
-		Element element = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
-		if (element == null)
+		Element element;
+//		element = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
+//		if (element == null)
 			element = (Element)root.selectSingleNode("/zoneConfiguration/" + key);
 		if (element == null) return null;
 		return element.getTextTrim();
 		
 	}
-	public static List getElements(String zoneName, String key) {
+	public static List<Element> getAllElements(String key) {
+		List<Element> results = getInstance().root.selectNodes(key);
+		if (results == null) results = new ArrayList();
+		return results;
+	}
+	public static List<Element> getElements(String zoneName, String key) {
 		Element root = getInstance().root;			
-		List results = root.selectNodes("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
-		if ((results == null) || results.isEmpty()) {
+		List<Element> results;
+//		results = root.selectNodes("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
+//		if ((results == null) || results.isEmpty()) {
 			results = root.selectNodes("/zoneConfiguration/" + key);	
-		}
+//		}
 		if (results == null) results = new ArrayList();
 		return results;
 	}
 	public static Element getElement(String zoneName, String key) {
 		Element root = getInstance().root;			
-		Element result = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
-		if (result == null) {
+		Element result;
+//		result = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
+//		if (result == null) {
 			result = (Element)root.selectSingleNode("/zoneConfiguration/" + key);	
-		}
+//		}
 		return result;
 	}
 	public static String getDefaultZoneName() {

@@ -789,7 +789,8 @@ application/vnd.stardivision.math                         smf
 	</bean>
 
 
-	<bean id="mailModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.MailModuleImpl">
+	<bean id="mailModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.MailModuleImpl" 
+			depends-on="zoneConfig, springContextUtil">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>

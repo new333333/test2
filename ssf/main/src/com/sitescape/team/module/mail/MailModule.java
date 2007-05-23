@@ -41,5 +41,4 @@ public interface MailModule {
     public void scheduleMail(Binder binder, Map message, String comment);
 	public String getMailProperty(String zoneName, String name);
 	public String getMailAttribute(String zoneName, String node, String name);
-	public String getMailAttribute(Binder binder, String node, String name);
 }
