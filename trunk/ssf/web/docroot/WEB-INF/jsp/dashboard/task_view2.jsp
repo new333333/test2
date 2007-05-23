@@ -49,12 +49,12 @@
 		<td>
 			<c:if test="${! empty entry.priority}">
 				<c:forEach var="prio" items="${ssEntryDefinitionElementData.priority.values}">
-					<img src="<html:imagesPath/>icons/prio_${prio.key}.jpg"
+					<img 
 						<c:if test="${entry.priority == prio.key}">
-						class="ss_prio_active" 
+						src="<html:imagesPath/>icons/prio_${prio.key}.gif" class="ss_prio_active" 
 						</c:if>
 						<c:if test="${entry.priority != prio.key}">
-						class="ss_prio_inactive"
+						src="<html:imagesPath/>icons/prio_${prio.key}_f3.gif" class="ss_prio_inactive"
 						</c:if>
 					>
 				</c:forEach>
@@ -82,12 +82,12 @@
 		<td>
 			<c:if test="${! empty entry.status}">
 				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
-					<img src="<html:imagesPath/>icons/status_${status.key}.jpg"
+					<img 
 						<c:if test="${entry.status == status.key}">
-						class="ss_status_active" 
+						src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_status_active" 
 						</c:if>
 						<c:if test="${entry.status != status.key}">
-						class="ss_status_inactive"
+						src="<html:imagesPath/>icons/status_${status.key}_f3.gif" class="ss_status_inactive"
 						</c:if>
 					>
 				</c:forEach>
