@@ -661,9 +661,8 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 
 /* styles for labels: required for forms; optional for views */
 .ss_labelAbove {
-  margin-top: 2px;
-  margin-bottom: 2px;
-  padding: 0px;
+  padding-top: 2px;
+  padding-bottom: 2px;
   display: block;
   font-weight: bold;
 }
@@ -2115,7 +2114,7 @@ div.ss_tabs {
     width:100%;
     margin-right:40px;
 }
-.ss_tabs_td {
+.ss_tabs_td, td.ss_tabs_td {
 	font-family: ${ss_style_title_font_family};
 	font-weight: bold;
 	font-size: 11px;
@@ -2126,7 +2125,7 @@ div.ss_tabs {
 	margin:0px;
 	padding:3px 0px 0px 0px;
 }
-.ss_tabs_td_active {
+.ss_tabs_td_active, td.ss_tabs_td_active {
 	font-family: ${ss_style_title_font_family};
 	font-weight: bold;
 	font-size:11px;
@@ -2557,7 +2556,6 @@ div.ss_dashboardContainer {
 div.ss_utils_bar {
     float:right;
     text-align:right;
-	margin-right:10px;
 	margin-bottom:0px;
 	color:#999999;
 	font-weight:bold;
