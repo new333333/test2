@@ -73,8 +73,19 @@ public class FileOpen extends JApplet implements Runnable {
 					
         			boolean blnEditorErrorEncountered = false;
             		try {
+            			
+            			//String strURLTest = strFileName;
+            			//URL urlTest = new URL(strURLTest);
+            			//System.out.println("urlTest: "+ urlTest.toString());
+            			//String encodedurl = URLEncoder.encode(urlTest.toString(),"UTF-8"); 
+            			//System.out.println("encodedurl: " + encodedurl);
+            			//System.out.println("strFileName: "+strFileName);
+            			
                         String strURL = strFileName;
                         String strReplacedURL = strURL.replaceAll(" ", "%20");
+                        strReplacedURL = strReplacedURL.replaceAll("&", "%26");
+                        
+                        //System.out.println("After replaced URL: strReplacedURL: "+strReplacedURL);
                         
                         String [] command;
                         //String strOperSystem = "windows";
@@ -87,12 +98,14 @@ public class FileOpen extends JApplet implements Runnable {
                             command[1] = "/C";
                             command[2] = "start " + strEditorType[i];
                             command[3] = strReplacedURL;
+                            //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2] + " " + command[3]);
                         } else if (strOperatingSystem.equalsIgnoreCase("linux")) {
                         	command =  new String[3];
                             command[0] = "bash";
                             command[1] = "-c";
                             //command[2] = "ooffice " + "'"+strReplacedURL+"'";
                             command[2] = strEditorType[i] + " '"+strReplacedURL+"'";
+                            //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2]);
                         } else {
                         	System.out.println("Operating System " + strOperatingSystem + " not Handled!");
                         	return;
