@@ -12,6 +12,8 @@ package com.sitescape.team.servlet.administration;
 
 import java.io.PrintWriter;
 
+import java.text.DateFormat;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +35,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
@@ -178,7 +181,10 @@ public class ReportDownloadController extends  SAbstractController {
 	{
 		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
-
+        User requestor = RequestContextHolder.getRequestContext().getUser();
+        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, requestor.getLocale());
+        dateFormat.setTimeZone(requestor.getTimeZone());
+        
 		HashSet userIds = new HashSet();
 		HashSet<String> definitionIds = new HashSet<String>();
 		for(Map<String, Object> row : report) {
@@ -230,7 +236,11 @@ public class ReportDownloadController extends  SAbstractController {
 				}
 				if(! isUserColumn(name)) {
 					if(row.containsKey(name)) {
-						out.print(row.get(name));
+						if(row.get(name) instanceof Date) {
+							out.print("\"" + dateFormat.format((Date) row.get(name)) +"\"");
+						} else {
+							out.print(row.get(name));
+						}
 					}
 				} else if(hasUsers) {
 					Long userId = (Long) row.get(name);
