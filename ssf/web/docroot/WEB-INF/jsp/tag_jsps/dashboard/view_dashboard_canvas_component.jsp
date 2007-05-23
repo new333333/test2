@@ -101,7 +101,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
 			  </c:if>
 			  
-			  <c:if test="${ssDashboard.sharedModificationAllowed}">
+			  <c:if test="${ss_dashboard_scope == 'local' || ss_dashboard_scope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
 				  ><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
