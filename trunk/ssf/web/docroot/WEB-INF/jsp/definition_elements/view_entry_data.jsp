@@ -14,11 +14,12 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" scope="request" />
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 	String itemType = (String) item.attributeValue("formItem", "");
-
 	if (itemType.equals("title")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" %><%
 
@@ -59,6 +60,10 @@
         <c:if test="${!empty ssDefinitionEntry.iconName}">
         <img border="0" src="<html:imagesPath/>${ssDefinitionEntry.iconName}" <ssf:alt/> />
         </c:if>
+        <%
+	} else {
+        %>
+        It's <%= itemType %>, baby!
         <%
 	}
 %>
