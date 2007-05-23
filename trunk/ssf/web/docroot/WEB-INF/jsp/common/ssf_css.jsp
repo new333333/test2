@@ -2569,6 +2569,7 @@ div.ss_line {
 	padding: 0px 0px 0px 0px;
 }
 ul.ss_utils_bar {
+	float: right;
 	list-style-type:none;
 	margin:0px;
 	padding:0px;
