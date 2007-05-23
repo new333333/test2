@@ -19,17 +19,17 @@
 <c:otherwise>
 
 <c:set var="folderChecked" value=""/>
-<c:if test="${!empty folderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
+<c:if test="${empty folderColumns || !empty folderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
 <c:set var="numberChecked" value=""/>
-<c:if test="${!empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
+<c:if test="${empty folderColumns || !empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
 <c:set var="titleChecked" value=""/>
-<c:if test="${!empty folderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
+<c:if test="${empty folderColumns || !empty folderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
 <c:set var="stateChecked" value=""/>
-<c:if test="${!empty folderColumns.state}"><c:set var="stateChecked" value="checked"/></c:if>
+<c:if test="${empty folderColumns || !empty folderColumns.state}"><c:set var="stateChecked" value="checked"/></c:if>
 <c:set var="authorChecked" value=""/>
-<c:if test="${!empty folderColumns.author}"><c:set var="authorChecked" value="checked"/></c:if>
+<c:if test="${empty folderColumns || !empty folderColumns.author}"><c:set var="authorChecked" value="checked"/></c:if>
 <c:set var="dateChecked" value=""/>
-<c:if test="${!empty folderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
+<c:if test="${empty folderColumns || !empty folderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
 
 <div class="ss_style" align="left">
 <form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);">
