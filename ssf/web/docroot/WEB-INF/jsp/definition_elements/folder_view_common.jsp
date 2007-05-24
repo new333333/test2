@@ -365,35 +365,43 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
   </ssf:slidingTableColumn>
  </c:if>
  
+<c:set var="colName2" value=""/>
+<c:set var="defId2" value=""/>
+<c:set var="eleType2" value=""/>
+<c:set var="eleName2" value=""/>
+<c:set var="eleCaption2" value=""/>
+<jsp:useBean id="colName2" type="java.lang.String"/>
+<jsp:useBean id="defId2" type="java.lang.String"/>
+<jsp:useBean id="eleType2" type="java.lang.String"/>
+<jsp:useBean id="eleName2" type="java.lang.String"/>
+<jsp:useBean id="eleCaption2" type="java.lang.String"/>
   <c:forEach var="column" items="${ssFolderColumns}">
-    <c:set var="colName2" value="${column.key}"/>
-    <c:set var="defId2" value=""/>
-    <c:set var="eleType2" value=""/>
-    <c:set var="eleName2" value=""/>
-    <c:set var="eleCaption2" value=""/>
-	<jsp:useBean id="colName2" type="java.lang.String" scope="page"/>
-	<jsp:useBean id="defId2" type="java.lang.String" scope="page"/>
-	<jsp:useBean id="eleType2" type="java.lang.String" scope="page"/>
-	<jsp:useBean id="eleName2" type="java.lang.String" scope="page"/>
-	<jsp:useBean id="eleCaption2" type="java.lang.String" scope="page"/>
+	<jsp:useBean id="column" type="java.util.Map.Entry"/>
 <%
+	String[] temp = new String[] {};
+	colName2 = column.getKey().toString();
 	if (colName2.contains(",")) {
-		String[] temp = colName2.split(",");
-		if (temp.length == 4) {
+		temp = colName2.split(",");
+		if (temp != null && temp.length == 4) {
 			defId2 = temp[0];
 			eleType2 = temp[1];
 			eleName2 = temp[2];
 			eleCaption2 = temp[3];
+		} else {
+			defId2 = "";
+			eleType2 = "";
+			eleName2 = "";
+			eleCaption2 = "";
 		}
 	}
-	if (!defId2.equals("")) {
+	if (defId2 != null && !defId2.equals("")) {
 %>
 	  <c:set var="eleType2" value="<%= eleType2 %>"/>
 	  <c:set var="eleName2" value="<%= eleName2 %>"/>
 	  <c:set var="eleCaption2" value="<%= eleCaption2 %>"/>
 	  <ssf:slidingTableColumn>
          <span <%= seenStyle %>>
-         <c:if test="${!empty entry1[eleName2]}">
+         <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
 	       <c:if test="${eleType2 == 'selectbox' || 
 	                     eleType2 == 'radio' || 
 	                     eleType2 == 'checkbox'}">
@@ -402,22 +410,37 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	       <c:if test="${eleType2 == 'date'}">
 	       	 <c:if test="${!empty entry1[eleName2]}">
 <%
-	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
-    String year = ((String)entry1.get(eleName2)).substring(0,4);
-	String month = ((String)entry1.get(eleName2)).substring(4,6);
-	String day = ((String)entry1.get(eleName2)).substring(6,8);
-	java.util.Date date = formatter.parse(year + "-" + month + "-" + day);
+	try {
+		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+	    String year = ((String)entry1.get(eleName2)).substring(0,4);
+		String month = ((String)entry1.get(eleName2)).substring(4,6);
+		String day = ((String)entry1.get(eleName2)).substring(6,8);
+		java.util.Date date = formatter.parse(year + "-" + month + "-" + day);
 %>
 	<fmt:formatDate value="<%= date %>" type="date" dateStyle="short" />
+<%
+	} catch(Exception e) {}
+%>
 	       	 </c:if>
 	       </c:if>
 	       <c:if test="${eleType2 == 'user_list' || 
 	       				 eleType2 == 'userListSelectbox'}">
           	<c:set var="separator" value=""/>
+<%
+	try {
+		SearchFieldResult sr = (SearchFieldResult)entry1.get(eleName2);
+		String[] sIds = new String[0];
+		java.util.Set ids = new java.util.HashSet();
+		sIds = (String[]) sr.getValueSet().toArray(new String[0]);
+		ids = com.sitescape.team.web.util.FindIdsHelper.getIdsAsLongSet(sIds);
+%>
           	<c:forEach var="user" 
-          	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(com.sitescape.team.web.util.FindIdsHelper.getIdsAsLongSet((String[])((SearchFieldResult)entry1.get(eleName2)).getValueSet().toArray(new String[0]))) %>"
-          	>${separator}${user.title}<c:set 
-          	var="separator" value=", "/></c:forEach>
+          	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ids) %>"
+          	>${separator}${user.title}<c:set var="separator" value=", "/>
+          	</c:forEach>
+<%
+	} catch(Exception e) {}
+%>
           </c:if>
          </c:if>
          </span>
@@ -433,8 +456,9 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 </div>
 
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" 
+  linkMenuObjIdx="${renderResponse.namespace}" 
+  namespace="${renderResponse.namespace}">
 </ssf:menuLink>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
