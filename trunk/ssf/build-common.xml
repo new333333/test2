@@ -149,6 +149,7 @@
 
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
 			<classpath location="${test.classes.dir}"/>
+			<classpath location="${project.dir}/main/test/classes"/>
 			<classpath location="${test.source.dir}"/>
 			<classpath location="${project.dir}/web/docroot/WEB-INF/classes"/>
 			<classpath refid="project.classpath"/>

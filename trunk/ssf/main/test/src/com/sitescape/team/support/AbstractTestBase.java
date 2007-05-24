@@ -56,6 +56,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
 			//generate id for top and profiles
 			cdi.save(top);
+			top.setupRoot();
 			top.setZoneId(top.getId());
 			
 			ProfileBinder profiles = new ProfileBinder();
@@ -97,12 +98,14 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			
 			Group group = new Group();
 			group.setName(adminGroup);
+			group.setForeignName(adminGroup);
 			group.setZoneId(top.getId());
 			group.setParentBinder(profiles);
 			cdi.save(group);
 			
 			User user = new User();
 			user.setName(adminUser);
+			user.setForeignName(adminUser);
 			user.setZoneId(top.getId());
 			user.setParentBinder(profiles);
 			cdi.save(user);
