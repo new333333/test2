@@ -220,9 +220,7 @@ public class ViewEntryController extends  SAbstractController {
 		Tabs tabs = new Tabs(request);
 		
 		Integer tabId = null;
-		try {
-			tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-		} catch(Exception e) {}
+		tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, 0);
 		
 		if(folderEntry == null) {
 			tabs.setCurrentTab(tabId.intValue());
