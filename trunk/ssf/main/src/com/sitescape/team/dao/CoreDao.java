@@ -45,7 +45,7 @@ public interface CoreDao {
 	public void clear();
     public void clearFileNames(Binder binder);
     public void clearTitles(Binder binder);
-	public int countObjects(Class clazz, FilterControls filter);
+	public long countObjects(Class clazz, FilterControls filter);
 	public void delete(Object obj);
 	public void delete(Binder binder);
 	public void delete(Binder binder, Class entryClass);
@@ -117,7 +117,7 @@ public interface CoreDao {
 	public void save(Collection objs);
 	public Object saveNewSession(Object obj);
 	public void update(Object obj);
-	public float averageColumn(Class clazz, String column, FilterControls filter);
+	public double averageColumn(Class clazz, String column, FilterControls filter);
 	public long sumColumn(Class clazz, String column, FilterControls filter);
 
     public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName);

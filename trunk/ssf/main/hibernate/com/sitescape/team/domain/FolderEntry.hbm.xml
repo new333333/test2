@@ -89,8 +89,8 @@
     </component>
     <property name="definitionType"/>
     <component name="averageRating" class="com.sitescape.team.domain.AverageRating">
-      <property name="average" column="rating_average"/>
-      <property name="count" column="rating_count"/>
+      <property name="average" column="ratings_average"/>
+      <property name="count" column="ratings_count"/>
     </component>
     <property name="popularity" optimistic-lock="false"/>
   </class>
