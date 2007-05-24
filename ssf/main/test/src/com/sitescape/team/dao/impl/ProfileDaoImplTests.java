@@ -123,15 +123,16 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	public void testAddGroup() {
 		Binder top = createZone(zoneName);
 		FilterControls filter = new FilterControls("zoneId", top.getZoneId());
-		int count = cdi.countObjects(Group.class, filter);
+		long count = cdi.countObjects(Group.class, filter);
 		
 		Group newGroup = new Group();
 		newGroup.setName("brandNewGroup");
+		newGroup.setForeignName("brandNewGroup");
 		newGroup.setZoneId(top.getZoneId());
 		
 		cdi.save(newGroup);
 		
-		int newCount = cdi.countObjects(Group.class, filter);
+		long newCount = cdi.countObjects(Group.class, filter);
 		
 		assertEquals(count + 1, newCount);
 	}
@@ -144,9 +145,9 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		String userName = "testUser";
 		Workspace top = createZone(zoneName);;
 		FilterControls filter = new FilterControls("zoneId", top.getId());
-		int count = cdi.countObjects(User.class, filter);
+		long count = cdi.countObjects(User.class, filter);
 		User user = createBaseUser(top, userName);
-		int newCount = cdi.countObjects(User.class, filter);
+		long newCount = cdi.countObjects(User.class, filter);
 		assertEquals(count + 1, newCount);
 
 		FilterControls fc = new FilterControls("owner.principal", user);
@@ -170,7 +171,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	public void testLoadPrincipals() {
 		Workspace top = createZone("testZone");
 		FilterControls filter = new FilterControls("zoneId",top.getZoneId());
-		int count = cdi.countObjects(User.class, filter);
+		long count = cdi.countObjects(User.class, filter);
 		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
 		assertEquals(count,users.size());
 
@@ -307,6 +308,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		User user = new User();
 		user.setZoneId(top.getZoneId());
 		user.setName(name);
+		user.setForeignName(name);
 		user.setParentBinder(pdi.getProfileBinder(top.getZoneId()));
 		//add some attributes
 		user.addCustomAttribute("aString", "I am a string");
@@ -355,6 +357,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		Group group1 = new Group();
 		group1.setName("group1");
+		group1.setForeignName("group1");
 		group1.setZoneId(top.getZoneId());
 		group1.setParentBinder(user1.getParentBinder());
 		cdi.save(group1);
@@ -362,6 +365,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		Group group2 = new Group();
 		group2.setName("group2");
+		group2.setForeignName("group2");
 		group2.setZoneId(top.getZoneId());
 		group2.setParentBinder(user1.getParentBinder());
 		cdi.save(group2);
@@ -369,6 +373,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		Group group3 = new Group();
 		group3.setName("group3");
+		group3.setForeignName("group3");
 		group3.setZoneId(top.getZoneId());
 		group3.setParentBinder(user1.getParentBinder());
 		cdi.save(group3);
