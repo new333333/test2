@@ -26,7 +26,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/team/team_members.js"></script>
 
 <div class="ss_teamMembersPane">
-	<span id="ss_teamMembersLoadLink_${prefix}" onclick="if (window.ss_loadTeamMembersList) ss_loadTeamMembersList('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members" /><ssf:param name="binderId" value="${binderId}" /></ssf:url>', ${prefix}<c:if test="${appendAll == 'true'}">, ${appendAll}</c:if>);"
+	<span id="ss_teamMembersLoadLink_${prefix}" onclick="if (window.ss_loadTeamMembersList) ss_loadTeamMembersList('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members" /><ssf:param name="binderId" value="${binderId}" /></ssf:url>', '${prefix}' <c:if test="${appendAll == 'true'}">, ${appendAll}</c:if>);"
 		onmouseover="this.style.cursor='pointer'; " onmouseout="this.style.cursor='default'; ">
 		<img <ssf:alt tag="alt.expand"/> id="ss_teamIcon_${prefix}" src="<html:imagesPath/>pics/sym_s_expand.gif" />
 		<span class="ss_bold"><ssf:nlt tag="sendMail.team" /></span>
