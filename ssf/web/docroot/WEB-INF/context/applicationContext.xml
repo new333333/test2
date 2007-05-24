@@ -717,6 +717,7 @@ application/vnd.stardivision.chart                        sds
 application/vnd.stardivision.writer                       sdw vob vor
 application/vnd.stardivision.writer-global                sgl
 application/vnd.stardivision.math                         smf		
+text/calendar											  ics
 	  ]]></value></property>
 	</bean>
 		
