@@ -34,6 +34,12 @@
 	}
 %>
 
+<script type="text/javascript">
+var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
+		name="action" value="${action}"/><portlet:param 
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="operation" value="subscribe"/></portlet:actionURL>";
+</script>
 
 <% // Then include the navigation widgets for this view %>
 

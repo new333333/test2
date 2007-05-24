@@ -46,7 +46,9 @@
   <input type="radio" name="notifyType" value="3" id="notifyType_${ssSubscription.id.entityId}_3"
   <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
   /><label for="notifyType_${ssSubscription.id.entityId}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
-  <input type="radio" name="notifyType" value="-1" id="notifyType_${ssSubscription.id.entityId}_delete"/><label for="notifyType_${ssSubscription.id.entityId}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
+  <c:if test="${!empty ssSubscription}">
+	<input type="radio" name="notifyType" value="-1" id="notifyType_${ssSubscription.id.entityId}_delete"/><label for="notifyType_${ssSubscription.id.entityId}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
+  </c:if>
 <br/>
   <input type="radio" name="notifyType" value="4" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${ssSubscription.style=='4'}"> checked="checked"</c:if>

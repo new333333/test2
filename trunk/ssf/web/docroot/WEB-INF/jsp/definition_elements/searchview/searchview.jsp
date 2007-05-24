@@ -15,6 +15,13 @@
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
+<script type="text/javascript">
+var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
+		name="action" value="${action}"/><portlet:param 
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="operation" value="subscribe"/></portlet:actionURL>";
+</script>
+
 <div style="margin:0px;">
 
 <div align="right" style="margin:0px 4px 0px 0px;">
