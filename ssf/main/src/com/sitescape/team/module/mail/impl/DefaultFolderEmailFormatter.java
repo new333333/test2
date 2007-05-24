@@ -195,7 +195,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				userIds.add(p.getId());
 		}
 		if (folder.getNotificationDef().isTeamOn()) {
-			Set team = binderModule.getTeamMemberIds(folder, false);
+			Set teamIds = binderModule.getTeamMemberIds(folder, false);
+			List team = getProfileDao().loadPrincipals(teamIds, folder.getZoneId(), true);
 			for (Iterator iter=team.iterator(); iter.hasNext();) {
 				Principal p = (Principal)iter.next();
 				if (p.getEntityType().equals(EntityType.group))
