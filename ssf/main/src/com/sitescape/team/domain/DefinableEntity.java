@@ -162,7 +162,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
    	 	this.definitionType = definitionType;
     }
     /**
-     * @hibernate.component prefix="rating_"
+     * @hibernate.component prefix="ratings_"
      * @return
      */
     public AverageRating getAverageRating() {

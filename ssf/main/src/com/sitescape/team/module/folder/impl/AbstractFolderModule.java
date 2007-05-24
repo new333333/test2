@@ -755,8 +755,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		rating.setRating(value);
     	// see if title exists for this folder
 		FilterControls filter = new FilterControls(ratingAttrs, cfValues);
-     	float result = getCoreDao().averageColumn(Rating.class, "rating", filter);
-     	int count = getCoreDao().countObjects(Rating.class,filter);
+     	double result = getCoreDao().averageColumn(Rating.class, "rating", filter);
+     	long count = getCoreDao().countObjects(Rating.class,filter);
      	AverageRating avg = entity.getAverageRating();
      	if (avg == null) {
      		avg = new AverageRating();

@@ -14,16 +14,16 @@
 <jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" 
   scope="request" />
 <%
-	int i_rating = 0;
+	long i_rating = 0;
 	if (ssDefinitionEntry.getAverageRating() != null) {
-		Float rating = ssDefinitionEntry.getAverageRating().getAverage();
+		Double rating = ssDefinitionEntry.getAverageRating().getAverage();
 		if (rating != null) i_rating = Math.round(rating);
 	}
 %>
 <div id="${ss_ratingDivId}" style="margin:0px; padding:0px;">
 <table style="border-spacing:0px; border-width:thin;"><tbody><tr>
 <%
-	for (int i = 0; i < i_rating; i++) {
+	for (long i = 0; i < i_rating; i++) {
 %>
   <td><a style="text-decoration: none;" 
     onMouseover="ss_showRating('<%= i+1 %>', '${ssDefinitionEntry.id}');" 
@@ -34,7 +34,7 @@
 <script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_<%= i+1 %>'] = "<html:imagesPath/>pics/star_gold.gif";</script>
 <%
 	}
-	for (int i = i_rating; i < 5; i++) {
+	for (long i = i_rating; i < 5; i++) {
 %>
   <td><a style="text-decoration: none;" 
     onMouseover="ss_showRating('<%= i+1 %>', '${ssDefinitionEntry.id}');" 

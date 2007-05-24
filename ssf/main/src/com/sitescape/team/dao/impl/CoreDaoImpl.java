@@ -415,8 +415,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        return result;
        
    }	
-   public int countObjects(final Class clazz, final FilterControls filter) {
-		Integer result = (Integer)getHibernateTemplate().execute(
+   public long countObjects(final Class clazz, final FilterControls filter) {
+		Long result = (Long)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
 		        	StringBuffer query = new StringBuffer();
@@ -434,11 +434,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             }
 		);
        if (result==null) return 0;
-	   return result.intValue();	
+	   return result.longValue(); 	
 	}
 	
-	public float averageColumn(final Class clazz, final String column, final FilterControls filter) {
-		Float result = (Float)getHibernateTemplate().execute(
+	public double averageColumn(final Class clazz, final String column, final FilterControls filter) {
+		Double result = (Double)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
 		        	StringBuffer query = new StringBuffer();
@@ -453,7 +453,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                   	 Iterator itr = result.iterator();
 
                 	 if (itr.hasNext()) {
-                		Float count = (Float)itr.next();
+                		 Double count = (Double)itr.next();
                 	 	return count;
              		}
                 	
@@ -462,7 +462,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             }
 		);
        if (result==null) return 0;
-	   return result.floatValue();	
+	   return result.doubleValue();	
 	}
 	public long sumColumn(final Class clazz, final String column, final FilterControls filter) {
 		Long result = (Long)getHibernateTemplate().execute(
@@ -791,7 +791,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            	//see if in use
 	            	List results;
 	               	if (def.getType() != Definition.WORKFLOW) {
-	               		int count = countObjects(com.sitescape.team.domain.FolderEntry.class, new FilterControls("entryDef", def));
+	               		long count = countObjects(com.sitescape.team.domain.FolderEntry.class, new FilterControls("entryDef", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 	               		count = countObjects(com.sitescape.team.domain.Principal.class, new FilterControls("entryDef", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
@@ -808,7 +808,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		               		b.removeDefinition(def);
 		               	}
 	               	} else {
-	               		int count = countObjects(com.sitescape.team.domain.WorkflowState.class, new FilterControls("definition", def));
+	               		long count = countObjects(com.sitescape.team.domain.WorkflowState.class, new FilterControls("definition", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 
 	               		results = session.createCriteria(Binder.class)

@@ -13,8 +13,8 @@ package com.sitescape.team.domain;
  * Component class
  */
 public class AverageRating {
-	Float rating=null; 
-	Integer count=null;
+	Double rating=null; 
+	Long count=null;
 	public AverageRating() {
 		
 	}
@@ -22,27 +22,27 @@ public class AverageRating {
 	 * @hibernate.property
 	 * @return
 	 */
-	public Float getAverage() {
+	public Double getAverage() {
 		return rating;
 	}
-	public void setAverage(Float rating) {
+	public void setAverage(Double rating) {
 		this.rating = rating;
 	}
-	public void setAverage(float rating) {
-		this.rating = Float.valueOf(rating);
+	public void setAverage(double rating) {
+		this.rating = Double.valueOf(rating);
 	}
 	/**
 	 * @hibernate.property
 	 * @return
 	 */
-	public Integer getCount() {
+	public Long getCount() {
 		return count;
 	}
-	public void setCount(Integer count) {
+	public void setCount(Long count) {
 		this.count = count;
 	}
-	public void setCount(int count) {
-		this.count = Integer.valueOf(count);
+	public void setCount(long count) {
+		this.count = Long.valueOf(count);
 	}
 
 }
