@@ -16,6 +16,10 @@
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
 <script type="text/javascript">
+var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
+		name="action" value="${action}"/><portlet:param 
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="operation" value="subscribe"/></portlet:actionURL>";
 var ss_columnCount = 0;
 function ss_loadEntry(obj,id) {
 	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
