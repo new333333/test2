@@ -12,8 +12,11 @@
 %>
 <%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
 <%
-	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
-											(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(property_name)).getValue());
+	String caption = "";
+	if(ssDefinitionEntry.getCustomAttributes().get(property_name) != null) {
+		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(property_name)).getValue());
+	}
 %>
 <c:set var="caption" value="<%= caption %>"/>
 
