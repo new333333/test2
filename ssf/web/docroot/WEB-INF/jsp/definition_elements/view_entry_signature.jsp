@@ -49,7 +49,7 @@
 	<div class="ss_entryContent ss_entrySignature">
 	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 	     value="${ssDefinitionEntry.modification.date}" type="both" 
-		 timeStyle="long" dateStyle="medium" />
+		 timeStyle="medium" dateStyle="medium" />
 	</div>
   </td>
  </tr>
