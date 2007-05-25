@@ -150,7 +150,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 						<portlet:param name="action" value="advanced_search"/>
 						<portlet:param name="newTab" value="1"/>
 						</portlet:actionURL>">
-			  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="90" offsetY="-3" 
+			  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="137" offsetY="-15"
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" type="text" /> 
 					<a class="ss_searchButton" 
@@ -390,7 +390,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
     <div class="ss_global_toolbar_favs_big" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
       onMouseOver="this.style.cursor = 'pointer';"
     >
-      <ssHelpSpot helpId="navigation_bar/favorites_button"  offsetY="25" offsetX="5"  
+      <ssHelpSpot helpId="navigation_bar/favorites_button_portlet"  offsetY="25" offsetX="5"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
@@ -402,7 +402,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
-      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="0" offsetY="13"  
+      <ssHelpSpot helpId="navigation_bar/favorites_button_portlet" offsetX="0" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	  </ssHelpSpot>
 	<a href="javascript: ss_showFavoritesPane('<portlet:namespace/>');"
@@ -455,7 +455,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			<portlet:param name="action" value="advanced_search"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>" style="display: inline;">
-		  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="110" offsetY="10"
+		  <ssHelpSpot helpId="navigation_bar/search_button_portlet" offsetX="-15" offsetY="15" 
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 			<input name="searchText" type="text" />
 			<input type="hidden" name="quickSearch" value="true"/>					
@@ -478,7 +478,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible"  id="ss_navbarSearchButton<portlet:namespace/>" >
-	  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="0" offsetY="-10"
+	  <ssHelpSpot helpId="navigation_bar/search_button"  offsetX="-15" offsetY="15" align="center"
 	    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 	  </ssHelpSpot>
  		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
