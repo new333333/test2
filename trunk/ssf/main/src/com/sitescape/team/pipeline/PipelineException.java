@@ -10,9 +10,7 @@
  */
 package com.sitescape.team.pipeline;
 
-import com.sitescape.team.exception.UncheckedException;
-
-public class PipelineException extends UncheckedException {
+public class PipelineException extends RuntimeException {
 
 	public PipelineException() {
         super();

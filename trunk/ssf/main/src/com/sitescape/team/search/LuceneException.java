@@ -10,13 +10,11 @@
  */
 package com.sitescape.team.search;
 
-import com.sitescape.team.exception.UncheckedException;
-
 /**
  * @author Jong Kim
  *
  */
-public class LuceneException extends UncheckedException {
+public class LuceneException extends RuntimeException {
     public LuceneException() {
         super();
     }

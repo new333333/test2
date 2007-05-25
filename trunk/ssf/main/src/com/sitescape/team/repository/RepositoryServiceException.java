@@ -10,9 +10,7 @@
  */
 package com.sitescape.team.repository;
 
-import com.sitescape.team.exception.UncheckedException;
-
-public class RepositoryServiceException extends UncheckedException {
+public class RepositoryServiceException extends RuntimeException {
 	
 	public RepositoryServiceException() {
         super();

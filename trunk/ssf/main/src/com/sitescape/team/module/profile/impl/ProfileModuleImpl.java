@@ -205,7 +205,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   		if (userId == null) userId = user.getId();
  		if (user.getId().equals(userId)) {
 			uProps = getProfileDao().loadUserProperties(userId, binderId);
-  		} else throw new NotSupportedException();
+  		} else throw new NotSupportedException("getUserProperties", "user");
 		return uProps;
 }
 
@@ -227,7 +227,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
     		uProps = getProfileDao().loadUserProperties(userId);
-  		} else throw new NotSupportedException();
+  		} else throw new NotSupportedException("getUserProperties", "user");
   		return uProps;
    }
 	//RO transaction
@@ -237,7 +237,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
  			 seen = getProfileDao().loadSeenMap(user.getId());
-  		} else throw new NotSupportedException();
+  		} else throw new NotSupportedException("getUserSeenMap", "user");
    		return seen;
    }
    //RW transaction
@@ -248,7 +248,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   		if (user.getId().equals(userId)) {
 			 seen = getProfileDao().loadSeenMap(user.getId());
 			 seen.setSeen(entry);
-  		} else throw new NotSupportedException();
+  		} else throw new NotSupportedException("setSeen", "user");
   }
    //RW transaction
    public void setSeen(Long userId, List entries) {
@@ -261,7 +261,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    				Entry reply = (Entry)entries.get(i);
    				seen.setSeen(reply);
    			}
-  		} else throw new NotSupportedException();
+  		} else throw new NotSupportedException("setSeen", "user");
    }  	
   
 	//RO transaction
@@ -524,7 +524,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         Principal entry = (Principal)processor.getEntry(binder, principalId);
         checkAccess(entry, "deleteEntry");
        	if (entry.isReserved()) 
-    		throw new NotSupportedException(NLT.get("errorcode.principal.reserved", new Object[]{entry.getName()}));       	
+    		throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});       	
        	processor.deleteEntry(binder, entry, true); // third arg is irrelevant 
         if (deleteWS && (entry instanceof User)) {
         	//delete workspace

@@ -191,14 +191,14 @@ public abstract class Principal extends Entry  {
    	 	return null;
     }
     public void setAverageRating(AverageRating rating) {
-    	throw new NotSupportedException();
+    	throw new NotSupportedException("setAverageRating", "principal");
     }
     //overload 
     public Long getPopularity() {
    	 	return null;
     }
     public void setPopularity(Long popularity) {
-       	throw new NotSupportedException();
+       	throw new NotSupportedException("setPopularity", "principal");
     }
  
     public String toString() {

@@ -80,10 +80,10 @@ public class DateHelper {
         // check that the fields are there
         // date fields (select boxes) *must* be there
         if (!inputData.exists(datePrefix+"month")) {
-            throw new ConfigurationException("Cannot find required date field: month.");
+            throw new ConfigurationException("errorcode.no.date.field", new String[]{"month."});
         }
         if (!inputData.exists(datePrefix+"date")) {
-            throw new ConfigurationException("Cannot find required date field: date.");
+            throw new ConfigurationException("errorcode.no.date.field", new String[]{"date."});
         }
         
         GregorianCalendar cal = new GregorianCalendar();

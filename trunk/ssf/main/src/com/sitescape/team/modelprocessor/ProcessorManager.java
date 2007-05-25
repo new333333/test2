@@ -16,6 +16,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SimpleProfiler;
@@ -49,7 +50,7 @@ public class ProcessorManager {
     }
     
     public Object getProcessor(Object model, String processorKey) 
-    	throws ProcessorNotFoundException {
+    	throws ConfigurationException {
 		SimpleProfiler.startProfiler("ProcessorManager.getProcessor");
         String processorClassName = getProcessorClassName(model, processorKey);
         
@@ -60,14 +61,14 @@ public class ProcessorManager {
     
 
     public Object getProcessor(String modelClassName, String processorKey) 
-    	throws ProcessorNotFoundException {
+    	throws ConfigurationException {
         String processorClassName = getProcessorClassName(modelClassName, processorKey);
         
         return getProcessor(processorClassName);
     }
     
     public String getProcessorClassName(Object model, String processorKey)
-    	throws ProcessorNotFoundException {
+    	throws ConfigurationException {
         String processorClassName = null;
         if(model instanceof InstanceLevelProcessorSupport) {
             // Try getting the processor's class name associated with the model instance.
@@ -84,17 +85,17 @@ public class ProcessorManager {
     }
     
     public String getProcessorClassName(String modelClassName, String processorKey) 
-		throws ProcessorNotFoundException {
+		throws ConfigurationException {
         String name = null;
         try {
             name = getProcessorClassNameRecursively(modelClassName, processorKey);
         } catch (ClassNotFoundException e) {
-            throw new ProcessorNotFoundException
+            throw new ConfigurationException
             	("Cannot get processor class name when model class name is '" + 
             	        modelClassName + "' and processor key is '" + processorKey + "'");
         }
         if(name == null)
-            throw new ProcessorNotFoundException("Model class name '" + 
+            throw new ConfigurationException("Model class name '" + 
                     modelClassName + "' and processor key '" + processorKey + 
                     "' does not map to a processor class name");
         else
@@ -102,7 +103,7 @@ public class ProcessorManager {
     }
 
     private Object getProcessor(String processorClassName)
-            throws ProcessorNotFoundException {
+            throws ConfigurationException {
         Object processor = null;
 
         int springBeanType = getSpringBeanType(processorClassName);
@@ -111,7 +112,7 @@ public class ProcessorManager {
             String springBeanName = getSpringBeanName(processorClassName);
             processor = SpringContextUtil.getBean(springBeanName);
             if(processor == null)
-                throw new ProcessorNotFoundException("Spring bean of name '" + 
+                throw new ConfigurationException("Spring bean of name '" + 
                         springBeanName + "' not found for processor class '" + 
                         processorClassName + "'");
         }
@@ -121,7 +122,7 @@ public class ProcessorManager {
 	        try {
 	            processorClass = ReflectHelper.classForName(processorClassName);
 	        } catch (ClassNotFoundException e) {
-	            throw new ProcessorNotFoundException(
+	            throw new ConfigurationException(
 	                    "Invalid processor class name '" + processorClassName + "'",
 	                    e);
 	        }
@@ -130,11 +131,11 @@ public class ProcessorManager {
 	        try {
 	            processor = processorClass.newInstance();
 	        } catch (InstantiationException e) {
-	            throw new ProcessorNotFoundException(
+	            throw new ConfigurationException(
 	                    "Cannot instantiate processor of type '"
 	                            + processorClassName + "'");
 	        } catch (IllegalAccessException e) {
-	            throw new ProcessorNotFoundException(
+	            throw new ConfigurationException(
 	                    "Cannot instantiate processor of type '"
 	                            + processorClassName + "'");
 	        }
@@ -201,7 +202,7 @@ public class ProcessorManager {
     }
     
     private String getSpringBeanName(String processorClassName)
-        throws ProcessorNotFoundException {
+        throws ConfigurationException {
         StringBuffer sb = new StringBuffer();
         sb.append("/model-processor-mapping/processors/processor[@class='")
         .append(processorClassName)
@@ -215,7 +216,7 @@ public class ProcessorManager {
             beanName = processorSpringBeanNameAttr.getValue();
         
         if(beanName == null || beanName.length() == 0)
-            throw new ProcessorNotFoundException("spring-bean-name attribute must be specified for '" + processorClassName + "' processor class");
+            throw new ConfigurationException("spring-bean-name attribute must be specified for '" + processorClassName + "' processor class");
         
         return beanName;
     }

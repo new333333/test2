@@ -116,7 +116,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    		} else if (type == Definition.WORKFLOW) {
-   			if (release.equals("open")) throw new NotSupportedException();
+   			if (release.equals("open")) throw new NotSupportedException(operation, "open edition");
    			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);  			
    		} else {

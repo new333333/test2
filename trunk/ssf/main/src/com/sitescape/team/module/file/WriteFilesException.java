@@ -10,9 +10,7 @@
  */
 package com.sitescape.team.module.file;
 
-import com.sitescape.team.exception.CheckedException;
-
-public class WriteFilesException extends CheckedException {
+public class WriteFilesException extends Exception {
 	
 	private FilesErrors errors;
 	

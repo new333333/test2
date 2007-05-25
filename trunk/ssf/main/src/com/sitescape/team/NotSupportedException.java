@@ -15,16 +15,13 @@ public class NotSupportedException extends UncheckedCodedException {
  	private static final long serialVersionUID = 1L;
 	private static final String NotSupportedException_ErrorCode = "errorcode.not.supported";
 
-    public NotSupportedException() {
-        super(NotSupportedException_ErrorCode);
+	public NotSupportedException(String operation, String target) {
+		this(NotSupportedException_ErrorCode, new String[] {operation, target}); // Use default code
+	}
+    public NotSupportedException(String errorCode) {
+    	super(errorCode);
     }
-    public NotSupportedException(String message) {
-        super(NotSupportedException_ErrorCode,  new Object[] {message});
-    }
-    public NotSupportedException(String message, Throwable cause) {
-        super(NotSupportedException_ErrorCode, new Object[] {message}, cause);
-    }
-    public NotSupportedException(Throwable cause) {
-        super(NotSupportedException_ErrorCode, new Object[0], cause);
+    public NotSupportedException(String errorCode, Object[] errorArgs) {
+        super(errorCode, errorArgs);
     }
 }

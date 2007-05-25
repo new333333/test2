@@ -16,7 +16,7 @@ import com.sitescape.team.util.NLT;
  * @author Jong Kim
  *
  */
-public abstract class UncheckedCodedException extends UncheckedException implements ErrorCodeSupport {
+public abstract class UncheckedCodedException extends RuntimeException implements ErrorCodeSupport {
     private String errorCode;
     private Object[] errorArgs;
     

@@ -10,23 +10,23 @@
  */
 package com.sitescape.team;
 
-import com.sitescape.team.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 /**
  * @author Jong Kim
  *
  */
-public class ConfigurationException extends UncheckedException {
-    public ConfigurationException() {
-        super();
-    }
-    public ConfigurationException(String message) {
-        super(message);
-    }
-    public ConfigurationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public ConfigurationException(Throwable cause) {
-        super(cause);
+public class ConfigurationException extends UncheckedCodedException {
+ 	private static final long serialVersionUID = 1L;
+	private static final String ConfigurationException_ErrorCode = "errorcode.configuration";
+
+	public ConfigurationException(String detailMessage) {
+		super(ConfigurationException_ErrorCode, new String[]{detailMessage}); // Use default code
+	}
+	public ConfigurationException(String detailMessage, Throwable cause) {
+		super(ConfigurationException_ErrorCode, new String[]{detailMessage}, cause); // Use default code
+	}
+    public ConfigurationException(String errorCode, Object[] errorArgs) {
+        super(errorCode, errorArgs);
     }
 }

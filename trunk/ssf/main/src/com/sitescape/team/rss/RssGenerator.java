@@ -36,7 +36,6 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.AccessUtils;
-import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.util.ConfigPropertyNotFoundException;
 import com.sitescape.team.util.Constants;

@@ -816,7 +816,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //***********************************************************************************************************
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
 		throw new NotSupportedException(
-				NLT.get("errorcode.notsupported.moveEntry", new String[]{entry.getTitle()}));
+				"errorcode.notsupported.moveEntry", new String[]{entry.getTitle()});
     }
     
     //***********************************************************************************************************

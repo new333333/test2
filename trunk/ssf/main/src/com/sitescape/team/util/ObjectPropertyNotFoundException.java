@@ -10,13 +10,11 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.exception.UncheckedException;
-
 /**
  *
  * @author Jong Kim
  */
-public class ObjectPropertyNotFoundException extends UncheckedException {
+public class ObjectPropertyNotFoundException extends RuntimeException {
     public ObjectPropertyNotFoundException() {
         super();
     }

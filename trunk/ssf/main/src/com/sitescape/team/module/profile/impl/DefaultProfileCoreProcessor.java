@@ -87,7 +87,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //*******************************************************************/
   	//not supported
 	public void moveBinder(Binder source, Binder destination) {
-		throw new NotSupportedException("Move not supported on ProfileBinder");
+		throw new NotSupportedException("Move", "ProfileBinder");
 	
 	}
     //*******************************************************************/

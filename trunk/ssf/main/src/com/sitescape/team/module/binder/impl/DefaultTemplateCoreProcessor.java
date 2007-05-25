@@ -37,7 +37,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	public Binder addBinder(final Binder binder, Definition def, Class clazz, 
 	    		final InputDataAccessor inputData, Map fileItems) 
 	    	throws AccessControlException, WriteFilesException {
-		throw new NotSupportedException("Add not supported on TemplateBinder");
+		throw new NotSupportedException("Add", "TemplateBinder");
 
 	}
     
@@ -54,7 +54,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     }
   	//not supported
 	public void moveBinder(Binder source, Binder destination) {
-		throw new NotSupportedException("Move not supported on TemplateBinder");
+		throw new NotSupportedException("Move", "TemplateBinder");
 	
 	}
     protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
