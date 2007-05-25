@@ -1145,12 +1145,12 @@ div.ss_sliding_table_column {
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
   line-height:15px;
-  font-family: ${ss_style_folder_view_font_family};
+  font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
   background-color: ${ss_sliding_table_row1_background_color}; 
   line-height:15px;
-  font-family: ${ss_style_folder_view_font_family};
+  font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
   background-color: ${ss_folder_line_highlight_color} !important;
