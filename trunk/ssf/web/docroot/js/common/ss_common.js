@@ -2849,6 +2849,7 @@ var editClicked = "false";
 function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, strURLValue) {
 
 	var escapedURL = escape(strURLValue);
+	escapedURL = ss_replaceSubStrAll(escapedURL, "+", "%2B");
 
 	var url = ss_baseAjaxRequestWithOS;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
