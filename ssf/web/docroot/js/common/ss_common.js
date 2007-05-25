@@ -2202,6 +2202,12 @@ var ss_helpSystem = {
 	    this.showHelpPanel(id, panelId, x, y);
 	},
 
+	showMoreInfoPanelLeft : function(id, panelId) {
+	    y = parseInt(ss_getDivTop('ss_help_panel') - 25);
+	    x = parseInt(ss_getDivLeft('ss_help_panel') - 25);
+	    this.showHelpPanel(id, panelId, x, y);
+	},
+
 	showInlineHelpSpotInfo : function(helpSpot, jspId, tagId, dx, dy, xAlignment, yAlignment) {
 		if (dx == "") dx = 0;
 		if (dy == "") dy = 0;
@@ -2210,7 +2216,7 @@ var ss_helpSystem = {
 		//ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
-		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
+		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);  
 		    var x = parseInt(left + 3 + parseInt(dx));
 		    var y = parseInt(top + 3 + parseInt(dy));
 			this.showHelpPanel(jspId, "ss_help_panel", x, y, xAlignment, yAlignment, tagId)

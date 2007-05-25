@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
-<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
+<%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
 
 <span class="ss_titlebold"><ssf:nlt tag="help.createTeam.title"/></span><br/>
 <span style="font-weight:bold;"><ssf:nlt tag="help.setTeamAccess.title"/></span>
@@ -39,15 +39,6 @@
 
 </ol>
 
-</div>
-
-<br/>
-
-<div align="center" style="margin-bottom:5px;" title="This Help topic has more than one page of information">
-<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/create_team_button', 'ss_help_panel', '', '');"><img border="0" <ssf:alt tag="general.previous"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a></div>
-<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showHelpPanel('navigation_bar/create_team_button', 'ss_help_panel', '', '');">1</a></div> 
-<div style="display:inline;margin-right:10px;">2</div>
-<div style="display:inline;"><img border="0" <ssf:alt tag="general.next"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></div>
 </div>
 
 

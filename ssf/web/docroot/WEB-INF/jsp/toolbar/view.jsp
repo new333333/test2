@@ -122,7 +122,7 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 </c:if>
 <c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
 <a href="javascript: ;" 
-  onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'navigation_bar/create_team_button', '', 0, 20, '', '');return false;"
+  onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'navigation_bar/create_team_button', '', 200, 20, 'left', 'top');return false;"
 ><ssf:nlt tag="navigation.createTeam"/></a>
 <div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
 <div align="right"><a href="#" 
