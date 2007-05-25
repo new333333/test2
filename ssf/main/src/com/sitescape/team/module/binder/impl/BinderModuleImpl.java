@@ -290,7 +290,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    			if(mirrored && binder.getBinderCount() > 0) {
    				// We allow changing regular binder to mirrored one only when it has no child binders.
    				// It is ok for the binder to have existing entries though.
-   				throw new NotSupportedException(NLT.get("errorcode.notsupported.not.leaf"));
+   				throw new NotSupportedException("errorcode.notsupported.not.leaf");
    			}
    		}
     	
@@ -334,7 +334,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        				} 
    		        			} catch (HibernateSystemException he) {
    		        				if (he.contains(NonUniqueObjectException.class)) {
-   		        					throw new ConfigurationException(NLT.get("errorcode.cannot.make.library"));
+   		        					throw new ConfigurationException("errorcode.cannot.make.library", (Object[])null);
    		        				}
    		        			} finally {
    		        				query.close();
@@ -363,7 +363,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        				}
   		        			} catch (HibernateSystemException he) {
    		        				if (he.contains(NonUniqueObjectException.class)) {
-   		        					throw new ConfigurationException(NLT.get("errorcode.cannot.make.unique"));
+   		        					throw new ConfigurationException("errorcode.cannot.make.unique", (Object[])null);
    		        				}
   		        			}
    		        			//add entry titles
@@ -382,7 +382,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   		        					}
   		        				} catch (HibernateSystemException he) {
   		        					if (he.contains(NonUniqueObjectException.class)) {
-  		        						throw new ConfigurationException(NLT.get("errorcode.cannot.make.unique"));
+  		        						throw new ConfigurationException("errorcode.cannot.make.unique", (Object[])null);
   		        					}
    		        				
   		        				} finally {
@@ -789,7 +789,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         			//if address is assigned, cannot continue
         			if (oldPost.getBinder() != null) {
         				if (!oldPost.getBinder().equals(binder)) {
-        					throw new NotSupportedException(NLT.get("errorcode.posting.assigned", new String[]{email}));
+        					throw new NotSupportedException("errorcode.posting.assigned", new String[]{email});
         				}
         			}
         			if (post != null) getCoreDao().delete(post);

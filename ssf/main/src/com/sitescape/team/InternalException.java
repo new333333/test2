@@ -10,13 +10,11 @@
  */
 package com.sitescape.team;
 
-import com.sitescape.team.exception.UncheckedException;
-
 /**
  * @author Jong Kim
  *
  */
-public class InternalException extends UncheckedException {
+public class InternalException extends RuntimeException {
     public InternalException() {
         super();
     }

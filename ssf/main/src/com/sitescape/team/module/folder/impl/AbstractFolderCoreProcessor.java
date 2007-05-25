@@ -276,11 +276,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
-    		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveEntryDestination", new String[] {destination.getPathName()}));
+    		throw new NotSupportedException("errorcode.notsupported.moveEntryDestination", new String[] {destination.getPathName()});
     	Folder to = (Folder)destination;
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (fEntry.getTopEntry() != null)
-    		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveReply"));
+    		throw new NotSupportedException("errorcode.notsupported.moveReply");
     	HKey oldKey = fEntry.getHKey();
     	//get Children
     	List entries = getFolderDao().loadEntryDescendants(fEntry);
@@ -438,7 +438,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     public void moveBinder(Binder source, Binder destination) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
     		super.moveBinder(source, destination);
-    	else throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    	else throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
    	 
     }
 	public void moveBinderFixup(Binder binder) {

@@ -24,7 +24,7 @@ import com.sitescape.team.util.NLT;
 public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     public void moveBinder(Binder source, Binder destination) {
     	if (!(destination instanceof Workspace))
-        	throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+        	throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     	super.moveBinder(source, destination);
      }
  

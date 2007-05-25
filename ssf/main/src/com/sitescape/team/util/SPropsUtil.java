@@ -140,7 +140,7 @@ public class SPropsUtil {
 		String val = get(key);
 		
 		if(val == null)
-			throw new ConfigPropertyNotFoundException();
+			throw new ConfigPropertyNotFoundException(key);
 		else
 			return val;
 	}

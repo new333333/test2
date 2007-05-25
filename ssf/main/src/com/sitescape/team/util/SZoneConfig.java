@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 
@@ -127,7 +128,7 @@ public class SZoneConfig {
 		String val = get(zoneName, key);
 		
 		if(val == null)
-			throw new ConfigPropertyNotFoundException();
+			throw new ConfigurationException("Property " + key + " is not found for zone " + zoneName);
 		else
 			return val;
 	}

@@ -10,9 +10,7 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.exception.UncheckedException;
-
-public class ThumbnailException extends UncheckedException {
+public class ThumbnailException extends RuntimeException {
 	
 	public ThumbnailException() {
         super();

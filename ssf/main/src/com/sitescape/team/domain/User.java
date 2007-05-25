@@ -87,7 +87,7 @@ public class User extends Principal {
 	}
 	public void setTitle(String title) {
 		if (!isDeleted())
-			throw new NotSupportedException(NLT.get("errorcode.notsupported.setTitle"));
+			throw new NotSupportedException("errorcode.notsupported.setTitle");
 		//allow title to be changed when a user is deleted.
 		super.setTitle(title);
 	}

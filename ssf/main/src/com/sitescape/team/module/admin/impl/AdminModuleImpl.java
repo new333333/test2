@@ -28,7 +28,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.InvalidArgumentException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
@@ -324,7 +323,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				break;
 			}
 		default: {
-			throw new InvalidArgumentException("Invalid type:" + type);
+			throw new IllegalArgumentException("Invalid type:" + type);
 			}
 		}
 		

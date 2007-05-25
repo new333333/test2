@@ -16,15 +16,12 @@
  */
 package com.sitescape.team.docconverter;
 
-
-import com.sitescape.team.exception.UncheckedException;
-
 /**
  * @author Roy Klein
  *
  */
 
-public class DocConverterException extends UncheckedException {
+public class DocConverterException extends RuntimeException {
     public DocConverterException() {
         super();
     }

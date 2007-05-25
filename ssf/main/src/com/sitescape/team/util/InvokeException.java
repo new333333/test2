@@ -10,13 +10,11 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.exception.UncheckedException;
-
 /**
  *
  * @author Jong Kim
  */
-public class InvokeException extends UncheckedException {
+public class InvokeException extends RuntimeException {
     public InvokeException() {
         super();
     }

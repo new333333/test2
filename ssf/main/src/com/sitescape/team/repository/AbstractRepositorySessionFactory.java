@@ -17,6 +17,6 @@ public class AbstractRepositorySessionFactory {
 
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
 		if(archiveStore == null)
-			throw new ConfigurationException("Archive store must be specified");
+			throw new ConfigurationException("errorcode.no.archive.store", (Object[])null);
 	}
 }

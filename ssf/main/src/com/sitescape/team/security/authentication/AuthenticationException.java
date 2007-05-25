@@ -10,9 +10,7 @@
  */
 package com.sitescape.team.security.authentication;
 
-import com.sitescape.team.exception.UncheckedException;
-
-public class AuthenticationException extends UncheckedException {
+public class AuthenticationException extends RuntimeException {
     public AuthenticationException() {
         super();
     }

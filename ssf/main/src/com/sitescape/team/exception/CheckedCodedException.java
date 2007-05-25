@@ -16,7 +16,7 @@ import com.sitescape.team.util.NLT;
  * @author Jong Kim
  *
  */
-public abstract class CheckedCodedException extends CheckedException implements ErrorCodeSupport {
+public abstract class CheckedCodedException extends Exception implements ErrorCodeSupport {
     private String errorCode;
     private Object[] errorArgs;
     
@@ -47,7 +47,12 @@ public abstract class CheckedCodedException extends CheckedException implements 
     }
 
     public String getLocalizedMessage() {
-    	return NLT.get(getErrorCode(), getErrorArgs());
+    	try {
+    		return NLT.get(getErrorCode(), getErrorArgs());
+    	}
+    	catch(Exception e) {
+    		return super.getLocalizedMessage();
+    	}
     }
     
     public String getErrorCode() {

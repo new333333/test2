@@ -10,15 +10,13 @@
  */
 package com.sitescape.team.security;
 
-import com.sitescape.team.exception.UncheckedException;
-
 /**
  * Same as <code>AccessControlException</code> except that this is not a
  * <i>coded</i> exception.
  * 
  * @author Jong Kim
  */
-public class AccessControlNonCodedException extends UncheckedException {
+public class AccessControlNonCodedException extends RuntimeException {
     
     public AccessControlNonCodedException() {
         super();

@@ -1,8 +1,6 @@
 package com.sitescape.team.fi;
 
-import com.sitescape.team.exception.UncheckedException;
-
-public class FIException extends UncheckedException {
+public class FIException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -635,7 +635,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						//see if for this folder
 						if (title.startsWith(flag)) {
 							if (option == PostingDef.RETURN_TO_SENDER) 
-						   		throw new NotSupportedException(NLT.get("errorcode.notsupported.postingReplies"));
+						   		throw new NotSupportedException("errorcode.notsupported.postingReplies");
 							 							
 							String docId = title.substring(flag.length());
 							Long id=null;

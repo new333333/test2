@@ -154,7 +154,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
       	if (parent.isZone())
-      		throw new NotSupportedException(NLT.get("errorcode.notsupported.addbinder"));
+      		throw new NotSupportedException("errorcode.notsupported.addbinder");
                
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
@@ -669,7 +669,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
     	if (binder.isReserved()) 
     		throw new NotSupportedException(
-    				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
+    				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("deleteBinder_preDelete");
@@ -773,9 +773,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void moveBinder(Binder source, Binder destination) {
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
-    				NLT.get("errorcode.notsupported.moveBinder", new String[]{source.getPathName()}));
+    				"errorcode.notsupported.moveBinder", new String[]{source.getPathName()});
     	if (destination.isZone())
-      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     	 
     	Map ctx = moveBinder_setCtx(source, destination, null);
     	moveBinder_preMove(source, destination, ctx);
@@ -819,20 +819,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				else {
     					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
     							+ "] because the resource driver is different");
-    		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+    		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     				}
     			}
     			else {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is not top-level mirrored and the destination is not mirrored");
-		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));  				
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});  				
     			}
     		}
     		else { // top-level mirrored
     			if(destination.isMirrored()) {
 					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 							+ "] because the source is top-level mirrored and the destination is already mirrored");
-		      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     			}
     			else {
     				// Does not involve resource moving.
@@ -843,7 +843,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		if(destination.isMirrored()) {
 				logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
 						+ "] because the source is not mirrored but the destination is");
-	      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+	      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     		}
     		else {
     			// Does not involve resource moving.

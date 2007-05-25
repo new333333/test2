@@ -10,20 +10,13 @@
  */
 package com.sitescape.team.util;
 
-import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
-public class ConfigPropertyNotFoundException extends ConfigurationException {
-    public ConfigPropertyNotFoundException() {
-        super();
-    }
-    public ConfigPropertyNotFoundException(String message) {
-        super(message);
-    }
-    public ConfigPropertyNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public ConfigPropertyNotFoundException(Throwable cause) {
-        super(cause);
-    }
+public class ConfigPropertyNotFoundException extends UncheckedCodedException {
+ 	private static final long serialVersionUID = 1L;
+	private static final String ConfigPropertyNotFoundException_ErrorCode = "errorcode.property.not.found";
 
+	public ConfigPropertyNotFoundException(String keyName) {
+		super(ConfigPropertyNotFoundException_ErrorCode, new String[]{keyName});
+	}
 }

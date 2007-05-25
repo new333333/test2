@@ -30,7 +30,6 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -132,7 +131,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
-			throw new ConfigurationException("There is no folder definition to use");
+			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
 		
 		Map<String,Object> data = new HashMap<String,Object>(); // Input data
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
@@ -165,7 +164,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
-			throw new ConfigurationException("There is no folder definition to use");
+			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
 		
 		Map data = new HashMap(); // Input data
 		// Title field, not name, is used as the name of the folder. Weird...
@@ -221,7 +220,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
-			throw new ConfigurationException("There is no folder entry definition to use");
+			throw new ConfigurationException("errorcode.no.entry.definition", (Object[])null);
 		
 		String elementName = getDefinitionElementNameForNonMirroredFile(def);
 		
@@ -252,7 +251,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
-			throw new ConfigurationException("There is no folder entry definition to use");
+			throw new ConfigurationException("errorcode.no.entry.definition", (Object[])null);
 		
 		String[] elementNameAndRepository = getDefinitionElementNameForMirroredFile(def);
 		
@@ -300,7 +299,7 @@ public class FolderUtils {
 		
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
-			throw new ConfigurationException("There is no folder entry definition to use");
+			throw new ConfigurationException("errorcode.no.entry.definition", (Object[])null);
 		
 		String elementName = getDefinitionElementNameForNonMirroredFile(def);
 		
@@ -338,7 +337,7 @@ public class FolderUtils {
 		
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
-			throw new ConfigurationException("There is no folder entry definition to use");
+			throw new ConfigurationException("errorcode.no.entry.definition", (Object[])null);
 		
 		String[] elementNameAndRepository = getDefinitionElementNameForMirroredFile(def);
 
@@ -367,7 +366,8 @@ public class FolderUtils {
 				new MapInputData(data), fileItems, null, null);
 	}
 
-	private static String getDefinitionElementNameForNonMirroredFile(Definition definition) {
+	private static String getDefinitionElementNameForNonMirroredFile(Definition definition) 
+	throws ConfigurationException {
 		Document defDoc = definition.getDefinition();
 		Element root = defDoc.getRootElement();
 		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
@@ -385,22 +385,33 @@ public class FolderUtils {
 				}
 			}
 		}
-		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-		String elementName = nameProperty.attributeValue("value");
 		
-		if (item.attributeValue("name").equals(ATTACH_FILES)) {
-			// Since attachment element allows uploading multiple files at the
-			// same (when done through Aspen UI), each file is identified 
-			// uniquely by appending numeric number (1-based) to the element
-			// name. When uploaded through WebDAV, there is always exactly one
-			// file involed. So we use "1".
-			return elementName + "1";
-		} else {		
-			return elementName;
+		if(item != null) {
+			Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
+			String elementName = nameProperty.attributeValue("value");
+			
+			if (item.attributeValue("name").equals(ATTACH_FILES)) {
+				// Since attachment element allows uploading multiple files at the
+				// same (when done through Aspen UI), each file is identified 
+				// uniquely by appending numeric number (1-based) to the element
+				// name. When uploaded through WebDAV, there is always exactly one
+				// file involed. So we use "1".
+				return elementName + "1";
+			} else {		
+				return elementName;
+			}
+		}
+		else {
+			// This means one of the following conditions:
+			// 1. The defintion does not contain any of the file related elements.
+			// 2. The definition does not contain any file related elements 
+			// configured to use a regular repository.
+			throw new ConfigurationException("errorcode.no.element.regular.file", new String[]{definition.getName()});
 		}
 	}
 
-	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) {
+	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
+	throws ConfigurationException {
 		SimpleProfiler.startProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
 		Document defDoc = definition.getDefinition();
 		Element root = defDoc.getRootElement();
@@ -428,22 +439,32 @@ public class FolderUtils {
 				}
 			}
 		}
-		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-		String elementName = nameProperty.attributeValue("value");
-		
-		String[] result;
-		if (item.attributeValue("name").equals(ATTACH_FILES)) {
-			// Since attachment element allows uploading multiple files at the
-			// same (when done through Aspen UI), each file is identified 
-			// uniquely by appending numeric number (1-based) to the element
-			// name. When uploaded through WebDAV, there is always exactly one
-			// file involed. So we use "1".
-			result = new String[] {elementName + "1", elementName + "_repos1"};
-		} else {		
-			result = new String[] {elementName, null};
+		if(item != null) {
+			Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
+			String elementName = nameProperty.attributeValue("value");
+			
+			String[] result;
+			if (item.attributeValue("name").equals(ATTACH_FILES)) {
+				// Since attachment element allows uploading multiple files at the
+				// same (when done through Aspen UI), each file is identified 
+				// uniquely by appending numeric number (1-based) to the element
+				// name. When uploaded through WebDAV, there is always exactly one
+				// file involed. So we use "1".
+				result = new String[] {elementName + "1", elementName + "_repos1"};
+			} else {		
+				result = new String[] {elementName, null};
+			}
+			SimpleProfiler.stopProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
+			return result;
 		}
-		SimpleProfiler.stopProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
-		return result;
+		else {	
+			// This means one of the following conditions:
+			// 1. The defintion does not contain any of the file related elements.
+			// 2. The definition does not contain attachFiles element (which normally
+			// shouldn't happen) and all other file related elements are configured
+			// to use regular repositories (as opposed to external resource adapter).
+			throw new ConfigurationException("errorcode.no.element.mirrored.file", new String[]{definition.getName()});
+		}
 	}
 
 	private static String getStorageValueFromItemElem(Element itemElem) {
