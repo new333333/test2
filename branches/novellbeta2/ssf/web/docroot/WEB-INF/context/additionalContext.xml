@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
+		<property name="configLocation"><value>classpath:config/hibernate.cfg.xml</value></property>
+		
+		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
+	</bean>
+	<!-- ========================= Data Access (DAO) Components ====================== -->
+	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+	</bean>
+
+	<!-- ============================== Modules ============================= -->
+
+	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
+	<bean id="workflowModule" class="com.sitescape.team.module.workflow.impl.NullWorkflowModuleImpl"/>
+	
+	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
+	</bean>
+
+	<!-- ============================== Services ============================= -->
+
+	<bean id="archiveStore" class="com.sitescape.team.repository.archive.impl.NullArchiveStore">
+	</bean>
+	
+	<!-- ============================== Document Converter ============================ -->
+
+    <bean id="textConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">
+    </bean>
+    
+	<!-- View file as HTML manager implementation -->
+    <bean id="htmlConverterManager" class="com.sitescape.team.docconverter.impl.HtmlConverterManagerImpl">
+    	<!-- Options 1=OpenOffice conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="htmlOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="textConverterManager" class="com.sitescape.team.docconverter.impl.TextConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="textOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="imageConverterManager" class="com.sitescape.team.docconverter.impl.ImageConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="imageOpenOfficeConverter"/></property>
+    </bean>
+    
+    <!-- ============================= File Integration Service ============================ -->
+    
+	<bean id="resourceDriverManager" class="com.sitescape.team.fi.connection.impl.NullResourceDriverManager"/>
+    
+    <bean id="fiAdapter" class="com.sitescape.team.repository.fi.impl.NullFIRepositorySessionFactoryAdapter"/>
+	
+</beans>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<project name="samples" basedir="." default="compile">
+	<target name="clean">
+		<ant dir="remotingclient" target="clean" />
+	</target>
+
+	<target name="compile">
+		<ant dir="remotingclient" target="compileButGenerated" />
+	</target>
+</project>

@@ -1,0 +1,10 @@
+
+	<form>
+	  <ssHelpSpot helpId="tools/calendar_entry_control" offsetX="0" 
+	    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>"></ssHelpSpot>
+		<input type="checkbox" id="ss_calendarEventsTypeChoose" onclick="ss_cal_Events.changeEventType();"><label for="ss_calendarEventsTypeChoose">Show all entries by:</label>
+		<select id="ss_calendarEventsTypeSelect" onclick="ss_cal_Events.changeEventType();">
+			<option value="creation"><ssf:nlt tag="calendar.viewType.creation"/></option>
+			<option value="activity"><ssf:nlt tag="calendar.viewType.activity"/></option>
+		</select>
+	</form>

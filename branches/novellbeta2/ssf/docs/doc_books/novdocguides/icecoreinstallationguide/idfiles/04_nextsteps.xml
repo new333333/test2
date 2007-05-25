@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9veuno" pid="b9veuno" name="Chapter" level="0" number="4"> <text>Next Steps</text> </target>
+
+ <target id="b9vev1e" pid="b9veuno" name="Procedure" level="1" number="1"> <text>Read the Making Teams Work manual</text> </target>
+
+ <target id="b9vev1f" pid="b9veuno" name="Step" level="2" number="1"> <text>Read the Making Teams Work manual</text> </target>
+
+ <target id="b9vev2q" pid="b9veuno" name="Step" level="2" number="2"> <text>Read the Getting Started with Workflow tutorial </text> </target>
+
+ <target id="b9vev2t" pid="b9veuno" name="Step" level="2" number="3"> <text>Skim the Manager online help system.</text> </target>
+
+ <target id="b9vev2w" pid="b9veuno" name="Step" level="2" number="4"> <text>Investigate template customizations. </text> </target>
+
+ <target id="b9vev2z" pid="b9veuno" name="Step" level="2" number="5"> <text>Investigate toolkit customizations.</text> </target>
+
+</targets>

@@ -1,0 +1,165 @@
+/**
+ * The contents of this file are governed by the terms of your license
+ * with SiteScape, Inc., which includes disclaimers of warranties and
+ * limitations on liability. You may not use this file except in accordance
+ * with the terms of that license. See the license for the specific language
+ * governing your rights and limitations under the license.
+ *
+ * Copyright (c) 2007 SiteScape, Inc.
+ *
+ */
+/*
+ * Created on Jan 26, 2005
+ *
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+package com.sitescape.team.domain;
+import com.sitescape.team.InternalException;
+import com.sitescape.util.StringUtil;
+/**
+ * @author Janet McCann
+ * The first 15 characters of a sortKey are the B36 encoded folderId.  For entries this provides
+ * sorting by folder, which should result in better lookups.  For folders the first 15 characters 
+ * represent the topFolderId
+ */
+public class HKey {
+    public static final  String B10_TO_36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    private String sortKey;
+    private String position;
+    private int level=1;
+    
+    public HKey() { 
+    }
+    public HKey(String sortKey) {
+        int length = sortKey.length();
+        
+        if (length == 15) { 
+            level=0;
+        } else {
+            level = (length-15)/5;
+        }
+        this.sortKey = sortKey;
+        
+    }
+    
+ 
+    public HKey(HKey parent, int eNum) {
+        level = parent.getLevel()+1;
+        setKey(parent.getSortKey(), eNum);
+    }
+    public HKey(String parent, int eNum) {
+        level = (parent.length()/5)-3+1;
+        setKey(parent, eNum);
+    }
+    protected void setKey(String parent, int eNum) {
+        StringBuffer key = new StringBuffer(100);
+
+        // Base 36 conversion 
+        while (eNum > 0) {
+            key.insert(0,B10_TO_36.charAt(eNum%36));
+            eNum = eNum/36;
+        }
+        int length = key.length();
+        for (int i=length; i<5; ++i) {
+            key.insert(0,"0");            
+        }
+        key.insert(0, parent);
+        sortKey = key.toString();       
+        
+    }
+
+    /**
+     * @hibernate.property column="level"
+     * @return
+     */
+    public int getLevel() {
+        return this.level;
+    }
+    protected void setLevel(int level) {
+        this.level = level;
+    }
+    /**
+     * @hibernate.property length="255" column="sortKey"
+     * @return
+     */
+    public String getSortKey() {
+        return this.sortKey;
+    }
+    protected void setSortKey(String sortKey) {
+        this.sortKey = sortKey;
+        position=null;       
+    }
+    /*
+     * Return array of ancestor sortKeys for use in queries.
+     */
+    public String[] getAncestorKeys() {
+        if (level <= 1) return null;
+        String[] result = new String[level-1];
+        int endIndex=20;
+        int pos=0;
+        while (endIndex < sortKey.length()) {
+            result[pos++] = sortKey.substring(0,endIndex);
+            endIndex += 5;
+           
+        }
+        return result;
+    }
+    public String getEntryNumber() {
+        if (position == null) {
+            //Base 10 representation as a dotted string
+            StringBuffer dottyString = new StringBuffer(100);
+            //Skip folder root which is first 15 characters
+            dottyString.append(B36To10(sortKey.substring(15,20)));
+            
+            for (int i=20; i<sortKey.length(); i+=5) {
+                dottyString.append(".");
+                dottyString.append(B36To10(sortKey.substring(i,i+5)));
+            }
+            position = dottyString.toString();
+        }
+        return position;
+    }
+    private String B36To10(String B36) {
+         int value=0;
+         for (int i=0; i<B36.length(); ++i) {
+             value = (value*36) + B10_TO_36.indexOf(B36.charAt(i));
+         }
+         return String.valueOf(value);
+             
+    }
+    public String getRelativeNumber(int level) {
+    	String [] levels = StringUtil.split(getEntryNumber(), ".");
+    	if (level > levels.length) return null;
+    	return levels[level-1];
+    }
+    public int getLastNumber() {
+    	String num = B36To10(sortKey.substring(sortKey.length()-5, sortKey.length()));
+    	return Integer.parseInt(num);
+     }
+    /*
+     * Each binder has a unique root sort key that it uses to
+     * generate sortkeys for its child docshareentries.
+     * The root is generated from the folder id.
+     */
+    public static String generateRootKey(Long id) {
+    	//the maximum long value encoded in base 36 will fit in 15 bytes
+    	StringBuffer sortKey = new StringBuffer(15);
+    	if (id == null) throw new InternalException("Entity must be saved");
+    	long start = id.longValue();
+    	
+        // Base 36 conversion 
+        while (start > 0) {
+            sortKey.insert(0,HKey.B10_TO_36.charAt((int)(start%36)));
+            start = start/36;
+        }
+        for (int i=sortKey.length(); i<15; ++i) {
+            sortKey.insert(0,"0");            
+        }
+        
+        return sortKey.toString();
+    }
+
+  
+}

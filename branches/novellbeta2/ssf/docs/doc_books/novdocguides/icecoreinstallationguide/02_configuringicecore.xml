@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd" [
+ <!ENTITY % NOVDOC.DEACTIVATE.IDREF "INCLUDE">
+ <!ENTITY % entities SYSTEM "entity-decl.ent">
+ %entities;
+]>
+
+<chapter conformance="none,doc,no,,80" id="b9vdb7o" revision="01/01/03">
+ <title>Configuring 
+  <productname>&product;</productname>
+ </title>
+ <para>Before using 
+  <productname>&product;</productname>, you need to perform the initial configuration tasks described in this chapter to set up 
+  <productname>&product;</productname> so that all default features are operable:
+ </para>
+ <orderedlist spacing="normal">
+  <listitem>
+   <para><xref linkend="b9vde7e" xrefstyle="SectTitleOnPage"/></para>
+   <para>After you log in to the zone-management account, you can perform all of the management tasks for the zone and the current workspace.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vdczx" xrefstyle="SectTitleOnPage"/></para>
+   <para>You need to decide who can view the zone workspace, which is the initial workspace in the zone's hierarchy.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7f" xrefstyle="SectTitleOnPage"/></para>
+   <para>You must specify an outgoing e-mail server to be able to invite users to the zone, and to use features such as "I forgot my password," e-mail notifications, and more.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7g" xrefstyle="SectTitleOnPage"/></para>
+   <para>There are various optional features that you can enable or disable to change the zone appearance and functionality to meet the needs of your organization's teams.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7h" xrefstyle="SectTitleOnPage"/></para>
+   <para>After you provide the e-mail addresses of your users, the software sends users a link to pages that guide them through the registration process.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7i" xrefstyle="SectTitleOnPage"/></para>
+   <para>Users cannot receive e-mail notification of new or modified entries in a discussion forum until you enable this feature.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vde7j" xrefstyle="SectTitleOnPage"/></para>
+   <para>SiteScape provides additional configuration, information-design, and customization information that you can use to enhance your teams' experience of Forum.</para>
+  </listitem>
+ </orderedlist>
+ <sect1 id="b9vde7e">
+  <title>Log in as a Manager</title>
+  <para>You need to log in using a zone-management account in order to set up Forum for your users.</para>
+  <sect2 id="b9vdfym">
+   <title>To log in using the default zone-management account:</title>
+   <procedure id="b9vdg1s">
+    <step id="b9vdg1t" performance="required">
+     <para>Type the following URL in the browser window:</para>
+
+<screen>
+http://&lt;yourCompany.com>/&lt;ssf>/&lt;zone1>/dispatch.cgi
+</screen>
+
+     <note>
+      <para>Replace the variables above with values specified during installation.</para>
+     </note>
+     <para>The login box appears.</para>
+    </step>
+    <step id="b9vdg74" performance="required">
+     <para>In the "Login name" box, type:</para>
+
+<screen>
+wf_admin
+</screen>
+
+    </step>
+    <step id="b9vdg76" performance="required">
+     <para>In the Password box, enter the password specified upon Forum installation.</para>
+    </step>
+    <step id="b9vdg79" performance="required">
+     <para>Click the Login button.</para>
+     <para>The zone-workspace page appears. You are now logged in.</para>
+    </step>
+   </procedure>
+   <para>In the upper-left corner of the page, a SiteScape Forum Manager link appears. This is the name associated with the default management account (wf_admin). When the name appears in the upper-left corner, you are logged into the system. (You can change the name "SiteScape Forum Manager" by modifying the user profile for the wf_admin account.)</para>
+   <para>When you begin managing Forum, there are only two management levels: site managers (who manage the server machine) and zone managers. </para>
+   <para>By default, wf_admin is the only member of the Administrators group for the initial zone; if you create an additional zone, then the zone creator and wf_admin are both members of the Administrators group. Members of the Administrators group have the right to perform zone-management tasks. If you choose, you can add other members to this group, so that they can help manage the zone.</para>
+  </sect2>
+  <sect2 id="b9vdhwi">
+   <title>Management Levels</title>
+   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and forums. At that point, it is helpful to delegate workspace management and the management of individual resources.</para>
+   <para>The Forum management levels and the default tasks that managers at those levels may perform are:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Site Managers</para>
+     <para>Primarily responsible for working with the SiteScape Forum software so that Forum runs smoothly. Tasks include updating the installation on the server, troubleshooting the internal processes of Forum, enabling e-mail for the system, and so on.</para>
+     <para>Because site managers work directly with the server, there is no management menu specifically designed for them. Usually, site managers are also zone managers.</para>
+    </listitem>
+    <listitem>
+     <para>Zone Managers</para>
+     <para>Primarily responsible for performing the initial setup of the zone managing users and groups, creating workspaces, delegating management, customizing the zone using templates, and assisting the discussion-forum managers with the creation of initial custom commands and workflow processes.</para>
+    </listitem>
+    <listitem>
+     <para>Workspace Managers</para>
+     <para>Responsible for creating and deleting forums in a workspace, determining which forums appear in the workspace, viewing auditing information about the workspace, customizing the workspace using templates, and creating or deleting additional workspaces. </para>
+    </listitem>
+    <listitem>
+     <para>Forum Managers</para>
+     <para>Responsible for managing a single forum. The responsibilities vary according to the type of forum being managed (discussion, calendar, tasks, and so on). Forum managers can modify access controls for the forum and allow or prevent viewing, participation, and other actions.</para>
+     <para>Managing a discussion forum requires more effort than managing other kinds of forums. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the forum using templates, running reports about content in the discussion forum, and managing the e-mail posting of forum entries.</para>
+    </listitem>
+   </itemizedlist>
+   <para>Additional information about delegating management is available in the online Manager Help system, in the Workspace Organization section.</para>
+  </sect2>
+  <sect2 id="b9vdjua">
+   <title>Using the Forum Management Menus </title>
+   <para>The Forum management menus are designed to provide you with a maximum amount of flexibility when managing resources for your teams.</para>
+   <para>To access the management menus, click the Manage toolbar item: </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="managemenus_a.png" width="100%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="managemenus_a.png" width="100%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>The Manage drop-down menu provides you with access to pages that allow you to manage: The current workspace Groups (available across the zone) Users (available across the zone) </para>
+   <para/>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>The zone </para>
+    </listitem>
+    <listitem>
+     <para/>
+    </listitem>
+    <listitem>
+     <para/>
+    </listitem>
+   </itemizedlist>
+   <para>SiteScape provides navigation links at the top of the management pages, which allow you to move quickly from one type of management to another: </para>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vdczx">
+  <title>Set Access to the Zone Workspace</title>
+  <para/>
+ </sect1>
+ <sect1 id="b9vde7f">
+  <title>Specify the Outgoing E-Mail Server</title>
+  <para/>
+ </sect1>
+ <sect1 id="b9vde7g">
+  <title>Optional Configuration Choices</title>
+  <para/>
+ </sect1>
+ <sect1 id="b9vde7h">
+  <title>Enable E-mail Notifications</title>
+  <para/>
+ </sect1>
+ <sect1 id="b9vde7i">
+  <title>Invite Users to the Zone</title>
+  <para/>
+ </sect1>
+ <sect1 id="b9vde7j">
+  <title>Facilitate Forum Use</title>
+  <para/>
+ </sect1>
+</chapter>
