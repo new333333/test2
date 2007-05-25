@@ -48,7 +48,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    <ssf:param name="fileId" value="${selection.id}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
-					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
+					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
 					</c:if>
 					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:url 
 		    webPath="viewFile"
@@ -68,7 +68,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    <ssf:param name="fileId" value="${selection.id}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
-					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
+					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
 					</c:if>
 					     ><c:out value="${selection.fileItem.name} "/></a>
 			<c:if test="${!empty selection.fileLock}">
@@ -109,7 +109,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 									'<ssf:ssfsInternalAttachmentUrl 
 										binder="${ssDefinitionEntry.parentBinder}"
 										entity="${ssDefinitionEntry}" 
-										fileAttachment="${selection}"/>');
+										fileAttachment="${selection}" escapeSingleQuote="yes" />');
 									return false;">
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 

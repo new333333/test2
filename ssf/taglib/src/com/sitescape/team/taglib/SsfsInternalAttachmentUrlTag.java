@@ -24,6 +24,7 @@ public class SsfsInternalAttachmentUrlTag extends TagSupport {
 	private Binder binder;
 	private DefinableEntity entity;
 	private FileAttachment fa;
+	private String escapeSingleQuote = "no";
     
 	public int doStartTag() throws JspException {
 		if(binder == null)
@@ -37,10 +38,16 @@ public class SsfsInternalAttachmentUrlTag extends TagSupport {
 		
 		String url = SsfsUtil.getInternalAttachmentUrl(binder, entity, fa);
 		
+		if ("yes".equalsIgnoreCase(escapeSingleQuote)) {
+			url = url.replaceAll("'", "\\\\'");
+		}
+		
 		try {
 			pageContext.getOut().print(url);
 		} catch (IOException e) {
 			throw new JspException(e);
+		} finally {
+			escapeSingleQuote = "no";
 		}
 	    
 		return SKIP_BODY;
@@ -61,6 +68,8 @@ public class SsfsInternalAttachmentUrlTag extends TagSupport {
 	public void setFileAttachment(FileAttachment fa) {
 		this.fa = fa;
 	}
+	
+	public void setEscapeSingleQuote(String escapeSingleQuote) {
+		this.escapeSingleQuote = escapeSingleQuote;
+	}
 }
-
-

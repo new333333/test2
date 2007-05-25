@@ -74,22 +74,16 @@ public class FileOpen extends JApplet implements Runnable {
         			boolean blnEditorErrorEncountered = false;
             		try {
             			
-            			//String strURLTest = strFileName;
-            			//URL urlTest = new URL(strURLTest);
-            			//System.out.println("urlTest: "+ urlTest.toString());
-            			//String encodedurl = URLEncoder.encode(urlTest.toString(),"UTF-8"); 
-            			//System.out.println("encodedurl: " + encodedurl);
-            			//System.out.println("strFileName: "+strFileName);
+            			//System.out.println("After replaced URL: strFileName: "+strFileName);
             			
                         String strURL = strFileName;
-                        String strReplacedURL = strURL.replaceAll(" ", "%20");
+                        String strReplacedURL = strURL.replaceAll("#", "%23");
                         strReplacedURL = strReplacedURL.replaceAll("&", "%26");
-                        
+                        strReplacedURL = strReplacedURL.replaceAll(" ", "%20");
                         //System.out.println("After replaced URL: strReplacedURL: "+strReplacedURL);
                         
                         String [] command;
                         //String strOperSystem = "windows";
-                        
                         //System.out.println("TESTING the Editor Type: Using This: " + strEditorType[i]);
                         
                         if (strOperatingSystem.equalsIgnoreCase("windows")) {
@@ -132,6 +126,9 @@ public class FileOpen extends JApplet implements Runnable {
             		}
                 	catch(IOException ioe) {
                 		System.out.println("IO Err: "+ioe);
+                	}
+                	catch(Exception e) {
+                		System.out.println("Err: "+e);
                 	}
                 	finally {
                 		if (!blnEditorErrorEncountered)  break;

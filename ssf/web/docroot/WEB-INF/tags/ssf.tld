@@ -1056,7 +1056,12 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>com.sitescape.team.domain.FileAttachment</type>
-		</attribute>		
+		</attribute>
+		<attribute>
+			<name>escapeSingleQuote</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>	
 
 	<tag>
