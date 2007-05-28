@@ -4149,7 +4149,16 @@ table.ss_tasks_list ul, table.ss_tasks_list li {
 div.ss_completedContainer {
 	border: 1px solid #afc8e3;
 	background-color: #e8eff7;
-	width: 99px;
+	<c:choose>
+		<c:when test="<%= isIE %>">
+			width: 101px;
+		</c:when>
+		<c:otherwise>
+			width: 99px;
+		</c:otherwise>
+	</c:choose>
+		
+
 	height:12px;
 	float:left;
 	margin: 3px;
@@ -4216,6 +4225,7 @@ a.ss_taskStatus img {
 	vertical-align: bottom;
 }
 
+
 a.ss_taskStatus_inProcess_u img, a.ss_taskStatus_inProcess_u:link img , a.ss_taskStatus_inProcess_u:focus img, a.ss_taskStatus_inProcess_u:visited img { 
 	background: transparent url(<html:imagesPath/>icons/status_inProcess_u.gif) no-repeat top left; 
 }
@@ -4244,6 +4254,8 @@ a.ss_taskPriority img {
 	border: 0;
 	vertical-align: bottom;
 }
+
+
 
 a.ss_taskPriority_trivial_u img, a.ss_taskPriority_trivial_u:link img , a.ss_taskPriority_trivial_u:focus img, a.ss_taskPriority_trivial_u:visited img { 
 	background: transparent url(<html:imagesPath/>icons/prio_trivial_u.gif) no-repeat top left; 
