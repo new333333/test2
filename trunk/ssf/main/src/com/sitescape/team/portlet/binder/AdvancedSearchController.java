@@ -240,6 +240,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("quickSearch", false);
 		
+		model.putAll(prepareSavedQueries());
 		
 		Workspace ws = getWorkspaceModule().getWorkspace();
 		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);

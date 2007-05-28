@@ -65,6 +65,9 @@
 					<tr>
 						<td id="ss_rankings" >
 							<div>
+								<!-- Saved searches -->
+								<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
+															
 								<!-- Places rating - Moved to the new file -->
 								<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
 						
@@ -73,9 +76,6 @@
 						
 								<!-- Tags -->
 								<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
-								
-								<!-- Saved searches -->
-								<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
 							</div>
 						</td>
 						

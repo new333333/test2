@@ -72,7 +72,8 @@ var ss_findButtonClose;
 var ss_AjaxBaseUrl;
 var ss_viewEntryURL;
 var ss_validationErrorMessage;
-
+var ss_AdvancedSearch;
+var ss_savedSearchTitle;
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
 	ss_rootPath = "<html:rootPath/>";
@@ -175,6 +176,11 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	
 	// calendar
 	ss_calendarTitleText = "<ssf:nlt tag="calendar.import.window.title"/>";
+	
+	ss_AdvancedSearch = "<portlet:actionURL windowState="maximized" portletMode="view">
+				<portlet:param name="action" value="advanced_search"/>
+		</portlet:actionURL>";
+	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 }
 
 function ss_loadDojoFiles() {

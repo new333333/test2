@@ -318,6 +318,7 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_ENTRY = "view_entry";
 	public static final String OPERATION_VIEW_FILE = "view_file";
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
+	public static final String OPERATION_LIST_SAVED_QUERIES="list_saved_queries";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	
