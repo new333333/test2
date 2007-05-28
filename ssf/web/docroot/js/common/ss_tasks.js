@@ -228,12 +228,11 @@ function ss_tasks (tableId, binderId, namespace) {
 		var label = completed[task.completed];
 		
 		var container = document.createElement('div');
-		container.setAttribute("class", "ss_completedContainer");
+		dojo.html.setClass(container, "ss_completedContainer");
 		dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, value));
 	
 		var clearDiv = document.createElement('div');
-		clearDiv.setAttribute("class", "ss_clear");
-		
+		dojo.html.setClass(clearDiv, "ss_clear");
 		parent.appendChild(container);
 		
 		
@@ -252,16 +251,16 @@ function ss_tasks (tableId, binderId, namespace) {
 		
 		completedStatusDivs[task.id][11] = document.createElement('div');
 		completedStatusDivs[task.id][11].innerHTML = completed[task.completed];
-		completedStatusDivs[task.id][11].setAttribute("class", "ss_bar_status");
+		dojo.html.setClass(completedStatusDivs[task.id][11], "ss_bar_status");
 		parent.appendChild(completedStatusDivs[task.id][11]);
 	}
 	
 	function ss_setStyle(obj, tempValue, borderValue) {
 		borderValueT = borderValue.replace("c", "");
 		if (tempValue <= borderValueT && borderValueT != 0 ) {
-			obj.setAttribute("class", "ss_bar_on");
+			dojo.html.setClass(obj, "ss_bar_on");
 		} else {
-			obj.setAttribute("class", "ss_bar_off");
+			dojo.html.setClass(obj, "ss_bar_off");
 		}
 	}
 	
@@ -320,7 +319,9 @@ function ss_tasks (tableId, binderId, namespace) {
 			hrefObj.href = "javascript: // ;";
 			
 			if (task.status != statuses[i].key) {
-				hrefObj.setAttribute("class", "ss_taskStatus ss_taskStatus_" + statuses[i].key + "_u");
+				dojo.html.setClass(hrefObj, "ss_taskStatus ss_taskStatus_" + statuses[i].key + "_u");
+			} else {
+				dojo.html.setClass(hrefObj, "ss_taskStatus");			
 			}
 				    
 		    function declareChangeStatus(obj, taskId, newStatus) {		
@@ -357,7 +358,9 @@ function ss_tasks (tableId, binderId, namespace) {
 			hrefObj.href = "javascript: // ;";
 	    
 	    	if (task.priority != priorities[i].key) {
-				hrefObj.setAttribute("class", "ss_taskPriority ss_taskPriority_" + priorities[i].key + "_u");
+	    		dojo.html.setClass(hrefObj, "ss_taskPriority ss_taskPriority_" + priorities[i].key + "_u");
+			} else {
+				dojo.html.setClass(hrefObj, "ss_taskPriority");			
 			}
 			
 		    function declareChangePriority(obj, taskId, newPriority) {		
