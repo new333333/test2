@@ -160,6 +160,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
 			  </ssHelpSpot>
+				<a class="ss_savedQueries" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+				<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
 			</form>
      	</div>
 	</div>
@@ -422,6 +424,12 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
         <ssf:nlt tag="navigation.search"/>
       </label>
     </span>
+		<a class="ss_advanced" style="margin-left: 15px;" href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="advanced_search"/>
+		<portlet:param name="tabTitle" value="SEARCH FORM"/>
+		<portlet:param name="newTab" value="0"/>
+		</portlet:actionURL>"
+		><ssf:nlt tag="navigation.search.advanced"/></a>
   </td>
   <td rowspan="4" width="100%"></td>
   <td valign="top" rowspan="4"><!-- Help button -->
@@ -468,12 +476,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 		  </ssHelpSpot>
 		</form>
 		
-		<a class="ss_advanced" href="<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="advanced_search"/>
-			<portlet:param name="tabTitle" value="SEARCH FORM"/>
-			<portlet:param name="newTab" value="0"/>
-			</portlet:actionURL>"
-			><ssf:nlt tag="navigation.search.advanced"/></a>
+		<a class="ss_savedQueries" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+		<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>

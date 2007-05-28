@@ -4067,6 +4067,23 @@ input.ss_saveQueryName {
 	font-weight: bold;
 }
 
+.ss_savedQueriesListPane {
+	display: none;
+	background-color: #FFFFFF;
+	border: 1px solid #CCCCCC;
+	margin: 0;
+	padding: 6px;
+	width: 140px;
+}
+
+.ss_savedQueriesListPane ul, .ss_savedQueriesListPane li {
+	margin: 0;
+	padding: 0;
+}
+
+.ss_savedQueriesListPane h1 {
+	font-size: 12px;
+}
 
 /*
 	Search styles / end
@@ -4081,6 +4098,7 @@ input.ss_saveQueryName {
 /* skip link - end */
 
 /* Widgets */
+
 div.ss_selectedItemsContainer {
 	border: 1px solid #333333;
 	<c:if test="<%= isIE %>">

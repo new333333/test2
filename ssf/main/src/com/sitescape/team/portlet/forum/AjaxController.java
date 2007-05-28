@@ -354,11 +354,12 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetTasksExtendedInfo(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
 			return ajaxUpdateTask(request, response);
+		} else if (op.equals(WebKeys.OPERATION_LIST_SAVED_QUERIES)) {
+			return ajaxListSavedQueries(request, response);
 		}
 		
 		return ajaxReturn(request, response);
 	} 
-	
 	
 	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
@@ -2349,5 +2350,21 @@ public class AjaxController  extends SAbstractController {
 		}
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/removeSearchQuery", model);		
+	}
+	
+	private ModelAndView ajaxListSavedQueries(RenderRequest request, RenderResponse response) {
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = getProfileModule().getUserProperties(currentUser.getId());
+		Map properties = userProperties.getProperties();
+		
+		Map userQueries = new HashMap();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+
+		Map model = new HashMap();
+		model.put("ss_UserQueries", userQueries);
+		return new ModelAndView("forum/json/savedQueries", model);	
 	}
 }

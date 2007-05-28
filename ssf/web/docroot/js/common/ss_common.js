@@ -4938,3 +4938,39 @@ function ss_confirmStopWorkflow(text) {
 		return false
 	}
 }
+
+dojo.require("dojo.html.iframe");
+
+function ss_showSavedQueriesList(relObj, divId) {
+	var url = ss_AjaxBaseUrl;
+	url += "&operation=list_saved_queries";
+	url += "&randomNumber="+ss_random++;
+	
+	var bindArgs = {
+    	url: url,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+			try {
+				var divObj = document.getElementById(divId);
+			
+				
+				var txt = "<h1>" + ss_savedSearchTitle + "</h1><ul>";
+				for (var queryNo in data) {
+					txt += "<li><a href=\"" + ss_AdvancedSearch + "&operation=ss_savedQuery&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
+				}
+				txt += "</ul>";
+				divObj.innerHTML = txt;
+
+				ss_toggleDivWipe(divId);
+			} catch (e) {alert(e)}
+		},
+		preventCache: true,
+		mimetype: "text/json",
+		method: "get"
+	};   
+	dojo.io.bind(bindArgs);	
+	
+	
+}
