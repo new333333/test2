@@ -22,12 +22,7 @@
 					<ssf:param name="operation" value="find_calendar_events" />
 		    	</ssf:url>";
 
-	var ss_viewEventUrl = "<ssf:url 
-				adapter="<%= useAdaptor %>" 
-				portletName="ss_forum" 
-				folderId="${ssFolder.id}" 
-				action="view_folder_entry" 
-				actionUrl="true" />";
+	var ss_viewEventUrl = ss_viewEntryURL + "&binderId=${ssFolder.id}";
 				
 	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
 		    	adapter="true" 

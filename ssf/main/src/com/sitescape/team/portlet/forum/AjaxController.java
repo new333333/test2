@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -40,6 +41,7 @@ import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -56,6 +58,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.ical.IcalParser;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
@@ -68,6 +71,9 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.task.TaskMonthViewRangeDates;
+import com.sitescape.team.task.TaskViewRangeDates;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -342,8 +348,14 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetSearchQueryName(request, response);
 		} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
 			return ajaxGetRemovedQueryName(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_TASKS)) {
+			return ajaxFindTasks(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_TASKS_EXTENDED_INFO)) {
+			return ajaxGetTasksExtendedInfo(request, response);
+		} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
+			return ajaxUpdateTask(request, response);
 		}
-
+		
 		return ajaxReturn(request, response);
 	} 
 	
@@ -2041,7 +2053,145 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
 	}
+
+	private ModelAndView ajaxFindTasks(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Binder binder = getBinderModule().getBinder(binderId);
+			
+			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+
+			Map folderEntries = new HashMap();
+			Map options = new HashMap();
+			
+			User user = RequestContextHolder.getRequestContext().getUser();
+			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+			options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+			
+			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+			
+			
+			String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, "");
+			TaskHelper.FilterType filterType = TaskHelper.setTaskRange(portletSession, TaskHelper.FilterType.valueOf(filterTypeParam));
+			model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+			
+			options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());
+	       	
+	       	List entries;
+			if (binder instanceof Folder) {
+				folderEntries = getFolderModule().getEntries(binderId, options);
+				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			} else {
+				//a template
+				entries = new ArrayList();
+			}
+			TaskHelper.extendTasksInfo(entries);
+			model.put(WebKeys.FOLDER_ENTRIES, entries);
+			
+		} else {
+			model.put(WebKeys.FOLDER_ENTRIES, Collections.EMPTY_LIST);
+		}
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/tasks", model);
+	}
 	
+	private ModelAndView ajaxGetTasksExtendedInfo(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Binder binder = getBinderModule().getBinder(binderId);
+			
+			Iterator defaultEntryDefinitionsIt = binder.getEntryDefinitions().iterator();
+			if (defaultEntryDefinitionsIt.hasNext()) {
+				Definition entryDefinition = (Definition) defaultEntryDefinitionsIt.next();
+				Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryDefinition.getId());
+				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
+			}
+		}
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/tasks_extended_info", model);
+	}
+	
+	private ModelAndView ajaxUpdateTask(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		if (WebHelper.isUserLoggedIn(request)) {
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Long entryId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+			
+			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			
+			Map formData = new HashMap();
+			String newPriority = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_PRIORITY, "");
+			if (!newPriority.equals("")) {
+				formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
+			}
+			
+			String newStatus = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_STATUS, "");
+			if (!newStatus.equals("")) {
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
+				if (newStatus.equals("completed")) {
+					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+				}
+				
+				String statusCurrent = TaskHelper.getTaskStatusValue(entry);
+				String completedCurrent = TaskHelper.getTaskStatusValue(entry);
+				
+				if (newStatus.equals("inProcess") && "completed".equals(statusCurrent) &&
+						"c100".equals(completedCurrent)) {
+					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c90"});
+				}
+			}
+			
+			String newCompleted = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_COMPLETED, "");
+			if (!newCompleted.equals("")) {
+				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});
+				
+				
+				if (newCompleted.equals("c0")) {
+					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"needsAction"});
+				}
+				
+				if (newCompleted.equals("c10") || newCompleted.equals("c20") ||
+						newCompleted.equals("c30") || newCompleted.equals("c40") ||
+						newCompleted.equals("c50") || newCompleted.equals("c60") ||
+						newCompleted.equals("c70") || newCompleted.equals("c80") ||
+						newCompleted.equals("c90")) {
+					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"inProcess"});
+				}
+				
+				if (newCompleted.equals("c100")) {
+					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"completed"});
+				}		
+
+			}
+			
+			getFolderModule().modifyEntry(binderId, entryId, 
+					new MapInputData(formData), new HashMap(), new HashSet(), null);
+			
+		
+			entry = getFolderModule().getEntry(binderId, entryId);
+			model.putAll(TaskHelper.extendTaskInfo(entry));
+			model.put(WebKeys.ENTRY, entry);
+			
+			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+		}		
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/update_task", model);
+	}
+
+
 	private ModelAndView ajaxFindEntryForFile(RenderRequest request, RenderResponse response) throws Exception
 	{
 		Map model = new HashMap();

@@ -947,21 +947,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
     	}
     	maxResults = getBinders_maxEntries(maxResults); 
-        
-       	Hits hits = null;
-       	org.dom4j.Document queryTree = null;
-       	org.dom4j.Document userSearchFilter = null;
-       	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
-       		userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+    
+
        	
-       	SearchFilter searchFilter = null;
-       	if (userSearchFilter != null) {
-       		searchFilter = new SearchFilter(userSearchFilter);
-       	} else {
-       		searchFilter = new SearchFilter(true);
+       	SearchFilter searchFilter = new SearchFilter(true);
+
+       	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) {
+       		org.dom4j.Document userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+           	if (userSearchFilter != null) {
+           		searchFilter.appendFilter(userSearchFilter);
+           	}       		
        	}
+
+    	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER)) {
+    		org.dom4j.Document userDynamicSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER);
+        	if (userDynamicSearchFilter != null) {
+        		searchFilter.appendFilter(userDynamicSearchFilter);
+        	}
+    	}
+
+       	
+       	
+       	
        	getBinders_getSearchDocument(binder, searchFilter);
-      	queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), options);
+       	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), options);
       	
       	SearchUtils.getQueryFields(queryTree, options); 
     	if(logger.isDebugEnabled()) {
@@ -983,8 +992,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
+    	Hits hits = null;
         try {
-	        hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
+        	hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
         }
         finally {
             luceneSession.close();

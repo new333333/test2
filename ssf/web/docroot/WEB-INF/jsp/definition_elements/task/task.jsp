@@ -15,7 +15,7 @@
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
-<script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js"></script>
 <script type="text/javascript">
 var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="${action}"/><portlet:param 
@@ -23,21 +23,8 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="operation" value="subscribe"/></portlet:actionURL>";
 </script>
 
-<br>
 <div style="margin:0px;">
 
-<div align="right" style="margin:0px 4px 0px 0px;">
-<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-	<tr>
-		<td align="left" width="55%">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-		</td>
-		<td align="right" width="20%">
-			&nbsp;
-		</td>
-	</tr>
-</table>
-</div>
 
 <div class="ss_folder_border" style="position:relative; top:2; margin:0px; padding:2px 0px; 
   border-top:solid #666666 1px; 
@@ -56,6 +43,10 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 
 </div>
 </div>
-<div class="ss_folder" id="ss_guestbook_folder_div">
+<div class="ss_folder" id="ss_task_folder_div">
+
+<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
+
+
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
 </div>

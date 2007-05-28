@@ -729,6 +729,11 @@ public class ViewEntryController extends  SAbstractController {
 				questionsMap.put(ws.getTokenId(), qMap);
 			}
 		}
+		
+		Definition entryDefinition = entry.getEntryDef();
+		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryDefinition.getId());
+		model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
+		
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);

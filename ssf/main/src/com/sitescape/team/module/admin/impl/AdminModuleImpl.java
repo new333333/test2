@@ -1177,7 +1177,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
  			while (entriesIt.hasNext()) {
  				DefinableEntity entry = (DefinableEntity)entriesIt.next();
  				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
- 					iCalendars.add(getIcalGenerator().getICalendarForEntryEvents(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
+ 					iCalendars.add(getIcalGenerator().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
  				}
  			}
  			if (!iCalendars.isEmpty()) {

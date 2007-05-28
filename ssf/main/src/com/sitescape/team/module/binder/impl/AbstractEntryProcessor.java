@@ -1099,22 +1099,27 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
        	} else {
 
-       		org.dom4j.Document userSearchFilter = null;
-        	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
-        		userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
-       		
-        	SearchFilter searchFilter = null;
-        	if (userSearchFilter != null) {
-        		searchFilter = new SearchFilter(userSearchFilter);
-        	} else {
-        		searchFilter = new SearchFilter(true);
+           	SearchFilter searchFilter = new SearchFilter(true);
+
+           	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) {
+           		org.dom4j.Document userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+               	if (userSearchFilter != null) {
+               		searchFilter.appendFilter(userSearchFilter);
+               	}       		
+           	}
+
+        	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER)) {
+        		org.dom4j.Document userDynamicSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER);
+            	if (userDynamicSearchFilter != null) {
+            		searchFilter.appendFilter(userDynamicSearchFilter);
+            	}
         	}
+        	
         	getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
         	SearchUtils.getQueryFields(queryTree, options); 
        	}       	
-       	//System.out.println(queryTree.asXML());
-       	
+    	
        	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
     	SearchObject so = qb.buildQuery(queryTree);

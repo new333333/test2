@@ -14,6 +14,8 @@ package com.sitescape.team.jobs;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -21,9 +23,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
@@ -37,6 +41,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
@@ -226,7 +231,20 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 						} catch (ValidationException e) {
 							logger.error(e);
 						}
-						helper.addAttachment("iCalendar" + c + ".ics", new ByteArrayResource( out.toByteArray()));
+						// helper.addInline("iCalendar" + c + ".ics", new ByteArrayResource( out.toByteArray()), "text/calendar");
+						
+						
+						DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), "text/calendar", "iCalendar" + c + ".ics");
+						
+						MimeBodyPart mimeBodyPart = new MimeBodyPart();
+						mimeBodyPart.setDisposition(MimeBodyPart.INLINE);
+						mimeBodyPart.setFileName("iCalendar" + c + ".ics");
+						// We're using setHeader here to remain compatible with JavaMail 1.2,
+						// rather than JavaMail 1.3's setContentID.
+						// mimeBodyPart.setHeader(HEADER_CONTENT_ID, "<" + contentId + ">");
+						mimeBodyPart.setDataHandler(new DataHandler(dataSource));
+						
+						helper.getMimeMultipart().addBodyPart(mimeBodyPart);
 						c++;
 					}
 				}
@@ -235,6 +253,25 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 				message = mimeMessage;
 			}
 
+		}
+    
+	protected DataSource createDataSource(
+		    final InputStreamSource inputStreamSource, final String contentType, final String name) {
+
+			return new DataSource() {
+				public InputStream getInputStream() throws IOException {
+					return inputStreamSource.getInputStream();
+				}
+				public OutputStream getOutputStream() {
+					throw new UnsupportedOperationException("Read-only javax.activation.DataSource");
+				}
+				public String getContentType() {
+					return contentType;
+				}
+				public String getName() {
+					return name;
+				}
+			};
 		}
     
 }

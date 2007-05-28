@@ -70,6 +70,7 @@ var ss_confirmStopWorkflowText;
 var ss_userDisplayStyle;
 var ss_findButtonClose;
 var ss_AjaxBaseUrl;
+var ss_viewEntryURL;
 var ss_validationErrorMessage;
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -138,6 +139,12 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		portletName="ss_forum" 
 		action="__ajax_request" 
 		actionUrl="true" />";
+		
+	ss_viewEntryURL = "<ssf:url 
+				adapter="true" 
+				portletName="ss_forum" 
+				action="view_folder_entry" 
+				actionUrl="true" />";
 
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";

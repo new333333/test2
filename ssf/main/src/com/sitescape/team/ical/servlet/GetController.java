@@ -62,7 +62,7 @@ public class GetController extends SAbstractController {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
 			if (getFolderModule().testAccess(entry, "getEntry")) {				
 				CalendarOutputter calendarOutputter = new CalendarOutputter();
-				Calendar calendar = getIcalGenerator().getICalendarForEntryEvents(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				Calendar calendar = getIcalGenerator().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				calendarOutputter.output(calendar, response.getWriter());
 			}
 		} else {

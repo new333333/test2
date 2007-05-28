@@ -16,7 +16,7 @@ public class WebKeys {
 	public static final String JAVAX_PORTLET_REQUEST = "javax.portlet.request";
 	public static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
 
-	// Calendar view stuff
+	// Calendar and tasks view stuff
 	public static final String CALENDAR_INITIAL_EVENT = "ssInitialEvent";
 	public static final String CALENDAR_VIEW_DAY = "day";
 	public static final String CALENDAR_VIEW_WEEK = "week";
@@ -32,6 +32,8 @@ public class WebKeys {
 	public static final String CALENDAR_CURRENT_GRID_SIZE = "ssCurrentGridSize";
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
+	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
+	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
@@ -127,6 +129,9 @@ public class WebKeys {
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
 	public static final String URL_TEAM_MEMBERS="teamMembers";
 	public static final String URL_OS_INFO="ssOSInfo";
+	public static final String URL_TASK_PRIORITY="ssTaskPriority";
+	public static final String URL_TASK_STATUS="ssTaskStatus";
+	public static final String URL_TASK_COMPLETED="ssTaskCompleted";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -300,6 +305,9 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
+	public static final String OPERATION_FIND_TASKS = "find_tasks";
+	public static final String OPERATION_GET_TASKS_EXTENDED_INFO = "get_tasks_extended_info";
+	public static final String OPERATION_UPDATE_TASK = "update_task";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";
 	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
 	

@@ -44,7 +44,7 @@
 					<property name="name" value="start_end"/>
 					<property name="caption" value="Time period"/>
 					<property name="hasDuration" value="true"/>
-					<property name="hasRecurrence" value="true"/>
+					<property name="hasRecurrence" value="false"/>
 					<property name="required" value="false"/>
 				</properties>
 			</item>
@@ -120,13 +120,13 @@
 				</properties>
 				<item name="selectboxSelection" caption="__selection" id="31">
 					<properties>
-						<property name="name" value="needs_action"/>
+						<property name="name" value="needsAction"/>
 						<property name="caption" value="needs action"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="33">
 					<properties>
-						<property name="name" value="in_process"/>
+						<property name="name" value="inProcess"/>
 						<property name="caption" value="in process"/>
 					</properties>
 				</item>
@@ -155,67 +155,67 @@
 				</properties>
 				<item name="selectboxSelection" caption="__selection" id="37">
 					<properties>
-						<property name="name" value="c_0"/>
+						<property name="name" value="c0"/>
 						<property name="caption" value="0 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="38">
 					<properties>
-						<property name="name" value="c_10"/>
+						<property name="name" value="c10"/>
 						<property name="caption" value="10 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="39">
 					<properties>
-						<property name="name" value="c_20"/>
+						<property name="name" value="c20"/>
 						<property name="caption" value="20 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="40">
 					<properties>
-						<property name="name" value="c_30"/>
+						<property name="name" value="c30"/>
 						<property name="caption" value="30 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="41">
 					<properties>
-						<property name="name" value="c_40"/>
+						<property name="name" value="c40"/>
 						<property name="caption" value="40 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="42">
 					<properties>
-						<property name="name" value="c_50"/>
+						<property name="name" value="c50"/>
 						<property name="caption" value="50 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="43">
 					<properties>
-						<property name="name" value="c_60"/>
+						<property name="name" value="c60"/>
 						<property name="caption" value="60 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="44">
 					<properties>
-						<property name="name" value="c_70"/>
+						<property name="name" value="c70"/>
 						<property name="caption" value="70 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="45">
 					<properties>
-						<property name="name" value="c_80"/>
+						<property name="name" value="c80"/>
 						<property name="caption" value="80 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="46">
 					<properties>
-						<property name="name" value="c_90"/>
+						<property name="name" value="c90"/>
 						<property name="caption" value="90 %"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="47">
 					<properties>
-						<property name="name" value="c_100"/>
+						<property name="name" value="c100"/>
 						<property name="caption" value="100 %"/>
 					</properties>
 				</item>

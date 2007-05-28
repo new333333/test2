@@ -72,6 +72,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeAuthor = "author";
    	public final static String FilterTypeDate = "date";
+   	public final static String FilterTypeTaskStatus = "taskStatus";
 	public final static String FilterTypePlace = "place";
    	public final static String FilterTypeEvent = "event";
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
@@ -99,7 +100,8 @@ public class SearchFilterKeys {
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
    	public final static String FilterEventDate = "filterEventDate";
    	public final static String FilterItemType = "filterItemType";
-
+   	public final static String FilterTaskStatusName = "filterTaskStatusName";
+   	
    	public final static String CurrentUserId="CURRENT_USER_ID";
    	
    	public static String MinimumSystemDate = "19000000";

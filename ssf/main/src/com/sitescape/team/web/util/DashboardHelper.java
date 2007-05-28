@@ -50,6 +50,7 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
@@ -194,7 +195,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);
     	
     	List items = (List) ((Map)((Map)((Map)ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP)).get(id)).get(WebKeys.SEARCH_FORM_DATA)).get(WebKeys.SEARCH_FORM_RESULTS);
-    	TaskHelper.extendTaskInfo(items);
+    	TaskHelper.extendTasksInfo(items);
 	}
 	private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
 		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
