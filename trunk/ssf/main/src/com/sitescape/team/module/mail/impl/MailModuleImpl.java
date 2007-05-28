@@ -14,6 +14,9 @@ package com.sitescape.team.module.mail.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,6 +37,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
@@ -45,6 +50,7 @@ import net.fortuna.ical4j.model.ValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailParseException;
@@ -540,7 +546,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
 				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
 				List events = (List)mapEntry.getValue();
-				Calendar iCal = getIcalGenerator().getICalendarForEntryEvents(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				Calendar iCal = getIcalGenerator().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				CalendarOutputter calendarOutputter = new CalendarOutputter();
@@ -552,12 +558,42 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					logger.error(e);
 					
 				}
-				helper.addAttachment("iCalendar" + c + ".ics", new ByteArrayResource(out.toByteArray()));
-			
+				// helper.addInline("", new ByteArrayResource(out.toByteArray()), "text/calendar");
+				
+				
+				DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), "text/calendar", "iCalendar" + c + ".ics");
+				
+				MimeBodyPart mimeBodyPart = new MimeBodyPart();
+				mimeBodyPart.setDisposition(MimeBodyPart.INLINE);
+				mimeBodyPart.setFileName("iCalendar" + c + ".ics");
+				// We're using setHeader here to remain compatible with JavaMail 1.2,
+				// rather than JavaMail 1.3's setContentID.
+				// mimeBodyPart.setHeader(HEADER_CONTENT_ID, "<" + contentId + ">");
+				mimeBodyPart.setDataHandler(new DataHandler(dataSource));
+				helper.getMimeMultipart().addBodyPart(mimeBodyPart);
 				c++;
 			}
 			notify.clearEvents();
 		}
+		
+		protected DataSource createDataSource(
+			    final InputStreamSource inputStreamSource, final String contentType, final String name) {
+
+				return new DataSource() {
+					public InputStream getInputStream() throws IOException {
+						return inputStreamSource.getInputStream();
+					}
+					public OutputStream getOutputStream() {
+						throw new UnsupportedOperationException("Read-only javax.activation.DataSource");
+					}
+					public String getContentType() {
+						return contentType;
+					}
+					public String getName() {
+						return name;
+					}
+				};
+			}
 		
 		private void prepareAttachments(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			if (sendAttachments) {

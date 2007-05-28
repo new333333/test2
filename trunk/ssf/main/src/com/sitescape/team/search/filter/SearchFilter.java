@@ -27,6 +27,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.task.TaskHelper;
 
 public class SearchFilter {
 	protected static List placeTypes = new ArrayList(3);
@@ -68,6 +69,45 @@ public class SearchFilter {
 				Attribute joinAndAttr = this.currentFilterTerms.attribute(SearchFilterKeys.FilterAnd);
 				joinAnd = Boolean.parseBoolean(joinAndAttr.getText());
 				break;
+			}
+		}
+	}
+	
+	public void appendFilter(Document newFilter) {
+		if (newFilter == null) {
+			return;
+		}
+		
+		if (this.filter == null || sfRoot.nodeCount() == 0) {// no filter or empty filter
+		
+			this.filter = (Document)newFilter.clone();
+			this.sfRoot = this.filter.getRootElement();
+			
+			Iterator nodes = sfRoot.nodeIterator();
+			while (nodes.hasNext()) {
+				Element el = (Element)nodes.next();
+				if (el.getName().equals(SearchFilterKeys.FilterTerms)) {
+					this.currentFilterTerms = el;
+					Attribute joinAndAttr = this.currentFilterTerms.attribute(SearchFilterKeys.FilterAnd);
+					joinAnd = Boolean.parseBoolean(joinAndAttr.getText());
+					break;
+				}
+			}
+		
+		} else {		
+			Element paramRoot = newFilter.getRootElement();
+			
+			Iterator nodes = paramRoot.nodeIterator();
+			while (nodes.hasNext()) {
+				Element el = (Element)nodes.next();
+				if (el.getName().equals(SearchFilterKeys.FilterTerms)) {
+					
+					this.sfRoot.add(el);
+					
+					this.currentFilterTerms = el;
+					Attribute joinAndAttr = this.currentFilterTerms.attribute(SearchFilterKeys.FilterAnd);
+					joinAnd = Boolean.parseBoolean(joinAndAttr.getText());
+				}
 			}
 		}
 	}
@@ -383,6 +423,29 @@ public class SearchFilter {
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
+	}
+	
+	public void addTaskStatuses(String[] statuses) {
+		if (statuses == null) {
+			return;
+		}
+		
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeTaskStatus);
+		for (int i = 0; i < statuses.length; i++) {
+			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterTaskStatusName);
+			newTerm.setText(statuses[i]);
+		}
+	}
+	
+	public void addTaskStartDate(String date) {
+		checkCurrent();
+		
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + "#StartDate");
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	

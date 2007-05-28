@@ -121,6 +121,7 @@ public interface ObjectKeys {
     public static final String SEARCH_USER_OFFSET = "userOffset";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";
+    public static final String SEARCH_SEARCH_DYNAMIC_FILTER = "searchDynamicFilter";
     public static final String SEARCH_SORT_BY = "sortBy";
     public static final String SEARCH_SORT_DESCEND = "sortDescend";
     public static final String SEARCH_START_DATE = "startDate";

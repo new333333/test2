@@ -73,6 +73,7 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
@@ -86,7 +87,6 @@ import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
-import com.sitescape.team.web.util.TaskHelper;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -660,8 +660,9 @@ public static final String[] monthNamesShort = {
 			//Get the list of all entries to build the archive list
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-				// don't get events now, do it with ajax
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+					viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				// do it with ajax
 			} else {
 				folderEntries = getFolderModule().getEntries(folderId, options);
 			}
@@ -674,10 +675,10 @@ public static final String[] monthNamesShort = {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
 			}
-			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-				//Get the list of all entries with assigned people & due date
-				TaskHelper.extendTaskInfo((List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
-			}
+//			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+//				//Get the list of all entries with assigned people & due date
+//				TaskHelper.extendTaskInfo((List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+//			}
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));
@@ -685,10 +686,9 @@ public static final String[] monthNamesShort = {
 			model.put(WebKeys.FOLDER_ENTRIES, (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 		}
 		
-		//See if this folder is to be viewed as a calendar
-		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-			//This is a calendar view, so get the event beans
-//			buildCaledarView(calendarViewRangeDates, folder, entries, model, response);
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+				viewType.equals(Definition.VIEW_STYLE_TASK)) {
+			// all in Ajax
 		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, so get the extra blog beans
 			getBlogEntries(folder, folderEntries, model, req, response);
@@ -822,9 +822,12 @@ public static final String[] monthNamesShort = {
 		} else if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			//Get the list of all entries to build the archive list
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
-		} else 	if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+		} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+		} else if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+//			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
+//			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 		}
 		
 	}
@@ -1432,7 +1435,8 @@ public static final String[] monthNamesShort = {
 		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				(viewType.equals(Definition.VIEW_STYLE_CALENDAR))) {
+				(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+						viewType.equals(Definition.VIEW_STYLE_TASK))) {
 			
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "');return false;");

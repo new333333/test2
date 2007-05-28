@@ -35,6 +35,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
@@ -134,15 +135,17 @@ public class SearchFilterToSearchBooleanConverter {
     	    			}
     	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
     	    			addItemTypesField(block, filterTerm);
-    	    		}
+    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTaskStatus)) {
+    	    			addTaskStatus(block, filterTerm);
+    	    		} 
             	}
     		}
     	}
     	
     	return qTree;
 	}
-   	
-   	private static void createRelativeUser(Element block) {
+
+	private static void createRelativeUser(Element block) {
    		Long currentUserId = RequestContextHolder.getRequestContext().getUserId();
 		Element andField = block.addElement(QueryBuilder.AND_ELEMENT);
 		Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
@@ -389,16 +392,32 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 	}
 	
+   	private static void addTaskStatus(Element block, Element filterTerm) {
+		Element andField = block;
+		
+		if (filterTerm.selectNodes(SearchFilterKeys.FilterTaskStatusName).size() > 0) {
+			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+			Iterator itTermStates = filterTerm.selectNodes(SearchFilterKeys.FilterTaskStatusName).iterator();
+			while (itTermStates.hasNext()) {
+				String statusName = ((Element) itTermStates.next()).getText();
+				if (!statusName.equals("")) {
+					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child2.setText(statusName);
+				}
+			}
+		}
+	}
 	
 	private static void addEntryIdField(Element block, String entryId) {
-		Element field;
-		Element child;
 		Element andField = block;
 		if (!entryId.equals("")) {
 			andField = block.addElement(QueryBuilder.AND_ELEMENT);
-			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+			Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.DOCID_FIELD);
-	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 	    	child.setText(entryId);
 		}
 	}

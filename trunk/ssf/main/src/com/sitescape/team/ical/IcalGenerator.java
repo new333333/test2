@@ -55,6 +55,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.util.cal.DayAndPosition;
 
@@ -73,14 +74,6 @@ public class IcalGenerator {
 	private static final ProdId PROD_ID = new ProdId("-//SiteScape Inc//"
 			+ ObjectKeys.PRODUCT_NAME_DEFAULT);
 
-	private static final String PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME = "priority";
-
-	private static final String STATUS_TASK_ENTRY_ATTRIBUTE_NAME = "status";
-
-	private static final String COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME = "completed";
-
-	private static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME = "assignment";
-
 	private static class ComponentType {
 
 		private int type;
@@ -95,7 +88,7 @@ public class IcalGenerator {
 
 	}
 
-	public Calendar getICalendarForEntryEvents(DefinableEntity entry,
+	public Calendar generate(DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar();
 
@@ -203,7 +196,7 @@ public class IcalGenerator {
 
 	private void setComponentAttendee(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
-				.getCustomAttribute(ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
+				.getCustomAttribute(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
 
 		if (customAttribute == null) {
 			return;
@@ -229,7 +222,7 @@ public class IcalGenerator {
 
 	private void addComponentCompleted(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
-				.getCustomAttribute(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+				.getCustomAttribute(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
 
 		if (customAttribute == null) {
 			return;
@@ -243,27 +236,27 @@ public class IcalGenerator {
 
 		int completed = 0;
 
-		if (value.contains("c_0")) {
+		if (value.contains("c0")) {
 			completed = 0;
-		} else if (value.contains("c_10")) {
+		} else if (value.contains("c10")) {
 			completed = 10;
-		} else if (value.contains("c_20")) {
+		} else if (value.contains("c20")) {
 			completed = 20;
-		} else if (value.contains("c_30")) {
+		} else if (value.contains("c30")) {
 			completed = 30;
-		} else if (value.contains("c_40")) {
+		} else if (value.contains("c40")) {
 			completed = 40;
-		} else if (value.contains("c_50")) {
+		} else if (value.contains("c50")) {
 			completed = 50;
-		} else if (value.contains("c_60")) {
+		} else if (value.contains("c60")) {
 			completed = 60;
-		} else if (value.contains("c_70")) {
+		} else if (value.contains("c70")) {
 			completed = 70;
-		} else if (value.contains("c_80")) {
+		} else if (value.contains("c80")) {
 			completed = 80;
-		} else if (value.contains("c_90")) {
+		} else if (value.contains("c90")) {
 			completed = 90;
-		} else if (value.contains("c_100")) {
+		} else if (value.contains("c100")) {
 			completed = 100;
 		} else {
 			logger.error("The task compleded has wrong value [" + value + "].");
@@ -275,7 +268,7 @@ public class IcalGenerator {
 
 	private void addToDoStatus(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
-				.getCustomAttribute(STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+				.getCustomAttribute(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
 
 		if (customAttribute == null) {
 			return;
@@ -283,15 +276,15 @@ public class IcalGenerator {
 
 		Set value = (Set) customAttribute.getValue();
 
-		if (value != null) {
+		if (value == null) {
 			return;
 		}
 
 		String status = null;
 
-		if (value.contains("needs_action")) {
+		if (value.contains("needsAction")) {
 			status = "NEEDS-ACTION";
-		} else if (value.contains("in_process")) {
+		} else if (value.contains("inProcess")) {
 			status = "IN-PROCESS";
 		} else if (value.contains("completed")) {
 			status = "COMPLETED";
@@ -312,13 +305,14 @@ public class IcalGenerator {
 
 	private void addToDoPriority(VToDo toDo, DefinableEntity entry) {
 		CustomAttribute customAttribute = entry
-				.getCustomAttribute(PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
+				.getCustomAttribute(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
 
 		if (customAttribute == null) {
 			return;
 		}
 
 		Set value = (Set) customAttribute.getValue();
+		
 
 		int priority = 0;
 		if (value != null) {

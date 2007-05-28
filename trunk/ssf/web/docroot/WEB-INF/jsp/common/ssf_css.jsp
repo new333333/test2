@@ -4145,37 +4145,130 @@ table.ss_tasks_list ul, table.ss_tasks_list li {
 	padding:0px;
 	border:0px;
 }
-img.ss_prio_active {}
-img.ss_prio_inactive {}
-img.ss_status_active {}
-img.ss_status_inactive {}
 
-div.ss_c_ {
+div.ss_completedContainer {
 	border: 1px solid #afc8e3;
 	background-color: #e8eff7;
-	width: 100px;
-	height:15px;
-	line-height:15px;
+	width: 99px;
+	height:12px;
 	float:left;
-	margin: 3px 0px 3px 0px;
+	margin: 3px;
 	padding:0px;
 }
-div.ss_c_ div {
-	background-color: #afc8e3;
-	color:#000099;
+
+
+div.ss_inline {
+	float:left;
+	margin:0px;
+	padding:0px;
+}
+
+div.ss_bar_on, div.ss_bar_off, div.ss_inline {
+	float:left;
+}
+
+div.ss_bar_on {
+	background-color: #afc8e3; 
+	width: 9px; 
+	float:left; 
+	padding:0px;
+	margin: 0px 0px 0px 0px; 
+	border:0px; 
+	color:#000099; 
+	font-size:10px;
+	line-height:12px;
+	height:12px;
+	overflow: visible;
 	white-space: nowrap;
 }
-div.ss_c_ div.ss_c_0 { width:0px;}
-div.ss_c_ div.ss_c_10 { width:10px;}
-div.ss_c_ div.ss_c_20 { width:20px;}
-div.ss_c_ div.ss_c_30 { width:30px;}
-div.ss_c_ div.ss_c_40 { width:40px;}
-div.ss_c_ div.ss_c_50 { width:50px;}
-div.ss_c_ div.ss_c_60 { width:60px;}
-div.ss_c_ div.ss_c_70 { width:70px;}
-div.ss_c_ div.ss_c_80 { width:80px;}
-div.ss_c_ div.ss_c_90 { width:90px;}
-div.ss_c_ div.ss_c_100 { width:100px;}
+
+div.ss_bar_off {
+	background-color: #e8eff7; 
+	width: 9%; 
+	float: left; 
+	padding: 0; 
+	margin: 0; 
+	border: 0; 
+	color: #000099; 
+	font-size: 10px;
+	line-height: 12px;
+	height: 12px;
+	overflow: visible;
+	white-space: nowrap;
+}
+
+div.ss_bar_status {
+	clear: both;
+	padding: 0; 
+	margin: 0;
+	color: #000099; 
+	font-size: 10px;
+	line-height: 12px;
+	margin-left: 3px;
+}
+
+a.ss_taskStatus img {
+	width: 21px;
+	height: 22px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_taskStatus_inProcess_u img, a.ss_taskStatus_inProcess_u:link img , a.ss_taskStatus_inProcess_u:focus img, a.ss_taskStatus_inProcess_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/status_inProcess_u.gif) no-repeat top left; 
+}
+
+a.ss_taskStatus_needsAction_u img, a.ss_taskStatus_needsAction_u:link img , a.ss_taskStatus_needsAction_u:focus img, a.ss_taskStatus_needsAction_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/status_needsAction_u.gif) no-repeat top left; 
+}
+
+a.ss_taskStatus_cancelled_u img, a.ss_taskStatus_cancelled_u:link img , a.ss_taskStatus_cancelled_u:focus img, a.ss_taskStatus_cancelled_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/status_cancelled_u.gif) no-repeat top left; 
+}
+
+a.ss_taskStatus_completed_u img, a.ss_taskStatus_completed_u:link img , a.ss_taskStatus_completed_u:focus img, a.ss_taskStatus_completed_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/status_completed_u.gif) no-repeat top left; 
+}
+
+a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, a.ss_taskStatus_cancelled_u:hover img, a.ss_taskStatus_completed_u:hover img {
+	background-position: left -22px; 
+}
+
+a.ss_taskPriority img {
+	width: 21px;
+	height: 22px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: bottom;
+}
+
+a.ss_taskPriority_trivial_u img, a.ss_taskPriority_trivial_u:link img , a.ss_taskPriority_trivial_u:focus img, a.ss_taskPriority_trivial_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/prio_trivial_u.gif) no-repeat top left; 
+}
+
+a.ss_taskPriority_low_u img, a.ss_taskPriority_low_u:link img , a.ss_taskPriority_low_u:focus img, a.ss_taskPriority_low_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/prio_low_u.gif) no-repeat top left; 
+}
+
+a.ss_taskPriority_medium_u img, a.ss_taskPriority_medium_u:link img , a.ss_taskPriority_medium_u:focus img, a.ss_taskPriority_medium_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/prio_medium_u.gif) no-repeat top left; 
+}
+
+a.ss_taskPriority_high_u img, a.ss_taskPriority_high_u:link img , a.ss_taskPriority_high_u:focus img, a.ss_taskPriority_high_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/prio_high_u.gif) no-repeat top left; 
+}
+
+a.ss_taskPriority_critical_u img, a.ss_taskPriority_critical_u:link img , a.ss_taskPriority_critical_u:focus img, a.ss_taskPriority_critical_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/prio_critical_u.gif) no-repeat top left; 
+}
+
+a.ss_taskPriority_trivial_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
+	background-position: left -22px; 
+}
+
 /* Task - end*/
 
 /* Administration->Reporting styles */
