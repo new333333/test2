@@ -177,9 +177,12 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	// calendar
 	ss_calendarTitleText = "<ssf:nlt tag="calendar.import.window.title"/>";
 	
-	ss_AdvancedSearch = "<portlet:actionURL windowState="maximized" portletMode="view">
-				<portlet:param name="action" value="advanced_search"/>
-		</portlet:actionURL>";
+	ss_AdvancedSearch = "<ssf:url 
+				adapter="false" 
+				portletName="ss_forum" 
+				action="advanced_search" 
+				actionUrl="true" />";
+
 	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 }
 
