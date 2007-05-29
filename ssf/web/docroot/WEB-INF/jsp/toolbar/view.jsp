@@ -81,7 +81,7 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 <tr>
 <td valign="top" width="50%">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" 
+<ssHelpSpot helpId="navigation_bar/workspace_tree_nav_bar" 
   title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
   offsetX="-13" offsetY="10">
 <div style="padding-top:10px;">

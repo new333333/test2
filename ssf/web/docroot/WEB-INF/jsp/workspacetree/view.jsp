@@ -40,7 +40,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <table width="100%">
 	<tr>
 		<td align="left">
-	    <ssHelpSpot helpId="workspace_tree_portlet/workspace_tree_portlet" offsetX="-13" 
+	    <ssHelpSpot helpId="portlets/workspace_tree_portlet" offsetX="-13" 
 	      title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>">
 			<div>
 			<c:choose>
