@@ -1444,63 +1444,9 @@ public static final String[] monthNamesShort = {
 			entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
 
 		}
-
-		//	The "Manage dashboard" menu
-		//See if the dashboard is being shown in the definition
-		if (DefinitionHelper.checkIfBinderShowingDashboard(folder)) {
-			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
-			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
-			
-			//This folder is showing the dashboard
-			qualifiers = new HashMap();
-			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageDashboard");
-			dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"), "", qualifiers);
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-
-			if (dashboardContentExists) {
-				qualifiers = new HashMap();
-				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
-	
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter("_scope", "local");
-				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
-	
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter("_scope", "global");
-				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
-	
-				//Check the access rights of the user
-				if (getBinderModule().testAccess(folder, "setProperty")) {
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-					url.setParameter("_scope", "binder");
-					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
-				}
-	
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-						response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
-						folder.getId().toString()+"');return false;");
-				
-				if (DashboardHelper.checkIfShowingAllComponents(folder)) {
-					qualifiers.put("icon", "hideDashboard.gif");
-					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-				} else {
-					qualifiers.put("icon", "showDashboard.gif");
-					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
-				}
-			}
-		}
+		
+		//Build the "Manage dashboard" toolbar
+		BinderHelper.buildDashboardToolbar(request, response, this, folder, dashboardToolbar, model);
 
 		//The "Footer" menu
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
