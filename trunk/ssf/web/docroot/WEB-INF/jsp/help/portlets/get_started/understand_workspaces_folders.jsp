@@ -17,7 +17,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span><br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.getStartedProduct.subtopic.workspaces"/></span>
 
-<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.intro"/></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.intro"/> <ssf:nlt tag="help.getStartedProduct.content.workspaces.defaults"/></p>
 
 <p><ssf:nlt tag="help.getStartedProduct.content.workspaces.defined"/></p>
 

@@ -20,8 +20,10 @@
 
 <p><ssf:nlt tag="help.workspaceTreePortlet.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.workspaceTreePortlet.getStarted"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<div style="margin-left:25px;">
 
-<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.access"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+
+</div>
 
 </div>
