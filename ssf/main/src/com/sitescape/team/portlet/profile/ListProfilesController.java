@@ -186,7 +186,7 @@ public class ListProfilesController extends   SAbstractController {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildViewFolderToolbar(request, response, binder).getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, buildViewFolderToolbar(request, response, binder, model).getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR, buildViewEntryToolbar(request, response, binder).getToolbar());
 
 		//Build the navigation beans
@@ -356,12 +356,14 @@ public class ListProfilesController extends   SAbstractController {
 		return hmRet;
 	}
 	
-	protected Toolbar buildViewFolderToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
+	protected Toolbar buildViewFolderToolbar(RenderRequest request, RenderResponse response, 
+			ProfileBinder binder, Map model) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
         PortletURL url;
         String binderId = binder.getId().toString();
+		Toolbar dashboardToolbar = new Toolbar();
         
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
@@ -399,8 +401,12 @@ public class ListProfilesController extends   SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 			toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
-			}
+		}
 		
+		//	The "Manage dashboard" menu
+		BinderHelper.buildDashboardToolbar(request, response, this, binder, dashboardToolbar, model);
+		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+
 		return toolbar;
 	}
 	

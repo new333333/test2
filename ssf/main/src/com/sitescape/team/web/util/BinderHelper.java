@@ -1097,4 +1097,65 @@ public class BinderHelper {
 		return false;
 	}
 	
+	public static void buildDashboardToolbar(RenderRequest request, RenderResponse response, 
+			AllModulesInjected bs, Binder binder, Toolbar dashboardToolbar, Map model) {
+		//	The "Manage dashboard" menu
+		//See if the dashboard is being shown in the definition
+		PortletURL url;
+		if (DefinitionHelper.checkIfBinderShowingDashboard(binder)) {
+			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
+			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
+			
+			//This folder is showing the dashboard
+			Map qualifiers = new HashMap();
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageDashboard");
+			dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"), "", qualifiers);
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+			dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+
+			if (dashboardContentExists) {
+				qualifiers = new HashMap();
+				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter("_scope", "local");
+				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter("_scope", "global");
+				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+	
+				//Check the access rights of the user
+				if (bs.getBinderModule().testAccess(binder, "setProperty")) {
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+					url.setParameter("_scope", "binder");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+				}
+	
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+						response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
+						binder.getId().toString()+"');return false;");
+				
+				if (DashboardHelper.checkIfShowingAllComponents(binder)) {
+					qualifiers.put("icon", "hideDashboard.gif");
+					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+				} else {
+					qualifiers.put("icon", "showDashboard.gif");
+					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				}
+			}
+		}		
+	}
+	
 }

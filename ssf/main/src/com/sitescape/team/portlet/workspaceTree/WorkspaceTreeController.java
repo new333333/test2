@@ -464,57 +464,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		
 		//	The "Manage dashboard" menu
-		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
-			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
-			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
-
-			dashboardToolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-			
-			if (dashboardContentExists) {
-				qualifiers = new HashMap();
-				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-				dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
-	
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter("_scope", "local");
-				dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
-	
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter("_scope", "global");
-				dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
-	
-				//Check the access rights of the user
-				if (getBinderModule().testAccess(workspace, "setProperty")) {
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-					url.setParameter("_scope", "binder");
-					dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
-				};
-			
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-						response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
-						workspace.getId().toString()+"');return false;");
-				
-				if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
-					qualifiers.put("icon", "hideDashboard.gif");
-					dashboardToolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-				} else {
-					qualifiers.put("icon", "showDashboard.gif");
-					dashboardToolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
-				}
-			}
-		}
+		BinderHelper.buildDashboardToolbar(request, response, this, workspace, dashboardToolbar, model);
 
 		//The "Footer" menu
 		//RSS link 
