@@ -364,7 +364,18 @@ function ss_fillSearchMask(id, value) {
 function ss_goToSearchResultPage(ind) {
 	var url=ss_AdvancedSearchURL;
 	url = url + "&pageNumber=" + ind;
-	window.location.assign(url);
+	document.location.href = url;
+}
+
+function ss_goToSearchResultPageByInputValue(inputId) {
+	var inputObj = document.getElementById(inputId);
+	if (!inputObj) {
+		return;
+	}
+	var ind = inputObj.value;
+	var url=ss_AdvancedSearchURL;
+	url = url + "&pageNumber=" + ind;
+	document.location.href = url;
 }
 
 function ss_prepareAdditionalSearchOptions() {

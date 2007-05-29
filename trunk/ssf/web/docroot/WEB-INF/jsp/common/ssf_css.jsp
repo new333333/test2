@@ -3962,16 +3962,19 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	margin:12px 12px 12px 12px;	
 }
 
-#ss_searchResult_header {
+.ss_searchResult_header {
 	border-bottom: 1px solid #afc8e3;	
 	margin-bottom:24px;
-	padding:6px 24px 6px 12px;
+	padding: 3px 24px 3px 12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
 </c:if>
 }
-#ss_searchResult_numbers {float:left;}
-#ss_paginator {float:right;}
+.ss_searchResult_numbers {
+	float:left;
+	padding: 3px 24px 3px 0;
+}
+.ss_paginator {float:left;}
 
 div.ss_thumbnail {float: left; width:62px; text-align:center;}
 div.ss_thumbnail img {width:50px;height:50px;padding:0px; margin:0px;}
@@ -4023,7 +4026,19 @@ div.ss_rating_box_content td {text-align:left;}
 div.ss_rating_box_content td.ss_star {padding-left:10px;}
 div.ss_rating_box_content h5 {margin:0px; border-bottom: 1px solid #afc8e3; }
 div.ss_rating_box_content p {margin:6px 0px 12px 0px; }
-span.ss_pageNumber{margin:0px 24px 0px 24px;}
+
+span.ss_pageNumber {
+	margin: 0 2px 0 2px;
+}
+
+span.ss_pageNumber a {
+
+}
+
+a.ss_pageNumberCurrent {
+	font-size: 14px;
+}
+
 #ss_searchForm_additionalFilters {background-color:#ffffff;}
 
 div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0px;padding:0px 12px 12px 12px;}
@@ -4300,6 +4315,66 @@ a.ss_taskPriority_trivial_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_t
 }
 
 /* Task - end*/
+
+div.ssPageNavi {
+	margin: 0;
+}
+
+.ssPageNavi, .ssPageNavi table, .ssPageNavi td, .ssPageNavi div {
+	background-color: #AFC8E3;
+}
+
+.ssPageNavi .ssVisibleEntryNumbers {
+	font-family: Arial;
+	font-size: 10px;
+	color: #666666;
+}
+
+.ssPageNavi .ss_go_to_page {
+	font-size: 10px;
+	color: #333333;
+}
+
+.ssPageNavi input.form-text {
+	border: 1px solid #333333;
+}
+
+.ssPageNavi a.ss_linkButton:link, .ssPageNavi a.ss_linkButton:visited, .ssPageNavi a.ss_linkButton:hover {
+	border: 1px solid #000099;
+	background-color: #AFC8E3;
+	background-image: none;
+}
+
+.ssPageNavi .ssCurrentPage {
+	font-size: 11px;
+	color: #333333;
+}
+
+.ssPageNavi a.ssPageNumber {
+	font-size: 11px;
+	color: #3333FF;
+	text-decoration: underline;
+	margin: 0 2px 0 2px;
+}
+
+.ssPageNavi a.ssPageNumber:visited {
+	color: purple;
+	text-decoration:underline;
+}
+
+.ssPageNavi .ss_actions_bar4 {
+	background-color: #E8EFF7;
+	font-weight: normal;
+	font-size: 8px;
+	font-family: ${ss_style_title_font_family};
+}
+
+.ssPageNavi .ss_results_pro_page, .ssPageNavi .ss_results_pro_page div, .ssPageNavi .ss_results_pro_page table {
+	background-color: #E8EFF7;
+}
+
+
+
 
 /* Administration->Reporting styles */
 .ss_tab_container {

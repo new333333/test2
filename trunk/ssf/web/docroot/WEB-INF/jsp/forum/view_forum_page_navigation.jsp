@@ -66,7 +66,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		<table border="0" cellspacing="0px" cellpadding="0px">
 		<tr>
 			<td>
-			    <span class="ss_light ss_fineprint">
+			    <span class="ssVisibleEntryNumbers">
 					<c:choose>
 					  <c:when test="${ssTotalRecords == '0'}">
 						[<ssf:nlt tag="folder.NoResults" />]
@@ -99,14 +99,14 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			    <input type="hidden" name="ssEntriesPerPage" />
 			
 			<td>
-				<div style="position:relative; top:2; margin:2px; padding:2px; border-top:solid #666666 1px; border-bottom:solid #666666 1px;  border-right:solid #666666 1px;  border-left:solid #666666 1px;">
+				<div class="ss_results_pro_page" style="position:relative; top:2; margin:2px; padding:2px; border-top:solid #666666 1px; border-bottom:solid #666666 1px;  border-right:solid #666666 1px;  border-left:solid #666666 1px;">
 				<span class="ss_light ss_fineprint">
 	
-				<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar2 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+				<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
 				<ssf:ifnotaccessible>
 				
-					<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:150px;">
+					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
 					<li>
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;">
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
@@ -191,7 +191,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<portlet:namespace/>(this))">
 			<td>
 				&nbsp;&nbsp;
-			    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
+			    <span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 			    <input name="ssGoToPage" size="1" type="text" class="form-text" />
 				<a class="ss_linkButton" href="javascript: ;" onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
 			</td>
@@ -207,11 +207,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 
 		<table width="100%" border="0" cellspacing="0px" cellpadding="0px">
 		<tr>
-			<td width="15%">
+			<td width="10%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
-					<img <ssf:alt tag="general.previousPage"/> 
-					src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -226,17 +225,15 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
 							<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
 							<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
-					</portlet:actionURL>"><img <ssf:alt tag="general.nextPage"/> 
-					src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
+					</portlet:actionURL>">&lt;&lt;
 					</a>
 				  </c:otherwise>
 				</c:choose>
-			</td>
-			<td width="70%" align="center">
+
 				<c:forEach var="entryPage" items="${ssPageNumbers}" >
 				<jsp:useBean id="entryPage" type="java.util.HashMap" />
 					<c:if test="${!empty entryPage.ssPageIsCurrent && entryPage.ssPageIsCurrent == 'true'}">
-						<span class="font-small">
+						<span class="ssCurrentPage">
 							<c:out value="${entryPage.ssPageDisplayValue}"/>
 						</span>
 					</c:if>
@@ -254,16 +251,15 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 								<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
 								<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
 								<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
-						</portlet:actionURL>">
-						<span class="ss_fineprint ss_light"><c:out value="${entryPage.ssPageDisplayValue}"/></span>
+						</portlet:actionURL>" class="ssPageNumber">
+						<span><c:out value="${entryPage.ssPageDisplayValue}"/></span>
 						</a>
 					</c:if>
 				</c:forEach>
-			</td>
-			<td width="15%" align="right">
+
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-					<img  <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					
 				  </c:when>
 				  <c:otherwise>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -278,8 +274,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
 							<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
 							<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
-					</portlet:actionURL>"><img  <ssf:alt tag="general.nextPage"/>
-					src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
+					</portlet:actionURL>">&gt;&gt;
 					</a>
 				  </c:otherwise>
 				</c:choose>

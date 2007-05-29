@@ -164,10 +164,37 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// get page no and actualize options
 		// execute query
 		// actualize tabs info
-		Map options = new HashMap();
+		Map options = prepareSearchOptions(request);
 		actualizeOptions(options, request);
+		
 		Tabs tabs = setupTabs(request);
 		prepareSearchResultPage(model, query, options, tabs, "");
+		
+		return model;
+	}
+	
+	private Map prepareSearchFormData(RenderRequest request) throws PortletRequestBindingException {
+		Tabs tabs = setupTabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
+		Map options = prepareSearchOptions(request);
+		if (tabId < 0) {
+			if (!options.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
+			if (!options.containsKey(Tabs.TAB_SEARCH_TEXT))options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
+			options.put(Tabs.TYPE, Tabs.SEARCH);
+			int newTabId = tabs.findTab(DocumentHelper.createDocument(), options);
+			tabs.setCurrentTab(newTabId);
+		}		
+		Map model = new HashMap();
+		model.put(WebKeys.TABS, tabs.getTabs());
+		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
+		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		model.put("quickSearch", false);
+		
+		model.putAll(prepareSavedQueries());
+		
+		Workspace ws = getWorkspaceModule().getWorkspace();
+		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		model.put(WebKeys.DOM_TREE, tree);
 		
 		return model;
 	}
@@ -221,32 +248,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return (Document)queries.get(queryName);
 		}
 		return null;
-	}
-	
-	private Map prepareSearchFormData(RenderRequest request) throws PortletRequestBindingException {
-		Tabs tabs = setupTabs(request);
-		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
-		Map options = prepareSearchOptions(request);
-		if (tabId < 0) {
-			if (!options.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
-			if (!options.containsKey(Tabs.TAB_SEARCH_TEXT))options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
-			options.put(Tabs.TYPE, Tabs.SEARCH);
-			int newTabId = tabs.findTab(DocumentHelper.createDocument(), options);
-			tabs.setCurrentTab(newTabId);
-		}		
-		Map model = new HashMap();
-		model.put(WebKeys.TABS, tabs.getTabs());
-		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
-		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
-		model.put("quickSearch", false);
-		
-		model.putAll(prepareSavedQueries());
-		
-		Workspace ws = getWorkspaceModule().getWorkspace();
-		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
-		model.put(WebKeys.DOM_TREE, tree);
-		
-		return model;
 	}
 
 	private Map prepareSearchResultData(RenderRequest request) throws Exception {
@@ -450,6 +451,20 @@ public class AdvancedSearchController extends AbstractBinderController {
 		checkFileIds(shownOnPage);
 		model.put(WebKeys.FOLDER_ENTRIES, shownOnPage);
 		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
+		
+		List pageNos = new ArrayList();
+		for (int i = currentPageNo - 2; i <= currentPageNo; i++) {
+			if (i > 0) {
+				pageNos.add(i);
+			}
+		}
+		int pagesCount = (int)Math.ceil((double)totalRecordsFound / pageInterval);
+		for (int i = currentPageNo+1; i <= currentPageNo+2; i++) {
+			if (i <= pagesCount) {
+				pageNos.add(i);
+			}
+		}
+		model.put(WebKeys.PAGE_NUMBERS, pageNos);
 		model.put(WebKeys.PAGE_TOTAL_RECORDS, totalRecordsFound);
 		model.put(WebKeys.PAGE_START_INDEX, firstOnCurrentPage+1);
 		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
@@ -545,7 +560,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.quicksearch.Title"));			
 		} else {
 			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
-			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));			
+			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
 		} 
 
 		// TODO - if needed - implement dynamic
