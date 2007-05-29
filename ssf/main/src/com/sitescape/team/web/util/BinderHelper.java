@@ -276,7 +276,7 @@ public class BinderHelper {
     	}
 	}
 	static void buildTemplateElement(Element element, TemplateBinder config, DomTreeHelper helper) {
-	   	element.addAttribute("title", NLT.get(config.getTitle()));
+	   	element.addAttribute("title", NLT.getDef(config.getTitle()));
     	element.addAttribute("id", config.getId().toString());
  		
     	if (!config.getBinders().isEmpty()) {

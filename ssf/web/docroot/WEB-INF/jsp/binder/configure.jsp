@@ -99,9 +99,9 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
  text="Inherit definitions :"/>
 <br>
 &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
-<ssf:nlt tag="yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<ssf:nlt tag="general.yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="radio" name="inherit" value="no" ${no_checked}>
-<ssf:nlt tag="no" text="no"/>&nbsp;&nbsp;&nbsp;
+<ssf:nlt tag="general.no" text="no"/>&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="inheritanceBtn"
  value="<ssf:nlt tag="button.apply" text="Apply"/>">
 </form>
