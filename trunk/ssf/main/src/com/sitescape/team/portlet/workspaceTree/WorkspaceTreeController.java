@@ -264,6 +264,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Toolbar dashboardToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
+		boolean canGetTeamMembers = getBinderModule().testAccess(workspace, "getTeamMembers");
+
 		
 		//The "Administration" menu
 		boolean adminMenuCreated=false;
@@ -428,7 +430,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		
 		// list team members
-		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
+		if (canGetTeamMembers) {
 			qualifiers = new HashMap();
 					
 			// The "Teams" menu
@@ -538,19 +540,19 @@ public class WorkspaceTreeController extends SAbstractController  {
 				contributorIdsAsJSString += ", ";	
 			}
 		}
-		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (getBinderModule().testAccess(workspace, "getTeamMembers") ? ", '" + forumId + "'" : "" ) + ");return false;");
+		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (canGetTeamMembers ? ", '" + forumId + "'" : "" ) + ");return false;");
 		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
 
 		// send mail
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
+		if (canGetTeamMembers) {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
-		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
+		if (!canGetTeamMembers) {
 			qualifiers.put("post", Boolean.TRUE);
 			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
@@ -560,12 +562,12 @@ public class WorkspaceTreeController extends SAbstractController  {
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
+		if (canGetTeamMembers) {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
-		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
+		if (!canGetTeamMembers) {
 			qualifiers.put("post", Boolean.TRUE);
 			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
