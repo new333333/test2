@@ -16,5 +16,10 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderBookmarksPortlet"/></span>
 
-<p>TBD</p>
+<p><ssf:nlt tag="help.folderBookmarksPortlet.info" /></p>
+
+<p><ssf:nlt tag="help.folderBookmarksPortlet.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.folderBookmarksPortlet.viewingUnseen" /></p>
+
 </div>
