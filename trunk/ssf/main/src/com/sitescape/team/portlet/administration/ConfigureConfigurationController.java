@@ -361,7 +361,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			for (TemplateBinder tb:configs) {
 				Element treeEle = dtRoot.addElement("child");
 				treeEle.addAttribute("type", "template");
-				treeEle.addAttribute("title", NLT.get(tb.getTemplateTitle()));
+				treeEle.addAttribute("title", NLT.getDef(tb.getTemplateTitle()));
 				treeEle.addAttribute("id", tb.getId().toString());	
 				treeEle.addAttribute("displayOnly", "false");
 				treeEle.addAttribute("url", "");

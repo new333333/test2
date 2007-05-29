@@ -306,9 +306,9 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   <ssf:nlt tag="binder.configure.access_control.inherit"/> <ssf:inlineHelp tag="ihelp.other.inherit_roles"/>
   <br/>
   &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
-  <ssf:nlt tag="answer.yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <ssf:nlt tag="general.yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="radio" name="inherit" value="no" ${no_checked}>
-  <ssf:nlt tag="answer.no"/>&nbsp;&nbsp;&nbsp;
+  <ssf:nlt tag="general.no"/>&nbsp;&nbsp;&nbsp;
   <input type="submit" class="ss_submit" name="inheritanceBtn"
    value="<ssf:nlt tag="button.apply" text="Apply"/>">
   </form>

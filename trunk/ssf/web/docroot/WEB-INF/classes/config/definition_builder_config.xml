@@ -2096,7 +2096,7 @@
 			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
 				<option name="true" caption="__matchAll" />
 				<option name="false" caption="__matchAny" />
-				<help>__allMustMatchHelp</help>
+				<help>ihelp.workflow.allMustMatch</help>
 			</property>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>

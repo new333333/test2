@@ -53,14 +53,14 @@
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_rootOpen" value="true" 
-  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="yes"/><br/>
+  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="general.yes"/><br/>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen == 'false'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_rootOpen" value="false" 
-  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="no"/><br/>
+  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="general.no"/><br/>
 </div>
 </td>
 </tr>
