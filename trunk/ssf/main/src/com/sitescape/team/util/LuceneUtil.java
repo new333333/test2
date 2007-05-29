@@ -24,93 +24,65 @@ import org.apache.lucene.store.FSDirectory;
 import com.sitescape.team.lucene.ChineseAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 
-
-
 public class LuceneUtil {
-	
+
 	protected static Log logger = LogFactory.getLog(LuceneUtil.class);
-	
-	private static final int READSEARCH = 1;
-	private static final int READDELETE = 2;
+
+	private static final int SEARCH = 1;
+	private static final int READ = 2;
 	private static final int WRITE = 3;
-	
+
 	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
-	
-	private static int prevState = READSEARCH;
+
+	private static int prevState = SEARCH;
+
 	private static IndexWriter indexWriter = null;
 	private static IndexReader indexReader = null;
 	private static IndexSearcher indexSearcher = null;
+
+	
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		synchronized (LuceneUtil.class) {
-			switch(prevState) {
-			case (READSEARCH):
-				if (indexReader != null) 
+			switch (prevState) {
+			case (READ):
+				if (indexReader != null)
 					return indexReader;
-			case (READDELETE):
-			case(WRITE): 
-				closeAll();
-				indexWriter = null;
-				try {
-					if (indexReader != null) indexReader.close();
-					indexReader = IndexReader.open(indexPath);
-				} catch (IOException ioe) {
-					if (!indexExists(indexPath)) {
-						if (initializeIndex(indexPath)) {
-							indexReader =  IndexReader.open(indexPath);
-							return indexReader;
-						}
-					} else {
-						try {
-							// force unlock of the directory
-							IndexReader.unlock(FSDirectory.getDirectory(indexPath));
-							indexReader = IndexReader.open(indexPath);
-						} catch (IOException e) {
-							throw e;
-						}
-					}
-				}
+			case (SEARCH):
+				indexReader = getNewReader(indexPath);
+				break;
+			case (WRITE):
+				closeWriter();
+				closeReader();
+				indexReader = getNewReader(indexPath);
 			}
-			prevState = READDELETE;
+			prevState = READ;
 		}
 		return indexReader;
 	}
-	
-	public static IndexSearcher getSearcher(String indexPath) throws IOException {
+
+	public static IndexSearcher getSearcher(String indexPath)
+			throws IOException {
 		synchronized (LuceneUtil.class) {
-			switch(prevState) {
-			case (READSEARCH):
-			case (READDELETE):
-				if (indexSearcher != null) 
+			switch (prevState) {
+			case (SEARCH):
+				if (indexSearcher != null)
 					return indexSearcher;
-			case(WRITE): 
-				closeAll();
-				try {
-					indexSearcher = new IndexSearcher(indexPath);
-				} catch (IOException ioe) {
-					try {
-						if (indexExists(indexPath)) {
-							// force unlock of the directory
-							IndexReader.unlock(FSDirectory.getDirectory(indexPath));
-							indexSearcher = new IndexSearcher(indexPath);
-						} else {
-							if (initializeIndex(indexPath)) {
-								indexSearcher = new IndexSearcher(indexPath);
-								return indexSearcher;
-							} else {
-								throw ioe;
-							}
-						}
-					} catch (IOException e) {
-						throw e;
-					}
-				}
+				indexSearcher = getNewSearcher(indexPath);
+				break;
+			case (READ):
+				closeReader();
+				prevState = SEARCH;
+				indexSearcher = getNewSearcher(indexPath);
+				break;
+			case (WRITE):
+				if (indexWriter != null) indexWriter.flush();
+				indexSearcher = getNewSearcher(indexPath);
 			}
-			prevState = READSEARCH;
 		}
 		return indexSearcher;
 	}
-	
+
 	public static IndexWriter getWriter(String indexPath, boolean create)
 			throws IOException {
 		synchronized (LuceneUtil.class) {
@@ -118,34 +90,91 @@ public class LuceneUtil {
 			case (WRITE):
 				if (indexWriter != null && !create)
 					break;
-			case (READSEARCH):
-			case (READDELETE):
-				closeAll();
-				try {
-					indexWriter = new IndexWriter(indexPath, 
-						new SsfIndexAnalyzer(), create);
-				} catch (Exception ie) {
-					try {
-						// force unlock of the directory
-						IndexReader.unlock(FSDirectory.getDirectory(indexPath));
-						indexWriter = new IndexWriter(indexPath, 
-								new SsfIndexAnalyzer(), create);
-					} catch (IOException e) {
-						throw e;
-					}
-				}
-				indexWriter.setUseCompoundFile(false);
+			case (SEARCH):
+				indexWriter = getNewWriter(indexPath, create);
+				break;
+			case (READ):
+				closeReader();
+				indexWriter = getNewWriter(indexPath, create);
 			}
-			
 			prevState = WRITE;
 		}
 		return indexWriter;
 	}
-	
+
+	private static IndexReader getNewReader(String indexPath)
+			throws IOException {
+		try {
+			indexReader = IndexReader.open(indexPath);
+		} catch (IOException ioe) {
+			if (!indexExists(indexPath)) {
+				if (initializeIndex(indexPath)) {
+					indexReader = IndexReader.open(indexPath);
+					return indexReader;
+				}
+			} else {
+				try {
+					// force unlock of the directory
+					IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+					indexReader = IndexReader.open(indexPath);
+				} catch (IOException e) {
+					throw e;
+				}
+			}
+		}
+		return indexReader;
+
+	}
+
+	private static IndexSearcher getNewSearcher(String indexPath)
+			throws IOException {
+		IndexSearcher indexSearcher = null;
+		try {
+			indexSearcher = new IndexSearcher(indexPath);
+		} catch (IOException ioe) {
+			try {
+				if (indexExists(indexPath)) {
+					// force unlock of the directory
+					IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+					indexSearcher = new IndexSearcher(indexPath);
+				} else {
+					if (initializeIndex(indexPath)) {
+						indexSearcher = new IndexSearcher(indexPath);
+						return indexSearcher;
+					} else {
+						throw ioe;
+					}
+				}
+			} catch (IOException e) {
+				throw e;
+			}
+		}
+		return indexSearcher;
+	}
+
+	private static IndexWriter getNewWriter(String indexPath, boolean create)
+			throws IOException {
+		try {
+			indexWriter = new IndexWriter(indexPath, new SsfIndexAnalyzer(),
+					create);
+		} catch (Exception ie) {
+			try {
+				// force unlock of the directory
+				IndexReader.unlock(FSDirectory.getDirectory(indexPath));
+				indexWriter = new IndexWriter(indexPath,
+						new SsfIndexAnalyzer(), create);
+			} catch (IOException e) {
+				throw e;
+			}
+		}
+		indexWriter.setUseCompoundFile(false);
+		return indexWriter;
+	}
+
 	public static IndexSearcher getSearcher(IndexReader reader) {
 		synchronized (LuceneUtil.class) {
-			indexSearcher =  new IndexSearcher(reader);
-			//prevState = READSEARCH;
+			indexSearcher = new IndexSearcher(reader);
+			// prevState = READSEARCH;
 		}
 		return indexSearcher;
 	}
@@ -153,15 +182,14 @@ public class LuceneUtil {
 	public static IndexWriter getWriter(String indexPath) throws IOException {
 		return getWriter(indexPath, false);
 	}
-	
+
 	private static boolean initializeIndex(String indexPath) throws IOException {
-		synchronized(LuceneUtil.class) {
-			if(IndexReader.indexExists(indexPath)) {
-				// Index already exists at the specified directory. 
+		synchronized (LuceneUtil.class) {
+			if (IndexReader.indexExists(indexPath)) {
+				// Index already exists at the specified directory.
 				// We shouldn't initialize index in this case.
 				return false;
-			}
-			else {
+			} else {
 				// No index exists at the specified directory. Create a new one.
 				getWriter(indexPath, true);
 				indexWriter.close();
@@ -170,45 +198,53 @@ public class LuceneUtil {
 			}
 		}
 	}
-	
+
 	public static boolean indexExists(String indexPath) {
 		if (IndexReader.indexExists(indexPath))
 			return true;
 		else
 			return false;
 	}
-	
-	
+
 	public static void closeAll() {
-		synchronized(LuceneUtil.class) {
-			try {
-				indexWriter.close();
-			} catch (Exception we) {}
-			try {
-				indexReader.close();
-			} catch (Exception re) {}
-			try {
-				indexSearcher.close();
-			} catch (Exception se) {}
-			indexWriter = null;
-			indexReader = null;
-			indexSearcher = null;
+		synchronized (LuceneUtil.class) {
+			closeWriter();
+			closeReader();
+			closeSearcher();
 		}
 	}
-	
+
 	// needed for searchers that are opened on existing readers.
 	public static void closeSearcher() {
 		try {
 			indexSearcher.close();
-		} catch (Exception se) {}
+		} catch (Exception se) {
+		}
 		indexSearcher = null;
+	}
+
+	public static void closeReader() {
+		try {
+			indexReader.close();
+		} catch (Exception se) {
+		}
+		indexReader = null;
+	}
+
+	public static void closeWriter() {
+		try {
+			indexWriter.close();
+		} catch (Exception se) {
+		}
+		indexWriter = null;
 	}
 
 	// unlock the index
 	public static void unlock(String indexPath) {
 		try {
 			closeAll();
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 		try {
 			if (indexExists(indexPath)) {
 				// force unlock of the directory
@@ -226,10 +262,10 @@ public class LuceneUtil {
 			logger.info("Can't delete Lucene lockfile: " + e.toString());
 		}
 	}
-	
-	//return the correct analyzer based on the text passed in.
+
+	// return the correct analyzer based on the text passed in.
 	public static Analyzer getAnalyzer(String snippet) {
-		// pass the snippet to the language taster and see which 
+		// pass the snippet to the language taster and see which
 		// analyzer to use
 		String language = LanguageTaster.taste(snippet.toCharArray());
 		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
@@ -237,34 +273,36 @@ public class LuceneUtil {
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			return new ChineseAnalyzer();
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
-			//return new HEBREWAnalyzer;
+			// return new HEBREWAnalyzer;
 			Analyzer analyzer = defaultAnalyzer;
 			String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
 			if (!aName.equalsIgnoreCase("")) {
-				//load the hebrew analyzer here
+				// load the hebrew analyzer here
 				try {
 					Class hebrewClass = ReflectHelper.classForName(aName);
-			 		analyzer = (Analyzer)hebrewClass.newInstance();
+					analyzer = (Analyzer) hebrewClass.newInstance();
 				} catch (Exception e) {
-					logger.error("Could not initialize hebrew analyzer class: " + e.toString());
+					logger.error("Could not initialize hebrew analyzer class: "
+							+ e.toString());
 				}
 			}
 			return analyzer;
 		} else {
-			//return new ARABICAnalyzer;
+			// return new ARABICAnalyzer;
 			Analyzer analyzer = defaultAnalyzer;
 			String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
 			if (!aName.equalsIgnoreCase("")) {
-				//load the arabic analyzer here
+				// load the arabic analyzer here
 				try {
 					Class arabicClass = ReflectHelper.classForName(aName);
-			 		analyzer = (Analyzer)arabicClass.newInstance();
+					analyzer = (Analyzer) arabicClass.newInstance();
 				} catch (Exception e) {
-					logger.error("Could not initialize arabic analyzer class: " + e.toString());
+					logger.error("Could not initialize arabic analyzer class: "
+							+ e.toString());
 				}
 			}
 			return analyzer;
 		}
 	}
-	
+
 }
