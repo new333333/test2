@@ -1035,6 +1035,7 @@ public static final String[] monthNamesShort = {
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
+		boolean canGetTeamMembers = getBinderModule().testAccess(folder, "getTeamMembers");
 		Map qualifiers;
 		//	The "Add entry" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
@@ -1223,7 +1224,7 @@ public static final String[] monthNamesShort = {
 		}
 		
 		// list team members
-		if (getBinderModule().testAccess(folder.getId(), "getTeamMembers")) {
+		if (canGetTeamMembers) {
 			qualifiers = new HashMap();			
 			
 			//The "Teams" menu
@@ -1523,7 +1524,7 @@ public static final String[] monthNamesShort = {
 				contributorIdsAsJSString += ", ";	
 			}
 		}
-		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (getBinderModule().testAccess(folder.getId(), "getTeamMembers") ? ", '" + forumId + "'" : "" ) + ");return false;");
+		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (canGetTeamMembers ? ", '" + forumId + "'" : "" ) + ");return false;");
 		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
 		
 		// email
