@@ -120,7 +120,7 @@ function ss_hideBlogReplyIframe<portlet:namespace/>(id, count) {
 
 <div style="margin:0px;">
 
-<div align="right" style="margin:0px 4px 0px 0px;">
+<div align="left" class="ssPageNavi">
 <table border="0" cellspacing="0px" cellpadding="0px">
 	<tr>
 		<td align="left" width="55%">

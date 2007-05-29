@@ -26,7 +26,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 <br>
 <div style="margin:0px;">
 
-<div align="right" style="margin:0px 4px 0px 0px;">
+<div align="right" class="ssPageNavi">
 <table width="99%" border="0" cellspacing="0px" cellpadding="0px">
 	<tr>
 		<td align="left" width="55%">
