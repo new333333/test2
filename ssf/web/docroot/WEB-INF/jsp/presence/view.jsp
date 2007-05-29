@@ -54,7 +54,9 @@
   </tr>
   </table>
   </div>
+</c:if>
 
+<c:if test="${!empty ssUsers || ss_windowState == 'maximized' || !empty ssDashboard}">
   <c:if test="${!empty ssDashboard}">
 	<c:set var="ssUsers" value="${ssDashboard.beans[ssComponentId].ssUsers}"/>
 	<c:set var="ssGroups" value="${ssDashboard.beans[ssComponentId].ssGroups}"/>
