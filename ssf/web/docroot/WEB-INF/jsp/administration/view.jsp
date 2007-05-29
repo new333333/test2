@@ -20,14 +20,14 @@
 	<tr>
 	  <td>
 <c:if test="${ss_isSiteAdmin}">
-	    <ssHelpSpot helpId="portlets/admin_portlet_site" 
-	      title="<ssf:nlt tag="helpSpot.adminPortletSite" />" 
+	    <ssHelpSpot helpId="portlets/admin/admin_portlet_site" 
+	      title="<ssf:nlt tag="helpSpot.adminPortletSite" />xx" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
 </c:if>
 <c:if test="${!ss_isSiteAdmin}">
-	    <ssHelpSpot helpId="portlets/admin_portlet" 
-	      title="<ssf:nlt tag="helpSpot.adminPortlet" />" 
+	    <ssHelpSpot helpId="portlets/admin/admin_portlet" 
+	      title="<ssf:nlt tag="helpSpot.adminPortlet" />ff" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
 </c:if>
@@ -56,12 +56,9 @@
 			</table>
 		</td>
 		<td align="right" width="30" valign="top">
-	  <ssHelpSpot helpId="navigation_bar/help_button" offsetX="-22" offsetY="6"
-	      title="<ssf:nlt tag="helpSpot.helpButton"/>">
 		<a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
   		  src="<html:imagesPath/>icons/help.png" 
   		  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
-	  </ssHelpSpot>
 		</td>
 	</tr>
 	</table>

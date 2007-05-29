@@ -108,14 +108,21 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 </ssHelpSpot>
 </td>
 <td valign="top" width="30%">
+<ssHelpSpot helpId="navigation_bar/my_teams" 
+  title="<ssf:nlt tag="helpSpot.myTeams"/>"
+  offsetX="-22" offsetY="8" xAlignment="center">
 <div style="padding-top:10px;">
 <a href="javascript: ;" onClick="ss_showMyTeams<portlet:namespace/>();return false;">
   <ssf:nlt tag="navigation.myTeams"/>
 </a>
 <div id="<portlet:namespace/>ss_myTeams"></div>
 </div>
+</ssHelpSpot>
 </td>
 <td valign="top" width="20%">
+<ssHelpSpot helpId="navigation_bar/create_team_button" 
+  title="<ssf:nlt tag="helpSpot.createTeam"/>"
+  offsetX="-22" offsetY="8" xAlignment="center">
 <div style="padding-top:10px;">
 <c:if test="${empty ss_inlineHelpDivIdNumber}">
   <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
@@ -130,6 +137,7 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
   border="0" alt="<ssf:nlt tag="button.close"/>" 
   src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>
 <div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}"></div>
+</ssHelpSpot>
 </div>
 </div>
 </td>

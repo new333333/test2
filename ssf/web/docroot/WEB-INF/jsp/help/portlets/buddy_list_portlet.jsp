@@ -16,5 +16,16 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.buddyListPortlet"/></span>
 
-<p>TBD</p>
+<p><ssf:nlt tag="help.buddyListPortlet.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.buddyListPortlet.contacting"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="help.buddyListPortlet.configure" /></p>
+
+<div style="margin-left:25px;">
+
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+
+</div>
+
 </div>

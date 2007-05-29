@@ -14,29 +14,11 @@
 <div class="ss_style" align="left">
 <%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.adminPortletSite"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.myTeams"/></span>
 
-<p><ssf:nlt tag="help.adminPortlet.roleDefined" /></p>
+<p><ssf:nlt tag="help.myTeams.intro" /></p>
 
-<p><ssf:nlt tag="help.adminPortletSite.listIntro" /></p>
-
-<ul style="list-style-type:disc;">
-
-<li><ssf:nlt tag="help.adminPortletSite.listItem.roleDefs" /></li>
-
-<li><ssf:nlt tag="help.adminPortletSite.listItem.configEmail" /></li>
-
-<li><ssf:nlt tag="help.adminPortletSite.listItem.exportImport" /></li>
-
-<li><ssf:nlt tag="help.adminPortletSite.listItem.templates" /></li>
-
-</ul>
-
-<p><ssf:nlt tag="help.adminPortlet.duties" /></p>
-
-<p><ssf:nlt tag="help.adminPortlet.createGroups" /></p>
-
-<p><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence" /></p>
+<p><ssf:nlt tag="help.myTeams.teamsDefined" /></p>
 
 <div style="margin-left:25px;">
 
