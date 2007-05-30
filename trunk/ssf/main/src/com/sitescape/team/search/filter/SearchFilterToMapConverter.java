@@ -384,6 +384,9 @@ public class SearchFilterToMapConverter {
 	}	
 	
 	private Date parseDate_from_yyyyMMdd(String s) {
+		if (s == null || "".equals(s)) {
+			return null;
+		}
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyyMMdd");
@@ -394,7 +397,7 @@ public class SearchFilterToMapConverter {
 		try { 
 			result = inputFormater.parse(s);
 		} catch (ParseException e) {
-			logger.error("Date [" + s + "] in search mask is in wrong format");			
+			logger.info("Date [" + s + "] in search mask is in wrong format");
 		}
 		
 		return result;
