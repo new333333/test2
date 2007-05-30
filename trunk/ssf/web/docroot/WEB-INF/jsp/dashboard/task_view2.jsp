@@ -25,6 +25,15 @@
 <c:set var="portletNamespace" value="${renderResponse.namespace}"/>
 </ssf:ifnotadapter>
 
+<style>
+a.ss_taskPriority_trivial_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
+	background-position: left top; 
+}
+a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, a.ss_taskStatus_cancelled_u:hover img, a.ss_taskStatus_completed_u:hover img {
+	background-position: left top; 
+}
+</style>
+
 <div class="ss_blog">
 <table class="ss_tasks_list">
 	<tr>
@@ -49,13 +58,21 @@
 		<td>
 			<c:if test="${! empty entry.priority}">
 				<c:forEach var="prio" items="${ssEntryDefinitionElementData.priority.values}">
-					<img 
+					<a href="javascript: // ;"
 						<c:if test="${entry.priority == prio.key}">
-						src="<html:imagesPath/>icons/prio_${prio.key}.gif" class="ss_prio_active" 
+							class="ss_taskPriority"
 						</c:if>
 						<c:if test="${entry.priority != prio.key}">
-						src="<html:imagesPath/>icons/prio_${prio.key}_f3.gif" class="ss_prio_inactive"
+							class="ss_taskPriority ss_taskPriority_${prio.key}_u"
 						</c:if>
+						><img 
+						<c:if test="${entry.priority == prio.key}">
+						src="<html:imagesPath/>icons/prio_${prio.key}.gif"
+						</c:if>
+						<c:if test="${entry.priority != prio.key}">
+						src="<html:imagesPath/>pics/1pix.gif"
+						</c:if>
+						alt="${prio.value}" title="${prio.value}"
 					>
 				</c:forEach>
 			</c:if>
@@ -82,14 +99,22 @@
 		<td>
 			<c:if test="${! empty entry.status}">
 				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
-					<img 
+					<a href="javascript: //"
 						<c:if test="${entry.status == status.key}">
-						src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_status_active" 
+							class="ss_taskStatus"
 						</c:if>
 						<c:if test="${entry.status != status.key}">
-						src="<html:imagesPath/>icons/status_${status.key}_f3.gif" class="ss_status_inactive"
+							class="ss_taskStatus ss_taskStatus_${status.key}_u"
+						</c:if>>
+						<img 
+						<c:if test="${entry.status == status.key}">
+							src="<html:imagesPath/>icons/status_${status.key}.gif" 
 						</c:if>
-					>
+						<c:if test="${entry.status != status.key}">
+							src="<html:imagesPath/>pics/1pix.gif" 
+						</c:if>
+						alt="${status.value}" title="${status.value}">
+					</a>
 				</c:forEach>
 				
 			</c:if>
