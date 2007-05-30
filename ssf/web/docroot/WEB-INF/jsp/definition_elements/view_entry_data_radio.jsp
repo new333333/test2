@@ -11,11 +11,13 @@
  */
 %>
 <%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%
 	String caption = "";
 	if(ssDefinitionEntry.getCustomAttributes().get(property_name) != null) {
 		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
 					(String) ((CustomAttribute) ssDefinitionEntry.getCustomAttributes().get(property_name)).getValue());
+		caption = NLT.getDef(caption);
 	}
 %>
 <c:set var="caption" value="<%= caption %>"/>
