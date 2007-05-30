@@ -663,11 +663,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
 		}
-		if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
-			if ((folders != null) && !folders.isEmpty()) {
-				idData.put(WebKeys.BINDER, folders.iterator().next());					
-			}
-		}
 		getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
 
     }
@@ -764,8 +759,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				}
 				idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
 
-				if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
-						component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
+				if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					if ((folders != null) && !folders.isEmpty()) {
 						idData.put(WebKeys.BINDER, folders.iterator().next());					
 					}
@@ -930,7 +924,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					Document query = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
 					componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName)) {
+						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
 					
 					//multi-select	
 					Set <String> folderIds = FindIdsHelper.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
@@ -972,14 +967,28 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 							}
 						}
 					}
+					SearchFilter searchFilter = new SearchFilter(true);
+					String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
+					searchFilter.addFilterName(filterName);
+
 					if (!folderIds.isEmpty()) {
-						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
-						componentData.put(SearchFormSavedSearchQuery, query.asXML());
+						searchFilter.addFolderIds(folderIds);
 						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
-					} 
+					}
+					
+					boolean assignedToCurrentUser = PortletRequestUtils.getBooleanParameter(request, "filterAssignedToCurrentUser", false);
+					if (assignedToCurrentUser) {
+						searchFilter.addEntryAttributeValues(null,
+										TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
+										new String[] { SearchFilterKeys.CurrentUserId },
+										"user_list");
+						componentData.put(AssignedToCurrentUser, assignedToCurrentUser);
+					}
+					
+					componentData.put(SearchFormSavedSearchQuery, searchFilter
+							.getFilter().asXML());
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
+						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
 
 					//single select
 					List folderIds = new ArrayList();
@@ -1010,14 +1019,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
 					}
 
-					boolean assignedToCurrentUser = PortletRequestUtils.getBooleanParameter(request, "filterAssignedToCurrentUser", false);
-					if (assignedToCurrentUser) {
-						searchFilter.addEntryAttributeValues(null,
-										TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
-										new String[] { SearchFilterKeys.CurrentUserId },
-										"user_list");
-						componentData.put(AssignedToCurrentUser, assignedToCurrentUser);
-					}
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
 							.getFilter().asXML());
 		

@@ -60,7 +60,6 @@
 					<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.assignedToCurrentUser}">checked="checked"</c:if>>
 				<label for="filterAssignedToCurrentUser${renderResponse.namespace}"><ssf:nlt tag="dashboard.task.assignedToCurrentUser"/></label>
 			</div>
-			<br/><br/>
 			
 			<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
 				<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
@@ -82,10 +81,10 @@
 				</c:if>
 				
 				<ssf:tree 
-				  treeName="${treeName}"
+				  treeName="${treeName}" 
 				  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
-				  rootOpen="true" 
-				  singleSelect="${ssDashboard.beans[ssComponentId].ssBinder.id}" 
-				  singleSelectName="ss_folder_id"
+				  rootOpen="false" 
+				  multiSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList}" 
+				  multiSelectPrefix="ss_folder_id_"
 				/>
 			</div>
