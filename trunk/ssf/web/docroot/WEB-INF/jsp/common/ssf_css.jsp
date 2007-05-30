@@ -139,12 +139,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 <% //GUESTBOOK %>
 	<c:set var="ss_guestbook_rule_color" value="#AFC8E3" scope="request"/>
-	  
-<% //LINK COLORS %>
-	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_link_visited_color" value="#663366" scope="request"/>
-	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
-	
+	 
+
 <% //TOOLBAR %>
 
     <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
@@ -190,15 +186,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     
 <%  //LINK COLORS   %>
 	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_link_visited_color" value="#663366" scope="request"/>	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
-	
-<%  //search    %>
-	
-	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_link_visited_color" value="#663366" scope="request"/>
+	<c:set var="ss_style_link_visited_color" value="#333333" scope="request"/>	
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
 	
-<%  //breadcrumbs   %>
 	
 <% //METADATA COLORS %>
 
@@ -230,24 +220,41 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_diff_color_same" value="lightblue" scope="request"/>	
 
 <% //TOOLBARs %>
+
+
+    <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
+    <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
+    <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+    <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
+    <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
+    <c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
+    
+	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
+	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
+	<c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>
+
 	<c:set var="ss_toolbar2_background_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
 	<c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/>
-	
-	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
-	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
-	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
-	<c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/>
-	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>	
+
+	<c:set var="ss_toolbar4_background_color" value="#DBE6F2" scope="request"/>
+	<c:set var="ss_toolbar4_text_color" value="#666666" scope="request"/>
+	<c:set var="ss_toolbar4_link_hover_color" value="#E8EFF7" scope="request"/>
+	<c:set var="ss_toolbar4_border_color" value="#DBE6F2" scope="request"/>
+	<c:set var="ss_toolbar4_dropdown_menu_color" value="#DBE6F2" scope="request"/>
+	<c:set var="ss_toolbar4_inactive" value="#333333" scope="request"/>
 	
 	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	 
-	 
-<% //REPLYS %>
+	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
+	
+	
+	<% //REPLYS %>
 	<c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/>
 	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
 	
@@ -1559,6 +1566,7 @@ div.ss_dashboardProtoDropTarget {
 .ss_tree_highlight {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
+  text_decoration: none !important;
   }
   
 .ss_tree_bucket_text_div {
