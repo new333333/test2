@@ -196,7 +196,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     
 <% //MUTED %>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_muted_label_color" value="#2956B2" scope="request"/>
+	<c:set var="ss_style_muted_label_color" value="#003782" scope="request"/>
 			
 <% //PORTLET COLORS	 %>
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
@@ -629,8 +629,8 @@ table.ss_guestbook {
 
 input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
   color: ${ss_linkbutton_text_color};
-  font: normal 9px Lucida Sans Unicode;
-  letter-spacing: 0.25px;
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: ${ss_style_font_fineprint};
   border-top: 1px solid ${ss_linkbutton_border_color_in};
   border-left: 1px solid ${ss_linkbutton_border_color_in};
   border-right: 1px solid ${ss_linkbutton_border_color_out};
@@ -638,8 +638,8 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   background-color: ${ss_linkbutton_background_color};
   background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
   background-repeat: repeat-x;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 8px;
+  padding-right: 8px;
   padding-bottom: 1px;
   vertical-align: middle;
   text-decoration: none;
@@ -649,17 +649,17 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
 
 a.ss_linkButton:focus, a.ss_linkButton:hover {
   color: ${ss_linkbutton_link_hover_color};
-  font: normal 9px Lucida Sans Unicode;
-  letter-spacing: 0.25px;
-  border-top: 1px solid ${ss_linkbutton_border_color_in};
-  border-left: 1px solid ${ss_linkbutton_border_color_in};
-  border-right: 1px solid ${ss_linkbutton_border_color_out};
-  border-bottom: 1px solid ${ss_linkbutton_border_color_out};
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: ${ss_style_font_fineprint};
+  border-top: 1px solid ${ss_linkbutton_border_color_out};
+  border-left: 1px solid ${ss_linkbutton_border_color_out};
+  border-right: 1px solid ${ss_linkbutton_border_color_in};
+  border-bottom: 1px solid ${ss_linkbutton_border_color_in};
   background-color: ${ss_linkbutton_background_color};
   background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
   background-repeat: repeat-x;
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 8px;
+  padding-right: 8px;
   padding-bottom: 1px;
   vertical-align: bottom;
   text-decoration: none;
@@ -695,15 +695,17 @@ div.ss_iconed_label {
   background-repeat: no-repeat;
   background-position: left center;
   padding-left: 16px;
-  padding-right: 16px;
+  padding-right: 12px;
   margin-left: 2px;
   font-size: 11px;
-  line-height: 20px;
+  font-weight: bold;
+  line-height: 16px;
   color: ${ss_style_muted_label_color};
 }
 
 div.ss_iconed_label a {
   font-size: 11px;
+  font-weight: bold;
   color: ${ss_style_muted_label_color};
 }
 
@@ -2565,13 +2567,14 @@ div.ss_utils_bar {
     float:right;
     text-align:right;
 	margin-bottom:0px;
-	color:#999999;
+	color:#666666;
 	font-weight:bold;
+	font-family:${ss_style_title_font_family};
 	background:transparent none repeat scroll 0%;
 	font-size:${ss_style_font_size};
 }
 div.ss_line {
-	border-bottom: 1px solid #999999;
+	border-bottom: 1px solid #666666;
 	width: 100%;
 	margin: 0px;
 	padding: 0px 0px 0px 0px;
@@ -2589,17 +2592,17 @@ div.ss_utils_bar ul.ss_utils_bar li {
 	margin: 0px 10px 0px 0px;
 }
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
-	color:#999999;
+	color:#003782;
 	display:block;
 	margin:0px;
 	border:0px;
-	text-decoration:underline;
+	
 }
 div.ss_utils_bar ul.ss_utils_bar li a span {
 	padding: 5px 0px 6px 0px;
 	margin: 0px;
 	font-size:${ss_style_font_smallprint};
-	color:#999999;
+	color:#003782;
 }
 
 .ss_utils_bar li a:hover {
@@ -2607,36 +2610,36 @@ div.ss_utils_bar ul.ss_utils_bar li a span {
 }
 
 div.ss_utils_bar_submenu {
-	background:#ffffff;
+	background:#ECECEC;
 	margin:0px;
 	padding:0px;
 	text-align:left;
 	position:absolute;
 	display:none;
 	z-index:500;
-	border: 1px solid #999999;
+	border: 1px solid #CCCCCC;
 }
 
 ul.ss_utils_bar_submenu {
 	margin: 0px 5px 0px 5px;
-	background:#ffffff;
+	background:#ECECEC;
 } 
 
 .ss_utils_bar_submenu li  {
 	float:none;
 	padding:0px;
-	font-weight:bold;
+	font-weight:normal;
 	border-right-style:none;
     line-height:20px;
 }
 .ss_utils_bar_submenu li:hover .ss_utils_bar_submenu a:hover {
 	text-decoration:underline;
 	background-color:transparent;
-	color:#999999;
+	color:#666666;
 	font-size:${ss_style_font_smallprint};	
 }
 .ss_utils_bar_submenu a, .ss_utils_bar_submenu a:visited {
-	color:#999999;
+	color:#666666;
 	font-size:${ss_style_font_smallprint};
 }
 
