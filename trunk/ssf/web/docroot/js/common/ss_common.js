@@ -3705,8 +3705,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         if (email != '') {
             m += '<tr>';
             m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgmail'+ssNamespace+'"></td>';
-            bodyText = escape(window.location.href);
-            m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
+            m += '<td><a class="ss_graymenu" href="mailto:' + email +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
         }
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
