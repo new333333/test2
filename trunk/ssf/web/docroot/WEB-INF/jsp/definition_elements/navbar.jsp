@@ -160,7 +160,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
 			  </ssHelpSpot>
-				<a class="ss_savedQueries" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
 				<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
 			</form>
      	</div>
@@ -476,7 +476,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 		  </ssHelpSpot>
 		</form>
 		
-		<a class="ss_savedQueries" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
 		<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
 	</div>
 </ssf:ifnotaccessible>
