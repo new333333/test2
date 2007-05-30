@@ -250,7 +250,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 			//sb.append("self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
 			sb.append("idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'")+"';\n");
+			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'").replaceAll("&", "&amp;")+"';\n");
 		}
 
 	}
@@ -263,7 +263,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			if (Validator.isNull(propertyCaptionValue)) {
 				propertyCaptionValue = rootElement.attributeValue("caption", "");
 			}
-			sb.append(" - " + propertyCaptionValue);
+			sb.append(" - " + propertyCaptionValue.replaceAll("&", "&amp;"));
 			sb.append("</span>\n<br/><br/>\n");
 		}
 
@@ -410,7 +410,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + 
 						operationElementName + "', '" + 
 						operationElement.attributeValue("item", "") + "'); return false;\">");
-				sb.append(NLT.getDef(operationElement.attributeValue("caption")));
+				sb.append(NLT.getDef(operationElement.attributeValue("caption").replaceAll("&", "&amp;")));
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
 			}
@@ -431,7 +431,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			Map<String, StringBuffer[]> optionsMap = new TreeMap();
 			String optionCaption = "";
 			if (e_options != null) {
-				optionCaption = NLT.getDef(e_options.attributeValue("optionCaption", ""));
+				optionCaption = NLT.getDef(e_options.attributeValue("optionCaption", "").replaceAll("&", "&amp;"));
 				if (Validator.isNotNull(optionCaption)) {
 					sb.append("<b>").append(optionCaption).append("</b>\n");
 				}
@@ -502,7 +502,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
 						if (!itOptionsSelect.hasNext()) continue;
 					
-						optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
+						optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", "").replaceAll("&", "&amp;"));
 						if (!optionCaption.equals("")) {
 							//flush contents of current buffers to make way for new header
 							for (Map.Entry<String, StringBuffer[]> me: optionsMap.entrySet()) {
@@ -607,7 +607,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		if (Validator.isNull(caption)) {
 			caption = DefinitionUtils.getPropertyValue(item, "name");
 		} 
-		sb.append(caption);
+		sb.append(caption.replaceAll("&", "&amp;"));
 		sb.append("</a>");
 		addOptionHelp(item, sb, hb);
 		sb.append("</li>\n");
@@ -696,7 +696,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption").replaceAll("&", "&amp;")));
 							sb.append("\n<br/>\n");
 						}
 						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+Html.formatTo(propertyValue0)+"</textarea>\n<br/>\n");
@@ -711,12 +711,12 @@ public class BuildDefinitionDivs extends TagSupport {
 							checked = "checked=\"checked\"";
 						}
 						sb.append("<input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
-						sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+						sb.append(NLT.getDef(propertyConfig.attributeValue("caption").replaceAll("&", "&amp;")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption").replaceAll("&", "&amp;")));
 							sb.append("\n<br/>\n");
 						}
 						if (type.equals("selectbox")) {
@@ -746,14 +746,14 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (type.equals("radio")) checked = " checked=\"checked\"";							}
 							if (type.equals("selectbox")) {
 								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;")));
 								sb.append("</option>\n");
 								optionCount++;
 							} else if (type.equals("radio")) {
 								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 								sb.append(selection.attributeValue("name", ""));
 								sb.append("\"").append(checked).append("/>");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;")));
 								sb.append("<br/>\n");
 							}
 						}
@@ -824,7 +824,7 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
 											sb.append("\"").append(checked).append("/>");
-											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;")));
 											sb.append("<br/>\n");
 										}
 									}
@@ -842,7 +842,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("itemSelect")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						//Get the list of items in this definition
@@ -866,7 +866,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									Element selectedItemCaptionEle = (Element)selectedItem.selectSingleNode("properties/property[@name='caption']");
 									if (selectedItemCaptionEle == null) {continue;}
 									String selectedItemName = selectedItemNameEle.attributeValue("value", "");
-									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "");
+									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "").replaceAll("&", "&amp;");
 									sb.append("<option value=\"").append(selectedItemName).append("\"");
 									for (int i = 0; i < propertyValues.size(); i++) {
 										if (((String)propertyValues.get(i)).equals(selectedItemName)) {
@@ -884,7 +884,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 					
@@ -912,13 +912,13 @@ public class BuildDefinitionDivs extends TagSupport {
 									break;
 								}
 							}
-							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(entryDef.getTitle().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("iconList")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						String iconListPath = propertyConfig.attributeValue("path", "");
@@ -943,7 +943,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("repositoryList")) {
 						int optionCount = 0;
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						//See if multiple selections are allowed
@@ -1002,7 +1002,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(def.getTitle());
+									sb.append(def.getTitle().replaceAll("&", "&amp;"));
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1115,7 +1115,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							//Build a list of the entry definitions
 							Definition entryDef = (Definition)defs.get(i);
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(entryDef.getTitle()).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(entryDef.getTitle().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1155,7 +1155,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
