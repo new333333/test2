@@ -329,4 +329,8 @@ app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
   		<ant dir="main" target="unit-test" />
 	</target>
 	
+	<target name="unit-test-report" description="Generate unit test reports">
+  		<ant dir="main" target="unit-test-report" />
+	</target>
+	
 </project>
