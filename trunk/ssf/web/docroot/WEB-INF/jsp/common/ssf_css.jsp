@@ -299,23 +299,23 @@ body.ss_style_body {
 }
 
 .ss_style {
-  font-family: ${ss_style_font_family};
+  font-family: ${ss_style_folder_view_font_family};
   font-weight: inherit;
-  font-size: ${ss_style_font_size}; 
+  font-size: ${ss_style_font_smallprint}; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
 }
 
 .ss_style td, .ss_style th {
-  font-family: ${ss_style_font_family};
-  font-size: ${ss_style_font_size}; 
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: ${ss_style_font_smallprint}; 
   color: ${ss_style_text_color};
 }
 
 .ss_style_trans , .ss_style_trans td, .ss_style_trans th{
-  font-family: ${ss_style_font_family};
+  font-family: ${ss_style_folder_view_font_family};
   font-weight: inherit;
-  font-size: ${ss_style_font_size}; 
+  font-size: ${ss_style_font_smallprint}; 
   background-color: transparent;
   color: ${ss_style_text_color};
 }
