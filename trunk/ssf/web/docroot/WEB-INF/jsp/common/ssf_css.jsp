@@ -2351,7 +2351,7 @@ ul.ss_actions_bar1  {
 	border-right:  1px solid ${ss_style_drop_shadow};	
 	background-color: inherit;
 	margin: 3px 3px 0 0;
-	padding: 2px 6px 3px 6px;
+	padding: 2px 3px 3px 3px;
 }
 
 .ss_actions_bar li.ss_toolBarItem {
@@ -2403,7 +2403,7 @@ ul.ss_actions_bar1  {
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
 	color:${ss_style_text_color} !important;
 	display:block;
-	padding:0px 15px;
+	padding:0px 7px;
 }
 
 .ss_actions_bar_background {
