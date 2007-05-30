@@ -307,19 +307,25 @@ public class SearchFilter {
 	
 	public void addEntryAttributeValues(String defId, String name, String[] value) {
 		checkCurrent();
-		if (!defId.equals("") && name.equals(AllEntries)) {
+		if (defId != null && !defId.equals("") && name.equals(AllEntries)) {
 			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
 			filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
-		} else if (!defId.equals("") && !name.equals("") && value.length > 0) {
+		} else if ((defId != null && !defId.equals("")) || (name != null && !name.equals("") && value.length > 0)) {
 			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
-			//If not selecting a "common" element, store the definition id, too
-			if (!defId.equals("_common")) filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
-			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, name);
-			for (int j = 0; j < value.length; j++) {
-				Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
-				newTerm.setText(value[j]);
+			
+			if (defId != null && !defId.equals("")) {
+				//If not selecting a "common" element, store the definition id, too
+				if (!defId.equals("_common")) filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
+			}
+			
+			if (name != null && !name.equals("") && value.length > 0) {
+				filterTerm.addAttribute(SearchFilterKeys.FilterElementName, name);
+				for (int j = 0; j < value.length; j++) {
+					Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+					newTerm.setText(value[j]);
+				}
 			}
 		}
 	}
