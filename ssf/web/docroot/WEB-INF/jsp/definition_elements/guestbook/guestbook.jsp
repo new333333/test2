@@ -39,10 +39,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 </table>
 </div>
 
-<div class="ss_folder_border" style="position:relative; top:2; margin:0px; padding:2px 0px; 
-  border-top:solid #666666 1px; 
-  border-right:solid #666666 1px; 
-  border-left:solid #666666 1px;">
+<div class="ss_folder_border">
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
