@@ -200,7 +200,7 @@ public class ViewController extends SAbstractController {
 			if (!caption.equals("")) {title = caption + " (" + title + ")";}
 			dtRoot.addAttribute("title", title);
 			dtRoot.addAttribute("id", def.getId());
-			idDataCaptions.put(def.getId(), caption.replaceAll("'", "\'"));
+			idDataCaptions.put(def.getId(), caption.replaceAll("'", "\'").replaceAll("&", "&amp;"));
 			
 			if (sourceRoot != null) {
 				buildDefinitionTree(sourceRoot, dtRoot, idDataNames, idDataCaptions);
@@ -313,6 +313,7 @@ public class ViewController extends SAbstractController {
 				}
 			}
 			
+			caption = caption.replaceAll("&", "&amp;");
 			Element targetEle = targetElement.addElement("child");
 			targetEle.addAttribute("type", "item");
 			targetEle.addAttribute("title", caption);

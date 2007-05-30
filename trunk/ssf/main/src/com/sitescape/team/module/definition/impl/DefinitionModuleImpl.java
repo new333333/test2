@@ -1537,7 +1537,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
 					if (Validator.isNull(nameValue)) nameValue = itemName;
 						
-					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
+					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption").replaceAll("&", "&amp;");							
 					if (Validator.isNull(captionValue)) captionValue = nameValue;							
 					itemData.put("caption", NLT.getDef(captionValue));
 								
@@ -1549,7 +1549,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Element selection = (Element) itSelectionItems.next();
 							//Get the element name (property name)
 							String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
-							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
+							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption").replaceAll("&", "&amp;");
 							if (Validator.isNotNull(selectionNameValue)) {
 								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
 								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
@@ -1566,7 +1566,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Element selection = (Element) itSelectionItems.next();
 							//Get the element name (property name)
 							String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
-							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
+							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption").replaceAll("&", "&amp;");
 							if (Validator.isNotNull(selectionNameValue)) {
 								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
 								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
@@ -1611,7 +1611,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
 				if (Validator.isNull(nameValue)) nameValue = itemName;
 						
-				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
+				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption").replaceAll("&", "&amp;");							
 				if (Validator.isNull(captionValue)) captionValue = nameValue;							
 				itemData.put("caption", NLT.getDef(captionValue));
 								
