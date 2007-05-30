@@ -78,19 +78,24 @@ public class ICalContentHandler implements ContentHandler {
 	private boolean parseSummaryNow = false;
 	private boolean parseDescriptionNow = false;
 	private boolean parseRRuleNow = false;
-//	private boolean parseRDateNow = false;
 	private boolean parseTZOffsetToNow = false;
 	private boolean parseTZOffsetFromNow = false;
 	private boolean parseTZStandardNow = false;
 	private boolean parseTZDayligthNow = false;
 	
-	private String currentTimeZoneId = null;
-	private DateTime currentStartDate = null;
-	private DateTime currentEndDate = null;
-	private String currentUID = null;
-	private String summary = null;
-	private String description = null;
-	private Recur recur = null;
+	private class Event {
+		String currentStartTimeZoneId = null;
+		String currentEndTimeZoneId = null;
+		String currentStartDate = null;
+		String currentEndDate = null;
+		String currentUID = null;
+		String summary = null;
+		String description = null;
+		Recur recur = null;
+	}
+	
+	private List<ICalContentHandler.Event> eventsToCreate = new ArrayList();
+	private ICalContentHandler.Event currentEvent = null;
 	
 	private TzId timeZoneId = null;
 	private Standard timeZoneStandard = null;
@@ -133,6 +138,12 @@ public class ICalContentHandler implements ContentHandler {
 	
 	public void endCalendar() {
 		logger.debug("endCalendar");
+		
+		Iterator it = this.eventsToCreate.iterator();
+		while (it.hasNext()) {
+			Event event = (Event)it.next();
+			createEntry(event);
+		}
 	}
 
 	public void startComponent(String component) {
@@ -141,6 +152,7 @@ public class ICalContentHandler implements ContentHandler {
 			parseTimeZoneNow = true;
 		} else if ("VEVENT".equals(component)) {
 			parseEventNow = true;
+			this.currentEvent = new Event();
 		} else if ("STANDARD".equals(component)) {
 			parseTZStandardNow = true;
 			timeZoneStandard = new Standard();
@@ -170,15 +182,8 @@ public class ICalContentHandler implements ContentHandler {
 			
 		} else if ("VEVENT".equals(component)) {
 			parseEventNow = false;
-			createEntry();
-			
-			currentStartDate = null;
-			currentEndDate = null;
-			currentUID = null;
-			summary = null;
-			description = null;
-			recur = null;
-			
+			this.eventsToCreate.add(this.currentEvent);
+			this.currentEvent = new Event();
 		} else if ("STANDARD".equals(component)) {
 			parseTZStandardNow = false;
 		} else if ("DAYLIGHT".equals(component)) {
@@ -217,10 +222,8 @@ public class ICalContentHandler implements ContentHandler {
 			parseTimeZoneIdNow = false;
 		} else if ("DTSTART".equals(poperty)) {
 			parseDateStartNow = false;
-			currentTimeZoneId = null;
 		} else if ("DTEND".equals(poperty)) {
 			parseDateEndNow = false;
-			currentTimeZoneId = null;
 		} else if ("UID".equals(poperty)) {
 			parseUIDNow = false;
 		} else if ("SUMMARY".equals(poperty)) {
@@ -242,12 +245,12 @@ public class ICalContentHandler implements ContentHandler {
 		logger.debug(" * * * parameter ["+name+", "+value+"]");
 		if (parseEventNow && parseDateStartNow) {
 			if ("TZID".equals(name)) {
-				currentTimeZoneId = fixQuote(value);
+				this.currentEvent.currentStartTimeZoneId = fixQuote(value);
 			}
 		}
 		if (parseEventNow && parseDateEndNow) {
 			if ("TZID".equals(name)) {
-				currentTimeZoneId = fixQuote(value);
+				this.currentEvent.currentEndTimeZoneId = fixQuote(value);
 			}
 		}
 	}
@@ -267,33 +270,33 @@ public class ICalContentHandler implements ContentHandler {
 		}
 		
 		if (parseEventNow && parseDateStartNow) {
-			currentStartDate = parseDateTime(value, currentTimeZoneId);
-			logger.debug(" ============= start date ["+currentStartDate.toString("yyyy-MM-dd HH:mm:ss")+"]");
+			this.currentEvent.currentStartDate = value;
+			logger.debug(" ============= start date ["+value+"]");
 		}
 		
 		if (parseEventNow && parseDateEndNow) {
-			currentEndDate = parseDateTime(value, currentTimeZoneId);
-			logger.debug(" ============= end date ["+currentEndDate.toString("yyyy-MM-dd HH:mm:ss")+"]");
+			this.currentEvent.currentEndDate = value;
+			logger.debug(" ============= end date ["+value+"]");
 		}
 		
 		if (parseEventNow && parseUIDNow) {
-			currentUID = value;
-			logger.debug(" ============= UID ["+currentUID+"]");
+			this.currentEvent.currentUID = value;
+			logger.debug(" ============= UID ["+this.currentEvent.currentUID+"]");
 		}
 		
 		if (parseEventNow && parseSummaryNow) {
-			summary = value;
-			logger.debug(" ============= summary ["+summary+"]");
+			this.currentEvent.summary = value;
+			logger.debug(" ============= summary ["+this.currentEvent.summary+"]");
 		}
 		
 		if (parseEventNow && parseDescriptionNow) {
-			description = value;
-			logger.debug(" ============= description ["+description+"]");
+			this.currentEvent.description = value;
+			logger.debug(" ============= description ["+this.currentEvent.description+"]");
 		}
 		
 		if (parseEventNow && parseRRuleNow) {
-			recur = new Recur(value);
-			logger.debug(" ============= recur ["+recur+"]");
+			this.currentEvent.recur = new Recur(value);
+			logger.debug(" ============= recur ["+this.currentEvent.recur+"]");
 		}
 		
 		if (parseTZStandardNow && parseTZOffsetToNow) {
@@ -318,7 +321,6 @@ public class ICalContentHandler implements ContentHandler {
 		
 		if (parseTZStandardNow && parseDateStartNow) {
 			timeZoneStandard.getProperties().add(new DtStart(value));
-//			currentStartDate = parseDateTime(value, null);
 			logger.debug(" ============= standard start date ["+value+"]");
 		}
 		
@@ -336,11 +338,6 @@ public class ICalContentHandler implements ContentHandler {
 			timeZoneDaylight.getProperties().add(new RRule(new Recur(value)));
 			logger.debug(" ============= time zone Daylight rrule ["+value+"]");
 		}
-		
-//		if (parseTZStandardNow && parseRDateNow) {
-//			timeZoneStandard.getProperties().add(new RDate(value));
-//			logger.debug(" ============= recur ["+recur+"]");
-//		}
 
 	}
 
@@ -360,44 +357,48 @@ public class ICalContentHandler implements ContentHandler {
 		}
 	}
 	
-	private void createEntry() {
+	private void createEntry(Event event) {
 		if (this.eventName == null) {
 			return;
 		}
 		
 		Map formData = new HashMap();
 		
+		DateTime startDate = parseDateTime(event.currentStartDate, event.currentStartTimeZoneId);
+		DateTime endDate = parseDateTime(event.currentEndDate, event.currentEndTimeZoneId);
+		
 		formData.put("binderId", new String[] {this.folderId.toString()});
-		formData.put("description", new String[] {this.description != null ? this.description : ""});
+		formData.put("description", new String[] {event.description != null ? event.description : ""});
 		formData.put("entryType", new String[] {this.entryType});
-		formData.put("title", new String[] {this.summary != null ? this.summary : ""});
+		formData.put("title", new String[] {event.summary != null ? event.summary : ""});
+		
 		
 //		// all day event?
-		if (this.currentStartDate.plusDays(1).equals(this.currentEndDate)) {
-			this.currentEndDate = this.currentStartDate;
+		if (startDate.plusDays(1).equals(endDate)) {
+			endDate = startDate;
 		}
 	
-		formData.putAll(dateTimeToFormData("dp", this.currentStartDate));
-		formData.putAll(dateTimeToFormData("dp2", this.currentEndDate));
+		formData.putAll(dateTimeToFormData("dp", startDate));
+		formData.putAll(dateTimeToFormData("dp2", endDate));
 		
-		if (this.recur == null) {
+		if (event.recur == null) {
 			formData.put(eventName + "_repeatUnit", new String[] {"none"});
 		} else {
-			if (recur.getFrequency().equals(Recur.DAILY)) {
+			if (event.recur.getFrequency().equals(Recur.DAILY)) {
 				formData.put(eventName + "_repeatUnit", new String[] {"day"});
-			} else if (recur.getFrequency().equals(Recur.WEEKLY)) {
+			} else if (event.recur.getFrequency().equals(Recur.WEEKLY)) {
 				formData.put(eventName + "_repeatUnit", new String[] {"week"});
-			} else if (recur.getFrequency().equals(Recur.MONTHLY)) {
+			} else if (event.recur.getFrequency().equals(Recur.MONTHLY)) {
 				formData.put(eventName + "_repeatUnit", new String[] {"month"});
-			} else if (recur.getFrequency().equals(Recur.YEARLY)) {
+			} else if (event.recur.getFrequency().equals(Recur.YEARLY)) {
 				formData.put(eventName + "_repeatUnit", new String[] {"year"});
 			}
 			
-			if (recur.getInterval() == -1) {
-				recur.setInterval(1);
+			if (event.recur.getInterval() == -1) {
+				event.recur.setInterval(1);
 			}
 
-			formData.put(eventName + "_everyN", new String[] {Integer.toString(recur.getInterval())});
+			formData.put(eventName + "_everyN", new String[] {Integer.toString(event.recur.getInterval())});
 			
 //			Iterator weekNoListIt = recur.getWeekNoList().iterator();
 //			while (weekNoListIt.hasNext()) {
@@ -405,15 +406,15 @@ public class ICalContentHandler implements ContentHandler {
 //				formData.put(eventName + "_day" + number, new String[] {"on"});
 //			}
 			
-			if (!recur.getDayList().isEmpty()) {
-				Iterator dayListIt = recur.getDayList().iterator();
+			if (!event.recur.getDayList().isEmpty()) {
+				Iterator dayListIt = event.recur.getDayList().iterator();
 				while (dayListIt.hasNext()) {
 					WeekDay weekDay = (WeekDay)dayListIt.next();
 					String dayOfWeek = weekDay.getDay();
 										
-					if (!recur.getSetPosList().isEmpty()) {
+					if (!event.recur.getSetPosList().isEmpty()) {
 						int offset = 0;
-						Iterator setPosListIt = recur.getSetPosList().iterator();
+						Iterator setPosListIt = event.recur.getSetPosList().iterator();
 						if (setPosListIt.hasNext()) {
 							offset = ((Integer)setPosListIt.next()).intValue();
 						}
@@ -450,7 +451,7 @@ public class ICalContentHandler implements ContentHandler {
 						
 		                formData.put(eventName + "_onDayCard", new String[] {offsetParam});
 						formData.put(eventName + "_dow", new String[] {dayOfWeekParam});
-					} else if (recur.getSetPosList().isEmpty()) {
+					} else if (event.recur.getSetPosList().isEmpty()) {
 		                if (dayOfWeek.equals("SU")) {
 		                    formData.put(eventName + "_day" + 0, new String[] {"on"});
 		                } else if (dayOfWeek.equals("MO")) {
@@ -470,10 +471,10 @@ public class ICalContentHandler implements ContentHandler {
 				}
 			}
 
-			if (!recur.getMonthDayList().isEmpty()) {
+			if (!event.recur.getMonthDayList().isEmpty()) {
 				List monthDayParam = new ArrayList();
 				
-				Iterator monthDayListIt = recur.getMonthDayList().iterator();
+				Iterator monthDayListIt = event.recur.getMonthDayList().iterator();
 				while (monthDayListIt.hasNext()) {
 					Integer monthDay = (Integer)monthDayListIt.next();
 					monthDayParam.add(monthDay.toString());
@@ -481,10 +482,10 @@ public class ICalContentHandler implements ContentHandler {
 				formData.put(eventName + "_dom", monthDayParam.toArray(new String[]{}));
 			}
 			
-			if (!recur.getMonthList().isEmpty()) {
+			if (!event.recur.getMonthList().isEmpty()) {
 				List monthListParam = new ArrayList();
 				
-				Iterator monthListIt = recur.getMonthList().iterator();
+				Iterator monthListIt = event.recur.getMonthList().iterator();
 				while (monthListIt.hasNext()) {
 					int month = ((Integer)monthListIt.next()).intValue();
 					month--;
@@ -493,12 +494,12 @@ public class ICalContentHandler implements ContentHandler {
 				formData.put(eventName + "_month", monthListParam.toArray(new String[]{}));
 			}
 			
-			if (recur.getUntil() != null) {
+			if (event.recur.getUntil() != null) {
 				formData.put(eventName + "_rangeSel", new String[] {"until"});
-				formData.putAll(dateToFormData("endRange", new DateTime(recur.getUntil())));
-			} else if (recur.getCount() != -1) {
+				formData.putAll(dateToFormData("endRange", new DateTime(event.recur.getUntil())));
+			} else if (event.recur.getCount() != -1) {
 				formData.put(eventName + "_rangeSel", new String[] {"count"});
-				formData.put(eventName + "_repeatCount", new String[] {Integer.toString(recur.getCount())});
+				formData.put(eventName + "_repeatCount", new String[] {Integer.toString(event.recur.getCount())});
 			} else {
 				formData.put(eventName + "_rangeSel", new String[] {"forever"});
 			}
@@ -517,7 +518,7 @@ public class ICalContentHandler implements ContentHandler {
 			logger.error("Can not create entry from iCal file.", e);
 		}
 		
-		logger.error("New entry id created from iCal file [" + entryId + "]");// TODO: change to debug
+		logger.debug("New entry id created from iCal file [" + entryId + "]");
 
 	}
 
