@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 
 <project name="main" basedir="." default="compile">
+	<!-- If you want to run a specific unit test (or a select sub-set of unit tests)
+	     rather than the entire tests from the project, uncomment this property 
+	     and specify appropriate pattern for the names of the test classes. -->
+	<!--<property name="test.includes" value="**/InvokeUtilTests.class"/>-->
+	
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 	
@@ -180,5 +185,5 @@
 	        </fileset>
 	     </schemaupdate>
 	</target>-->
-			
+	
 </project>
