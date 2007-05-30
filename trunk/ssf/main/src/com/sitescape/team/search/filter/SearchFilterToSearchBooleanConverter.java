@@ -460,7 +460,7 @@ public class SearchFilterToSearchBooleanConverter {
 			Element field;
 			Element child;
 			Element andField = block;
-			if (!defId.equals("")) {
+			if (defId != null && !defId.equals("")) {
 				andField = block.addElement(QueryBuilder.AND_ELEMENT);
 				field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 				field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
@@ -475,7 +475,7 @@ public class SearchFilterToSearchBooleanConverter {
 					Element field;
 					Element child;
 					Element andField = block;
-	    			if (!defId.equals("")) {
+	    			if (defId != null &&!defId.equals("")) {
 	    				andField = block.addElement(QueryBuilder.AND_ELEMENT);
 		    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 		    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);

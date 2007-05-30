@@ -80,7 +80,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     public static final String Workspace_topId="topId";
 	//key in component data used to resolve binders by type
 	public final static String ChooseType = "chooseViewType";
-
+	public final static String AssignedToCurrentUser = "assignedToCurrentUser";
+	
 	//Scopes
 	public final static String Local = "local";
 	public final static String Binder = "binder";
@@ -999,11 +1000,26 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
 						if (id != null) folderIds.add(id); 
 					}
+					
+					SearchFilter searchFilter = new SearchFilter(true);
+					String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
+					searchFilter.addFilterName(filterName);
+
 					if (!folderIds.isEmpty()) {
-						Document query = SearchFiltersBuilder.buildFolderListQuery(request, folderIds);
-						componentData.put(SearchFormSavedSearchQuery, query.asXML());
+						searchFilter.addFolderIds(folderIds);
 						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
-					} 
+					}
+
+					boolean assignedToCurrentUser = PortletRequestUtils.getBooleanParameter(request, "filterAssignedToCurrentUser", false);
+					if (assignedToCurrentUser) {
+						searchFilter.addEntryAttributeValues(null,
+										TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
+										new String[] { SearchFilterKeys.CurrentUserId },
+										"user_list");
+						componentData.put(AssignedToCurrentUser, assignedToCurrentUser);
+					}
+					componentData.put(SearchFormSavedSearchQuery, searchFilter
+							.getFilter().asXML());
 		
 				}		
 				//Save the title and data map
