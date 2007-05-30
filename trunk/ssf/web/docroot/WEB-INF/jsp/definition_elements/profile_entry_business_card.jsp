@@ -29,4 +29,5 @@
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}" />

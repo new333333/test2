@@ -12,6 +12,7 @@
 %>
 <% //Selectbox view %>
 <%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 
 <c:if test="${!empty ss_element_display_style && 
     ss_element_display_style == 'tableAlignLeft'}">
@@ -25,6 +26,7 @@
 <%
 	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
 											(String) pageContext.getAttribute("selection"));
+	caption = NLT.getDef(caption);
 %>
 <c:set var="caption" value="<%= caption %>"/>
 	<li><c:out value="${caption}" escapeXml="false"/></span></li>
@@ -42,6 +44,7 @@
 <%
 	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
 											(String) pageContext.getAttribute("selection"));
+	caption = NLT.getDef(caption);
 %>
 <c:set var="caption" value="<%= caption %>"/>
 <li><c:out value="${caption}" escapeXml="false"/></span></li>
