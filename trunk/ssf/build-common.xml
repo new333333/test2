@@ -144,12 +144,12 @@
 	     ant unit-test -Dtest.includes=**/CoreDaoImplTests.class
 	     will only run CoreDaoImplTests and nothing else. -->
 	<target name="unit-test" depends="compile-test">
+		<delete dir="${test.report.dir}"/>
 		<mkdir dir="${test.report.dir}"/>
 		<property name="tests" value="Test*"/>
 
 		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
 			<classpath location="${test.classes.dir}"/>
-			<classpath location="${project.dir}/main/test/classes"/>
 			<classpath location="${test.source.dir}"/>
 			<classpath location="${project.dir}/web/docroot/WEB-INF/classes"/>
 			<classpath refid="project.classpath"/>
