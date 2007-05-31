@@ -1674,8 +1674,8 @@ div.ss_dashboardProtoDropTarget {
   padding:0px;
   }
 .ss_twIcon {
-  width:16px;
-  height:16px;
+  width:19px;
+  height:20px;
   border:none;
   margin:0px;
   padding:0px;
