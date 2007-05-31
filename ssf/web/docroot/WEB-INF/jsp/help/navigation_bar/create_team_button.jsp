@@ -24,7 +24,9 @@
 
 <li><ssf:nlt tag="help.createTeam.content.listItem.clickMenu"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
-<li><ssf:nlt tag="help.createTeam.content.listItem.fillOutForm"/></li>
+<li><ssf:nlt tag="help.createTeam.content.listItem.fillOutForm"
+    ><ssf:param name="value" useBody="true"><ssf:nlt tag="__template_workspace" 
+    checkIfTag="true"/></ssf:param></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.globalStrings.listItem.clickOK"/></li>
 

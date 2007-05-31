@@ -288,8 +288,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				List result = getCoreDao().loadObjects(TemplateBinder.class, 
 							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CONFIG, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-				config.setTemplateTitle("__configuration_default_folder");
-				config.setTemplateDescription("__configuration_default_folder_description");
+				config.setTemplateTitle("__template_default_folder");
+				config.setTemplateDescription("__template_default_folder_description");
 				config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CONFIG);
 				entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
 				config.setEntryDef(entryDef);
@@ -301,8 +301,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				List result = getCoreDao().loadObjects(TemplateBinder.class, 
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_CONFIG, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-				config.setTemplateTitle("__configuration_default_workspace");
-				config.setTemplateDescription("__configuration_default_workspace_description");
+				config.setTemplateTitle("__template_workspace");
+				config.setTemplateDescription("__template_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_CONFIG);
 				entryDef = getDefinitionModule().addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
@@ -314,8 +314,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
 				
-				config.setTemplateTitle("__configuration_default_user_workspace");
-				config.setTemplateDescription("__configuration_default_user_workspace_description");
+				config.setTemplateTitle("__template_user_workspace");
+				config.setTemplateDescription("__template_user_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG);
 				entryDef = getDefinitionModule().addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
