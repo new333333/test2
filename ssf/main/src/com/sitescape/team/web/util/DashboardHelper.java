@@ -12,6 +12,7 @@ package com.sitescape.team.web.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -52,6 +54,7 @@ import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AbstractAllModulesInjected;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -80,7 +83,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     public static final String Workspace_topId="topId";
 	//key in component data used to resolve binders by type
 	public final static String ChooseType = "chooseViewType";
-	public final static String AssignedToCurrentUser = "assignedToCurrentUser";
+	public final static String AssignedTo = "assignedTo";
+	public final static String AssignedToName = "assignedToName";
 	
 	//Scopes
 	public final static String Local = "local";
@@ -198,6 +202,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	List items = (List) ((Map)((Map)((Map)ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP)).get(id)).get(WebKeys.SEARCH_FORM_DATA)).get(WebKeys.SEARCH_FORM_RESULTS);
     	TaskHelper.extendTasksInfo(items);
 	}
+    
 	private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
 		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
 			Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
@@ -235,7 +240,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					//Set up the search results bean
 					getInstance().getSummaryConfigBean(binder, ssDashboard, 
 							model, id, component);
-				} 
+				}
 			}
 		}
    	
@@ -663,6 +668,22 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				idData.put(WebKeys.BINDER, folders.iterator().next());					
 			}
 		}
+
+    	if (data.get(AssignedTo) != null) {
+    		String userId = (String)data.get(AssignedTo);
+    		String userTitle = null;
+    		if (SearchFilterKeys.CurrentUserId.equals(userId)) {
+    			userTitle = NLT.get("searchForm.currentUserTitle");
+    		} else {
+    			Iterator users = getProfileModule().getUsers(Collections.singleton(Long.parseLong(userId))).iterator();
+    			if (users.hasNext()) {
+    				userTitle = ((Principal)users.next()).getTitle();
+    			}
+    		}
+    		data.put(AssignedToName, userTitle);
+    	}
+		
+		
 		getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
 
     }
@@ -976,13 +997,13 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
 					}
 					
-					boolean assignedToCurrentUser = PortletRequestUtils.getBooleanParameter(request, "filterAssignedToCurrentUser", false);
-					if (assignedToCurrentUser) {
+					String assignedTo = PortletRequestUtils.getStringParameter(request, "assignedTo", "");
+					if (!"".equals(assignedTo)) {
 						searchFilter.addEntryAttributeValues(null,
 										TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
-										new String[] { SearchFilterKeys.CurrentUserId },
+										new String[] { assignedTo },
 										"user_list");
-						componentData.put(AssignedToCurrentUser, assignedToCurrentUser);
+						componentData.put(AssignedTo, assignedTo);
 					}
 					
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
