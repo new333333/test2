@@ -408,7 +408,11 @@ public class TreeTag extends TagSupport {
 					if (ls) {
 						indentKey += "s";
 						String classField = "";
-						if (!className.equals("")) classField = "class=\""+className+"\"";
+						if (!className.equals("")) {
+							classField = "class=\""+className+"\"";
+						} else {
+							classField = "class=\""+titleClass+"\"";
+						}
 						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
 						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
@@ -491,7 +495,11 @@ public class TreeTag extends TagSupport {
 		
 				if (!displayOnly) {
 					String classField = "";
-					if (!className.equals("")) classField = "class=\""+className+"\"";
+					if (!className.equals("")) {
+						classField = "class=\""+className+"\"";
+					} else {
+						classField = titleClass;
+					}
 					jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 					if (s_id != null && !s_id.equals("")) {
 						if (action.equals(""))

@@ -1565,11 +1565,20 @@ div.ss_dashboardProtoDropTarget {
 
   
 /* highlights */
-.ss_tree_highlight {
+a.ss_tree_highlight  {
+  text-decoration: none;
+  }
+span.ss_tree_highlight {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
-  text_decoration: none !important;
+}
+
+a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
+  font-weight: bold;
+  color: ${ss_tree_highlight_line_color};
+  text-decoration: underline !important;
   }
+
   
 .ss_tree_bucket_text_div {
   position:absolute;
