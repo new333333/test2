@@ -36,9 +36,6 @@ import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.dao.CoreDao;
-import com.sitescape.team.dao.FolderDao;
-import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.docconverter.IHtmlConverterManager;
 import com.sitescape.team.docconverter.IImageConverterManager;
 import com.sitescape.team.docconverter.ImageConverter;
@@ -76,7 +73,6 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.repository.archive.ArchiveStore;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
-import com.sitescape.team.search.LuceneSessionFactory;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.util.FileHelper;
@@ -898,52 +894,78 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors.addProblem(new FilesErrors.Problem
 					(repositoryName, relativeFilePath, 
 							FilesErrors.Problem.PROBLEM_CANCELING_LOCK, e));
-			return null;
+			// We proceed despite of the problem hoping we can still delete it.
 		}
 
-		// Archive the contents of the file. We archive all versions of the file.
 		List<KeyValuePair> archiveURIs = new ArrayList<KeyValuePair>();
-		ArchiveStore archiveStore = RepositorySessionFactoryUtil.getArchiveStore(repositoryName);
-		if(archiveStore != null) {
-			for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
-				VersionAttachment v = (VersionAttachment) i.next();
-				try {
-					String archiveURI = archiveStore.write(binder, entry, v);
-					
-					if(archiveURI != null)
-						archiveURIs.add(new KeyValuePair(String.valueOf(v.getVersionNumber()), archiveURI));
+
+		// If there is any problem with the repository itself or communication 
+		// with the repository, the following call is expected to detect it
+		// (indirectly) and throw an exception right here. In essence, it will 
+		// prevent delete operation from proceeding when it really shouldn't. 
+		// The idea is that, we want delete operation to be reasonably forgiving, 
+		// since it is quite frustrating for people to unable to delete
+		// something just because the operation encountered a non-critical error.
+		// The most important thing about deletion is the post-condition. As long
+		// as the post-condition is acceptable, deletion should proceed even 
+		// when there are errors. However, there are obviously exceptions to the
+		// tolerability, and the following call reveals one such condition - 
+		// that is, connection or configuration related problems about the
+		// repository. Such problems must be reported, remedied, and then the
+		// user should be able to repeate the same operation, which is, in 
+		// this case, a delete operation. 
+		int fileInfo = RepositoryUtil.fileInfo(repositoryName, binder, entry, relativeFilePath);
+		
+		if(fileInfo != RepositorySession.NON_EXISTING_FILE) {
+			// Archive the contents of the file. We archive all versions of the file.
+			ArchiveStore archiveStore = RepositorySessionFactoryUtil.getArchiveStore(repositoryName);
+			if(archiveStore != null) {
+				for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
+					VersionAttachment v = (VersionAttachment) i.next();
+					try {
+						String archiveURI = archiveStore.write(binder, entry, v);
+						
+						if(archiveURI != null)
+							archiveURIs.add(new KeyValuePair(String.valueOf(v.getVersionNumber()), archiveURI));
+					}
+					catch(Exception e) {
+						logger.error("Error archiving file " + relativeFilePath + " version " + v.getVersionNumber(), e);
+						errors.addProblem(new FilesErrors.Problem
+								(repositoryName, relativeFilePath,
+										FilesErrors.Problem.PROBLEM_ARCHIVING, e));
+						// Well, this is not a good situation. The repository is reachable, 
+						// the file exists in the repository, but for some reason, we could
+						// not archive it. It is most likely that, for some reason, the 
+						// particular version of the file does not exist in the repository, etc.
+						// Since there is no other good alternative, we proceed, hoping that
+						// we can at least archive "some" versions of the file. 
+					}
 				}
-				catch(Exception e) {
-					logger.error("Error archiving file " + relativeFilePath + " version " + v.getVersionNumber(), e);
-					errors.addProblem(new FilesErrors.Problem
-							(repositoryName, relativeFilePath,
-									FilesErrors.Problem.PROBLEM_ARCHIVING, e));
-					// If we fail to archive we stop here, since we can't afford to
-					// delete without successfully archiving it first. 
-					return null;
+			}
+			
+			if(!ObjectKeys.FI_ADAPTER.equals(fAtt.getRepositoryName()) || deleteMirroredSource) {
+				RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
+		
+				try {
+					try {
+						// Delete primary file
+						session.delete(binder, entry, relativeFilePath);
+					}
+					catch(Exception e) {
+						logger.error("Error deleting primary file " + relativeFilePath, e);
+						errors.addProblem(new FilesErrors.Problem
+								(repositoryName, relativeFilePath, 
+										FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
+						// Even if we failed to delete the primary file, we still proceed
+						// to deleting generated files. 
+					}
+				} finally {
+					session.close();
 				}
 			}
 		}
-		
-		if(!ObjectKeys.FI_ADAPTER.equals(fAtt.getRepositoryName()) || deleteMirroredSource) {
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
-	
-			try {
-				try {
-					// Delete primary file
-					session.delete(binder, entry, relativeFilePath);
-				}
-				catch(Exception e) {
-					logger.error("Error deleting primary file " + relativeFilePath, e);
-					errors.addProblem(new FilesErrors.Problem
-							(repositoryName, relativeFilePath, 
-									FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
-					// Even if we failed to delete the primary file, we still proceed
-					// to deleting generated files. 
-				}
-			} finally {
-				session.close();
-			}
+		else {
+			logger.warn("The file " + relativeFilePath + " does not exist in the repository " + repositoryName);
 		}
 		
    		ChangeLog changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
