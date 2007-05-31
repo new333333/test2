@@ -436,6 +436,15 @@ public class WorkspaceTreeController extends SAbstractController  {
 			// The "Teams" menu
 			toolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
+			//Add
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
+			
 			// View
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
