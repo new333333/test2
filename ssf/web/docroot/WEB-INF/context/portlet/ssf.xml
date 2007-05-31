@@ -40,6 +40,7 @@
 	<bean id="emailConfigController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.EmailConfigController" />
 	<bean id="sendEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.SendMailController" />
 	<bean id="meetingController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
+	<bean id="teamController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TeamController" />	
 	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 		
 	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
@@ -89,6 +90,7 @@
 						<entry key="config_email"><ref bean="emailConfigController"/></entry>
 						<entry key="send_email"><ref bean="sendEmailController"/></entry>
 						<entry key="add_meeting"><ref bean="meetingController"/></entry>					
+						<entry key="add_team_member"><ref bean="teamController"/></entry>					
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
 

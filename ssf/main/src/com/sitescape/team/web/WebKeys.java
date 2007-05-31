@@ -154,6 +154,7 @@ public class WebKeys {
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
+    public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
     public static final String ACTION_CONFIG_EMAIL="config_email";
@@ -700,6 +701,7 @@ public class WebKeys {
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
+    public static final String VIEW_ADD_TEAM_MEMBERS = "binder/add_team_members";
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
