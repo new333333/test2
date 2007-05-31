@@ -365,7 +365,15 @@ public class ICalContentHandler implements ContentHandler {
 		Map formData = new HashMap();
 		
 		DateTime startDate = parseDateTime(event.currentStartDate, event.currentStartTimeZoneId);
-		DateTime endDate = parseDateTime(event.currentEndDate, event.currentEndTimeZoneId);
+		DateTime endDate = startDate;
+		if (event.currentEndDate != null) {
+			endDate = parseDateTime(event.currentEndDate, event.currentEndTimeZoneId);
+		}
+		// all day event?
+		if (startDate.plusDays(1).equals(endDate)) {
+			endDate = startDate;
+		}
+
 		
 		formData.put("binderId", new String[] {this.folderId.toString()});
 		formData.put("description", new String[] {event.description != null ? event.description : ""});
@@ -373,10 +381,6 @@ public class ICalContentHandler implements ContentHandler {
 		formData.put("title", new String[] {event.summary != null ? event.summary : ""});
 		
 		
-//		// all day event?
-		if (startDate.plusDays(1).equals(endDate)) {
-			endDate = startDate;
-		}
 	
 		formData.putAll(dateTimeToFormData("dp", startDate));
 		formData.putAll(dateTimeToFormData("dp2", endDate));
