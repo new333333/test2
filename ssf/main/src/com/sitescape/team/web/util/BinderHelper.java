@@ -653,7 +653,9 @@ public class BinderHelper {
 						Long roleId = Long.valueOf(s_roleId[0]);
 						Long memberId;
 						if (s_roleId[1].equals("owner")) {
-							memberId = Long.valueOf("-1");
+							memberId = ObjectKeys.OWNER_USER_ID;
+						} else if (s_roleId[1].equals("teamMember")) {
+							memberId = ObjectKeys.TEAM_MEMBER_ID;
 						} else {
 							memberId = Long.valueOf(s_roleId[1]);
 						}
@@ -686,9 +688,12 @@ public class BinderHelper {
 				if (members != null) {
 					for (Iterator iter = members.iterator();iter.hasNext();) {
 						Long pId = (Long)iter.next();
-						if (pId.equals(Long.valueOf("-1"))) {
+						if (pId.equals(ObjectKeys.OWNER_USER_ID)) {
 							//The owner has this right
 							pMap.put(WebKeys.OWNER, pId);
+						} else if (pId.equals(ObjectKeys.TEAM_MEMBER_ID)) {
+							//The team members have this right
+							pMap.put(WebKeys.TEAM_MEMBER, pId);
 						} else {
 							Principal p = (Principal)principalMap.get(pId);
 							if (p instanceof Group) {
@@ -723,8 +728,11 @@ public class BinderHelper {
 				for (int j=0; j<membership.size(); ++j) {
 					WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)membership.get(j);
 					if (f.getId().equals(m.getFunctionId())) {
-						if (m.getMemberIds().contains(Long.valueOf("-1"))) 
-							pMap.put(WebKeys.OWNER, Long.valueOf("-1"));
+						if (m.getMemberIds().contains(ObjectKeys.OWNER_USER_ID)) {
+							pMap.put(WebKeys.OWNER, ObjectKeys.OWNER_USER_ID);
+						} else if (m.getMemberIds().contains(ObjectKeys.TEAM_MEMBER_ID)) {
+							pMap.put(WebKeys.TEAM_MEMBER, ObjectKeys.TEAM_MEMBER_ID);
+						}
 						Collection ids = ResolveIds.getPrincipals(m.getMemberIds());
 						for (Iterator iter=ids.iterator(); iter.hasNext();) {
 							Principal p = (Principal)iter.next();
