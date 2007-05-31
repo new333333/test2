@@ -57,9 +57,12 @@ public interface ObjectKeys {
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
 	//id to run background jobs under - also acts as a super user but cannot loggin as this person
 	public static final String JOB_PROCESSOR_INTERNALID="402883b90d0de1f3010d0df5582b0012";
-	//reserved id put in acls to indicate owner of object has access
-	//search engine stores then ownerId of the entry in place of this
+	//reserved id put in acls/membership to indicate owner of object has access
+	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
+	//reserved id put in acls/membership to indicate team members have access
+	//search engine stores the actual members of the team in place of this
+	public static final Long TEAM_MEMBER_ID = Long.valueOf(-2);
 
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
@@ -96,7 +99,7 @@ public interface ObjectKeys {
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
     
-    public static final String BINDER_PROPERTY_DASHBOARD = "dashboard";
+    public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
 
     public static final String CONFIG_PROPERTY_REPOSITORY = "repository";
