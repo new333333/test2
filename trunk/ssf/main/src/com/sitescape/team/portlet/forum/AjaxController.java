@@ -421,12 +421,20 @@ public class AjaxController  extends SAbstractController {
 				model.put(WebKeys.PAGE_PREVIOUS, prev);
 			}
 			if (startPageNo == 1 && (search.equals("") || search.equals("*"))) {
-				// add relative option "current user"
+				// add relative option "current user" and "me"
 				Map currentUserPlaceholder = new HashMap();
 				currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
 				currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
-				users.add(0, currentUserPlaceholder);				
-			}
+				
+				
+				Map mePlaceholder = new HashMap();
+				mePlaceholder.put("title", NLT.get("searchForm.meTitle") + " (" + currentUser.getTitle() + ")");
+				mePlaceholder.put("_docId", currentUser.getId());
+				
+				
+				users.add(0, mePlaceholder);
+				users.add(0, currentUserPlaceholder);
+			} 
 		}
 
 		model.put(WebKeys.USERS, users);
