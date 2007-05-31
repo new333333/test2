@@ -46,6 +46,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private String binderId = "";
     private Boolean searchSubFolders;
     private String instanceCount;
+    private String accessibilityText;
 
 	private Map _params;
 
@@ -112,6 +113,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
 			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
 			req.setAttribute("binderId", this.binderId);
+			req.setAttribute("accessibilityText", this.accessibilityText);
 			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -135,6 +137,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.binderId = "";
 			this.searchSubFolders = false;
 			this.instanceCount = null;
+			this.accessibilityText = null;
 			if (_params != null) {
 				_params.clear();
 			}
@@ -201,5 +204,8 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 	public void setSearchSubFolders(Boolean searchSubFolders) {
 	    this.searchSubFolders = searchSubFolders;
 	}
-
+	
+	public void setAccessibilityText(String accessibilityText) {
+	    this.accessibilityText = accessibilityText;
+	}	
 }

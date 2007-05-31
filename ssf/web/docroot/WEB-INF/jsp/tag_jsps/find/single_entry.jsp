@@ -206,6 +206,17 @@ function ss_findEntriesSelectItem<portlet:namespace/>(obj) {
 	}
 }
 
+//Routine called when item is clicked in accessible mode
+function ss_findEntriesSelectItemAccessible<portlet:namespace/>(obj, entryId) {
+	if (!obj || !obj.id ||obj.id == undefined) return false;
+	var url = "<ssf:url adapter="false" portletName="ss_forum" 
+		    folderId="${ssFolder.id}" action="view_folder_entry" 
+		    entryId="ss_entryIdPlaceholder" actionUrl="true">
+		    <ssf:param name="newTab" value="1" /></ssf:url>";
+	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', entryId);
+	self.location.href = url;
+}
+
 function ss_savefindEntriesData_${prefix}() {
 	ss_debug('ss_savefindEntriesData')
 	var ulObj = document.getElementById('available_<%= findEntriesElementName %>_${prefix}')
@@ -256,7 +267,7 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
     var iframeObj = self.document.getElementById("ss_findEntriesIframe");
     var iframeDivObjParent = self.parent.document.getElementById("ss_findEntriesIframeDiv");
     var iframeObjParent = self.parent.document.getElementById("ss_findEntriesIframe");
-    var textObj = self.document.getElementById('ss_findEntries_searchText_bottom_${prefix}');
+    var textObj = self.document.getElementById('ss_findEntries_searchText_<portlet:namespace/>');
     if (iframeDivObjParent == null && iframeDivObj == null) {
 	    iframeDivObj = self.document.createElement("div");
 	    iframeDivObjParent = iframeDivObj;
@@ -274,7 +285,8 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
 	    closeDivObj.style.padding = "6px";
 	    iframeDivObj.appendChild(closeDivObj);
 	    var aObj = self.document.createElement("a");
-	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findEntriesIframeDiv');ss_findEntriesClose${prefix}();");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findEntriesIframeDiv');ss_findEntriesClose<portlet:namespace/>();");
+	    aObj.setAttribute("title", "<ssf:nlt tag="title.close.searchResults" />");
 	    aObj.style.border = "2px outset black";
 	    aObj.style.padding = "2px";
 	    aObj.appendChild(document.createTextNode(ss_findButtonClose));
@@ -286,19 +298,22 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
     if (self.parent == self && textObj != null) {
     	var x = dojo.html.getAbsolutePosition(textObj, true).x
     	var y = dojo.html.getAbsolutePosition(textObj, true).y
-	    ss_setObjectTop(iframeDivObj, y + "px");
+	    ss_setObjectTop(iframeDivObj, (y + 15) + "px");
 	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_findEntriesIframeDiv");
+	
 	var url = ss_AjaxBaseUrl;
 	url = ss_replaceSubStrAll(url, "&amp;", "&");
 	url += "&operation=find_user_search";
 	url += "&searchText=" + searchText;
+	url += "&binderId=" + "<%= findEntriesBinderId %>";
 	url += "&maxEntries=" + "10";
 	url += "&pageNumber=" + ss_findEntries_pageNumber;
-	url += "&findType=" + findPlacesType;
+	url += "&findType=" + findEntriesType;
 	url += "&listDivId=" + "available_"+elementName+"_${prefix}";
-	url += "&namespace=" + "${prefix}";
+	url += "&namespace=" + "<portlet:namespace/>";
+	
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {

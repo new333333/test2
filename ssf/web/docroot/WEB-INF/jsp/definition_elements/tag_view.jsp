@@ -93,7 +93,13 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <tr>
 <td valign="top" style="padding-right:2px;">
 <a href="#" 
-  onClick="ss_showTags<portlet:namespace/>('${ss_tagDivNumber}', '${ssDefinitionEntry.id}'); return false;"
+	<ssf:ifaccessible>
+  		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
+	</ssf:ifaccessible>
+	<ssf:ifnotaccessible>
+		onClick="ss_showTags<portlet:namespace/>('${ss_tagDivNumber}', '${ssDefinitionEntry.id}'); return false;"
+	</ssf:ifnotaccessible>
+	<ssf:title tag="title.open.tag.menu" />
 ><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a></td>
 </tr>
 <tr><td colspan="2"></td><td>
@@ -105,13 +111,26 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:set var="ssEntryId" value="${ssDefinitionEntry.id}" scope="request"/>
+
+<ssf:ifaccessible>
+	<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
+</ssf:ifaccessible>
+<ssf:ifnotaccessible>
+	<c:set var="ssCloseScript" value="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;" scope="request"/>
+</ssf:ifnotaccessible>
+
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 
-<div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane">
+<div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
+	<ssf:ifaccessible>
+		style="visibility:hidden;display:none;white-space:nowrap;"  		
+	</ssf:ifaccessible>
+	<ssf:ifnotaccessible>
+		class="ss_tag_pane"
+	</ssf:ifnotaccessible>
+>
 
-
-<ssf:popupPane width="220px" titleTag="tags.manageTags"
-     closeScript="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;">
+<ssf:popupPane width="220px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 
 <div style="padding:0px 10px;">
 <form class="ss_style ss_form ss_tag_pane_color" 
@@ -132,10 +151,11 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <tr><td>
   <table class="ss_tag_pane_color"><tbody><tr><td>
     <!-- input type="text" class="ss_text" name="personalTag" / -->
-<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" />
+<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
     </td><td>
       <a class="ss_linkButton" href="#" 
         onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
+        <ssf:title tag="title.add.personal.tags" />
       ><ssf:nlt tag="button.add"/></a>
     </td></tr>
   </tbody></table>
@@ -154,15 +174,29 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <tr><td>
   <table class="ss_tag_pane_color"><tbody><tr><td>
     <!--input type="text" class="ss_text" name="communityTag"/ -->
-<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" width="70px" singleItem="true" />
+<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
    
     </td><td style="padding-left:4px;">
     <a class="ss_linkButton" href="#" 
       onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
+      <ssf:title tag="title.add.community.tags" />
     ><ssf:nlt tag="button.add"/></a>
     </td></tr>
   </tbody></table>
 </td></tr>
+
+<ssf:ifaccessible>
+
+<tr><td>
+  <table class="ss_tag_pane_color" colspan="2"><tbody><tr><td>
+    <a class="ss_linkButton" href="#" title="<ssf:nlt tag="title.closeMenu" />"
+      onClick="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
+    ><ssf:nlt tag="button.close"/></a>
+    </td></tr>
+  </tbody></table>
+</td></tr>
+
+</ssf:ifaccessible>
 
 </tbody>
 </table>
