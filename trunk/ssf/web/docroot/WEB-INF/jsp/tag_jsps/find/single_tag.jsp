@@ -24,6 +24,7 @@
 	String instanceCount = (String) request.getAttribute("instanceCount");
 	String instanceCode = (String) request.getAttribute("instanceCode");
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
+	String accessibilityText = (String) request.getAttribute("accessibilityText");
 	String label = ParamUtil.get(request, "label", "");
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
@@ -39,7 +40,10 @@
     </c:if>
 
 <div style="margin:0px; padding:0px;display:inline;">
-
+	<ssf:ifaccessible>
+ 		<label for="ss_findTag_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+ 	</ssf:ifaccessible>
+ 	
 	<textarea 
 	    class="ss_text" style="height:17px; width:<%= findTagElementWidth %>; overflow:hidden;" 
 	    name="<%= findTagElementName %>" 

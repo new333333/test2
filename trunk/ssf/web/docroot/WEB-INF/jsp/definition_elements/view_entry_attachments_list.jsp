@@ -50,6 +50,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
 					</c:if>
+					
+				    <ssf:title tag="title.open.file">
+					    <ssf:param name="value" value="${selection.fileItem.name}" />
+				    </ssf:title>
 					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
@@ -70,6 +74,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
 					</c:if>
+
+				    <ssf:title tag="title.open.file">
+					    <ssf:param name="value" value="${selection.fileItem.name}" />
+				    </ssf:title>
 					     ><c:out value="${selection.fileItem.name} "/></a>
 			<c:if test="${!empty selection.fileLock}">
 			  <br/>
@@ -89,7 +97,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    entityType="${ssDefinitionEntry.entityType}" >
 			    	<ssf:param name="fileId" value="${selection.id}"/>
 			    	<ssf:param name="viewType" value="html"/>
-			    	</ssf:url>" ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
+			    	</ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
 		</td>
 		<td class="ss_att_meta">
@@ -157,7 +165,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    </ssf:url>"
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
-					</c:if>				    
+					</c:if>
+					
+				    <ssf:title tag="title.open.file.version">
+					    <ssf:param name="value" value="${selection.fileItem.name}" />
+					    <ssf:param name="value" value="${fileVersion.versionNumber}" />
+				    </ssf:title>
+					
 				    ><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</a></td>
 				<td class="ss_att_meta" width="10%"></td>
 				<td class="ss_att_meta"></td>

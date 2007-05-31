@@ -26,12 +26,18 @@
 
 <c:if test="${!empty ss_blog_reply_url}">
 <a href="${ss_blog_reply_url}" 
-  onClick="ss_addBlogReply<portlet:namespace/>(this, '${ssDefinitionEntry.id}');return false;">
+  onClick="ss_addBlogReply<portlet:namespace/>(this, '${ssDefinitionEntry.id}');return false;"
+  <ssf:title tag="title.add.comment" />
+  >
 <div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
 </a>
 </c:if>
 
-<a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}', '<portlet:namespace/>');return false;">
+<a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}', '<portlet:namespace/>');return false;"
+<ssf:title tag="title.view.comments">
+	<ssf:param name="value" value="${ssDefinitionEntry.totalReplyCount}" />
+</ssf:title>
+>
 <div class="ss_iconed_label ss_view_something">
 <ssf:nlt tag="blog.viewComments"/> [<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
 </div>
