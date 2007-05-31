@@ -628,6 +628,7 @@ public class WebKeys {
     public static final String TAB_PERSONAL_TAG_SEARCH_TEXT="ss_tab_personal_tag_search_text";
     public static final String TAGS="ss_tags";
     public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
+    public static final String TEAM_MEMBER="ssTeamMember";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String TOOLBAR="ss_toolbar";

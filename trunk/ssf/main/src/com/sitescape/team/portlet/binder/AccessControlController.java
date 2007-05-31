@@ -112,6 +112,8 @@ public class AccessControlController extends AbstractBinderController {
 					Long memberId = null;
 					if (s_roleId[1].equals("owner")) {
 						memberId = ObjectKeys.OWNER_USER_ID;
+					} else if (s_roleId[1].equals("teamMember")) {
+						memberId = ObjectKeys.TEAM_MEMBER_ID;
 					} else {
 						memberId = Long.valueOf(s_roleId[1]);
 					}

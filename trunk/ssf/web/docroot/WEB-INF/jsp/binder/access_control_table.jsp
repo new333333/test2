@@ -101,6 +101,43 @@
 </c:forEach>
   
 </TR>
+
+<TR>
+  <TD class="ss_table_paragraph"></TD>
+  <TD colSpan="2" class="ss_table_paragraph"><ssf:nlt tag="access.teamMembers"/></TD>
+<c:forEach var="function" items="${ss_accessSortedFunctions}">
+<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
+
+<c:if test="${!ssBinder.functionMembershipInherited}">
+  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
+  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssTeamMember}">
+    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
+  </c:if>
+  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssTeamMember}">
+    src="<html:imagesPath/>pics/1pix.gif"
+  </c:if>
+  style="padding-right:10px;"/>
+</c:if>
+
+<c:if test="${!empty ssFunctionMap[function].ssTeamMember}">
+<input type="checkbox" 
+  <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    disabled="disabled"
+  </c:if>
+  name="role_id${function.id}_teamMember" 
+  checked="checked" />
+</c:if>
+<c:if test="${empty ssFunctionMap[function].ssTeamMember}">
+<input type="checkbox" 
+  <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+    disabled="disabled"
+  </c:if>
+  name="role_id${function.id}_teamMember" />
+</c:if>
+</TD>
+</c:forEach>
+  
+</TR>
 </TBODY>
 
 <THEAD>
