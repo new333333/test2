@@ -85,13 +85,24 @@ var ss_userSkin = "${ss_user_skin}";
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
 	      onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
-	      <span>${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"
+	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
+	      	<img border="0" 
+	      	src="<html:imagesPath/>/icons/${toolbarMenu.value.qualifiers.icon}" 
+	      	alt="${toolbarMenu.value.title}" >
+	      </c:if><c:if test="${empty toolbarMenu.value.qualifiers.icon}"
+	      ><span>${toolbarMenu.value.title}</c:if
+	      ><c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"
 	      > <img border="0" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/></c:if></span></a>
 		</c:when>
      	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
-		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>
-		</c:when>
+	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
+	      	<img border="0" 
+	      	src="<html:imagesPath/>/icons/disabled-${toolbarMenu.value.qualifiers.icon}" 
+	      	alt="${toolbarMenu.value.title}" >
+	      </c:if><c:if test="${empty toolbarMenu.value.qualifiers.icon}"
+	      ><span class="ss_toolbar_inactive">${toolbarMenu.value.title}</c:if
+	      ></c:when>
         <c:otherwise>
         </c:otherwise>
 	 </c:choose>
