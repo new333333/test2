@@ -50,7 +50,6 @@ import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 /**
  *
@@ -380,12 +379,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 								} catch (Exception ex) {
 									logger.warn("Error logging entry " + entry.toString(), ex);
 								}
-								try {
-									getFileModule().deleteFiles(folder, entry, false, null);
-								} catch (Exception ex) {
-									// but keep going
-									logger.warn("Error delete files for entry " + entry.toString() , ex);
-								}
+								
+								getFileModule().deleteFiles(folder, entry, false, null);
+
 								entries.add(entry);
 								++count;
 								
