@@ -9,7 +9,7 @@
  *
  */
 
-dojo.require("dojo.html");
+dojo.require("dojo.html.*");
 dojo.require("dojo.html.util");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
@@ -1520,67 +1520,41 @@ var ss_calendar_import = {
 		document.getElementsByTagName("body").item(0).appendChild(calImportDiv);
 		
 		dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(ss_calendarTitleText));
-		
-	    var formObj = document.createElement("form");
-	    formObj.setAttribute("id", "ss_calendar_import_form");
-	    formObj.setAttribute("method", "post");
-	    formObj.setAttribute("enctype", "multipart/form-data");
-	    formObj.setAttribute("name", "ss_calendar_import_form");
-		dojo.byId("ss_calendar_import_inner").appendChild(formObj);
-		dojo.event.connect(formObj, "onsubmit", function(evt) {
-			return dojoformfunction(this);
-	    });
-	    
-	    
-	    var uploadFileDivObj = document.createElement("div");
-		uploadFileDivObj.style.textAlign = "left";
-		uploadFileDivObj.style.width = "100%";
 
-		var inputFileObj = document.createElement("input");
-		inputFileObj.setAttribute("type", "file");
-		inputFileObj.setAttribute("name", "iCalFile");
-		
-		var hiddenInputObj = document.createElement("input");
-		hiddenInputObj.setAttribute("type", "hidden");
-		hiddenInputObj.setAttribute("name", "folderId");
-		hiddenInputObj.value = forumId;
-		formObj.appendChild(hiddenInputObj);
-    
-	    uploadFileDivObj.appendChild(inputFileObj);
-	    formObj.appendChild(uploadFileDivObj);
-    
-    	var submitBtnObj = document.createElement("input");
-	    submitBtnObj.setAttribute("type", "button");
-	    submitBtnObj.setAttribute("value", "Upload");
-		formObj.appendChild(brObj);
-	    formObj.appendChild(submitBtnObj);
-	    
-	   	dojo.event.connect(submitBtnObj, "onclick", function(evt) {
-			ss_calendar_import.uploadFile();
-	    });
-	    
 		dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
 			ss_calendar_import.cancel();
 	    });
+	   
+	    dojo.byId("ss_calendar_import_inner").innerHTML = 
+		    "<form id=\"ss_calendar_import_form\" method=\"post\" enctype=\"multipart/form-data\" name=\"ss_calendar_import_form\">" +
+				"<div style=\"text-align: left; width: 100%; \">" +
+					"<input type=\"file\" name=\"iCalFile\" />" +
+				"</div><br/>" +
+				"<input type=\"button\" value=\"Upload\" onclick=\"ss_calendar_import.uploadFile();\"/>" +
+				"<input type=\"hidden\" name=\"folderId\" value=\"" + forumId + "\">" +
+			"</form>";
 	    
 		ss_showPopupDivCentered(this.divId);
-			    
-		// alert('import form: ' + forumId);
 	},
 	
 	uploadFile : function () {
 		var url = ss_AjaxBaseUrl;
 		url += "\&operation=uploadICalendarFile";
 		url += "\&randomNumber="+ss_random++;
+		dojo.debug("uploadFile");
 		dojo.io.bind({
 	    	url: url,
 			error: function(type, data, evt) {
+				try {
 				ss_calendar_import.cancel();
+				} catch (e) {alert(e)}
 			},
 			load: function(type, data, evt) {
+				try {
 				ss_calendar_import.cancel();
+				} catch (e) {alert(e)}
 			},
-			mimetype: "text/json",
+			preventCache: true,
 			formNode: dojo.byId("ss_calendar_import_form")
 		});
 
