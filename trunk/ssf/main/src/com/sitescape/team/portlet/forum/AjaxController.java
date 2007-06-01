@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +25,7 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -41,6 +41,7 @@ import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -57,6 +58,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.ical.IcalParser;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
@@ -68,13 +70,12 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.task.TaskMonthViewRangeDates;
+import com.sitescape.team.task.TaskViewRangeDates;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -84,6 +85,7 @@ import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
+import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
@@ -616,8 +618,7 @@ public class AjaxController  extends SAbstractController {
 		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
 		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
 		if (EntityIdentifier.EntityType.folder.equals(entityType) || 
-				EntityIdentifier.EntityType.workspace.equals(entityType) ||
-				EntityIdentifier.EntityType.profiles.equals(entityType)) {
+				EntityIdentifier.EntityType.workspace.equals(entityType)) {
 			if (operation2.equals("delete")) {
 				getBinderModule().deleteTag(binderId, tagToDelete);
 			} else if (operation2.equals("add")) {
@@ -850,12 +851,12 @@ public class AjaxController  extends SAbstractController {
 		
 		if (binderId != null && binderId.equals(entryId)) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			Map tagResults = TagUtil.uniqueTags(getBinderModule().getTags(binder));
+			Map tagResults = getBinderModule().getTags(binder);
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		} else {
 			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
-			Map tagResults = TagUtil.uniqueTags(getFolderModule().getTags(entry));
+			Map tagResults = getFolderModule().getTags(entry);
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		}
@@ -1401,10 +1402,10 @@ public class AjaxController  extends SAbstractController {
 		Boolean addTeamMembers = PortletRequestUtils.getBooleanParameter(request, "add_team_members", false);
 		if (addTeamMembers) {
 			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			try {
-				Collection teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
-				clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));				
-			} catch (AccessControlException ac) {} //no access, just skip
+			if (getBinderModule().testAccess(binderId, "getTeamMembers")) {
+				Set teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
+				clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));
+			}
 		}
 	}
 
@@ -1457,8 +1458,8 @@ public class AjaxController  extends SAbstractController {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
-			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
-			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+			Set ids = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users"));
+			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
 			List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
@@ -1616,7 +1617,7 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response) throws Exception {
 	Map model = new HashMap();
 	User user = RequestContextHolder.getRequestContext().getUser();
-	Collection myTeams = getBinderModule().getTeamMemberships(user.getId());
+	List myTeams = getAdminModule().getTeamMemberships(user.getId());
 	model.put(WebKeys.MY_TEAMS, myTeams);
 	String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 	model.put(WebKeys.NAMESPACE, namespace);
@@ -1907,7 +1908,7 @@ public class AjaxController  extends SAbstractController {
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		
 		Set<Long> memberIds = new HashSet();
-		memberIds.addAll(LongIdUtil.getIdsAsLongSet(request
+		memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request
 				.getParameterValues("users")));
 				
 		Binder binder = null;
@@ -1934,12 +1935,8 @@ public class AjaxController  extends SAbstractController {
 		
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
-		if (WebHelper.isUserLoggedIn(request)) {
-			try {
-				model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
-			} catch (AccessControlException ex) {
-				model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
-			}
+		if (WebHelper.isUserLoggedIn(request) && getBinderModule().testAccess(binderId, "getTeamMembers")) {
+			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
 		} else {
 			model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
 		}
