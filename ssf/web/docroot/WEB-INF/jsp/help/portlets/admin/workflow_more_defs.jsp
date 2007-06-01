@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
-<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
+<%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
 
 <span class="ss_titlebold"><ssf:nlt tag="help.workflowIntro.title"/></span> (2/4)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.workflowIntro.subtopic.moreDefs"/></span>
