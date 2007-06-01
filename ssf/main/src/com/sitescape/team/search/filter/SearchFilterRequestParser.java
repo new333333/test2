@@ -214,6 +214,14 @@ public class SearchFilterRequestParser {
 			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeTag)) {
 				String personalTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchPersonalTags.concat(numbers[i]), "");
 				String communityTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchCommunityTags.concat(numbers[i]), "");
+				
+				if (personalTag.equals("")) {
+					personalTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchPersonalTags.concat(numbers[i]).concat("_selected"), "");
+				}
+				if (communityTag.equals("")) {
+					communityTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchCommunityTags.concat(numbers[i]).concat("_selected"), "");
+				}
+				
 				if (!personalTag.equals("")) {
 					tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.PERSONAL, personalTag));
 				}
