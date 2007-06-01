@@ -104,8 +104,12 @@ var ss_userSkin = "${ss_user_skin}";
 	    </c:if>
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
 	        <c:set var="popup" value="false"/>
+	        <c:set var="popupWidth" value=""/>
+	        <c:set var="popupHeight" value=""/>
 	        <c:if test="${toolbarMenuCategoryItem.value.qualifiers.popup}">
 	          <c:set var="popup" value="true"/>
+	          <c:set var="popupWidth" value="${toolbarMenuCategoryItem.value.qualifiers.popupWidth}"/>
+	          <c:set var="popupHeight" value="${toolbarMenuCategoryItem.value.qualifiers.popupHeight}"/>
 	        </c:if>
 	        <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.folder || (!empty toolbarMenuCategoryItem.value.qualifiers.folder && isWebdavSupported)}">
 	        
@@ -139,7 +143,7 @@ var ss_userSkin = "${ss_user_skin}";
     	      	  target="_blank"
     	      </c:if>
 	          <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
-	          	onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
+	          	onClick="return(ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}'));">
 	          </c:if>
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}">
@@ -175,8 +179,12 @@ var ss_userSkin = "${ss_user_skin}";
     </c:if>
     <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
       <c:set var="popup" value="false"/>
+	  <c:set var="popupWidth" value=""/>
+	  <c:set var="popupHeight" value=""/>
       <c:if test="${toolbarMenu.value.qualifiers.popup}">
         <c:set var="popup" value="true"/>
+	    <c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/>
+	    <c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
       </c:if>
 
      <% // BEGIN Helpspots for folder menus %> 
@@ -242,7 +250,9 @@ var ss_userSkin = "${ss_user_skin}";
     	    </c:if>
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
+	                <c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/>
+	                <c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
+    	      		onClick="ss_toolbarPopupUrl(this.href, '_blank', '${popupWidth}', '${popupHeight}');return false;"
     	    	</c:if>
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
@@ -297,7 +307,9 @@ var ss_userSkin = "${ss_user_skin}";
     	    </c:if>
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
+	                <c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/>
+	                <c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
+    	      		onClick="ss_toolbarPopupUrl(this.href, '_blank', '${popupWidth}', '${popupHeight}');return false;"
     	    	</c:if>
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
