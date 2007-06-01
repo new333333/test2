@@ -615,7 +615,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(NLT.get("administration.initial.function.workspacecreator", "Workspace Creator"));
-		function.addOperation(WorkAreaOperation.CREATE_BINDERS);
+		function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
 		//generate functionId
 		getFunctionManager().addFunction(function);
 		return function;

@@ -123,9 +123,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		if ("getProfileBinder".equals(operation)) {
 			getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 		} else if ("addFolder".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_BINDERS);
+	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_FOLDERS);
 		} else if ("addWorkspace".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_BINDERS);
+	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_WORKSPACES);
 		} else if (operation.startsWith("add")) {
 	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
 		} else {

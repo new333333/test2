@@ -170,7 +170,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		} else if ("addEntry".equals(operation)) {
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 		} else if ("addFolder".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_BINDERS);
+	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
 		} else if ("setTag".equals(operation)) { 	
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		} else if ("deleteTag".equals(operation)) { 	
