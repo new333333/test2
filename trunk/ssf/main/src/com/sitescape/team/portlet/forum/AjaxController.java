@@ -520,7 +520,7 @@ public class AjaxController  extends SAbstractController {
 			
 			if (tags.size() > startPageNo) {
 				if (tags.size() < endPageNo) endPageNo = tags.size();
-				tags = tags.subList(startPageNo, endPageNo);
+				tags = tags.subList(startPageNo - 1, endPageNo);
 			}
 			
 			if (endPageNo < searchCountTotal) {
