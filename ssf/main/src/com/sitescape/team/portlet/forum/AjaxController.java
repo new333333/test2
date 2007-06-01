@@ -58,8 +58,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.ical.IcalGenerator;
-import com.sitescape.team.ical.IcalParser;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -1371,7 +1369,7 @@ public class AjaxController  extends SAbstractController {
 			
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
 			
-			List createdEntryIds = IcalParser.parseToEntries(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
+			List createdEntryIds = getIcalConverter().parseToEntries(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
 			
 			WebHelper.releaseFileHandle(fileHandle);
 		}

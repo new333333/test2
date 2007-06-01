@@ -34,7 +34,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.ical.IcalGenerator;
+import com.sitescape.team.module.ical.impl.IcalConverterImpl;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.rss.RssGenerator;
@@ -48,8 +48,6 @@ import com.sitescape.util.FileUtil;
 import org.springframework.web.bind.RequestUtils;
 
 public class ViewICalController extends SAbstractController {
-	
-	private IcalGenerator icalGenerator;
 	
 	private MailModule mailModule;
 	
@@ -94,7 +92,7 @@ public class ViewICalController extends SAbstractController {
 			response.setHeader("Pragma", "no-cache");
 			
 			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalGenerator().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+			Calendar calendar = getIcalConverter().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		}	
 		
@@ -108,12 +106,5 @@ public class ViewICalController extends SAbstractController {
 	}
 	public void setMailModule(MailModule mailModule) {
 		this.mailModule = mailModule;
-	}
-	
-	protected IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
 	}
 }

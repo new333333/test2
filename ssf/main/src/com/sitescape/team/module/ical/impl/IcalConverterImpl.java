@@ -8,14 +8,26 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.ical;
+package com.sitescape.team.module.ical.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.data.UnfoldingReader;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Date;
@@ -36,6 +48,7 @@ import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.PercentComplete;
 import net.fortuna.ical4j.model.property.Priority;
@@ -47,6 +60,8 @@ import net.fortuna.ical4j.model.property.Version;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.joda.time.DateTimeZone;
 
 import com.sitescape.team.ObjectKeys;
@@ -54,7 +69,14 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.util.cal.DayAndPosition;
@@ -67,7 +89,7 @@ import com.sitescape.util.cal.DayAndPosition;
  * @author Pawel Nowicki
  * 
  */
-public class IcalGenerator {
+public class IcalConverterImpl implements IcalConverter {
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	
@@ -88,6 +110,167 @@ public class IcalGenerator {
 
 	}
 
+	/**
+	 * parseEvents
+	 * 
+	 * Extracts the VEVENTs from an ical input stream, converts each to an Event, and calls
+	 *   the supplied handler with the event, along with the SUMMARY and DESCRIPTION, if any,
+	 *   from the VEVENT
+	 * 
+	 * @param icalData
+	 * @param handler
+	 * @throws IOException
+	 * @throws ParserException
+	 */
+	public void parseEvents(Reader icalData, EventHandler handler)
+		throws IOException, ParserException
+	{
+		Event event = null;
+		try {
+			Calendar cal = (new CalendarBuilder()).build(new UnfoldingReader(icalData));
+			for(Object comp : cal.getComponents("VEVENT")) {
+				VEvent eventComponent = (VEvent) comp;
+				event = new Event();
+				DateProperty start = eventComponent.getStartDate();
+				GregorianCalendar startCal = new GregorianCalendar();
+				startCal.setTime(start.getDate());
+				event.setDtStart(startCal);
+				if(start.getParameter(Value.DATE.getName()) == null) {
+					if(eventComponent.getEndDate() != null) {
+						GregorianCalendar endCal = new GregorianCalendar();
+						endCal.setTime(eventComponent.getEndDate().getDate());
+						event.setDtEnd(endCal);
+					} else {
+						event.setDuration(new com.sitescape.util.cal.Duration(eventComponent.getDuration().toString()));
+					}
+				}
+				RRule recurrence = (RRule) eventComponent.getProperty("RRULE");
+				if(recurrence != null && (eventComponent.getRecurrenceId() == null)) {
+					Recur recur = recurrence.getRecur();
+					event.setFrequency(recur.getFrequency());
+					event.setInterval(recur.getInterval());
+					if(recur.getUntil() != null) {
+						GregorianCalendar untilCal = new GregorianCalendar();
+						untilCal.setTime(recur.getUntil());
+						event.setUntil(untilCal);
+					} else {
+						event.setCount(recur.getCount());
+					}
+					if(recur.getDayList() != null) {
+						event.setByDay(recur.getDayList().toString());
+					}
+					if(recur.getHourList() != null) {
+						event.setByHour(recur.getHourList().toString());
+					}
+					if(recur.getMinuteList() != null) {
+						event.setByMinute(recur.getMinuteList().toString());
+					}
+					if(recur.getMonthDayList() != null) {
+						event.setByMonthDay(recur.getMonthDayList().toString());
+					}
+					if(recur.getMonthList() != null) {
+						event.setByMonth(recur.getMonthList().toString());
+					}
+					if(recur.getSecondList() != null) {
+						event.setBySecond(recur.getSecondList().toString());
+					}
+					if(recur.getWeekNoList() != null) {
+						event.setByWeekNo(recur.getWeekNoList().toString());
+					}
+					if(recur.getYearDayList() != null) {
+						event.setByYearDay(recur.getYearDayList().toString());
+					}
+					if(recur.getWeekStartDay() != null) {
+						event.setWeekStart(recur.getWeekStartDay().toString());
+					}
+				}
+				String description = null;
+				if(eventComponent.getDescription() != null) {
+					description = eventComponent.getDescription().toString();
+				}
+				String summary = null;
+				if(eventComponent.getSummary() != null) {
+					summary = eventComponent.getSummary().toString();
+				}
+				handler.handleEvent(event, description, summary);
+			}
+		} catch(IOException e) {
+			logger.debug("IOException while parsing iCal stream", e);
+			throw e;
+		} catch(ParserException e) {
+			logger.debug("ParserException while parsing iCal stream", e);
+			throw e;
+		}
+	}
+	
+	/**
+	 * parseToEntries
+	 * 
+	 * Creates an entry in the given folder for each VEVENT in the given ical input stream, returning a list of
+	 *  the added IDs.
+	 * 
+	 * @param binderModule
+	 * @param folderModule
+	 * @param folderId
+	 * @param icalFile
+	 * @return id list of created entries
+	 * @throws IOException
+	 * @throws ParserException
+	 */
+	public List parseToEntries (final BinderModule binderModule, final FolderModule folderModule, final Long folderId, InputStream icalFile) throws IOException, ParserException
+	{
+		final Folder folder = (Folder)binderModule.getBinder(folderId);
+		final List<Long> entries = new ArrayList<Long>();
+
+		Iterator defaultEntryDefinitions = folder.getEntryDefinitions().iterator();
+		if (!defaultEntryDefinitions.hasNext()) {
+			return entries;
+		}
+		Definition def = (Definition) defaultEntryDefinitions.next();
+		final String entryType = def.getId();
+		final String eventName= getEventName(def.getDefinition());
+		if(eventName == null) {
+			return entries;
+		}
+
+		EventHandler entryCreator = new EventHandler() {
+			public void handleEvent(Event event, String description, String summary) {
+				Map<String, Object> formData = new HashMap<String, Object>();
+				
+				formData.put("binderId", new String[] {folderId.toString()});
+				formData.put("description", new String[] {description != null ? description : ""});
+				formData.put("entryType", new String[] {entryType});
+				formData.put("title", new String[] {summary != null ? summary : ""});
+				formData.put(eventName, event);
+				
+				MapInputData inputData = new MapInputData(formData);
+				try {
+					Long entryId = folderModule.addEntry(folderId, entryType, inputData, new HashMap());
+					entries.add(entryId);
+					logger.info("New entry id created from iCal file [" + entryId + "]");
+				} catch (AccessControlException e) {
+					logger.warn("Can not create entry from iCal file.", e);
+				} catch (WriteFilesException e) {
+					logger.warn("Can not create entry from iCal file.", e);
+				}
+			}
+		};
+
+		parseEvents(new InputStreamReader(icalFile), entryCreator);
+		return entries;
+	}
+	
+	private String getEventName(Document definition) {
+		Element configRoot = definition.getRootElement();
+		Element eventEl = (Element) configRoot.selectSingleNode("//item[@name='event']//property[@name='name']");
+		if (eventEl != null) {
+			return eventEl.attributeValue("value");
+		}
+		logger.error("Entry defintion ["+ definition.asXML() +"] has no events. iCalendar import aborted.");
+		return null;
+	}
+
+	
 	public Calendar generate(DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar();
@@ -113,7 +296,7 @@ public class IcalGenerator {
 	 */
 	private Calendar createICalendar() {
 		Calendar calendar = new Calendar();
-		calendar.getProperties().add(IcalGenerator.PROD_ID);
+		calendar.getProperties().add(PROD_ID);
 		calendar.getProperties().add(Version.VERSION_2_0);
 		calendar.getProperties().add(CalScale.GREGORIAN);
 		return calendar;

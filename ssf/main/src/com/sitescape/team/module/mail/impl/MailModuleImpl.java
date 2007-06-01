@@ -71,6 +71,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.jobs.FailedEmail;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.definition.notify.Notify;
+import com.sitescape.team.module.ical.IcalConverter;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.FolderEmailFormatter;
 import com.sitescape.team.module.mail.JavaMailSender;
@@ -112,6 +113,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
 	}
+
+	private IcalConverter icalConverter;
+	public IcalConverter getIcalConverter() {
+		return icalConverter;
+	}
+	public void setIcalConverter(IcalConverter icalConverter) {
+		this.icalConverter = icalConverter;
+	}	
 
 	public String getMailRootDir() {
 		return mailRootDir;
@@ -546,7 +555,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
 				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
 				List events = (List)mapEntry.getValue();
-				Calendar iCal = getIcalGenerator().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				Calendar iCal = getIcalConverter().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				CalendarOutputter calendarOutputter = new CalendarOutputter();
