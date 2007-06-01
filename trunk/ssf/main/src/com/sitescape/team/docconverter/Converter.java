@@ -67,7 +67,7 @@ public abstract class Converter<T>
 			if(!parentDir.exists())
 				parentDir.mkdirs();
 
-			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+			is = RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, relativeFilePath, fa.getHighestVersion().getVersionName());
 			copyOfOriginalFile = cacheFileStore.getFile(filePath);
 			fos = new FileOutputStream(copyOfOriginalFile);
 			FileCopyUtils.copy(is, fos);

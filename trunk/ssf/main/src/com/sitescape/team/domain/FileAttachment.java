@@ -76,19 +76,26 @@ public class FileAttachment extends Attachment {
      * @return
      */
     public int getHighestVersionNumber() {
-    	if(fileVersions == null || fileVersions.size() == 0)
+    	VersionAttachment va = getHighestVersion();
+    	if(va != null)
+    		return va.getVersionNumber();
+    	else
     		return -1;
-    	
-    	int result = Integer.MIN_VALUE;
-    	
-    	for(int i = 0; i < fileVersions.size(); i++) {
-    		VersionAttachment va = (VersionAttachment) fileVersions.get(i);
-    		int no = va.getVersionNumber();
-    		if(no > result)
-    			result = no;
+    }
+    
+    public VersionAttachment getHighestVersion() {
+    	VersionAttachment hva = null;
+    	if(fileVersions != null) {
+	    	int hno = Integer.MIN_VALUE;
+	    	for(Object va :  fileVersions) {
+	    		int no = ((VersionAttachment) va).getVersionNumber();
+	    		if(no > hno) {
+	    			hno = no;
+	    			hva = (VersionAttachment) va;
+	    		}
+	    	}
     	}
-    	
-    	return result;
+    	return hva;   	
     }
     
     /**

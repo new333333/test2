@@ -20,9 +20,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -269,26 +267,49 @@ public class FileRepositorySession implements RepositorySession {
 		FileHelper.deleteRecursively(dir);
 	}
 	
-	public void read(Binder binder, DefinableEntity entry, 
+	public void readUnversioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
-		File file = getFileForRead(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
-		readFile(file, out);
+		if(fileInfo == VERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It is versioned"); 
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+			
+			readFile(unversionedFile, out);
+		}
+		else {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
+		}
 	}
 
-	public InputStream read(Binder binder, DefinableEntity entry, 
+	public InputStream readUnversioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		File file = getFileForRead(binder, entry, relativeFilePath);
+		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
-		try {
-			return new BufferedInputStream(new FileInputStream(file));
+		if(fileInfo == VERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It is versioned"); 
 		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}	
+		else if(fileInfo == UNVERSIONED_FILE) {
+			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
+			
+			try {
+				return new BufferedInputStream(new FileInputStream(unversionedFile));
+			} catch (FileNotFoundException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+		else {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
+		}
 	}
 	
-	public void readVersion(Binder binder, DefinableEntity entry, 
+	public void readVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, OutputStream out) 
 		throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
@@ -308,7 +329,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 	}
 
-	public InputStream readVersion(Binder binder, DefinableEntity entry, 
+	public InputStream readVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
@@ -348,15 +369,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 	}
 	
-	public DataSource getDataSource(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException, UncheckedIOException {
-		File latestFile = getLatestFile(binder, entry, relativeFilePath);
-		FileDataSource fSource = new FileDataSource(latestFile);
-		fSource.setFileTypeMap(fileTypeMap);
-		return fSource;
-	}
-	public DataSource getDataSourceVersion(Binder binder, DefinableEntity entry, 
+	public DataSource getDataSourceVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException, UncheckedIOException {
 		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
@@ -374,6 +387,13 @@ public class FileRepositorySession implements RepositorySession {
 			
 			if(!tempFile.exists()) { // It is not checked out
 				try {
+					// The latest version from this repository's point of view may not be
+					// necessarily the latest version of the file from the application/user 
+					// point of view (as strange it may sound) due to the potentially 
+					// possible out-of-orderness between the db's metadata and the
+					// repository's metadata. However, since a file is only checked out
+					// to be replaced with a new content, it should not really matter
+					// too much which version we use as the basis for initial state. 
 					File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
 					
 					if(latestVersionFile != null) {
@@ -445,7 +465,8 @@ public class FileRepositorySession implements RepositorySession {
 				
 				return versionName;
 			}	
-			else { // It is already checked in
+			else { // It is already checked in.
+				// Return this repository's notion of the latest version of this file.
 				return getLatestVersionName(binder, entry, relativeFilePath);
 			}
 		}
@@ -477,14 +498,13 @@ public class FileRepositorySession implements RepositorySession {
 			return true;
 	}*/
 
-	public long getContentLength(Binder binder, DefinableEntity entry, 
+	public long getContentLengthUnversioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
-			File latestFile = getLatestFile(binder, entry, relativeFilePath);
-			
-			return latestFile.length();
+			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It is versioned"); 			
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -497,7 +517,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 	}
 	
-	public long getContentLength(Binder binder, DefinableEntity entry, 
+	public long getContentLengthVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName) throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
@@ -603,6 +623,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	// For internal use only
+	/*
 	public List<String> getVersionNames(Binder binder, DefinableEntity entity,
 			String relativeFilePath) throws RepositoryServiceException {
 		String[] versionFileNames = getVersionFileNames(binder, entity, relativeFilePath);
@@ -610,32 +631,7 @@ public class FileRepositorySession implements RepositorySession {
 		for(int i = 0; i < versionFileNames.length; i++) 
 			list.add(versionFileNames[i]);
 		return list;
-	}
-
-	/**
-	 * Returns latest snapshot of the file (which is either the latest version
-	 * of the file or the working copy in progress which is created when the 
-	 * file is checked out). It is assumed that the file is versioned.
-	 * 
-	 * @param binder
-	 * @param entry
-	 * @param relativeFilePath
-	 * @return
-	 */
-	private File getLatestFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
-		
-		if(tempFile.exists()) {
-			return tempFile;
-		}
-		else {
-			File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
-			if(latestVersionFile != null)
-				return latestVersionFile;
-			else
-				throw new RepositoryServiceException("The specified file does not exist");
-		}
-	}
+	}*/
 	
 	/**
 	 * Returns an array of file names representing each version of the specified file. 
@@ -849,22 +845,6 @@ public class FileRepositorySession implements RepositorySession {
 				logger.warn(e); // Log and return normally.
 			}
 		}
-	}
-	
-	private File getFileForRead(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		int fileInfo = fileInfo(binder, entry, relativeFilePath);
-		
-		if(fileInfo == VERSIONED_FILE) {
-			return getLatestFile(binder, entry, relativeFilePath);
-		}
-		else if(fileInfo == UNVERSIONED_FILE) {
-			return getUnversionedFile(binder, entry, relativeFilePath);
-		}
-		else {
-			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
-		}					
 	}
 	
 	private void move(File source, File target) throws UncheckedIOException {

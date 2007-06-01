@@ -291,25 +291,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		if(fa instanceof VersionAttachment) {
-			RepositoryUtil.readVersion(fa.getRepositoryName(), binder, entry, 
-					fa.getFileItem().getName(), ((VersionAttachment) fa).getVersionName(), out);			
-		}
-		else {
-			RepositoryUtil.read(fa.getRepositoryName(), binder, entry, 
-				fa.getFileItem().getName(), out);
-		}
+		VersionAttachment va = null;
+		
+		if(fa instanceof VersionAttachment)
+			va = (VersionAttachment) fa;
+		else
+			va = fa.getHighestVersion();
+		
+		RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
+				fa.getFileItem().getName(), va.getVersionName(), out);			
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		if(fa instanceof VersionAttachment) {
-			return RepositoryUtil.readVersion(fa.getRepositoryName(), binder, entry, 
-					fa.getFileItem().getName(), ((VersionAttachment) fa).getVersionName());
-		}
-		else {
-			return RepositoryUtil.read(fa.getRepositoryName(), binder, entry, 
-				fa.getFileItem().getName());
-		}
+		VersionAttachment va = null;
+		
+		if(fa instanceof VersionAttachment)
+			va = (VersionAttachment) fa;
+		else
+			va = fa.getHighestVersion();
+
+		return RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
+				fa.getFileItem().getName(), va.getVersionName());
 	}
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
@@ -1327,12 +1329,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//if we are adding a new version of an existing attachment to 
 		//a uniqueName item, set flag - (will already be set if originally added
 		//through a unique element.  In other works, once unique always unique
-		long fileSize = session.getContentLength(binder, entry, relativeFilePath);
+    	Long fileSize = null;
+    	if(versionName != null)
+    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate());
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
-			Principal user, String versionName, long contentLength,
+			Principal user, String versionName, Long contentLength,
 			Date modDate) {
     	HistoryStamp now = new HistoryStamp(user);
     	HistoryStamp mod;
@@ -1344,7 +1348,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fAtt.setModification(mod);
 		
 		FileItem fItem = fAtt.getFileItem();
-		fItem.setLength(contentLength);
+
+		if(contentLength != null)
+			fItem.setLength(contentLength);
 		
 		if(versionName != null) {
 			// The repository system supports versioning.        			
@@ -1443,7 +1449,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		String versionName = createVersionedFile(session, binder, entry, fui);
 						
-		long fileSize = session.getContentLength(binder, entry, fui.getOriginalFilename());
+		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
 		
 		fAtt.getFileItem().setLength(fileSize);
 
@@ -1697,10 +1703,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			String versionName = session.checkin(binder, entity, relativeFilePath);
 			VersionAttachment va = fa.findFileVersion(versionName);
 			if(va == null) {
-				// This means that the checkin above created a new version
-				// of the file. 
-				long contentLength = session.getContentLength(binder, entity, 
-						relativeFilePath, versionName);
+				// The checkin method above returned a version name that we don't
+				// know about, which means that it must have created a new version
+				// of the file.
+				// Note: Never compare the returned version name against the highest
+				// version alone in our metadata. It is not guaranteed to work always.
+				// Instead, we must check the name against all versions. This is due
+				// to the possibility (extremely unlikely but nevertheless theoretically
+				// possible) of version out-of-orderness between the metadata side
+				// and the repository side. For example, it is possible that V1 in 
+				// metadata points to v2 in the repository, while V2 in metadata
+				// points to v1 in the repository. This can happen when you have two
+				// threads (or two nodes in a cluster) try to create a new version
+				// of the same file exactly at the same time. Because the updates
+				// to the db metadata and to the repository metadata are not 
+				// transactionally atomic, two concurrent requests can in theory
+				// result in such intertwined scenario. Consequently the notion of 
+				// highest version may not necessarily agree between the application
+				// side and the repository side. Therefore it is important to check
+				// the returned version name against all versions.
+				Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
+						relativeFilePath, versionName));
 				updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null);
 				metadataDirty = true;
 			}   					

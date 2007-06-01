@@ -145,9 +145,9 @@ public class WebdavRepositorySession implements RepositorySession {
 		}		
 	}
 
-	public void read(Binder binder, DefinableEntity entry, String relativeFilePath, 
+	public void readUnversioned(Binder binder, DefinableEntity entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException, UncheckedIOException {	
-		InputStream is = read(binder, entry, relativeFilePath);
+		InputStream is = readUnversioned(binder, entry, relativeFilePath);
 		
 		try {
 			FileCopyUtils.copy(is, out);
@@ -157,7 +157,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public InputStream read(Binder binder, DefinableEntity entry, 
+	public InputStream readUnversioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {	
 		try {
 			return wdr.getMethodData(getFileResourcePath(binder, entry, relativeFilePath));
@@ -167,10 +167,10 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public void readVersion(Binder binder, DefinableEntity entity, 
+	public void readVersioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName, OutputStream out) 
 	throws RepositoryServiceException, UncheckedIOException {
-		InputStream is = readVersion(binder, entity, relativeFilePath, versionName);
+		InputStream is = readVersioned(binder, entity, relativeFilePath, versionName);
 		
 		try {
 			FileCopyUtils.copy(is, out);
@@ -180,7 +180,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		}		
 	}
 	
-	public InputStream readVersion(Binder binder, DefinableEntity entity, String relativeFilePath, 
+	public InputStream readVersioned(Binder binder, DefinableEntity entity, String relativeFilePath, 
 			String versionName) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String versionResourcePath = getVersionResourcePath(wdr, binder, entity, 
@@ -204,12 +204,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public DataSource getDataSource(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException, UncheckedIOException {
-		return new WebDavDataSource(wdr, getFileResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
-	}
-	public DataSource getDataSourceVersion(Binder binder, DefinableEntity entry, 
+	public DataSource getDataSourceVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -318,33 +313,8 @@ public class WebdavRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}
 	}
-	
-	/*
-	public boolean isCheckedOut(Binder binder, DefinableEntity entry, String relativeFilePath) 
-		throws RepositoryServiceException, UncheckedIOException {
-		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
-			
-			return isCheckedOut(wdr, resourcePath);
-		} catch (IOException e) {
-			wdr.logError(logger);
-			throw new UncheckedIOException(e);
-		}
-	}*/
-	
-	/*
-	public boolean exists(Binder binder, DefinableEntity entry, String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
-			
-			return WebdavUtil.exists(wdr, resourcePath);
-		} catch (IOException e) {
-			wdr.logError(logger);
-			throw new RepositoryServiceException(e);
-		}
-	}*/
 
-	public long getContentLength(Binder binder, 
+	public long getContentLengthUnversioned(Binder binder, 
 			DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -359,7 +329,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 	
-	public long getContentLength(Binder binder, 
+	public long getContentLengthVersioned(Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -374,26 +344,6 @@ public class WebdavRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}
 	}
-	
-	/*
-	public boolean isVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
-		
-			String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr,resourcePath);
-			
-			if(checkedInVersionResourcePath == null || checkedInVersionResourcePath.length() == 0)
-				return false;
-			else
-				return true;
-	
-		} catch (IOException e) {
-			wdr.logError(logger);
-			throw new RepositoryServiceException(e);
-		}
-	}*/
-	
 
 	public int fileInfo(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
@@ -685,43 +635,6 @@ public class WebdavRepositorySession implements RepositorySession {
 		
 		if(!result)
 			throw new RepositoryServiceException("Failed to delete [" + resourcePath + "]");
-	}
-	
-	private void readResource(SWebdavResource wdr, String resourcePath,
-			OutputStream out) throws IOException {
-
-		/*
-		 * for debugging WebdavUtil.dumpProp(wdr, "/slide/history/101/1.2",
-		 * "version-name"); WebdavUtil.dumpProp(wdr, "/slide/history/101/1.2",
-		 * "no-version-delete"); WebdavUtil.dumpProp(wdr,
-		 * "/slide/history/101/1.2", "predecessor-set");
-		 * WebdavUtil.dumpProp(wdr,
-		 * "/slide/files/sitescape/document/liferay.com/74/493/junk.txt",
-		 * "no-version-delete");
-		 * 
-		 * if(wdr.headMethod("/slide/history/101/1.2")) { // failed result =
-		 * wdr.deleteMethod("/slide/history/101/1.2"); }
-		 * 
-		 * if(wdr.headMethod("/slide/history/1")) { // successful result =
-		 * wdr.deleteMethod("/slide/history/1"); }
-		 * 
-		 * if(wdr.headMethod("/slide/files/sitescape/document/liferay.com/74/489/license.html")) //
-		 * successful result =
-		 * wdr.deleteMethod("/slide/files/sitescape/document/liferay.com/74/489/license.html");
-		 * 
-		 * String value = WebdavUtil.getSinglePropertyValue(wdr,
-		 * "/slide/files/sitescape/document/liferay.com/74/493/junk.txt",
-		 * "version-history"); value = WebdavUtil.getHrefValue(value);
-		 * WebdavUtil.dumpProp(wdr, "/slide/history/101", "version-set");
-		 */
-		
-		InputStream is = wdr.getMethodData(resourcePath);
-
-		FileCopyUtils.copy(is, out);
-
-		//WebdavUtil.dumpAllProps(wdr, resourcePath); 
-		//WebdavUtil.dumpAllProps(wdr, "/slide/history/201"); 
-		//WebdavUtil.dumpAllProps(wdr, "/slide/history/201/1.2"); 
 	}
 
 	private String getEntityResourcePath(Binder binder, DefinableEntity entry) {
