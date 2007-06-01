@@ -12,7 +12,6 @@ package com.sitescape.team.web.portlet;
 
 import org.springframework.web.portlet.mvc.SimpleFormController;
 
-import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -20,6 +19,8 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ic.ICBrokerModule;
+import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.impl.IcalConverterImpl;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
@@ -45,6 +46,7 @@ implements AllModulesInjected {
 	private FileModule fileModule;
 	private DashboardModule dashboardModule;
 	private ICBrokerModule icBrokerModule;
+	private IcalConverter icalConverter;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -146,4 +148,11 @@ implements AllModulesInjected {
 	public void setIcBrokerModule(ICBrokerModule icBrokerModule) {
 		this.icBrokerModule = icBrokerModule;
 	}
+
+	public IcalConverter getIcalConverter() {
+		return icalConverter;
+	}
+	public void setIcalConverter(IcalConverter icalConverter) {
+		this.icalConverter = icalConverter;
+	}	
 }

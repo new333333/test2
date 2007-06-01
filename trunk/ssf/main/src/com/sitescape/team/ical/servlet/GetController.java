@@ -27,7 +27,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.ical.IcalGenerator;
+import com.sitescape.team.module.ical.IcalConverter;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -39,8 +39,6 @@ import com.sitescape.team.web.servlet.SAbstractController;
  * @author Pawel Nowicki
  */
 public class GetController extends SAbstractController {
-
-	private IcalGenerator icalGenerator;
 	
 	private MailModule mailModule;
 
@@ -62,7 +60,7 @@ public class GetController extends SAbstractController {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
 			if (getFolderModule().testAccess(entry, "getEntry")) {				
 				CalendarOutputter calendarOutputter = new CalendarOutputter();
-				Calendar calendar = getIcalGenerator().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				Calendar calendar = getIcalConverter().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				calendarOutputter.output(calendar, response.getWriter());
 			}
 		} else {
@@ -81,12 +79,4 @@ public class GetController extends SAbstractController {
 	public void setMailModule(MailModule mailModule) {
 		this.mailModule = mailModule;
 	}
-	
-	protected IcalGenerator getIcalGenerator() {
-		return icalGenerator;
-	}
-	public void setIcalGenerator(IcalGenerator icalGenerator) {
-		this.icalGenerator = icalGenerator;
-	}
-
 }

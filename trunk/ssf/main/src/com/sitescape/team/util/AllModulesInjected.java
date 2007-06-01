@@ -17,6 +17,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ic.ICBrokerModule;
+import com.sitescape.team.module.ical.IcalConverter;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.profile.ProfileModule;
@@ -85,4 +86,7 @@ public interface AllModulesInjected {
 	void setIcBrokerModule(ICBrokerModule icBrokerModule);
 
 	ICBrokerModule getIcBrokerModule();	
+	
+	void setIcalConverter(IcalConverter icalConverter);
+	IcalConverter getIcalConverter();
 }
