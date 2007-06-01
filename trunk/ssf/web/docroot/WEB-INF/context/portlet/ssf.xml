@@ -85,7 +85,7 @@
 						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
 						<entry key="view_profile_listing"><ref bean="listProfilesController"/></entry>
 						<entry key="view_ws_listing"><ref bean="listWSController"/></entry>
-						<entry key="view_presence"><ref bean="updatePresenceController"/></entry>
+						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>
 						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
 						<entry key="config_email"><ref bean="emailConfigController"/></entry>
 						<entry key="send_email"><ref bean="sendEmailController"/></entry>

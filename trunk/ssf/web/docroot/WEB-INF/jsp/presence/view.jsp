@@ -127,7 +127,7 @@ function ${ssNamespace}_getPresence (timeout) {
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
-    	action="view_presence" 
+    	action="__view_presence" 
     	actionUrl="false" >
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object

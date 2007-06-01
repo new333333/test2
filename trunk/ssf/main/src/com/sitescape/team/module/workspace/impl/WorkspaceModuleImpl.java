@@ -88,9 +88,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		if ("getWorkspace".equals(operation)) {
 			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
 		} else if ("addFolder".equals(operation)) {
-	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_BINDERS);
+	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_FOLDERS);
 		} else if ("addWorkspace".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_BINDERS);
+	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_WORKSPACES);
 		} else {
 	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
 		}

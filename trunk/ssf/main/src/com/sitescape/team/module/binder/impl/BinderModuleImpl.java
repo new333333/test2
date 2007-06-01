@@ -57,6 +57,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
@@ -447,7 +448,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	Binder source = loadBinder(fromId);
 		checkAccess(source, "moveBinder");
        	Binder destination = loadBinder(toId);
-		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_BINDERS); 
+       	if (source.getEntityType().equals(EntityType.folder)) {
+       		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_FOLDERS);
+       	} else {
+       		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_WORKSPACES);
+       	}
        	
      	loadBinderProcessor(source).moveBinder(source,destination);
            	
