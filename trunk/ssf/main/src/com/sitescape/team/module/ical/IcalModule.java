@@ -65,15 +65,13 @@ public interface IcalModule {
 	 * Creates an entry in the given folder for each VEVENT in the given ical input stream, returning a list of
 	 *  the added IDs.
 	 * 
-	 * @param binderModule
-	 * @param folderModule
 	 * @param folderId
 	 * @param icalFile
 	 * @return id list of created entries
 	 * @throws IOException
 	 * @throws ParserException
 	 */
-	List parseToEntries (final BinderModule binderModule, final FolderModule folderModule, final Long folderId, InputStream icalFile)
+	List parseToEntries (final Long folderId, InputStream icalFile)
 		throws IOException, ParserException;
 
 

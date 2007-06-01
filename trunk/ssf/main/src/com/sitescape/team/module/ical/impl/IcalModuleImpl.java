@@ -96,6 +96,25 @@ public class IcalModuleImpl implements IcalModule {
 	private static final ProdId PROD_ID = new ProdId("-//SiteScape Inc//"
 			+ ObjectKeys.PRODUCT_NAME_DEFAULT);
 
+	private BinderModule binderModule;
+	private FolderModule folderModule;
+	
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+
+	protected FolderModule getFolderModule() {
+		return folderModule;
+	}
+
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+
 	private static class ComponentType {
 
 		private int type;
@@ -217,7 +236,7 @@ public class IcalModuleImpl implements IcalModule {
 	 * @throws IOException
 	 * @throws ParserException
 	 */
-	public List parseToEntries (final BinderModule binderModule, final FolderModule folderModule, final Long folderId, InputStream icalFile) throws IOException, ParserException
+	public List parseToEntries (final Long folderId, InputStream icalFile) throws IOException, ParserException
 	{
 		final Folder folder = (Folder)binderModule.getBinder(folderId);
 		final List<Long> entries = new ArrayList<Long>();
