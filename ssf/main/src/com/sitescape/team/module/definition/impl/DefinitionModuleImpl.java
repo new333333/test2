@@ -61,7 +61,6 @@ import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
@@ -1331,7 +1330,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					} else if (itemName.equals("date")) {
 						//Use the helper routine to parse the date into a date object
-						Date date = DateHelper.getDateFromInput(inputData, nameValue);
+						Date date = inputData.getDateValue(nameValue);
 						if (date != null) {entryData.put(nameValue, date);}
 					} else if (itemName.equals("event")) {
 					    //Ditto for event helper routine
@@ -1343,7 +1342,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    if (GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "hasRecurrence"), false)) {
 					    	hasRecur = Boolean.TRUE;
 					    }
-					    Event event = EventHelper.getEventFromMap(inputData, nameValue, hasDur, hasRecur);
+					    Event event = inputData.getEventValue(nameValue, hasDur, hasRecur);
 					    if (event != null) {
 					        event.setName(nameValue);
 					        entryData.put(nameValue, event);

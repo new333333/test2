@@ -26,7 +26,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 	name="<portlet:namespace />fm">
 
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
@@ -65,7 +65,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 <br>
 <br>
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>

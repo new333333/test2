@@ -10,9 +10,13 @@
  */
 package com.sitescape.team.samples.remoting.client.ws.axis;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
@@ -51,6 +55,16 @@ public class WSClient
 				fetchAndPrintXML("getDefinitionAsXML", new Object[] {args[1]});			
 			} else if(args[0].equals("printDefinitionConfig")) {
 				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);			
+			} else if(args[0].equals("addEntry")) {
+				String s = readText(args[3]);
+				System.out.println("XML: " + s);
+				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s});			
+			} else if(args[0].equals("modifyEntry")) {
+				String s = readText(args[3]);
+				System.out.println("XML: " + s);
+				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});			
+			} else if(args[0].equals("uploadFile")) {
+				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);			
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -62,7 +76,27 @@ public class WSClient
 		}
 	}
 	
-	static void fetchAndPrintXML(String operation, Object[] args) throws Exception {
+	static String readText(String filename)
+	{
+		StringBuffer buf = new StringBuffer();
+		try {
+			FileReader f = new FileReader(filename);
+			char in[] = new char[32768];
+			int len;
+			while((len = f.read(in, 0, 32767)) > 0) {
+				buf.append(in, 0, len);
+			}
+		} catch(IOException e) {
+			System.err.println("Error reading file " + filename + ": " + e);
+		}
+		return buf.toString();
+	}
+
+	static Object fetch(String operation, Object[] args) throws Exception {
+		return fetch(operation, args, null);
+	}
+	
+	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
 		String endpoint = "http://localhost:8080/ssf/ws/Facade";
 
@@ -84,10 +118,37 @@ public class WSClient
 		// if the username is known at deployment time and does not change
 		// between calls, which is rarely the case in Aspen.
 		call.setProperty(WSHandlerConstants.USER, "liferay.com.1");
+		
+		if(filename != null) {
+			DataHandler dhSource = new DataHandler(new FileDataSource(new File(filename)));
+		
+			call.addAttachmentPart(dhSource); //Add the file.
+        
+			call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+		}
+		
+		return call.invoke(args);
+	}
 
-		String wsTreeAsXML = (String) call.invoke(args);
+	static void fetchAndPrintXML(String operation, Object[] args) throws Exception {
+		String wsTreeAsXML = (String) fetch(operation, args);
 
 		FacadeClientHelper.printXML(wsTreeAsXML);
+	}
+
+	static void justDoIt(String operation, Object[] args) throws Exception {
+		justDoIt(operation, args, null);
+	}
+	
+	static void justDoIt(String operation, Object[] args, String filename) throws Exception {
+		fetch(operation, args, filename);
+	}
+
+
+	static void fetchAndPrintIdentifier(String operation, Object[] args) throws Exception {
+		Long ident = (Long) fetch(operation, args);
+
+		System.out.println(ident);
 	}
 
 	private static void printUsage() {
@@ -98,5 +159,8 @@ public class WSClient
 		System.out.println("printFolderEntry <folder id> <entry id>");
 		System.out.println("printDefinition <definition id>");
 		System.out.println("printDefinitionConfig");
+		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString>");
+		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
+		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
 	}
 }

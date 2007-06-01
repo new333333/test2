@@ -43,7 +43,6 @@ import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
-import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 
 public class ReportDownloadController extends  SAbstractController {
@@ -79,8 +78,8 @@ public class ReportDownloadController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		MapInputData inputData = new MapInputData(formData);
 		GregorianCalendar cal = new GregorianCalendar();
-		Date startDate = DateHelper.getDateFromInput(inputData, WebKeys.URL_START_DATE);
-		Date endDate = DateHelper.getDateFromInput(inputData, WebKeys.URL_END_DATE);
+		Date startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
+		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
 		if(endDate != null) {
 			cal.setTime(endDate);
 			cal.add(Calendar.DATE, 1);

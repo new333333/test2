@@ -72,8 +72,6 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.task.TaskMonthViewRangeDates;
-import com.sitescape.team.task.TaskViewRangeDates;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -1373,7 +1371,7 @@ public class AjaxController  extends SAbstractController {
 			
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
 			
-			List createdEntryIds = IcalParser.parse(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
+			List createdEntryIds = IcalParser.parseToEntries(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
 			
 			WebHelper.releaseFileHandle(fileHandle);
 		}

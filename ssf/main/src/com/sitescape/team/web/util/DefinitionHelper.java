@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.domain.Binder;
@@ -305,10 +306,12 @@ public class DefinitionHelper {
     {
     	String dataType = configElement.attributeValue("formItem");
     	String fieldName = configElement.selectSingleNode("properties/property[@name='name']/@value").getStringValue();
-    	String result = definitionConfig.selectSingleNode("//item[@type='form']//item[@type='data' and @name='" + 
+    	Node captionNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@type='data' and @name='" + 
     														dataType + "' and properties/property[@name='name' and @value='" +
     														fieldName + "']]//item/properties[property[@name='name' and @value='" +
-    														value + "']]/property[@name='caption']/@value").getStringValue();
+    														value + "']]/property[@name='caption']/@value");
+    	String result = value;
+    	if(captionNode != null) { result = captionNode.getStringValue();}
     	return result;
     }
 }

@@ -58,7 +58,6 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
-import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
@@ -232,7 +231,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		} else if (WebKeys.OPERATION_CALENDAR_GOTO_DATE.equals(operation)) {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
+			Date dt = (new MapInputData(formData)).getDateValue("ss_goto");
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");

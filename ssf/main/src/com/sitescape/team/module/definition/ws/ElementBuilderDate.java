@@ -10,15 +10,10 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
-import java.util.Map;
 
 import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.search.BasicIndexUtils;
 
 /**
  *
@@ -28,7 +23,8 @@ public class ElementBuilderDate extends AbstractElementBuilder {
 	   protected boolean build(Element element, Object obj) {
 	    	if (obj instanceof Date) {
 	    		Date date = (Date)obj;
-	    		element.setText(DateFormat.getInstance().format(date));
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	    		element.setText(sdf.format(date));
 	    	} else if (obj != null) {
 	    		element.setText(obj.toString());
 	    	}

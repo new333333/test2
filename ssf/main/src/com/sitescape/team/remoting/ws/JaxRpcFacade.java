@@ -46,20 +46,21 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.facade.getFolderEntryAsXML(binderId, entryId);
 	}
 	
-/*
+
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
 		return this.facade.addFolderEntry(binderId, definitionId, inputDataAsXML);
 	}
-	
+
+	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
+		this.facade.modifyFolderEntry(binderId, entryId, inputDataAsXML);
+	}
+
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		this.facade.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
-		this.facade.modifyFolderEntry(binderId, entryId, inputDataAsXML);
-	}
-
+	/*
 	public void deleteFolderEntry(long binderId, long entryId) {
 		this.facade.deleteFolderEntry(binderId, entryId);
 	}

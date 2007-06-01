@@ -67,8 +67,8 @@ public abstract class AbstractReportController extends  AbstractBinderController
 		Date endDate = null;
 		try {
 			MapInputData data = new MapInputData(request.getParameterMap());
-			startDate = DateHelper.getDateFromInput(data, WebKeys.URL_START_DATE);
-			endDate = DateHelper.getDateFromInput(data, WebKeys.URL_END_DATE);
+			startDate = data.getDateValue(WebKeys.URL_START_DATE);
+			endDate = data.getDateValue(WebKeys.URL_END_DATE);
 		} catch(Exception e) {
 		}
 		if(startDate == null) { startDate = new Date(); }
