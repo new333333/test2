@@ -93,98 +93,12 @@ public class SearchFilterToMapConverter {
 
 	    	logger.debug("Query: "+searchQuery.asXML());
 
-	    	// read the joiner information, probably the size will be always 1 so it can be in loop
-	    	for (int i = 0; i < liFilterTerms.size(); i++) {
-	    		Element filterTerms = (Element) liFilterTerms.get(i);
-
-	    		String andJoiner = Boolean.FALSE.toString();
-	    		if (filterTerms.attributeValue(SearchFilterKeys.FilterAnd, "").equals(Boolean.TRUE.toString())) {
-	    			andJoiner = Boolean.TRUE.toString();
-	    		}
-	    		
-	    		String searchedText = "";
-	    		String searchedTags = "";
-	    		String searchedAuthors = "";
-	    		List searchFolders = new ArrayList();
-	    		Boolean searchSubfolders = false;
-	    		Boolean searchCurrentFolder = false;
-	    		Map blocks = new HashMap();
-	    		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
-	    		if (liFilterTermsTerm.size() > 0) {
-	            	for (int j = 0; j < liFilterTermsTerm.size(); j++) {
-	    	    		Element filterTerm = (Element) liFilterTermsTerm.get(j);
-	    	    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
-	    	    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
-	    	    			if (searchedText.equals("")) searchedText = filterTerm.getText(); 
-	    	    			else searchedText = searchedText.concat(" "+filterTerm.getText()); 
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAuthor)) {
-	    	    			if (searchedAuthors.equals("")) searchedAuthors = filterTerm.getText(); 
-	    	    			else  searchedAuthors = searchedAuthors.concat(" "+filterTerm.getText());
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
-	    	    			searchFolders.addAll(createFolderIdsList(filterTerm));
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
-	    	    			searchFolders.addAll(createFolderIdsList(filterTerm));
-	    	    			searchSubfolders = Boolean.TRUE;
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
-	    	    			if (searchedTags.equals("")) searchedTags = filterTerm.getText(); 
-	    	    			else  searchedTags = searchedTags.concat(" "+filterTerm.getText());
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition)) {
-	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm, definitionModule, profileModule));
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
-	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm, definitionModule));
-	    	    		} else if ( filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
-	    	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
-	    	    			if (blocks.get(SearchBlockTypeWorkflow) == null) blocks.put(SearchBlockTypeWorkflow, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeWorkflow)).add(createWorkflowBlock(filterTerm));
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
-	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
-	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
-	    		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
-	    	    			Map dateBlock = createDateBlock(filterTerm);
-	    	    			if (SearchBlockTypeCreationDate.equals(dateBlock.get(SearchBlockType))) {
-	    	    				if (blocks.get(SearchBlockTypeCreationDate) == null) blocks.put(SearchBlockTypeCreationDate, new ArrayList());
-	    	    				((List)blocks.get(SearchBlockTypeCreationDate)).add(dateBlock);
-	    	    			} else {
-	    	    				if (blocks.get(SearchBlockTypeModificationDate) == null) blocks.put(SearchBlockTypeModificationDate, new ArrayList());
-	    	    				((List)blocks.get(SearchBlockTypeModificationDate)).add(dateBlock);	    	    				
-	    	    			}
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
-	    	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
-	    	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
-	    	    				if (blocks.get(SearchBlockTypeLastActivity) == null) blocks.put(SearchBlockTypeLastActivity, new ArrayList());
-	    	    				((List)blocks.get(SearchBlockTypeLastActivity)).add(createLastActivityBlock(filterTerm));
-	    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
-		    	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
-		    	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
-	    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
-	    	    				searchCurrentFolder = true;
-	    	    				if (filterTerm.getTextTrim().equals(Boolean.TRUE.toString())) {
-	    	    					searchSubfolders = true;
-	    	    				}
-	    	    			}
-	    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
-	    	    			if (blocks.get(SearchBlockTypeItemTypes) == null) {
-	    	    				blocks.put(SearchBlockTypeItemTypes, new HashMap());
-	    	    			}
-	    	    			((Map)blocks.get(SearchBlockTypeItemTypes)).putAll(createItemTypesBlock(filterTerm));
-	    	    		}
-	            	}
-	    		}
-	    		convertedQuery.put(SearchFilterKeys.SearchText, searchedText);
-	    		convertedQuery.put(SearchFilterKeys.SearchAuthors, searchedAuthors);
-	    		convertedQuery.put(SearchFilterKeys.SearchTags, searchedTags);
-	    		convertedQuery.put(SearchFilterKeys.SearchFolders, searchFolders);
-	    		convertedQuery.put(SearchFilterKeys.SearchSubfolders, searchSubfolders);
-	    		convertedQuery.put(SearchFilterKeys.SearchCurrentFolder, searchCurrentFolder);
-	    		convertedQuery.put(SearchFilterKeys.SearchJoiner, andJoiner);
-	    		convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+	    	convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, new HashMap());
+	    	
+	    	Iterator filterTermsIt = liFilterTerms.iterator();
+	    	while (filterTermsIt.hasNext()) {
+	    		Element filterTerms = (Element) filterTermsIt.next();
+	    		convertFilterTerms(filterTerms, convertedQuery);
 	    	}
 		}
 		
@@ -195,6 +109,133 @@ public class SearchFilterToMapConverter {
 		return result;
 	}
 	
+	private void convertFilterTerms(Element filterTerms, Map convertedQuery) {
+		// TODO: now is not in use, in future parse only on first level
+		if (filterTerms.attributeValue(SearchFilterKeys.FilterAnd, "").equals(Boolean.TRUE.toString())) {
+			convertedQuery.put(SearchFilterKeys.SearchJoiner, Boolean.TRUE.toString());
+		} else {
+			convertedQuery.put(SearchFilterKeys.SearchJoiner, Boolean.FALSE.toString());
+		}
+		
+    	Iterator filterTermsIt = filterTerms.selectNodes(SearchFilterKeys.FilterTerms).iterator();
+    	while (filterTermsIt.hasNext()) {
+    		Element filterTermsChild = (Element) filterTermsIt.next();
+    		convertFilterTerms(filterTermsChild, convertedQuery);
+    	}
+
+		Iterator filterTermsTermIt = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm).iterator();
+		while (filterTermsTermIt.hasNext()) {
+    		Element filterTerm = (Element) filterTermsTermIt.next();
+    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
+    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
+    			String searchedText = (String)convertedQuery.get(SearchFilterKeys.SearchText);
+    			if (searchedText == null || searchedText.equals("")) {
+    				searchedText = filterTerm.getText(); 
+    			} else {
+    				searchedText = searchedText.concat(" "+filterTerm.getText()); 
+    			}
+    			convertedQuery.put(SearchFilterKeys.SearchText, searchedText);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
+    			String searchedAuthors = (String)convertedQuery.get(SearchFilterKeys.SearchAuthors);
+    			if (searchedAuthors == null || searchedAuthors.equals("")) {
+    				searchedAuthors = filterTerm.getText(); 
+    			} else {
+    				searchedAuthors = searchedAuthors.concat(" "+filterTerm.getText());
+    			}
+    			convertedQuery.put(SearchFilterKeys.SearchAuthors, searchedAuthors);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
+    			List searchFolders = (List)convertedQuery.get(SearchFilterKeys.SearchFolders);
+    			if (searchFolders == null) {
+    				searchFolders = new ArrayList();
+    			}
+    			searchFolders.addAll(createFolderIdsList(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchFolders, searchFolders);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
+    			List searchFolders = (List)convertedQuery.get(SearchFilterKeys.SearchFolders);
+    			if (searchFolders == null) {
+    				searchFolders = new ArrayList();
+    			}
+    			searchFolders.addAll(createFolderIdsList(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchFolders, searchFolders);
+    			convertedQuery.put(SearchFilterKeys.SearchSubfolders, Boolean.TRUE);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
+    			String searchedTags = (String)convertedQuery.get(SearchFilterKeys.SearchTags);
+    			if (searchedTags == null || searchedTags.equals("")) {
+    				searchedTags = filterTerm.getText(); 
+    			} else {
+    				searchedTags = searchedTags.concat(" "+filterTerm.getText());
+    			}
+    			convertedQuery.put(SearchFilterKeys.SearchTags, searchedTags);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeEntry) == null) {
+    				blocks.put(SearchBlockTypeEntry, new ArrayList());
+    			}
+    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm, definitionModule, profileModule));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
+    			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm, definitionModule));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if ( filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
+    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeWorkflow) == null) blocks.put(SearchBlockTypeWorkflow, new ArrayList());
+    			((List)blocks.get(SearchBlockTypeWorkflow)).add(createWorkflowBlock(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
+    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
+    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+	    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
+	    		Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			Map dateBlock = createDateBlock(filterTerm);
+    			if (SearchBlockTypeCreationDate.equals(dateBlock.get(SearchBlockType))) {
+    				if (blocks.get(SearchBlockTypeCreationDate) == null) blocks.put(SearchBlockTypeCreationDate, new ArrayList());
+    				((List)blocks.get(SearchBlockTypeCreationDate)).add(dateBlock);
+    			} else {
+    				if (blocks.get(SearchBlockTypeModificationDate) == null) blocks.put(SearchBlockTypeModificationDate, new ArrayList());
+    				((List)blocks.get(SearchBlockTypeModificationDate)).add(dateBlock);	    	    				
+    			}
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
+    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
+    				if (blocks.get(SearchBlockTypeLastActivity) == null) blocks.put(SearchBlockTypeLastActivity, new ArrayList());
+    				((List)blocks.get(SearchBlockTypeLastActivity)).add(createLastActivityBlock(filterTerm));
+    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
+	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
+	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
+    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
+    				convertedQuery.put(SearchFilterKeys.SearchCurrentFolder, true);
+    				if (filterTerm.getTextTrim().equals(Boolean.TRUE.toString())) {
+    					convertedQuery.put(SearchFilterKeys.SearchSubfolders, Boolean.TRUE);
+    				}
+    			}
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
+    			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
+    			if (blocks.get(SearchBlockTypeItemTypes) == null) {
+    				blocks.put(SearchBlockTypeItemTypes, new HashMap());
+    			}
+    			((Map)blocks.get(SearchBlockTypeItemTypes)).putAll(createItemTypesBlock(filterTerm));
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    		}
+    	}
+	}
+
 	private List createFolderIdsList(Element filterTerm) {
 		List folderIds = new ArrayList();
 		

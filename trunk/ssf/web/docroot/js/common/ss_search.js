@@ -203,10 +203,6 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 function ss_addLastActivity(orderNo, initialDaysNumber) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	var remover = document.createElement('img');
-	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
-	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
-	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" " + ss_searchFormLabelLastActivity + ": "));
 	
 	var selectBox = document.createElement('select');
