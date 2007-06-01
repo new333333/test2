@@ -822,7 +822,7 @@ text/calendar											  ics
 	        <entry key="SiteScape:type=Other,name=rssGenerator">
 	          <ref local="rssGenerator"/>
 	        </entry>
-	        <entry key="SiteScape:type=Other,name=icalModule">
+	        <entry key="SiteScape:type=Module,name=icalModule">
 	          <ref local="icalModule"/>
 	        </entry>
 			<entry key="SiteScape:type=Repository,name=simpleFileRepository">
