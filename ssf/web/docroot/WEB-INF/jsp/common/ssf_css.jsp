@@ -1634,14 +1634,6 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
 	width: 14px;
 }
 
-.ss_box_title {
-	background: ${ss_box_title_color} url(<html:imagesPath/>box/box_title_bg_gradient.gif) repeat-x;
-	color: ${ss_box_title_text_color};
-	height: 20px;
-	margin:0px;
-	padding: 0px 3px 0px 3px;
-}
-
 .ss_plus {
   width:16px;
   height:16px;
