@@ -1004,7 +1004,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      
     }
     protected void getBinders_getSearchDocument(Binder binder, SearchFilter searchFilter) {
-    	searchFilter.newFiltersBlock(true);
+    	searchFilter.newCurrentFilterTermsBlock(true);
     	
 		searchFilter.addBinderParentId(binder.getId().toString());
    		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_BINDER);
