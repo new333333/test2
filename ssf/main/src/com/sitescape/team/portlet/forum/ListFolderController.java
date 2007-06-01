@@ -1237,6 +1237,8 @@ public static final String[] monthNamesShort = {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
+			qualifiers.put("popupWidth", "500");
+			qualifiers.put("popupHeight", "600");
 			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
 			
 			//View
