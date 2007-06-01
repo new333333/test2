@@ -117,6 +117,42 @@
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
 	    <br/>
+		
+		<span class="ss_bold">
+		  <c:if test="${ssConfigJspStyle != 'template'}">
+		  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="${action}"/>
+			<portlet:param name="operation" value="save_folder_sort_info"/>
+			<portlet:param name="binderId" value="${ssBinder.id}"/>
+			<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
+			<portlet:param name="ssFolderSortDescend" value="false"/>
+			</portlet:actionURL>"
+		  ><ssf:nlt tag="photo.showAll"/></a>
+		  </c:if>
+		  <c:if test="${ssConfigJspStyle == 'template'}">
+		    <ssf:nlt tag="photo.showAll"/>
+	      </c:if>
+		</span>
+		<br/>
+		  
+		<span class="ss_bold">
+		  <c:if test="${ssConfigJspStyle != 'template'}">
+		  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="${action}"/>
+			<portlet:param name="operation" value="save_folder_sort_info"/>
+			<portlet:param name="binderId" value="${ssBinder.id}"/>
+			<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
+			<portlet:param name="ssFolderSortDescend" value="true"/>
+			</portlet:actionURL>"
+		  ><ssf:nlt tag="photo.showRecent"/></a>
+		  </c:if>
+		  <c:if test="${ssConfigJspStyle == 'template'}">
+			<ssf:nlt tag="photo.showRecent"/>
+		  </c:if>
+		</span>
+		<br/>
+		<br/>
+
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
