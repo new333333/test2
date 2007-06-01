@@ -14,7 +14,7 @@
 <div class="ss_style" align="left">
 <%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span><br />
+<span class="ss_titlebold"><ssf:nlt tag="help.searchboxes.subtopic.moreSearchInfo"/></span><br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.searchboxes.subtopic.advancedSearch" /></span>
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.advancedSearch.intro" /></p>

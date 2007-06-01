@@ -36,10 +36,18 @@
 
 <p><ssf:nlt tag="help.createTeam.content.pageContent"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.createTeam.content.restrictAccessIntro"/> <ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/></p>
+<p><ssf:nlt tag="help.createTeam.content.restrictAccessIntro"/></p>
+
+<p><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/></p>
 
 <div style="margin-left:25px;">
-<a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/create_team_restrict_access', 'ss_moreinfo_panel');"><ssf:nlt tag="help.createTeam.subTitle"/></a>
+
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/team_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/create_team_restrict_access', 'ss_moreinfo_panel');"><ssf:nlt tag="help.createTeam.subTopic.restrictAccess"/></a></p>
+
+<p><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.globalStrings.newWindow"/></a></p>
+
 </div>
 
 </div>

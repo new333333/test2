@@ -34,9 +34,11 @@
 
 <div style="margin-left:25px;">
 
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_results', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.moreInfo.moreSearchInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_results', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.moreSearchInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
 
 <p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+
+<p><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.globalStrings.newWindow"/></a></p>
 
 </div>
 </div>

@@ -20,6 +20,6 @@
 
 <p><ssf:nlt tag="help.folderBookmarksPortlet.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.folderBookmarksPortlet.viewingUnseen" /></p>
+<p><ssf:nlt tag="help.folderBookmarksPortlet.viewingUnread" /></p>
 
 </div>

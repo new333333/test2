@@ -14,7 +14,7 @@
 <div class="ss_style" align="left">
 <%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span><br />
+<span class="ss_titlebold"><ssf:nlt tag="help.searchboxes.subtopic.moreSearchInfo"/></span><br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.searchboxes.subtopic.searchResults"/></span>
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.intro" /></p>
@@ -27,7 +27,7 @@
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.hits"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><span style="font-weight:bold;"><ssf:nlt tag="help.globalStrings.moreinfo.header" /></span></p>
 
 <div style="margin-left:25px;">
 
