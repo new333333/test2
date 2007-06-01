@@ -1162,12 +1162,14 @@ public static final String[] monthNamesShort = {
 		if(folder.isMirrored() &&
 				getFolderModule().testAccess(folder, "addEntry")) {
 			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("showSpinner", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url, qualifiers);
 		}
 
 		//set email

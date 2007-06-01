@@ -17,6 +17,7 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
@@ -66,6 +68,8 @@ import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.util.DateHelper;
+import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
 
 
@@ -605,6 +609,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				resultVals[i] = result.get(i).getTextTrim();
 			}
 			return resultVals;
+		}
+
+		public Date getDateValue(String key) {
+			return DateHelper.getDateFromInput(this, key);
+		}
+
+		public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
+		{
+			return EventHelper.getEventFromMap(this, key, hasDuration, hasRecurrence);
 		}
 
 		public boolean exists(String key) {

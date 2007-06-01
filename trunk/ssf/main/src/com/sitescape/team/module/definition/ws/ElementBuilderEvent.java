@@ -10,29 +10,23 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.text.SimpleDateFormat;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.module.mail.MailModule;
 
 public class ElementBuilderEvent extends AbstractElementBuilder {
 	protected boolean build(Element element, Object obj) {
 		if (obj instanceof Event) {
 			Event event = (Event) obj;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			Element value = element.addElement("startDate");
-			value.setText(DateFormat.getInstance().format(
-					event.getDtStart().getTime()));
+			value.setText(sdf.format(event.getDtStart().getTime()));
 			value = element.addElement("endDate");
-			value.setText(DateFormat.getInstance().format(
-					event.getDtEnd().getTime()));
+			value.setText(sdf.format(event.getDtEnd().getTime()));
 		} else {
 			element.setText(obj.toString());
 		}

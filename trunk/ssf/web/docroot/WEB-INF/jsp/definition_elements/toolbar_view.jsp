@@ -84,7 +84,7 @@ var ss_userSkin = "${ss_user_skin}";
      <c:choose>
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
-	      onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
+	      onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
 	      	<img border="0" 
 	      	src="<html:imagesPath/>/icons/${toolbarMenu.value.qualifiers.icon}" 
@@ -96,13 +96,8 @@ var ss_userSkin = "${ss_user_skin}";
 	        src="<html:imagesPath/>pics/menudown.gif"/></c:if></span></a>
 		</c:when>
      	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
-	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
-	      	<img border="0" 
-	      	src="<html:imagesPath/>/icons/disabled-${toolbarMenu.value.qualifiers.icon}" 
-	      	alt="${toolbarMenu.value.title}" >
-	      </c:if><c:if test="${empty toolbarMenu.value.qualifiers.icon}"
-	      ><span class="ss_toolbar_inactive">${toolbarMenu.value.title}</c:if
-	      ></c:when>
+		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		</c:when>
         <c:otherwise>
         </c:otherwise>
 	 </c:choose>
@@ -116,13 +111,14 @@ var ss_userSkin = "${ss_user_skin}";
 	    </c:if>
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
 	        <c:set var="popup" value="false"/>
-	        <c:set var="popupWidth" value=""/>
-	        <c:set var="popupHeight" value=""/>
 	        <c:if test="${toolbarMenuCategoryItem.value.qualifiers.popup}">
 	          <c:set var="popup" value="true"/>
-	          <c:set var="popupWidth" value="${toolbarMenuCategoryItem.value.qualifiers.popupWidth}"/>
-	          <c:set var="popupHeight" value="${toolbarMenuCategoryItem.value.qualifiers.popupHeight}"/>
 	        </c:if>
+			<c:set var="spin" value=""/>
+			<c:if test="${toolbarMenuCategoryItem.value.qualifiers.showSpinner}">
+				<c:set var="spin" value="ss_startSpinner();"/>
+			</c:if>
+
 	        <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.folder || (!empty toolbarMenuCategoryItem.value.qualifiers.folder && isWebdavSupported)}">
 	        <li>
 	          <c:choose>
@@ -154,11 +150,12 @@ var ss_userSkin = "${ss_user_skin}";
     	      	  folder="${toolbarMenuCategoryItem.value.qualifiers.folder}"
     	      	  target="_blank"
     	      </c:if>
+
 	          <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
-	          	onClick="return(ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}'));">
+	          	onClick="${spin} return(ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}'));">
 	          </c:if>
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
-	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}">
+	          	onClick="${spin} ${toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          </c:if>
 	          <span
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.textId}">
@@ -185,13 +182,13 @@ var ss_userSkin = "${ss_user_skin}";
     </c:if>
     <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
       <c:set var="popup" value="false"/>
-	  <c:set var="popupWidth" value=""/>
-	  <c:set var="popupHeight" value=""/>
       <c:if test="${toolbarMenu.value.qualifiers.popup}">
         <c:set var="popup" value="true"/>
-	    <c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/>
-	    <c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
       </c:if>
+	  <c:set var="spin" value=""/>
+	  <c:if test="${toolbarMenu.value.qualifiers.showSpinner}">
+		<c:set var="spin" value="ss_startSpinner();"/>
+	  </c:if>
 
      <% // BEGIN Helpspots for folder menus %> 
      <c:choose>
@@ -235,7 +232,10 @@ var ss_userSkin = "${ss_user_skin}";
     	      	target="_blank"
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
-    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+    	      	onClick="${spin} ${toolbarMenu.value.qualifiers.onClick}"
+    	    </c:if>
+    	    <c:if test="${!empty spin and empty toolbarMenu.value.qualifiers.onClick}">
+    	      	onClick="${spin}"
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
 <%
@@ -250,13 +250,14 @@ var ss_userSkin = "${ss_user_skin}";
     	    </c:if>
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-	                <c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/>
-	                <c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
-    	      		onClick="ss_toolbarPopupUrl(this.href, '_blank', '${popupWidth}', '${popupHeight}');return false;"
+    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
+    	    	</c:if>
+    	    	<c:if test="${!empty spin and empty toolbarMenu.value.qualifiers.popup}">
+    	      		onClick="${spin}"
     	    	</c:if>
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
-    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+    	      	onClick="${spin} ${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
 	      ><span
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
@@ -299,13 +300,11 @@ var ss_userSkin = "${ss_user_skin}";
     	    </c:if>
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-	                <c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/>
-	                <c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
-    	      		onClick="ss_toolbarPopupUrl(this.href, '_blank', '${popupWidth}', '${popupHeight}');return false;"
+    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
     	    	</c:if>
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
-    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+    	      	onClick="${spin} ${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
 	 	  ><span
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">

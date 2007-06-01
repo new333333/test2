@@ -31,17 +31,18 @@ public interface Facade {
 
 	public String getFolderEntryAsXML(long folderId, long entryId);
 
-	/*
 	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML);
 	
 	public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
 	
+	public void uploadFolderFile(long folderId, long entryId, 
+			String fileUploadDataItemName, String fileName);
+
+	/*
     public void deleteFolderEntry(long folderId, long entryId);
 
 	public long addReply(long folderId, long parentEntryId, String definitionId, String inputDataAsXML);
 
-	public void uploadFolderFile(long folderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
 	 */
 	
 	//

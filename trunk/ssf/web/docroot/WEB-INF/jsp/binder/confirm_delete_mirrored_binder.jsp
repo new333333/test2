@@ -30,7 +30,7 @@
 <input type="hidden" name="deleteSource" value="false"/>
 <br/>
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onclick="ss_startSpinner();">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 
 </form>

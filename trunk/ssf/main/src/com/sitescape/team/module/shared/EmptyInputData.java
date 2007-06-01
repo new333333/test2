@@ -10,6 +10,10 @@
  */
 package com.sitescape.team.module.shared;
 
+import java.util.Date;
+
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.web.util.EventHelper;
 
 /**
  * An implementation of <code>InputDataAccessor</code> interface
@@ -25,6 +29,15 @@ public class EmptyInputData implements InputDataAccessor{
 	}
 
 	public String[] getValues(String key) {
+		return null;
+	}
+
+	public Date getDateValue(String key) {
+		return null;
+	}
+
+	public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
+	{
 		return null;
 	}
 

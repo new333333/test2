@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.module.shared;
 
+import java.util.Date;
+import com.sitescape.team.domain.Event;
+
 public interface InputDataAccessor {
 
 	/**
@@ -30,6 +33,24 @@ public interface InputDataAccessor {
 	 */
 	public String[] getValues(String key);
 	
+	/**
+	 * Returns as a java.util.Date the value associated with the key.
+	 * Returns <code>null</code> if no value exists for this key. 
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Date getDateValue(String key);
+	
+	/**
+	 * Returns as a com.sitescape.domain.Event the value associated with the key.
+	 * Returns <code>null</code> if no value exists for this key. 
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence);
+
 	/**
 	 * Returns <code>true</code> if the source contains a value for the
 	 * specified key.  

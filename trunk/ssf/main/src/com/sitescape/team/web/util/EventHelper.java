@@ -56,8 +56,8 @@ public class EventHelper {
             String startId = "dp_" + id;
             String endId = "dp2_" + id;
 
-            Date start = DateHelper.getDateFromInput(inputData, startId);
-            Date end = DateHelper.getDateFromInput(inputData, endId);
+            Date start = inputData.getDateValue(startId);
+            Date end = inputData.getDateValue(endId);
             // for now, if either date in the range is missing, we return null Event
             // (consider instead making a checked exception?)
             if (start == null || end == null) {
@@ -133,7 +133,7 @@ public class EventHelper {
 	                e.setCount(repeatCount);
 	            } else if (rangeSel.equals("until")) {
 	                String untilId = "endRange_" + id;
-	                Date until = DateHelper.getDateFromInput(inputData, untilId);
+	                Date until = inputData.getDateValue(untilId);
 	                GregorianCalendar untilCal = new GregorianCalendar();
 	                untilCal.setTime(until);
 	                e.setUntil(untilCal);

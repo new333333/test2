@@ -170,17 +170,11 @@ function ss_navigation_goto(url) {
 //  running inside an iframe. It it is, then the url is opened in the parent of the iframe.
 //This routine returns "true" without opening the url if the caller is not inside a frame.
 //If the caller is in a frame (or iframe), then the routine opens the url in the parent and returns false.
-function ss_openUrlInPortlet(url, popup, width, height) {
-	if (width == null) width = '';
-	if (height == null) height = '';
+function ss_openUrlInPortlet(url, popup) {
 	//Is this a request to pop up?
 	ss_debug('popup = '+popup+', url = '+url)
 	if (popup) {
-		if (width != '' && height != '') {
-			self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,width="+width+",height="+height+",scrollbars=yes,status=no,toolbar=no");
-		} else {
-			self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
-		}
+		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
 		return false;
 	}
 	//Are we at the top window?
@@ -1649,10 +1643,10 @@ function ss_showSpannedAreas() {
 }
 
 //Routine to pop up a window with a url (used in common toolbar code)
-function ss_toolbarPopupUrl(url, windowName, width, height) {
-	if (width == null || width == "") width = ss_getWindowWidth();
+function ss_toolbarPopupUrl(url, windowName) {
+	var width = ss_getWindowWidth();
 	if (width < 600) width=600;
-	if (height == null || height == "") height = ss_getWindowHeight();
+	var height = ss_getWindowHeight();
 	if (height < 600) height=600;
 	self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
 }
@@ -2208,12 +2202,6 @@ var ss_helpSystem = {
 	    this.showHelpPanel(id, panelId, x, y);
 	},
 
-	showMoreInfoPanelLeft : function(id, panelId) {
-	    y = parseInt(ss_getDivTop('ss_help_panel') - 25);
-	    x = parseInt(ss_getDivLeft('ss_help_panel') - 25);
-	    this.showHelpPanel(id, panelId, x, y);
-	},
-
 	showInlineHelpSpotInfo : function(helpSpot, jspId, tagId, dx, dy, xAlignment, yAlignment) {
 		if (dx == "") dx = 0;
 		if (dy == "") dy = 0;
@@ -2222,7 +2210,7 @@ var ss_helpSystem = {
 		//ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
-		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);  
+		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
 		    var x = parseInt(left + 3 + parseInt(dx));
 		    var y = parseInt(top + 3 + parseInt(dy));
 			this.showHelpPanel(jspId, "ss_help_panel", x, y, xAlignment, yAlignment, tagId)
@@ -3454,8 +3442,7 @@ function ss_showPopupDivCentered(divId, focusId) {
 	}
 }
 
-function ss_setupPopupDiv(targetDiv) {
-		targetDiv.style.display = "block";
+function ss_centerPopupDiv(targetDiv) {
 		var x = parseInt(ss_getWindowWidth() / 2);
 		var y = parseInt(ss_getWindowHeight() / 2);
 	    var bodyX = self.document.body.scrollLeft
@@ -3464,6 +3451,11 @@ function ss_setupPopupDiv(targetDiv) {
 		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
 		targetDiv.style.left = x;
 		targetDiv.style.top = y;
+}
+
+function ss_setupPopupDiv(targetDiv) {
+		targetDiv.style.display = "block";
+		ss_centerPopupDiv(targetDiv);
 		targetDiv.style.visibility = "visible";
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
@@ -3711,7 +3703,8 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         if (email != '') {
             m += '<tr>';
             m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgmail'+ssNamespace+'"></td>';
-            m += '<td><a class="ss_graymenu" href="mailto:' + email +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
+            bodyText = escape(window.location.href);
+            m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
         }
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
@@ -4941,6 +4934,32 @@ function ss_confirmStopWorkflow(text) {
 		return true
 	} else {
 		return false
+	}
+}
+
+function ss_startSpinner()
+{
+	var spinner = document.getElementById("ss_spinner")
+	if (!spinner) {
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		spinner = document.createElement("div");
+        spinner.setAttribute("id", "ss_spinner");
+		var spinImg = document.createElement("img");
+		spinImg.setAttribute("src", ss_imagesPath + "pics/spinner.gif");
+		spinner.appendChild(spinImg);
+        bodyObj.appendChild(spinner);
+	}
+	spinner.style.position='absolute';
+    spinner.style.zIndex = 1000;
+	spinner.style.display='block';
+	ss_centerPopupDiv(spinner);
+}
+
+function ss_stopSpinner()
+{
+	var spinner = document.getElementById("ss_spinner")
+	if (spinner) {
+	  spinner.style.display='none';
 	}
 }
 
