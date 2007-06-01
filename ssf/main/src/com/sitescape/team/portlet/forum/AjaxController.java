@@ -389,8 +389,8 @@ public class AjaxController  extends SAbstractController {
 				SearchFilter searchTermFilter = new SearchFilter();
 				search += "*";
 				
-				searchTermFilter.addTitleFilter(SearchFilterKeys.FilterTypeEntryDefinition, search);
-				searchTermFilter.addLoginNameFilter(SearchFilterKeys.FilterTypeEntryDefinition, search);
+				searchTermFilter.addTitleFilter(search);
+				searchTermFilter.addLoginNameFilter(search);
 							
 				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 			}
@@ -964,7 +964,7 @@ public class AjaxController  extends SAbstractController {
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			if (searchText.length()>0)
-			searchTermFilter.addTitleFilter(SearchFilterKeys.FilterTypeEntryDefinition, searchText);
+			searchTermFilter.addTitleFilter(searchText);
 
 			List searchTerms = new ArrayList();
 			searchTerms.add(EntityIdentifier.EntityType.folderEntry.name());
@@ -986,8 +986,8 @@ public class AjaxController  extends SAbstractController {
 		} else {
 			//Add the login name term
 			if (searchText.length()>0) {
-				searchTermFilter.addTitleFilter(SearchFilterKeys.FilterTypeEntryDefinition, searchText);
-				searchTermFilter.addLoginNameFilter(SearchFilterKeys.FilterTypeEntryDefinition, searchText);
+				searchTermFilter.addTitleFilter(searchText);
+				searchTermFilter.addLoginNameFilter(searchText);
 			}
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.
