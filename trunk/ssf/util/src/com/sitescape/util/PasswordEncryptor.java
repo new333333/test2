@@ -47,5 +47,9 @@ public class PasswordEncryptor {
 		catch(UnsupportedEncodingException e) {
 			throw new RuntimeException(e);			
 		}
+		catch (NullPointerException e) {
+			// this will occur when the password.getBytes("UTF-8") returns a null.
+			return new StringBuffer().toString();
+		}
 	}
 }
