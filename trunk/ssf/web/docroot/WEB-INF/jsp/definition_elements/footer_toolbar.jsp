@@ -148,7 +148,7 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 <div id="ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
 	<div align="right">
 	<a  onClick="ss_hideFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace />(); return false;"><img 
-	  <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
+	  <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/></a>
 	</div>	
 	<iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>" name="ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>" height="80%" width="100%">xxx</iframe>
 </div>

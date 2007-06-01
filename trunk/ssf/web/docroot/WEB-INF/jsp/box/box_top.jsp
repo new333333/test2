@@ -135,7 +135,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 			 href="javascript: <%= showCloseRoutine %>;"><img border="0" <ssf:alt/>
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
-			 src="<html:imagesPath/>box/close_off.gif" 
+			 src="<html:imagesPath/>icons/close_off.gif" 
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="14" ></a></span></td>
 	  </c:if>
