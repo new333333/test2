@@ -40,6 +40,79 @@ public class SearchFilter {
 	static {
 		binderType.add(BasicIndexUtils.DOC_TYPE_BINDER);
 	}
+	
+	public static class Creator {
+		
+		String id;
+		
+		String name;
+		
+		public Creator(String id, String name) {
+			this.id = id;
+			this.name = name;
+		}
+	}
+	
+	public static class Tag {
+		
+		enum Type {
+			PERSONAL, COMMUNITY, BOTH;
+		}
+		
+		Type type;
+		
+		String tag;
+		
+		public Tag(Type type, String tag) {
+			this.type = type;
+			this.tag = tag;
+		}
+	}
+	
+	public static class Workflow {
+		
+		String id;
+		
+		String[] steps;
+
+		public Workflow(String id, String[] steps) {
+			this.id = id;
+			this.steps = steps;
+		}
+		
+	}
+	
+	public static class Entry {
+		
+		String typeId;
+		
+		String fieldId;
+		
+		String[] value;
+		
+		String valueType;
+
+		public Entry(String typeId, String fieldId, String[] value, String valueType) {
+			super();
+			this.typeId = typeId;
+			this.fieldId = fieldId;
+			this.value = value;
+			this.valueType = valueType;
+		}
+	}
+	
+	public static class Period {
+		
+		Date start;
+		
+		Date end;
+
+		public Period(Date start, Date end) {
+			this.start = start;
+			this.end = end;
+		}
+		
+	}
 
 	// default join as 'OR' so joinAnd is false 
 	private Boolean joinAnd = Boolean.FALSE;
@@ -117,7 +190,7 @@ public class SearchFilter {
 		this.joinAnd = joinAsAnd;
 	}
 	
-	private void addFilter(String field, String type, String searchTerm) {
+	private void addFieldFilter(String field, String type, String searchTerm) {
 		checkCurrent();
 		
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
@@ -133,12 +206,12 @@ public class SearchFilter {
 		filterTermValueEle.setText(searchTerm.trim());
 		
 	}
-	public void addTitleFilter(String type, String searchTerm) {
-		addFilter(EntityIndexUtils.TITLE_FIELD, type, searchTerm);
+	public void addTitleFilter(String searchTerm) {
+		addFieldFilter(EntityIndexUtils.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
-	public void addLoginNameFilter(String type, String searchTerm) {
-		addFilter(ProfileIndexUtils.LOGINNAME_FIELD, type, searchTerm);
+	public void addLoginNameFilter(String searchTerm) {
+		addFieldFilter(ProfileIndexUtils.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
 	public void addTagsFilter(String tagsType, String searchTerm) {
@@ -155,7 +228,7 @@ public class SearchFilter {
 	public void addAndNestedTerms(String type, String tagType, Collection searchTerms) {
 		//Add terms to search folders and workspaces
 		
-		newFiltersBlock();
+		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
 		addNestedTerms(type, tagType, searchTerms);
@@ -185,7 +258,7 @@ public class SearchFilter {
 	}
 	
 	public void addAndFolderId(String folderId) {
-		newFiltersBlock();
+		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 		
 		addFolderId(folderId);
@@ -294,25 +367,18 @@ public class SearchFilter {
 		addTermInCurrentFilter(SearchFilterKeys.FilterTypeSearchText, searchText);
 	}
 	
-	public void addWorkflowFilter(String workflowId, String[] states) {
-		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeWorkflow);
-		filterTerm.addAttribute(SearchFilterKeys.FilterWorkflowDefId, workflowId);
-		for (int i = 0; i < states.length; i++) {
-			Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterWorkflowStateName);
-			newTerm.setText(states[i]);
-		}
-	}
-	
 	public void addEntryAttributeValues(String defId, String name, String[] value) {
 		checkCurrent();
+		addEntryAttributeValues(currentFilterTerms, defId, name, value);
+	}
+	
+	private void addEntryAttributeValues(Element parent, String defId, String name, String[] value) {
 		if (defId != null && !defId.equals("") && name.equals(AllEntries)) {
-			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
 			filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
 		} else if ((defId != null && !defId.equals("")) || (name != null && !name.equals("") && value.length > 0)) {
-			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
 			
 			if (defId != null && !defId.equals("")) {
@@ -327,6 +393,47 @@ public class SearchFilter {
 					newTerm.setText(value[j]);
 				}
 			}
+		}
+	}
+
+	public void addEntryAttributeValues(String defId, String attributeName, String[] fieldValues, String valueType) {
+		checkCurrent();
+		addEntryAttributeValues(currentFilterTerms, defId, attributeName, fieldValues, valueType);
+	}
+	
+	private void addEntryAttributeValues(Element parent, String defId, String attributeName, String[] fieldValues, String valueType) {
+		if (valueType != null && valueType.equals("description")) {
+			attributeName="_desc";
+		}
+		if (fieldValues != null && valueType != null &&
+			(valueType.equals("date") || valueType.equals("event"))) {
+			for (int c = 0; c < fieldValues.length; c++) {
+				if (fieldValues[c] != null) {
+					fieldValues[c] = fieldValues[c].replaceAll("-", "");
+				}
+			}
+		}	
+		
+		if (valueType != null && valueType.equals("event")) {
+			addEvent(parent, defId, attributeName, fieldValues);
+		} else {
+			addEntryAttributeValues(parent, defId, attributeName, fieldValues);
+		}
+	}
+
+	public void addEntries(List<Entry> entries) {
+		if (entries == null || entries.isEmpty()) {
+			return;
+		}
+		
+		checkCurrent();
+		
+		Element entriesListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<Entry> it = entries.iterator();
+		while (it.hasNext()) {
+			Entry entry = it.next();
+			addEntryAttributeValues(entriesListParent, entry.typeId, entry.fieldId, entry.value, entry.valueType);
 		}
 	}
 		
@@ -355,18 +462,23 @@ public class SearchFilter {
 	}
 	
 	
-	protected void newFiltersBlock() {
-		newFiltersBlock(this.joinAnd);
+	protected void newCurrentFilterTermsBlock() {
+		newCurrentFilterTermsBlock(this.joinAnd);
 	}
 	
-	public void newFiltersBlock(boolean joinAnd) {
-		currentFilterTerms = sfRoot.addElement(SearchFilterKeys.FilterTerms);
-		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, Boolean.toString(joinAnd));
+	public void newCurrentFilterTermsBlock(boolean joinAnd) {
+		this.currentFilterTerms = newFilterTermsBlock(sfRoot, joinAnd);
+	}
+	
+	private Element newFilterTermsBlock(Element parent, boolean joinAnd) {
+		Element filterTerms = parent.addElement(SearchFilterKeys.FilterTerms);
+		filterTerms.addAttribute(SearchFilterKeys.FilterAnd, Boolean.toString(joinAnd));
+		return filterTerms;
 	}
 	
 	protected void checkCurrent() {
 		if (currentFilterTerms == null) {
-			newFiltersBlock();
+			newCurrentFilterTermsBlock();
 		}
 	}
 
@@ -382,14 +494,20 @@ public class SearchFilter {
 	 * extends current search fiter to look for author by name (name or title fields)
 	 * @param name
 	 */
-	public void addCreator(String name) {
+	public void addCreatorByName(String name) {
 		checkCurrent();
-		
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeAuthor);
-		filterTerm.setText(name);
-		
+		addCreatorByName(currentFilterTerms, name);
 	}
+	
+	private void addCreatorByName(Element parent, String name) {
+		if (name == null || name.equals("")) {
+			return;
+		}
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCreatorByName);
+		filterTerm.setText(name);
+	}
+	
 	
 	/**
 	 * extends current search fiter to look for author by id
@@ -407,7 +525,14 @@ public class SearchFilter {
 	 */
 	public void addCreatorById(String userId, String userTitle) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		addCreatorById(currentFilterTerms, userId, userTitle);
+	}
+	
+	public void addCreatorById(Element parent, String userId, String userTitle) {
+		if (userId == null || userId.equals("")) {
+			return;
+		}
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		if (userId.equals(SearchFilterKeys.CurrentUserId)) {
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeRelative);
 			filterTerm.addAttribute(SearchFilterKeys.FilterRelativeType, SearchFilterKeys.FilterTypeCreatorById);
@@ -415,21 +540,36 @@ public class SearchFilter {
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCreatorById);
 		}
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
-		if (userTitle != null && userTitle != "") filterTerm.addAttribute(SearchFilterKeys.FilterCreatorTitle, userTitle);
+		if (userTitle != null && !userTitle.equals("")) {
+			filterTerm.addAttribute(SearchFilterKeys.FilterCreatorTitle, userTitle);
+		}
 		Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		newTerm.setText(userId);
 	}
 	
-	public void addCreationDateRange(String startDate, String endDate) {
-		addDateRange(EntityIndexUtils.CREATION_DAY_FIELD, startDate, endDate);
-	}
-	
-	public void addCreationDate(String date) {
+	/**
+	 * Add a list of entry creators to filter. Creators are conneted with OR operator.
+	 * 
+	 * @param creators
+	 */
+	public void addCreators(List<Creator> creators) {
+		if (creators == null || creators.isEmpty()) {
+			return;
+		}
+		
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
-		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
+		
+		Element creatorsListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<Creator> it = creators.iterator();
+		while (it.hasNext()) {
+			Creator creator = it.next();
+			if (creator.id == null) {
+				addCreatorByName(creatorsListParent, creator.name);
+			} else {
+				addCreatorById(creatorsListParent, creator.id, creator.name);
+			}
+		}
 	}
 	
 	public void addTaskStatuses(String[] statuses) {
@@ -455,6 +595,18 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	
+	public void addCreationDate(String date) {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
+	}
+	
+	public void addCreationDate(Date date) {
+		addCreationDate(searchFormated(date));
+	}
+	
 	public void addModificationDate(String date) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
@@ -462,58 +614,90 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.MODIFICATION_DAY_FIELD);
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
-	public void addModificationDateRange(String startDate, String endDate) {
-		addDateRange(EntityIndexUtils.MODIFICATION_DAY_FIELD, startDate, endDate);
+	
+	public void addModificationDate(Date date) {
+		addModificationDate(searchFormated(date));
 	}
 	
-	private void addDateRange(String fieldName, String startDate, String endDate) {
-		if ((startDate== null || startDate.equals("")) && ((endDate == null) || endDate.equals(""))) return;
-		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+	private void addDateRange(Element parent, String fieldName, String startDate, String endDate) {
+		if ((startDate== null || startDate.equals("")) && ((endDate == null) || endDate.equals(""))) {
+			return;
+		}
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, fieldName);
 		if (startDate != null && !startDate.equals("")) { filterTerm.addAttribute(SearchFilterKeys.FilterStartDate, startDate);}
 		if (endDate != null && !endDate.equals("")) { filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, endDate);}		
 	}
 	
-	public void addCreationDate(Date date) {
-		addCreationDate(searchFormated(date));
-	}
-	public void addCreationDateBefore(Date date) {
-		addCreationDateRange(null, searchFormated(date));
-	}
-	public void addCreationDateAfter(Date date) {
-		addCreationDateRange(searchFormated(date), null);
+	private void addCreationDateRange(Element parent, String startDate, String endDate) {
+		addDateRange(parent, EntityIndexUtils.CREATION_DAY_FIELD, startDate, endDate);
 	}
 	
 	public void addCreationDateRange(Date startDate, Date endDate) {
+		checkCurrent();
+		addCreationDateRange(currentFilterTerms, startDate, endDate);
+	}
+	
+	private void addCreationDateRange(Element parent, Date startDate, Date endDate) {
 		String formatedStartDate = null;
 		if (startDate != null) formatedStartDate = searchFormated(startDate);
 		String formatedEndDate = null;
 		if (endDate != null) formatedEndDate = searchFormated(endDate);
-		addCreationDateRange(formatedStartDate, formatedEndDate);
+		addCreationDateRange(parent, formatedStartDate, formatedEndDate);
+	}
+	
+	public void addCreationDates(List<Period> creationPeriods) {
+		if (creationPeriods == null || creationPeriods.isEmpty()) {
+			return;
+		}
+		
+		checkCurrent();
+		
+		Element creationPeriodsListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<Period> it = creationPeriods.iterator();
+		while (it.hasNext()) {
+			Period period = it.next();
+			addCreationDateRange(creationPeriodsListParent, period.start, period.end);
+		}
 	}
 	
 	private String searchFormated(Date date) {
 		return DateTools.dateToString(date, DateTools.Resolution.DAY);
 	}
 	
+	public void addModificationDateRange(Element parent, String startDate, String endDate) {
+		addDateRange(parent, EntityIndexUtils.MODIFICATION_DAY_FIELD, startDate, endDate);
+	}
+	
 	public void addModificationDateRange(Date startDate, Date endDate) {
+		checkCurrent();
+		addModificationDateRange(currentFilterTerms, startDate, endDate);
+	}
+	
+	public void addModificationDateRange(Element parent, Date startDate, Date endDate) {
 		String formatedStartDate = null;
 		if (startDate != null) formatedStartDate = searchFormated(startDate);
 		String formatedEndDate = null;
 		if (endDate != null) formatedEndDate = searchFormated(endDate);
-		addModificationDateRange(formatedStartDate, formatedEndDate);
+		addModificationDateRange(parent, formatedStartDate, formatedEndDate);
 	}
 
-	public void addModificationDate(Date date) {
-		addModificationDate(searchFormated(date));
-	}
-	public void addModificationDateBefore(Date date) {
-		addModificationDateRange(null, searchFormated(date));
-	}
-	public void addModificationDateAfter(Date date) {
-		addModificationDateRange(searchFormated(date), null);
+	public void addModificationDates(List<Period> modificationPeriods) {
+		if (modificationPeriods == null || modificationPeriods.isEmpty()) {
+			return;
+		}
+		
+		checkCurrent();
+		
+		Element modificationPeriodsListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<Period> it = modificationPeriods.iterator();
+		while (it.hasNext()) {
+			Period period = it.next();
+			addModificationDateRange(modificationPeriodsListParent, period.start, period.end);
+		}
 	}
 	
 	public void addTitle(String title) {
@@ -534,28 +718,74 @@ public class SearchFilter {
 	
 	public void addTag(String tag) {
 		checkCurrent();
+		addTag(currentFilterTerms, tag);
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeTags);
+		filterTerm.addText(tag);
+	}
+	
+	private void addTag(Element parent, String tag) {
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeTags);
 		filterTerm.addText(tag);
 	}
 	
 	public void addPersonalTag(String tag) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		addPersonalTag(currentFilterTerms, tag);
+	}
+	
+	private void addPersonalTag(Element parent, String tag) {
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypePersonalTagSearch);
 		filterTerm.addText(tag);
 	}
 	
 	public void addCommunityTag(String tag) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		addCommunityTag(currentFilterTerms, tag);	
+	}
+	
+	private void addCommunityTag(Element parent, String tag) {
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCommunityTagSearch);
 		filterTerm.addText(tag);		
 	}
 	
+	/**
+	 * Add a list of tags to filter. Tags are conneted with OR operator.
+	 * 
+	 * @param tags
+	 */
+	public void addTags(List<Tag> tags) {
+		if (tags == null || tags.isEmpty()) {
+			return;
+		}
+		
+		checkCurrent();
+		
+		Element tagsListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<Tag> it = tags.iterator();
+		while (it.hasNext()) {
+			Tag tag = it.next();
+			if (tag.type.equals(Tag.Type.BOTH)) {
+				addTag(tagsListParent, tag.tag);
+			} else if (tag.type.equals(Tag.Type.PERSONAL)) {
+				addPersonalTag(tagsListParent, tag.tag);
+			} else if (tag.type.equals(Tag.Type.COMMUNITY)) {
+				addCommunityTag(tagsListParent, tag.tag);
+			}
+		}
+	}
+	
 	public void addWorkflow(String workflowId, String[] states) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		addWorkflow(currentFilterTerms, workflowId, states);
+	}
+	
+	private void addWorkflow(Element parent, String workflowId, String[] states) {
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeWorkflow);
 		filterTerm.addAttribute(SearchFilterKeys.FilterWorkflowDefId, workflowId);
 		for (int i = 0; i < states.length; i++) {
@@ -564,9 +794,29 @@ public class SearchFilter {
 		}
 	}
 	
+	public void addWorkflows(List<Workflow> workflows) {
+		if (workflows == null || workflows.isEmpty()) {
+			return;
+		}
+		
+		checkCurrent();
+		
+		Element workflowsListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<Workflow> it = workflows.iterator();
+		while (it.hasNext()) {
+			Workflow workflow = it.next();
+			addWorkflow(workflowsListParent, workflow.id, workflow.steps);
+		}
+	}
+	
 	public void addEvent(String defId, String name, String[] eventDates) {
 		checkCurrent();
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		addEvent(currentFilterTerms, defId, name, eventDates);
+	}
+	
+	private void addEvent(Element parent, String defId, String name, String[] eventDates) {
+		Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEvent);
 				
 		filterTerm.addAttribute(SearchFilterKeys.FilterEntryDefId, defId);
@@ -598,27 +848,6 @@ public class SearchFilter {
 		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, binderType);	
 	}
 	
-	public  void addEntryAttributeValues(String defId, String attributeName, String[] fieldValues, String valueType) {
-		if (valueType != null && valueType.equals("description")) {
-			attributeName="_desc";
-		}
-		if (fieldValues != null && valueType != null &&
-			(valueType.equals("date") || valueType.equals("event"))) {
-			for (int c = 0; c < fieldValues.length; c++) {
-				if (fieldValues[c] != null) {
-					fieldValues[c] = fieldValues[c].replaceAll("-", "");
-				}
-			}
-		}	
-		
-		if (valueType != null && valueType.equals("event")) {
-			addEvent(defId, attributeName, fieldValues);
-		} else {
-			addEntryAttributeValues(defId, attributeName, fieldValues);
-		}
-		
-	}
-
 
 	/**
 	 * Adds relative date

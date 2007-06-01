@@ -72,6 +72,16 @@
 				</p>
 			</c:forEach>
 		</c:if>
+		<c:if test="${!empty ss_filterMap.additionalFilters.item_types}">
+			<p>
+				<ssf:nlt tag="searchForm.sectionTitle.ItemType"/>: 
+				<c:forEach var="type" items="${ss_filterMap.additionalFilters.item_types}" varStatus="loopStatus">
+					<c:if test="${type.value}">
+						<ssf:nlt tag="searchForm.itemType.${type.key}"/><c:if test="${!loopStatus.last}">, </c:if>
+					</c:if>
+				</c:forEach>
+			</p>
+		</c:if>
 	</c:if>
 </div>
 <div id="ss_filterSummary_switch">

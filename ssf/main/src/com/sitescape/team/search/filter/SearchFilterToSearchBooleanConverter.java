@@ -60,89 +60,102 @@ public class SearchFilterToSearchBooleanConverter {
     	Element qTreeAndElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
     	    	
     	Element sfRootElement = searchFilter.getRootElement();
-    	List liFilterTerms = sfRootElement.selectNodes(SearchFilterKeys.FilterTerms);
-
-    	for (int i = 0; i < liFilterTerms.size(); i++) {
-    		Element filterTerms = (Element) liFilterTerms.get(i);
-    		// each terms block can have information if the children should be join with AND
-    		// if not defined use OR as default
-    		String joiner = QueryBuilder.OR_ELEMENT;
-    		if (filterTerms.attributeValue(SearchFilterKeys.FilterAnd, "").equals(Boolean.TRUE.toString())) {
-    			joiner = QueryBuilder.AND_ELEMENT;
-    		}
-
-    		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
-    		if (liFilterTermsTerm.size() > 0) {
-    			Element block = qTreeAndElement.addElement(joiner);
-
-            	for (int j = 0; j < liFilterTermsTerm.size(); j++) {
-    	    		// add term to current block
-    	    		Element filterTerm = (Element) liFilterTermsTerm.get(j);
-    	    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
-    	    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
-    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
-    	    			addSearchTextField(block, filterTerm.getText());
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAuthor)) {
-    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
-    	    			addAuthorField(block, filterTerm.getText());
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
-    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
-    	    			addTagsField(block, filterTerm.getText());
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition) || filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {	    			
-    	    			parseAndAddEntryField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTopEntry)) {
-    	    			addTopEntryField(block);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
-    	    			parseAndAddWorkflowField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFolders)) {
-    	    			addFolderField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestry)) {
-    	    			addAncestryField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
-    	    			addFoldersListField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
-    	    			addAncestriesListField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryId)) {
-    	    			addEntryIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterEntryId, ""));
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeBinderParent)) {
-    	    			addBinderParentIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterBinderId, ""));    	    			
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntityTypes)) {
-    	    			parseAndAddEntityTypesField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryTypes)) {
-    	    			parseAndAddEntryTypesField(block, filterTerm);    	    			
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeDocTypes)) {
-    	    			parseAndAddDocTypesField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeElement)) {
-    	    			addElementField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
-    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
-    	    			addCommunityTagField(block, filterTerm.getText());
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
-    	    			lang = checkLanguage(filterTerm.getText(),qTreeRootElement,lang);
-    	    			addPersonalTagField(block, filterTerm.getText());
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
-    	    			addEventField(block, filterTerm);    	    			
-    		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
-    		    		addDateRange(block, filterTerm.attributeValue(SearchFilterKeys.FilterElementName, ""), filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
-    		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
-    	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
-    	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
-    	    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
-    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
-    	    				createRelativeUser(block);
-    	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
-    	    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
-    	    			}
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
-    	    			addItemTypesField(block, filterTerm);
-    	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTaskStatus)) {
-    	    			addTaskStatus(block, filterTerm);
-    	    		} 
-            	}
-    		}
+    	
+    	Iterator filterTermsIt = sfRootElement.selectNodes(SearchFilterKeys.FilterTerms).iterator();
+    	while (filterTermsIt.hasNext()) {
+    		Element filterTerms = (Element) filterTermsIt.next();
+    		convertFilterTerms(qTreeAndElement, filterTerms, lang, currentBinderId);
     	}
     	
     	return qTree;
+	}
+
+	private static void convertFilterTerms(Element parent, Element filterTerms, String lang, String currentBinderId) {
+//		 each terms block can have information if the children should be join with AND
+		// if not defined use OR as default
+		String joiner = QueryBuilder.OR_ELEMENT;
+		if (filterTerms.attributeValue(SearchFilterKeys.FilterAnd, "").equals(Boolean.TRUE.toString())) {
+			joiner = QueryBuilder.AND_ELEMENT;
+		}
+
+		List liFilterTerms = filterTerms.selectNodes(SearchFilterKeys.FilterTerms);
+		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
+		
+		if (!liFilterTerms.isEmpty() || !liFilterTermsTerm.isEmpty()) {
+			Element block = parent.addElement(joiner);
+			
+			Iterator filterTermsIt = liFilterTerms.iterator();
+			while (filterTermsIt.hasNext()) {
+	    		Element filterTermsChild = (Element)filterTermsIt.next();
+	    		convertFilterTerms(block, filterTermsChild, lang, currentBinderId);
+	    	}
+			
+			Iterator filterTermsTermIt = liFilterTermsTerm.iterator();
+			while (filterTermsTermIt.hasNext()) {
+	    		// add term to current block
+	    		Element filterTerm = (Element) filterTermsTermIt.next();
+	    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
+	    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
+	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+	    			addSearchTextField(block, filterTerm.getText());
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
+	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+	    			addAuthorField(block, filterTerm.getText());
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
+	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+	    			addTagsField(block, filterTerm.getText());
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition) || filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {	    			
+	    			parseAndAddEntryField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTopEntry)) {
+	    			addTopEntryField(block);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
+	    			parseAndAddWorkflowField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFolders)) {
+	    			addFolderField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestry)) {
+	    			addAncestryField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
+	    			addFoldersListField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
+	    			addAncestriesListField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryId)) {
+	    			addEntryIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterEntryId, ""));
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeBinderParent)) {
+	    			addBinderParentIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterBinderId, ""));    	    			
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntityTypes)) {
+	    			parseAndAddEntityTypesField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryTypes)) {
+	    			parseAndAddEntryTypesField(block, filterTerm);    	    			
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeDocTypes)) {
+	    			parseAndAddDocTypesField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeElement)) {
+	    			addElementField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
+	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+	    			addCommunityTagField(block, filterTerm.getText());
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
+	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+	    			addPersonalTagField(block, filterTerm.getText());
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
+	    			addEventField(block, filterTerm);    	    			
+		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
+		    		addDateRange(block, filterTerm.attributeValue(SearchFilterKeys.FilterElementName, ""), filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
+		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
+	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
+	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
+	    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
+	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
+	    				createRelativeUser(block);
+	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
+	    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
+	    			}
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
+	    			addItemTypesField(block, filterTerm);
+	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTaskStatus)) {
+	    			addTaskStatus(block, filterTerm);
+	    		} 
+        	}
+		}
 	}
 
 	private static void createRelativeUser(Element block) {

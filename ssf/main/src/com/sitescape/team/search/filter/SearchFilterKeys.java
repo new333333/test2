@@ -70,7 +70,8 @@ public class SearchFilterKeys {
    	public final static String FilterBinderId = "filterBinderId";
    	public final static String FilterEntryId = "filterEntryId";
    	public final static String FilterTypeSearchText = "text";
-   	public final static String FilterTypeAuthor = "author";
+   	public final static String FilterTypeCreatorByName = "author";
+   	public final static String FilterTypeCreatorById = "creatorById";
    	public final static String FilterTypeDate = "date";
    	public final static String FilterTypeTaskStatus = "taskStatus";
 	public final static String FilterTypePlace = "place";
@@ -79,7 +80,6 @@ public class SearchFilterKeys {
    	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntryDefinition = "entry";
    	public final static String FilterTypeEntryId = "entryId";
-   	public final static String FilterTypeCreatorById = "creatorById";
    	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
