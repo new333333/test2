@@ -79,7 +79,7 @@ import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.FolderEmailFormatter;
 import com.sitescape.team.module.mail.MailModule;
@@ -118,12 +118,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
  	public void setMailModule(MailModule mailModule) {
 		this.mailModule = mailModule;
 	}
-	private IcalConverter icalConverter;
-	public IcalConverter getIcalConverter() {
-		return icalConverter;
+	private IcalModule icalModule;
+	public IcalModule getIcalModule() {
+		return icalModule;
 	}
-	public void setIcalConverter(IcalConverter icalConverter) {
-		this.icalConverter = icalConverter;
+	public void setIcalModule(IcalModule icalModule) {
+		this.icalModule = icalModule;
 	}	
 
 
@@ -662,7 +662,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						while (fileItemsIt.hasNext()) {
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
-							entryIdsFromICalendars.addAll(getIcalConverter().parseToEntries(binderModule, folderModule, folder.getId(), fileHandler.getInputStream()));
+							entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(binderModule, folderModule, folder.getId(), fileHandler.getInputStream()));
 						}
 							
 						if (entryIdsFromICalendars.isEmpty()) {

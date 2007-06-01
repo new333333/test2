@@ -1369,7 +1369,7 @@ public class AjaxController  extends SAbstractController {
 			
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
 			
-			List createdEntryIds = getIcalConverter().parseToEntries(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
+			List createdEntryIds = getIcalModule().parseToEntries(getBinderModule(), getFolderModule(), folderId, file.getInputStream());
 			
 			WebHelper.releaseFileHandle(fileHandle);
 		}

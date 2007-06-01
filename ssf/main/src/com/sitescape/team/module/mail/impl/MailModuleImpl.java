@@ -57,6 +57,7 @@ import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.util.ClassLoaderUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
@@ -71,7 +72,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.jobs.FailedEmail;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.definition.notify.Notify;
-import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.FolderEmailFormatter;
 import com.sitescape.team.module.mail.JavaMailSender;
@@ -114,12 +115,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
 	}
 
-	private IcalConverter icalConverter;
-	public IcalConverter getIcalConverter() {
-		return icalConverter;
+	private IcalModule icalModule;
+	public IcalModule getIcalModule() {
+		return icalModule;
 	}
-	public void setIcalConverter(IcalConverter icalConverter) {
-		this.icalConverter = icalConverter;
+	public void setIcalModule(IcalModule icalModule) {
+		this.icalModule = icalModule;
 	}	
 
 	public String getMailRootDir() {
@@ -152,7 +153,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					jndiName = PortabilityUtil.getJndiName(jndiName);
 					JavaMailSender sender = (JavaMailSender)mailSender.getClass().newInstance();				
 					SpringContextUtil.applyDependencies(sender, "mailSender");
-					sender.setSession((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
+					Object jndiObj = jndiAccessor.getJndiTemplate().lookup(jndiName);
+					
+					//System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(jndiObj, "jndi")); // $$$ TODO
+					//System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(javax.mail.Session.class.getClassLoader()));
+					
+					sender.setSession((javax.mail.Session) jndiObj);
 					sender.setName(jndiName);		
 					mailSenders.put(jndiName, sender);
 				
@@ -555,7 +561,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
 				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
 				List events = (List)mapEntry.getValue();
-				Calendar iCal = getIcalConverter().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				Calendar iCal = getIcalModule().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				CalendarOutputter calendarOutputter = new CalendarOutputter();

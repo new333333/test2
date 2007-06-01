@@ -10,7 +10,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ic.ICBrokerModule;
-import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
@@ -35,7 +35,7 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 	private FileModule fileModule;
 	private DashboardModule dashboardModule;
 	private ICBrokerModule icBrokerModule;
-	private IcalConverter icalConverter;
+	private IcalModule icalModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -140,10 +140,10 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 		this.icBrokerModule = icBroker;
 	}
 	
-	public IcalConverter getIcalConverter() {
-		return icalConverter;
+	public IcalModule getIcalModule() {
+		return icalModule;
 	}
-	public void setIcalConverter(IcalConverter icalConverter) {
-		this.icalConverter = icalConverter;
+	public void setIcalModule(IcalModule icalModule) {
+		this.icalModule = icalModule;
 	}	
 }

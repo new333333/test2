@@ -62,7 +62,7 @@
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
-		<property name="icalConverter"><ref local="icalConverter"/></property>
+		<property name="icalModule"><ref local="icalModule"/></property>
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -326,7 +326,7 @@
 	
     <!-- ============================== ical Converter ============================ -->
 	
-    <bean id="icalConverter" class="com.sitescape.team.module.ical.impl.IcalConverterImpl" />	
+    <bean id="icalModule" class="com.sitescape.team.module.ical.impl.IcalModuleImpl" />	
 	
 	<!-- ================================ Security Service =============================== -->
 	
@@ -468,7 +468,7 @@
 				<property name="workspaceModule"><ref local="workspaceModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
 				<property name="dashboardModule"><ref local="dashboardModule"/></property>
-				<property name="icalConverter"><ref local="icalConverter"/></property>
+				<property name="icalModule"><ref local="icalModule"/></property>
 			</bean>
 		</property>
 	</bean>
@@ -583,7 +583,7 @@
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
 		<property name="mailModule"><ref local="mailModule"/></property>
-		<property name="icalConverter"><ref local="icalConverter"/></property>
+		<property name="icalModule"><ref local="icalModule"/></property>
 	</bean>
 	
 
@@ -797,7 +797,7 @@ text/calendar											  ics
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
-		<property name="icalConverter"><ref local="icalConverter"/></property>
+		<property name="icalModule"><ref local="icalModule"/></property>
 	</bean>	
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
@@ -819,8 +819,8 @@ text/calendar											  ics
 	        <entry key="SiteScape:type=Other,name=rssGenerator">
 	          <ref local="rssGenerator"/>
 	        </entry>
-	        <entry key="SiteScape:type=Other,name=icalConverter">
-	          <ref local="icalConverter"/>
+	        <entry key="SiteScape:type=Other,name=icalModule">
+	          <ref local="icalModule"/>
 	        </entry>
 			<entry key="SiteScape:type=Repository,name=simpleFileRepository">
 	          <ref local="simpleFileRepository"/>

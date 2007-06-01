@@ -74,7 +74,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
@@ -89,7 +89,7 @@ import com.sitescape.util.cal.DayAndPosition;
  * @author Pawel Nowicki
  * 
  */
-public class IcalConverterImpl implements IcalConverter {
+public class IcalModuleImpl implements IcalModule {
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	

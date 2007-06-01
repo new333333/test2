@@ -34,7 +34,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.ical.impl.IcalConverterImpl;
+import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.rss.RssGenerator;
@@ -92,7 +92,7 @@ public class ViewICalController extends SAbstractController {
 			response.setHeader("Pragma", "no-cache");
 			
 			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalConverter().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		}	
 		
