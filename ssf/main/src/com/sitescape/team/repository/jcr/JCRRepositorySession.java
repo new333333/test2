@@ -167,10 +167,10 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 	}
 
-	public void read(Binder binder, DefinableEntity entity, 
+	public void readUnversioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, OutputStream out) 
 		throws RepositoryServiceException, UncheckedIOException {
-		InputStream is = read(binder, entity, relativeFilePath);
+		InputStream is = readUnversioned(binder, entity, relativeFilePath);
 		
 		try {
 			FileCopyUtils.copy(is, out);
@@ -180,7 +180,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 	}
 
-	public InputStream read(Binder binder, DefinableEntity entity, 
+	public InputStream readUnversioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath) throws RepositoryServiceException, 
 			UncheckedIOException {
 		try {
@@ -192,10 +192,10 @@ public class JCRRepositorySession implements RepositorySession {
 	}
 
 
-	public void readVersion(Binder binder, DefinableEntity entity, 
+	public void readVersioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName, OutputStream out) 
 	throws RepositoryServiceException, UncheckedIOException {
-		InputStream is = readVersion(binder, entity, relativeFilePath, versionName);
+		InputStream is = readVersioned(binder, entity, relativeFilePath, versionName);
 		
 		try {
 			FileCopyUtils.copy(is, out);
@@ -205,7 +205,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 	
-	public InputStream readVersion(Binder binder, DefinableEntity entity, 
+	public InputStream readVersioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -216,13 +216,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 
-	public DataSource getDataSource(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, FileTypeMap fileTypeMap) 
-		throws RepositoryServiceException, UncheckedIOException {
-		return new JCRDataSource(binder, entity, relativeFilePath, null, fileTypeMap);
-	}
-
-	public DataSource getDataSourceVersion(Binder binder, DefinableEntity entity, 
+	public DataSource getDataSourceVersioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap) 
 		throws RepositoryServiceException, UncheckedIOException {
 		return new JCRDataSource(binder, entity, relativeFilePath, versionName, fileTypeMap);
@@ -253,7 +247,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 
-	public long getContentLength(Binder binder, DefinableEntity entity, 
+	public long getContentLengthUnversioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath) throws RepositoryServiceException, 
 			UncheckedIOException {
 		try {
@@ -264,7 +258,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 
-	public long getContentLength(Binder binder, DefinableEntity entity, 
+	public long getContentLengthVersioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -679,7 +673,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 		
 		public java.io.InputStream getInputStream() throws java.io.IOException {
-			return readVersion(binder, entity, relativeFilePath, versionName);
+			return readVersioned(binder, entity, relativeFilePath, versionName);
 		}
 		
 		public java.io.OutputStream getOutputStream() throws java.io.IOException {

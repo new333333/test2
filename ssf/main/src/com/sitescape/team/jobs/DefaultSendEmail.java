@@ -211,8 +211,8 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 				if (atts != null) {
 					for (FileAttachment fAtt : atts) {
 						FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-						DataSource ds = RepositoryUtil.getDataSource(fAtt.getRepositoryName(), entry.getParentFolder(), 
-								entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
+						DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt.getRepositoryName(), entry.getParentFolder(), 
+								entry, fAtt.getFileItem().getName(), fAtt.getHighestVersion().getVersionName(), helper.getFileTypeMap());
 						
 						helper.addAttachment(fAtt.getFileItem().getName(), ds);
 					}
