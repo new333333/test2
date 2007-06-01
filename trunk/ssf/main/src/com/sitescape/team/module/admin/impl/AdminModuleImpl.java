@@ -62,7 +62,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EntryBuilder;
@@ -150,12 +150,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return dashboardModule;
 	}
    	
-	private IcalConverter icalConverter;
-	public IcalConverter getIcalConverter() {
-		return icalConverter;
+	private IcalModule icalModule;
+	public IcalModule getIcalModule() {
+		return icalModule;
 	}
-	public void setIcalConverter(IcalConverter icalConverter) {
-		this.icalConverter = icalConverter;
+	public void setIcalModule(IcalModule icalModule) {
+		this.icalModule = icalModule;
 	}	
 
    	/**
@@ -1187,7 +1187,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
  			while (entriesIt.hasNext()) {
  				DefinableEntity entry = (DefinableEntity)entriesIt.next();
  				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
- 					iCalendars.add(getIcalConverter().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
+ 					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
  				}
  			}
  			if (!iCalendars.isEmpty()) {

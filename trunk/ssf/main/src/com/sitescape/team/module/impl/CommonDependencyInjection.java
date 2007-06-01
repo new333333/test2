@@ -18,7 +18,7 @@ import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.fi.connection.ResourceDriverManager;
-import com.sitescape.team.module.ical.impl.IcalConverterImpl;
+import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;

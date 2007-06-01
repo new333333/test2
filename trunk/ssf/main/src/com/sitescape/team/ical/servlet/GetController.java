@@ -27,7 +27,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.ical.IcalConverter;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -60,7 +60,7 @@ public class GetController extends SAbstractController {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
 			if (getFolderModule().testAccess(entry, "getEntry")) {				
 				CalendarOutputter calendarOutputter = new CalendarOutputter();
-				Calendar calendar = getIcalConverter().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+				Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 				calendarOutputter.output(calendar, response.getWriter());
 			}
 		} else {

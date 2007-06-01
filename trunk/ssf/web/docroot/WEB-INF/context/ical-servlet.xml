@@ -44,7 +44,7 @@
 
 	<!-- Controllers -->
 	<bean id="get" parent="dependOnAllModulesTemplate" class="com.sitescape.team.ical.servlet.GetController">
-		<property name="icalConverter"><ref bean="icalConverter"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="mailModule"><ref bean="mailModule"/></property>
 	</bean>
 

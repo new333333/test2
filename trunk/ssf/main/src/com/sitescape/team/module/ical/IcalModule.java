@@ -23,7 +23,7 @@ import net.fortuna.ical4j.model.Calendar;
  * @author Joe
  *
  */
-public interface IcalConverter {
+public interface IcalModule {
 
 	/*
 	 * Users of parseEvents need to provide an EventHandler implementation that
