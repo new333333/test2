@@ -662,7 +662,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						while (fileItemsIt.hasNext()) {
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
-							entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(binderModule, folderModule, folder.getId(), fileHandler.getInputStream()));
+							entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(folder.getId(), fileHandler.getInputStream()));
 						}
 							
 						if (entryIdsFromICalendars.isEmpty()) {
