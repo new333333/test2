@@ -12,5 +12,6 @@
 %>
 <% //File form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="ss_entryContent" ${inline}>
 <%@ include file="/WEB-INF/jsp/definition_elements/file_browse.jsp" %>
 </div>
