@@ -28,6 +28,8 @@ import com.sitescape.team.web.util.WebHelper;
 public class ListController extends SAbstractController {
 
 	private RssGenerator rssGenerator;
+	private static final int THREESECS = 3000;
+	private boolean authErr = false;
 	
 	protected RssGenerator getRssGenerator() {
 		return rssGenerator;
@@ -49,6 +51,13 @@ public class ListController extends SAbstractController {
 		if(!WebHelper.isUnauthenticatedRequest(request)) {
 			binder = getBinderModule().getBinder(binderId);
 			user = RequestContextHolder.getRequestContext().getUser();
+		} else {
+			// the authentication key is incorrect, make them wait
+			// a bit (to stop immediate retries from hackers), and 
+			// and then let them know that the request failed.
+			Thread.sleep(THREESECS);
+			authErr = true;
+			
 		}
 		
 		response.resetBuffer();
@@ -56,7 +65,11 @@ public class ListController extends SAbstractController {
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		//use writer to enfoce character set
-		response.getWriter().write(getRssGenerator().filterRss(request, response, binder,user));
+		if (!authErr) {
+			response.getWriter().write(getRssGenerator().filterRss(request, response, binder,user));
+		} else {
+			response.getWriter().write(getRssGenerator().AuthError(request, response));
+		}
 		response.flushBuffer();
 		return null;
 	}

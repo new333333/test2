@@ -112,7 +112,7 @@ public class RssGenerator implements RssGeneratorMBean {
 		File rssdir = new File(rssRootDir);
 		if (!rssdir.exists()) rssdir.mkdir();	
 		
-		Document doc = createEmptyRssDoc(binder.getTitle());
+		Document doc = createEmptyRssDoc("Updates to the " + binder.getTitle() + " forum");
 		
 	    writeRssFile(binder, doc);
 	}
@@ -245,11 +245,16 @@ public class RssGenerator implements RssGeneratorMBean {
 		else {
 			// This request is being made without appropriate user authentication.
 			// Do NOT use binder in this case, since it may be null in this situation.
-			Document doc = createEmptyRssDoc("Unknown");
+			Document doc = createEmptyRssDoc("Updates to the Unknown forum");
 			return doc.asXML();
 		}
 	}
 
+	public String AuthError(HttpServletRequest request, HttpServletResponse response) {
+		Document doc = createEmptyRssDoc("Authentication failure, please get a new URL for this feed.");
+		return doc.asXML();
+	}
+	
     public Document parseFile(String rssFileName) {
     	Document document = null;
         try {
@@ -292,7 +297,7 @@ public class RssGenerator implements RssGeneratorMBean {
     	
     }
     
-	private Document createEmptyRssDoc(String binderTitle) {
+	private Document createEmptyRssDoc(String title) {
 		// First create our top-level document
 		Document doc = DocumentHelper.createDocument();
 		Element root = doc.addElement("rss");
@@ -303,11 +308,11 @@ public class RssGenerator implements RssGeneratorMBean {
 	    Element channel = root.addElement("channel");
 	    
 	    channel.addElement("title")
-	    	.addText(binderTitle);
+	    	.addText(title);
 	    channel.addElement("link")
 	    	.addText("" /*this.getRssLink(binder)*/);
 	    channel.addElement("description")
-	    	.addText("Updates to the " + binderTitle + " forum");
+	    	.addText(title);
 	    channel.addElement("pubDate")
 	    	.addText(new Date().toString());
 	    channel.addElement("ttl")
