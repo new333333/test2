@@ -97,9 +97,12 @@
 		     (named porlet-api-lib.jar NOT portlet.jar). If we have our own portlet.jar
 		     in our lib directory, the Portal fails to load our portlets at startup.
 		     So we must remove that too. 
+		     3. If we have our own mail.jar (javax.mail) in our lib directory, 
+		     ClassCastException occurs at startup during initialization of mail
+		     module due to class loader conflict. So we must remove that.
 		-->
 		<delete>
-			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar,mail.jar"/>
 		</delete>		
 	</target>		
 
