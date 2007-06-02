@@ -20,7 +20,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -46,7 +45,10 @@ public class FileRepositorySession implements RepositorySession {
 
 	private static final String VERSION_NAME_PREFIX = "_ssfversionfile_";
 	private static final String VERSION_NAME_SUFFIX = "_";
-	private static final String TEMP_STRING = "_ssftempfile_";
+	private static final String WORKING_STRING = "_ssfworkingfile_";
+	private static final String TEMPFILE_PREFIX = "_ssftempfile_";
+	private static final int MAX_TRY = 5;
+	private static final long RETRY_INTERVAL = 1L;
 
 	private FileRepositorySessionFactory factory;
 	private String repositoryRootDir;
@@ -59,23 +61,41 @@ public class FileRepositorySession implements RepositorySession {
 	public void close() throws RepositoryServiceException, UncheckedIOException {
 	}
 	
+	private String createVersionFileFromTemporaryFile(Binder binder, DefinableEntity entry,
+			String relativeFilePath, File tempFile) throws RepositoryServiceException {
+    	String versionName = null;
+    	File versionFile = null;
+    	for(int i = MAX_TRY; i > 0; i--) {
+    		if(i != MAX_TRY) {
+    			try {
+					Thread.sleep(RETRY_INTERVAL);
+				} 
+    			catch(InterruptedException ignore) {}     			
+    		}
+    		versionName = newVersionName();
+    		versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+    		if(tempFile.renameTo(versionFile))
+    			return versionName;
+    	}
+    	
+    	// If still here, bad news.
+    	throw new RepositoryServiceException("Cannot write file " + relativeFilePath + " for entry " + entry.getId());
+	}
+	
 	public String createVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
         try {
     		FileHelper.mkdirsIfNecessary(fileDir);
+    		
+    		File tempFile = File.createTempFile(TEMPFILE_PREFIX, null, fileDir);
 
-    		String versionName = newVersionName();
-    		
-    		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
-    		
-        	mf.transferTo(versionFile);
-        	
-        	return versionName;
+        	mf.transferTo(tempFile);
+
+        	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, tempFile);
 		} catch (IllegalStateException e) {
 			throw new RepositoryServiceException(e);
-
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -88,13 +108,11 @@ public class FileRepositorySession implements RepositorySession {
 		try {
 			FileHelper.mkdirsIfNecessary(fileDir);
 
-			String versionName = newVersionName();
-			
-			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
-			
-			copyData(in, versionFile);
-			
-			return versionName;
+    		File tempFile = File.createTempFile(TEMPFILE_PREFIX, null, fileDir);
+
+    		copyData(in, tempFile);
+    
+        	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, tempFile);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -135,14 +153,14 @@ public class FileRepositorySession implements RepositorySession {
 		
 		try {
 			if(fileInfo == VERSIONED_FILE) {
-				File tempFile = getTempFile(binder, entry, relativeFilePath);
+				File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 				
-				if(!tempFile.exists())
+				if(!workingFile.exists())
 					throw new RepositoryServiceException("Cannot update file " + 
 							relativeFilePath + " for entry " + entry.getTypedId() + 
 							": It must be checked out first"); 
 	
-				mf.transferTo(tempFile);
+				mf.transferTo(workingFile);
 			}
 			else if(fileInfo == UNVERSIONED_FILE) {
 				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -169,14 +187,14 @@ public class FileRepositorySession implements RepositorySession {
 		
 		try {
 			if(fileInfo == VERSIONED_FILE) {
-				File tempFile = getTempFile(binder, entry, relativeFilePath);
+				File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 				
-				if(!tempFile.exists())
+				if(!workingFile.exists())
 					throw new RepositoryServiceException("Cannot update file " + 
 							relativeFilePath + " for entry " + entry.getTypedId() + 
 							": It must be checked out first"); 
 	
-				copyData(in, tempFile);
+				copyData(in, workingFile);
 			}
 			else if(fileInfo == UNVERSIONED_FILE) {
 				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -216,13 +234,13 @@ public class FileRepositorySession implements RepositorySession {
 		// enforced. 
 		
 		// Delete temp file if exists
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 		
 		try {
-			FileHelper.delete(tempFile);
+			FileHelper.delete(workingFile);
 		}
 		catch(IOException e) {
-			logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]");
+			logger.error("Error deleting file [" + workingFile.getAbsolutePath() + "]");
 			throw new UncheckedIOException(e);
 		}
 		
@@ -383,9 +401,9 @@ public class FileRepositorySession implements RepositorySession {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
-			File tempFile = getTempFile(binder, entry, relativeFilePath);
+			File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 			
-			if(!tempFile.exists()) { // It is not checked out
+			if(!workingFile.exists()) { // It is not checked out
 				try {
 					// The latest version from this repository's point of view may not be
 					// necessarily the latest version of the file from the application/user 
@@ -398,7 +416,7 @@ public class FileRepositorySession implements RepositorySession {
 					
 					if(latestVersionFile != null) {
 						// Check it out by coping the content of the latest version of the file
-						FileCopyUtils.copy(latestVersionFile, tempFile);
+						FileCopyUtils.copy(latestVersionFile, workingFile);
 					}
 					else {
 						// This shouldn't occur.
@@ -424,12 +442,12 @@ public class FileRepositorySession implements RepositorySession {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
-			File tempFile = getTempFile(binder, entry, relativeFilePath);
+			File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 			
-			if(tempFile.exists()) { // It is checked out
+			if(workingFile.exists()) { // It is checked out
 				// Delete the temp file
 				try {
-					FileHelper.delete(tempFile);
+					FileHelper.delete(workingFile);
 				} catch (IOException e) {
 					throw new UncheckedIOException(e);
 				}
@@ -450,20 +468,10 @@ public class FileRepositorySession implements RepositorySession {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
 		if(fileInfo == VERSIONED_FILE) {
-			File tempFile = getTempFile(binder, entry, relativeFilePath);
+			File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 			
-			if(tempFile.exists()) { // It is checked out
-				String versionName = newVersionName();
-				
-				File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
-				
-			    try {
-					FileHelper.move(tempFile, versionFile);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-				
-				return versionName;
+			if(workingFile.exists()) { // It is checked out
+	        	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, workingFile);
 			}	
 			else { // It is already checked in.
 				// Return this repository's notion of the latest version of this file.
@@ -483,9 +491,9 @@ public class FileRepositorySession implements RepositorySession {
 	/*
 	public boolean isCheckedOut(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		File tempFile = getTempFile(binder, entry, relativeFilePath);
+		File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 		
-		return tempFile.exists();
+		return workingFile.exists();
 	}*/
 
 	/*
@@ -540,11 +548,11 @@ public class FileRepositorySession implements RepositorySession {
 			String relativeFilePath, Binder destBinder, 
 			DefinableEntity destEntity, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
-		File tempFile = getTempFile(binder, entity, relativeFilePath);
+		File workingFile = getWorkingFile(binder, entity, relativeFilePath);
 		
-		if(tempFile.exists()) {
-			File newTempFile = getTempFile(destBinder, destEntity, destRelativeFilePath);			
-			move(tempFile, newTempFile);
+		if(workingFile.exists()) {
+			File newWorkingFile = getWorkingFile(destBinder, destEntity, destRelativeFilePath);			
+			move(workingFile, newWorkingFile);
 		}
 		
 		String[] versionFileNames = getVersionFileNames(binder, entity, relativeFilePath);
@@ -570,11 +578,11 @@ public class FileRepositorySession implements RepositorySession {
 	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, 
 			Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) 
 	throws RepositoryServiceException, UncheckedIOException {
-		File tempFile = getTempFile(binder, entity, relativeFilePath);
+		File workingFile = getWorkingFile(binder, entity, relativeFilePath);
 		
-		if(tempFile.exists()) {
-			File newTempFile = getTempFile(destBinder, destEntity, destRelativeFilePath);			
-			copy(tempFile, newTempFile);
+		if(workingFile.exists()) {
+			File newWorkingFile = getWorkingFile(destBinder, destEntity, destRelativeFilePath);			
+			copy(workingFile, newWorkingFile);
 		}
 		
 		String[] versionFileNames = getVersionFileNames(binder, entity, relativeFilePath);
@@ -774,7 +782,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	private String newVersionName() {
-		return String.valueOf(new Date().getTime());
+		return String.valueOf(System.currentTimeMillis());
 	}
 	
 	private File getVersionFileFromVersionFileName(Binder binder, DefinableEntity entry, String relativeFilePath, String versionFileName) {
@@ -806,21 +814,21 @@ public class FileRepositorySession implements RepositorySession {
 		return getFile(binder, entry, relativeFilePath);
 	}
 	
-	private File getTempFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
+	private File getWorkingFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
 		File file = getFile(binder, entry, relativeFilePath);
 		
 		String fileName = file.getName();
-		String tempFileName;
+		String workingFileName;
 		int index = fileName.lastIndexOf(".");
 		if(index == -1) {
 			// The file name doesn't contain extension 
-			tempFileName = fileName + TEMP_STRING;
+			workingFileName = fileName + WORKING_STRING;
 		}
 		else {
-			tempFileName = fileName.substring(0, index) + TEMP_STRING + 
+			workingFileName = fileName.substring(0, index) + WORKING_STRING + 
 				"." + fileName.substring(index+1);
 		}
-		return new File(file.getParent(), tempFileName);		
+		return new File(file.getParent(), workingFileName);		
 	}
 
 	private void readFile(File file, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
