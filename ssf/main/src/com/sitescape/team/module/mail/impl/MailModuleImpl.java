@@ -57,7 +57,6 @@ import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.util.ClassLoaderUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
