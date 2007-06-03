@@ -42,7 +42,7 @@
 				id="22">
 				<properties>
 					<property name="name" value="start_end"/>
-					<property name="caption" value="Time period"/>
+					<property name="caption" value="__task_time_period"/>
 					<property name="hasDuration" value="true"/>
 					<property name="hasRecurrence" value="false"/>
 					<property name="required" value="false"/>
@@ -53,36 +53,36 @@
 				<item name="selectboxSelection" caption="__selection" id="24">
 					<properties>
 						<property name="name" value="critical"/>
-						<property name="caption" value="Critical"/>
+						<property name="caption" value="__task_priority_critical"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="25">
 					<properties>
 						<property name="name" value="high"/>
-						<property name="caption" value="High"/>
+						<property name="caption" value="__task_priority_high"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="26">
 					<properties>
 						<property name="name" value="medium"/>
-						<property name="caption" value="Medium"/>
+						<property name="caption" value="__task_priority_medium"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="27">
 					<properties>
 						<property name="name" value="low"/>
-						<property name="caption" value="Low"/>
+						<property name="caption" value="__task_priority_low"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="27">
 					<properties>
 						<property name="name" value="trivial"/>
-						<property name="caption" value="Trivial"/>
+						<property name="caption" value="__task_priority_trivial"/>
 					</properties>
 				</item>
 				<properties>
 					<property name="name" value="priority"/>
-					<property name="caption" value="Priority"/>
+					<property name="caption" value="__task_priority"/>
 					<property name="multipleAllowed" value="false"/>
 					<property name="size" value="1"/>
 					<property name="inline" value="false"/>
@@ -93,7 +93,7 @@
 				category="commonEntryData" id="28">
 				<properties>
 					<property name="name" value="assignment"/>
-					<property name="caption" value="Assigned to"/>
+					<property name="caption" value="__task_assigned_to"/>
 					<property name="inline" value="false"/>
 					<property name="required" value="false"/>
 				</properties>
@@ -102,7 +102,7 @@
 				category="commonEntryData" id="29">
 				<properties>
 					<property name="name" value="duration"/>
-					<property name="caption" value="Planned duration (in days)"/>
+					<property name="caption" value="__task_planned_duration"/>
 					<property name="width" value="50"/>
 					<property name="inline" value="true"/>
 					<property name="required" value="false"/>
@@ -112,7 +112,7 @@
 				category="commonEntryData" id="30">
 				<properties>
 					<property name="name" value="status"/>
-					<property name="caption" value="Status"/>
+					<property name="caption" value="__task_status"/>
 					<property name="multipleAllowed" value="false"/>
 					<property name="size" value="1"/>
 					<property name="inline" value="false"/>
@@ -121,25 +121,25 @@
 				<item name="selectboxSelection" caption="__selection" id="31">
 					<properties>
 						<property name="name" value="needsAction"/>
-						<property name="caption" value="needs action"/>
+						<property name="caption" value="__task_status_needs_action"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="33">
 					<properties>
 						<property name="name" value="inProcess"/>
-						<property name="caption" value="in process"/>
+						<property name="caption" value="__task_status_in_process"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="34">
 					<properties>
 						<property name="name" value="completed"/>
-						<property name="caption" value="completed"/>
+						<property name="caption" value="__task_status_completed"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="35">
 					<properties>
 						<property name="name" value="cancelled"/>
-						<property name="caption" value="cancelled"/>
+						<property name="caption" value="__task_status_cancelled"/>
 					</properties>
 				</item>
 			</item>
@@ -147,7 +147,7 @@
 				category="commonEntryData" id="36">
 				<properties>
 					<property name="name" value="completed"/>
-					<property name="caption" value="Completed (in %)"/>
+					<property name="caption" value="__task_completed"/>
 					<property name="multipleAllowed" value="false"/>
 					<property name="size" value="1"/>
 					<property name="inline" value="false"/>
@@ -156,67 +156,67 @@
 				<item name="selectboxSelection" caption="__selection" id="37">
 					<properties>
 						<property name="name" value="c0"/>
-						<property name="caption" value="0 %"/>
+						<property name="caption" value="__task_completed_0"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="38">
 					<properties>
 						<property name="name" value="c10"/>
-						<property name="caption" value="10 %"/>
+						<property name="caption" value="__task_completed_10"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="39">
 					<properties>
 						<property name="name" value="c20"/>
-						<property name="caption" value="20 %"/>
+						<property name="caption" value="__task_completed_20"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="40">
 					<properties>
 						<property name="name" value="c30"/>
-						<property name="caption" value="30 %"/>
+						<property name="caption" value="__task_completed_30"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="41">
 					<properties>
 						<property name="name" value="c40"/>
-						<property name="caption" value="40 %"/>
+						<property name="caption" value="__task_completed_40"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="42">
 					<properties>
 						<property name="name" value="c50"/>
-						<property name="caption" value="50 %"/>
+						<property name="caption" value="__task_completed_50"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="43">
 					<properties>
 						<property name="name" value="c60"/>
-						<property name="caption" value="60 %"/>
+						<property name="caption" value="__task_completed_60"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="44">
 					<properties>
 						<property name="name" value="c70"/>
-						<property name="caption" value="70 %"/>
+						<property name="caption" value="__task_completed_70"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="45">
 					<properties>
 						<property name="name" value="c80"/>
-						<property name="caption" value="80 %"/>
+						<property name="caption" value="__task_completed_80"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="46">
 					<properties>
 						<property name="name" value="c90"/>
-						<property name="caption" value="90 %"/>
+						<property name="caption" value="__task_completed_90"/>
 					</properties>
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="47">
 					<properties>
 						<property name="name" value="c100"/>
-						<property name="caption" value="100 %"/>
+						<property name="caption" value="__task_completed_100"/>
 					</properties>
 				</item>
 			</item>
@@ -278,42 +278,42 @@
 			category="entryViewData" id="48" formItem="selectbox">
 			<properties>
 				<property name="name" value="completed"/>
-				<property name="caption" value="Completed (in %)"/>
+				<property name="caption" value="__task_completed"/>
 			</properties>
 		</item>
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
 			category="entryViewData" id="49" formItem="user_list">
 			<properties>
 				<property name="name" value="assignment"/>
-				<property name="caption" value="Assigned to"/>
+				<property name="caption" value="__task_assigned_to"/>
 			</properties>
 		</item>
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
 			category="entryViewData" id="50" formItem="text">
 			<properties>
 				<property name="name" value="duration"/>
-				<property name="caption" value="Planned duration (in days)"/>
+				<property name="caption" value="__task_planned_duration"/>
 			</properties>
 		</item>
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
 			category="entryViewData" id="51" formItem="selectbox">
 			<properties>
 				<property name="name" value="priority"/>
-				<property name="caption" value="Priority"/>
+				<property name="caption" value="__task_priority"/>
 			</properties>
 		</item>
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
 			category="entryViewData" id="52" formItem="selectbox">
 			<properties>
 				<property name="name" value="status"/>
-				<property name="caption" value="Status"/>
+				<property name="caption" value="__task_status"/>
 			</properties>
 		</item>
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
 			category="entryViewData" id="53" formItem="event">
 			<properties>
 				<property name="name" value="start_end"/>
-				<property name="caption" value="Time period"/>
+				<property name="caption" value="__task_time_period"/>
 			</properties>
 		</item>
 	</item>
@@ -352,21 +352,21 @@
 			category="blogEntryViewData" id="54" formItem="user_list">
 			<properties>
 				<property name="name" value="assignment"/>
-				<property name="caption" value="Assigned to"/>
+				<property name="caption" value="__task_assigned_to"/>
 			</properties>
 		</item>
 		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item"
 			category="blogEntryViewData" id="55" formItem="selectbox">
 			<properties>
 				<property name="name" value="priority"/>
-				<property name="caption" value="Priority"/>
+				<property name="caption" value="__task_priority"/>
 			</properties>
 		</item>
 		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item"
 			category="blogEntryViewData" id="56" formItem="selectbox">
 			<properties>
 				<property name="name" value="status"/>
-				<property name="caption" value="Status"/>
+				<property name="caption" value="__task_status"/>
 			</properties>
 		</item>
 	</item>
