@@ -3903,11 +3903,13 @@ div.ss_searchContainer {
 	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;
 	margin-left: 15px;
 }
-#ss_content { 
-	border-left:1px solid #afc8e3; 
-	border-right:1px solid #afc8e3;
-    border-bottom:1px solid #afc8e3; 
-	margin:0px; padding:0px;
+div.ss_searchContainer #ss_content { 
+	border-left: 1px solid #afc8e3; 
+	border-right: 1px solid #afc8e3;
+    border-bottom: 1px solid #afc8e3; 
+	margin: 0px; 
+	padding: 0px;
+	width: 491px;
 }
 #ss_searchForm_container {margin:0px; padding:0px;	}
 #ss_searchForm_spacer {
@@ -3966,6 +3968,7 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	padding:0px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
+	width: 502px;
 </c:if>
 }
 #ss_searchResult li {
@@ -3976,10 +3979,11 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 
 .ss_searchResult_header {
 	border-bottom: 1px solid #afc8e3;	
-	margin-bottom:24px;
+	margin: 0 0 24px 0;
 	padding: 3px 24px 3px 12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
+	width: 502px;
 </c:if>
 }
 .ss_searchResult_numbers {
