@@ -51,7 +51,7 @@
 								</c:if>
 								
 								<c:choose>
-									<c:when test="${!empty ss_filterMap}">
+									<c:when test="${!empty ss_filterMap && !empty ss_filterMap.searchFolders}">
 										<c:set var="folderIds" value="${ss_filterMap.searchFolders}" />
 									</c:when>
 									<c:otherwise>

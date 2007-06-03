@@ -436,16 +436,29 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private void preparePagination(Map model, Map results, Map options) {
 
 		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
-		int firstOnCurrentPage = 0;
-		if (options != null && options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) firstOnCurrentPage = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
-		
 		int countReturned = (Integer) results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
 		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
-		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
+		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) {
+			pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
+		}
+		
+		int pagesCount = (int)Math.ceil((double)totalRecordsFound / pageInterval);
+		
+		int firstOnCurrentPage = 0;
+		if (options != null && options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) {
+			firstOnCurrentPage = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
+		}
+		
+		if (firstOnCurrentPage > totalRecordsFound) {
+			firstOnCurrentPage = 0;
+		}
+		
 		int lastOnCurrentPage = firstOnCurrentPage + pageInterval;
 		if ((countReturned - firstOnCurrentPage)<pageInterval) lastOnCurrentPage = firstOnCurrentPage + (countReturned-firstOnCurrentPage);
 		
 		int currentPageNo = (firstOnCurrentPage + pageInterval)/pageInterval; 
+		
+		
 		
 		List shownOnPage = ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage);
 		checkFileIds(shownOnPage);
@@ -458,7 +471,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 				pageNos.add(i);
 			}
 		}
-		int pagesCount = (int)Math.ceil((double)totalRecordsFound / pageInterval);
+		
 		for (int i = currentPageNo+1; i <= currentPageNo+2; i++) {
 			if (i <= pagesCount) {
 				pageNos.add(i);
