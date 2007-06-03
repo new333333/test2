@@ -44,4 +44,6 @@ var ss_days_3 = "<ssf:nlt tag="searchForm.lastActivity.3"/>"
 var ss_days_7 = "<ssf:nlt tag="searchForm.lastActivity.7"/>"
 var ss_days_30 = "<ssf:nlt tag="searchForm.lastActivity.30"/>"
 var ss_days_90 = "<ssf:nlt tag="searchForm.lastActivity.90"/>"
+var ss_searchFormMoreOptionsShowLabel = "<ssf:nlt tag="searchForm.advanced.moreOptions"/>";
+var ss_searchFormMoreOptionsHideLabel = "<ssf:nlt tag="searchForm.advanced.moreOptions.hide"/>";
 </script>

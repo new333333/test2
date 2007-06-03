@@ -330,7 +330,15 @@ function ss_searchToggleFolders(objId, selection) {
 	}
 }
 
-function ss_showAdditionalOptions(objId) {
+function ss_showAdditionalOptions(objId, txtContainerId) {
+	var txtContainerObj = document.getElementById(txtContainerId);
+	if (txtContainerObj) {
+		if (txtContainerObj.innerHTML == ss_searchFormMoreOptionsHideLabel) {
+			txtContainerObj.innerHTML = ss_searchFormMoreOptionsShowLabel;
+		} else {
+			txtContainerObj.innerHTML = ss_searchFormMoreOptionsHideLabel;
+		}
+	}
 	ss_showHide(objId);
 	if (!ss_searchMoreInitialized) {
 		ss_initSearchOptions();
