@@ -195,9 +195,9 @@ function ss_tasks (tableId, binderId, namespace) {
 		
 		trObj.setAttribute("id", getTaskTRId(task.id));
 		
-		trObj.appendChild(createDueDateTD(task));
-		trObj.appendChild(createPriorityTD(task));
 		trObj.appendChild(createTitleTD(task));
+		trObj.appendChild(createPriorityTD(task));
+		trObj.appendChild(createDueDateTD(task));
 		trObj.appendChild(createStatusTD(task));
 		trObj.appendChild(createAssignedTD(task));
 		trObj.appendChild(createCompletedTD(task));		

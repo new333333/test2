@@ -16,12 +16,12 @@
 <table class="ss_tasks_list" id="ss_tasks_list_<portlet:namespace/>">
 	<thead>
 		<tr>
-			<th><ssf:nlt tag="task.dueDate"/></th>
-			<th><ssf:nlt tag="task.priority"/></th>
 			<th><ssf:nlt tag="task.title"/></th>
+			<th><ssf:nlt tag="task.priority"/></th>
+			<th><ssf:nlt tag="task.dueDate"/></th>
 			<th><ssf:nlt tag="task.status"/></th>
 			<th><ssf:nlt tag="task.assigned"/></th>
-			<th><ssf:nlt tag="task.done"/></th>		
+			<th><ssf:nlt tag="task.done"/></th>
 		</tr>
 	</thead>
 	<tbody>

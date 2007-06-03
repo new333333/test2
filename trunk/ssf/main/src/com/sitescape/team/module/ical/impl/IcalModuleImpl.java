@@ -518,7 +518,7 @@ public class IcalModuleImpl implements IcalModule {
 
 		int priority = 0;
 		if (value != null) {
-			if (value.contains("trivial")) {
+			if (value.contains("least")) {
 				priority = 9;
 			} else if (value.contains("low")) {
 				priority = 8;

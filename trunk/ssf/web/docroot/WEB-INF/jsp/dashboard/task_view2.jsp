@@ -26,7 +26,7 @@
 </ssf:ifnotadapter>
 
 <style>
-a.ss_taskPriority_trivial_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
+a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
 	background-position: left top; 
 }
 a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, a.ss_taskStatus_cancelled_u:hover img, a.ss_taskStatus_completed_u:hover img {
