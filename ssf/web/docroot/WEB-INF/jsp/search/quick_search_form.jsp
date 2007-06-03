@@ -28,7 +28,7 @@
 								
 				<table>
 					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
-						<td><input type="text" name="searchText" id="searchText_adv"/></td>
+						<td><input type="text" name="searchText" value="${ss_filterMap.searchText}" id="searchText_adv"/></td>
 						<td>
 							<a class="ss_searchButton" 
 							  href="javascript: document.getElementById('advSearchForm').submit();" ><img 
