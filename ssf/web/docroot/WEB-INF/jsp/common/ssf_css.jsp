@@ -4306,8 +4306,8 @@ a.ss_taskPriority img {
 
 
 
-a.ss_taskPriority_trivial_u img, a.ss_taskPriority_trivial_u:link img , a.ss_taskPriority_trivial_u:focus img, a.ss_taskPriority_trivial_u:visited img { 
-	background: transparent url(<html:imagesPath/>icons/prio_trivial_u.gif) no-repeat top left; 
+a.ss_taskPriority_least_u img, a.ss_taskPriority_least_u:link img , a.ss_taskPriority_least_u:focus img, a.ss_taskPriority_least_u:visited img { 
+	background: transparent url(<html:imagesPath/>icons/prio_least_u.gif) no-repeat top left; 
 }
 
 a.ss_taskPriority_low_u img, a.ss_taskPriority_low_u:link img , a.ss_taskPriority_low_u:focus img, a.ss_taskPriority_low_u:visited img { 
@@ -4326,7 +4326,7 @@ a.ss_taskPriority_critical_u img, a.ss_taskPriority_critical_u:link img , a.ss_t
 	background: transparent url(<html:imagesPath/>icons/prio_critical_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_trivial_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
+a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
 	background-position: left -22px; 
 }
 

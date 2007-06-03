@@ -76,8 +76,8 @@
 				</item>
 				<item name="selectboxSelection" caption="__selection" id="27">
 					<properties>
-						<property name="name" value="trivial"/>
-						<property name="caption" value="__task_priority_trivial"/>
+						<property name="name" value="least"/>
+						<property name="caption" value="__task_priority_least"/>
 					</properties>
 				</item>
 				<properties>
