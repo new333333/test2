@@ -147,7 +147,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// execute query
 		// actualize tabs info
 		actualizeOptions(options, request);
-		prepareSearchResultPage(model, query, options, tabs, "");
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		prepareSearchResultPage(model, query, options, tabs, newTab);
 		
 		return model;
 	}
@@ -171,7 +172,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		options.put(Tabs.TAB_SEARCH_TEXT, queryName);
 		
 		Tabs tabs = setupTabs(request);
-		prepareSearchResultPage(model, query, options, tabs, "");
+		
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		prepareSearchResultPage(model, query, options, tabs, newTab);
 		
 		return model;
 	}

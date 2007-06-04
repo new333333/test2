@@ -209,7 +209,7 @@ public class Tabs {
 		for (int i = 0; i < tabList.size(); i++) {
 			Map tab = (Map)tabList.get(i);
 			if (tab != null && tab.get(TYPE)!=null && ((query != null && tab.get(TYPE).equals(QUERY) && tab.containsKey(QUERY_DOC) && 
-					((Document)tab.get(QUERY_DOC)).asXML().equals(query.asXML()))) || (tab.get(TYPE).equals(SEARCH))) {
+					((Document)tab.get(QUERY_DOC)).asXML().equals(query.asXML()))) || (tab.get(TYPE).equals(SEARCH) && defaultTabId != -1)) {
 				tabId = ((Integer)tab.get(TAB_ID)).intValue();
 				break;
 			}
