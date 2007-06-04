@@ -11,41 +11,43 @@
 package com.sitescape.team.module.shared;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 import java.util.Set;
-
-import java.util.Calendar;
 import java.util.TimeZone;
-import java.text.SimpleDateFormat;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.module.folder.index.IndexUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
-import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.module.folder.index.IndexUtils;
 
 public class SearchUtils {
+	private static  String[] docTypes = new String[] {BasicIndexUtils.DOC_TYPE_BINDER, BasicIndexUtils.DOC_TYPE_ENTRY,BasicIndexUtils.DOC_TYPE_ATTACHMENT};
+
 	//Common search support
 	public static List getSearchEntries(Hits hits) {
 		//Iterate through the search results and build the entries array
@@ -291,7 +293,6 @@ public class SearchUtils {
 				List attachments = (List) entryValues.get(ATTACHMENTS);
 				if (attachments == null) attachments = new ArrayList();
 				attachments.add(entry);
-				System.out.println("Attachment:"+attachments.toString());
 				
 				entryValues.put(ATTACHMENTS, attachments);
 			} else {
@@ -315,7 +316,73 @@ public class SearchUtils {
 		}
 		return result;
 	}
-	public void clearIndex() {
+	public static void buildMembershipUpdate(List<Binder>binders, ArrayList<Query> updateQueries, ArrayList<String> updateIds) {
+		// Now, create a query which can be used by the index update method to modify all the
+		// entries, replies, attachments, and binders(workspaces) in the index with this new 
+		// Acl list.
+		//find descendent binders with the same owner team membership and re-index together
+		//the owner  may be part of the acl set, so cannot always share
+		while (!binders.isEmpty()) {
+			Binder top = binders.get(0);
+			binders.remove(0);
+			List ids = new ArrayList();
+			ids.add(top.getId());
+			List<Binder> others = new ArrayList(binders);
+			for (Binder b:others) {
+				//have same owner and team membership have same acl
+				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId()) &&
+						top.getTeamMemberIds().equals(b.getTeamMemberIds())) {
+					binders.remove(b);
+					ids.add(b.getId());
+				}
+			}
+			org.dom4j.Document qTree = buildQueryforUpdate(ids);
+	    	//don't need to add access check to update of acls
+			//access to entries is not required to update the folder acl
+	    	QueryBuilder qb = new QueryBuilder(null);
+			// add this query and list of ids to the lists we'll pass to updateDocs.
+			updateQueries.add(qb.buildQuery(qTree, false).getQuery());
+			updateIds.add(EntityIndexUtils.getBinderAccess(top));
+		}
 		
 	}
+	private static org.dom4j.Document buildQueryforUpdate(List folderIds) {
+		org.dom4j.Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+    	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+    	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	//get all the entrys, replies and attachments
+    	// Folderid's and doctypes:{entry, binder, attachment}
+    	for (Iterator iter = folderIds.iterator(); iter.hasNext();) {
+    		Element field = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(iter.next().toString());
+    	}
+    	
+    	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	for (int i =0; i < docTypes.length; i++) {
+    		Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(docTypes[i]);
+    	}
+    	// Get all the binder's themselves
+    	// OR Doctype=binder and binder id's
+    	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
+    	Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+    	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+	   	for (Iterator iter = folderIds.iterator(); iter.hasNext();) {
+    		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(iter.next().toString());
+    	}
+	   	return qTree;
+	}
+	
 }

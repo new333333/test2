@@ -21,6 +21,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -48,8 +49,9 @@ public class ViewChangeLogController  extends  SAbstractController {
 			changes = getAdminModule().getChanges(binderId, operation);
 		} else {
 			String entityType = PortletRequestUtils.getStringParameter(request,  "entityType", "folderEntry");
+			EntityIdentifier entityIdentifier = new EntityIdentifier(entityId, EntityIdentifier.EntityType.valueOf(entityType));
 			if (entityId != null) {
-				changes = getAdminModule().getChanges(entityId, entityType, operation);
+				changes = getAdminModule().getChanges(entityIdentifier, operation);
 			}
 		}
 			

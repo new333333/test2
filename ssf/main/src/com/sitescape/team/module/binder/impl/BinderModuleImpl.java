@@ -12,6 +12,7 @@ package com.sitescape.team.module.binder.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.lucene.index.Term;
@@ -26,6 +28,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -43,16 +46,19 @@ import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NotificationDef;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
@@ -66,18 +72,19 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.profile.PrincipalComparator;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 /**
@@ -98,9 +105,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("moveBinder", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setProperty", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setDefinitions", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setTeamMembershipInherited", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setNotificationConfig", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
 		operations.put("accessControl", new WorkAreaOperation[]{WorkAreaOperation.CHANGE_ACCESS_CONTROL});
 		operations.put("setTag", new WorkAreaOperation[]{WorkAreaOperation.ADD_COMMUNITY_TAGS});
@@ -156,6 +164,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   		} else {
   			WorkAreaOperation[] wfo = (WorkAreaOperation[])operations.get(operation);
   			if (wfo == null) {
+  				if (operation.startsWith("getTeamM")) {
+  					Set teamIds = binder.getTeamMemberIds();
+  					//quick check
+  					User user = RequestContextHolder.getRequestContext().getUser();
+  					if (teamIds.contains(user.getId())) return;
+  					Set myIds = getProfileDao().getPrincipalIds(user);
+  					if (!Collections.disjoint(myIds, teamIds)) return;
+  	 				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 			  					
+  					
+  				}
   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
   			} else {
   				for (int i=0; i<wfo.length-1; ++i) {
@@ -169,17 +187,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		// fall under read_entries: getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
 		//addSubscription,modifySubscription,deleteSubscription (personal)
 	}
-  		
-	protected void checkAccess(Binder binder, WorkAreaOperation operation) throws AccessControlException {
-		if (binder instanceof TemplateBinder) {
-			//Only allow template access checks if site-admin
-			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
-  		} else {
-			//	will throw exception on failure
-			getAccessControlManager().checkOperation(binder, operation);
-		}
-	}
-	
+  			
 	private Binder loadBinder(Long binderId) {
 		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 		if (binder.isDeleted()) throw new NoBinderByTheIdException(binderId);
@@ -202,7 +210,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "getBinder"); 
         return binder;        
 	}
-	public Set<Binder> getBinders(Collection<Long> binderIds) {
+	public SortedSet<Binder> getBinders(Collection<Long> binderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
        	TreeSet<Binder> result = new TreeSet<Binder>(c);
@@ -224,13 +232,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return processor.getBinders(binder, options);
 	}
 
-    public Collection indexTree(Long binderId) {
-    	List ids = new ArrayList();
+    public Set<Long> indexTree(Long binderId) {
+    	Set<Long> ids = new HashSet();
     	ids.add(binderId);
     	return indexTree(ids);
     }
     //optimization so we can manage the deletion to the searchEngine
-    public Collection indexTree(Collection binderIds) {
+    public Set<Long> indexTree(Collection binderIds) {
     	//make list of binders we have access to first
     	boolean clearAll = false;
     	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, RequestContextHolder.getRequestContext().getZoneId());
@@ -244,7 +252,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		} catch (Exception ex) {};
     		
     	}
-    	List done = new ArrayList();
+    	Set<Long> done = new HashSet();
     	if (checked.isEmpty()) return done;
 
 		if (clearAll) {
@@ -404,10 +412,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "setProperty");
 		binder.setProperty(property, value);	
    }    
-    public List deleteBinder(Long binderId) {
+    public Set<Exception> deleteBinder(Long binderId) {
     	return deleteBinder(binderId, true);
     }
-    public List deleteBinder(Long binderId, boolean deleteMirroredSource) {
+    public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, "deleteBinder");
 		
@@ -415,15 +423,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if(binder.isMirrored() && deleteMirroredSource)
 			deleteMirroredSourceForChildren = false;
 			
-   		List errors = deleteChildBinders(binder, deleteMirroredSourceForChildren);
+		Set<Exception> errors = deleteChildBinders(binder, deleteMirroredSourceForChildren);
    		if (!errors.isEmpty()) return errors;
    		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource);
    		return null;
     }
-    protected List deleteChildBinders(Binder binder, boolean deleteMirroredSource) {
+    protected Set<Exception> deleteChildBinders(Binder binder, boolean deleteMirroredSource) {
     	//First process all child folders
     	List binders = new ArrayList(binder.getBinders());
-    	List errors = new ArrayList();
+    	Set errors = new HashSet();
     	boolean deleteMirroredSourceForChildren;
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
@@ -434,7 +442,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         		deleteMirroredSourceForChildren = deleteMirroredSource;
         		if(b.isMirrored() && deleteMirroredSource)
         			deleteMirroredSourceForChildren = false;
-       			List e = deleteChildBinders(b, deleteMirroredSourceForChildren);
+        		Set<Exception> e = deleteChildBinders(b, deleteMirroredSourceForChildren);
        			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b, deleteMirroredSource);
        			else errors.addAll(e);
         	} catch (Exception ex) {
@@ -480,7 +488,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return binder;
 		
 	}
-    public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) 
+    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
     	//access checked in setDefinitions
     	Binder binder = setDefinitions(binderId, definitionIds);
@@ -500,16 +508,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		binder.setDefinitionsInherited(false);
 		return binder;
 	}
-	public Binder setDefinitions(Long binderId, List definitionIds) throws AccessControlException {
+	public Binder setDefinitions(Long binderId, List<String> definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "setDefinitions"); 
 		List definitions = new ArrayList(); 
 		Definition def;
 		//	Build up new set - domain object will handle associations
 		if (definitionIds != null) {
-			for (int i=0; i<definitionIds.size(); ++i) {
+			for (String id: definitionIds) {
 				try {
-					def = getCoreDao().loadDefinition((String)definitionIds.get(i), 
+					def = getCoreDao().loadDefinition(id, 
 							RequestContextHolder.getRequestContext().getZoneId());
 					definitions.add(def);
 				} catch (NoDefinitionByTheIdException nd) {}
@@ -523,28 +531,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	/**
 	 * Get tags owned by this binder or current user
-	 */
-	
-	public Map getTags(Binder binder) {
+	 */	
+	public List<Tag> getTags(Binder binder) {
 		//have binder - so assume read access
-        Map results = new HashMap();
 		//bulk load tags
-        List<Tag> tags = getCoreDao().loadEntityTags(binder.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
-        List publicTags = new ArrayList();
-        List privateTags = new ArrayList();
-        for (Tag t: tags) {
-        	if (t.isPublic()) {
-       			publicTags.add(t);
-        	} else {
-       			privateTags.add(t);
-         	}
-        }
-        
-        results.put(ObjectKeys.COMMUNITY_ENTITY_TAGS, TagUtil.uniqueTags(publicTags));
-        results.put(ObjectKeys.PERSONAL_ENTITY_TAGS, TagUtil.uniqueTags(privateTags));
-
-		return results;
-	}
+        return getCoreDao().loadEntityTags(binder.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
+ 	}
 
 	/**
 	 * Add a new tag, to binder
@@ -675,8 +667,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     
 
 
-	public ArrayList getSearchTags(String wordroot, String type) {
-		ArrayList tags = new ArrayList();
+	public List<Map> getSearchTags(String wordroot, String type) {
+		ArrayList tags;
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		SearchObject so = null;
@@ -721,49 +713,175 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	return null;
 	 }
 
-	public boolean hasTeamMembers(Long binderId, boolean explodeGroups) {
-		Binder binder = loadBinder(binderId);
-		//give access to team members OR binder Admins.
-		checkAccess(binder, "getTeamMembers");
-		Set ids = getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.TEAM_MEMBER);		
-		if (explodeGroups) {
-			// explode groups
-			return getProfileDao().explodeGroups(ids, binder.getZoneId()).size() > 0;
-		}
-		if (ids.isEmpty()) return false;
-		return true;
-	}
-		
-
-	public List getTeamMembers(Long binderId, boolean explodeGroups) {
+	public SortedSet<Principal> getTeamMembers(Long binderId, boolean explodeGroups) {
 		//give access to team members  or binder Admins.
-		Set ids = getTeamMemberIds(binderId, explodeGroups);
+		Collection<Long> ids = getTeamMemberIds(binderId, explodeGroups);
 		//turn ids into real Principals
- 	    return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Comparator c = new PrincipalComparator(user.getLocale());
+       	TreeSet<Principal> result = new TreeSet<Principal>(c);
+       	result.addAll(getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true));
+       	return result;
 	}
 	
 	
-	public Set getTeamMemberIds(Long binderId, boolean explodeGroups) {
+	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) {
 		Binder binder = loadBinder(binderId);
 		//give access to team members  or binder Admins.
-		if (testAccess(binder, "getTeamMembers")) {
-			return getTeamMemberIds(binder, explodeGroups);
-		}
-		//Not privileged, send back an empty set
-		return new HashSet();
-	}
-	/*
-	 *  (non-Javadoc)
-	 *  No access check - used internally to send notifications
-	 * @see com.sitescape.team.module.binder.BinderModule#getTeamMemberIds(com.sitescape.team.domain.Binder, boolean)
-	 */
-	public Set getTeamMemberIds(Binder binder, boolean explodeGroups) {
-		Set ids = getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.TEAM_MEMBER);		
+		checkAccess(binder, "getTeamMembers");
+		Set ids = binder.getTeamMemberIds();		
 	    // explode groups
 		if (explodeGroups) return getProfileDao().explodeGroups(ids, binder.getZoneId());
 		return ids;
 	}
+	
+	public void setTeamMembershipInherited(Long binderId, boolean inherit) {
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "setTeamMembershipInherited");
+		if (inherit) {
+			binder.setTeamMemberIds(null);			
+		} else if (binder.isTeamMembershipInherited() && !inherit) {
+			//going from was inheriting to not inheriting => copy
+			Set ids = new HashSet(binder.getTeamMemberIds());
+			binder.setTeamMemberIds(ids);
+		}
+    	//see if there is a real change
+    	if (binder.isTeamMembershipInherited() != inherit) {
+    		binder.setTeamMembershipInherited(inherit);
+            if (!(binder instanceof TemplateBinder)) {
+            	User user = RequestContextHolder.getRequestContext().getUser();
+            	binder.incrLogVersion();
+            	binder.setModification(new HistoryStamp(user));
+           		BinderProcessor processor = loadBinderProcessor(binder);
+           		processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
+    			//Always reindex top binder to update the team members field
+        		processor.indexBinder(binder, false);
+        		//just changed from not inheritting to inherit = need to update index acls
+        		//if changed from inherit to not, acls remains the same
+        		if (inherit) indexMembership(binder, true);
+           	}
 
+    	}
+		
+	}
+	public void setTeamMembers(Long binderId, Collection<Long> memberIds) throws AccessControlException {
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "setTeamMembers");
+		binder.setTeamMemberIds(new HashSet(memberIds));
+		binder.setTeamMembershipInherited(false);
+        if (!(binder instanceof TemplateBinder)) {
+        	User user = RequestContextHolder.getRequestContext().getUser();
+        	binder.incrLogVersion();
+        	binder.setModification(new HistoryStamp(user));
+       		BinderProcessor processor = loadBinderProcessor(binder);
+       		processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
+			//Always reindex top binder to update the team members field
+    		processor.indexBinder(binder, false);
+    		indexMembership(binder, true);
+       	}
+	}
+	private void indexMembership(Binder binder, boolean cascade) {
+		ArrayList<Query> updateQueries = new ArrayList();
+		ArrayList<String> updateIds = new ArrayList();
+		// Now, create a query which can be used by the index update method to modify all the
+		// entries, replies, attachments, and binders(workspaces) in the index with this new 
+		// Acl list.
+		List<Binder> binders = new ArrayList();
+		if (cascade) {
+			binders = getInheritingDescendentBinderIds(binder, binders);
+		} else {
+			binders.add(binder);
+		}
+		SearchUtils.buildMembershipUpdate(binders, updateQueries, updateIds);
+		if (updateQueries.size() > 0) {
+			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+			try {
+				
+				luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
+						updateIds);
+			} finally {
+				luceneSession.close();
+			}
+		}
+		
+	}
+	// a recursive routine which walks down the tree
+	// from here and builds a list of the binders
+	// who inherit teammembership from their parents.  The tree is pruned at
+	// the highest branch that does not inherit from it's parent.
+	private List getInheritingDescendentBinderIds(Binder binder, List<Binder> binders) {
+  		binders.add(binder);
+		List<Binder> childBinders = binder.getBinders();
+ 		for (Binder c: childBinders) {
+			if (c.isTeamMembershipInherited()) {
+				binders = getInheritingDescendentBinderIds(c, binders);
+			}
+    	}
+    	return binders;
+	}
+	//return binders this user is a team_member of
+	public List<Map> getTeamMemberships(Long userId) {
+
+		// We use search engine to get the list of binders.
+		
+		// create empty search filter
+		org.dom4j.Document qTree = SearchUtils.getInitalSearchDocument(null, null);
+		
+		Element rootElement = qTree.getRootElement();
+		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+		
+		// look for binders only
+		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+       	child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+
+    	// look for user
+       	User user = RequestContextHolder.getRequestContext().getUser();
+       	if (!userId.equals(user.getId())) user = getProfileDao().loadUser(userId, user.getZoneId());
+       	Set<Long> ids = getProfileDao().getPrincipalIds(user);
+       	if (ids.isEmpty()) return Collections.EMPTY_LIST;
+       	if (ids.size() > 1) {
+       		Element orField2 = boolElement.addElement(QueryBuilder.OR_ELEMENT);
+       		for (Long id:ids) {
+       			field = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+       			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
+       			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+       			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+       			child.setText(id.toString());
+       		}
+       	} else {
+  			field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+   			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
+   			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+   			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+   			child.setText(userId.toString());
+       		
+       	}
+    	QueryBuilder qb = new QueryBuilder(ids);
+    	SearchObject so = qb.buildQuery(qTree);
+	   	//Set the sort order
+	   	SortField[] fields = new SortField[] {new SortField(EntityIndexUtils.SORT_TITLE_FIELD, SortField.AUTO, false)};
+	   	so.setSortBy(fields);
+   	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + qTree.asXML());
+    		logger.debug("Query is: " + so.getQuery().toString());
+    	}
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+    	Hits hits = null;
+        try {
+	        hits = luceneSession.search(so.getQuery(), so.getSortBy(), 0, Integer.MAX_VALUE);
+        }
+        finally {
+            luceneSession.close();
+        }
+        if (hits == null) return new ArrayList();
+    	return SearchUtils.getSearchEntries(hits);	    
+    }	
     public void setPosting(Long binderId, String emailAddress) {
     	Map updates = new HashMap();
     	updates.put("emailAddress", emailAddress);
@@ -829,6 +947,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    
     public void setNotificationConfig(Long binderId, ScheduleInfo config) {
         Binder binder = loadBinder(binderId); 
+        getCoreDao().refresh(binder);
         checkAccess(binder, "setNotificationConfig"); 
         //data is stored with job
         EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
@@ -840,7 +959,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      * @param updates
      * @param principals - if null, don't change list.
      */
-    public void modifyNotification(Long binderId, Map updates, Collection principals) {
+    public void modifyNotification(Long binderId, Map updates, Collection<Long> principalIds) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, "modifyNotification"); 
     	NotificationDef current = binder.getNotificationDef();
@@ -849,9 +968,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		binder.setNotificationDef(current);
     	}
     	ObjectBuilder.updateObject(current, updates);
-    	if (principals == null) return;
+    	if (principalIds == null) return;
   		//	Pre-load for performance
-    	List notifyUsers = getProfileDao().loadPrincipals(principals, binder.getZoneId(), true);
+    	List notifyUsers = getProfileDao().loadPrincipals(principalIds, binder.getZoneId(), true);
    		current.setDistribution(notifyUsers);
     }
     

@@ -71,7 +71,7 @@ public interface ProfileDao {
      * @param zoneId
      * @return
      */
- 	public Set explodeGroups(Set ids, Long zoneId); 
+ 	public Set<Long> explodeGroups(Collection ids, Long zoneId); 
  	/**
  	 * Locate a user by name.  This is used for login
  	 * @param principalName
@@ -91,11 +91,11 @@ public interface ProfileDao {
 	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
       
     public Group loadGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
-    public List loadGroups(Collection groupsIds, Long zoneId);
+    public List loadGroups(Collection<Long> groupsIds, Long zoneId);
     public List loadGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public Principal loadPrincipal(Long prinId, Long zoneId, boolean checkActive);
-    public List loadPrincipals(Collection ids, Long zoneId,  boolean checkActive);
-    public Map loadPrincipalsData(Collection ids, Long zoneId,  boolean checkActive);
+    public List loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
+    public Map loadPrincipalsData(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
 	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
@@ -110,7 +110,7 @@ public interface ProfileDao {
     public User loadUser(Long userId, Long zoneId) throws NoUserByTheIdException;
     public User loadUser(Long userId, String zoneName) throws NoUserByTheIdException;
     public List loadUsers(FilterControls filter, Long zoneId) throws DataAccessException; 
-    public List loadUsers(Collection usersIds, Long zoneId);
+    public List loadUsers(Collection<Long> usersIds, Long zoneId);
 	public Visits loadVisit(Long userId, EntityIdentifier entityId);
 
 	public UserProperties loadUserProperties(Long userId);

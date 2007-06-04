@@ -78,6 +78,7 @@
     <property name="functionMembershipInherited" not-null="true"/>
     <property name="definitionsInherited"/>
     <property name="definitionType"/>
+    <property name="teamMembershipInherited"/>
     <component name="averageRating" class="com.sitescape.team.domain.AverageRating">
       <property name="average" column="ratings_average" />
       <property name="count" column="ratings_count"/>

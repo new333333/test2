@@ -9,6 +9,7 @@
  *
  */
 package com.sitescape.team.security.function;
+import java.util.Set;
 import com.sitescape.team.domain.Principal;
 /**
  * 
@@ -36,5 +37,9 @@ public interface WorkArea {
     public Long getOwnerId();
     public Principal getOwner();
     public void setOwner(Principal owner);
+    public boolean isTeamMembershipInherited();
+    public Set getTeamMemberIds();
+    public void setTeamMemberIds(Set memberIds);
+    public Set getChildWorkAreas();
 
 }

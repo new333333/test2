@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
@@ -82,7 +83,6 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
-import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 /**
@@ -344,15 +344,15 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     }
 
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         
         Boolean filesFromApplet = new Boolean(false);
         modifyEntry(folderId, entryId, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
     }
 
-    public FilesErrors modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
     	meCount.incrementAndGet();
 
@@ -368,24 +368,20 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         
     	List<Attachment> atts = new ArrayList<Attachment>();
     	if (deleteAttachments != null) {
-    		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
-    			Object v = iter.next();
-    			if(v instanceof String) {
-    				String id = (String)v;
-    				Attachment a = entry.getAttachment(id);
-    				if (a != null) atts.add(a);
-    			}
-    			else if(v instanceof Attachment) {
-    				atts.add((Attachment) v);
-    			}
+    		for (String id: deleteAttachments) {
+   				Attachment a = entry.getAttachment(id);
+   				if (a != null) atts.add(a);
     		}
     	}
     	Date stamp = entry.getModification().getDate();
     	
-    	FilesErrors filesErrors = processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo, filesFromApplet);
-        if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
+    	try {
+    		processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo, filesFromApplet);
+    	} catch (WriteFilesException ex) {
+    		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
+    	    throw ex;   
+    	}
         
-        return filesErrors;
     }    
     
 
@@ -512,15 +508,15 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return result;
     }
 
-    public Map getUnseenCounts(List folderIds) {
+    public Map getUnseenCounts(Collection<Long> folderIds) {
     	//search engine will do acl checks
         User user = RequestContextHolder.getRequestContext().getUser();
         SeenMap seenMap = getProfileDao().loadSeenMap(user.getId());
         Map results = new HashMap();
-        List folders = new ArrayList();
-        for (int i=0; i<folderIds.size(); ++i) {
+        Set<Folder> folders = new HashSet();
+        for (Long id:folderIds) {
         	try {
-        		folders.add(loadFolder((Long)folderIds.get(i)));
+        		folders.add(loadFolder(id));
         	} catch (NoFolderByTheIdException nf) {} 
         }
         if (folders.size() > 0) {
@@ -547,8 +543,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 						cnt.increment();
 					}
 				}
-		        for (int i=0; i<folders.size(); ++i) {
-		        	Folder f = (Folder)folders.get(i);
+		        for (Folder f : folders) {
 		        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
 		        	if (cnt == null) cnt = new Counter();
 		        	results.put(f, cnt);
@@ -558,7 +553,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return results;
     }
  
-    protected Hits getRecentEntries(List folders) {
+    protected Hits getRecentEntries(Collection<Folder> folders) {
     	Hits results = null;
        	// Build the query
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
@@ -667,26 +662,10 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		if (s != null) getCoreDao().delete(s);
     }
 
-	public Map getTags(FolderEntry entry) {
+	public List<Tag> getTags(FolderEntry entry) {
 		//have Entry - so assume read access
-        Map results = new HashMap();
 		//bulk load tags
-        List<Tag> tags = getCoreDao().loadEntityTags(entry.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
-        List publicTags = new ArrayList();
-        List privateTags = new ArrayList();
-        for (Tag t: tags) {
-        	if (t.isPublic()) {
-       			publicTags.add(t);
-        	} else {
-       			privateTags.add(t);
-         	}
-        }
-        
-        results.put(ObjectKeys.COMMUNITY_ENTITY_TAGS, TagUtil.uniqueTags(publicTags));
-        results.put(ObjectKeys.PERSONAL_ENTITY_TAGS, TagUtil.uniqueTags(privateTags));
-
-		return results;		
-		
+        return getCoreDao().loadEntityTags(entry.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
 	}
 	
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
@@ -907,7 +886,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	}
     }
     //this is for wiki links where normalize title is used
-    public Set getFolderEntryByNormalizedTitle(Long folderId, String title)
+    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title)
 	throws AccessControlException {
     	Folder folder = getFolder(folderId);
     	FilterControls fc = new FilterControls();

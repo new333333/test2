@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.security.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +27,6 @@ import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.security.acl.AclAccessControlException;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
-import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.security.function.WorkArea;
@@ -64,16 +64,16 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
     	//need to use this work areas owner, even if inheriting
-    	return getWorkAreaAccessControl(workArea, workArea.getOwnerId(), workAreaOperation);
+    	return getWorkAreaAccessControl(workArea, workArea, workAreaOperation);
     }
 
-    protected Set getWorkAreaAccessControl(WorkArea workArea, Long ownerId, WorkAreaOperation workAreaOperation) {
+    protected Set getWorkAreaAccessControl(WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
         if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
             if(parentWorkArea == null)
                 return new HashSet();  //possible for templates
             else
-                return getWorkAreaAccessControl(parentWorkArea, ownerId, workAreaOperation);
+                return getWorkAreaAccessControl(workAreaStart, parentWorkArea, workAreaOperation);
         }
         else {
 	        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -83,7 +83,8 @@ public class AccessControlManagerImpl implements AccessControlManager {
             for (WorkAreaFunctionMembership wfm:wfms) {
             	ids.addAll(wfm.getMemberIds());
         	}
-        	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(ownerId);
+        	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(workAreaStart.getOwnerId());
+        	if (ids.remove(ObjectKeys.TEAM_MEMBER_ID)) ids.add(workAreaStart.getTeamMemberIds());
 	        return ids;
 	        
         }    	
@@ -117,16 +118,16 @@ public class AccessControlManagerImpl implements AccessControlManager {
     	throws AccessControlException {
         return testOperation
         	(RequestContextHolder.getRequestContext().getUser(), 
-        	        workArea, workArea.getOwnerId(), workAreaOperation);
+        	        workArea, workArea, workAreaOperation);
     }
 	
 	public boolean testOperation(User user,
 			WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		return testOperation(user, workArea, workArea.getOwnerId(), workAreaOperation);
+		return testOperation(user, workArea, workArea, workAreaOperation);
 		
 	}
 	//pass the original ownerId in.  Recursive calls need the original
-	private boolean testOperation(User user, WorkArea workArea, Long ownerId, WorkAreaOperation workAreaOperation) {
+	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
 
 		if (user.isSuper()) return true;
 		if (workArea.isFunctionMembershipInherited()) {
@@ -136,11 +137,12 @@ public class AccessControlManagerImpl implements AccessControlManager {
 						"Cannot inherit function membership when it has no parent");
 			else
 				// use the original workArea owner
-				return testOperation(user, parentWorkArea, ownerId, workAreaOperation);
+				return testOperation(user, workAreaStart, parentWorkArea, workAreaOperation);
 		} else {
 			Set membersToLookup = getProfileDao().getPrincipalIds(user);
 			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(ownerId)) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			if (!Collections.disjoint(workAreaStart.getTeamMemberIds(), membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
 			return getWorkAreaFunctionMembershipManager()
 					.checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, membersToLookup);
@@ -157,7 +159,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
-        if (!testOperation(user, workArea, workArea.getOwnerId(), workAreaOperation))
+        if (!testOperation(user, workArea, workArea, workAreaOperation))
         	throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.toString());
     }
@@ -240,8 +242,9 @@ public class AccessControlManagerImpl implements AccessControlManager {
            	// We have to check against the explicit set associated with this object.
            	Set principalIds = getProfileDao().getPrincipalIds(user);
             if (user.getId().equals(aclControlledObj.getOwnerId()))  principalIds.add(ObjectKeys.OWNER_USER_ID);
+            //don't know if team members makes sense
            	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
-           	return intersectedSets(principalIds, memberIds);
+           	return !Collections.disjoint(principalIds, memberIds);
         }        
     }
     public void checkAcl(AclContainer aclContainer, AccessType accessType, boolean includeParentAcl) throws AccessControlException {
@@ -257,11 +260,5 @@ public class AccessControlManagerImpl implements AccessControlManager {
         return testAcl(user, aclContainer.getParentAclContainer(), aclContainer, accessType, includeParentAcl);
     }    
     
-    private boolean intersectedSets(Set set1, Set set2) {
-        for(Iterator i = set1.iterator(); i.hasNext();) {
-            if(set2.contains(i.next()))
-                return true;
-        }
-        return false;
-    }
+
 }

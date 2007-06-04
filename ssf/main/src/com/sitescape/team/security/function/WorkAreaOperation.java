@@ -51,7 +51,6 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation CREATOR_DELETE = new WorkAreaOperation("creatorDeleteEntries");
 //    public final static WorkAreaOperation USER_SEE_COMMUNITY = new WorkAreaOperation("userSeeCommunity");
 //    public final static WorkAreaOperation USER_SEE_ALL = new WorkAreaOperation("userSeeAll");
-    public final static WorkAreaOperation TEAM_MEMBER = new WorkAreaOperation("teamMember");
     public final static WorkAreaOperation MANAGE_BINDER_INCOMING = new WorkAreaOperation("posting");
     public final static WorkAreaOperation ADD_COMMUNITY_TAGS = new WorkAreaOperation("addTags");
     private String name;

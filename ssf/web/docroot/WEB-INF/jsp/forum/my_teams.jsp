@@ -22,15 +22,15 @@
 <c:forEach var="binder" items="${ss_myTeams}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
-		    binderId="${binder.id}">
-		    <ssf:param name="entityType" value="${binder.entityType}" />
+		    binderId="${binder._docId}">
+		    <ssf:param name="entityType" value="${binder._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
 <ssf:ifnotaccessible>
-  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '${ss_namespace}', '1')"
+  onClick="return ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', '1')"
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-  onClick="return parent.ss_gotoPermalink('${binder.id}', '${binder.id}', '${binder.entityType}', '${ss_namespace}', '1')"
+  onClick="return parent.ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', '1')"
 </ssf:ifaccessible>
 >${binder.title}</a><br/>
 </c:forEach>

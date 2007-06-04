@@ -15,9 +15,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.team.security.function.WorkArea;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -46,6 +50,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected Map workflowAssociations;//initialized by hibernate access="field"
     protected boolean definitionsInherited=true;
     protected boolean functionMembershipInherited = true;
+    protected boolean teamMembershipInherited = true;
     //uuid to identify a reserved binder
     private String internalId;
     //force attachments of all child objects to have unique names.
@@ -76,6 +81,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 type = source.type;
 		 definitionsInherited=source.definitionsInherited;
 		 functionMembershipInherited=source.functionMembershipInherited;
+		 teamMembershipInherited=source.teamMembershipInherited;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
 		 if (source.properties != null)
@@ -275,7 +281,13 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setProperties(Map properties) {
         this.properties = properties;
     }
+    public void removeProperty(String name) {
+    	if (properties == null) return;
+    	properties.remove(name);
+    	if (properties.isEmpty()) properties = null;
+    }
     public void setProperty(String name, Object value) {
+    	if (value == null) removeProperty(name);
     	if (properties == null) properties = new HashMap();
     	properties.put(name, value);
     }
@@ -283,7 +295,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	if (properties == null) return null;
     	return properties.get(name);
     }
-
     
     /**
      * hibernate.property 
@@ -309,6 +320,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public WorkArea getParentWorkArea() {
         return this.getParentBinder();
     }
+    public Set getChildWorkAreas() {
+    	return new HashSet(getBinders());
+    }
 	/**
 	 * @hibernate.property not-null="true"
 	 * @return
@@ -332,6 +346,23 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	if (owner == null)	return null;
     	return owner.getId();
     }
+    public boolean isTeamMembershipInherited() {
+    	return teamMembershipInherited;   	
+    }
+    public void setTeamMembershipInherited(boolean teamMembershipInherited) {
+    	this.teamMembershipInherited = teamMembershipInherited;
+    }
+    public Set getTeamMemberIds() {
+    	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberIds();
+    	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
+    	return LongIdUtil.getIdsAsLongSet(members);
+    	
+    }
+    public void setTeamMemberIds(Set memberIds) {
+    	//setting inherited flag handled separate
+    	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
+    	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));
+     }
 
     public String getProcessorClassName(String processorKey) {
         return (String) getProperty(processorKey);

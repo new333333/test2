@@ -11,9 +11,9 @@
 package com.sitescape.team.portlet.workspaceTree;
 
 import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -40,7 +40,9 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -197,7 +199,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			} else {
 				getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
 			}
-			Map tagResults = getBinderModule().getTags(binder);
+			Map tagResults = TagUtil.uniqueTags(getBinderModule().getTags(binder));
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		} catch(NoBinderByTheIdException e) {
@@ -246,11 +248,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 	}
 	
 	protected void getTeamMembers(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Map<String,Object>model) throws PortletRequestBindingException {
-		if (getBinderModule().testAccess(ws, "getTeamMembers")) {
-			List users = getBinderModule().getTeamMembers(ws.getId(), true);
+		try {
+			Collection users = getBinderModule().getTeamMembers(ws.getId(), true);
 			model.put(WebKeys.TEAM_MEMBERS, users);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
-		}
+		} catch (AccessControlException ac) {} //just skip
 		
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
 	}

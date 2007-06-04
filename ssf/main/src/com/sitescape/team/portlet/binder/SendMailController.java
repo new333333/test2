@@ -31,7 +31,7 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
 
@@ -56,8 +56,8 @@ public class SendMailController extends SAbstractController {
 			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 			Set memberIds = new HashSet();
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
-			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
-			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			
 			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML), null, false);
 			int i = 0;

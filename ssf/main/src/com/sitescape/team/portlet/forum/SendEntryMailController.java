@@ -11,7 +11,6 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,16 +30,13 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.workflow.WorkflowUtils;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
 
@@ -67,8 +63,8 @@ public class SendEntryMailController extends SAbstractController {
 			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 			Set memberIds = new HashSet();
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
-			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
-			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			
 			boolean sendAttachments = PortletRequestUtils.getBooleanParameter(request, "attachments", false);
 			Map folderEntries  = getFolderModule().getEntryTree(folderId, entryId);

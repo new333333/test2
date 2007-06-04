@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 
@@ -55,9 +55,9 @@ public class UpdatePresenceController  extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
 		} else {
 			//refresh call
-			Set p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("userList"));
+			Set p = LongIdUtil.getIdsAsLongSet(request.getParameterValues("userList"));
 			model.put(WebKeys.USERS, getProfileModule().getUsers(p));
-			p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groupList"));
+			p = LongIdUtil.getIdsAsLongSet(request.getParameterValues("groupList"));
 			model.put(WebKeys.GROUPS, getProfileModule().getGroups(p));
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);

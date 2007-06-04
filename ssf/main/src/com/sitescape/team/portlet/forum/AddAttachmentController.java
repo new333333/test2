@@ -24,13 +24,13 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
-import com.sitescape.team.module.file.FilesErrors;
 
 /**
  * @author Peter Hurley
@@ -62,13 +62,11 @@ public class AddAttachmentController extends SAbstractController {
 					deleteAtts.add(key.substring(8));
 				}
 			}
-			Boolean filesFromApplet = new Boolean(true);
-			FilesErrors filesErrors = getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, filesFromApplet);
-			
 			String strFilesErrors = "";
-			
-			if (filesErrors != null && filesErrors.getProblems().size() > 0) {
-				strFilesErrors = filesErrors.toString();
+			try {
+				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, Boolean.TRUE);
+			} catch (WriteFilesException wf) {
+				strFilesErrors = wf.toString();
 			}
 			
 			if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {

@@ -13,7 +13,6 @@
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -21,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -28,6 +28,7 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -36,7 +37,6 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
@@ -46,6 +46,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
 
 /**
@@ -110,6 +111,7 @@ public class EntityIndexUtils {
     public static final String ENTITY_FIELD="_entityType";
     public static final String ENTRY_FIELD="_entryType"; 
     public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
+    public static final String TEAM_MEMBERS_FIELD="_teamMembers";
  //   public static final String GROUP_SEE_COMMUNITY="groupCommunity";
  //   public static final String GROUP_SEE_ANY="groupAny";
     
@@ -465,17 +467,17 @@ public class EntityIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
-    private static String getBinderAccess(Binder binder) {
+    public static void addTeamMembership(Document doc, Set<Long> ids) {
+    	if ((ids == null) || ids.isEmpty()) return;
+		doc.add(new Field(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.TOKENIZED));
+   	
+    }
+    public static String getBinderAccess(Binder binder) {
 		Set binderIds = AccessUtils.getReadAccessIds(binder);
-		StringBuffer bIds = new StringBuffer();
 		if (!binderIds.isEmpty()) {
-			for (Iterator i = binderIds.iterator(); i.hasNext();) {
-				bIds.append(i.next()).append(" ");
-			}
-		} else {
-			bIds.append(BasicIndexUtils.READ_ACL_ALL);
-		}   		
-		return bIds.toString();
+			return LongIdUtil.getIdsAsString(binderIds);
+		} 
+		return BasicIndexUtils.READ_ACL_ALL;
     }
     public static void addReadAccess(Document doc, Binder binder) {
     	//set entryAcl to all
@@ -497,10 +499,7 @@ public class EntityIndexUtils {
      	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
      	// I'm not sure if putting together a long string value is more
      	// 	efficient than processing multiple short strings... We will see.
-     	StringBuffer pIds = new StringBuffer();
-     	for (Iterator i = ids.iterator(); i.hasNext();) {
-     		pIds.append(i.next()).append(" ");
-     	}
+     	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
    		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
    			//add all => folder check
    			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
@@ -539,31 +538,21 @@ public class EntityIndexUtils {
 	}
  
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
-    	List pubTags = new ArrayList<Tag>();
-    	List privTags = new ArrayList<Tag>();
     	String indexableTags = "";
     	String aclTags = "";
     	   	
-    	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
-    		Tag thisTag = (Tag)iter.next();
-    		if (thisTag.isPublic())
-    			pubTags.add(thisTag);
-    		else
-    			privTags.add(thisTag);
-    	}
-    	pubTags = TagUtil.uniqueTags(pubTags);
-    	privTags = TagUtil.uniqueTags(privTags);
+    	Map<String, SortedSet<Tag>> uniqueTags = TagUtil.uniqueTags(allTags);
+    	SortedSet<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
+    	SortedSet<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
     	
     	// index all the public tags (allTags field and tag_acl field)
-		for (Iterator iter=pubTags.iterator(); iter.hasNext();) {
-			Tag thisTag = (Tag)iter.next();
+		for (Tag thisTag: pubTags) {
 			indexableTags += " " + thisTag.getName();
 			aclTags += " " + BasicIndexUtils.buildAclTag(thisTag.getName(), BasicIndexUtils.READ_ACL_ALL);
 		}
 	
 		// now index the private tags (just the tag_acl field)
-		for (Iterator iter=privTags.iterator(); iter.hasNext();) {
-			Tag thisTag = (Tag)iter.next();
+		for (Tag thisTag: privTags) {
 			aclTags += " " + BasicIndexUtils.buildAclTag(thisTag.getName(), thisTag.getOwnerIdentifier().getEntityId().toString());
 		}
     
@@ -667,19 +656,6 @@ public class EntityIndexUtils {
     		doc.add(ancestry);
     		parentBinder = ((Binder)parentBinder).getParentBinder();
     	}
-    }
-
-    public static Set getPrincipalsFromSearch(List<Map> searchResults) {
-    	Set ids = new HashSet();
-    	for (Map entry: searchResults) {
-    		if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
-    			try {ids.add(new Long(entry.get(EntityIndexUtils.CREATORID_FIELD).toString()));
-    			} catch (Exception ex) {}
-    		if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
-    			try {ids.add(new Long(entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString()));
-    			} catch (Exception ex) {}
-    	}
-    	return ids;
     }
 
 }

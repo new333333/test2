@@ -54,6 +54,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -686,7 +687,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.BINDER_WEBDAV_URL, strEntryURL);
 		//model.put(WebKeys.BINDER_WEBDAV_URL, strWebDavURL);
-		Map tagResults = getFolderModule().getTags(entry);
+		Map tagResults = TagUtil.uniqueTags(getFolderModule().getTags(entry));
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(entry));

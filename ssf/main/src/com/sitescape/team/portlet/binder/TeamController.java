@@ -11,40 +11,23 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.domain.User;
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.Clipboard;
-import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
-import com.sitescape.util.StringUtil;
 
 /**
  * @author Janet McCann
@@ -62,11 +45,10 @@ public class TeamController extends AbstractBinderController {
 
 		if (formData.containsKey("okBtn")) {
 			Set memberIds = new HashSet();
-			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
-			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-			
-			//Save the team members list
-			// TODO - add code
+			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+			//Save the team members 
+			getBinderModule().setTeamMembers(binderId, memberIds);
 			
 			setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("cancelBtn")) {
@@ -84,12 +66,10 @@ public class TeamController extends AbstractBinderController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 		}
-
-		List userIds = new ArrayList();
-		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
-
-		List groupIds = new ArrayList();
-		model.put(WebKeys.GROUPS, getProfileModule().getUsers(new HashSet(userIds)));
+		Set memberIds = getBinderModule().getTeamMemberIds(binderId, false);
+		//split into users/groups
+		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
+		model.put(WebKeys.GROUPS, getProfileModule().getGroups(memberIds));
 
 		return new ModelAndView(WebKeys.VIEW_ADD_TEAM_MEMBERS, model);
 	}

@@ -18,11 +18,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.SortedSet;
 import org.dom4j.Document;
 
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
@@ -66,12 +67,12 @@ public interface ProfileModule {
 
     public Map getGroups(Long binderId);
     public Map getGroups(Long binderId, Map options);
-	public Collection getGroups(Set groupIds);
+	public SortedSet<Group> getGroups(Collection<Long> groupIds);
 	public List getGroupMembers(Long groupId, Long zoneId);
 	public List getPrincipals(Set ids, Long zoneId);
 	public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, Map options);
-	public Collection getUsers(Set userIds);
+	public SortedSet<User> getUsers(Collection<Long> userIds);
 	/**
 	 * Return a collection of user.  The are either in the principal list
 	 * or members of groups in the principal list.

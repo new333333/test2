@@ -39,11 +39,11 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 
 import com.sitescape.team.util.NLT;
 
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
 
@@ -1132,7 +1132,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						req = new DynamicServletRequest(httpReq);
 						req.setAttribute("propertyId", propertyId);
 						req.setAttribute("propertyValue", propertyValue0);
-						Set ids = FindIdsHelper.getIdsAsLongSet((String)propertyValue0);
+						Set ids = LongIdUtil.getIdsAsLongSet((String)propertyValue0);
 						ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
 					    User user = RequestContextHolder.getRequestContext().getUser();
 

@@ -1040,8 +1040,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                 	return session.createCriteria(Tag.class)
                  		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
        					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
-                 		.addOrder(Order.asc("name"))
-	                 	.list();
+ 	                 	.list();
 	                }
 	            }
 	        );
@@ -1056,8 +1055,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                  		.add(Expression.eq("entityIdentifier.entityId", entityId.getEntityId()))
        					.add(Expression.eq("entityIdentifier.type", entityId.getEntityType().getValue()))
        					.add(Expression.eq("public", true))
-                 		.addOrder(Order.asc("name"))
-	                 	.list();
+ 	                 	.list();
 	                }
 	            }
 	        );
@@ -1073,7 +1071,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                  		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
        					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
        					.add(Expression.eq("public",false))
-                 		.addOrder(Order.asc("name"))
 	                 	.list();
 	                }
 	            }
@@ -1088,7 +1085,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                  		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
        					.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
        					.add(Expression.eq("public",false))
-                 		.addOrder(Order.asc("name"))
 	                 	.list();
 	                }
 	            }
@@ -1111,7 +1107,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
               							.add(Expression.eq("ownerIdentifier.type", ownerIdentifier.getEntityType().getValue()))
               					)
               			)
-                 		.addOrder(Order.asc("name"))
 	                 	.list();
 	    	   		}
 	    	   	}

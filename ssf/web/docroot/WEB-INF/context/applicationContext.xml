@@ -471,6 +471,7 @@
 				<property name="workspaceModule"><ref local="workspaceModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
 				<property name="dashboardModule"><ref local="dashboardModule"/></property>
+				<property name="fileModule"><ref local="fileModule"/></property>
 				<property name="icalModule"><ref local="icalModule"/></property>
 			</bean>
 		</property>

@@ -36,7 +36,6 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
 import com.sitescape.team.domain.Attachment;
-import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
@@ -50,6 +49,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
@@ -80,7 +80,6 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.FileUploadItem;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.SpringContextUtil;
@@ -93,8 +92,6 @@ import com.sitescape.util.Validator;
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
    protected DefinitionModule definitionModule;
-   private static final String TEXT_SUBDIR = "text",
-   							   TXT_EXT = ".txt";
 
  
 	protected DefinitionModule getDefinitionModule() {
@@ -1139,8 +1136,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     	// Add search document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_BINDER);
-        
-         
+        //used to answer what teams am I a member of
+       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, binder.getTeamMemberIds());
+
         // Add the events
         EntityIndexUtils.addEvents(indexDoc, binder);
         

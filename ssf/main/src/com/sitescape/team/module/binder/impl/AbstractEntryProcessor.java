@@ -22,7 +22,6 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,12 +63,11 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.SearchObject;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.util.FileUploadItem;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
@@ -460,7 +458,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	modifyEntry(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
     }
     
-    public FilesErrors modifyEntry(final Binder binder, final Entry entry, 
+    public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)  
     		throws WriteFilesException {
@@ -533,12 +531,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
-	    		//throw new WriteFilesException(filesErrors);
-	    		return filesErrors;
+	    		throw new WriteFilesException(filesErrors);
 	    	}
-	    	else {
-	    		return null;
-	    	} 
+	    	
 	    }finally {
 		    cleanupFiles(fileUploadItems);
 	    }

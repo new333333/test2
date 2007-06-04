@@ -22,19 +22,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.sitescape.team.domain.User;
-import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 
  *
  */
-public class Group extends Principal implements WorkArea {
+public class Group extends Principal  {
     private List members;  //initialized by hibernate access=field  
-    private Principal owner; //initialized by hibernate access=field  
-    
-    private Boolean functionMembershipInherited = Boolean.TRUE;//initialized by hibernate access=field
       
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
@@ -82,56 +77,4 @@ public class Group extends Principal implements WorkArea {
     	member.getMemberOf().remove(this);
     }
     
-	public Long getWorkAreaId() {
-		return getId();
-	}
-	public String getWorkAreaType() {
-		return EntityIdentifier.EntityType.group.name();
-	}
-	public WorkArea getParentWorkArea() {
-		// Group can be a child of many other groups. No single parent.
-		// TODO Then where should we inherit the function membership from?
-		return null; // For now
-	}
-	public Principal getOwner() {
-		if (owner != null) return owner;
-	   	HistoryStamp creation = getCreation();
-    	if ((creation != null) && creation.getPrincipal() != null) {
-    		return creation.getPrincipal();
-    	}
-    	return null;
-		
-	}
-	public void setOwner(Principal owner) {
-		this.owner = owner;
-	}
-	public Long getOwnerId() {
-		Principal owner = getOwner();
-		if (owner == null)	return null;
-		return owner.getId();
- 
-	}
-	
-	// I have separate sets of methods for handling functionMembershipInherited
-	// field - one for WorkArea interface and the other for Hibernate persistence.
-	// Strictly speaking this separation is not at all necessary. But in order
-	// to allow people to continue working with existing databases without having
-	// to re-build them, I had to allow nulls for existing records, and hence
-	// this ugly code. 
-	public boolean isFunctionMembershipInherited() {
-    	if(functionMembershipInherited == null)
-    		return true; // Default value
-    	else		
-    		return functionMembershipInherited.booleanValue();
-	}
-    //this is needed for templates, which may inherit from a yet to be determined parent
-    public boolean isFunctionMembershipInheritanceSupported() {
-    	return true;
-    }
-
-	public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
-        this.functionMembershipInherited = Boolean.valueOf(functionMembershipInherited);
-    }
-	
-
 }

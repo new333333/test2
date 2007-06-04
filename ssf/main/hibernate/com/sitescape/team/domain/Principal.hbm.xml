@@ -74,8 +74,6 @@
         <key column="groupId"/>
         <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="userId"/>
       </bag>
-      <many-to-one name="owner" access="field"/>      
-      <property name="functionMembershipInherited" access="field"/>
     </subclass>
     <subclass name="com.sitescape.team.domain.User" node="User" discriminator-value="user" dynamic-update="true">
       <property name="displayStyle" length="16"/>

@@ -759,6 +759,7 @@ public class BinderHelper {
 			Map users = (Map)pMap.get(WebKeys.USERS);
 			Map groups = (Map)pMap.get(WebKeys.GROUPS);
 			if (users.size() > 0 || groups.size() > 0 || pMap.containsKey(WebKeys.OWNER) || 
+					pMap.containsKey(WebKeys.TEAM_MEMBER) ||
 					newRoleIds.contains(f.getId())) {
 				//This function has some membership; add it to the sorted list
 				sortedFunctionsMap.put(f.getName().toLowerCase() + f.getId().toString(), f);

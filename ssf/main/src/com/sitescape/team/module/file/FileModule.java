@@ -23,6 +23,8 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.repository.RepositoryServiceException;
+import com.sitescape.team.util.FileUploadItem;
+
 
 /**
  * Provides uniform interface and integrated management for various file 
@@ -180,7 +182,7 @@ public interface FileModule {
 	 * with the accumulated errors.  
 	 */
     public FilesErrors writeFiles(Binder binder, DefinableEntity entity, 
-    		List fileUploadItems, FilesErrors errors) 
+    		List<FileUploadItem> fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException;
     
     /**
@@ -194,7 +196,7 @@ public interface FileModule {
      * @return
      * @throws FilterException
      */
-    public FilesErrors filterFiles(Binder binder, List fileUploadItems) 
+    public FilesErrors filterFiles(Binder binder, List<FileUploadItem> fileUploadItems) 
     	throws FilterException;
     
     /**

@@ -34,7 +34,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.MailTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.ScheduleHelper;
 import com.sitescape.util.Validator;
@@ -60,12 +60,12 @@ public class EmailConfigController extends  AbstractBinderController  {
 			//sub-folders don't have a schedule, use addresses to figure it out
 			if (formData.containsKey("addresses")) {
 				Set userList = new HashSet();
-				if (formData.containsKey("users")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
-				if (formData.containsKey("groups")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+				if (formData.containsKey("users")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+				if (formData.containsKey("groups")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 				getScheduleData(request, config);
-				getBinderModule().setNotificationConfig(folderId, config);			
 				getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
+				getBinderModule().setNotificationConfig(folderId, config);			
 			}
 			response.setRenderParameters(formData);
 		} 
