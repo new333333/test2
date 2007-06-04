@@ -44,11 +44,17 @@ public class TeamController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 
 		if (formData.containsKey("okBtn")) {
-			Set memberIds = new HashSet();
-			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
-			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			//Save the team members 
-			getBinderModule().setTeamMembers(binderId, memberIds);
+			//Save the inheritance flag
+			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", true);
+			getBinderModule().setTeamMembershipInherited(binderId, inherit);
+
+			if (!inherit) {
+				Set memberIds = new HashSet();
+				if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+				if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+				//Save the team members 
+				getBinderModule().setTeamMembers(binderId, memberIds);
+			}
 			
 			setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("cancelBtn")) {
@@ -62,9 +68,11 @@ public class TeamController extends AbstractBinderController {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_BINDER_ID);
+		model.put(WebKeys.INHERIT_FROM_PARENT, false);
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.INHERIT_FROM_PARENT, binder.isTeamMembershipInherited());
 		}
 		Set memberIds = getBinderModule().getTeamMemberIds(binderId, false);
 		//split into users/groups
