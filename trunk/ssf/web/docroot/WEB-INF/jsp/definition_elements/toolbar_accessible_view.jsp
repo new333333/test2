@@ -268,7 +268,7 @@ var ss_userSkin = "${ss_user_skin}";
 	      >
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
 	      	<img border="0" 
-	      	src="<html:imagesPath/>skins/${ss_user_skin}/iconset/<c:out value="${toolbarMenu.value.qualifiers.icon}" />" 
+	      	src="<html:imagesPath/>icons/<c:out value="${toolbarMenu.value.qualifiers.icon}" />" 
 	      	alt="<c:out value="${toolbarMenu.value.title}" />" >
 	      </c:if>
 	      <c:if test="${empty toolbarMenu.value.qualifiers.icon}">

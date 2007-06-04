@@ -484,10 +484,10 @@ public class ConfigureConfigurationController extends  SAbstractController {
 						configId+"');return false;");
 				
 				if (DashboardHelper.checkIfShowingAllComponents(config)) {
-					qualifiers.put("icon", "hideDashboard.gif");
+					qualifiers.put("icon", "dashboard_hide.gif");
 					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
 				} else {
-					qualifiers.put("icon", "showDashboard.gif");
+					qualifiers.put("icon", "dashboard_show.gif");
 					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
 				}
 			}

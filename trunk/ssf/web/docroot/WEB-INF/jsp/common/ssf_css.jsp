@@ -2236,13 +2236,6 @@ a.ss_breadcrumb {
 	float:left;
 	margin-right:6px;
 }
-.ss_title_bar_icons li a {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/iconset/iconback.gif) no-repeat top;
-	display:block;
-}
-.ss_title_bar_icons li a:hover {
-	background-position:bottom;
-}
 
 /* title menu: */
 
