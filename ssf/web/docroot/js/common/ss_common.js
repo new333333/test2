@@ -170,11 +170,17 @@ function ss_navigation_goto(url) {
 //  running inside an iframe. It it is, then the url is opened in the parent of the iframe.
 //This routine returns "true" without opening the url if the caller is not inside a frame.
 //If the caller is in a frame (or iframe), then the routine opens the url in the parent and returns false.
-function ss_openUrlInPortlet(url, popup) {
+function ss_openUrlInPortlet(url, popup, width, height) {
+	if (width == null) width = "";
+	if (height == null) height = "";
 	//Is this a request to pop up?
 	ss_debug('popup = '+popup+', url = '+url)
 	if (popup) {
-		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
+		if (width == '' || height == '') {
+			self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
+		} else {
+			self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,width="+width+",height="+height+",scrollbars=yes,status=no,toolbar=no");
+		}
 		return false;
 	}
 	//Are we at the top window?
