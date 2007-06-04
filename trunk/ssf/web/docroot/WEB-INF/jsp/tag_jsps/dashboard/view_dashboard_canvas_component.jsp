@@ -45,7 +45,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img border="0" <ssf:alt/> src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.jpg"></div></td>
+><img border="0" <ssf:alt/> src="<html:imagesPath/>roundcorners3/corner1.jpg"></div></td>
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_title_bar"
   <c:if test="${hideDashboardControls}">
@@ -123,7 +123,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img border="0" <ssf:alt/> src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.jpg"></div></td>
+><img border="0" <ssf:alt/> src="<html:imagesPath/>roundcorners3/corner2.jpg"></div></td>
 </tr>
 <tr>
 <c:if test="${hideDashboardControls}">
