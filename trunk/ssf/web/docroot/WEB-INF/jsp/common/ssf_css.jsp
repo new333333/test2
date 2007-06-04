@@ -1984,13 +1984,13 @@ div.ss_global_toolbar table td {
 .ss_global_toolbar_favs_big div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites_big.jpg) no-repeat top;
 	width: 75px;
-	padding-top: 40px;
+	padding-top: 60px;
 	text-align: center;
 }
 .ss_global_toolbar_myworkspace_big div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace_big.jpg) no-repeat top;
-	width: 75px;
-	padding-top: 40px;
+	width: 85px;
+	padding-top: 60px;
 	text-align: center;
 }
 
