@@ -43,7 +43,7 @@
 		<c:if test="${!empty ss_filterMap.additionalFilters.creator_by_id}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creator_by_id}">
 				<p>
-					<ssf:nlt tag="searchForm.label.author"/>: ${block.authorTitle} (${block.authorId})
+					<ssf:nlt tag="searchForm.label.author"/>: ${block.authorTitle}
 					<input type="hidden" name="searchAuthors_selected_hidden" value="${block.authorTitle}" />
 					<input type="hidden" name="searchAuthors_hidden" value="${block.authorId}" />
 				</p>
