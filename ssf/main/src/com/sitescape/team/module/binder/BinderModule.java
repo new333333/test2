@@ -163,6 +163,7 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) throws AccessControlException;
+	public void setTeamMembershipInherited(Long binderId, boolean inherit);
 	/**
 	 * Ordered list of binders by title
 	 * @param id
