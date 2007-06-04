@@ -1789,7 +1789,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
     position: relative;
 	padding-bottom:100px;
 	margin-top:1px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back1.gif) repeat;
+	background:url(<html:imagesPath/>pics/background_content_outer.gif) repeat;
 }
 .ss_content_inner {
 	width:100%;
