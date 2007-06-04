@@ -1051,7 +1051,6 @@ public class BinderHelper {
 		
 		//What do the newTab values mean?
 		/*
-		NEW FUNCTIONALITY: 04/12/2007: 
 		IF newTab == 1, means if the Tab already exists use it, if not create another one
 		ELSE IF newTab == 2, always create a new tab
 		ELSE IF newTab == 3, If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
@@ -1066,10 +1065,6 @@ public class BinderHelper {
 				if so, we will use it
 				if not, we will use the current tab
 		
-		//IGNORE: OLD FUNCTIONALITY: 04/12/2007 
-		//newTab == 1 means if the Tab already exists use it, if not create another one
-		//newTab == 2 means create a new Tab always
-		//newTab == 3 If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
 		*
 		*/
 		if (newTab.equals("1")) {
