@@ -85,7 +85,7 @@
 				    cursor:n-resize; top:<%= sliderDivOffset %>px;"
 				><table cellspacing="0" cellpadding="0" style="width:95%">
 				<tr>
-				<td style="background:url(<html:imagesPath/>skins/${ss_user_skin}/uparrows.gif) center no-repeat;"><img 
+				<td style="background:url(<html:imagesPath/>icons/resize_pane_vertical.gif) center no-repeat;"><img 
 				  border="0" style="height:<%= String.valueOf(sliderDivHeight) %>px;" 
 				  <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif"></td>
 				</tr></table></div>
