@@ -1812,35 +1812,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
 	font-size:0px;
 }
 /* round corners: */
-.ss_decor-round-corners-top1{
-	margin:0px 12px 0px 12px;
-	background:transparent url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border1.gif) repeat-x;
-}
-.ss_decor-round-corners-top1 div{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner1s.gif) no-repeat left;
-}
-.ss_decor-round-corners-top1 div div{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner2.gif) no-repeat right;
-	height:19px;
-}
-.ss_decor-round-corners-bottom1{
-	margin:0px 12px 0px 12px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border2.gif) repeat-x;
-}
-.ss_decor-round-corners-bottom1 div{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner3.gif) no-repeat left;
-}
-.ss_decor-round-corners-bottom1 div div{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner4.gif) no-repeat right;
-	height:19px;
-}
-.ss_decor-border3{
-	background:transparent url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border3.gif) repeat-y left;
-}
-.ss_decor-border4{
-	margin:0px 0px 0px 10px;
-	background:transparent url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border4.gif) repeat-y right;
-}
+
 .ss_decor-border5{
 	background:url(<html:imagesPath/>roundcorners2/border.gif) repeat-y left;
 }
