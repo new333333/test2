@@ -41,9 +41,6 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 </c:choose>
 
 <c:set var="isWebdavSupported" value="<%= webdavSupported %>"/>
-<script type="text/javascript">
-var ss_userSkin = "${ss_user_skin}";
-</script>
 
 <c:if test="${empty ss_toolbar_style}">
   <c:set var="ss_toolbar_style" value="ss_toolbar"/>
