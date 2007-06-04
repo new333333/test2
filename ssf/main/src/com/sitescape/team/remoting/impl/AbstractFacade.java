@@ -161,7 +161,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		*/
 		
 		if(!entry.getEvents().isEmpty()) {
-			Calendar eventCalendar = getIcalConverter().generate(entry, entry.getEvents(), MailModule.DEFAULT_TIMEZONE);
+			Calendar eventCalendar = getIcalModule().generate(entry, entry.getEvents(), MailModule.DEFAULT_TIMEZONE);
 			DataHandler dh = new DataHandler(new CalendarDataSource(eventCalendar));
 			MessageContext messageContext = MessageContext.getCurrentContext();
 			Message responseMessage = messageContext.getResponseMessage();
