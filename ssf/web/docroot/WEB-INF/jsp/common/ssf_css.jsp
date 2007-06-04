@@ -13,9 +13,6 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<% // Define the user's choice of skins (right now there is only one) %>
-<c:set var="ss_user_skin" value="r1" scope="request"/>
-
 
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
