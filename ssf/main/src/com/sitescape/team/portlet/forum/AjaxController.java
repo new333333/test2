@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -75,7 +76,7 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
@@ -92,8 +93,9 @@ import com.sitescape.util.Validator;
  * @author Peter Hurley
  *
  */
-public class AjaxController  extends SAbstractController {
-	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+public class AjaxController  extends SAbstractControllerRetry {
+	//caller will retry on OptimisiticLockExceptions
+	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -357,7 +359,6 @@ public class AjaxController  extends SAbstractController {
 		
 		return ajaxReturn(request, response);
 	} 
-	
 	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
@@ -1458,7 +1459,7 @@ public class AjaxController  extends SAbstractController {
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
 			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+			SortedSet principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
