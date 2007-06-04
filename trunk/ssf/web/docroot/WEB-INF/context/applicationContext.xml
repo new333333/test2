@@ -734,7 +734,7 @@ text/calendar											  ics
 	<bean id="coreDao" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
-	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl" depends-on="zoneConfig">
+	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>

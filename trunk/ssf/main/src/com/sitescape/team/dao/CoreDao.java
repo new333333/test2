@@ -27,7 +27,9 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.UserDashboard;
 import com.sitescape.team.domain.Workspace;
 
@@ -61,7 +63,7 @@ public interface CoreDao {
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List<Tag> loadAllTagsByEntity(EntityIdentifier entityId);
-	public Map loadAllTagsByEntity(Collection entityIds);
+	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(Collection<EntityIdentifier> entityIds);
 	/**
      * 
      * @param binderId
@@ -71,15 +73,15 @@ public interface CoreDao {
      * @throws NoBinderByTheIdException
      */
     public Binder loadBinder(Long binderId, Long zoneId);
-	public List loadCommunityTagsByEntity(EntityIdentifier entityId);
-    public List loadConfigurations(Long zoneId);
-    public List loadConfigurations(Long zoneId, int type);
+	public List<Tag> loadCommunityTagsByEntity(EntityIdentifier entityId);
+    public List<TemplateBinder> loadConfigurations(Long zoneId);
+    public List<TemplateBinder> loadConfigurations(Long zoneId, int type);
 	public Dashboard loadDashboard(String id);
 	public Definition loadDefinition(String defId, Long zoneId);   
-    public List loadDefinitions(Long zoneId);
-    public List loadDefinitions(Long zoneId, int type);
+    public List<Definition> loadDefinitions(Long zoneId);
+    public List<Definition> loadDefinitions(Long zoneId, int type);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
-    public List loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
+    public List<Tag> loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter);
 	public List loadObjects(Class className, FilterControls filter);
@@ -90,20 +92,20 @@ public interface CoreDao {
 	 * Performance optimization.
 	 * Load a list of objects and eagerly fetch listed collections
 	 * 
-	 * @param ids
+	 * @param ids 
 	 * @param className
 	 * @param zoneId
 	 * @param collections
 	 * @return
 	 */
 	public List loadObjects(Collection ids, Class className, Long zoneId, List collections);
-	public List loadPersonalTagsByEntity(EntityIdentifier entityId, EntityIdentifier ownerId);
-	public List loadPersonalTagsByOwner(EntityIdentifier ownerId);
+	public List<Tag> loadPersonalTagsByEntity(EntityIdentifier entityId, EntityIdentifier ownerId);
+	public List<Tag> loadPersonalTagsByOwner(EntityIdentifier ownerId);
     public List loadPostings(Long zoneId);
 	public PostingDef loadPosting(String aliasId, Long zoneId);
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
-	public List loadSubscriptionByEntity(final EntityIdentifier entityId);
+	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
 	public Tag loadTag(String id);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 

@@ -994,31 +994,30 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	//The entries must be of the same type
 	//Used by indexing bulk load
-	public Map loadAllTagsByEntity(final Collection entityIds) {
+	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(final Collection<EntityIdentifier> entityIds) {
 		if (entityIds.isEmpty()) return new HashMap();
 		
 		List<Tag> tags = (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
-	                	List ids = new ArrayList();
-	                	EntityIdentifier id =null;
-	                	for (Iterator iter=entityIds.iterator(); iter.hasNext();) {
-		                	id = (EntityIdentifier)iter.next();
+	                	List<Long> ids = new ArrayList();
+	                	EntityIdentifier savedId=null;
+	                	for (EntityIdentifier id:entityIds) {
 		                	ids.add(id.getEntityId());
+		                	savedId = id;
 	                	}
 	                	
 	                	return session.createCriteria(Tag.class)
                  		.add(Expression.in("entityIdentifier.entityId", ids))
-       					.add(Expression.eq("entityIdentifier.type", id.getEntityType().getValue()))
+       					.add(Expression.eq("entityIdentifier.type", savedId.getEntityType().getValue()))
                  		.addOrder(Order.asc("entityIdentifier.entityId"))
 	                 	.list();
 	                }
 	            }
 	        );
-		Map result = new HashMap();
-		for (Iterator iter=entityIds.iterator(); iter.hasNext();) {
-			EntityIdentifier id = (EntityIdentifier)iter.next();
-			List tList = new ArrayList();
+		Map<EntityIdentifier, List<Tag>> result = new HashMap();
+		for (EntityIdentifier id :entityIds) {
+			List<Tag> tList = new ArrayList();
 			
 			while (!tags.isEmpty()) {
 				Tag tag = tags.get(0);
@@ -1033,8 +1032,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		
 	}
 	//Used by indexing
-	public List loadAllTagsByEntity(final EntityIdentifier entityId) {
-		return (List)getHibernateTemplate().execute(
+	public List<Tag> loadAllTagsByEntity(final EntityIdentifier entityId) {
+		return (List<Tag>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
@@ -1047,8 +1046,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		
 	}
 
-	public List loadCommunityTagsByEntity(final EntityIdentifier entityId) {
-		return (List)getHibernateTemplate().execute(
+	public List<Tag> loadCommunityTagsByEntity(final EntityIdentifier entityId) {
+		return (List<Tag>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
@@ -1061,8 +1060,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	public List loadPersonalTagsByEntity(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
-		return (List)getHibernateTemplate().execute(
+	public List<Tag> loadPersonalTagsByEntity(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
+		return (List<Tag>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
@@ -1077,8 +1076,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	public List loadPersonalTagsByOwner(final EntityIdentifier ownerId) {
-		return (List)getHibernateTemplate().execute(
+	public List<Tag> loadPersonalTagsByOwner(final EntityIdentifier ownerId) {
+		return (List<Tag>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
@@ -1093,8 +1092,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}	
     //load public and personal private tags for an entity.  Optimization
     //order by id and name
-    public List loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
-	   	return (List)getHibernateTemplate().execute(
+    public List<Tag> loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
+	   	return (List<Tag>)getHibernateTemplate().execute(
 		     	new HibernateCallback() {
 		       		public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)
@@ -1114,8 +1113,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    	
     }
 	
-	public List loadSubscriptionByEntity(final EntityIdentifier entityId) {
-		return (List)getHibernateTemplate().execute(
+	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId) {
+		return (List<Subscription>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Subscription.class)

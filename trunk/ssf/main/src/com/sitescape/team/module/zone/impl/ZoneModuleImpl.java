@@ -38,6 +38,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
@@ -242,7 +243,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        					}
 	        				}
 	        				//fixup templates
-	        				List<Binder> templates = getCoreDao().loadConfigurations(zone.getId());
+	        				List<TemplateBinder> templates = getCoreDao().loadConfigurations(zone.getId());
 	        				while (!templates.isEmpty()) {
 	        					Binder b = templates.get(0);
 	        					templates.remove(0);
