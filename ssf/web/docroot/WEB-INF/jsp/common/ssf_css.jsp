@@ -2103,7 +2103,7 @@ div.ss_tabs {
 	font-size: 11px;
 	color:#5A3C68;
 	height:24px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.jpg) repeat-x left top;
+	background:url(<html:imagesPath/>tabs/back1.jpg) repeat-x left top;
 	white-space: nowrap;
 	margin:0px;
 	padding:3px 0px 0px 0px;
@@ -2114,27 +2114,27 @@ div.ss_tabs {
 	font-size:11px;
 	color:#666666;
 	height:25px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.jpg) repeat-x left top;
+	background:url(<html:imagesPath/>tabs/back1_active.jpg) repeat-x left top;
 	margin:0px;
 	padding:3px 0px 0px 0px;
 }
 .ss_tabs_td_left_active {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.jpg) no-repeat left;
+    background:url(<html:imagesPath/>tabs/back2_active.jpg) no-repeat left;
     width:4px;
     min-width:4px;
 }
 .ss_tabs_td_right_active {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.jpg) no-repeat right;
+    background:url(<html:imagesPath/>tabs/back3_active.jpg) no-repeat right;
     width:4px;
     min-width:4px;
 }
 .ss_tabs_td_left {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.jpg) no-repeat left;
+    background:url(<html:imagesPath/>tabs/back2.jpg) no-repeat left;
     width:4px;
     min-width:4px;
 }
 .ss_tabs_td_right {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.jpg) no-repeat right;
+    background:url(<html:imagesPath/>tabs/back3.jpg) no-repeat right;
     width:4px;
     min-width:4px;
 }
