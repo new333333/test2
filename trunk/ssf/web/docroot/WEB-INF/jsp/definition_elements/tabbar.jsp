@@ -34,7 +34,7 @@ var ss_nextTabNumber = "${ss_tabs.next_tab_id}";
 </script>
 </div>
 <script type="text/javascript">
-var ss_tabs_delete_icon = "<html:imagesPath/>icons/tab_delete.gif";
+var ss_tabs_delete_icon = "<html:imagesPath/>tabs/tab_delete.gif";
 var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 </script>
 <table cellspacing="0" cellpadding="0" style="background:transparent;">
@@ -135,7 +135,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 	<c:if test="${numTabs > 1}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
 		  <img border="0" style="position:relative; vertical-align: bottom;" 
-		    <ssf:alt tag="alt.deleteTab"/> src="<html:imagesPath/>icons/tab_delete.gif"/>
+		    <ssf:alt tag="alt.deleteTab"/> src="<html:imagesPath/>tabs/tab_delete.gif"/>
 		</a>
 	</c:if>
 	  </td>
