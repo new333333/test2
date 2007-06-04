@@ -2158,9 +2158,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 				}
 				
 				String statusCurrent = TaskHelper.getTaskStatusValue(entry);
-				String completedCurrent = TaskHelper.getTaskStatusValue(entry);
+				String completedCurrent = TaskHelper.getTaskCompletedValue(entry);
 				
-				if (newStatus.equals("inProcess") && "completed".equals(statusCurrent) &&
+				if ((newStatus.equals("needsAction") || newStatus.equals("inProcess")) && "completed".equals(statusCurrent) &&
 						"c100".equals(completedCurrent)) {
 					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c90"});
 				}

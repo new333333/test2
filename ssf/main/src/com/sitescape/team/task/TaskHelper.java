@@ -115,7 +115,7 @@ public class TaskHelper {
 		
 		Set value = (Set) customAttribute.getValue();
 		
-		if (value != null) {
+		if (value == null) {
 			return null;
 		}
 		
@@ -137,7 +137,7 @@ public class TaskHelper {
 		
 		Set value = (Set) customAttribute.getValue();
 		
-		if (value != null) {
+		if (value == null) {
 			return null;
 		}
 		
