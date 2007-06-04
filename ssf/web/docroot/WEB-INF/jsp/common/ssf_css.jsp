@@ -1877,7 +1877,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
 	height:10px;
 	font-size:1px;
 }
-.ss_decor-round-corners-top2 div div.ss_utils{
+.ss_decor-round-corners-top2 div {
 	background:none;
 }
 .ss_decor-round-corners-bottom2{
@@ -2731,49 +2731,6 @@ div.ss_bottomlinks {
 	color:#8E8FA7 !important;
 }
 
-.ss_utils{
-	position:absolute;
-	top:0px;
-	right:10px;
-}
-.ss_util{
-    float:right;
-	margin-right:10px;
-	line-height:24px;
-	text-align:center;
-	color:#9C9C9C !important;
-	font-weight:bold;
-	font-size:${ss_style_font_fineprint};
-}
-.ss_util_cartouche {
-    position:relative; 
-    background-color:${ss_style_background_color}; 
-    z-index:3;
-}
-.ss_util.ss_long{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners4/3.gif) repeat-x;
-	display:block;
-}
-.ss_utilwrap1{
-	float:right;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners4/1.gif) no-repeat left top;
-	padding-left:8px;
-	height:24px;
-}
-.ss_utilwrap1 a.ss_util{
-	float:none;
-	margin:0px;
-}
-.ss_utilwrap2{
-	display:block;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners4/2.gif) no-repeat right;
-	padding-right:8px;
-	margin-right:10px;
-}
-.ss_util.ss_short{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/util_short.gif) no-repeat;
-	width:25px;
-}
 .ss_innerContentBegins{
 	margin-top:9px;
 }
