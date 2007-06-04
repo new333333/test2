@@ -25,6 +25,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.EntityIdentifier;
+
 import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -48,13 +50,15 @@ public class EntryVersionController extends  SAbstractController {
 		List changeList = new ArrayList();
 		List changes = null;
 		String entityType = PortletRequestUtils.getStringParameter(request,  "entityType", "folderEntry");
+		EntityIdentifier entityIdentifier = new EntityIdentifier(entityId, EntityIdentifier.EntityType.valueOf(entityType));
+
 		if (entityId != null) {
 			if (operation.equals(ChangeLog.MODIFYENTRY)) {
 				//Start the list with the "addEntry" entry
-				changes = getAdminModule().getChanges(entityId, entityType, ChangeLog.ADDENTRY);
+				changes = getAdminModule().getChanges(entityIdentifier, ChangeLog.ADDENTRY);
 				changeList.addAll(BinderHelper.BuildChangeLogBeans(changes));
 			}
-			changes = getAdminModule().getChanges(entityId, entityType, operation);
+			changes = getAdminModule().getChanges(entityIdentifier, operation);
 			changeList.addAll(BinderHelper.BuildChangeLogBeans(changes));
 		}
 		

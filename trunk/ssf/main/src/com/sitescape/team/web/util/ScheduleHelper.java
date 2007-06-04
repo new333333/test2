@@ -37,7 +37,9 @@ public class ScheduleHelper {
 			else
 				schedule.setHours("*");	
 		} else {
-			schedule.setHours(Integer.toString(PortletRequestUtils.getIntParameter(request, "schedHours", 14)));			
+			int hours = PortletRequestUtils.getIntParameter(request, "schedHours", -1);
+			if (hours == -1) schedule.setHours("*");
+			else schedule.setHours(Integer.toString(hours));
 		}		
 		
 		

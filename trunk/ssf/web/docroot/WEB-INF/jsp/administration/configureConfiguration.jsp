@@ -140,6 +140,8 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></span>
 <br/>
 <script type="text/javascript">
+var ss_reloadUrl = "${ss_reloadUrl}";
+
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
 	var url = "<portlet:renderURL windowState="maximized"><portlet:param 

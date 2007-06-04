@@ -55,13 +55,11 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         return getSecurityDao().findWorkAreaFunctionMemberships
         	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
-    //Find workareas assigning this user to a specific operation.  Used to implement
-    //what workspaces am I a team member of.
+    //Find workareas assigning this user to a specific operation.  
     public List findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkAreaOperation workAreaOperation, Set membersToLookup) {
         return getSecurityDao().findWorkAreaByOperation(zoneId, workAreaOperation.getName(), membersToLookup);
     }
-    //Find memberhsiops for a specific workarea that have a specified operation.
-    // USed to implmenet getteammembers
+    //Find memberhships for a specific workarea that have a specified operation.
     public List findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkArea workArea, WorkAreaOperation workAreaOperation) {
     	return getSecurityDao().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), workAreaOperation.getName());
     }

@@ -10,35 +10,26 @@
  */
 package com.sitescape.team.servlet.forum;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-
+import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.servlet.ModelAndView;
-import javax.activation.FileTypeMap;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.TempFileUtil;
@@ -49,7 +40,6 @@ import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.FileUtil;
 import com.sitescape.util.Validator;
-import org.springframework.web.bind.RequestUtils;
 
 public class ViewFileController extends SAbstractController {
 	
@@ -84,29 +74,30 @@ public class ViewFileController extends SAbstractController {
 			response.getOutputStream().flush();
 			
 		} else {
-			Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			String strEntryId = RequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			Long entryId = null;
 			if (!strEntryId.equals("")) entryId = Long.valueOf(strEntryId);
 			String downloadFile = RequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
-			Binder binder = getBinderModule().getBinder(binderId);
 			DefinableEntity entity=null;
 			Binder parent;
 			String strEntityType = RequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.none.toString());
 			EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
-			if(entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace)) {
+			if (entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace) ||
+					entityType.equals(EntityIdentifier.EntityType.profiles)) {
 				entity = getBinderModule().getBinder(entryId);
 				parent = (Binder) entity;
 			} else if (entryId != null) {
-				 if (binder instanceof Folder) {
+				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
 					entity = getFolderModule().getEntry(binderId, entryId);
 				} else {
 					entity = getProfileModule().getEntry(binderId, entryId);
 				}
 				parent = entity.getParentBinder();
 			} else {
-				entity = binder;
-				parent = binder;
+				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				parent = getBinderModule().getBinder(binderId);
+				entity = parent;
 			}
 			//Set up the beans needed by the jsps
 			FileAttachment fa = null;

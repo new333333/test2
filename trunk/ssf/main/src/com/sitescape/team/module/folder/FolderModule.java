@@ -23,6 +23,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.fi.FIException;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.file.FilesErrors;
@@ -88,12 +89,19 @@ public interface FolderModule {
 	public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
 	public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
 	public Map getEntries(Long folderId) throws AccessControlException;
+	/**
+	 * Return entries
+	 * @param folderId
+	 * @param options
+	 * @return search results
+	 * @throws AccessControlException
+	 */
 	public Map getEntries(Long folderId, Map options) throws AccessControlException;
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
     public Folder getFolder(Long folderId);
 	public Set<Folder> getFolders(Collection<Long> folderIds);
-    public Set getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
+    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
 	public Map getFullEntries(Long folderId) throws AccessControlException;
 	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;
 	   /**
@@ -117,12 +125,11 @@ public interface FolderModule {
 	/**
 	 * Return community tags and the current users personal tags on the entry
 	 * @param entry
-	 * @return Map contain 2 Lists. Indexed by ObjectKeys.COMMUNITY_ENTITY_TAGS
-	 * and ObjectKeys.PERSONAL_ENTITY_TAGS
+	 * @return 
 	 */
-	public Map getTags(FolderEntry entry);
+	public List<Tag> getTags(FolderEntry entry);
  	  
-	public Map getUnseenCounts(List folderIds);
+	public Map getUnseenCounts(Collection<Long> folderIds);
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
 	public void indexEntry(FolderEntry entry, boolean includeReplies);
     /**
@@ -139,10 +146,10 @@ public interface FolderModule {
      * @throws ReservedByAnotherUserException
      */
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
-    public FilesErrors modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 

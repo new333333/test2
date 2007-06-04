@@ -441,7 +441,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			throw new NoGroupByTheIdException(groupId);
 		}
 	}
-	public List loadGroups(Collection ids, Long zoneId) {
+	public List loadGroups(Collection<Long> ids, Long zoneId) {
 		return loadPrincipals(ids, zoneId, Group.class, false, true);
 	}
 
@@ -466,7 +466,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     }
 	
-	public List loadUsers(Collection ids, Long zoneId) {
+	public List loadUsers(Collection<Long> ids, Long zoneId) {
 		return loadPrincipals(ids, zoneId, User.class, false, true);
     }
     public List loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
@@ -615,7 +615,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * @param Set of principalIds
 	 * @returns Set of userIds
 	 */
-	public Set explodeGroups(final Set ids, Long zoneId) {   
+	public Set<Long> explodeGroups(final Collection ids, Long zoneId) {   
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
 		Set users;
 		if (ids.contains(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
@@ -630,7 +630,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			users = (Set)getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
-                    Set result = new TreeSet(ids);
+                    Set<Long> result = new TreeSet(ids);
                     List mems;
                     Set currentIds = new HashSet(ids);
                     while (!currentIds.isEmpty()) {

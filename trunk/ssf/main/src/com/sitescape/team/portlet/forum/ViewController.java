@@ -38,13 +38,13 @@ import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
-import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Toolbar;
@@ -145,8 +145,8 @@ public class ViewController  extends SAbstractController {
 		    
 		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
- 			ids.addAll(FindIdsHelper.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
- 			ids.addAll(FindIdsHelper.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
+ 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
  			//This is the portlet view; get the configured list of principals to show
  			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  			//if we list groups, then we have issues when a user appears in multiple groups??

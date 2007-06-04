@@ -161,9 +161,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected void generateReport(List<Map<String, Object>> report, Binder binder, final boolean byUser, final Date startDate, final Date endDate) {
 		checkAccess(binder, "generateReport");
 		final Long binderId = binder.getId();
-		final Set<Long> userIds;
+		final Collection<Long> userIds;
 		if(byUser) {
-			userIds = getBinderModule().getTeamMemberIds(binderId, true);
+				userIds = getBinderModule().getTeamMemberIds(binderId, true);
 		} else {
 			userIds = null;
 		}

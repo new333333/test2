@@ -34,13 +34,13 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.FolderConfigHelper;
 import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DashboardHelper;
-import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
@@ -122,8 +122,8 @@ public class EditController extends SAbstractController {
 				DashboardHelper.saveComponentData(request, d);
 
 			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
-				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
-				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("groups"))); 			
+				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("users")));
+				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("groups"))); 			
 			} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				String id = PortletRequestUtils.getStringParameter(request, "topWorkspace"); 
 				if (Validator.isNotNull(id)) {
@@ -177,8 +177,8 @@ public class EditController extends SAbstractController {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
 			Set<Long> groupIds = new HashSet<Long>();
-			userIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
-			groupIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+			userIds.addAll(LongIdUtil.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
+			groupIds.addAll(LongIdUtil.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
 
 			model.put(WebKeys.USERS, getProfileModule().getUsers(userIds));
 			model.put(WebKeys.GROUPS, getProfileModule().getGroups(groupIds));			

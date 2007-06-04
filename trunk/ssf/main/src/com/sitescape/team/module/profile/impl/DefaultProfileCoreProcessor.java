@@ -54,7 +54,7 @@ import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.XmlUtils;
-import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
@@ -541,7 +541,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
 		} else {
 			Group group = (Group)prin;
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, CollectionUtil.toCommaIds(group.getMembers()));
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));
 		}
 		getCoreDao().save(changes);
 		return changes;

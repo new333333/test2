@@ -12,13 +12,13 @@ package com.sitescape.team.module.admin.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.mail.internet.InternetAddress;
 
@@ -32,7 +32,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
@@ -41,11 +40,12 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityDashboard;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.NoBinderByTheNameException;
+import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -54,40 +54,38 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.AccessUtils;
-import com.sitescape.team.module.binder.BinderComparator;
-import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EntryBuilder;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
+import com.sitescape.team.module.shared.SearchUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
-import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.team.web.util.DashboardHelper;
 
 /**
  * @author Janet McCann
@@ -149,7 +147,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    	protected DashboardModule getDashboardModule() {
 		return dashboardModule;
 	}
-   	
+   	protected FileModule fileModule;
+   	public void setFileModule(FileModule fileModule) {
+   		this.fileModule = fileModule;
+   	}
+   	protected FileModule getFileModule() {
+   		return fileModule;
+   	}	
 	private IcalModule icalModule;
 	public IcalModule getIcalModule() {
 		return icalModule;
@@ -233,7 +237,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
    	}
 
-    public List getPostings() {
+    public List<PostingDef> getPostings() {
     	//TODO: access check
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }
@@ -367,13 +371,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			myDashboard.setOwnerIdentifier(destination.getEntityIdentifier());
 			getCoreDao().save(myDashboard);
 		  }
-		//TODO: copy all attachments
-		Set<Attachment> atts = source.getAttachments();
-		if (atts != null) {
-			for (Attachment at:atts) {
-				if (at instanceof FileAttachment);
-			}
-		}
+		//copy all file attachments
+		getFileModule().copyFiles(source, source, destination, destination);
 		Map catts = source.getCustomAttributes();
 		for (Iterator iter=catts.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
@@ -390,6 +389,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					break;
 				}
 				case CustomAttribute.ATTACHMENT: {
+					//only support file attachments now
+					FileAttachment sfa = (FileAttachment)ca.getValue();
+					if (sfa == null) continue;
+					FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
+					//attach as custom attribute
+					if (dfa != null) source.addCustomAttribute(ca.getName(), dfa);
 					break;
 				}
 				case CustomAttribute.SET: {
@@ -405,7 +410,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 								newE.setId(null);
 								getCoreDao().save(newE);
 								newV.add(newE);
-							} else if (val instanceof Attachment) {
+							} else if (val instanceof FileAttachment) {
+								//only support file attachments now
+								FileAttachment sfa = (FileAttachment)val;
+								FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
+								//attach as custom attribute
+								if (dfa != null) newV.add(dfa);
 								
 							} else {
 								newV.add(val);
@@ -676,12 +686,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//TODO: is there access
 		return (TemplateBinder)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
-	public List getTemplates() {
-		//TODO: is there access
+	public List<TemplateBinder> getTemplates() {
+		//world read
 		return getCoreDao().loadConfigurations(RequestContextHolder.getRequestContext().getZoneId());
 	}
-	public List getTemplates(int type) {
-		//TODO: is there access
+	public List<TemplateBinder> getTemplates(int type) {
+		//world read
 		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
 	
@@ -774,7 +784,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	
  
-	public void addFunction(String name, Set operations) {
+	public void addFunction(String name, Set<WorkAreaOperation> operations) {
 		checkAccess("addFunction");
 		Function function = new Function();
 		function.setName(name);
@@ -800,7 +810,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		functionManager.deleteFunction(f);
     }
-    public List getFunctions() {
+    public List<Function> getFunctions() {
 		//let anyone read them			
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
@@ -832,38 +842,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		} else {
 			binders.add(binder);
 		}
-		//find descendent binders with the same owner, and re-index together
-		//the owner may be part of the acl set, so cannot always share
-		while (!binders.isEmpty()) {
-			Binder top = binders.get(0);
-			binders.remove(0);
-			Set readAclIds =  AccessUtils.getReadAccessIds(top);
-			//collect ids of binders with the same owner
-			StringBuffer aIds = new StringBuffer();
-			if (!readAclIds.isEmpty()) {
-				for(Iterator i = readAclIds.iterator(); i.hasNext();) {
-					aIds.append(i.next()).append(" ");
-				}
-			} else {
-				aIds.append(BasicIndexUtils.READ_ACL_ALL);
-			}
-			List ids = new ArrayList();
-			ids.add(top.getId());
-			List<Binder> others = new ArrayList(binders);
-			for (Binder b:others) {
-				//have same owner, have same acl
-				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId())) {
-					binders.remove(b);
-					ids.add(b.getId());
-				}
-			}
-			Query q = buildQueryforUpdate(ids);
-			// add this query and list of ids to the lists we'll pass to updateDocs.
-			updateQueries.add(q);
-			updateIds.add(aIds.toString());
-		}
+		SearchUtils.buildMembershipUpdate(binders, updateQueries, updateIds);
+
 		if (updateQueries.size() > 0) {
-		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
 			try {
 				
 				luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
@@ -874,8 +856,23 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 		
 	}
-
-	private void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
+	// a recursive routine which walks down the tree
+	// from here and builds a list of the binders
+	// who inherit acls from their parents.  The tree is pruned at
+	// the highest branch that does not inherit from it's parent.
+	private List getInheritingDescendentBinderIds(Binder binder, List binders) {
+  		binders.add(binder);
+		List<Binder> childBinders = binder.getBinders();
+ 		for (Binder c: childBinders) {
+			if (c.isFunctionMembershipInherited()) {
+				binders = getInheritingDescendentBinderIds(c, binders);
+			}
+    	}
+    	return binders;
+	}
+	
+	
+	private void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set<Long> memberIds) {
      	Workspace zone = RequestContextHolder.getRequestContext().getZone();
       	WorkAreaFunctionMembership membership =
       		getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(zone.getId(), workArea, functionId);
@@ -898,67 +895,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 	}
 	
-	// a recursive routine which walks down the tree
-	// from here and builds a list of the binders
-	// who inherit acls from their parents.  The tree is pruned at
-	// the highest branch that does not inherit from it's parent.
-	private List getInheritingDescendentBinderIds(Binder binder, List binders) {
-  		binders.add(binder);
-		List childBinder = binder.getBinders();
- 		for (int i=0; i<childBinder.size(); ++i) {
-			Binder c = (Binder)childBinder.get(i);
-			if (c.isFunctionMembershipInherited()) {
-				binders = getInheritingDescendentBinderIds(c, binders);
-			}
-    	}
-    	return binders;
-	}
-	
-	
-	private Query buildQueryforUpdate(List folderIds) {
-		Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
-    	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
-    	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
-    	//get all the entrys, replies and attachments
-    	// Folderid's and doctypes:{entry, binder, attachment}
-    	for (Iterator iter = folderIds.iterator(); iter.hasNext();) {
-    		Element field = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(iter.next().toString());
-    	}
-    	String[] types = new String[] {"entry","binder","attachment"};
-    	
-    	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
-    	for (int i =0; i < types.length; i++) {
-    		Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(types[i]);
-    	}
-    	// Get all the binder's themselves
-    	// OR Doctype=binder and binder id's
-    	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
-    	Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-    	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText("binder");
-	   	for (Iterator iter = folderIds.iterator(); iter.hasNext();) {
-    		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
-			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(iter.next().toString());
-    	}
-    	
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
-    	SearchObject so = qb.buildQuery(qTree);
 
-		return so.getQuery();
-	}
-	
+
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		checkAccess(workArea, "deleteWorkAreaFunctionMembership");
 
@@ -989,7 +927,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        		(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
     }
     
-	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
+	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea) {
 		// open to anyone - only way to get parentMemberships
 		//checkAccess(workArea, "getWorkAreaFunctionMemberships");
 
@@ -997,7 +935,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         		RequestContextHolder.getRequestContext().getZoneId(), workArea);
 	}
 
-	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
+	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
 		// open to anyone - only way to get parentMemberships
 		// checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
 	    WorkArea source = workArea;
@@ -1070,45 +1008,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	}
 		
 	}
-	//return binders this user is a team_member of
-	public List getTeamMemberships(Long userId) {
-		//team membership is implemented by a reserved role
-        User current = RequestContextHolder.getRequestContext().getUser();
-        
-        User user;
-        if ((userId == null) || current.getId().equals(userId)) user = current;
-        else user = getProfileDao().loadUser(userId, current.getZoneId());
-		List<WorkAreaFunctionMembership> wfm = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(
-				RequestContextHolder.getRequestContext().getZoneId(), WorkAreaOperation.TEAM_MEMBER, getProfileDao().getPrincipalIds(user));
-	    Set ids = new HashSet();
-	    for (WorkAreaFunctionMembership w: wfm) {
-	    	ids.add(w.getWorkAreaId());
-	    }
-	    List wa = getCoreDao().loadObjects(ids, Binder.class, user.getZoneId());
-	    
-	    //can certainly see own memberships
-	    Set result = new TreeSet(new BinderComparator(current.getLocale(),BinderComparator.SortByField.searchTitle));
-	    if (user == current) result.addAll(wa);
-	    else {
-	    	for (int i=0; i<wa.size(); ++i) {
-	    		Binder b = (Binder) wa.get(i);
-	    		try {
-	    			//TODO: is this what we want??
-	    			getAccessControlManager().checkOperation(user, b, WorkAreaOperation.READ_ENTRIES);
-	    			result.add(b);
-	    		} catch (Exception ex) {};
-	    	}
-	    }
-	    wa.clear();
-	    wa.addAll(result);
-	    return wa;
-	    
-    }
-    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries, boolean sendAttachments) throws Exception {
+
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception {
     	User user = RequestContextHolder.getRequestContext().getUser();
-		Set userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
-		//TODO is there accesschecking on sending email address
-		List users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
 		Set emailSet = new HashSet();
 		List distribution = new ArrayList();
 		List errors = new ArrayList();
@@ -1117,22 +1019,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		result.put(ObjectKeys.SENDMAIL_DISTRIBUTION, distribution);
 		//add email address listed 
 		Object[] errorParams = new Object[3];
-		for (Iterator iter=emailAddresses.iterator(); iter.hasNext();) {
-			String e = (String)iter.next();
-			if (!Validator.isNull(e)) {
-				try {
-					emailSet.add(new InternetAddress(e.trim()));
-					distribution.add(e);
-				} catch (Exception ex) {
-					errorParams[0] = "";
-					errorParams[1] = e;
-					errorParams[2] = ex.getLocalizedMessage();
-					errors.add(NLT.get("errorcode.badToAddress", errorParams));							
+		if (emailAddresses != null) {
+			for (String e: emailAddresses) {
+				if (!Validator.isNull(e)) {
+					try {
+						emailSet.add(new InternetAddress(e.trim()));
+						distribution.add(e);
+					} catch (Exception ex) {
+						errorParams[0] = "";
+						errorParams[1] = e;
+						errorParams[2] = ex.getLocalizedMessage();
+						errors.add(NLT.get("errorcode.badToAddress", errorParams));							
+					}
 				}
 			}
 		}
-		for (Iterator iter=users.iterator(); iter.hasNext();) {
-			User e = (User)iter.next();
+		Set<Long> userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
+		List<User> users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
+		for (User e:users) {
 			try {
 				emailSet.add(new InternetAddress(e.getEmailAddress().trim()));
 				distribution.add(e.getEmailAddress());
@@ -1172,29 +1076,22 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
 			if (sendAttachments) {
 	 			List attachments = new ArrayList();
-	 			
-	 			Iterator entriesIt = entries.iterator();
-	 			while (entriesIt.hasNext()) {
-	 				DefinableEntity entry = (DefinableEntity)entriesIt.next();
+				List iCalendars = new ArrayList();
+				 	 			
+	 			for (DefinableEntity entry:entries) {
 					attachments.addAll(entry.getFileAttachments());
-	 			}
+					if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
+	 					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
+	 				}
+	 	 		}
 				message.put(SendEmail.ATTACHMENTS, attachments);
+	 			if (!iCalendars.isEmpty()) {
+	 				message.put(SendEmail.ICALENDARS, iCalendars);
+	 			}
 			}
  			
  			
- 			List iCalendars = new ArrayList();
- 			Iterator entriesIt = entries.iterator();
- 			while (entriesIt.hasNext()) {
- 				DefinableEntity entry = (DefinableEntity)entriesIt.next();
- 				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
- 					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
- 				}
- 			}
- 			if (!iCalendars.isEmpty()) {
- 				message.put(SendEmail.ICALENDARS, iCalendars);
- 			}
  		}
- 				
 		boolean sent = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
 		if (sent) result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SENT);
 		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);
@@ -1202,7 +1099,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
 
 
-   public List getChanges(Long binderId, String operation) {
+   public List<ChangeLog> getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("binderId", binderId);
 	   if (!Validator.isNull(operation)) {
@@ -1216,10 +1113,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter));
 	   //need to filter for access
    }
-   public List getChanges(Long entityId, String entityType, String operation) {
+   public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation) {
 	   FilterControls filter = new FilterControls();
-	   filter.add("entityId", entityId);
-	   filter.add("entityType", entityType);
+	   filter.add("entityId", entityIdentifier.getEntityId());
+	   filter.add("entityType", entityIdentifier.getEntityType().name());
 	   if (!Validator.isNull(operation)) {
 		   filter.add("operation", operation);
 	   }
@@ -1230,7 +1127,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter)); 
    	
    }
-   private List filterChangeLogs(List<ChangeLog> changeLogs) {
+   private List<ChangeLog> filterChangeLogs(List<ChangeLog> changeLogs) {
 	   User user = RequestContextHolder.getRequestContext().getUser();
 	   if (user.isSuper()) return changeLogs;
 	   // get the current users acl set
@@ -1239,7 +1136,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   for (Long id:userAclSet) {
 		   userStringIds.add(id.toString());
 	   }
-	   List result = new ArrayList();
+	   List<ChangeLog> result = new ArrayList();
 	   for (ChangeLog log: changeLogs) {
 		   Document doc = log.getDocument();
 		   if (doc == null) continue;

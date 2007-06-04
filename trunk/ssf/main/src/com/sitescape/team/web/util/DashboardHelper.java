@@ -51,9 +51,10 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
-import com.sitescape.team.search.filter.SearchFiltersBuilder;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AbstractAllModulesInjected;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
@@ -491,7 +492,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	    		if (!isConfig) {
 	    			//merge into user list if not config
 	    			try {
-	    				ids.addAll(getBinderModule().getTeamMemberIds(binder, false));
+	    				ids.addAll(getBinderModule().getTeamMemberIds(binder.getId(), false));
 	    			} catch (Exception ex) {};  //skip if don't have access
 	    		}
 	    	}
@@ -502,7 +503,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	private Set getIds(Object ids) {
 		//handle bad data
 		if (ids instanceof String) {
-			return FindIdsHelper.getIdsAsLongSet((String)ids);
+			return LongIdUtil.getIdsAsLongSet((String)ids);
 		} else return new HashSet<Long>();
 
 	}
@@ -592,9 +593,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
         	beans.put(id, idData);
     	}
     	if (!isConfig) {
-    		List users = getBinderModule().getTeamMembers(binder.getId(), true);
-    		idData.put(WebKeys.TEAM_MEMBERS, users);
-    		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+    		try {
+    			Collection users = getBinderModule().getTeamMembers(binder.getId(), true);
+    			idData.put(WebKeys.TEAM_MEMBERS, users);
+    			idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+    		} catch (AccessControlException ac) {} //justskip
     	}
 	}
 	
@@ -618,7 +621,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
     	try {
     		String binderId = null;
-   			Set <String> savedFolderIds = FindIdsHelper.getIdsAsStringSet((String)data.get(SearchFormSavedFolderIdList));
+   			Set <String> savedFolderIds = LongIdUtil.getIdsAsStringSet((String)data.get(SearchFormSavedFolderIdList));
    			if (!savedFolderIds.isEmpty()) binderId = savedFolderIds.iterator().next();
        		if (Validator.isNotNull(binderId)) {
        			Binder fBinder = getBinderModule().getBinder(Long.valueOf(binderId));				
@@ -656,7 +659,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
 		
 		Collection folders=null;
-		Set <Long> folderIds = FindIdsHelper.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		Set <Long> folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
 		if (!folderIds.isEmpty()) {
 			folders = getBinderModule().getBinders(folderIds);		//may have templates		
 			idData.put(WebKeys.FOLDER_LIST, folders);
@@ -757,7 +760,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
 		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-		Set <Long> folderIds = FindIdsHelper.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		Set <Long> folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
 		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, folderIds);
 
 		boolean doSearch = true;		
@@ -949,7 +952,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
 					
 					//multi-select	
-					Set <String> folderIds = FindIdsHelper.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
+					Set <String> folderIds = LongIdUtil.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
 
 					//add first
 					//Get the folderIds out of the formData
@@ -994,7 +997,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
 					if (!folderIds.isEmpty()) {
 						searchFilter.addFolderIds(folderIds);
-						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
+						componentData.put(SearchFormSavedFolderIdList, LongIdUtil.getIdsAsString(folderIds));
 					}
 					
 					String assignedTo = PortletRequestUtils.getStringParameter(request, "assignedTo", "");
@@ -1037,7 +1040,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
 					if (!folderIds.isEmpty()) {
 						searchFilter.addFolderIds(folderIds);
-						componentData.put(SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
+						componentData.put(SearchFormSavedFolderIdList, LongIdUtil.getIdsAsString(folderIds));
 					}
 
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
@@ -1099,12 +1102,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				String id = getInstance().resolveBinder(binder, viewType);
 				if (Validator.isNotNull(id)) {
 					String savedIds = (String)data.get(DashboardHelper.SearchFormSavedFolderIdList);
-					Set<String> folderIds = FindIdsHelper.getIdsAsStringSet(savedIds);
+					Set<String> folderIds = LongIdUtil.getIdsAsStringSet(savedIds);
 					folderIds.add(id);
 					SearchFilter searchFilter = new SearchFilter();
 					searchFilter.addFolderIds(folderIds);
 					data.put(DashboardHelper.SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());
-					data.put(DashboardHelper.SearchFormSavedFolderIdList, FindIdsHelper.getIdsAsString(folderIds));
+					data.put(DashboardHelper.SearchFormSavedFolderIdList, LongIdUtil.getIdsAsString(folderIds));
 				} 
 			}
 		}
@@ -1354,7 +1357,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					//convert from list to string 
 					if (propVal instanceof List) {
 						List propList = (List)propVal;
-						fixedData.put(propName, FindIdsHelper.getIdsAsString(propList));
+						fixedData.put(propName, LongIdUtil.getIdsAsString(propList));
 					}
 				}
 			}

@@ -10,14 +10,11 @@
  */
 package com.sitescape.team.portlet.forum;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,17 +22,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -43,13 +37,10 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
@@ -59,7 +50,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -68,16 +59,12 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
-import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -383,7 +370,7 @@ public static final String[] monthNamesShort = {
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 
 		if(binder != null) {
-			Map tagResults = getBinderModule().getTags(binder);
+			Map tagResults = TagUtil.uniqueTags(getBinderModule().getTags(binder));
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		}
@@ -753,11 +740,11 @@ public static final String[] monthNamesShort = {
 			RenderResponse response, Folder folder, Map options, 
 			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
 		
-		if (getBinderModule().testAccess(folder, "getTeamMembers")) {
-			List users = getBinderModule().getTeamMembers(folder.getId(), true);
+		try {
+			Collection users = getBinderModule().getTeamMembers(folder.getId(), true);
 			model.put(WebKeys.TEAM_MEMBERS, users);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
-		}
+		} catch (AccessControlException ac) {} //just skip
 		
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, folder, model);

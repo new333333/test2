@@ -87,18 +87,5 @@ public class IndexUtils  {
         	doc.add(reservedByIdField);
         }
     }   
-    public static Set getPrincipalsFromSearch(List<Map> searchResults) {
-    	Set ids = EntityIndexUtils.getPrincipalsFromSearch(searchResults);
-    	//add in folder ids
-    	for (Map entry: searchResults) {
-    	       if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
-           		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
-   	    	} catch (Exception ex) {};
-    	}
-    	return ids;
- 
-    }
-
- 
     
 }

@@ -40,7 +40,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 public class ManageGroupsController extends  SAbstractController {
@@ -64,8 +64,8 @@ public class ManageGroupsController extends  SAbstractController {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
-			Set ids = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users"));
-			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
+			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);

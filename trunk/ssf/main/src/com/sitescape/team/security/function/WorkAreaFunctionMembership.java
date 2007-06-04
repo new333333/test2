@@ -16,8 +16,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.module.shared.XmlUtils;
-import com.sitescape.team.util.CollectionUtil;
-import com.sitescape.util.Validator;
+import com.sitescape.team.util.LongIdUtil;
 
 /**
  * @hibernate.class table="SS_WorkAreaFunctionMemberships" lazy="false" dynamic-update="true"
@@ -151,7 +150,7 @@ public class WorkAreaFunctionMembership {
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
 		
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_FUNCTION, getFunctionId());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_MEMBERS, CollectionUtil.toCommaIds(getMemberIds()));
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_MEMBERS, LongIdUtil.getIdsAsString(getMemberIds()));
 		return element;
     	
     }

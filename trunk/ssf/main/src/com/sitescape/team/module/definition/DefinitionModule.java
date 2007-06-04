@@ -22,7 +22,6 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.Entry;
-import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.shared.InputDataAccessor;
 
 /**
@@ -53,8 +52,8 @@ public interface DefinitionModule {
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
 
 	public Definition getDefinition(String id);
-	public List getDefinitions();
-	public List getDefinitions(int type);
+	public List<Definition> getDefinitions();
+	public List<Definition> getDefinitions(int type);
 	public Document getDefinitionConfig();
 	/**
 	 * Routine to process the input data and return a map of only the entry data

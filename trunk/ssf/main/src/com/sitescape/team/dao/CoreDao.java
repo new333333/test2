@@ -60,7 +60,7 @@ public interface CoreDao {
 	public boolean isDirty();
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
-	public List loadAllTagsByEntity(EntityIdentifier entityId);
+	public List<Tag> loadAllTagsByEntity(EntityIdentifier entityId);
 	public Map loadAllTagsByEntity(Collection entityIds);
 	/**
      * 

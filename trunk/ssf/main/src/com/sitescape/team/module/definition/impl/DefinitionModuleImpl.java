@@ -1468,13 +1468,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	
     	return entryDataAll;
     }
-    public List getDefinitions() {
+    public List<Definition> getDefinitions() {
 		// Controllers need access to definitions.  Allow world read        
     	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId());
     	return defs;
     }
     
-    public List getDefinitions(int type) {
+    public List<Definition> getDefinitions(int type) {
 		// Controllers need access to definitions.  Allow world read        
     	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId(), type);
     	return defs;

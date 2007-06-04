@@ -140,6 +140,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	       	}
 	    }
         if (result.remove(ObjectKeys.OWNER_USER_ID)) result.add(getOwnerId());
+    	if (result.remove(ObjectKeys.TEAM_MEMBER_ID)) result.add(getParentBinder().getTeamMemberIds());
 
 	    return result;
 	    	

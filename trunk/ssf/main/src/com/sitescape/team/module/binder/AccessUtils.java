@@ -10,9 +10,8 @@
  */
 package com.sitescape.team.module.binder;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.dom4j.Element;
@@ -26,8 +25,8 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
-import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
@@ -37,7 +36,6 @@ import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Validator;
 
@@ -185,10 +183,7 @@ public class AccessUtils  {
     }
     private static boolean testAccess(User user, Set allowedIds) {
      	Set principalIds = getInstance().getProfileDao().getPrincipalIds(user);
-        for(Iterator i = principalIds.iterator(); i.hasNext();) {
-            if (allowedIds.contains(i.next())) return true;
-        }
-        return false;
+        return !Collections.disjoint(principalIds, allowedIds);
     }
     public static void modifyCheck(Entry entry) throws AccessControlException {
 		modifyCheck(RequestContextHolder.getRequestContext().getUser(), entry);
@@ -335,7 +330,8 @@ public class AccessUtils  {
  			//check explicit users
  			Set allowedIds = acl.getPrincipals();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
- 			if (testAccess(user, allowedIds)) return;
+        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.add(binder.getTeamMemberIds());
+			if (testAccess(user, allowedIds)) return;
  			
  			if (acl.isUseDefault()) { 		
  				modifyCheck(user, binder, (Entry)entry);
@@ -357,6 +353,7 @@ public class AccessUtils  {
  			//This basically AND's the binder and entry, since we already passed the binder
 			Set allowedIds = acl.getPrincipals();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
+        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.add(binder.getTeamMemberIds());
  			if (testAccess(user, allowedIds)) return;
  			 throw new AclAccessControlException(user.getName(), type.toString());
    		}

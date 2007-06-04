@@ -11,18 +11,19 @@
 
 package com.sitescape.team.module.binder;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.SortedSet;
 import java.util.Set;
 
 import org.dom4j.Document;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
@@ -44,10 +45,10 @@ public interface BinderModule {
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.
 	 * @param binderId
-	 * @return List of errors when deleting child binders
+	 * @return Set of exceptions when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public List deleteBinder(Long binderId) 
+	public Set<Exception> deleteBinder(Long binderId) 
 	throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
@@ -57,10 +58,10 @@ public interface BinderModule {
 	 * @param deleteMirroredSource indicates whether or not to delete the
 	 * corresponding source resources (directories and files) if this binder
 	 * or any of the child binders is mirrored.
-	 * @return List of errors when deleting child binders
+	 * @return Set of exceptions when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public List deleteBinder(Long binderId, boolean deleteMirroredSource) 
+	public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) 
 	throws AccessControlException;
 		
 	/**
@@ -98,16 +99,16 @@ public interface BinderModule {
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
     /**
-     * Load a list of binders
+     * Load binders,
      * @param binderIds
-     * @return
+     * @return Binders sorted by title
      */
-    public Set<Binder> getBinders(Collection<Long> binderIds);
+    public SortedSet<Binder> getBinders(Collection<Long> binderIds);
     /**
      * Search for child binders - 1 level
      * @param binder
      * @param options
-     * @return
+     * @return search results
      */
     public Map getBinders(Binder binder, Map options);
     /**
@@ -128,12 +129,12 @@ public interface BinderModule {
      */
     public ScheduleInfo getNotificationConfig(Long binderId);
     /**
-     * 
+     * Orders list
      * @param wordroot
      * @param type
      * @return
      */
-    public ArrayList getSearchTags(String wordroot, String type); 
+    public List<Map> getSearchTags(String wordroot, String type); 
     /**
      * Get your subscription to this binder
      * @param binderId
@@ -143,9 +144,9 @@ public interface BinderModule {
 	/**
 	 * Return community tags and the current users personal tags on the binder
 	 * @param binder
-	 * @return Map contain 2 Lists.
+	 * @return 
 	 */
-	public Map getTags(Binder binder);
+	public List<Tag> getTags(Binder binder);
 	/**
 	 * Get a list of team members for the given binder
 	 * @param binderId
@@ -153,19 +154,21 @@ public interface BinderModule {
 	 * @return
 	 * @throws AccessControlException
 	 */
-	public List getTeamMembers(Long binderId, boolean explodeGroups) throws AccessControlException;
-	
-	public Set getTeamMemberIds(Long binderId, boolean explodeGroups) throws AccessControlException;
+	public SortedSet<Principal> getTeamMembers(Long binderId, boolean explodeGroups) throws AccessControlException;
 	/**
-	 * Same as <code>getTeamMemberIds</code> except no access checks are
-	 * performed.  This should only be used internally
-	 * @param binder
+	 * Return a list of team member ids
+	 * @param binderId
 	 * @param explodeGroups
 	 * @return
+	 * @throws AccessControlException
 	 */
-	public Set getTeamMemberIds(Binder binder, boolean explodeGroups);
-    
-	public boolean hasTeamMembers(Long binderId, boolean explodeGroups) throws AccessControlException;	
+	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) throws AccessControlException;
+	/**
+	 * Ordered list of binders by title
+	 * @param id
+	 * @return search results
+	 */
+	public List<Map> getTeamMemberships(Long id);    
 	/**
 	 * Index only the binder and its attachments.  Do not include entries or sub-binders
 	 * @param binderId
@@ -180,17 +183,16 @@ public interface BinderModule {
     /**
      * Index a binder and its child binders, including all entries
      * @param binderId
-     * @return
+     * @return Set of binderIds indexed
      */
-    public Collection indexTree(Long binderId);
+    public Set<Long> indexTree(Long binderId);
     /**
      * Same as <code>indexTree</code> except handles a collection of binders.  Use this as a
      * performance optimzation for multiple binders- it handles the index cleanup better
      * @param binderId
-     * @param exclusions - sub-binders to skip
-     * @return Collection binderIds indexed
+     * @return Set of binderIds indexed
      */
-     public Collection indexTree(Collection binderId);
+     public Set<Long> indexTree(Collection<Long> binderId);
    
     /**
      * Modify a binder
@@ -216,15 +218,15 @@ public interface BinderModule {
      * Modify who gets email notifications.  The upates are applied to the <code>NotificationDef</code> for this binder
      * @param binderId
      * @param updates
-     * @param principals
+     * @param principalIds
      */
-    public void modifyNotification(Long binderId, Map updates, Collection principals); 
+    public void modifyNotification(Long binderId, Map updates, Collection<Long> principalIds) throws AccessControlException;  
 	/**
 	 * Move a binder, all of its entries and sub-binders
 	 * @param fromId - the binder to move
 	 * @param toId - destination id
 	 */
-	public void moveBinder(Long binderId, Long toId);
+	public void moveBinder(Long binderId, Long toId) throws AccessControlException;  
 	/**
 	 * Set the definition inheritance on a binder
 	 * @param binderId
@@ -239,7 +241,7 @@ public interface BinderModule {
      * @param definitionIds
      * @throws AccessControlException
      */
-    public Binder setDefinitions(Long binderId, List definitionIds) throws AccessControlException;
+    public Binder setDefinitions(Long binderId, List<String> definitionIds) throws AccessControlException;
     /**
      * Modify the list of definitions and workflows assocated with a binder
      * @param binderId
@@ -247,13 +249,13 @@ public interface BinderModule {
      * @param workflowAssociations
      * @throws AccessControlException
      */
-    public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
+    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations) throws AccessControlException;
     /**
      * Set the schedule by which notifications are sent.  Use this to both enable and disable notifications
      * @param binderId
      * @param config
      */
-    public void setNotificationConfig(Long binderId, ScheduleInfo config);
+    public void setNotificationConfig(Long binderId, ScheduleInfo config) throws AccessControlException;  
 	/**
 	 * Update the <code>com.sitescape.team.domain.PostingDef</code> associated with this binder.
 	 * If one doesn't exists, create one.  
@@ -261,20 +263,20 @@ public interface BinderModule {
 	 * @param binderId
 	 * @param updates
 	 */
-    public void setPosting(Long binderId, Map updates);
+    public void setPosting(Long binderId, Map updates) throws AccessControlException;  
     /**
      * Same as <code>setPosting</code>
      * @param binderId
      * @param emailAddress
      */
-    public void setPosting(Long binderId, String emailAddress);
+    public void setPosting(Long binderId, String emailAddress) throws AccessControlException;  
     /**
      * Set a property to be associated with this binder
      * @param binderId
      * @param property
      * @param value
      */
-    public void setProperty(Long binderId, String property, Object value);
+    public void setProperty(Long binderId, String property, Object value) throws AccessControlException;  
     /**
      * Create a new tag for this binder
      * @param binderId
@@ -282,7 +284,14 @@ public interface BinderModule {
      * @param community
      * @throws AccessControlException
      */
-	public void setTag(Long binderId, String newtag, boolean community) throws AccessControlException;    
+	public void setTag(Long binderId, String newtag, boolean community) throws AccessControlException;  
+	/**
+	 * Set the team members for a binder.  By default inherits from parent
+	 * @param binderId
+	 * @param membersIds
+	 * @throws AccessControlException
+	 */
+	public void setTeamMembers(Long binderId, Collection<Long> membersIds) throws AccessControlException;  
 	/**
 	 * Test access to a binder.  The method name to be called is used as the operation.   This
 	 * allows the binderModule to check for multiple rights or change requirments in the future.

@@ -13,7 +13,6 @@
  *
  */
 package com.sitescape.team.module.profile.impl;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -21,10 +20,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -58,6 +57,7 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.profile.PrincipalComparator;
 import com.sitescape.team.module.profile.ProfileCoreProcessor;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -67,7 +67,6 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
@@ -282,7 +281,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
 	//RO transaction
-	public Collection getGroups(Set entryIds) {
+	public SortedSet<Group> getGroups(Collection<Long> entryIds) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
 		checkAccess(binder, "getEntries");
@@ -555,7 +554,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
    }
 	//RO transaction 
-	public Collection getUsers(Set entryIds) {
+	public SortedSet<User> getUsers(Collection<Long> entryIds) {
 		checkAccess(getProfileBinder(), "getEntries");
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -571,25 +570,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Set ids = getProfileDao().explodeGroups(principalIds, profile.getZoneId());
 		return getUsers(ids);
 	}
-	public class PrincipalComparator implements Comparator {
-	   	private Collator c;
-		public PrincipalComparator(Locale locale) {
-			c = Collator.getInstance(locale);		
-		}
-		public int compare(Object obj1, Object obj2) {
-			Principal f1,f2;
-			f1 = (Principal)obj1;
-			f2 = (Principal)obj2;
-					
-			if (f1 == f2) return 0;
-			if (f1==null) return -1;
-			if (f2 == null) return 1;
-			int result = c.compare(f1.getTitle(), f2.getTitle());
-			if (result != 0) return result;
-			//if titles and type match - compare ids
-			return f1.getId().compareTo(f2.getId());
-		}
-	}
+
 	public class ElementInputData implements InputDataAccessor {
 		private Element source;
 		public ElementInputData(Element source) {

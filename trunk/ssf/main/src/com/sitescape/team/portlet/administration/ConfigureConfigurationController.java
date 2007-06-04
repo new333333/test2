@@ -44,6 +44,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.forum.ListFolderController;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.servlet.forum.ViewFileController;
 import com.sitescape.team.util.FileHelper;
@@ -176,6 +177,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				getBinderModule().modifyBinder(configId, new MapInputData(formData), fileMap, deleteAtts);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//Get the function id from the form
@@ -266,6 +268,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 				return new ModelAndView("administration/reload_opener");
 			} else if (Validator.isNull(operation)) {
+				//Build a reload url
+				PortletURL reloadUrl = response.createRenderURL();
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+				model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 				model.put(WebKeys.DEFINITION_ENTRY, config);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -443,11 +451,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 		if (manager) {
 			//Modify target
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
-			url.setParameter(WebKeys.URL_BINDER_ID, configId);
-			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), url);		
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_administration", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, configId);
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), adapterUrl.toString(), qualifiers);
 		}
 		
 		//	The "Manage dashboard" menu

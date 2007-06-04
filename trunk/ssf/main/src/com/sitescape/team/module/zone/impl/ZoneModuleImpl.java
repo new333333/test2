@@ -309,6 +309,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {name}, name));
 	        		top.setPathName("/"+top.getTitle());
 	        		top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
+	        		top.setTeamMembershipInherited(false);
+	        		top.setFunctionMembershipInherited(false);
+	        		top.setDefinitionsInherited(false);
 	        		//generate id for top and profiles
 	        		getCoreDao().save(top);
 	        		top.setZoneId(top.getId());
@@ -364,7 +367,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		
 	        		Function visitorsRole = addVisitorsRole(top);
 	        		Function participantsRole = addParticipantsRole(top);
-	        		Function teamRole = addTeamRole(top);
 	        		Function binderRole = 	addBinderRole(top);
 	        		Function adminRole = addAdminRole(top);
 	        		Function teamWsRole = addTeamWorkspaceRole(top);
@@ -374,14 +376,15 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		
 	        		addMembership(top, visitorsRole, top, members);
 	        		addMembership(top, visitorsRole, teamRoot, members);
-	        		addMembership(top, participantsRole, top, members);
 	        		addMembership(top, participantsRole, teamRoot, members);
 	        		addMembership(top, teamWsRole, teamRoot, members);
+	        		//add members to participants
+	        		members.add(ObjectKeys.TEAM_MEMBER_ID);
+	        		addMembership(top, participantsRole, top, members);
+	        		addMembership(top, participantsRole, teamRoot, members);
 	        		
 	        		members.clear();
 	        		members.add(ObjectKeys.OWNER_USER_ID);
-	        		addMembership(top, teamRole, top, members);
-	        		addMembership(top, teamRole, teamRoot, members);
 	        		addMembership(top, binderRole, top, members);
 	        		addMembership(top, binderRole, teamRoot, members);
 			
@@ -566,24 +569,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		getFunctionManager().addFunction(function);
 		return function;
 	}
-	private Function addTeamRole(Workspace top) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.teammember", "Team member"));
 
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
-		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-//		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
-		function.addOperation(WorkAreaOperation.TEAM_MEMBER);
-		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
-		
-		//generate functionId
-		getFunctionManager().addFunction(function);
-		return function;
-	}
 	private Function addBinderRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
