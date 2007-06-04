@@ -10,7 +10,7 @@
 				<c:if test="${!filterDefinition}">
 					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:inlineHelp tag="ihelp.other.advanced_search"/></h4>
 				</c:if>
-				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}');" class="ss_advanced"><span id="ss_search_more_options_txt_${ssNamespace}"><ssf:nlt tag="searchForm.advanced.moreOptions"/></span></a>
+				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');" class="ss_advanced"><span id="ss_search_more_options_txt_${ssNamespace}"><ssf:nlt tag="searchForm.advanced.moreOptions"/></span></a>
 				<div class="ss_clear"></div>
 				<table>
 					<tr>
@@ -67,7 +67,7 @@
 								</c:if>
 								
 								<c:choose>
-									<c:when test="${!empty ss_filterMap && !empty ss_filterMap.searchFolders}">
+									<c:when test="${!empty ss_filterMap.searchFolders}">
 										<c:set var="folderIds" value="${ss_filterMap.searchFolders}" />
 									</c:when>
 									<c:otherwise>
@@ -121,14 +121,15 @@
 		</div>
 		</c:if>
 
-		<div id="ss_searchForm_additionalFilters" style="visibility:hidden; display: none;">
+		<div id="ss_searchForm_additionalFilters" style="display: none; visibility: hidden;">
+			<input type="hidden" id="ssSearchParseAdvancedForm${ssNamespace}" name="ssSearchParseAdvancedForm" value="false" />
 			<div id="ss_authors_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Author"/></h4>
 				<div id="ss_authors_options" class="ss_options"></div>
 				<div class="ss_more">
 					<a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
-			</div>		
+			</div>
 			<div id="ss_tags_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></h4>
 				<div id="ss_tags_options" class="ss_options"></div>

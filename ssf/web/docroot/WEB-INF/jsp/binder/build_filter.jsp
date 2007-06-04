@@ -13,6 +13,8 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
+<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
+
 <div class="ss_style ss_portlet">
 	<div style="margin:10px;">
 		<form name="filterData" id="filterData" method="post" 
@@ -86,6 +88,6 @@
 	ss_createOnSubmitObj('ss_prepareAdditionalFilterCheck', 'filterData', ss_checkFilterForm);
 	
 	dojo.addOnLoad(function() {
-		ss_showAdditionalOptions('ss_searchForm_additionalFilters');
+		ss_showAdditionalOptions('ss_searchForm_additionalFilters', null, '${ssNamespace}');
 	});
 </script>

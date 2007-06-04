@@ -19,8 +19,20 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class SearchFilterRequestParser {
+	
+	private PortletRequest request;
+	
+	private DefinitionModule definitionModule;
+	
+	private boolean parseMoreOptions = false;
+	
+	public SearchFilterRequestParser(PortletRequest request, DefinitionModule definitionModule) {
+		super();
+		this.request = request;
+		this.definitionModule = definitionModule;
+	}
 		
-	public static Document getSearchQuery(PortletRequest request, DefinitionModule definitionModule) {
+	public Document getSearchQuery() {
 		Boolean joiner = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchJoiner, true);
 		
 		SearchFilter searchFilter = new SearchFilter(joiner);
@@ -28,11 +40,13 @@ public class SearchFilterRequestParser {
 		parseFilterName(request, searchFilter);
 		parseFreeText(request, searchFilter);
 		parsePlaces(request, searchFilter);
-		parseItemTypes(request, searchFilter);
+		
+		parseMoreOptions = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchParseAdvancedForm, false);
 		
 		String[] numbers = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchNumbers, "").split(" ");
 		String[] types = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchTypes, "").split(" ");
 		
+		parseItemTypes(request, searchFilter);
 		parseAuthors(request, searchFilter, types, numbers);
 		parseTags(request, searchFilter, types, numbers);
 		parseWorkflows(request, searchFilter, types, numbers);
@@ -44,15 +58,21 @@ public class SearchFilterRequestParser {
 		return searchFilter.getFilter();
 	}
 
-	private static void parseLastActivity(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
+	private void parseLastActivity(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		Integer maxDaysNumber = 0;
 		
-		for (int i = 0; i < types.length; i++) {
-
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeLastActivity)) {
-				Integer daysNumber = PortletRequestUtils.getIntParameter(request, SearchFilterKeys.SearchDaysNumber.concat(numbers[i]), 0);
-				if (daysNumber > maxDaysNumber) {
-					maxDaysNumber = daysNumber;
+		if (!parseMoreOptions) {
+			Integer daysNumber = PortletRequestUtils.getIntParameter(request, SearchFilterKeys.SearchDaysNumber.concat("_hidden"), 0);
+			if (daysNumber > maxDaysNumber) {
+				maxDaysNumber = daysNumber;
+			}
+		} else {
+			for (int i = 0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeLastActivity)) {
+					Integer daysNumber = PortletRequestUtils.getIntParameter(request, SearchFilterKeys.SearchDaysNumber.concat(numbers[i]), 0);
+					if (daysNumber > maxDaysNumber) {
+						maxDaysNumber = daysNumber;
+					}
 				}
 			}
 		}
@@ -62,33 +82,28 @@ public class SearchFilterRequestParser {
 		}
 	}
 
-	private static void parseModificationDates(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
+	private void parseModificationDates(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Period> modificationDates = new ArrayList();
 		
-		for (int i = 0; i < types.length; i++) {
-
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeModificationDate)) {
-				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchStartDate.concat(numbers[i]), "");
-				String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchEndDate.concat(numbers[i]), "");
-				SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
-				User user = RequestContextHolder.getRequestContext().getUser();
-				inputFormater.setTimeZone(user.getTimeZone());
-				Date startD = null;
-				Date endD = null;
-				if (!startDate.equals("")) {
-					try {startD = inputFormater.parse(startDate);} 
-					catch (ParseException e) {
-						//logger.error("Parse exception by date:"+startDate);
-					}
+		if (!parseMoreOptions) {
+			int count = PortletRequestUtils.getIntParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat("length"), -1);
+			for (int index = 0; index < count; index++) {
+				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat(SearchFilterKeys.SearchStartDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
+				String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat(SearchFilterKeys.SearchEndDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
+				SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
+				if (period.start != null || period.end != null) {
+					modificationDates.add(period);
 				}
-				if (!endDate.equals("")) {	
-					try {endD = inputFormater.parse(endDate);} 
-					catch (ParseException e) {
-						// logger.error("Parse exception by date:"+endDate);
+			}
+		} else {
+			for (int i = 0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeModificationDate)) {
+					String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchStartDate.concat(numbers[i]), "");
+					String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchEndDate.concat(numbers[i]), "");
+					SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
+					if (period.start != null || period.end != null) {
+						modificationDates.add(period);
 					}
-				}
-				if (startD != null && endD != null) {
-					modificationDates.add(new SearchFilter.Period(startD, endD));
 				}
 			}
 		}
@@ -96,33 +111,28 @@ public class SearchFilterRequestParser {
 		searchFilter.addModificationDates(modificationDates);
 	}
 
-	private static void parseCreationDates(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
+	private void parseCreationDates(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Period> creationDates = new ArrayList();
 		
-		for (int i = 0; i < types.length; i++) {
-
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeCreationDate)) {
-				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchStartDate.concat(numbers[i]), "");
-				String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchEndDate.concat(numbers[i]), "");
-				SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
-				User user = RequestContextHolder.getRequestContext().getUser();
-				inputFormater.setTimeZone(user.getTimeZone());
-				Date startD = null;
-				Date endD = null;
-				if (!startDate.equals("")) {
-					try {startD = inputFormater.parse(startDate);} 
-					catch (ParseException e) {
-						//logger.error("Parse exception by date:"+startDate);
-					}
+		if (!parseMoreOptions) {
+			int count = PortletRequestUtils.getIntParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat("length"), -1);
+			for (int index = 0; index < count; index++) {
+				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat(SearchFilterKeys.SearchStartDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
+				String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat(SearchFilterKeys.SearchEndDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
+				SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
+				if (period.start != null || period.end != null) {
+					creationDates.add(period);
 				}
-				if (!endDate.equals("")) {	
-					try {endD = inputFormater.parse(endDate);} 
-					catch (ParseException e) {
-						// logger.error("Parse exception by date:"+endDate);
+			}
+		} else {
+			for (int i = 0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeCreationDate)) {
+					String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchStartDate.concat(numbers[i]), "");
+					String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchEndDate.concat(numbers[i]), "");
+					SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
+					if (period.start != null || period.end != null) {
+						creationDates.add(period);
 					}
-				}
-				if (startD != null && endD != null) {
-					creationDates.add(new SearchFilter.Period(startD, endD));
 				}
 			}
 		}
@@ -130,41 +140,67 @@ public class SearchFilterRequestParser {
 		searchFilter.addCreationDates(creationDates);
 	}
 
-	private static void parseEntries(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers, DefinitionModule definitionModule) {
+	private void parseEntries(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers, DefinitionModule definitionModule) {
 		List<SearchFilter.Entry> entries = new ArrayList(); 
 		
-		for (int i = 0; i < types.length; i++) {
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeEntry)) {
-				String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]), "");
-				
-				String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i]), SearchFilter.AllEntries);
-				String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]));
-				String valueType = null;
-				if (entryTypeId != null && !entryTypeId.equals("")) {
-					Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
-					if (fieldsMap != null && fieldsMap.get(entryFieldId) != null) {
-						valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(SearchFilterToMapConverter.EntryField.TypeField);
-					}
-				}
+		if (!parseMoreOptions) {
+			String[] entryTypeIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterEntryDefIdField.concat("_hidden"));
+			for (int i = 0; i < entryTypeIds.length; i++) {
+				String entryTypeId = entryTypeIds[i];
+				String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat("_").concat(entryTypeId).concat("_hidden"), "");
+				String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat("_").concat(entryTypeId).concat("_hidden"));
+				String valueType = getEntryValueType(entryTypeId, entryFieldId);
 				if (!entryTypeId.equals("")) {
 					entries.add(new SearchFilter.Entry(entryTypeId, entryFieldId, value, valueType));
 				}
-				
+			}
+		} else {
+			for (int i = 0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeEntry)) {
+					String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]), "");
+					
+					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i]), SearchFilter.AllEntries);
+					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]));
+					String valueType = getEntryValueType(entryTypeId, entryFieldId);
+					if (!entryTypeId.equals("")) {
+						entries.add(new SearchFilter.Entry(entryTypeId, entryFieldId, value, valueType));
+					}
+				}
 			}
 		}
 		
 		searchFilter.addEntries(entries);
 	}
 
-	private static void parseWorkflows(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
+	private String getEntryValueType(String entryTypeId, String entryFieldId) {
+		String valueType = null;
+		if (entryTypeId != null && !entryTypeId.equals("")) {
+			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
+			if (fieldsMap != null && fieldsMap.get(entryFieldId) != null) {
+				valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(SearchFilterToMapConverter.EntryField.TypeField);
+			}
+		}
+		return valueType;
+	}
+
+	private void parseWorkflows(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Workflow> workflows = new ArrayList();
 
-		for (int i = 0; i < types.length; i++) {
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
-				String workflowId =  PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]), "");
-				String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
-				if (!workflowId.equals("")) {
-					workflows.add(new SearchFilter.Workflow(workflowId, workflowSteps));
+		if (!parseMoreOptions) {
+			String[] workflowIds =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowId.concat("_hidden"));
+			for (int i = 0; i < workflowIds.length; i++) {
+				String workflowId = workflowIds[i];
+				String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat("_").concat(workflowId).concat("_step").concat("_hidden"));
+				workflows.add(new SearchFilter.Workflow(workflowId, workflowSteps));
+			}
+		} else {
+			for (int i = 0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
+					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]), "");
+					String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
+					if (!workflowId.equals("")) {
+						workflows.add(new SearchFilter.Workflow(workflowId, workflowSteps));
+					}
 				}
 			}
 		}
@@ -172,7 +208,7 @@ public class SearchFilterRequestParser {
 		searchFilter.addWorkflows(workflows);
 	}
 
-	private static void parseAuthors(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
+	private void parseAuthors(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Creator> creators = new ArrayList();
 		
 		String authors = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors, "");
@@ -183,14 +219,28 @@ public class SearchFilterRequestParser {
 			}
 		}
 		
-		for (int i=0; i < types.length; i++) {
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeAuthor)) {
-				String authorTitle = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
-				String authorId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]), "");
+		if (!parseMoreOptions) {
+			String[] authorTitles = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_selected").concat("_hidden"));
+			String[] authorIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_hidden"));
+			for (int i = 0; i < authorIds.length; i++) {
+				String authorTitle = authorTitles[i];
+				String authorId = authorIds[i];
 				if (!authorId.equals("")) {
 					creators.add(new SearchFilter.Creator(authorId, authorTitle));
 				} else if (!authorTitle.equals("")) {
 					creators.add(new SearchFilter.Creator(null, authorTitle));
+				}
+			}
+		} else {
+			for (int i=0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeAuthor)) {
+					String authorTitle = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
+					String authorId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]), "");
+					if (!authorId.equals("")) {
+						creators.add(new SearchFilter.Creator(authorId, authorTitle));
+					} else if (!authorTitle.equals("")) {
+						creators.add(new SearchFilter.Creator(null, authorTitle));
+					}
 				}
 			}
 		}
@@ -198,7 +248,7 @@ public class SearchFilterRequestParser {
 		searchFilter.addCreators(creators);
 	}
 	
-	private static void parseTags(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
+	private void parseTags(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Tag> tagsList = new ArrayList();
 		
 		String tags = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchTags, "");
@@ -210,23 +260,35 @@ public class SearchFilterRequestParser {
 			}
 		}
 		
-		for (int i = 0; i < types.length; i++) {
-			if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeTag)) {
-				String personalTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchPersonalTags.concat(numbers[i]), "");
-				String communityTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchCommunityTags.concat(numbers[i]), "");
-				
-				if (personalTag.equals("")) {
-					personalTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchPersonalTags.concat(numbers[i]).concat("_selected"), "");
-				}
-				if (communityTag.equals("")) {
-					communityTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchCommunityTags.concat(numbers[i]).concat("_selected"), "");
-				}
-				
-				if (!personalTag.equals("")) {
-					tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.PERSONAL, personalTag));
-				}
-				if (!communityTag.equals("")) {
-					tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.COMMUNITY, communityTag));
+		
+		if (!parseMoreOptions) {
+			Iterator personalTagIt = Arrays.asList(PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchPersonalTags.concat("_hidden"))).iterator();
+			while (personalTagIt.hasNext()) {
+				tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.PERSONAL, (String)personalTagIt.next()));
+			}
+			Iterator communityTagIt = Arrays.asList(PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchCommunityTags.concat("_hidden"))).iterator();
+			while (communityTagIt.hasNext()) {
+				tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.COMMUNITY, (String)communityTagIt.next()));
+			}
+		} else {
+			for (int i = 0; i < types.length; i++) {
+				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeTag)) {
+					String personalTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchPersonalTags.concat(numbers[i]), "");
+					String communityTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchCommunityTags.concat(numbers[i]), "");
+					
+					if (personalTag.equals("")) {
+						personalTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchPersonalTags.concat(numbers[i]).concat("_selected"), "");
+					}
+					if (communityTag.equals("")) {
+						communityTag = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchCommunityTags.concat(numbers[i]).concat("_selected"), "");
+					}
+					
+					if (!personalTag.equals("")) {
+						tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.PERSONAL, personalTag));
+					}
+					if (!communityTag.equals("")) {
+						tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.COMMUNITY, communityTag));
+					}
 				}
 			}
 		}
@@ -234,26 +296,26 @@ public class SearchFilterRequestParser {
 		searchFilter.addTags(tagsList);
 	}
 
-	private static void parseFreeText(PortletRequest request, SearchFilter searchFilter) {
+	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) {
 		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "");
 		if (!searchText.equals("")) {
 			searchFilter.addText(searchText);
 		}
 	}
 
-	private static void parseFilterName(PortletRequest request, SearchFilter searchFilter) {
+	private void parseFilterName(PortletRequest request, SearchFilter searchFilter) {
 		String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
 		if (filterName != null && !filterName.equals("")) {
 			searchFilter.addFilterName(filterName);
 		}
 	}
 
-	private static void parseItemTypes(PortletRequest request, SearchFilter searchFilter) {
+	private void parseItemTypes(PortletRequest request, SearchFilter searchFilter) {
 		List itemTypes = Arrays.asList(PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchItemType));
 		searchFilter.addItemTypes(itemTypes);
 	}
 
-	private static void parsePlaces(PortletRequest request, SearchFilter searchFilter) {
+	private void parsePlaces(PortletRequest request, SearchFilter searchFilter) {
 		String foldersType = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchFoldersType, "selected");
 		boolean searchSubfolders = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchSubfolders, false);
 		
@@ -279,6 +341,5 @@ public class SearchFilterRequestParser {
 			searchFilter.addRelativePlace(searchSubfolders);
 		}
 	}
-	
 	
 }

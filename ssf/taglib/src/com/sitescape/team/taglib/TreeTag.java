@@ -235,6 +235,21 @@ public class TreeTag extends TagSupport {
 				
 				if (this.startingId == null || this.startingId.equals("")) {
 					sb.append("<div class=\"ss_treeWidget\">\n");
+					
+					String mPrefix=this.multiSelectPrefix;
+					// hope it's notin use here because type attribute is now unknown
+//					if (mPrefix.startsWith("$type")) {
+//						mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
+//					}
+					
+					if (this.multiSelect != null && !this.multiSelect.isEmpty()) {
+						Iterator multiSelectIt = this.multiSelect.iterator();
+						while (multiSelectIt.hasNext()) {
+							String id = (String)multiSelectIt.next();
+							sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + id + "_lastChoice\" name=\"" + mPrefix + id + "\" />\n");
+						}
+					}
+					
 				}
 				String indentKey = this.indentKey;
 				if (this.flat) {
@@ -369,12 +384,18 @@ public class TreeTag extends TagSupport {
 						jspOut.print("<img class=\"ss_twImg\" alt=\"\" src=\"" + getImage("spacer") + "\"/>");
 					} else {
 						String checked = "";
-						if (this.multiSelect.contains(s_binderId)) checked = "checked=\"checked\"";
+						if (this.multiSelect.contains(s_binderId)) {
+							checked = "checked=\"checked\"";
+						}
 						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
 						jspOut.print(mPrefix + s_id + "\" id=\"");
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
-						jspOut.print(checked + "/>");
+						jspOut.print(checked);
+						if (this.multiSelect.contains(s_binderId)) {
+							jspOut.print(" onclick=\"ss_clearMultiSelect('" + treeName + mPrefix + s_id + "')\"");
+						}
+						jspOut.print("/>");
 					}
 				} else if (this.singleSelectName != null) {
 					//can only select one item from tree, but probably other things going on

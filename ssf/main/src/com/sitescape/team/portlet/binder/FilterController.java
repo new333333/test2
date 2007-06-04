@@ -54,7 +54,8 @@ public class FilterController extends AbstractBinderController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 			//Parse the search filter
-			Document searchFilter = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
+			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
+			Document searchFilter = requestParser.getSearchQuery();
 			if (searchFilter != null) {
 				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);

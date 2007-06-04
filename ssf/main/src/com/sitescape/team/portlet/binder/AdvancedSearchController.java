@@ -255,7 +255,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Tabs tabs = setupTabs(request);
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 
-		Document searchQuery = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
+		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
+		Document searchQuery = requestParser.getSearchQuery();
 		Map options = prepareSearchOptions(request);
  
  		prepareSearchResultPage(model, searchQuery, options, tabs, newTab);
