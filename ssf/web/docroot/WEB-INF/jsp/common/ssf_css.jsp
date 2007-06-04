@@ -2642,7 +2642,7 @@ div.ss_search_results_pane {
 	background:inherit;
 }
 .ss_search_results_selection_active {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back4.gif) repeat-x !important;
+	background:url(<html:imagesPath/>pics/background_search_results_active.gif) repeat-x !important;
 	text-decoration:none;
 }
 .ss_search_results_selection_inactive {
