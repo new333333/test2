@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
@@ -195,7 +196,7 @@ public class ReportDownloadController extends  SAbstractController {
 			}
 		}
 		if(userIds.size() > 0) {
-			List<Principal> principals = getProfileModule().getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
+			SortedSet<Principal> principals = getProfileModule().getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
 			for(Principal p : principals) {
 				userMap.put(p.getId(), p);
 			}

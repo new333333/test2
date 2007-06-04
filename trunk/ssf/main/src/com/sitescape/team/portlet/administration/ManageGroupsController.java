@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -36,11 +37,10 @@ import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 public class ManageGroupsController extends  SAbstractController {
@@ -66,7 +66,7 @@ public class ManageGroupsController extends  SAbstractController {
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
 			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+			SortedSet principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);

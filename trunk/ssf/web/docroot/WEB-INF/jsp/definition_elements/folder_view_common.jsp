@@ -427,7 +427,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		String[] sIds = new String[0];
 		java.util.Set ids = new java.util.HashSet();
 		sIds = (String[]) sr.getValueSet().toArray(new String[0]);
-		ids = com.sitescape.team.web.util.FindIdsHelper.getIdsAsLongSet(sIds);
+		ids = com.sitescape.team.util.LongIdUtil.getIdsAsLongSet(sIds);
 %>
           	<c:forEach var="user" 
           	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ids) %>"

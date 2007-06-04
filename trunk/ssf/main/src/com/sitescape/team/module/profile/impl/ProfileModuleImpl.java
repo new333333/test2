@@ -27,7 +27,6 @@ import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
@@ -76,7 +75,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
-	protected TransactionTemplate transactionTemplate;
 
     protected DefinitionModule definitionModule;
 	protected DefinitionModule getDefinitionModule() {
@@ -254,14 +252,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   		} else throw new NotSupportedException("setSeen", "user");
   }
    //RW transaction
-   public void setSeen(Long userId, List entries) {
+   public void setSeen(Long userId, Collection<Entry> entries) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
    		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
 			seen = getProfileDao().loadSeenMap(user.getId());
-   			for (int i=0; i<entries.size(); i++) {
-   				Entry reply = (Entry)entries.get(i);
+   			for (Entry reply:entries) {
    				seen.setSeen(reply);
    			}
   		} else throw new NotSupportedException("setSeen", "user");
@@ -287,19 +284,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		checkAccess(binder, "getEntries");
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
-       	TreeSet<Group> result = new TreeSet<Group>(c);
+       	TreeSet<Group> result = new TreeSet(c);
        	result.addAll(getProfileDao().loadGroups(entryIds, user.getZoneId()));
 		return result;
 	}
-	public List getGroupMembers(Long groupId, Long zoneId) {
+	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId) {
 		ProfileBinder binder = getProfileBinder();
 		checkAccess(binder, "getEntries");
-		return getProfileDao().getMembership(groupId, zoneId);
-	}
-	public List getPrincipals(Set ids, Long zoneId) {
-		ProfileBinder binder = getProfileBinder();
-		checkAccess(binder, "getEntries");
-		return getProfileDao().loadPrincipals(ids, zoneId, false);
+	    User user = RequestContextHolder.getRequestContext().getUser();
+        Comparator c = new PrincipalComparator(user.getLocale());
+       	TreeSet<Principal> result = new TreeSet(c);
+ 		result.addAll(getProfileDao().loadPrincipals(ids, zoneId, false));
+ 		return result;
 	}
     
     //***********************************************************************************************************	
@@ -331,7 +327,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     //NO transaction
    public void modifyEntry(Long binderId, Long entryId, InputDataAccessor inputData, 
-		   Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
    		throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
@@ -558,13 +554,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		checkAccess(getProfileBinder(), "getEntries");
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
-       	TreeSet<User> result = new TreeSet<User>(c);
+       	TreeSet<User> result = new TreeSet(c);
        	result.addAll(getProfileDao().loadUsers(entryIds, user.getZoneId()));
  		return result;
 	}
    
 	//RO transaction
-	public Collection getUsersFromPrincipals(Set principalIds) {
+	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {
 		ProfileBinder profile = getProfileBinder();
 		checkAccess(profile, "getEntries");
 		Set ids = getProfileDao().explodeGroups(principalIds, profile.getZoneId());
