@@ -120,6 +120,7 @@
 											
 											<ssf:param name="url" useBody="true">
 												<ssf:url webPath="viewFile" binderId="${entry._binderId}">
+	    											<ssf:param name="entityType" value="${entry._entityType}"/>
 													<ssf:param name="entryId" value="${entry._docId}"/>
 													<ssf:param name="fileId" value="${entry._fileID}"/>
 												</ssf:url>
@@ -179,6 +180,7 @@
 						<div class="ss_thumbnail">
 							<c:if test="${!empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
 							  src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
+	    										<ssf:param name="entityType" value="${entry._entityType}"/>
 												<ssf:param name="fileId" value="${entry._fileID}"/>
 											    <ssf:param name="viewType" value="thumbnail"/>
 											    </ssf:url>" />
@@ -258,6 +260,7 @@
 										
 										<ssf:param name="url" useBody="true">
 											<ssf:url webPath="viewFile" binderId="${entry._binderId}">
+	    										<ssf:param name="entityType" value="${entry._entityType}"/>
 												<ssf:param name="entryId" value="${entry._docId}"/>
 												<ssf:param name="fileId" value="${entry._fileID}"/>
 											</ssf:url>

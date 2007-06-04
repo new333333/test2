@@ -40,6 +40,7 @@
 				    webPath="viewFile"
 				    folderId="${fileEntry._binderId}"
 				    entryId="${fileEntry._docId}" >
+	    			<ssf:param name="entityType" value="${fileEntry._entityType}"/>
 				    <ssf:param name="fileId" value="<%= _fileId %>"/>
 				    </ssf:url>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
@@ -47,6 +48,7 @@
 			    webPath="viewFile"
 			    folderId="${fileEntry._binderId}"
 			    entryId="${fileEntry._docId}" >
+	    		<ssf:param name="entityType" value="${fileEntry._entityType}"/>
 			    <ssf:param name="fileId" value="<%= _fileId %>"/>
 			    <ssf:param name="viewType" value="thumbnail"/>
 			    </ssf:url>"></a><br\>

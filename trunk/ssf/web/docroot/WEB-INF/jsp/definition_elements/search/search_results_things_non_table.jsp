@@ -522,6 +522,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 					<span class="ss_bold"><a target="_blank" href="<ssf:url
 					    	webPath="viewFile"
 					    	binderId="${entry1._binderId}">
+	    					<ssf:param name="entityType" value="${entry1._entityType}"/>
 			    	    	<ssf:param name="entryId" value="${attachment._docId}"/>
 			    	    	<ssf:param name="fileId" value="${attachment._fileID}"/>
 							</ssf:url>">${attachment._fileName}</a></span>

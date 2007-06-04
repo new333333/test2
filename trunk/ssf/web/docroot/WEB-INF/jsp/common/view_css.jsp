@@ -181,7 +181,8 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 				adapter="false" 
 				portletName="ss_forum" 
 				action="advanced_search" 
-				actionUrl="true" />";
+				actionUrl="true" ><ssf:param
+				name="newTab" value="1" /></ssf:url>";
 
 	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 }
@@ -301,7 +302,7 @@ var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:para
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
 var ss_baseBinderUrl<portlet:namespace/> = ss_baseBinderUrl;
 var ss_baseFileUrl = '<ssf:url webPath="viewFile" folderId="ssBinderIdPlaceHolder" 
-   	entryId="ssEntryIdPlaceHolder"></ssf:url>';
+   	entryId="ssEntryIdPlaceHolder" entityType="ssEntityTypePlaceHolder"></ssf:url>';
 var ss_baseFileUrl<portlet:namespace/> = ss_baseFileUrl;
 </ssf:ifnotadapter>
 </c:if>

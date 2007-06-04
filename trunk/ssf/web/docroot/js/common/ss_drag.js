@@ -28,9 +28,9 @@ var ss_Drag = {
 		group.minY = null;
 		group.maxX = null;
 		group.maxY = null;
-		group.threshold = 0;
-		group.thresholdY = 0;
-		group.thresholdX = 0;
+		group.threshold = 10;
+		group.thresholdY = 10;
+		group.thresholdX = 10;
 
 		group.onDragStart = new Function();
 		group.onDragEnd = new Function();
@@ -166,14 +166,14 @@ var ss_Drag = {
 		//ss_Drag.showStatus(mouse, nwPosition, sePosition, nwOffset, seOffset);
 
 		if (!ss_Drag.isDragging) {
-			if (group.threshold > 0) {
+			if (group.threshold > 10) {
 				var distance = group.initialWindowCoordinate.distance(
 						mouse);
 				if (distance < group.threshold) return true;
-			} else if (group.thresholdY > 0) {
+			} else if (group.thresholdY > 10) {
 				var deltaY = Math.abs(group.initialWindowCoordinate.y - mouse.y);
 				if (deltaY < group.thresholdY) return true;
-			} else if (group.thresholdX > 0) {
+			} else if (group.thresholdX > 10) {
 				var deltaX = Math.abs(group.initialWindowCoordinate.x - mouse.x);
 				if (deltaX < group.thresholdX) return true;
 			}
