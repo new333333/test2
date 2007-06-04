@@ -944,8 +944,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				//Get any component specific data
 				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName)) {
 					//Get the search query
-					// Document query = FilterHelper.getSearchFilter(request);
-					Document query = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
+					SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
+					Document query = requestParser.getSearchQuery();
 					componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName) ||

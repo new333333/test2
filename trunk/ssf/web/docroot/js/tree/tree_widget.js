@@ -349,6 +349,12 @@ function ss_hideBucketText() {
 	}
 }
 
+function ss_clearMultiSelect(id) {
+	var inputHiddenObj = document.getElementById(id + "_lastChoice");
+	if (inputHiddenObj) {
+		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
+	}
+}
 
 
 

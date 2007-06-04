@@ -330,7 +330,7 @@ function ss_searchToggleFolders(objId, selection) {
 	}
 }
 
-function ss_showAdditionalOptions(objId, txtContainerId) {
+function ss_showAdditionalOptions(objId, txtContainerId, namespace) {
 	var txtContainerObj = document.getElementById(txtContainerId);
 	if (txtContainerObj) {
 		if (txtContainerObj.innerHTML == ss_searchFormMoreOptionsHideLabel) {
@@ -339,6 +339,13 @@ function ss_showAdditionalOptions(objId, txtContainerId) {
 			txtContainerObj.innerHTML = ss_searchFormMoreOptionsHideLabel;
 		}
 	}
+	
+	var ssSearchParseAdvancedFormInputObj = document.getElementById("ssSearchParseAdvancedForm" + namespace);
+	if (ssSearchParseAdvancedFormInputObj) {
+		ssSearchParseAdvancedFormInputObj.value = "true";
+	// <input type="hidden" name="ssSearchParseAdvancedForm" value="true" />
+	}
+	
 	ss_showHide(objId);
 	if (!ss_searchMoreInitialized) {
 		ss_initSearchOptions();
@@ -360,6 +367,7 @@ function ss_showHideRatingBox(id, imgObj) {
 		imgObj.src=ss_opendBoxTooglerSrc;
 	}
 }
+
 
 function ss_fillSearchMask(id, value) { 
 	if (document.getElementById(id)) document.getElementById(id).value = value;

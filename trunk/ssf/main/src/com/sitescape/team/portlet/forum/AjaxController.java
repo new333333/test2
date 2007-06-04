@@ -1685,7 +1685,8 @@ public class AjaxController  extends SAbstractController {
 			Entry entry = getFolderModule().getEntry(binderId, entryId);
 			tabId = tabs.findTab(entry);
 		} else if (type.equals(Tabs.QUERY)) {
-			Document query = SearchFilterRequestParser.getSearchQuery(request, getDefinitionModule());
+			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
+			Document query = requestParser.getSearchQuery();
 			tabId = tabs.findTab(query);
 		}
 		tabs.setCurrentTab(tabId);

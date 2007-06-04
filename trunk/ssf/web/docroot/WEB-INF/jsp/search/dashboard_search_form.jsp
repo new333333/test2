@@ -14,6 +14,8 @@
 
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
+<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
+
 <script type="text/javascript">
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
@@ -67,6 +69,6 @@ ss_createOnSubmitObj('ss_prepareAdditionalSearchOptions', '${ss_dashboard_config
 <%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 
 dojo.addOnLoad(function() {
-	ss_showAdditionalOptions('ss_searchForm_additionalFilters');
+	ss_showAdditionalOptions('ss_searchForm_additionalFilters', null, '${ssNamespace}');
 });
 </script>

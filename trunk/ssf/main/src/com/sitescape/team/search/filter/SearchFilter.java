@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.search.filter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +25,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -111,7 +115,27 @@ public class SearchFilter {
 			this.start = start;
 			this.end = end;
 		}
-		
+
+		public static Period parseDatesToPeriod(String startDate, String endDate) {
+			SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
+			User user = RequestContextHolder.getRequestContext().getUser();
+			inputFormater.setTimeZone(user.getTimeZone());
+			Date startD = null;
+			Date endD = null;
+			if (!startDate.equals("")) {
+				try {startD = inputFormater.parse(startDate);} 
+				catch (ParseException e) {
+					//logger.error("Parse exception by date:"+startDate);
+				}
+			}
+			if (!endDate.equals("")) {
+				try {endD = inputFormater.parse(endDate);} 
+				catch (ParseException e) {
+					// logger.error("Parse exception by date:"+endDate);
+				}
+			}
+			return new Period(startD, endD);
+		}
 	}
 
 	// default join as 'OR' so joinAnd is false 

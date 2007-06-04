@@ -3,6 +3,7 @@ package com.sitescape.team.search.filter;
 public class SearchFilterKeys {
 
 //	//Search form field names
+	public final static String SearchParseAdvancedForm = "ssSearchParseAdvancedForm";
 	public final static String SearchAuthors = "searchAuthors";
 	public final static String SearchNumbers = "searchNumbers";
 	public final static String SearchStartDate = "searchStartDate";
