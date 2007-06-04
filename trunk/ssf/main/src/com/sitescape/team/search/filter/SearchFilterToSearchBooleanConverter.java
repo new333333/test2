@@ -561,9 +561,13 @@ public class SearchFilterToSearchBooleanConverter {
 			} else if (itemType.equals("user")) {
 				addEntityType(subOr, EntityType.user.name());
 			} else if (itemType.equals("attachment")) {
-				addDocType(subOr, BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ATTACHMENT);
 			} else if (itemType.equals("entry")) {
-				addEntryType(subOr, EntityIndexUtils.ENTRY_TYPE_ENTRY);
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
 			} else if (itemType.equals("reply")) {
 				addEntryType(subOr, EntityIndexUtils.ENTRY_TYPE_REPLY);
 			}
