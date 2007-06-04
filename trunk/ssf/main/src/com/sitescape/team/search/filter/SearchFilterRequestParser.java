@@ -91,7 +91,7 @@ public class SearchFilterRequestParser {
 				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat(SearchFilterKeys.SearchStartDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
 				String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat(SearchFilterKeys.SearchEndDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
 				SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
-				if (period.start != null || period.end != null) {
+				if (period.getStart() != null || period.getEnd() != null) {
 					modificationDates.add(period);
 				}
 			}
@@ -101,7 +101,7 @@ public class SearchFilterRequestParser {
 					String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchStartDate.concat(numbers[i]), "");
 					String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchEndDate.concat(numbers[i]), "");
 					SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
-					if (period.start != null || period.end != null) {
+					if (period.getStart() != null || period.getEnd() != null) {
 						modificationDates.add(period);
 					}
 				}
@@ -120,7 +120,7 @@ public class SearchFilterRequestParser {
 				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat(SearchFilterKeys.SearchStartDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
 				String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat(SearchFilterKeys.SearchEndDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
 				SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
-				if (period.start != null || period.end != null) {
+				if (period.getStart() != null || period.getEnd() != null) {
 					creationDates.add(period);
 				}
 			}
@@ -130,7 +130,7 @@ public class SearchFilterRequestParser {
 					String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchStartDate.concat(numbers[i]), "");
 					String endDate = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchEndDate.concat(numbers[i]), "");
 					SearchFilter.Period period = SearchFilter.Period.parseDatesToPeriod(startDate, endDate);
-					if (period.start != null || period.end != null) {
+					if (period.getStart() != null || period.getEnd() != null) {
 						creationDates.add(period);
 					}
 				}

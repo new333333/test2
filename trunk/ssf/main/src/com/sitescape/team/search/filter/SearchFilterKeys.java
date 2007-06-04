@@ -105,7 +105,9 @@ public class SearchFilterKeys {
    	
    	public final static String CurrentUserId="CURRENT_USER_ID";
    	
-   	public static String MinimumSystemDate = "19000000";
-   	public static String MaximumSystemDate = "30000000";
+   	public static final String MinimumSystemDate = "19000000000000";
+   	public static final String MaximumSystemDate = "30000000000000";
+   	public static final int MILIS_IN_THE_DAY = (1000 * 60 * 60 * 24) - 1;
+   	
    	
 }

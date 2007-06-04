@@ -278,8 +278,8 @@ public class SearchFilterToMapConverter {
 			Object parsedValue = value;
 			String formattedValue = value;
 			if (valueType.equals("date")) {
-				parsedValue = parseDate_from_yyyyMMdd(value);
-				formattedValue = formatDate_to_yyyy_MM_dd((Date)parsedValue);
+				parsedValue = parseDate_from_yyyy_MM_dd(value);
+				formattedValue = value;
 			} else if (valueType.equals("checkbox")) {
 				boolean valueObj = Boolean.parseBoolean(value);
 				if (valueObj) {
@@ -331,8 +331,8 @@ public class SearchFilterToMapConverter {
 			Object parsedValue = value;
 			String formattedValue = value;
 			if (valueType.equals("event")) {
-				parsedValue = parseDate_from_yyyyMMdd(value);
-				formattedValue = formatDate_to_yyyy_MM_dd((Date)parsedValue);
+				parsedValue = parseDate_from_yyyy_MM_dd(value);
+				formattedValue = value;
 			}
 			
 			block.put(SearchEntryValues, formattedValue);
@@ -390,14 +390,14 @@ public class SearchFilterToMapConverter {
 		String startDate = filterTerm.attributeValue(SearchStartDate, "");
 		String endDate = filterTerm.attributeValue(SearchEndDate, "");
 		
-		Date startDateParsed = parseDate_from_yyyyMMdd(startDate);
-		String formatedStartDate = formatDate_to_yyyy_MM_dd(startDateParsed);
+		Date startDateParsed = parseDate_from_yyyy_MM_dd(startDate);
+//		String formatedStartDate = formatDate_to_yyyy_MM_dd(startDateParsed);
 		
-		Date endDateParsed = parseDate_from_yyyyMMdd(endDate);
-		String formatedEndDate = formatDate_to_yyyy_MM_dd(endDateParsed);
+		Date endDateParsed = parseDate_from_yyyy_MM_dd(endDate);
+//		String formatedEndDate = formatDate_to_yyyy_MM_dd(endDateParsed);
 		
-		block.put(SearchStartDate, formatedStartDate);
-		block.put(SearchEndDate, formatedEndDate);
+		block.put(SearchStartDate, startDate);
+		block.put(SearchEndDate, endDate);
 		block.put(SearchStartDateNotFormated, startDateParsed);
 		block.put(SearchEndDateNotFormated, endDateParsed);
 		return block;
@@ -424,13 +424,13 @@ public class SearchFilterToMapConverter {
 		return modelValues;
 	}	
 	
-	private Date parseDate_from_yyyyMMdd(String s) {
+	private Date parseDate_from_yyyy_MM_dd(String s) {
 		if (s == null || "".equals(s)) {
 			return null;
 		}
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
-		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
 		inputFormater.setTimeZone(user.getTimeZone());
 		
 		Date result = null;
@@ -444,16 +444,16 @@ public class SearchFilterToMapConverter {
 		return result;
 	}
 	
-	/*
-	 * to yyyy-MM-dd
-	 */
-	private String formatDate_to_yyyy_MM_dd(Date date) {
-		if (date == null) {
-			return "";
-		}
-		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
-		return outputFormater.format(date);
-	}	
+//	/*
+//	 * to yyyy-MM-dd
+//	 */
+//	private String formatDate_to_yyyy_MM_dd(Date date) {
+//		if (date == null) {
+//			return "";
+//		}
+//		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
+//		return outputFormater.format(date);
+//	}	
 
 	private Map prepareAdditionalFiltersData(Map convertedQuery) {
 		

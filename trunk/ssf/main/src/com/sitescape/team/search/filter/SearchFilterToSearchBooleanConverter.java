@@ -25,11 +25,15 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -196,18 +200,44 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 	}
    	
+	private static String formatStartDate(String dateAsString) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+		DateTime date = fmt.parseDateTime(dateAsString);
+		date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
+		Date d = date.toDate();
+		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
+	}
+	
+	private static String formatEndDate(String dateAsString) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+		DateTime date = fmt.parseDateTime(dateAsString);
+		date = date.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
+		Date d = date.toDate();
+		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
+	}
+		
    	private static void addDateRange(Element block, String fieldName, String startDate, String endDate) {
    		
    		Element range = block.addElement(QueryBuilder.RANGE_ELEMENT);
    		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
-   		if (startDate == null || startDate.equals("")) startDate = SearchFilterKeys.MinimumSystemDate;
-   		if (endDate == null || endDate.equals("")) endDate = SearchFilterKeys.MaximumSystemDate;
+   		String formattedStartDate = SearchFilterKeys.MinimumSystemDate;
+   		if (startDate != null && !startDate.equals("")) {
+   			formattedStartDate = formatStartDate(startDate);
+   		}
+   		String formattedEndDate = SearchFilterKeys.MaximumSystemDate;
+   		if (endDate != null && !endDate.equals("")) {
+   			formattedEndDate = formatEndDate(endDate);
+   		}
    		
 		Element start = range.addElement(QueryBuilder.RANGE_START);
-		start.setText(startDate);
+		start.setText(formattedStartDate);
    		
 		Element end = range.addElement(QueryBuilder.RANGE_FINISH);
-		end.setText(endDate);
+		end.setText(formattedEndDate);
 	}
 
 	private static void addPersonalTagField(Element block, String personalTag) {
