@@ -153,6 +153,8 @@ public class Schedule {
 		this.hours = hours;
 		if (hours.indexOf('/') != -1) {
 			hoursRepeat=true;
+		} else if ("*".equals(hours)) {
+			hoursRepeat = true;
 		}
 	}
 	public boolean isRepeatMinutes() {
@@ -165,6 +167,8 @@ public class Schedule {
 		this.minutes = minutes;
 		if (minutes.indexOf('/') != -1) {
 			minutesRepeat=true;
+		} else if ("*".equals(hours)) {
+			minutesRepeat = true;
 		}
 	}
 	public String getMinutesRepeat() {
