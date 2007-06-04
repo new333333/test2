@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -23,6 +24,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.namespace.QName;
 
 import org.apache.axis.EngineConfiguration;
+import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.configuration.FileProvider;
@@ -127,7 +129,20 @@ public class WSClient
 			call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
 		}
 		
-		return call.invoke(args);
+		Object result = call.invoke(args);
+		
+		org.apache.axis.MessageContext messageContext = call.getMessageContext();
+		org.apache.axis.Message returnedMessage = messageContext.getResponseMessage();
+		System.out.println("Number of attachments is -> " +
+			returnedMessage.countAttachments());
+		Iterator iteAtta = returnedMessage.getAttachments();
+		DataHandler[] dhTab = new DataHandler[returnedMessage.countAttachments()];
+		for (int i=0;iteAtta.hasNext();i++) {
+			AttachmentPart ap = (AttachmentPart) iteAtta.next();
+			dhTab[i] = ap.getDataHandler();
+			System.out.println("Filename=" + dhTab[i].getName());
+		}
+		return result;
 	}
 
 	static void fetchAndPrintXML(String operation, Object[] args) throws Exception {

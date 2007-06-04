@@ -305,7 +305,11 @@ public class DefinitionHelper {
     public static String findCaptionForValue(Document definitionConfig, Element configElement, String value)
     {
     	String dataType = configElement.attributeValue("formItem");
-    	String fieldName = configElement.selectSingleNode("properties/property[@name='name']/@value").getStringValue();
+    	Node valueNode = configElement.selectSingleNode("properties/property[@name='name']/@value");
+    	if(valueNode == null) {
+    			return value;
+    	}
+    	String fieldName = valueNode.getStringValue();
     	Node captionNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@type='data' and @name='" + 
     														dataType + "' and properties/property[@name='name' and @value='" +
     														fieldName + "']]//item/properties[property[@name='name' and @value='" +

@@ -13,6 +13,7 @@ package com.sitescape.team.module.definition.ws;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.util.AllModulesInjected;
 
 /**
  *
@@ -20,5 +21,5 @@ import com.sitescape.team.domain.DefinableEntity;
  */
 public interface ElementBuilder {
     
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName);
+    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, AllModulesInjected moduleSource);
 }
