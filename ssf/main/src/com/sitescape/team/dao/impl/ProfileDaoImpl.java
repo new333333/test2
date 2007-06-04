@@ -62,11 +62,13 @@ import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.LongIdComparator;
+import com.sitescape.team.util.SPropsUtil;
 /**
  * @author Jong Kim
  *
  */
 public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
+	protected int inClauseLimit=2000;
 	protected Log logger = LogFactory.getLog(getClass());
 	private CoreDao coreDao;
 	Map reservedIds = new HashMap();
@@ -77,7 +79,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	private CoreDao getCoreDao() {
 	    return coreDao;
 	}
-	
+    /**
+     * Called after bean is initialized.  
+     */
+	protected void initDao() throws Exception {
+		//some database limit the number of terms 
+		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 2000);
+	}
 	/*
 	 * In most cases this will be initialized at startup and won't change,
 	 * but adding a zone or changing the ids could do it.
@@ -210,16 +218,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
      * We only actually delete groups.  Users are left forever, but
      * there associations are deleted
      */
-    public void deleteEntries(final List entries) {
+    public void deleteEntries(final Collection<Principal> entries) {
     	if (entries == null || entries.size() == 0) return;
       	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
         	   	   	Set ids = new HashSet();
            			StringBuffer inList = new StringBuffer();
-        			Principal p;
-        			for (int i=0; i<entries.size(); ++i) {
-        				p = (Principal)entries.get(i); 
+        			for (Principal p: entries) {
         	    		ids.add(p.getId());
         	    		inList.append(p.getId().toString() + ",");
         	    	}
@@ -302,7 +308,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	
     }
         
-    public void disablePrincipals(final Collection ids, final Long zoneId) {
+    public void disablePrincipals(final Collection<Long> ids, final Long zoneId) {
     	getHibernateTemplate().execute(
         	new HibernateCallback() {
         		public Object doInHibernate(Session session) throws HibernateException {
@@ -369,7 +375,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         return principal;
               
     }
-    public List loadPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
+    public List<Principal> loadPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
     	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
 		//remove proxies
 		for (int i=0; i<result.size(); ++i) {
@@ -387,23 +393,49 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         List result = (List)getHibernateTemplate().execute(
            	new HibernateCallback() {
             		public Object doInHibernate(Session session) throws HibernateException {
-            			Criteria crit = session.createCriteria(clazz)
-                        	.add(Expression.in(Constants.ID, ids))
-                        	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                        	// Unlike some other query caches used for reference type objects,
-                        	// this cache is not very useful in the sense that the result of
-                        	// this query is very unlikely to be shared across users.
-                        	// However, some WebDAV usage patterns make it useful because it
-                        	// can repeatedly asks for the same set of information (for a 
-                        	// request from the same user). We can use this as a short-lived
-                        	// temporary cache. 
-                        	.setCacheable(cacheable);
-            			if (checkActive) {
-                        	crit.add(Expression.eq("deleted", Boolean.FALSE));
-                        	crit.add(Expression.eq("disabled", Boolean.FALSE));
+       					//some databases restrict the size of the inList
+            			int useLimit = inClauseLimit-3;  //account for the 3 we add
+            			if (ids.size() <= useLimit) {
+           					Criteria crit = session.createCriteria(clazz)
+        					.add(Expression.in(Constants.ID, ids))
+        					.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                    		// Unlike some other query caches used for reference type objects,
+                    		// this cache is not very useful in the sense that the result of
+                    		// this query is very unlikely to be shared across users.
+                    		// However, some WebDAV usage patterns make it useful because it
+                    		// can repeatedly asks for the same set of information (for a 
+                    		// request from the same user). We can use this as a short-lived
+                    		// temporary cache. 
+                    		.setCacheable(cacheable);
+        					if (checkActive) {
+        						crit.add(Expression.eq("deleted", Boolean.FALSE));
+        						crit.add(Expression.eq("disabled", Boolean.FALSE));
+        					}            				
+        					return crit.list();
+            			} else {
+            				List idList = new ArrayList(ids);
+            				List results = new ArrayList();
+            				for (int i=0; i<idList.size(); i+=useLimit) {
+            					List subList = idList.subList(i, Math.min(idList.size(), i+useLimit));
+            					Criteria crit = session.createCriteria(clazz)
+            					.add(Expression.in(Constants.ID, subList))
+            					.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                        		// Unlike some other query caches used for reference type objects,
+                        		// this cache is not very useful in the sense that the result of
+                        		// this query is very unlikely to be shared across users.
+                        		// However, some WebDAV usage patterns make it useful because it
+                        		// can repeatedly asks for the same set of information (for a 
+                        		// request from the same user). We can use this as a short-lived
+                        		// temporary cache. 
+                        		.setCacheable(cacheable);
+            					if (checkActive) {
+            						crit.add(Expression.eq("deleted", Boolean.FALSE));
+            						crit.add(Expression.eq("disabled", Boolean.FALSE));
+            					}            				
+            					results.addAll(crit.list());
+            				}
+            				return results;
             			}
-                        return crit.list();
-
             		}
            	}
         );
@@ -441,11 +473,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			throw new NoGroupByTheIdException(groupId);
 		}
 	}
-	public List loadGroups(Collection<Long> ids, Long zoneId) {
+	public List<Group> loadGroups(Collection<Long> ids, Long zoneId) {
 		return loadPrincipals(ids, zoneId, Group.class, false, true);
 	}
 
-    public List loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
+    public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
     	return loadPrincipals(filter, zoneId, Group.class);
     }  
 	public User loadUser(Long userId, String zoneName) {
@@ -466,10 +498,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     }
 	
-	public List loadUsers(Collection<Long> ids, Long zoneId) {
+	public List<User> loadUsers(Collection<Long> ids, Long zoneId) {
 		return loadPrincipals(ids, zoneId, User.class, false, true);
     }
-    public List loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
+    public List<User> loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
      	return loadPrincipals(filter, zoneId, User.class);
     }
 
@@ -604,7 +636,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     	return loadUser(id, zoneId);
    }
-    public Set getPrincipalIds(User user) {
+    public Set<Long> getPrincipalIds(User user) {
     	return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
     }
 	/**
@@ -615,7 +647,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * @param Set of principalIds
 	 * @returns Set of userIds
 	 */
-	public Set<Long> explodeGroups(final Collection ids, Long zoneId) {   
+	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId) {   
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
 		Set users;
 		if (ids.contains(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
@@ -659,7 +691,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * @param groupId
 	 * @result List of <code>Membership</code>
 	 */
-	public List getMembership(final Long groupId, Long zoneId) {
+	public List<Long> getMembership(final Long groupId, Long zoneId) {
 		if (groupId == null) return new ArrayList();
 	    List membership = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
@@ -680,7 +712,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * @param principalId
 	 * @return Set of groupIds
 	 */
-	public Set getAllGroupMembership(final Long principalId, Long zoneId) {
+	public Set<Long> getAllGroupMembership(final Long principalId, Long zoneId) {
 		if (principalId == null)  return new TreeSet();
 		return (Set)getHibernateTemplate().execute(
             new HibernateCallback() {
@@ -730,7 +762,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	UserEntityPK id = new UserEntityPK(userId, entityId);
         return (Subscription)getHibernateTemplate().get(Subscription.class, id);	
 	}
-	public Map loadPrincipalsData(Collection ids, Long zoneId, boolean checkActive) {
+	public Map<Long, Principal> loadPrincipalsData(Collection<Long> ids, Long zoneId, boolean checkActive) {
     	List<Principal> principles = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
     	Map<Long,Principal> result = new HashMap();
 		//remove proxies

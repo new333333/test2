@@ -289,7 +289,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    //mark entries deleted - used when deleting entries in bulk and want
    //to exclude some from future queries
    //entries evicted from cache
-   public void markEntriesDeleted(final Folder folder, final List<FolderEntry> entries) {
+   public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
     	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
@@ -309,9 +309,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         	 );    	
              		 
    }
-    public void deleteEntries(final Folder folder, final List<FolderEntry> entries) {
+    public void deleteEntries(final Folder folder, final Collection<FolderEntry> entries) {
     	if (entries.isEmpty()) return;
-      	getHibernateTemplate().execute(
+ 
+    	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
                	   	   	Set ids = new HashSet();
@@ -471,9 +472,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     }
     //load public and private tags for a list of folder entries
     //order by id and name
-    public List loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection<Long> ids) {
+    public List<Tag> loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection<Long> ids) {
     	if (ids.isEmpty()) return new ArrayList();
-	   	return (List)getHibernateTemplate().execute(
+	   	return (List<Tag>)getHibernateTemplate().execute(
 		     	new HibernateCallback() {
 		       		public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(Tag.class)

@@ -22,6 +22,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.Tag;
 
 /**
  * @author Jong Kim
@@ -44,9 +45,9 @@ public interface FolderDao {
      * @return
      * @throws DataAccessException
      */
-    public List loadEntryDescendants(FolderEntry entry) throws DataAccessException;
-    public List loadEntryAncestors(FolderEntry entry) throws DataAccessException;
-    public List loadEntryTree(FolderEntry entry) throws DataAccessException;
+    public List<FolderEntry> loadEntryDescendants(FolderEntry entry) throws DataAccessException;
+    public List<FolderEntry> loadEntryAncestors(FolderEntry entry) throws DataAccessException;
+    public List<FolderEntry> loadEntryTree(FolderEntry entry) throws DataAccessException;
     
     /**
      * Load changed entries in a folder and its sub-folders
@@ -56,16 +57,16 @@ public interface FolderDao {
      * @return
      */
     
-	public List loadFolderTreeUpdates(Folder folder, Date since, Date before);
-	public List loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
+	public List<FolderEntry> loadFolderTreeUpdates(Folder folder, Date since, Date before);
+	public List<FolderEntry> loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
 	
 	public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException,NoFolderByTheIdException;
   
     public void delete(Folder folder);
-    public void deleteEntries(Folder folder, List<FolderEntry> entries);
-    public void markEntriesDeleted(Folder folder, List<FolderEntry> entries);
+    public void deleteEntries(Folder folder, Collection<FolderEntry> entries);
+    public void markEntriesDeleted(Folder folder, Collection<FolderEntry> entries);
     public void move(Folder folder);
     public void moveEntries(Folder folder, List<Long> ids);
-    public List loadEntryTags(EntityIdentifier ownerIdentifier, Collection<Long> ids);
+    public List<Tag> loadEntryTags(EntityIdentifier ownerIdentifier, Collection<Long> ids);
 
 }
