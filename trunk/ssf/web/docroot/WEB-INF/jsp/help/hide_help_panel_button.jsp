@@ -9,6 +9,12 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
+ 
+ /** NOTE: THIS code is shared by more than the HELP system.  It should
+  ** be both renamed and somewhere else.  It is a common way to get a close
+  ** button!
+  **/
+ 
 %>
 <div align="right">
   <a href="javascript: ;" 

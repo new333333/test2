@@ -888,8 +888,6 @@ div.ss_popup_body {
   position:absolute;
   visibility:hidden;
   display:none;
-  background-color:${ss_help_panel_background_color} !important;
-  border:2px solid black;
   margin:2px;
   padding:2px;
   width:400px;
@@ -906,6 +904,12 @@ div.ss_popup_body {
 
 .ss_help_bullets li {
 	list-style-type: disc;
+}
+
+
+div.ss_help_popup_body_frame {
+  border: 1px solid #6B78A9;
+  padding: 10px;
 }
 
 .ss_inlineHelp {
