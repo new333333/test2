@@ -69,7 +69,10 @@
 			<td valign="top">
 				<c:if test="${!empty ssUsers}">
 					<table cellspacing="0" cellpadding="0">
+					<c:set var="uCount" value="0"/>
 					<c:forEach var="u1" items="${ssUsers}">
+					<c:if test="${uCount < 100}">
+					<c:set var="uCount" value="${uCount + 1}"/>
 					<jsp:useBean id="u1" type="com.sitescape.team.domain.User" />
 					  <tr>
 					  <td><span id="${ssNamespace}_user_<c:out value="${u1.id}"/>"
@@ -96,8 +99,14 @@
 					  	if (!userIdList.equals("")) userIdList += " ";
 					  	userIdList += u1.getId().toString();
 					  %>
+					</c:if>
 					</c:forEach>
 					</table>
+					<c:if test="${uCount >= 100}">
+					  <div align="right">
+					    <span class="ss_fineprint ss_italic">[<ssf:nlt tag="presence.userListTruncated"/>]</span>
+					  </div>
+					</c:if>
 				 </c:if>
 				<br>
 			</td>
