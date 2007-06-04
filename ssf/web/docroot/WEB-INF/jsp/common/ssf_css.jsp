@@ -880,7 +880,7 @@ div.ss_popup_body {
   visibility:hidden;
   display:none;
   background-color:${ss_help_panel_background_color} !important;
-  border:2px solid black;
+  border:1px solid #666666;
   margin:2px;
   padding:2px;
 }
