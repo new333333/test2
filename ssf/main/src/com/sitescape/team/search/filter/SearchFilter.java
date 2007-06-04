@@ -24,6 +24,10 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -107,34 +111,39 @@ public class SearchFilter {
 	
 	public static class Period {
 		
-		Date start;
+		public String start;
 		
-		Date end;
+		public String end;
 
-		public Period(Date start, Date end) {
+		public Period(String start, String end) {
 			this.start = start;
 			this.end = end;
 		}
 
 		public static Period parseDatesToPeriod(String startDate, String endDate) {
-			SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
-			User user = RequestContextHolder.getRequestContext().getUser();
-			inputFormater.setTimeZone(user.getTimeZone());
-			Date startD = null;
-			Date endD = null;
+//			SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
+//			User user = RequestContextHolder.getRequestContext().getUser();
+//			inputFormater.setTimeZone(user.getTimeZone());
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
+			DateTime startD = null;
 			if (!startDate.equals("")) {
-				try {startD = inputFormater.parse(startDate);} 
-				catch (ParseException e) {
-					//logger.error("Parse exception by date:"+startDate);
-				}
+				startD = fmt.parseDateTime(startDate);
+				startD = startD.withMillisOfDay(0);
 			}
+			DateTime endD = null;
 			if (!endDate.equals("")) {
-				try {endD = inputFormater.parse(endDate);} 
-				catch (ParseException e) {
-					// logger.error("Parse exception by date:"+endDate);
-				}
+				endD = fmt.parseDateTime(endDate);
+				endD = endD.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY);
 			}
-			return new Period(startD, endD);
+			return new Period(startD != null ? fmt.print(startD) : null, endD != null ? fmt.print(endD) : null);
+		}
+
+		public String getEnd() {
+			return end;
+		}
+
+		public String getStart() {
+			return start;
 		}
 	}
 
@@ -627,20 +636,12 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	
-	public void addCreationDate(Date date) {
-		addCreationDate(searchFormated(date));
-	}
-	
 	public void addModificationDate(String date) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.MODIFICATION_DAY_FIELD);
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
-	}
-	
-	public void addModificationDate(Date date) {
-		addModificationDate(searchFormated(date));
 	}
 	
 	private void addDateRange(Element parent, String fieldName, String startDate, String endDate) {
@@ -654,23 +655,15 @@ public class SearchFilter {
 		if (endDate != null && !endDate.equals("")) { filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, endDate);}		
 	}
 	
-	private void addCreationDateRange(Element parent, String startDate, String endDate) {
-		addDateRange(parent, EntityIndexUtils.CREATION_DAY_FIELD, startDate, endDate);
-	}
-	
-	public void addCreationDateRange(Date startDate, Date endDate) {
+	public void addCreationDateRange(String startDate, String endDate) {
 		checkCurrent();
 		addCreationDateRange(currentFilterTerms, startDate, endDate);
 	}
 	
-	private void addCreationDateRange(Element parent, Date startDate, Date endDate) {
-		String formatedStartDate = null;
-		if (startDate != null) formatedStartDate = searchFormated(startDate);
-		String formatedEndDate = null;
-		if (endDate != null) formatedEndDate = searchFormated(endDate);
-		addCreationDateRange(parent, formatedStartDate, formatedEndDate);
+	private void addCreationDateRange(Element parent, String startDate, String endDate) {
+		addDateRange(parent, EntityIndexUtils.CREATION_DAY_FIELD, startDate, endDate);
 	}
-	
+
 	public void addCreationDates(List<Period> creationPeriods) {
 		if (creationPeriods == null || creationPeriods.isEmpty()) {
 			return;
@@ -683,29 +676,17 @@ public class SearchFilter {
 		Iterator<Period> it = creationPeriods.iterator();
 		while (it.hasNext()) {
 			Period period = it.next();
-			addCreationDateRange(creationPeriodsListParent, period.start, period.end);
+			addCreationDateRange(creationPeriodsListParent, period.getStart(), period.getEnd());
 		}
-	}
-	
-	private String searchFormated(Date date) {
-		return DateTools.dateToString(date, DateTools.Resolution.DAY);
 	}
 	
 	public void addModificationDateRange(Element parent, String startDate, String endDate) {
 		addDateRange(parent, EntityIndexUtils.MODIFICATION_DAY_FIELD, startDate, endDate);
 	}
 	
-	public void addModificationDateRange(Date startDate, Date endDate) {
+	public void addModificationDateRange(String startDate, String endDate) {
 		checkCurrent();
 		addModificationDateRange(currentFilterTerms, startDate, endDate);
-	}
-	
-	public void addModificationDateRange(Element parent, Date startDate, Date endDate) {
-		String formatedStartDate = null;
-		if (startDate != null) formatedStartDate = searchFormated(startDate);
-		String formatedEndDate = null;
-		if (endDate != null) formatedEndDate = searchFormated(endDate);
-		addModificationDateRange(parent, formatedStartDate, formatedEndDate);
 	}
 
 	public void addModificationDates(List<Period> modificationPeriods) {
@@ -720,7 +701,7 @@ public class SearchFilter {
 		Iterator<Period> it = modificationPeriods.iterator();
 		while (it.hasNext()) {
 			Period period = it.next();
-			addModificationDateRange(modificationPeriodsListParent, period.start, period.end);
+			addModificationDateRange(modificationPeriodsListParent, period.getStart(), period.getEnd());
 		}
 	}
 	
