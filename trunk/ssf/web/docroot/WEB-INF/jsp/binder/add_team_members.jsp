@@ -19,7 +19,19 @@
   id="<portlet:namespace/>fm" 
   method="post" onSubmit="return ss_onSubmit(this);">
 <span class="ss_titlebold"><ssf:nlt tag="team.addDeleteMembers"/></span></br></br>
-  
+
+<span class="ss_bold"><ssf:nlt tag="team.inheritTeamFromParent"/></span><br/>
+<c:if test="${ssInheritFromParent}">
+<input type="radio" name="inherit" value="true" checked/><span><ssf:nlt tag="yes"/></span>
+&nbsp;&nbsp;&nbsp;
+<input type="radio" name="inherit" value="false"/><span><ssf:nlt tag="no"/></span>
+</c:if>
+<c:if test="${!ssInheritFromParent}">
+<input type="radio" name="inherit" value="true"/><span><ssf:nlt tag="yes"/></span>
+&nbsp;&nbsp;&nbsp;
+<input type="radio" name="inherit" value="false" checked/><span><ssf:nlt tag="no"/></span>
+</c:if>
+ 
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
