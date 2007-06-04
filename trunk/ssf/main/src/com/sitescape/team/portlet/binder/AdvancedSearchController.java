@@ -166,6 +166,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// actualize tabs info
 		Map options = prepareSearchOptions(request);
 		actualizeOptions(options, request);
+
+		options.put(Tabs.TITLE, queryName);
+		options.put(Tabs.TAB_SEARCH_TEXT, queryName);
 		
 		Tabs tabs = setupTabs(request);
 		prepareSearchResultPage(model, query, options, tabs, "");
