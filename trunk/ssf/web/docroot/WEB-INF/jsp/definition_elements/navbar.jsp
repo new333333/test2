@@ -109,7 +109,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
-	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;clear:both;"
+	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" 
+	      style="visibility:hidden;margin:0px;padding:0px;clear:both;"
 	    ></div>
 	  </ssHelpSpot>
 	</div>
@@ -124,7 +125,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
-	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;clear:both;"
+	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" 
+	      style="visibility:hidden;margin:0px;padding:0px;clear:both;"
 	    ></div>
 	</div>
 </ssf:ifaccessible>
@@ -136,14 +138,16 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	<div class="ss_global_toolbar_quick">
 		<div >
 			<span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span>
-			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced" href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced" 
+			  href="<portlet:actionURL windowState="maximized" portletMode="view">
 				<portlet:param name="action" value="advanced_search"/>
 				<portlet:param name="tabTitle" value="SEARCH FORM"/>
 				<portlet:param name="newTab" value="0"/>
 				</portlet:actionURL>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
 		</div>
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>" onMouseOver="this.style.cursor = 'pointer';">
+		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>" 
+		  onMouseOver="this.style.cursor = 'pointer';">
      		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
 		  		name="ss_simpleSearchForm<portlet:namespace/>" 
 		  		action="<portlet:actionURL windowState="maximized">
@@ -160,7 +164,10 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
 			  </ssHelpSpot>
-				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
+				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
+				  onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img 
+				  src="<html:imagesPath/>pics/menudown.gif" /></a>
 				<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
 			</form>
      	</div>
