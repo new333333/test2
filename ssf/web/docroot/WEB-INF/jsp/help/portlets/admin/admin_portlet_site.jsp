@@ -24,7 +24,7 @@
 
 <li><ssf:nlt tag="help.adminPortletSite.listItem.roleDefs" /></li>
 
-<li><ssf:nlt tag="help.adminPortletSite.listItem.configEmail" /></li>
+<li><ssf:nlt tag="help.adminPortletSite.listItem.configEmail"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.adminPortletSite.listItem.exportImport" /></li>
 

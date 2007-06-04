@@ -14,7 +14,7 @@
 <div class="ss_style" align="left">
 <%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
 
-<span class="ss_titlebold"><ssf:nlt tag="help.workflowIntro.title"/></span> (2/4)<br />
+<span class="ss_titlebold"><ssf:nlt tag="help.workflowIntro.title"/></span><br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.workflowIntro.subtopic.moreDefs"/></span>
 
 <p><ssf:nlt tag="help.workflowIntro.moreDefs.content.state"/></p>
@@ -31,16 +31,13 @@
 
 </div>
 
-<div align="center">
-<div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('portlets/workflow_concepts', 'ss_workflow_concepts', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
-</div>
+<br/>
 
-<div class="ss_style" style="display:inline;margin-right:4px;">
-<a class="ss_linkButton ss_smallprint" href="#" onClick="ss_hideDiv('ss_workflow_concepts'); return false;"><ssf:nlt tag="button.close"/></a>
-</div>
-
-<div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('portlets/workflow_example', 'ss_workflow_concepts', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
-</div>
+<div align="center" style="margin-bottom:5px;" title="This Help topic has more than one page of information">
+<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/admin/workflow', 'ss_moreinfo_panel');"><img border="0" <ssf:alt tag="general.previous"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a></div>
+<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/admin/workflow', 'ss_moreinfo_panel');">1</a></div> 
+<div style="display:inline;margin-right:10px;">2</div>
+<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/admin/workflow_example', 'ss_moreinfo_panel');">3</a></div>
+<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/admin/workflow_associating', 'ss_moreinfo_panel');">4</a></div>
+<div style="display:inline;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/admin/workflow_example', 'ss_moreinfo_panel');"><img border="0" <ssf:alt tag="general.next"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a></div>
 </div>
