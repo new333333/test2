@@ -1157,10 +1157,10 @@ public class BinderHelper {
 						binder.getId().toString()+"');return false;");
 				
 				if (DashboardHelper.checkIfShowingAllComponents(binder)) {
-					qualifiers.put("icon", "hideDashboard.gif");
+					qualifiers.put("icon", "dashboard_hide.gif");
 					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
 				} else {
-					qualifiers.put("icon", "showDashboard.gif");
+					qualifiers.put("icon", "dashboard_show.gif");
 					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
 				}
 			}

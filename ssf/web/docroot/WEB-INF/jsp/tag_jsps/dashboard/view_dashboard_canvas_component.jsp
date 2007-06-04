@@ -81,34 +81,34 @@ if (displayStyle == null || displayStyle.equals("")) {
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="#"
 				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}');return false;"
-				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
+				><img border="0" src="<html:imagesPath/>icons/accessory_hide.gif" 
 				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="#"
 				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}');return false;"
-				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
+				><img border="0" src="<html:imagesPath/>icons/accessory_show.gif" 
 				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${ss_displayStyle == 'accessible'}">
 				<li><a href="#"
 				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
-				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/up.gif" 
+				><img border="0" src="<html:imagesPath/>icons/accessory_move_up.gif" 
 				  alt="<ssf:nlt tag="button.moveUp"/>" /></a></li>
 				<li><a href="#"
 				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
-				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/down.gif" 
+				><img border="0" src="<html:imagesPath/>icons/accessory_move_down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
 			  </c:if>
 			  
 			  <c:if test="${ss_dashboard_scope == 'local' || ss_dashboard_scope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
-				  ><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
+				  ><img border="0" src="<html:imagesPath/>icons/accessory_modify.gif" 
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
 				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}'); return false;"
-				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete-component.gif" 
+				><img border="0" src="<html:imagesPath/>icons/accessory_delete.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			  </c:if>
 			</ul>
