@@ -93,6 +93,10 @@ public class ModifyEntryController extends SAbstractController {
 			
 				getFolderModule().modifyEntry(folderId, entryId, 
 						new MapInputData(formData), fileMap, deleteAtts, null);
+				
+				//See if there was a request to reorder the graphic files
+				String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
+				
 				setupReloadOpener(response, folderId, entryId);
 				//flag reload of folder listing
 				//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");

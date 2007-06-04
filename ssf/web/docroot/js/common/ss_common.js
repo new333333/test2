@@ -3359,6 +3359,24 @@ function ss_moveSelectedFavorites(namespace, upDown) {
 	}
 }
 
+function ss_moveThisTableRow(objToMove, namespace, upDown) {
+    var toMove = ss_findOwningElement(objToMove, "tr");
+    if (upDown == 'up') {
+	    ss_moveElementUp(toMove);
+	} else {
+	    ss_moveElementDown(toMove);
+	}
+}
+
+function ss_findOwningElement(obj, eleName) {
+	var node = obj;
+	while (node.tagName.toLowerCase() != eleName.toLowerCase()) {
+		node = node.parentNode;
+		if (node == null || node.tagName.toLowerCase() == 'body') break;
+	}
+	return node;
+}
+
 function ss_moveElementUp(node) {
 	var prior = dojo.dom.getPreviousSiblingElement(node);
 	if (prior) {

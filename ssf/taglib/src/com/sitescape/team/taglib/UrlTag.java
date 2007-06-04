@@ -81,6 +81,8 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			
 			RenderRequest renderRequest = (RenderRequest) req.getAttribute("javax.portlet.request");
 			RenderResponse renderResponse = (RenderResponse) req.getAttribute("javax.portlet.response");
+			//If there is no request object, then this must be from an adaptor and not a portlet url
+			if (renderRequest == null || renderResponse == null) this.adapter = true;
 
 			
 			//See if a url was specified
