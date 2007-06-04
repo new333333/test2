@@ -20,26 +20,26 @@ public class ScheduleHelper {
 		Schedule schedule = new Schedule();
 		val = PortletRequestUtils.getStringParameter(request, "minuteType", "");
 		if (val.equals("repeat")) {
-			int iVal = PortletRequestUtils.getIntParameter(request, "minutesRepeat", 0);
-			if (iVal != 0)
+			int iVal = PortletRequestUtils.getIntParameter(request, "minutesRepeat", -1);
+			if (iVal != -1)
 				schedule.setMinutes("0/" + iVal);
 			else 
-				schedule.setMinutes("0");				
+				schedule.setMinutes("0/1");				
 		} else {
-			schedule.setMinutes(Integer.toString(PortletRequestUtils.getIntParameter(request, "schedMinutes", 5)));			
+			int minutes = PortletRequestUtils.getIntParameter(request, "schedMinutes", -1);
+			if (minutes != -1) schedule.setMinutes(Integer.toString(minutes));
 		}		
 		
 		val = PortletRequestUtils.getStringParameter(request, "hourType", "");
 		if (val.equals("repeat")) {
-			int iVal = PortletRequestUtils.getIntParameter(request, "hoursRepeat", 0);
-			if (iVal != 0)
+			int iVal = PortletRequestUtils.getIntParameter(request, "hoursRepeat", -1);
+			if (iVal != -1)
 				schedule.setHours("0/" + iVal);
 			else
-				schedule.setHours("*");	
+				schedule.setHours("0/1");	
 		} else {
 			int hours = PortletRequestUtils.getIntParameter(request, "schedHours", -1);
-			if (hours == -1) schedule.setHours("*");
-			else schedule.setHours(Integer.toString(hours));
+			if (hours != -1) schedule.setHours(Integer.toString(hours));
 		}		
 		
 		

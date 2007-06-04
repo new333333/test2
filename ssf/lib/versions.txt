@@ -53,8 +53,8 @@ Slide jaas 2.2pre1
 Slide Kernel 2.2pre1
 Slide WCK 1.0
 Slide WebDAV client library 2.1
-Spring 1.2.2
-Spring mock 1.2.2 (comes with Spring)
+Spring 1.2.9
+Spring mock 1.2.9 (comes with Spring)
 Spring Portlet spring-portlet.jar
 Trove 1.0.2
 Velocity 1.4

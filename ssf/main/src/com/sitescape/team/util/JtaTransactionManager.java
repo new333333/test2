@@ -13,6 +13,7 @@ package com.sitescape.team.util;
 import javax.transaction.SystemException;
 import org.springframework.transaction.InvalidIsolationLevelException;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.jta.JtaTransactionObject;
 
 /**
  *
@@ -20,11 +21,13 @@ import org.springframework.transaction.TransactionDefinition;
  */
 public class JtaTransactionManager extends org.springframework.transaction.jta.JtaTransactionManager {
     
-	protected void applyIsolationLevel(int isolationLevel)
-            throws InvalidIsolationLevelException, SystemException {
+	protected void applyIsolationLevel(JtaTransactionObject txObject, int isolationLevel)
+    throws InvalidIsolationLevelException, SystemException {
+
         if (isolationLevel != TransactionDefinition.ISOLATION_DEFAULT) {
             isolationLevel = TransactionDefinition.ISOLATION_DEFAULT;
         }
-        super.applyIsolationLevel(isolationLevel);
-    }
+        super.applyIsolationLevel(txObject, isolationLevel);
+	}
+
 }

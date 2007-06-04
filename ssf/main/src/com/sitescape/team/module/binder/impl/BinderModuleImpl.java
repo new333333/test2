@@ -947,7 +947,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    
     public void setNotificationConfig(Long binderId, ScheduleInfo config) {
         Binder binder = loadBinder(binderId); 
-        getCoreDao().refresh(binder);
         checkAccess(binder, "setNotificationConfig"); 
         //data is stored with job
         EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
