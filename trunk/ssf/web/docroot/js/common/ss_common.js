@@ -5000,7 +5000,7 @@ function ss_showSavedQueriesList(relObj, divId) {
 				
 				var txt = "<h1>" + ss_savedSearchTitle + "</h1><ul>";
 				for (var queryNo in data) {
-					txt += "<li><a href=\"" + ss_AdvancedSearch + "&operation=ss_savedQuery&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
+					txt += "<li><a href=\"" + ss_AdvancedSearch + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
 				}
 				txt += "</ul>";
 				divObj.innerHTML = txt;
