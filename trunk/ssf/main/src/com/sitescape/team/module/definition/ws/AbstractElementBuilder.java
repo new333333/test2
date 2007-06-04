@@ -14,6 +14,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
@@ -23,13 +24,15 @@ import com.sitescape.team.util.ObjectPropertyNotFoundException;
  */
 public abstract class AbstractElementBuilder implements ElementBuilder {
     
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName) {
+	protected AllModulesInjected moduleSource = null;
+    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, AllModulesInjected moduleSource) {
+    	this.moduleSource = moduleSource;
     	element.addAttribute("name", dataElemName);
     	element.addAttribute("type", element.attributeValue("name"));
         CustomAttribute attribute = entity.getCustomAttribute(dataElemName);
 		try {
 			if (attribute != null) 
-    			return build(element, attribute);
+    			return build(element, entity, attribute);
 			else 
     			return build(element, entity, dataElemName);
 		} catch (Exception e) {
@@ -37,15 +40,19 @@ public abstract class AbstractElementBuilder implements ElementBuilder {
 			return true;
     	}
     }
-	protected boolean build(Element element, CustomAttribute attribute) {
-	   	return build(element, attribute.getValue());
+	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+	   	return build(element, attribute.getValue(), entity);
 	}   
     protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
 	   	try {
-	   		return build(element, InvokeUtil.invokeGetter(entity, dataElemName));
+	   		return build(element, InvokeUtil.invokeGetter(entity, dataElemName), entity);
 		} catch (ObjectPropertyNotFoundException ex) {
 	   		return false;
 	   	}
+    }
+    
+    protected boolean build(Element element, Object obj, DefinableEntity entity) {
+    	return build(element, obj);
     }
     
     protected boolean build(Element element, Object obj) {

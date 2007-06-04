@@ -16,6 +16,7 @@ import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.ReflectHelper;
 
 /**
@@ -25,12 +26,12 @@ import com.sitescape.team.util.ReflectHelper;
 public class ElementBuilderUtil {
 
     public static void buildElement(Element parent, DefinableEntity entity, String dataElemName, 
-    			String fieldBuilderClassName) {
+    			String fieldBuilderClassName, AllModulesInjected moduleSource) {
         try {
             Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
             ElementBuilder fieldBuilder = (ElementBuilder) fieldBuilderClass.newInstance();
             Element element = DocumentHelper.createElement("attribute");
-            if (fieldBuilder.buildElement(element, entity, dataElemName))
+            if (fieldBuilder.buildElement(element, entity, dataElemName, moduleSource))
             	parent.add(element);
         } catch (ClassNotFoundException e) {
             throw new InternalException (e);

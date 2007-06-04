@@ -11,11 +11,28 @@
 package com.sitescape.team.remoting.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.naming.OperationNotSupportedException;
+
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.ValidationException;
+
+import org.apache.axis.Message;
+import org.apache.axis.MessageContext;
+import org.apache.axis.attachments.AttachmentPart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -34,8 +51,10 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.util.AbstractAllModulesInjected;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
@@ -85,6 +104,35 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return doc.getRootElement().asXML();
 	}
 
+	private static class CalendarDataSource implements DataSource
+	{
+		String data = "";
+		
+		public CalendarDataSource(Calendar cal)
+		{
+			StringWriter writer = new StringWriter();
+			CalendarOutputter out = new CalendarOutputter();
+			try {
+				out.output(cal, writer);
+				data = writer.toString();
+			} catch(IOException e) {
+			} catch(ValidationException e) {
+			}
+		}
+		
+		public String getName() { return "com.sitescape.team.CalendarDataSource"; }
+		public String getContentType() { return "text/calendar"; }
+		
+		public InputStream getInputStream() throws IOException
+		{
+			return new StringBufferInputStream(data);
+		}
+		
+		public OutputStream getOutputStream() throws IOException
+		{
+			throw new IOException("Output not supported to this DataSource");
+		}
+	}
 	public String getFolderEntryAsXML(long binderId, long entryId) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
@@ -112,6 +160,14 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		prettyPrint(doc);
 		*/
 		
+		if(!entry.getEvents().isEmpty()) {
+			Calendar eventCalendar = getIcalConverter().generate(entry, entry.getEvents(), MailModule.DEFAULT_TIMEZONE);
+			DataHandler dh = new DataHandler(new CalendarDataSource(eventCalendar));
+			MessageContext messageContext = MessageContext.getCurrentContext();
+			Message responseMessage = messageContext.getResponseMessage();
+			responseMessage.addAttachmentPart(new AttachmentPart(dh));
+		}
+
 		return xml;
 	}
 	
@@ -291,6 +347,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	
 	private void addCustomElements(final Element entryElem, final com.sitescape.team.domain.Entry entry) {
+		final AllModulesInjected moduleSource = this;
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entryElement, Element flagElement, Map args)
 			{
@@ -298,7 +355,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
                 	String fieldBuilder = flagElement.attributeValue("elementBuilder");
 					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
 					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-                	ElementBuilderUtil.buildElement(entryElem, entry, nameValue, fieldBuilder);
+                	ElementBuilderUtil.buildElement(entryElem, entry, nameValue, fieldBuilder, moduleSource);
                 }
 			}
 			public String getFlagElementName() { return "webService"; }

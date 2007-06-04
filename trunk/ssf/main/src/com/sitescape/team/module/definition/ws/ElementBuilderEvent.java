@@ -10,23 +10,36 @@
  */
 package com.sitescape.team.module.definition.ws;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.ValidationException;
+
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.module.mail.MailModule;
 
 public class ElementBuilderEvent extends AbstractElementBuilder {
-	protected boolean build(Element element, Object obj) {
+	protected boolean build(Element element, Object obj, DefinableEntity entity) {
 		if (obj instanceof Event) {
 			Event event = (Event) obj;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			Element value = element.addElement("startDate");
-			value.setText(sdf.format(event.getDtStart().getTime()));
-			value = element.addElement("endDate");
-			value.setText(sdf.format(event.getDtEnd().getTime()));
+			StringWriter writer = new StringWriter();
+			Calendar cal = moduleSource.getIcalConverter().generate(entity, Arrays.asList(event), MailModule.DEFAULT_TIMEZONE);
+			CalendarOutputter out = new CalendarOutputter();
+			try {
+				out.output(cal, writer);
+			} catch(IOException e) {
+			} catch(ValidationException e) {
+			}
+			element.add(org.dom4j.DocumentHelper.createCDATA(writer.toString()));
 		} else {
 			element.setText(obj.toString());
 		}
