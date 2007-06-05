@@ -3792,7 +3792,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 
 
 /*
-	Search styles / start
+	Search and survays styles / start
 */
 #ss_tab_content {
 	padding:6px 6px 12px 6px;
@@ -3822,7 +3822,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
     margin:0;
     vertical-align:top;
 }
-div.ss_searchContainer {
+div.ss_searchContainer, div.ss_survayContainer {
 	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;
 	margin-left: 15px;
 }
@@ -3834,8 +3834,8 @@ div.ss_searchContainer #ss_content {
 	padding: 0px;
 	width: 491px;
 }
-#ss_searchForm_container {margin:0px; padding:0px;	}
-#ss_searchForm_spacer {
+#ss_searchForm_container, #ss_survayForm_container {margin:0px; padding:0px;	}
+#ss_searchForm_spacer, #ss_survayForm_spacer {
 	background: #e8eff7 url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
 	margin:0px 0px 0px 5px;
 	padding:0px;
@@ -3844,12 +3844,15 @@ div.ss_searchContainer #ss_content {
 	font-size:0px;
 	border-right:1px solid #afc8e3;
 }
-#ss_searchForm {
+#ss_searchForm, #ss_survayForm {
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
 	padding:6px;
 	border-bottom:1px solid #afc8e3;
 }
-#ss_searchForm table {
+#ss_survayForm_main form {
+	background-color: transparent;
+}
+#ss_searchForm table, #ss_survayForm_main {
 	background-color: #e8eff7;
 }
 #ss_searchForm input { width: 150px;}
@@ -3865,7 +3868,6 @@ a.ss_searchButton img {
 	border: 0;
 	vertical-align: bottom;
 }
-
 
 a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
 	background: transparent url(<html:imagesPath/>pics/search_icons.gif) no-repeat top left; 
@@ -3996,10 +3998,10 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
-#ss_searchForm_main table {
+#ss_searchForm_main table, #ss_survayForm_main table {
 	width: 100%;
 }
-#ss_searchForm_main th, #ss_searchForm_main td {
+#ss_searchForm_main th, #ss_searchForm_main td, #ss_survayForm_main th, #ss_survayForm_main td {
 	vertical-align: top;
 }
 #ss_searchForm_main table div.ss_additionals {
@@ -4021,6 +4023,27 @@ input.ss_saveQueryName {
 	font-weight: bold;
 }
 
+#ss_survayForm_questions {
+	margin:0px 0px 0px 0px;
+}
+div.questionContainer {
+	border-bottom: 1px solid #afc8e3;
+	padding: 0px 0px 0px 0px;
+}
+div.questionContainer h4 {
+	border: 1px solid #afc8e3;
+	background-color:#e8eff7;
+	margin:0px;
+}
+div.questionContainer h4 img, div.questionContainer li img {
+	border: 0px;
+	margin:6px;
+	vertical-align:text-bottom;
+}
+div.questionContainer h4 span {
+	vertical-align:top;
+}
+div.questionContainer input {width:300px;}
 .ss_savedQueriesListPane {
 	display: none;
 	background-color: #FFFFFF;
@@ -4315,6 +4338,7 @@ div.ssPageNavi {
 .ssPageNavi .ss_results_pro_page, .ssPageNavi .ss_results_pro_page div, .ssPageNavi .ss_results_pro_page table {
 	background-color: #E8EFF7;
 }
+
 
 
 
