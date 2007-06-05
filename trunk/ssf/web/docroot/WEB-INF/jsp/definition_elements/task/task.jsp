@@ -10,7 +10,7 @@
  *
  */
 %>
-<% // Guestbook view %>
+<% // Task view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
