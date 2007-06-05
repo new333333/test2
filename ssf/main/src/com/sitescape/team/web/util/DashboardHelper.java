@@ -724,7 +724,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		// Map elementData = BinderHelper.getCommonEntryElements();
 		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
-		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule());
+		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule(), getBinderModule());
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		Workspace ws = getWorkspaceModule().getWorkspace();

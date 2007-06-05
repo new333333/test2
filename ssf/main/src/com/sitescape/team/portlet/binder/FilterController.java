@@ -124,7 +124,7 @@ public class FilterController extends AbstractBinderController {
 			//Build a bean that contains all of the fields to be shown
 			if (searchFilters.containsKey(selectedSearchFilter)) {
 				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter((Document)searchFilters.get(selectedSearchFilter), 
-							getDefinitionModule(), getProfileModule());
+							getDefinitionModule(), getProfileModule(), getBinderModule());
 				model.putAll(searchFilterConverter.convertAndPrepareFormData());
 			}
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);

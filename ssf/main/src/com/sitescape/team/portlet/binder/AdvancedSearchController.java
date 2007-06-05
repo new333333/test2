@@ -55,6 +55,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -280,7 +281,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
 		
-		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(query, getDefinitionModule(), getProfileModule());
+		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(query, getDefinitionModule(), getProfileModule(), getBinderModule());
 		model.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		// SearchUtils.filterEntryAttachmentResults(results);
