@@ -57,7 +57,6 @@
 		</property>
 		<property name="urlMap">
 			<map>
-				<entry key="/downloadFile"><ref local="downloadFile"/></entry>				
 				<entry key="/uploadFile"><ref local="uploadFile"/></entry>				
 				<entry key="/viewFile"><ref local="viewFile"/></entry>
 				<entry key="/rssFeed"><ref local="rssFeed"/></entry>
