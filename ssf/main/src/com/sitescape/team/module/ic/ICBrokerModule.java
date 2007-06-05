@@ -27,11 +27,11 @@ public interface ICBrokerModule {
 		
 	public static final int[] CALL = new int[] {0, 768 + 8192, 3072};
 
-	public boolean getScreenNameExists(String zonName);
+	public boolean getScreenNameExists(String zonName) throws ICException;
 
-	public void sendIm(String from, String recipient, String message);
+	public void sendIm(String from, String recipient, String message) throws ICException;
 
-	public String getCommunityId(String communityname);
+	public String getCommunityId(String communityname) throws ICException;
 
 	public String addMeeting(Set participants, String title,
 			String description, String message, String password,

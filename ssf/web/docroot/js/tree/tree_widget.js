@@ -174,10 +174,7 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 		iframeObj.src = url;
 	}
 }
-function ss_clearSingleSelect(treeName) {
-	eval("ss_treeSelected_" + treeName + "=null;");
-	return true;
-}
+
 function ss_createTreeCheckbox(treeName, prefix, id) {
 	var divObj = document.getElementById("ss_hiddenTreeDiv"+treeName);
 	var cbObj = document.getElementById("ss_tree_checkbox" + treeName + prefix + id)
@@ -349,12 +346,20 @@ function ss_hideBucketText() {
 	}
 }
 
+function ss_clearSingleSelect(treeName) {
+	eval("ss_treeSelected_" + treeName + "=null;");
+	
+	var inputHiddenObj = document.getElementById(treeName + "_lastChoice");
+	if (inputHiddenObj) {
+		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
+	}
+	
+	return true;
+}
+
 function ss_clearMultiSelect(id) {
 	var inputHiddenObj = document.getElementById(id + "_lastChoice");
 	if (inputHiddenObj) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
 }
-
-
-

@@ -12,4 +12,9 @@
 %>
 <%@ page language="java" pageEncoding="ISO-8859-1"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-{"meetingToken" : ${ssMeetingToken}}
+<c:if test="${!empty ssMeetingToken}">
+{meetingToken : ${ssMeetingToken}}
+</c:if>
+<c:if test="${empty ssMeetingToken}">
+{meetingError : "<ssf:escapeJavaScript value="${ssMeetingError}"/>"}
+</c:if>
