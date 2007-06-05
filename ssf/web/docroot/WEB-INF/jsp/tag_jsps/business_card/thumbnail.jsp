@@ -29,7 +29,7 @@
 		    webPath="viewFile"
 		    folderId="${photo_folder}"
 		    entryId="${photo_entry}" >
-	    	<ssf:param name="entityType" value="${photo_entry.entityType}"/>
+	    	<ssf:param name="entityType" value="${thumbnail.owner.entity.entityType}"/>
 		    <ssf:param name="fileId" value="${thumbnail.id}"/>
 		    <ssf:param name="viewType" value="thumbnail"/>
 		    </ssf:url>" onerror="ss_buddyPhotoLoadError(this, '<img border=&quot;0&quot; src=&quot;<html:imagesPath/>pics/thumbnail_no_photo.jpg&quot;>');" />
