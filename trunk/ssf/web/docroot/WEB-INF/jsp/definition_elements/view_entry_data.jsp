@@ -52,7 +52,10 @@
 		
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
-		
+
+	} else if (itemType.equals("survay")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_survay.jsp" %><%
+
 	} else if (itemType.equals("event")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
 	} else if (itemType.equals("entryIcon")) {
