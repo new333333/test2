@@ -96,8 +96,6 @@
 
 	<!-- Controllers -->
 
-	<bean id="downloadFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.sample.DownloadFileController"/>
-	<bean id="uploadFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.sample.UploadFileController"/>
 	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
 	<bean id="rssFeed" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewRssController">
 		<property name="rssGenerator"><ref bean="rssGenerator"/></property>

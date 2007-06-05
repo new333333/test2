@@ -52,7 +52,6 @@
 		<property name="adminModule"><ref bean="adminModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
-		<property name="employeeModule"><ref bean="employeeModule"/></property>
 		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="ldapModule"><ref bean="ldapModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
@@ -439,9 +438,6 @@
 		<property name="fileModule"><ref local="fileModule"/></property>
 		<property name="pipeline"><ref local="docPipeline"/></property>
 		<property name="reportModule"><ref local="reportModule"/></property>
-	</bean>
-	
-	<bean id="employeeModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
 	</bean>
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
