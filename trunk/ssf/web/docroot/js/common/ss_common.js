@@ -1893,6 +1893,8 @@ var ss_helpSystem = {
 		if (welcomeDiv) {
 	    	welcomeDiv.style.visibility = "hidden";
 	    	welcomeDiv.style.display = "none";
+		    //Call the routines that want to be called on layout changes
+		    ssf_onLayoutChange();
 		}
 		var helpMenuAnchorDiv = document.getElementById('ss_helpMenuAnchor');
         if (helpMenuAnchorDiv != null) {
@@ -2355,10 +2357,22 @@ var ss_helpSystem = {
 			case "left" : 
 				left = parseInt(left - width - ss_helpSystemPanelMarginOffset);
 				break
+			case "center" : 
+				left = parseInt(left - width/2 - ss_helpSystemPanelMarginOffset);
+				break
+			case "right" : 
+				left = parseInt(left - ss_helpSystemPanelMarginOffset);
+				break
 		}
 		switch(yAlignment) {
 			case "bottom" : 
 				top = parseInt(top - height - ss_helpSystemPanelMarginOffset);
+				break
+			case "middle" : 
+				top = parseInt(top - height/2 - ss_helpSystemPanelMarginOffset);
+				break
+			case "top" : 
+				top = parseInt(top - ss_helpSystemPanelMarginOffset);
 				break
 		}
 		var windowWidth = parseInt(ss_getWindowWidth());

@@ -54,9 +54,6 @@
 <TH class="ss_table_smheaders"><a href="#" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext">${function.name}
-<c:if test="${empty ssFunctionsAllowed[function.id]}">
-*
-</c:if>
 </span></a></TH>
 </c:forEach>
 </TR>

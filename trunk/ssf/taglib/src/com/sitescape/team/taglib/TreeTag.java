@@ -245,7 +245,7 @@ public class TreeTag extends TagSupport {
 					if (this.multiSelect != null && !this.multiSelect.isEmpty()) {
 						Iterator multiSelectIt = this.multiSelect.iterator();
 						while (multiSelectIt.hasNext()) {
-							String id = (String)multiSelectIt.next();
+							String id = multiSelectIt.next().toString();
 							sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + id + "_lastChoice\" name=\"" + mPrefix + id + "\" />\n");
 						}
 					}

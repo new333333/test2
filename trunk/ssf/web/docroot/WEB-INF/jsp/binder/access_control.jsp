@@ -349,9 +349,6 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
 </c:if>
 </span>
 <br/>
-*&nbsp;&nbsp;&nbsp;
-<span class="ss_italic"><ssf:nlt tag="access.cannotChangeRoleMembership"/></span>
-<br/>
 <br/>
 </div>
 </c:if>
@@ -426,6 +423,11 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   
 	<div id="ss_addRolesMenu<portlet:namespace/>" class="ss_actions_bar2 ss_actions_bar_submenu" >
 		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
+		  <div align="right">
+		    <a href="#" onClick="ss_hideDiv('ss_addRolesMenu<portlet:namespace/>');return false;">
+		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+		    </a>
+		  </div>
 		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
 	    <c:forEach var="function" items="${ssFunctionMap}">
 	      <c:set var="includeRole" value="1"/>
