@@ -196,6 +196,7 @@
 				<option name="form" caption="__entry_form" />
 				<option name="guestbook" caption="__entry_form_guestbook" />
 				<option name="task" caption="__entry_form_task" />
+				<option name="survay" caption="__entry_form_survay" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -259,6 +260,7 @@
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="task" caption="__entry_task" />
+				<option name="survay" caption="__entry_survay" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -342,6 +344,7 @@
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="task" caption="__entry_task" />
+				<option name="survay" caption="__entry_survay" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -447,6 +450,7 @@
 			<option name="graphic" />
 			<option name="file" />
 			<option name="user_list" />
+			<option name="survay" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='folderData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -486,6 +490,7 @@
 				<option name="file" caption="__folder_file" />
 				<option name="guestbook" caption="__folder_guestbook" />
 				<option name="task" caption="__folder_task" />
+				<option name="survay" caption="__folder_survay" />
 				<help>ihelp.other.folder_view_type</help>
 			</property>
 		</properties>
@@ -1490,6 +1495,27 @@
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
 	</item>
+
+	<item name="survay" caption="__survay_queries" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/survay_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_survay.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvay" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvay" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSurvay" />
+	</item>
+
 <!-- Entry layout items -->
 	<item name="form" caption="__form" category="entryLayout">
 		<properties>
