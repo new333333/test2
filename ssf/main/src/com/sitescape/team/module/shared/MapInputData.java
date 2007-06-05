@@ -13,8 +13,10 @@ package com.sitescape.team.module.shared;
 import java.util.Date;
 import java.util.Map;
 
+import com.liferay.portlet.journal.action.GetStructureAction;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 
@@ -51,6 +53,14 @@ public class MapInputData implements InputDataAccessor {
 			return (Event) source.get(key);
 		}
 		return EventHelper.getEventFromMap(this, key, hasDuration, hasRecurrence);
+	}
+	
+	public Survey getSurveyValue(String key)
+	{
+		if(source.containsKey(key) && source.get(key) instanceof Survey) {
+			return (Survey) source.get(key);
+		}
+		return new Survey(this.getSingleValue(key));
 	}
 
 	public String[] getValues(String key) {

@@ -38,7 +38,7 @@
 <div id="ss_tab_content">
 		
 	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" action="" onSubmit="return ss_prepareSubmit(this);">
+	  id="<%= formName %>" action="" onSubmit="return ssSurvey.prepareSubmit(this);">
   
 			<c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
 		<div class="ss_surveyContainer">

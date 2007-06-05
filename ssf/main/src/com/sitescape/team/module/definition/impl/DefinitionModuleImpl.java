@@ -57,6 +57,7 @@ import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -1347,6 +1348,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					        event.setName(nameValue);
 					        entryData.put(nameValue, event);
 					    }
+					} else if (itemName.equals("survey")) {
+						//Use the helper routine to parse the date into a date object
+						Survey survey = inputData.getSurveyValue(nameValue);
+						if (survey != null) {entryData.put(nameValue, survey);}
 					} else if (itemName.equals("user_list")) {
 						if (inputData.exists(nameValue)) {
 							String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");

@@ -20,6 +20,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 
@@ -107,6 +108,14 @@ public class DomInputData implements InputDataAccessor {
 		return e;
 	}
 
+	public Survey getSurveyValue(String key)
+	{
+		String textVal = getSingleValue(key);
+		if(textVal != null) {
+			return new Survey(textVal);
+		}
+		return null;
+	}
 	public String[] getValues(String key) {
 		List nodes = root.selectNodes("attribute[@name='" + key + "']/value");
 		if(nodes.size() == 0) {

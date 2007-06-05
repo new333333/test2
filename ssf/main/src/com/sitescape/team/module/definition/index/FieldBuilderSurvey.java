@@ -26,14 +26,15 @@ public class FieldBuilderSurvey extends AbstractFieldBuilder {
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default date implementation ignores args.  
         
-        Document val = (Document) getFirstElement(dataElemValue);
-        if(val == null) {
-            return new Field[0];
-        }
-        else {
-            Field field = new Field(makeFieldName(dataElemName), val.asXML(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-            return new Field[] {field};
-        }
+//    	String val = (String) getFirstElement(dataElemValue);
+//        if(val == null) {
+//            return new Field[0];
+//        }
+//        else {
+//            Field field = new Field(makeFieldName(dataElemName), val, Field.Store.YES, Field.Index.UN_TOKENIZED);
+//            return new Field[] {field};
+//        }
+    	return null;
     }
 
 }

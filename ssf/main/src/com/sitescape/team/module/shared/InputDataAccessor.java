@@ -12,6 +12,7 @@ package com.sitescape.team.module.shared;
 
 import java.util.Date;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.survey.Survey;
 
 public interface InputDataAccessor {
 
@@ -77,5 +78,7 @@ public interface InputDataAccessor {
 	 * @return
 	 */
 	public int getCount();
+
+	public Survey getSurveyValue(String nameValue);
 		
 }

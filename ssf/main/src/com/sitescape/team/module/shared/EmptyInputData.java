@@ -13,6 +13,7 @@ package com.sitescape.team.module.shared;
 import java.util.Date;
 
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.EventHelper;
 
 /**
@@ -41,6 +42,11 @@ public class EmptyInputData implements InputDataAccessor{
 		return null;
 	}
 
+	public Survey getSurveyValue(String key)
+	{
+		return null;
+	}
+	
 	public boolean exists(String key) {
 		return false;
 	}
