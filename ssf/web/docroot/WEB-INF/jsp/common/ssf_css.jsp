@@ -2103,7 +2103,7 @@ div.ss_tabs {
 	font-weight: bold;
 	font-size: 11px;
 	color:#5A3C68;
-	height:24px;
+	height:26px;
 	background:url(<html:imagesPath/>tabs/back1.jpg) repeat-x left top;
 	white-space: nowrap;
 	margin:0px;
@@ -2114,7 +2114,7 @@ div.ss_tabs {
 	font-weight: bold;
 	font-size:11px;
 	color:#666666;
-	height:25px;
+	height:28px;
 	background:url(<html:imagesPath/>tabs/back1_active.jpg) repeat-x left top;
 	margin:0px;
 	padding:3px 0px 0px 0px;
@@ -2150,6 +2150,34 @@ div.ss_tabs {
 
 .ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
 	text-decoration:underline;
+}
+
+img.ss_tabs_icon {
+	position:relative;
+	left: 0px;
+	vertical-align: middle;
+}
+
+img.ss_tabs_close2 {
+	position:relative;
+	vertical-align: middle;
+} 
+
+img.ss_tabs_close {
+	position:relative;
+	vertical-align: middle;
+    background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat right;
+    width:11px;
+    min-width:11px;	
+}
+img.ss_tabs_close:hover {
+    background:url(<html:imagesPath/>pics/sym_s_delete.gif) no-repeat right;
+}
+
+
+span.ss_tabs_title {
+	position:relative;
+    vertical-align: middle;
 }
 
 /* breadcrumbs */

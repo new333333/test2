@@ -114,8 +114,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		  </c:if>
 		>
 	<c:if test="${!empty tab.icon}">
-		   <img border="0" style="position:relative; left: 0px; vertical-align: bottom;" 
-		     <ssf:alt/> src="<html:imagesPath/>${tab.icon}"/>
+		   <img border="0" class="ss_tabs_icon" <ssf:alt/> src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
 <%
 	// Truncate long tab titles to 20 characters
@@ -131,11 +130,11 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		tabTitle = tabTitle.substring(0, maxTitle) + "...";
 	}
 %>	
-		   <span><%= tabTitle %></span></a>
+		   <span class="ss_tabs_title"><%= tabTitle %></span></a>
 	<c:if test="${numTabs > 1}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
-		  <img border="0" style="position:relative; vertical-align: bottom;" 
-		    <ssf:alt tag="alt.deleteTab"/> src="<html:imagesPath/>tabs/tab_delete.gif"/>
+		  <img border="0" class="ss_tabs_close"
+		    <ssf:alt tag="alt.deleteTab"/> src="<html:imagesPath/>pics/1pix.gif"/>
 		</a>
 	</c:if>
 	  </td>
