@@ -29,6 +29,7 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 
 /**
@@ -199,10 +200,11 @@ public interface FolderModule {
 	 * 
 	 * @param folderId this should be a mirrored folder; note that mirrored 
 	 * folder is always a library folder (but not the other way around)
+	 * @param statusTicket
 	 * @return returns <code>false</code> if the folder represented by the
 	 * <code>folderId</code> has been deleted as result of the synchronization.
 	 * Otherwise returns <code>true</code>
 	 * @throws FIException
 	 */
-	public boolean synchronize(Long folderId) throws FIException, UncheckedIOException;
+	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException;
 }

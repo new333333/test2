@@ -7,10 +7,11 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.fi.FIException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.StatusTicket;
 
 public class BaseFolderModule extends AbstractFolderModule implements BaseFolderModuleMBean {
 
-	public boolean synchronize(Long folderId) throws FIException, UncheckedIOException {
+	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
 		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
 	}
 	/*

@@ -31,10 +31,12 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebStatusTicketManager;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
@@ -57,7 +59,13 @@ public class ModifyBinderController extends AbstractBinderController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			// First, setup the view as if the binder is to be deleted.
 			setupViewOnDelete(response, binder, binderType);
-			if(getFolderModule().synchronize(binderId)) {
+			// Create a new status ticket
+			StatusTicket statusTicket = WebStatusTicketManager.newStatusTicket(request);
+			// Pass the status ticket to the business method. The id of the ticket will
+			// need to be maintained on the browser side in order to be able to come
+			// in and check the status at later times. The ticket is stored as an attribute 
+			// in the user's session. The ticket id is used as the name of the attribute.
+			if(getFolderModule().synchronize(binderId, statusTicket)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
 				setupViewBinder(response, binderId, binderType);
