@@ -196,7 +196,7 @@
 				<option name="form" caption="__entry_form" />
 				<option name="guestbook" caption="__entry_form_guestbook" />
 				<option name="task" caption="__entry_form_task" />
-				<option name="survay" caption="__entry_form_survay" />
+				<option name="survey" caption="__entry_form_survey" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -260,7 +260,7 @@
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="task" caption="__entry_task" />
-				<option name="survay" caption="__entry_survay" />
+				<option name="survey" caption="__entry_survey" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -344,7 +344,7 @@
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="task" caption="__entry_task" />
-				<option name="survay" caption="__entry_survay" />
+				<option name="survey" caption="__entry_survey" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -450,7 +450,7 @@
 			<option name="graphic" />
 			<option name="file" />
 			<option name="user_list" />
-			<option name="survay" />
+			<option name="survey" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='folderData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -490,7 +490,7 @@
 				<option name="file" caption="__folder_file" />
 				<option name="guestbook" caption="__folder_guestbook" />
 				<option name="task" caption="__folder_task" />
-				<option name="survay" caption="__folder_survay" />
+				<option name="survey" caption="__folder_survey" />
 				<help>ihelp.other.folder_view_type</help>
 			</property>
 		</properties>
@@ -1496,7 +1496,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
 	</item>
 
-	<item name="survay" caption="__survay_queries" type="data" category="commonEntryData">
+	<item name="survey" caption="__survey_queries" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -1508,12 +1508,12 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/survay_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_survay.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/survey_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_survey.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvay" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvay" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSurvay" />
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSurvey" />
 	</item>
 
 <!-- Entry layout items -->
