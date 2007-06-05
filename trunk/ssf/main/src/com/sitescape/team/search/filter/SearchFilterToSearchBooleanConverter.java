@@ -209,10 +209,17 @@ public class SearchFilterToSearchBooleanConverter {
 			date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
 			d = date.toDate();
 		} catch (Exception e) {
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
-			DateTime date = fmt.parseDateTime(dateAsString);
-			date = date.withZone(DateTimeZone.UTC);
-			d = date.toDate();
+			try {
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+				DateTime date = fmt.parseDateTime(dateAsString);
+				date = date.withZone(DateTimeZone.UTC);
+				d = date.toDate();
+			} catch (Exception e1) {
+				// this is old date format, try it, maybe there are old saved searches
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
+				DateTime date = fmt.parseDateTime(dateAsString);
+				d = date.toDate();
+			}
 		}
 		
 		
@@ -228,11 +235,20 @@ public class SearchFilterToSearchBooleanConverter {
 			date = date.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
 			d = date.toDate();
 		} catch (Exception e) {
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
-			DateTime date = fmt.parseDateTime(dateAsString);
-			date = date.withZone(DateTimeZone.UTC);
-			d = date.toDate();
+			try {
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+				DateTime date = fmt.parseDateTime(dateAsString);
+				date = date.withZone(DateTimeZone.UTC);
+				d = date.toDate();
+			} catch (Exception e1) {
+				// this is old date format, try it, maybe there are old saved searches
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
+				DateTime date = fmt.parseDateTime(dateAsString);
+				d = date.toDate();
+			}
 		}
+		
+		
 		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
 	}
 		
