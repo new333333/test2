@@ -174,32 +174,32 @@
 					<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/></h4>
 					<div id="ss_itemType_options" class="ss_options">
 						<input type="checkbox" name="searchItemType" value="workspace" id="ss_itemType_workspace"
-							<c:if test="${ss_filterMap.additionalFilters.item_types.workspace}">
+							<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.workspace}">
 								checked="true"
 							</c:if>
 						/>&nbsp;<label for="ss_itemType_workspace"><ssf:nlt tag="searchForm.itemType.workspace"/></label>
 						<input type="checkbox" name="searchItemType" value="folder" id="ss_itemType_folder"
-							<c:if test="${ss_filterMap.additionalFilters.item_types.folder}">
+							<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.folder}">
 								checked="true"
 							</c:if>
 						/>&nbsp;<label for="ss_itemType_folder"><ssf:nlt tag="searchForm.itemType.folder"/></label>
 						<input type="checkbox" name="searchItemType" value="user" id="ss_itemType_user"
-							<c:if test="${ss_filterMap.additionalFilters.item_types.user}">
+							<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.user}">
 								checked="true"
 							</c:if>					
 						/>&nbsp;<label for="ss_itemType_user"><ssf:nlt tag="searchForm.itemType.user"/></label>
 						<input type="checkbox" name="searchItemType" value="attachment" id="ss_itemType_attachment"
-							<c:if test="${ss_filterMap.additionalFilters.item_types.attachment}">
+							<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.attachment}">
 								checked="true"
 							</c:if>						
 						/>&nbsp;<label for="ss_itemType_attachment"><ssf:nlt tag="searchForm.itemType.attachment"/></label>
 						<input type="checkbox" name="searchItemType" value="entry" id="ss_itemType_entry"
-							<c:if test="${ss_filterMap.additionalFilters.item_types.entry}">
+							<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.entry}">
 								checked="true"
 							</c:if>						
 						/>&nbsp;<label for="ss_itemType_entry"><ssf:nlt tag="searchForm.itemType.entry"/></label>
 						<input type="checkbox" name="searchItemType" value="reply" id="ss_itemType_reply"
-							<c:if test="${ss_filterMap.additionalFilters.item_types.reply}">
+							<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.reply}">
 								checked="true"
 							</c:if>						
 						/>&nbsp;<label for="ss_itemType_reply"><ssf:nlt tag="searchForm.itemType.reply"/></label>
