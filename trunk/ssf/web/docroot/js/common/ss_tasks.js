@@ -103,8 +103,6 @@ function ss_tasks (tableId, binderId, namespace) {
 
 	
 	function loadExtendedInfo () {
-		// alert("load tasks into ["+tasksTable.id+"] for binder [" + binderId + "]");
-		
 		var url = ss_AjaxBaseUrl + "&operation=get_tasks_extended_info";
 		url += "\&binderId=" + binderId;
 		url += "\&randomNumber=" + ss_random++;
@@ -130,8 +128,6 @@ function ss_tasks (tableId, binderId, namespace) {
 	}
 	
 	function loadTasks() {
-		// alert("load tasks into ["+tasksTable.id+"] for binder [" + binderId + "]");
-		
 		var url = ss_AjaxBaseUrl + "&operation=find_tasks";
 		url += "\&binderId=" + binderId;
 		url += "\&ssTaskFilterType=" + filterType;
@@ -393,12 +389,19 @@ function ss_tasks (tableId, binderId, namespace) {
 	
 	function createDueDateTD(task) {
 		var tdObj = document.createElement('td');
+		if (task.status == "completed" || task.status == "cancelled") {
+			dojo.html.setClass(tdObj, "ss_task_completed");
+		}
+		
 		tdObj.appendChild(document.createTextNode(task.dueDate));
 		return tdObj;
 	}
 	
 	function createTitleTD(task) {
 		var tdObj = document.createElement('td');
+		if (task.status == "completed" || task.status == "cancelled") {
+			dojo.html.setClass(tdObj, "ss_task_completed");
+		}
 		
 		var hrefObj = document.createElement('a');
 		hrefObj.href = "javascript: // ;";
@@ -411,6 +414,9 @@ function ss_tasks (tableId, binderId, namespace) {
 		var callViewTask = declareViewTask(that, task.id);
 		dojo.event.connect(hrefObj, "onclick", callViewTask);
 		
+		if (!task.title || task.title == "") {
+			task.title = ss_noEntryTitleLabel;
+		}
 		hrefObj.appendChild(document.createTextNode(task.title));
 		
 		tdObj.appendChild(hrefObj);
@@ -442,3 +448,4 @@ function ss_tasks (tableId, binderId, namespace) {
 	}
 
 }
+

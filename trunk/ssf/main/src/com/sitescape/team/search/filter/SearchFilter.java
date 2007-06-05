@@ -628,6 +628,15 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	
+	public void addTaskEndDate(String date) {
+		checkCurrent();
+		
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + "#EndDate");
+		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
+	}
+	
 	public void addCreationDate(String date) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);

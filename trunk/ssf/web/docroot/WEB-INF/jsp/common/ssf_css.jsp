@@ -4253,6 +4253,10 @@ a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_tas
 	background-position: left -22px; 
 }
 
+.ss_task_completed {
+	text-decoration: line-through;
+}
+
 /* Task - end*/
 
 div.ssPageNavi {

@@ -202,21 +202,37 @@ public class SearchFilterToSearchBooleanConverter {
    	
 	private static String formatStartDate(String dateAsString) {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Date d = null;
+		try {
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+			DateTime date = fmt.parseDateTime(dateAsString);
+			date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
+			d = date.toDate();
+		} catch (Exception e) {
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+			DateTime date = fmt.parseDateTime(dateAsString);
+			date = date.withZone(DateTimeZone.UTC);
+			d = date.toDate();
+		}
 		
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
-		DateTime date = fmt.parseDateTime(dateAsString);
-		date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
-		Date d = date.toDate();
+		
 		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
 	}
 	
 	private static String formatEndDate(String dateAsString) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
-		DateTime date = fmt.parseDateTime(dateAsString);
-		date = date.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
-		Date d = date.toDate();
+		Date d = null;
+		try {
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+			DateTime date = fmt.parseDateTime(dateAsString);
+			date = date.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
+			d = date.toDate();
+		} catch (Exception e) {
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+			DateTime date = fmt.parseDateTime(dateAsString);
+			date = date.withZone(DateTimeZone.UTC);
+			d = date.toDate();
+		}
 		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
 	}
 		
