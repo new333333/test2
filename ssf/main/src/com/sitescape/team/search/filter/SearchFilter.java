@@ -121,9 +121,6 @@ public class SearchFilter {
 		}
 
 		public static Period parseDatesToPeriod(String startDate, String endDate) {
-//			SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
-//			User user = RequestContextHolder.getRequestContext().getUser();
-//			inputFormater.setTimeZone(user.getTimeZone());
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
 			DateTime startD = null;
 			if (!startDate.equals("")) {
