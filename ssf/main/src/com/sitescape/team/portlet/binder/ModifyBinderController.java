@@ -36,7 +36,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
-import com.sitescape.team.web.util.WebStatusTicketManager;
+import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
@@ -60,7 +60,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			// First, setup the view as if the binder is to be deleted.
 			setupViewOnDelete(response, binder, binderType);
 			// Create a new status ticket
-			StatusTicket statusTicket = WebStatusTicketManager.newStatusTicket(request);
+			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(request);
 			// Pass the status ticket to the business method. The id of the ticket will
 			// need to be maintained on the browser side in order to be able to come
 			// in and check the status at later times. The ticket is stored as an attribute 

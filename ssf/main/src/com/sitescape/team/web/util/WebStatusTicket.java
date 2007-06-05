@@ -9,7 +9,7 @@ import com.sitescape.team.util.StatusTicket;
 
 public class WebStatusTicket implements StatusTicket {
 
-	private static final String ID_PREFIX = "st.";
+	private static final String ID_PREFIX = "wst.";
 
 	private PortletSession session;
 	private String id;
