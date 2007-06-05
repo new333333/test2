@@ -2614,12 +2614,12 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	}
 	var callbackRoutine = ""
 	var imgObj = obj.getElementsByTagName('img').item(0);
-	if (imgObj.src.match(/show.gif/)) {
+	if (imgObj.src.match(/accessory_show.gif/)) {
 		url += "\&operation=show_component";
 	    callbackRoutine = ss_showComponentCallback;
 	    imgObj.src = ss_componentSrcHide;
 	    imgObj.alt = ss_componentAltHide;
-	} else if (imgObj.src.match(/hide.gif/)) {
+	} else if (imgObj.src.match(/accessory_hide.gif/)) {
 		url += "\&operation=hide_component";
 	    callbackRoutine = ss_hideComponentCallback;
 	    imgObj.src = ss_componentSrcShow;
@@ -2634,7 +2634,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			//Signal that the layout changed 
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
-	} else if (imgObj.src.match(/delete-component.gif/)) {
+	} else if (imgObj.src.match(/accessory_delete.gif/)) {
 		url += "\&operation=delete_component";
 	    callbackRoutine = ss_hideComponentCallback;
 		var targetDiv = document.getElementById(divId);
