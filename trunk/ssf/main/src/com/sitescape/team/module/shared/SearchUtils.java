@@ -341,7 +341,7 @@ public class SearchUtils {
 			//access to entries is not required to update the folder acl
 	    	QueryBuilder qb = new QueryBuilder(null);
 			// add this query and list of ids to the lists we'll pass to updateDocs.
-			updateQueries.add(qb.buildQuery(qTree, false).getQuery());
+			updateQueries.add(qb.buildQuery(qTree, true).getQuery());
 			updateIds.add(EntityIndexUtils.getBinderAccess(top));
 		}
 		
