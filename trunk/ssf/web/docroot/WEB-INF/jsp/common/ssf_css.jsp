@@ -2170,7 +2170,7 @@ img.ss_tabs_close {
     width:11px;
     min-width:11px;	
 }
-img.ss_tabs_close:hover {
+img.ss_tabs_close:hover, a:hover img.ss_tabs_close {
     background:url(<html:imagesPath/>pics/sym_s_delete.gif) no-repeat right;
 }
 
