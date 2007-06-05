@@ -52,8 +52,8 @@
 		<jsp:include page="/WEB-INF/jsp/definition_elements/task/task_form.jsp" />
   </c:when>
 
-  <c:when test="${ss_formViewStyle == 'survay'}">
-		<jsp:include page="/WEB-INF/jsp/definition_elements/survay/survay_form.jsp" />
+  <c:when test="${ss_formViewStyle == 'survey'}">
+		<jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey_form.jsp" />
   </c:when>
 
   <c:otherwise>
