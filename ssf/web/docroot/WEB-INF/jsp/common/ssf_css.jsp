@@ -3820,7 +3820,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 
 
 /*
-	Search and survays styles / start
+	Search and surveys styles / start
 */
 #ss_tab_content {
 	padding:6px 6px 12px 6px;
@@ -3850,7 +3850,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
     margin:0;
     vertical-align:top;
 }
-div.ss_searchContainer, div.ss_survayContainer {
+div.ss_searchContainer, div.ss_surveyContainer {
 	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;
 	margin-left: 15px;
 }
@@ -3862,8 +3862,8 @@ div.ss_searchContainer #ss_content {
 	padding: 0px;
 	width: 491px;
 }
-#ss_searchForm_container, #ss_survayForm_container {margin:0px; padding:0px;	}
-#ss_searchForm_spacer, #ss_survayForm_spacer {
+#ss_searchForm_container, #ss_surveyForm_container {margin:0px; padding:0px;	}
+#ss_searchForm_spacer, #ss_surveyForm_spacer {
 	background: #e8eff7 url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
 	margin:0px 0px 0px 5px;
 	padding:0px;
@@ -3872,15 +3872,15 @@ div.ss_searchContainer #ss_content {
 	font-size:0px;
 	border-right:1px solid #afc8e3;
 }
-#ss_searchForm, #ss_survayForm {
+#ss_searchForm, #ss_surveyForm {
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
 	padding:6px;
 	border-bottom:1px solid #afc8e3;
 }
-#ss_survayForm_main form {
+#ss_surveyForm_main form {
 	background-color: transparent;
 }
-#ss_searchForm table, #ss_survayForm_main {
+#ss_searchForm table, #ss_surveyForm_main {
 	background-color: #e8eff7;
 }
 #ss_searchForm input { width: 150px;}
@@ -4033,10 +4033,10 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
-#ss_searchForm_main table, #ss_survayForm_main table {
+#ss_searchForm_main table, #ss_surveyForm_main table {
 	width: 100%;
 }
-#ss_searchForm_main th, #ss_searchForm_main td, #ss_survayForm_main th, #ss_survayForm_main td {
+#ss_searchForm_main th, #ss_searchForm_main td, #ss_surveyForm_main th, #ss_surveyForm_main td {
 	vertical-align: top;
 }
 #ss_searchForm_main table div.ss_additionals {
@@ -4058,7 +4058,7 @@ input.ss_saveQueryName {
 	font-weight: bold;
 }
 
-#ss_survayForm_questions {
+#ss_surveyForm_questions {
 	margin:0px 0px 0px 0px;
 }
 div.questionContainer {
