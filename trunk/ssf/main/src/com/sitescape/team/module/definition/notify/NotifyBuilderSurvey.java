@@ -17,14 +17,14 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 
-public class NotifyBuilderSurvay extends AbstractNotifyBuilder {
+public class NotifyBuilderSurvey extends AbstractNotifyBuilder {
 
     protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
      	Object obj = attribute.getValue();
     	if (obj instanceof Document) {
     		Document document = (Document)obj;
-    		// TODO put survay content here?
-    		element.setText("SURVAY!!!"+document.asXML());
+    		// TODO put survey content here?
+    		element.setText("SURVEY!!!"+document.asXML());
     	} else if (obj != null) {
     		element.setText(obj.toString());
     	}

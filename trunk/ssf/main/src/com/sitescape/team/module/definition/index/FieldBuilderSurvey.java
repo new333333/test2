@@ -16,7 +16,7 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 
-public class FieldBuilderSurvay extends AbstractFieldBuilder {
+public class FieldBuilderSurvey extends AbstractFieldBuilder {
 	
     public String makeFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
