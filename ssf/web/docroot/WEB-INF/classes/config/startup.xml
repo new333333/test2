@@ -11,6 +11,7 @@
 	<definitionFile>config/definitions/_libraryEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_guestbookEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_taskEntry.xml</definitionFile>		
+	<definitionFile>config/definitions/_survayEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_photoEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_wikiEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_blogFolder.xml</definitionFile>
@@ -20,6 +21,7 @@
 	<definitionFile>config/definitions/_libraryFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_guestbookFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_taskFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_survayFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_photoFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_wikiFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_workspace.xml</definitionFile>
@@ -34,5 +36,6 @@
 	<templateFile>config/templates/__template_folder_wiki.xml</templateFile>
 	<templateFile>config/templates/__template_workspace.xml</templateFile>
 	<templateFile>config/templates/__template_folder_task.xml</templateFile>
+	<templateFile>config/templates/__template_folder_survay.xml</templateFile>
 
 </zoneConfiguration>
