@@ -39,8 +39,8 @@
 <c:if test="${ss_folderViewStyle == 'task'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/task/task.jsp" />
 </c:if>
-<c:if test="${ss_folderViewStyle == 'survay'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/survay/survay.jsp" />
+<c:if test="${ss_folderViewStyle == 'survey'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'table'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
