@@ -19,7 +19,7 @@ import org.dom4j.Element;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.search.BasicIndexUtils;
 
-public class ElementBuilderSurvay extends AbstractElementBuilder {
+public class ElementBuilderSurvey extends AbstractElementBuilder {
 	   protected boolean build(Element element, Object val) {
 		   if(val instanceof Document) {
 			   element.add((Document)val);
