@@ -66,6 +66,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
@@ -597,6 +598,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return EventHelper.getEventFromMap(this, key, hasDuration, hasRecurrence);
 		}
 
+		public Survey getSurveyValue(String key)
+		{
+			return new Survey(key);
+		}
+		
 		public boolean exists(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return false;

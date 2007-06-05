@@ -40,7 +40,7 @@
 
 			<item name="date" caption="__due_date" type="data" id="23">
 				<properties>
-					<property name="name" value="date"/>
+					<property name="name" value="due_date"/>
 					<property name="caption" value="__due_date"/>
 					<property name="storage" value=""/>
 					<property name="hide" value=""/>
