@@ -24,7 +24,6 @@ import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.rss.RssGenerator;
@@ -33,7 +32,6 @@ import com.sitescape.team.util.AllModulesInjected;
 public abstract class SSimpleFormController extends SimpleFormController
 implements AllModulesInjected {
 
-	private EmployeeModule employeeModule;
 	private WorkspaceModule workspaceModule;
 	private FolderModule folderModule;
 	private AdminModule adminModule;
@@ -48,13 +46,6 @@ implements AllModulesInjected {
 	private ICBrokerModule icBrokerModule;
 	private IcalModule icalModule;
 
-	public void setEmployeeModule(EmployeeModule employeeModule) {
-		this.employeeModule = employeeModule;
-	}
-	
-	public EmployeeModule getEmployeeModule() {
-		return employeeModule;
-	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}

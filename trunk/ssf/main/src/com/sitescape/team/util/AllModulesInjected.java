@@ -21,7 +21,6 @@ import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 
@@ -35,9 +34,6 @@ import com.sitescape.team.module.workspace.WorkspaceModule;
  *
  */
 public interface AllModulesInjected {
-	void setEmployeeModule(EmployeeModule employeeModule);;
-
-	EmployeeModule getEmployeeModule();;
 
 	void setBinderModule(BinderModule binderModule);
 
