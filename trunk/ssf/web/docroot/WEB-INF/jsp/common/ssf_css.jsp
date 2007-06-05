@@ -3859,7 +3859,14 @@ div.ss_searchContainer #ss_content {
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
 #ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
-
+#ss_searchForm ul {
+	margin: 0 0 5px 0;
+	padding: 0;
+}
+#ss_searchForm li {
+	margin: 0;
+	padding: 0;
+}
 a.ss_searchButton img {
 	width: 22px;
 	height: 17px;

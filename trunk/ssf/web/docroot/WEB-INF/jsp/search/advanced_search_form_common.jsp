@@ -47,6 +47,12 @@
 							<th><ssf:nlt tag="searchForm.searchFolders"/>:</th>
 							<td colspan="2">
 							
+								<ul>
+									<c:forEach var="folder" items="${ssFolderList}">
+									    <li>${folder.parentBinder.title} // <span class="ss_bold">${folder.title}</span></li>
+									</c:forEach>
+								</ul>
+							
 								<c:if test="${activateDashboardFolder}">
 									<input type="radio" onchange="ss_searchToggleFolders('ss_foldersTree_${ssNamespace}', 'dashboard');" 
 											name="search_folderType" value="dashboard" id="search_currentFolder" style="width: 19px; margin: 0; padding: 0; "

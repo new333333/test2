@@ -21,12 +21,14 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -69,11 +71,14 @@ public class SearchFilterToMapConverter {
 	
 	private ProfileModule profileModule;
 	
-	public SearchFilterToMapConverter(Document query, DefinitionModule definitionModule, ProfileModule profileModule) {
+	private BinderModule binderModule;
+	
+	public SearchFilterToMapConverter(Document query, DefinitionModule definitionModule, ProfileModule profileModule, BinderModule binderModule) {
 		super();
 		this.searchQuery = query;
 		this.definitionModule = definitionModule;
 		this.profileModule = profileModule;
+		this.binderModule = binderModule;
 	}
 	
 	/**
@@ -443,21 +448,20 @@ public class SearchFilterToMapConverter {
 		
 		return result;
 	}
-	
-//	/*
-//	 * to yyyy-MM-dd
-//	 */
-//	private String formatDate_to_yyyy_MM_dd(Date date) {
-//		if (date == null) {
-//			return "";
-//		}
-//		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
-//		return outputFormater.format(date);
-//	}	
 
 	private Map prepareAdditionalFiltersData(Map convertedQuery) {
 		
 		Map result = new HashMap();
+		
+		if (convertedQuery.get(SearchFilterKeys.SearchFolders) != null) {
+			Iterator<String> it = ((List)convertedQuery.get(SearchFilterKeys.SearchFolders)).iterator();
+			List<Long> idLs = new ArrayList();
+			while (it.hasNext()) {
+				String ids = it.next();
+				idLs.add(Long.parseLong(ids));
+			}
+			result.put(WebKeys.FOLDER_LIST, binderModule.getBinders(idLs));
+		}
 		
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
 		if (additionalOptions != null) {
