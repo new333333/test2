@@ -177,7 +177,7 @@ public class TaskHelper {
 		
 		if (filterType.equals(FilterType.CLOSED)) {
 			searchFilter.addTaskStatuses(new String[] {"completed", "cancelled"});
-		} else {
+		} else if (filterType.equals(FilterType.ACTIVE)) {
 			searchFilter.addTaskStatuses(new String[] {"needsAction", "inProcess"});
 		}
 		
@@ -186,15 +186,15 @@ public class TaskHelper {
 		if (filterType.equals(FilterType.DAY)) {
 			DateTime dateTime = (new DateTime(userTimeZone)).toDateMidnight().toDateTime();
 			dateTime.withZone(DateTimeZone.forID("GMT"));
-			searchFilter.addTaskStartDate(dateTime.toString("yyyyMMddHHmm"));
+			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 		} else if (filterType.equals(FilterType.WEEK)) {
 			DateTime dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusWeeks(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
-			searchFilter.addTaskStartDate(dateTime.toString("yyyyMMddHHmm"));
+			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 		} else if (filterType.equals(FilterType.MONTH)) {
 			DateTime dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusMonths(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
-			searchFilter.addTaskStartDate(dateTime.toString("yyyyMMddHHmm"));
+			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 		}
 		
 		return searchFilter;

@@ -21,6 +21,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="action" value="${action}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/><portlet:param 
 		name="operation" value="subscribe"/></portlet:actionURL>";
+var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </script>
 
 <div style="margin:0px;">
