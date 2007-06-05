@@ -159,7 +159,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 						<portlet:param name="action" value="advanced_search"/>
 						<portlet:param name="newTab" value="1"/>
 						</portlet:actionURL>">
-			  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="137" offsetY="7"
+			  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="145" offsetY="5"
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" type="text" /> 
 					<a class="ss_searchButton" 
@@ -475,7 +475,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			<portlet:param name="action" value="advanced_search"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>" style="display: inline;">
-		  <ssHelpSpot helpId="navigation_bar/search_button_portlet" offsetX="-15" offsetY="15" 
+		  <ssHelpSpot helpId="navigation_bar/search_button_portlet" offsetX="-15" offsetY="12" 
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 			<input name="searchText" type="text" />
 			<input type="hidden" name="quickSearch" value="true"/>					
