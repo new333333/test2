@@ -59,6 +59,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.ic.ICBrokerModule;
+import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
@@ -1920,13 +1921,20 @@ public class AjaxController  extends SAbstractControllerRetry {
 			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
 		}
 		
-		String meetingToken = getIcBrokerModule().addMeeting(memberIds,
-				binder, entry, "", -1, "", meetingType);
-
-		model.put(WebKeys.MEETING_TOKEN, meetingToken);
+		try {
+			String meetingToken = getIcBrokerModule().addMeeting(memberIds,
+					binder, entry, "", -1, "", meetingType);
+			model.put(WebKeys.MEETING_TOKEN, meetingToken);
+			response.setContentType("text/json");
+			return new ModelAndView("forum/meeting_return", model);	
+		} catch (ICException e) {
+			model.put(WebKeys.MEETING_ERROR, NLT.get("meeting.start.error"));
+			response.setContentType("text/json");
+			return new ModelAndView("forum/meeting_return", model);	
+		}
 		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/meeting_return", model);		
+		
+	
 	}	
 	
 	private ModelAndView ajaxGetTeamMembers(RenderRequest request, 

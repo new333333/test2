@@ -237,7 +237,7 @@ public class TreeTag extends TagSupport {
 					sb.append("<div class=\"ss_treeWidget\">\n");
 					
 					String mPrefix=this.multiSelectPrefix;
-					// hope it's notin use here because type attribute is now unknown
+					// hope it's not in use here because type attribute is now unknown
 //					if (mPrefix.startsWith("$type")) {
 //						mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
 //					}
@@ -248,6 +248,10 @@ public class TreeTag extends TagSupport {
 							String id = (String)multiSelectIt.next();
 							sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + id + "_lastChoice\" name=\"" + mPrefix + id + "\" />\n");
 						}
+					}
+					
+					if (this.singleSelect != null && !this.singleSelect.equals("")) {
+						sb.append("<input type=\"hidden\" id=\"" + treeName + "_lastChoice\" name=\"" + this.singleSelectName + "\" value=\"" + this.singleSelect + "\" />\n");
 					}
 					
 				}

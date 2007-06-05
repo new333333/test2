@@ -4641,8 +4641,8 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 		},
 		load: function(type, data, evt) {
 			ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-			if (!data.meetingToken || data.meetingToken == "") {
-				alert(ss_not_logged_in);
+			if ((!data.meetingToken || data.meetingToken == "") && data.meetingError) {
+				alert(data.meetingError);
 			} else {
 				ss_launchMeeting(data.meetingToken);
 			}

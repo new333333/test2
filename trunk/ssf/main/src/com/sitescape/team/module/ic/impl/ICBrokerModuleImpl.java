@@ -11,6 +11,7 @@
 package com.sitescape.team.module.ic.impl;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
@@ -188,32 +189,29 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	public void PresenceBroker() {
 		try {
 			server = new XmlRpcClient(zonUrl);
-		} catch (Exception e) {
+		} catch (MalformedURLException e) {
+			logger.error(e);
 		}
 	}
 
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		try {
 			server = new XmlRpcClient(zonUrl);
-		} catch (Exception e) {
+		} catch (MalformedURLException e) {
+			logger.error(e);
 		}
 	}
 
 	public void destroy() throws Exception {
-
 		// Close the socket connection that you established in
 		// afterPropertiesSet.
 		// Do any other cleanup stuff as necessary.
 	}
 
-	private Object findScreenName(String screenname) {
+	private Object findScreenName(String screenname) throws ICException {
 
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				System.out.println("PresenceBroker: Failed to get sessionId");
-			}
+			getSessionId();
 		}
 
 		// Build our parameter list.
@@ -226,40 +224,29 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 		// Call the server, and get our result.
 		try {
-
 			Object result = (Object) server.execute(FIND_USERS, params);
-			// System.out.println("Object is " + result);
-			// the result is buried 4 deep (vectors within vectors)
 			return result;
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
+		} catch (IOException e) {
+			logger.error(e);
 		}
+
 		return null;
 	}
 
-	public boolean getScreenNameExists(String screenname) {
-
-		try {
-
-			Object result = findScreenName(screenname);
-			// System.out.println("Object is " + result);
-			// the result is buried 4 deep (vectors within vectors)
-
-			String screenName = (String) ((Vector) ((Vector) ((Vector) (result))
-					.get(0)).get(0)).get(0);
-
-			if (screenName.equalsIgnoreCase(screenname))
-				return true;
-			else
-				return false;
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
-		}
-		return false;
+	public boolean getScreenNameExists(String screenname) throws ICException {
+		Object result = findScreenName(screenname);
+		// System.out.println("Object is " + result);
+		// the result is buried 4 deep (vectors within vectors)
+	
+		String screenName = (String) ((Vector) ((Vector) ((Vector) (result))
+				.get(0)).get(0)).get(0);
+	
+		if (screenName.equalsIgnoreCase(screenname))
+			return true;
+		else
+			return false;
 	}
 
 	private void getSessionId() throws ICException {
@@ -275,33 +262,22 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 		// Call the server, and get our result.
 		try {
-
 			result = (List) server.execute(AUTHENTICATE_USER, params);
-			// System.out.println("Object is " + result);
-
 		} catch (XmlRpcException e) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
 			sessionId = "";
 			throw new ICException(e);
 		} catch (IOException e) {
-			// System.err.println("JavaClient: " + exception.toString());
 			sessionId = "";
 			throw new ICException(e);
 		}
 		sessionId = (String) result.get(0);
 	}
 
-	public void sendIm(String from, String recipient, String message) {
+	public void sendIm(String from, String recipient, String message) throws ICException {
 		List result = null;
 
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				System.out.println("PresenceBroker: Failed to get sessionId");
-			}
+			getSessionId();
 		}
 		if (from.length() == 0)
 			from = "aspen";
@@ -318,38 +294,25 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		// Call the server, and get our result.
 		try {
 			result = (List) server.execute(SEND_IM, params);
-			// System.out.println("Object is " + result);
-
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
+		} catch (IOException e) {
+			logger.error(e);
 		}
 	}
 
-	public Vector fetchContact(String screenname) {
+	public Vector fetchContact(String screenname) throws ICException {
 		Object result = null;
 		String userId = "";
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				System.out.println("PresenceBroker: Failed to get sessionId");
-			}
+			getSessionId();
 		}
-		try {
 
-			result = findScreenName(screenname);
-			// System.out.println("Object is " + result);
-			// the result is buried 4 deep (vectors within vectors)
-
-			userId = (String) ((Vector) ((Vector) ((Vector) (result)).get(0))
-					.get(0)).get(1);
-		} catch (Exception e) {
-			return null;
-		}
+		result = findScreenName(screenname);
+		
+		// the result is buried 4 deep (vectors within vectors)
+		userId = (String) ((Vector) ((Vector) ((Vector) (result)).get(0))
+				.get(0)).get(1);
 
 		if (userId.length() == 0)
 			return null;
@@ -364,44 +327,32 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		params.addElement(fields);
 		try {
 			result = (List) server.execute(FETCH_CONTACT, params);
-			// System.out.println("Object is " + result);
-
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
 			return null;
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (IOException e) {
 			return null;
 		}
+		
 		Vector userInfo = (Vector) ((Vector) ((Vector) (result)).get(0)).get(0);
 		userInfo.insertElementAt(userId, 0);
 		return userInfo;
 	}
 
-	public int deleteUser(String screenname) {
+	public int deleteUser(String screenname) throws ICException {
 		Object result = null;
 		String userId = "";
 
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				System.out.println("PresenceBroker: Failed to get sessionId");
-			}
+			getSessionId();
 		}
 
-		try {
-			result = findScreenName(screenname);
-			// System.out.println("Object is " + result);
-			// the result is buried 4 deep (vectors within vectors)
+		result = findScreenName(screenname);
+		// System.out.println("Object is " + result);
+		// the result is buried 4 deep (vectors within vectors)
 
-			userId = (String) ((Vector) ((Vector) ((Vector) (result)).get(0))
-					.get(0)).get(1);
-		} catch (Exception e) {
-			return 0;
-		}
+		userId = (String) ((Vector) ((Vector) ((Vector) (result)).get(0))
+				.get(0)).get(1);
 
 		if (userId.length() == 0)
 			return 0;
@@ -411,21 +362,18 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		params.addElement(userId);
 		try {
 			result = (List) server.execute(REMOVE_CONTACT, params);
-			// System.out.println("Object is " + result);
-
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
 			return 0;
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (IOException e) {
+			logger.error(e);
 			return 0;
 		}
+			
 		return ((Integer) (result)).intValue();
 	}
 
-	public String getCommunityId(String communityname) {
+	public String getCommunityId(String communityname) throws ICException {
 		Object result = null;
 		String name = "";
 		String id = "";
@@ -438,13 +386,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				// System.out.println("PresenceBroker: Failed to get
-				// sessionId");
-				return "";
-			}
+			getSessionId();
 		}
 
 		Vector params = new Vector();
@@ -453,17 +395,14 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		params.addElement(new Integer(9999));
 		try {
 			result = (List) server.execute(FETCH_COMMUNITY_LIST, params);
-			// System.out.println("Object is " + result);
-
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
 			return "";
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (IOException e) {
+			logger.error(e);
 			return "";
 		}
+
 		Vector communityIds = (Vector) ((Vector) (result)).get(0);
 		for (int i = 0; i < communityIds.size(); i++) {
 			id = (String) ((Vector) communityIds.elementAt(i)).get(0);
@@ -476,7 +415,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		return (String) result;
 	}
 
-	public boolean addUser(HashMap adduserparams) {
+	public boolean addUser(HashMap adduserparams) throws ICException {
 		// private String[] userParams = {"password", "communityid", "title",
 		// "firstname", "middlename", "lastname", "suffix", "company",
 		// "jobtitle", "address1", "address2", "state", "country", "postalcode",
@@ -490,13 +429,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		Object result = null;
 
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				// System.out.println("PresenceBroker: Failed to get
-				// sessionId");
-				return false;
-			}
+			getSessionId();
 		}
 
 		if (adduserparams.get("Communityid") == null) {
@@ -513,33 +446,22 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 		try {
 			result = (List) server.execute(ADD_USER, params);
-			// System.out.println("Object is " + result);
-
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
 			return false;
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (IOException e) {
+			logger.error(e);
 			return false;
-
 		}
 		return true;
 	}
 
-	public boolean modUser(HashMap moduserparams) {
+	public boolean modUser(HashMap moduserparams) throws ICException {
 
 		Object result = null;
 
 		if (sessionId.length() <= 0) {
-			try {
-				getSessionId();
-			} catch (Exception e) {
-				// System.out.println("PresenceBroker: Failed to get
-				// sessionId");
-				return false;
-			}
+			getSessionId();
 		}
 
 		if (moduserparams.get("Communityid") == null) {
@@ -556,17 +478,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 		try {
 			result = (List) server.execute(MOD_USER, params);
-			// System.out.println("Object is " + result);
-
-		} catch (XmlRpcException exception) {
-			// System.err.println("JavaClient: XML-RPC Fault #" +
-			// Integer.toString(exception.code) + ": " +
-			// exception.toString());
+		} catch (XmlRpcException e) {
+			logger.error(e);
 			return false;
-		} catch (Exception exception) {
-			// System.err.println("JavaClient: " + exception.toString());
+		} catch (IOException e) {
+			logger.error(e);
 			return false;
-
 		}
 		return true;
 	}

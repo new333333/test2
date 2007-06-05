@@ -452,6 +452,7 @@ public class WebKeys {
     public static final String ENTRY_USER_LIST="assignedUsers";
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
+    public static final String MEETING_ERROR="ssMeetingError";
     public static final String TEAM_MEMBERS="ssTeamMembers";
     public static final String TEAM_MEMBERS_COUNT="ssTeamMembersCount";
     
