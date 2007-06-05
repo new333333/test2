@@ -601,21 +601,33 @@ public class SearchFilterToSearchBooleanConverter {
 			String itemType = ((Element) itTermValues.next()).getText();
 			
 			if (itemType.equals("workspace")) {
-				addEntityType(subOr, EntityType.workspace.name());
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.workspace.name());
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_BINDER);
 			} else if (itemType.equals("folder")) {
-				addEntityType(subOr, EntityType.folder.name());
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.folder.name());
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_BINDER);
 			} else if (itemType.equals("user")) {
-				addEntityType(subOr, EntityType.user.name());
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.user.name());
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
+				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_USER);
 			} else if (itemType.equals("attachment")) {
 				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.folderEntry.name());
 				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
 				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ATTACHMENT);
 			} else if (itemType.equals("entry")) {
 				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.folderEntry.name());
 				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
 				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
 			} else if (itemType.equals("reply")) {
-				addEntryType(subOr, EntityIndexUtils.ENTRY_TYPE_REPLY);
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.folderEntry.name());
+				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_REPLY);
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
 			}
 		}
 	}
