@@ -19,13 +19,11 @@
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.intro" /></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.placesAndPeople"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.saved" /></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.tagsAndSaved"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.rankingsTags" /></p>
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.criteria"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.hits"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><span style="font-weight:bold;"><ssf:nlt tag="help.globalStrings.moreinfo.header" /></span></p>
 

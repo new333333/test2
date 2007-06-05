@@ -21,4 +21,10 @@
 
 <p><ssf:nlt tag="help.folderBookmarksPortlet.viewingUnread" /></p>
 
+<div style="margin-left:25px;">
+
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+
+</div>
+
 </div>
