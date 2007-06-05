@@ -203,27 +203,6 @@
         <resource-bundle>content.welcome</resource-bundle>
     </portlet>
 
-<!-- Test portlet that throws exceptions on demand.  Uncomment it in liferay-portlet.xml, too.
-    <portlet>
-        <description xml:lang="en">SiteScape Exception Test Portlet</description>
-        <portlet-name>ss_exception</portlet-name>
-        <display-name xml:lang="en">SiteScape Exception Test</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/testPortlets.xml</value>
-		</init-param>
-        <expiration-cache>300</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.exception</resource-bundle>
-    </portlet>
--->
-
     <user-attribute>
         <description xml:lang="en">User First Name</description>
         <name>user.name.given</name>
