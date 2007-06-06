@@ -30,6 +30,7 @@ import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -90,6 +91,9 @@ public class ModifyEntryController extends SAbstractController {
 						deleteAtts.add(key.substring(8));
 					}
 				}
+				
+				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+				formData = TaskHelper.adjustTaskAttributesDependencies(entry, formData);
 			
 				getFolderModule().modifyEntry(folderId, entryId, 
 						new MapInputData(formData), fileMap, deleteAtts, null);

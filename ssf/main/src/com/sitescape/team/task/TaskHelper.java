@@ -20,12 +20,15 @@ import org.joda.time.DateTimeZone;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class TaskHelper {
 	
@@ -149,6 +152,31 @@ public class TaskHelper {
 		return null;
 	}
 	
+	private static String getTaskSingleValue(Map formData, String key) {
+		Object values = formData.get(key);
+		
+		if (values == null)
+			return null;
+		else if (values instanceof String) 
+			return (String)values;
+		else if (values instanceof String[]) 
+			return ((String[]) values)[0];
+		
+		return null;
+	}
+	
+	public static String getTaskStatusValue(Map formData) {
+		return getTaskSingleValue(formData, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+	
+	public static String getTaskPriorityValue(Map formData) {
+		return getTaskSingleValue(formData, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+	
+	public static String getTaskCompletedValue(Map formData) {
+		return getTaskSingleValue(formData, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+	
 	public static FilterType getTaskFilterType(PortletSession portletSession) {
 		return (FilterType)portletSession.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE);
 	}
@@ -199,6 +227,102 @@ public class TaskHelper {
 		
 		return searchFilter;
 	}
+
+	public static Map adjustTaskAttributesDependencies(FolderEntry entry, Map formData) {
+		Map result = new HashMap(formData);
+		if (!TaskHelper.isTaskEntryType(entry)) {
+			return formData;
+		}
+		
+		String newPriority = TaskHelper.getTaskPriorityValue(formData);
+		String newStatus = TaskHelper.getTaskStatusValue(formData);
+		String newCompleted = TaskHelper.getTaskCompletedValue(formData);
+
+		TaskHelper.adjustTaskAttributesDependencies(entry, result, newPriority, newStatus, newCompleted);
+		return result;
+	}
+	
+	public static Map adjustTaskAttributesDependencies(String entryType, Map formData) {
+		Map result = new HashMap(formData);
+		if (!TaskHelper.isTaskEntryType(entryType)) {
+			return formData;
+		}
+		
+		String newPriority = TaskHelper.getTaskPriorityValue(formData);
+		String newStatus = TaskHelper.getTaskStatusValue(formData);
+		String newCompleted = TaskHelper.getTaskCompletedValue(formData);
+		
+		TaskHelper.adjustTaskAttributesDependencies(null, entryType, result, newPriority, newStatus, newCompleted);
+		return result;
+	}
+	
+	private static boolean isTaskEntryType(FolderEntry entry) {
+		Definition entryDef = entry.getEntryDef();
+		String entryDefId = entryDef.getId();
+
+		return isTaskEntryType(entryDefId);
+	}
+	
+	private static boolean isTaskEntryType(String entryDefId) {
+		return entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG);
+	}
+
+	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
+		Definition entryDef = entry.getEntryDef();
+		String entryDefId = entryDef.getId();
+		TaskHelper.adjustTaskAttributesDependencies(null, entryDefId, formData, newPriority, newStatus, newCompleted);
+	}
+	
+	public static void adjustTaskAttributesDependencies(FolderEntry entry, String entryDefId, Map formData, String newPriority, String newStatus, String newCompleted) {
+		if ((entryDefId != null && !TaskHelper.isTaskEntryType(entryDefId)) ||
+				(entry != null && !TaskHelper.isTaskEntryType(entry))) {
+			return;
+		}
+		
+		if (!newPriority.equals("")) {
+			formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
+		}
+		
+		if (!newStatus.equals("")) {
+			formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
+			if (newStatus.equals("completed")) {
+				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+			}
+			
+			if (entry != null) {
+				String statusCurrent = TaskHelper.getTaskStatusValue(entry);
+				String completedCurrent = TaskHelper.getTaskCompletedValue(entry);
+				
+				if ((newStatus.equals("needsAction") || newStatus.equals("inProcess")) && "completed".equals(statusCurrent) &&
+						"c100".equals(completedCurrent)) {
+					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c90"});
+				}
+			}
+		}
+		
+		if (!newCompleted.equals("")) {
+			formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});
+			
+			
+			if (newCompleted.equals("c0")) {
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"needsAction"});
+			}
+			
+			if (newCompleted.equals("c10") || newCompleted.equals("c20") ||
+					newCompleted.equals("c30") || newCompleted.equals("c40") ||
+					newCompleted.equals("c50") || newCompleted.equals("c60") ||
+					newCompleted.equals("c70") || newCompleted.equals("c80") ||
+					newCompleted.equals("c90")) {
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"inProcess"});
+			}
+			
+			if (newCompleted.equals("c100")) {
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"completed"});
+			}		
+
+		}
+	}
+
 }
 
 	

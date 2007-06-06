@@ -704,7 +704,7 @@ public class ViewEntryController extends  SAbstractController {
 				FolderEntry reply = (FolderEntry)replies.get(i);
 				//if any reply is not seen, add it to list - try to avoid update transaction
 				if (!seen.checkIfSeen(reply)) {
-					getProfileModule().setSeen(null, replies);
+//					getProfileModule().setSeen(null, replies);
 					break;
 				}
 			}

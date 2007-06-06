@@ -43,6 +43,7 @@ import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
@@ -76,8 +77,11 @@ public class AddEntryController extends SAbstractController {
 			} else {
 				fileMap = new HashMap();
 			}
-			MapInputData inputData = new MapInputData(formData);
+			
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
+				formData = TaskHelper.adjustTaskAttributesDependencies(entryType, formData);
+				MapInputData inputData = new MapInputData(formData);
+				
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
 				setupReloadOpener(response, folderId, entryId);
 				if (!addEntryFromIFrame.equals("")) {
@@ -86,6 +90,7 @@ public class AddEntryController extends SAbstractController {
 					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
 				}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
+				MapInputData inputData = new MapInputData(formData);
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap);
 				//Show the parent entry when this operation finishes
