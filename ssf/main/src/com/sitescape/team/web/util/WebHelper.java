@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.team.domain.AnyOwner;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
@@ -450,6 +451,7 @@ public class WebHelper {
 			    		FileAttachment fa = entity.getFileAttachment(url.trim());
 			    		if (fa != null) {
 			    			webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
+			    			webUrl += WebKeys.URL_ENTITY_TYPE + "=" + fa.getOwner().getEntity().getEntityType().toString() + "&amp;";
 			    		} else {
 			    			webUrl += WebKeys.URL_FILE_TITLE + "=" + url.trim() + "&amp;";
 			    		}
