@@ -43,7 +43,7 @@
 	</bean>	
 
 	<!-- Controllers -->
-	<bean id="get" parent="dependOnAllModulesTemplate" class="com.sitescape.team.ical.servlet.GetController">
+	<bean id="get" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.ical.GetController">
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="mailModule"><ref bean="mailModule"/></property>
 	</bean>
