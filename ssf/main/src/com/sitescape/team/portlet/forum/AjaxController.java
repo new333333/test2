@@ -1661,7 +1661,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				jsp = "/WEB-INF/jsp/help/" + op2 + ".jsp";
 			}
 		}
-		response.setContentType("text/xml");
+		response.setContentType("text/json");
 		model.put(WebKeys.HELP_PANEL_JSP, jsp);
 		model.put(WebKeys.HELP_PANEL_TAG, tagId);
 
