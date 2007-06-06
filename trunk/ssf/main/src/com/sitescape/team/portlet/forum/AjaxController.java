@@ -2151,51 +2151,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Long entryId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			
 			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			String newPriority = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_PRIORITY, "");
+			String newStatus = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_STATUS, "");
+			String newCompleted = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_COMPLETED, "");
 			
 			Map formData = new HashMap();
-			String newPriority = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_PRIORITY, "");
-			if (!newPriority.equals("")) {
-				formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
-			}
 			
-			String newStatus = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_STATUS, "");
-			if (!newStatus.equals("")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
-				if (newStatus.equals("completed")) {
-					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
-				}
-				
-				String statusCurrent = TaskHelper.getTaskStatusValue(entry);
-				String completedCurrent = TaskHelper.getTaskCompletedValue(entry);
-				
-				if ((newStatus.equals("needsAction") || newStatus.equals("inProcess")) && "completed".equals(statusCurrent) &&
-						"c100".equals(completedCurrent)) {
-					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c90"});
-				}
-			}
-			
-			String newCompleted = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TASK_COMPLETED, "");
-			if (!newCompleted.equals("")) {
-				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});
-				
-				
-				if (newCompleted.equals("c0")) {
-					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"needsAction"});
-				}
-				
-				if (newCompleted.equals("c10") || newCompleted.equals("c20") ||
-						newCompleted.equals("c30") || newCompleted.equals("c40") ||
-						newCompleted.equals("c50") || newCompleted.equals("c60") ||
-						newCompleted.equals("c70") || newCompleted.equals("c80") ||
-						newCompleted.equals("c90")) {
-					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"inProcess"});
-				}
-				
-				if (newCompleted.equals("c100")) {
-					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"completed"});
-				}		
-
-			}
+			TaskHelper.adjustTaskAttributesDependencies(entry, formData, newPriority, newStatus, newCompleted);
 			
 			getFolderModule().modifyEntry(binderId, entryId, 
 					new MapInputData(formData), new HashMap(), new HashSet(), null);
