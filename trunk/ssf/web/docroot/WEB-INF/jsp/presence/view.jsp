@@ -131,6 +131,8 @@
 <c:if test="${!empty ssUsers || ss_windowState == 'maximized'}">
 <script type="text/javascript">
 function ${ssNamespace}_getPresence (timeout) {
+	var refreshDateDiv = document.getElementById('${ssNamespace}_refreshDate')
+	if (refreshDateDiv == null) return;
 	ss_setupStatusMessageDiv();
 	clearTimeout(${ssNamespace}_presenceTimer);
 	var url = "<ssf:url 
