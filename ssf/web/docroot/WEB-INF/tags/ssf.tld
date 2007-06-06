@@ -269,6 +269,24 @@
 	</tag>
 
 	<tag>
+		<name>drawChart</name>
+		<tag-class>com.sitescape.team.taglib.ChartTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>count</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>int</type>
+		</attribute>		
+		<attribute>
+			<name>total</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>int</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>editable</name>
 		<tag-class>com.sitescape.team.taglib.EditableTag</tag-class>
 		<body-content>JSP</body-content>
