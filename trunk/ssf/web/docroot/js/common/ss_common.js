@@ -1966,6 +1966,7 @@ var ss_helpSystem = {
 			var helpSpotTd2 = document.createElement("td");
 			var helpSpotGif = document.createElement("img");
 			helpSpotGif.src = ss_helpSpotGifSrc;
+			helpSpotGif.setAttribute("border", "0");
             // Title can be 'show' or 'hide' (default)			
 			if (nodes[i].getAttribute("titleFlag")) {
 			    helpSpotTitleFlag = nodes[i].getAttribute("titleFlag");
@@ -2250,7 +2251,7 @@ var ss_helpSystem = {
 			pObj = document.createElement("div");
 	        pObj.setAttribute("id", panelId);
 	        pObj.setAttribute("helpId", id);
-	        pObj.className = "ss_helpPanel";
+	        pObj.className = "ss_helpPanel ss_popup_panel_outer";
 	        pObj.style.zIndex = ssHelpPanelZ;
 	        bodyObj.appendChild(pObj);
 	        ss_helpSystemPanels[ss_helpSystemPanels.length] = panelId;
@@ -2409,8 +2410,17 @@ var ss_helpSystem = {
 		}
 	},
 
-	hideHelpPanel : function(obj, panelId) {
-		ss_hideDiv(panelId);
+	hideHelpPanel : function(obj) {
+	    while (dojo.dom.hasParent(obj)) {
+	        var n = obj.parentNode;
+	    	if (dojo.html.hasClass(n, "ss_popup_panel_outer")) {
+	    		if (n.id) {
+					ss_hideDiv(n.id);
+					break;
+				}
+			}
+			obj = n;
+		}
 	},
 	
 	highlight : function(id) {
