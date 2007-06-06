@@ -730,7 +730,8 @@ public class BinderHelper {
 					if (f.getId().equals(m.getFunctionId())) {
 						if (m.getMemberIds().contains(ObjectKeys.OWNER_USER_ID)) {
 							pMap.put(WebKeys.OWNER, ObjectKeys.OWNER_USER_ID);
-						} else if (m.getMemberIds().contains(ObjectKeys.TEAM_MEMBER_ID)) {
+						};
+						if (m.getMemberIds().contains(ObjectKeys.TEAM_MEMBER_ID)) {
 							pMap.put(WebKeys.TEAM_MEMBER, ObjectKeys.TEAM_MEMBER_ID);
 						}
 						Collection ids = ResolveIds.getPrincipals(m.getMemberIds());
