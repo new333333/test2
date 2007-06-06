@@ -129,9 +129,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     
 <% //GALLERY %>
 	<c:set var="ss_gallery_background_color" value="#F0F0F0" scope="request"/>
-	<c:set var="ss_gallery_image_background_color" value="#666666" scope="request"/>
+	<c:set var="ss_gallery_image_background_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_gallery_anchor_color" value="#333333" scope="request"/>
-	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
+	<c:set var="ss_gallery_anchor_hover_color" value="#003782" scope="request"/>
 	<c:set var="ss_gallery_rule_color" value="#CCCCCC" scope="request"/>
 	
 <% //GUESTBOOK %>
@@ -2780,12 +2780,12 @@ div.ss_thumbnail_standalone a img {
 }
 
 div.ss_thumbnail_standalone_small a:hover img {
-    border-color: blue;
+    border-color: #003782;
 }
 
 
 div.ss_thumbnail_small_no_text a:hover img {
-    border-color: blue;
+    border-color: #003782;
     opacity: 1.0;
 <c:if test="<%= isIE %>">
     filter:alpha(opacity=100);
