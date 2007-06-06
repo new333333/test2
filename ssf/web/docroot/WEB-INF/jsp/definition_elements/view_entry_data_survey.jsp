@@ -10,11 +10,24 @@
  *
  */
 %>
+<%@ page import="java.util.Date" %>
+<%
+	boolean overdue = false;
+	if (request.getAttribute("ssDefinitionEntry") != null &&
+		((DefinableEntity)request.getAttribute("ssDefinitionEntry")).getCustomAttribute("due_date") != null) {
+		Date dueDate = (Date) ((DefinableEntity)request.getAttribute("ssDefinitionEntry")).getCustomAttribute("due_date").getValue();
+		if (dueDate != null) {
+			Date now = new Date();
+			overdue = dueDate.after(now);
+		}
+	}
+%>
+<c:set var="overdue" value="<%= overdue %>" />
 
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 
-<p>TEST DRAW CHART:
+<p>TEST
 <ssf:drawChart count="30" total="100"/>
 </p>
 
@@ -22,10 +35,10 @@
 
 
 
-<c:forEach var="question" items="${ssDefinitionEntry.customAttributes[property_name].value.questions}" >
+<c:forEach var="question" items="${ssDefinitionEntry.customAttributes[property_name].value.surveyModel.questions}" >
 	<div class="ss_questionContainer">
 		<p><c:out value="${question.question}" escapeXml="false"/></p>
-		<c:if test="${question.overdued || question.alreadyVoted}">
+		<c:if test="${overdue || question.alreadyVoted}">
 			<c:if test="${question.type == 'multiple' || question.type == 'single'}">
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
@@ -34,7 +47,7 @@
 				</ol>
 			</c:if>
 		</c:if>
-		<c:if test="${!question.overdued && !question.alreadyVoted}">
+		<c:if test="${!overdue && !question.alreadyVoted}">
 			<c:if test="${question.type == 'multiple'}">
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
