@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.rss.util;
+package com.sitescape.team.module.rss.util;
 
 import javax.portlet.PortletRequest;
 

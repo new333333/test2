@@ -8,9 +8,9 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.rss;
+package com.sitescape.team.module.rss.impl;
 
-public interface RssGeneratorMBean {
+public interface RssModuleImplMBean {
 
 	public String getRssRootDir();
 }
