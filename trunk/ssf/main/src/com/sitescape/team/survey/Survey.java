@@ -1,10 +1,7 @@
 package com.sitescape.team.survey;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 public class Survey implements Serializable {
@@ -13,22 +10,24 @@ public class Survey implements Serializable {
 
 	private transient JSONObject jsonObj;
 
+	private transient SurveyModel survey;
+
 	public Survey(String jsonRepresentation) {
 		super();
 		this.jsonStringRepresentation = jsonRepresentation;
-		if (this.jsonStringRepresentation != null) {
+		init();
+	}
+
+	private void init() {
+		if (jsonObj == null && this.jsonStringRepresentation != null) {
 			this.jsonObj = JSONObject.fromString(this.jsonStringRepresentation);
-		} else {
-			this.jsonObj = new JSONObject();
+			this.survey = new SurveyModel(this.jsonObj);
 		}
 	}
-	
-	public Object[] getQuestions() {
-		if (jsonObj != null) {
-			return jsonObj.getJSONArray("definition").toArray();
-		} else {
-			return new Object[0];
-		}
+
+	public SurveyModel getSurveyModel() {
+		init();
+		return this.survey;
 	}
 
 }

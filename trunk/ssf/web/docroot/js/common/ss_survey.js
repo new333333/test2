@@ -167,7 +167,7 @@ if (!window.ssSurvey) {
 						aCounter = 0;
 						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
 							if (dojo.byId("question"+i+"answer"+j)) {
-								ss_toSend[ind].answers[aCounter] = dojo.byId("question"+i+"answer"+j).value;
+								ss_toSend[ind].answers[aCounter] = {'answer' : dojo.byId("question"+i+"answer"+j).value};
 								aCounter++;
 							}
 						}
@@ -177,7 +177,7 @@ if (!window.ssSurvey) {
 			}
 			var inputObj = document.getElementById(inputId);
 			if (inputObj) {
-				inputObj.value = dojo.json.serialize({definition : ss_toSend});
+				inputObj.value = dojo.json.serialize({'questions' : ss_toSend});
 			}
 			return ss_onSubmit(obj);
 		}
