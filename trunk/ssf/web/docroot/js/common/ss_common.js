@@ -1862,23 +1862,39 @@ var ss_helpSystem = {
 	    lightBox.onclick = function(e) {if (ss_helpSystem) ss_helpSystem.hide();};
 	    
 		ss_moveDivToBody('ss_help_welcome');
+		var bindArgs = {
+	    	url: ss_helpSystemWelcomePanelUrl,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+	  		  try {
+	  		  	dojo.byId("ss_help_welcome").innerHTML = data;
+		      } catch (e) {alert(e);}
+			},
+			preventCache: true,				
+			mimetype: "text/plain",
+			method: "get"
+		};   
+		dojo.io.bind(bindArgs);
 		var welcomeDiv = document.getElementById('ss_help_welcome');
 		var helpMenuAnchorDiv = document.getElementById('ss_helpMenuAnchor');
 		if (welcomeDiv) {
 	    	welcomeDiv.style.visibility = "visible";
 	    	welcomeDiv.style.zIndex = ssHelpWelcomeZ;
 	    	welcomeDiv.style.display = "block";
-	        welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
-	        welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
+	        //welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
+	        //welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
+	        dojo.html.placeOnScreen(welcomeDiv,0,0,[5,5],false, ['TL'], false);
 	        if (helpMenuAnchorDiv != null) {
 	        	helpMenuAnchorDiv.style.visibility = "visible";
 	        	helpMenuAnchorDiv.style.display = "block";
-	        	ss_setObjectHeight(helpMenuAnchorDiv, ss_getObjectHeight(welcomeDiv));
+	        	//ss_setObjectHeight(helpMenuAnchorDiv, ss_getObjectHeight(welcomeDiv));
 	        	var offsetT = -2;
 	        	if (isIE) offsetT = 6;
-	        	welcomeDiv.style.top = parseInt(ss_getObjectTopAbs(helpMenuAnchorDiv) - offsetT) + "px";
+	        	//welcomeDiv.style.top = parseInt(ss_getObjectTopAbs(helpMenuAnchorDiv) - offsetT) + "px";
 	        	var offsetL = parseInt((ss_getObjectWidth(helpMenuAnchorDiv) - ss_getObjectWidth(welcomeDiv)) / 2);
-	        	welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
+	        	//welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
 	        }
 	    	dojo.html.setOpacity(welcomeDiv, 0);
 	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
@@ -2507,42 +2523,8 @@ var ss_helpSystem = {
 		var undefined;
 		if (!ss_helpSpotGifSrc || ss_helpSpotGifSrc == undefined || ss_helpSpotGifSrc == "undefined") {
 			var s = "";	
-			s += "<div id=\"ss_help_welcome\" class=\"ss_style ss_helpWelcome\" \n";
-			s += "  positionX=\"center\" positionY=\"top\" align=\"center\">\n";
-			s += "  <table width=\"400\">\n";
-			s += "  <tr>\n";
-			s += "  <td><a href=\"#\" onClick=\"ss_helpSystem.showPreviousHelpSpot();return false;\"\n";
-			s += "    >&lt;&lt;&lt; "+ss_helpPreviousText+"</a></td>\n";
-			s += "  <td><span class=\"ss_style ss_bold ss_largestprint\">"+ss_helpWelcomeText+"</span></td>\n";
-			s += "  <td align=\"right\"><a href=\"#\" onClick=\"ss_helpSystem.showNextHelpSpot();return false;\"\n";
-			s += "    >"+ss_helpNextText+" &gt;&gt;&gt;</a></td>\n";
-			s += "  </tr>\n";
-			s += "  <tr>\n";
-			s += "    <td align=\"center\" colspan=\"3\"><span style=\"font-size:10px;\"  class=\"ss_titlebold\"><a href=\"#\" \n";
-			s += "      onClick=\"ss_helpSystem.showHelpPanel('help_on_help','ss_help_on_help','right','bottom'); return false;\">"+ss_helpInstructions+"</a></span></td>\n";
-			s += "  </tr>\n";
-			s += "  <tr>\n";
-			s += "  <td align=\"center\" colspan=\"3\"><a href=\"#\" \n";
-			s += "    onClick=\"ss_helpSystem.toggleTOC();return false;\">"+ss_helpTocText+"</a></td>\n";
-			s += "  </tr>\n"
-			s += "  <tr>\n";
-			s += "  <td align=\"center\" colspan=\"3\">\n";
-			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
-			s += "      onClick=\"ss_helpSystem.showHelpPanel('print_manuals','ss_help_print_manuals','right','bottom'); return false;\">"+ss_helpManualsButtonText+"</a>\n";
-			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
-			s += "      onClick=\"ss_helpSystem.hide(); return false;\">"+ss_helpCloseButtonText+"</a>\n";
-			s += "  </td>\n";
-			s += "  </tr>\n";
-			s += "  </table>\n";
-			s += "  <table>\n";
-			s += "  <tr>\n";
-			s += "  <td>&nbsp;</td>\n";
-			s += "  <td align=\"center\"><div id=\"ss_help_toc\" class=\"ss_helpToc\" align=\"left\"></td>\n";
-			s += "  <td>&nbsp;</td>\n";
-			s += "  </tr>\n";
-			s += "  </table>\n";
-			s += "</div>\n";
-			//alert(s)
+			s += "<div id=\"ss_help_welcome\" class=\"ss_style ss_helpWelcome ss_popup_panel_outer\" \n";
+			s += "  positionX=\"center\" positionY=\"top\" align=\"center\"></div>\n";
 			document.writeln(s);
 		}
 	}
