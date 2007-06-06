@@ -177,7 +177,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_lightBox_background_color" value="#ECECEC" scope="request"/>	
 				
 <% //HEADER COLORS	 %>
-    <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
+    <c:set var="ss_style_header_bar_background" value="#EDF2E0" scope="request"/>
     <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
     <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>	
     
@@ -194,7 +194,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% //MUTED %>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_muted_label_color" value="#003782" scope="request"/>
-			
+	<c:set var="ss_style_muted_text_color" value="#666666" scope="request"/>
+	
 <% //PORTLET COLORS	 %>
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/>
@@ -296,23 +297,23 @@ body.ss_style_body {
 }
 
 .ss_style {
-  font-family: ${ss_style_font_family};
+  font-family: ${ss_style_folder_view_font_family};
   font-weight: inherit;
-  font-size: ${ss_style_font_size}; 
+  font-size: ${ss_style_font_smallprint}; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
 }
 
 .ss_style td, .ss_style th {
-  font-family: ${ss_style_font_family};
-  font-size: ${ss_style_font_size}; 
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: ${ss_style_font_smallprint}; 
   color: ${ss_style_text_color};
 }
 
 .ss_style_trans , .ss_style_trans td, .ss_style_trans th{
-  font-family: ${ss_style_font_family};
+  font-family: ${ss_style_folder_view_font_family};
   font-weight: inherit;
-  font-size: ${ss_style_font_size}; 
+  font-size: ${ss_style_font_smallprint}; 
   background-color: transparent;
   color: ${ss_style_text_color};
 }
@@ -712,7 +713,7 @@ div.ss_iconed_label a {
 }
 
 .ss_muted_cloud_tag {
-  color: ${ss_style_muted_label_color};
+  color: ${ss_style_muted_text_color};
 }
 .ss_muted_tag_cloud {
   width: 70%;
@@ -1679,7 +1680,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   width:19px;
   height:20px;
   border:none;
-  margin: 0px 2px 0px 0px !important;
+  margin:0px;
   padding:0px;
   }
 .ss_twPlus {
@@ -2170,7 +2171,7 @@ img.ss_tabs_close {
     width:11px;
     min-width:11px;	
 }
-img.ss_tabs_close:hover, a:hover img.ss_tabs_close {
+img.ss_tabs_close:hover {
     background:url(<html:imagesPath/>pics/sym_s_delete.gif) no-repeat right;
 }
 
@@ -3820,7 +3821,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 
 
 /*
-	Search and surveys styles / start
+	Search and survays styles / start
 */
 #ss_tab_content {
 	padding:6px 6px 12px 6px;
@@ -3850,7 +3851,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
     margin:0;
     vertical-align:top;
 }
-div.ss_searchContainer, div.ss_surveyContainer {
+div.ss_searchContainer, div.ss_survayContainer {
 	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;
 	margin-left: 15px;
 }
@@ -3862,8 +3863,8 @@ div.ss_searchContainer #ss_content {
 	padding: 0px;
 	width: 491px;
 }
-#ss_searchForm_container, #ss_surveyForm_container {margin:0px; padding:0px;	}
-#ss_searchForm_spacer, #ss_surveyForm_spacer {
+#ss_searchForm_container, #ss_survayForm_container {margin:0px; padding:0px;	}
+#ss_searchForm_spacer, #ss_survayForm_spacer {
 	background: #e8eff7 url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
 	margin:0px 0px 0px 5px;
 	padding:0px;
@@ -3872,15 +3873,15 @@ div.ss_searchContainer #ss_content {
 	font-size:0px;
 	border-right:1px solid #afc8e3;
 }
-#ss_searchForm, #ss_surveyForm {
+#ss_searchForm, #ss_survayForm {
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
 	padding:6px;
 	border-bottom:1px solid #afc8e3;
 }
-#ss_surveyForm_main form {
+#ss_survayForm_main form {
 	background-color: transparent;
 }
-#ss_searchForm table, #ss_surveyForm_main {
+#ss_searchForm table, #ss_survayForm_main {
 	background-color: #e8eff7;
 }
 #ss_searchForm input { width: 150px;}
@@ -4033,10 +4034,10 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
-#ss_searchForm_main table, #ss_surveyForm_main table {
+#ss_searchForm_main table, #ss_survayForm_main table {
 	width: 100%;
 }
-#ss_searchForm_main th, #ss_searchForm_main td, #ss_surveyForm_main th, #ss_surveyForm_main td {
+#ss_searchForm_main th, #ss_searchForm_main td, #ss_survayForm_main th, #ss_survayForm_main td {
 	vertical-align: top;
 }
 #ss_searchForm_main table div.ss_additionals {
@@ -4058,28 +4059,27 @@ input.ss_saveQueryName {
 	font-weight: bold;
 }
 
-#ss_surveyForm_questions {
+#ss_survayForm_questions {
 	margin:0px 0px 0px 0px;
 }
-div.ss_questionContainer {
+div.questionContainer {
 	border-bottom: 1px solid #afc8e3;
 	padding: 0px 0px 0px 0px;
-	background-color:#ffffff;
 }
-div.ss_questionContainer h4 {
+div.questionContainer h4 {
 	border: 1px solid #afc8e3;
 	background-color:#e8eff7;
 	margin:0px;
 }
-div.ss_questionContainer h4 img, div.ss_questionContainer li img {
+div.questionContainer h4 img, div.questionContainer li img {
 	border: 0px;
 	margin:6px;
 	vertical-align:text-bottom;
 }
-div.ss_questionContainer h4 span {
+div.questionContainer h4 span {
 	vertical-align:top;
 }
-div.ss_questionContainer input {width:300px;}
+div.questionContainer input {width:300px;}
 .ss_savedQueriesListPane {
 	display: none;
 	background-color: #FFFFFF;
