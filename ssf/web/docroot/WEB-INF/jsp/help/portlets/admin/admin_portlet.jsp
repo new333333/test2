@@ -12,8 +12,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
-<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
-
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
 
 <p><ssf:nlt tag="help.adminPortlet.roleDefined" /></p>
