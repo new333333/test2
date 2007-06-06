@@ -5033,6 +5033,27 @@ function ss_showSavedQueriesList(relObj, divId) {
 		method: "get"
 	};   
 	dojo.io.bind(bindArgs);	
-	
-	
+}
+
+function ss_submitFormViaAjax(formName, doneRoutine) {
+	ss_setupStatusMessageDiv()
+	var formObj = document.forms[formName];
+	var ajaxRequest = new ss_AjaxRequest(formObj.action); //Create AjaxRequest object
+	ajaxRequest.addFormElements(formName);
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setData("doneRoutine", doneRoutine)
+	ajaxRequest.setPostRequest(ss_postSubmitFormViaAjax);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+	return false;
+}
+
+function ss_postSubmitFormViaAjax(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	} else {
+		var doneRoutine = obj.getData("doneRoutine");
+		eval("setTimeout('"+doneRoutine+"();', 100)");
+	}
 }

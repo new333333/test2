@@ -30,17 +30,21 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.SearchTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.util.Validator;
 public class ManageSearchIndexController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
+		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
 			//Get the list of binders to be indexed
 			List<Long> ids = new ArrayList();
 			Long profileId = null;
@@ -63,14 +67,17 @@ public class ManageSearchIndexController extends  SAbstractController {
 				}
 			}
 			
-			Collection idsIndexed = getBinderModule().indexTree(ids);
+			// Create a new status ticket
+			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(request);
+			
+			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
 			//if people selected and not yet index; index content only, not the whole ws tree
 			if ((profileId != null) && !idsIndexed.contains(profileId))
 				getBinderModule().indexBinder(profileId, true);
 			
-			response.setRenderParameter("redirect", "true");
-			
-		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
+			response.setRenderParameters(formData);
+		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn") ||
+				 btnClicked.equals("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
@@ -78,11 +85,17 @@ public class ManageSearchIndexController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Map model = new HashMap();
 		if (!Validator.isNull(request.getParameter("redirect"))) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
+		Map formData = request.getParameterMap();
+		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
+		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
+			response.setContentType("text/xml");
+			return new ModelAndView("forum/ajax_return", model);
+		}
 
-		Map model = new HashMap();
 		Document pTree = DocumentHelper.createDocument();
     	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
     	Element users = rootElement.addElement(DomTreeBuilder.NODE_CHILD);

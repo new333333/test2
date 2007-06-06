@@ -28,6 +28,7 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.StatusTicket;
 
 /**
  * @author Janet McCann
@@ -193,7 +194,7 @@ public interface BinderModule {
      * @param binderId
      * @return Set of binderIds indexed
      */
-     public Set<Long> indexTree(Collection<Long> binderId);
+     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket);
    
     /**
      * Modify a binder

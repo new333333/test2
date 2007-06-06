@@ -85,6 +85,8 @@ import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 /**
@@ -235,47 +237,56 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public Set<Long> indexTree(Long binderId) {
     	Set<Long> ids = new HashSet();
     	ids.add(binderId);
-    	return indexTree(ids);
+    	return indexTree(ids, null);
     }
     //optimization so we can manage the deletion to the searchEngine
-    public Set<Long> indexTree(Collection binderIds) {
-    	//make list of binders we have access to first
-    	boolean clearAll = false;
-    	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, RequestContextHolder.getRequestContext().getZoneId());
-    	List<Binder> checked = new ArrayList();
-    	for (Binder binder:binders) {
-    		try {
-    			checkAccess(binder, "indexTree");
-    			if (binder.isDeleted()) continue;
-    			if (binder.isZone()) clearAll = true;
-    			checked.add(binder);
-    		} catch (Exception ex) {};
-    		
-    	}
-    	Set<Long> done = new HashSet();
-    	if (checked.isEmpty()) return done;
-
-		if (clearAll) {
-			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-			try {
-				luceneSession.clearIndex();
-
-			} catch (Exception e) {
-				System.out.println("Exception:" + e);
-			} finally {
-				luceneSession.close();
+    public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket) {
+    	try {
+    		//make list of binders we have access to first
+	    	boolean clearAll = false;
+	    	List<Binder> binders = getCoreDao().loadObjects(binderIds, Binder.class, RequestContextHolder.getRequestContext().getZoneId());
+	    	List<Binder> checked = new ArrayList();
+	    	for (Binder binder:binders) {
+	    		try {
+	    			checkAccess(binder, "indexTree");
+	    			if (binder.isDeleted()) continue;
+	    			if (binder.isZone()) clearAll = true;
+	    			checked.add(binder);
+	    		} catch (Exception ex) {};
+	    		
+	    	}
+	    	Set<Long> done = new HashSet();
+	    	if (checked.isEmpty()) return done;
+	
+			if (clearAll) {
+				LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+				try {
+					luceneSession.clearIndex();
+	
+				} catch (Exception e) {
+					System.out.println("Exception:" + e);
+				} finally {
+					luceneSession.close();
+				}
+			} else {
+				//	delete all sub-binders - walk the ancestry list
+				// 	and delete all the entries under each folderid.
+				for (Binder binder:checked) {
+					IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
+				}
 			}
-		} else {
-			//	delete all sub-binders - walk the ancestry list
-			// 	and delete all the entries under each folderid.
-			for (Binder binder:checked) {
-				IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
-			}
+		   	for (Binder binder:checked) {
+				if (statusTicket != null)
+					statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {binder.getTitle()}));
+		   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done));
+		   	}
+		   	return done;
 		}
-	   	for (Binder binder:checked) {
-	   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done));
-	   	}
-	   	return done;
+		finally {
+			// It is important to call this at the end of the processing no matter how it went.
+			if (statusTicket != null)
+				statusTicket.done();
+		}
 	} 
     public void indexBinder(Long binderId) {
     	indexBinder(binderId, false);
