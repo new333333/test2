@@ -2033,7 +2033,20 @@ var ss_helpSystem = {
 	        helpSpotNode.style.left = left + "px";
 	        bodyObj.appendChild(helpSpotNode);
 			ss_helpSystemNextNodeId++;
-	        helpSpotNode.style.visibility = "visible";
+	        var owningDiv = nodes[i].parentNode
+	        var okToShow = 1
+	        while (owningDiv != null && owningDiv.tagName != null && owningDiv.tagName.toLowerCase() != 'body') {
+	        	if (owningDiv.tagName.toLowerCase() == 'div') {
+	        		var displayStyle = dojo.html.getComputedStyle(owningDiv, 'display')
+	        		var positionStyle = dojo.html.getComputedStyle(owningDiv, 'position')
+	        		if (displayStyle.toLowerCase() == 'none' || positionStyle.toLowerCase() == 'absolute') {
+	        			okToShow = 0
+	        			break
+	        		}
+	        	}
+	        	owningDiv = owningDiv.parentNode
+	        }
+	        if (okToShow == 1) helpSpotNode.style.visibility = "visible";
 			//ss_debug("nodes[i] width = "+dojo.html.getMarginBox(nodes[i]).width)
 		}
 	},
@@ -3400,9 +3413,10 @@ function ss_moveThisTableRow(objToMove, namespace, upDown) {
 
 function ss_findOwningElement(obj, eleName) {
 	var node = obj;
-	while (node.tagName.toLowerCase() != eleName.toLowerCase()) {
+	while (node != null && node.tagName.toLowerCase() != eleName.toLowerCase()) {
 		node = node.parentNode;
-		if (node == null || node.tagName.toLowerCase() == 'body') break;
+		if (node == null || node.tagName == null) node = null;
+		if (node == null || node.tagName == null || node.tagName.toLowerCase() == 'body') break;
 	}
 	return node;
 }
