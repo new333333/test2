@@ -12,17 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page session="false" %>
-<%@ page contentType="text/xml; charset=UTF-8" %>
-<taconite-root xml:space="preserve">
-<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
-
-<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-	<taconite-replace contextNodeID="${ss_help_panel_id}" parseInBrowser="true">
-<div id="${ss_help_panel_id}" class="ss_helpPanel">
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ include file="/WEB-INF/jsp/help/help_popup_panel_top.jsp" %>
 <jsp:include page="${ss_help_panel_jsp}" />
 <%@ include file="/WEB-INF/jsp/help/help_popup_panel_bottom.jsp" %>
-</div>
-	</taconite-replace>
-</c:if>
-</taconite-root>

@@ -2288,10 +2288,8 @@ var ss_helpSystem = {
 		var i1 = id.indexOf("___");
 		if (i1 >= 0) orgHelpId = id.substr(id.indexOf("___") + 3);
 		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  orgHelpId);
+
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.addKeyValue("operation2", id)
-		ajaxRequest.addKeyValue("ss_help_panel_id", panelId)
-		ajaxRequest.addKeyValue("tagId", tagId)
 		ajaxRequest.setData("id", id)
 		ajaxRequest.setData("panelId", panelId)
 		ajaxRequest.setData("x", x)
@@ -2301,10 +2299,24 @@ var ss_helpSystem = {
 		ajaxRequest.setData("startTop", startTop)
 		ajaxRequest.setData("startLeft", startLeft)
 		ajaxRequest.setData("startVisibility", startVisibility)
-		//ajaxRequest.setEchoDebugInfo();
-		ajaxRequest.setPostRequest(ss_helpSystem.postShowPanel);
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
+
+		var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+	  		  try {
+	  		  	dojo.byId(panelId).innerHTML = data;
+	  		    ss_helpSystem.postShowPanel(ajaxRequest);
+		      } catch (e) {alert(e);}
+			},
+			preventCache: true,				
+			mimetype: "text/plain",
+			method: "get"
+		};   
+		dojo.io.bind(bindArgs);
+
 	},
 	
 	postShowPanel : function(obj) {
