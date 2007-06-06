@@ -24,5 +24,8 @@ public class Answer {
 		return text;
 	}
 	
+	public int getVotesCount() {
+		return 0;
+	}
 	
 }
