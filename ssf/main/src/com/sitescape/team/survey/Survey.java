@@ -1,6 +1,7 @@
 package com.sitescape.team.survey;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONException;
@@ -23,7 +24,11 @@ public class Survey implements Serializable {
 	}
 	
 	public Object[] getQuestions() {
-		return jsonObj.getJSONArray("definition").toArray();
+		if (jsonObj != null) {
+			return jsonObj.getJSONArray("definition").toArray();
+		} else {
+			return new Object[0];
+		}
 	}
 
 }
