@@ -4061,24 +4061,25 @@ input.ss_saveQueryName {
 #ss_surveyForm_questions {
 	margin:0px 0px 0px 0px;
 }
-div.questionContainer {
+div.ss_questionContainer {
 	border-bottom: 1px solid #afc8e3;
 	padding: 0px 0px 0px 0px;
+	background-color:#ffffff;
 }
-div.questionContainer h4 {
+div.ss_questionContainer h4 {
 	border: 1px solid #afc8e3;
 	background-color:#e8eff7;
 	margin:0px;
 }
-div.questionContainer h4 img, div.questionContainer li img {
+div.ss_questionContainer h4 img, div.ss_questionContainer li img {
 	border: 0px;
 	margin:6px;
 	vertical-align:text-bottom;
 }
-div.questionContainer h4 span {
+div.ss_questionContainer h4 span {
 	vertical-align:top;
 }
-div.questionContainer input {width:300px;}
+div.ss_questionContainer input {width:300px;}
 .ss_savedQueriesListPane {
 	display: none;
 	background-color: #FFFFFF;
