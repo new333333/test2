@@ -20,10 +20,11 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" 
-	action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_index"/></portlet:actionURL>" 
+	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
 	method="post" 
-	name="<portlet:namespace />fm">
+	name="<portlet:namespace />fm"
+	id="<portlet:namespace />fm"
+	onSubmit="return ss_submitIndexingForm();" >
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_startSpinner();">
@@ -36,6 +37,27 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <br>
 
 <script type="text/javascript">
+
+function ss_submitIndexingForm() {
+	var formObj = document.forms['<portlet:namespace />fm'];
+	formObj.btnClicked.value = ss_buttonSelected;
+	if (ss_buttonSelected == 'okBtn') {
+		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>'
+		ss_submitFormViaAjax('<portlet:namespace />fm', 'ss_indexingDone');
+		return false;
+	} else {
+		formObj.action = '<portlet:actionURL><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
+		return true;
+	}
+}
+
+function ss_indexingDone() {
+	ss_buttonSelect('closeBtn');
+	var formObj = document.forms['<portlet:namespace />fm'];
+	formObj.btnClicked.value = 'closeBtn';
+	formObj.action = '<portlet:actionURL><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
+	formObj.submit();
+}
 
 function <%= wsTreeName %>_showId(forum, obj, action) {
 	var prefix = action+"_";
@@ -65,10 +87,13 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 <br>
 <br>
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_startSpinner();">
+<input type="submit" class="ss_submit" name="okBtn" 
+  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" 
+ value="<ssf:nlt tag="button.close" text="Close"/>" onClick="ss_buttonSelect('closeBtn');">
 </div>
+<input type="hidden" name="btnClicked"/>
 </form>
 <br>
 </td></tr></table>
