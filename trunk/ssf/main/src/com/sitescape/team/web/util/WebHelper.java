@@ -389,13 +389,19 @@ public class WebHelper {
         	Matcher m4 = p4.matcher(img);
         	if (m4.find() && m4.groupCount() >= 1) entryId = m4.group(1).trim();
 
+        	String entityType = "";
+    		img = new String(m.group(0));
+        	Pattern p5 = Pattern.compile("entityType=([^\\&\"]*)");
+        	Matcher m5 = p5.matcher(img);
+        	if (m5.find() && m5.groupCount() >= 1) entityType = m5.group(1).trim();
+
 	    	if (!fileId.equals("")) {
 		    	//Now, replace the url with special markup version
 		    	Pattern p1 = Pattern.compile("src *= *\"([^\"]*)\"");
 		    	Matcher m1 = p1.matcher(img);
 	        	if (m1.find() && m1.groupCount() >= 1) {
 	        		img = new String(m1.replaceFirst("src=\"{{attachmentFileId: fileId=" + fileId 
-	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId + "}}\""));
+	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId + "&amp;entityType=" + entityType + "}}\""));
 	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));
 	        		m = pattern.matcher(description.getText());
 	        	}
@@ -467,7 +473,7 @@ public class WebHelper {
 		    	}
 	    	}
 	    	
-	    	//Replace the markup attachmentFileIds with real urls {{attachmentFileId: binderId=xxx entryId=xxx fileId=xxx}}
+	    	//Replace the markup attachmentFileIds with real urls {{attachmentFileId: binderId=xxx entryId=xxx fileId=xxx entityType=xxx}}
 	    	if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FORM)) {
 		    	Pattern p2 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
 		    	Matcher m2 = p2.matcher(outputString);
