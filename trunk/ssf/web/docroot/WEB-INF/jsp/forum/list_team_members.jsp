@@ -18,6 +18,9 @@
 
 <div class="ss_buddies">
 
+  <table cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+	<td valign="top">
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
 		  src="<html:imagesPath/>icons/group.gif"/> 
@@ -25,9 +28,47 @@
 		  <ssf:param name="value" value="${ssBinder.title}"/>
 		  </ssf:nlt></span> 
     </div>
+    <div>
 		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> 
 		  <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
 	</div>
+	</td>
+	<td>&nbsp;</td>
+	<td valign="top" align="right">
+	  <div align="left" style="float:right;">
+	  <ul>
+	    <li><a href="<ssf:url 
+	    		adapter="true" 
+	    		portletName="ss_forum" 
+	    		action="add_team_member" 
+	    		actionUrl="true"><ssf:param 
+	    		name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    		name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
+	    	><ssf:nlt tag="toolbar.teams.addMember"/></a></li>
+	    <li><a href="<ssf:url 
+	    		adapter="true" 
+	    		portletName="ss_forum" 
+	    		action="send_email" 
+	    		actionUrl="true"><ssf:param 
+	    		name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    		name="appendTeamMembers" value="true"/></ssf:url>"
+	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
+	    	><ssf:nlt tag="toolbar.teams.sendmail"/></a></li>
+	    <li><a href="<ssf:url 
+	    		adapter="true" 
+	    		portletName="ss_forum" 
+	    		action="add_meeting" 
+	    		actionUrl="true"><ssf:param 
+	    		name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    		name="appendTeamMembers" value="true"/></ssf:url>"
+	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
+	    	><ssf:nlt tag="toolbar.teams.meet"/></a></li>
+	  </ul>
+	  </div>
+	</td>
+	</tr>
+  </table>
 	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
 	

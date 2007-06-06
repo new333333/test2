@@ -39,13 +39,15 @@ public class TeamController extends AbstractBinderController {
 			ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map formData = request.getParameterMap();
 
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			//Save the inheritance flag
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", true);
+			boolean inheritBefore = binder.isTeamMembershipInherited();
 			getBinderModule().setTeamMembershipInherited(binderId, inherit);
 
 			if (!inherit) {
@@ -56,8 +58,9 @@ public class TeamController extends AbstractBinderController {
 				getBinderModule().setTeamMembers(binderId, memberIds);
 			}
 			
-			setupViewBinder(response, binderId, binderType);
-		} else if (formData.containsKey("cancelBtn")) {
+			if ((inheritBefore && inherit) || (!inheritBefore && !inherit)) 
+				setupViewBinder(response, binderId, binderType);
+		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId, binderType);
 		}
