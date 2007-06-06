@@ -12,8 +12,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
-<%@ include file="/WEB-INF/jsp/help/hide_moreinfo_panel_button.jsp" %>
-
 <span class="ss_titlebold"><ssf:nlt tag="help.accessIntro.title"/></span>
 
 <p><ssf:nlt tag="help.accessIntro.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
