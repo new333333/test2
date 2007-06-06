@@ -59,13 +59,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			// First, setup the view as if the binder is to be deleted.
 			setupViewOnDelete(response, binder, binderType);
-			// Create a new status ticket
-			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(request);
-			// Pass the status ticket to the business method. The id of the ticket will
-			// need to be maintained on the browser side in order to be able to come
-			// in and check the status at later times. The ticket is stored as an attribute 
-			// in the user's session. The ticket id is used as the name of the attribute.
-			if(getFolderModule().synchronize(binderId, statusTicket)) {
+			if(getFolderModule().synchronize(binderId, null)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
 				setupViewBinder(response, binderId, binderType);
