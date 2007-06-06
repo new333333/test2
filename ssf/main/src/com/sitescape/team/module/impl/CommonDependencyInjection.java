@@ -20,9 +20,9 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.fi.connection.ResourceDriverManager;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;
-import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.LuceneSessionFactory;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AclManager;
@@ -56,7 +56,6 @@ public abstract class CommonDependencyInjection {
 	protected Scheduler scheduler;
 	protected LuceneSessionFactory luceneSessionFactory;
 	protected PresenceService presenceService;
-	protected RssGenerator rssGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	protected ResourceDriverManager resourceDriverManager;
 	
@@ -90,9 +89,6 @@ public abstract class CommonDependencyInjection {
 	public void setPresenceService(PresenceService presenceService) {
 		this.presenceService = presenceService;
 	}
-	public void setRssGenerator(RssGenerator rssGenerator) {
-		this.rssGenerator = rssGenerator;
-	}
 	protected LuceneSessionFactory getLuceneSessionFactory() {
 		return luceneSessionFactory;
 	}
@@ -122,9 +118,6 @@ public abstract class CommonDependencyInjection {
 	}
 	protected PresenceService getPresenceService() {
 		return presenceService;
-	}
-	public RssGenerator getRssGenerator() {
-		return rssGenerator;
 	}
 	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
 		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;

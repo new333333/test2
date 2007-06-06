@@ -96,7 +96,7 @@
 
 	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
 	<bean id="rssFeed" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewRssController">
-		<property name="rssGenerator"><ref bean="rssGenerator"/></property>
+		<property name="rssModule"><ref bean="rssModule"/></property>
 	</bean>
 	<bean id="viewiCal" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewICalController">
 		<property name="icalModule"><ref bean="icalModule"/></property>

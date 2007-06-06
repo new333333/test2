@@ -77,7 +77,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
-   		getRssGenerator().updateRssFeed(entry); 
+   		getRssModule().updateRssFeed(entry); 
      }
 
     //***********************************************************************************************************
@@ -209,12 +209,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
-    	getRssGenerator().updateRssFeed(entry);
+    	getRssModule().updateRssFeed(entry);
  	}
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
     	super.modifyWorkflowState(binder, entry, tokenId, toState);
-       	getRssGenerator().updateRssFeed(entry);
+       	getRssModule().updateRssFeed(entry);
            	
     }
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {

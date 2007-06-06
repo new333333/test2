@@ -63,6 +63,7 @@ import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
@@ -128,6 +129,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		this.reportModule = reportModule;
 	}
 
+	private RssModule rssModule;
+	protected RssModule getRssModule() {
+		return rssModule;
+	}
+	public void setRssModule(RssModule rssModule) {
+		this.rssModule = rssModule;
+	}
+	
 	private Pipeline pipeline;
 	
 	public void setPipeline(Pipeline pipeline) {

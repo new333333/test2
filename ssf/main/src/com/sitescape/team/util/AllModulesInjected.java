@@ -20,6 +20,7 @@ import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -85,4 +86,7 @@ public interface AllModulesInjected {
 	
 	void setIcalModule(IcalModule icalModule);
 	IcalModule getIcalModule();
+	
+	void setRssModule(RssModule rssModule);
+	RssModule getRssModule();
 }

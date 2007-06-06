@@ -62,6 +62,7 @@
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
 		<property name="icalModule"><ref local="icalModule"/></property>
+		<property name="rssModule"><ref local="rssModule"/></property>
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -318,9 +319,8 @@
 
     <!-- ============================== RSS Generator ============================ -->
 	
-    <bean id="rssGenerator" class="com.sitescape.team.rss.RssGenerator">
+    <bean id="rssModule" class="com.sitescape.team.module.rss.impl.RssModuleImpl">
     	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
-		<property name="profileDao"><ref local="profileDao"/></property>
     </bean>
 	
     <!-- ============================== ical Converter ============================ -->
@@ -427,7 +427,6 @@
 		<property name="processorManager"><ref local="modelProcessorManager"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
-		<property name="rssGenerator"><ref local="rssGenerator"/></property>
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 	</bean>
 	
@@ -438,6 +437,7 @@
 		<property name="fileModule"><ref local="fileModule"/></property>
 		<property name="pipeline"><ref local="docPipeline"/></property>
 		<property name="reportModule"><ref local="reportModule"/></property>
+		<property name="rssModule"><ref local="rssModule"/></property>
 	</bean>
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
@@ -816,8 +816,8 @@ text/calendar											  ics
 	        <entry key="SiteScape:type=Converter,name=imageOpenOfficeConverter">
 	          <ref local="imageOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="SiteScape:type=Other,name=rssGenerator">
-	          <ref local="rssGenerator"/>
+	        <entry key="SiteScape:type=Module,name=rssModule">
+	          <ref local="rssModule"/>
 	        </entry>
 	        <entry key="SiteScape:type=Module,name=icalModule">
 	          <ref local="icalModule"/>

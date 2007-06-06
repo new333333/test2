@@ -11,45 +11,24 @@
 package com.sitescape.team.servlet.forum;
 
 import java.io.OutputStream;
-import java.security.Principal;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.ModelAndView;
-import javax.activation.FileTypeMap;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.rss.RssGenerator;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.servlet.PrincipalServletRequest;
 import com.sitescape.team.web.servlet.SAbstractController;
-import com.sitescape.util.FileUtil;
 
 import org.springframework.web.bind.RequestUtils;
 
 public class ViewRssController extends SAbstractController {
 	
-	private RssGenerator rssGenerator;
-	
-	protected RssGenerator getRssGenerator() {
-		return rssGenerator;
-	}
-	public void setRssGenerator(RssGenerator rssGenerator) {
-		this.rssGenerator = rssGenerator;
-	}
-
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
@@ -81,7 +60,7 @@ public class ViewRssController extends SAbstractController {
 		}
 		
 
-		//response.getWriter(getRssGenerator().filterRss(request, response, binder,user));
+		//response.getWriter(getRssModule().filterRss(request, response, binder,user));
 			
 		/*response.setContentType(mimeTypes.getContentType(shortFileName));*/
 		response.resetBuffer();
@@ -89,7 +68,7 @@ public class ViewRssController extends SAbstractController {
 		response.setHeader("Pragma", "no-cache");
 		
 		OutputStream out = response.getOutputStream();
-		byte[] buffer = getRssGenerator().filterRss(request, response, binder,user).getBytes();
+		byte[] buffer = getRssModule().filterRss(request, response, binder,user).getBytes();
 		out.write(buffer, 0, buffer.length);
 
 		out.flush();

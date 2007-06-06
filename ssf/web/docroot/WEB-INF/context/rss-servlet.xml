@@ -43,8 +43,8 @@
 	</bean>	
 
 	<!-- Controllers -->
-	<bean id="list" parent="dependOnAllModulesTemplate" class="com.sitescape.team.rss.servlet.ListController">
-		<property name="rssGenerator"><ref bean="rssGenerator"/></property>
+	<bean id="list" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.rss.ListController">
+		<property name="rssModule"><ref bean="rssModule"/></property>
 	</bean>
 
 </beans>
