@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.ical.servlet;
+package com.sitescape.team.servlet.ical;
 
 import java.util.List;
 import java.util.Map;
