@@ -96,6 +96,16 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		<ssf:param name="operation" value="show_help_panel" />
 		<ssf:param name="operation2" value="ss_help_panel_id_place_holder" />
 		</ssf:url>";
+
+	ss_helpSystemWelcomePanelUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="show_help_panel" />
+		<ssf:param name="operation2" value="welcome_panel" />
+		</ssf:url>";
+	
 	
 	ss_addTabUrl = "<ssf:url 
 		adapter="true" 
