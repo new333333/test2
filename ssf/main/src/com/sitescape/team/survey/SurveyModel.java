@@ -14,6 +14,8 @@ public class SurveyModel {
 	
 	private List<Question> questions;
 	
+	private int maxLastIndex = 0;
+	
 	protected SurveyModel(JSONObject survey) {
 		super();
 		this.survey = survey;
@@ -22,7 +24,7 @@ public class SurveyModel {
 		Iterator<JSONObject> questionsIt = this.survey.getJSONArray("questions").iterator();
 		while (questionsIt.hasNext()) {
 			JSONObject question = questionsIt.next();
-			questions.add(new Question(question));
+			questions.add(new Question(question, this));
 		}
 	}	
 
@@ -34,5 +36,26 @@ public class SurveyModel {
 	public String toString() {
 		return new ToStringBuilder(this).append("questions", questions)
 				.toString();
+	}
+
+	public int getNextIndex() {
+		return ++maxLastIndex;
+	}
+	
+	public void reportIndexInUse(int index) {
+		if (index > maxLastIndex) {
+			maxLastIndex = index;
+		}
+	}
+
+	public Question getQuestionByIndex(int index) {
+		Iterator<Question> it = questions.iterator();
+		while (it.hasNext()) {
+			Question question = it.next();
+			if (question.getIndex() == index) {
+				return question;
+			}
+		}
+		return null;
 	}
 }

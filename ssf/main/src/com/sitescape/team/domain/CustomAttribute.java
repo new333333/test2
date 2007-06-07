@@ -26,6 +26,7 @@ import org.dom4j.io.OutputFormat;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.module.shared.XmlUtils;
+import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.util.Validator;
@@ -71,6 +72,7 @@ public class CustomAttribute  {
        	public static final int EVENT=9;
        	public static final int ATTACHMENT=10;
        	public static final int COMMASEPARATEDSTRING=11;
+       	public static final int SURVEY= 12;
    protected String name;
    protected AnyOwner owner;
    protected String id;
@@ -336,7 +338,19 @@ public class CustomAttribute  {
          	e.setName(name);
         	owner.getEntity().addEvent(e);
          	stringValue = e.getId();
-         } else {
+         } else if (value instanceof Survey) {
+          	clearVals();
+            valueType = SURVEY;
+            String val = (String) value.toString();
+            // this is returning unicode-16 lengths
+            if (val.length() <= 1000) {
+                stringValue=val;
+                description = null;
+            } else {
+                description = new Description(val);
+                stringValue = null;
+            }
+          } else {
             if (valueType != SERIALIZED) clearVals();
             valueType = SERIALIZED;
             serializedValue = new SSBlobSerializable(value);
@@ -389,6 +403,12 @@ public class CustomAttribute  {
     	    	return v;
        		case EVENT:
     		    return owner.getEntity().getEvent(stringValue);
+       		case SURVEY:
+	       		if (!Validator.isNull(stringValue))
+	 		        return new Survey(stringValue);
+	 		    else if (description != null)
+	 		        return new Survey(description.getText());
+	 		    return null;
     		case ATTACHMENT:
     			return owner.getEntity().getAttachment(stringValue);
  	    }
@@ -479,6 +499,12 @@ public class CustomAttribute  {
          			Event event = owner.getEntity().getEvent(stringValue);
         			if (event != null) element = event.addChangeLog(parent);
       				break;
+       			case SURVEY:
+       				if (!Validator.isNull(stringValue))
+       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
+       				else if (description != null)
+       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
+       				break;     				
        			case ATTACHMENT:
        				//attachments are logged separetly
        				element = XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_FILE, stringValue);

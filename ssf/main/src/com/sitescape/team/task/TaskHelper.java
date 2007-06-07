@@ -188,7 +188,7 @@ public class TaskHelper {
 	 * @param filterType
 	 * @return
 	 */
-	public static FilterType setTaskRange(PortletSession portletSession, FilterType filterType) {
+	public static FilterType setTaskFilterType(PortletSession portletSession, FilterType filterType) {
 		if (filterType == null) {
 			
 			filterType = getTaskFilterType(portletSession);

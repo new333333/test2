@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -52,12 +54,14 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
@@ -71,6 +75,10 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.survey.Answer;
+import com.sitescape.team.survey.Question;
+import com.sitescape.team.survey.Survey;
+import com.sitescape.team.survey.SurveyModel;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -141,9 +149,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSaveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
 				ajaxRemoveSearchQuery(request, response);
+			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
+				ajaxVoteSurvey(request, response);
 			}
 		}
 	}
+
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -217,6 +228,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/meeting_return", model);	
 			} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
 				return new ModelAndView("forum/meeting_return", model);	
+			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
+				return new ModelAndView("forum/json/vote_survey", model);	
 			}
 
 			return new ModelAndView("forum/ajax_return", model);
@@ -360,10 +373,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxUpdateTask(request, response);
 		} else if (op.equals(WebKeys.OPERATION_LIST_SAVED_QUERIES)) {
 			return ajaxListSavedQueries(request, response);
+		} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
+			return ajaxVoteSurveyStatus(request, response);	
 		}
 		
 		return ajaxReturn(request, response);
 	} 
+
 	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
@@ -2139,7 +2155,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 			
 			String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, "");
-			TaskHelper.FilterType filterType = TaskHelper.setTaskRange(portletSession, TaskHelper.FilterType.valueOf(filterTypeParam));
+			TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, TaskHelper.FilterType.valueOf(filterTypeParam));
 			model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 			
 			options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());
@@ -2205,7 +2221,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 					new MapInputData(formData), new HashMap(), new HashSet(), null);
 			
 		
-			entry = getFolderModule().getEntry(binderId, entryId);
 			model.putAll(TaskHelper.extendTaskInfo(entry));
 			model.put(WebKeys.ENTRY, entry);
 			
@@ -2390,5 +2405,63 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		model.put("ss_UserQueries", userQueries);
 		return new ModelAndView("forum/json/savedQueries", model);	
+	}
+	
+	private void ajaxVoteSurvey(ActionRequest request, ActionResponse response) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, -1);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, -1);
+		String attributeName = PortletRequestUtils.getStringParameter(request, "attributeName", "");
+		
+		if (binderId == -1 || entryId == -1 || Validator.isNull(attributeName)) {
+			return;
+		}
+		
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+		CustomAttribute surveyAttr = entry.getCustomAttribute(attributeName);
+		if (surveyAttr == null || surveyAttr.getValue() == null) {
+			return;
+		}
+		
+		Survey surveyAttrValue = ((Survey)surveyAttr.getValue());
+		SurveyModel survey = surveyAttrValue.getSurveyModel();
+		if (survey == null) {
+			return;
+		}
+		
+		Iterator formDataIt = request.getParameterMap().entrySet().iterator();
+		while (formDataIt.hasNext()) {
+			Map.Entry mapEntry = (Map.Entry)formDataIt.next();
+			String key = (String)mapEntry.getKey();
+			String[] value = (String[])mapEntry.getValue();
+			if (key.startsWith("answer_")) {
+				String[] temp = key.split("_");
+				if (temp != null && temp.length == 2) {
+					int questionIndex = -1;
+					try {
+						questionIndex = Integer.parseInt(temp[1]);
+					} catch (NumberFormatException e) {}
+					
+					if (questionIndex != -1) {
+						Question question = survey.getQuestionByIndex(questionIndex);
+						if (question != null) {
+							question.vote(value);
+						}
+					}
+				}
+			}
+		}
+		
+		Map formData = new HashMap(); 
+		formData.put(attributeName, surveyAttrValue.toString());
+		
+		getFolderModule().modifyEntry(binderId, entryId, 
+				new MapInputData(formData), new HashMap(), new HashSet(), null);
+		
+	}
+	
+	private ModelAndView ajaxVoteSurveyStatus(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		model.put("status", true);
+		return new ModelAndView("forum/json/vote_survey", model);	
 	}
 }
