@@ -19,6 +19,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DocumentSelection;
@@ -40,13 +41,17 @@ import org.apache.lucene.store.FSDirectory;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.lucene.ChineseAnalyzer;
+import com.sitescape.team.lucene.LanguageTaster;
+import com.sitescape.team.lucene.LuceneHelper;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
-import com.sitescape.team.util.LuceneUtil;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 
@@ -58,6 +63,9 @@ import com.sitescape.team.web.WebKeys;
  */
 public class LocalLuceneSession implements LuceneSession {
 	Object SyncObj = new Object();
+	
+	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
+	
 	// Note: I'm not convinced that this implementation makes good use of
 	// Lucene,
 	// primarily due to my lack of intimiate knowledge of Lucene.
@@ -104,7 +112,7 @@ public class LocalLuceneSession implements LuceneSession {
 			indexWriter = null;
 			String tastingText = getTastingText(doc);
 			try {
-				indexWriter = LuceneUtil.getWriter(indexPath);
+				indexWriter = LuceneHelper.getWriter(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
@@ -112,7 +120,7 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 
 			try {
-					indexWriter.addDocument(doc, LuceneUtil.getAnalyzer(tastingText));
+					indexWriter.addDocument(doc, getAnalyzer(tastingText));
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not add document to the index [" + indexPath
@@ -149,7 +157,7 @@ public class LocalLuceneSession implements LuceneSession {
 			indexWriter = null;
 			
 			try {
-				indexWriter = LuceneUtil.getWriter(indexPath);
+				indexWriter = LuceneHelper.getWriter(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
@@ -164,7 +172,7 @@ public class LocalLuceneSession implements LuceneSession {
 								"Document must contain a UID with field name "
 										+ BasicIndexUtils.UID_FIELD);
 					String tastingText = getTastingText(doc);
-					indexWriter.addDocument(doc, LuceneUtil.getAnalyzer(tastingText));
+					indexWriter.addDocument(doc, getAnalyzer(tastingText));
 				}
 			} catch (IOException e) {
 				throw new LuceneException(
@@ -205,7 +213,7 @@ public class LocalLuceneSession implements LuceneSession {
 			indexWriter = null;
 
 			try {
-				indexWriter = LuceneUtil.getWriter(indexPath); 
+				indexWriter = LuceneHelper.getWriter(indexPath); 
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
@@ -249,7 +257,7 @@ public class LocalLuceneSession implements LuceneSession {
 			indexSearcher = null;
 
 			try {
-				indexSearcher = LuceneUtil.getSearcher(indexPath);
+				indexSearcher = LuceneHelper.getSearcher(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open searcher on the index ["
@@ -326,7 +334,7 @@ public class LocalLuceneSession implements LuceneSession {
 		long startTime = System.currentTimeMillis();
 
 		try {
-			indexSearcher = LuceneUtil.getSearcher(indexPath);
+			indexSearcher = LuceneHelper.getSearcher(indexPath);
 		} catch (IOException e) {
 			throw new LuceneException("Could not open searcher on the index ["
 					+ this.indexPath + "]", e);
@@ -369,7 +377,7 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexSearcher indexSearcher = null;
 
 		try {
-			indexSearcher = LuceneUtil.getSearcher(indexPath);
+			indexSearcher = LuceneHelper.getSearcher(indexPath);
 		} catch (IOException e) {
 			throw new LuceneException("Could not open searcher on the index ["
 					+ this.indexPath + "]", e);
@@ -429,8 +437,8 @@ public class LocalLuceneSession implements LuceneSession {
 			synchronized (LocalLuceneSession.class) {
 
 				try {
-					indexReader = LuceneUtil.getReader(indexPath);
-					indexSearcher = LuceneUtil.getSearcher(indexReader);
+					indexReader = LuceneHelper.getReader(indexPath);
+					indexSearcher = LuceneHelper.getSearcher(indexReader);
 				} catch (IOException e) {
 					throw new LuceneException(
 							"Could not open reader on the index ["
@@ -516,7 +524,7 @@ public class LocalLuceneSession implements LuceneSession {
 				return resultTags;
 			}
 		} finally {
-			LuceneUtil.closeSearcher();
+			LuceneHelper.closeSearcher();
 		}
 	}
 	
@@ -532,7 +540,7 @@ public class LocalLuceneSession implements LuceneSession {
 
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = LuceneUtil.getWriter(indexPath);
+			indexWriter = LuceneHelper.getWriter(indexPath);
 		} catch (IOException e) {
 			throw new LuceneException("Could not open writer on the index ["
 					+ this.indexPath + "]", e);
@@ -566,7 +574,7 @@ public class LocalLuceneSession implements LuceneSession {
 		if (length > 0) {
 			IndexReader indexReader = null;
 			try {
-				indexReader = LuceneUtil.getReader(indexPath);
+				indexReader = LuceneHelper.getReader(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open reader on the index [" + this.indexPath
@@ -606,7 +614,7 @@ public class LocalLuceneSession implements LuceneSession {
 			IndexWriter indexWriter = null;
 
 			try {
-				indexWriter = LuceneUtil.getWriter(indexPath);
+				indexWriter = LuceneHelper.getWriter(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
@@ -639,7 +647,7 @@ public class LocalLuceneSession implements LuceneSession {
 			IndexWriter indexWriter = null;
 
 			try {
-				indexWriter = LuceneUtil.getWriter(indexPath);
+				indexWriter = LuceneHelper.getWriter(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
@@ -647,7 +655,7 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 			try {
 				indexWriter.optimize();
-				LuceneUtil.closeAll();
+				LuceneHelper.closeAll();
 				/*ROY indexWriter.close();*/
 				for (count = 0; count < queries.size(); count++)
 					doUpdate(queries.get(count),fieldname,values.get(count));
@@ -723,8 +731,8 @@ public class LocalLuceneSession implements LuceneSession {
 			synchronized (LocalLuceneSession.class) {
 
 				try {
-					indexReader = LuceneUtil.getReader(indexPath);
-					indexSearcher = LuceneUtil.getSearcher(indexReader);
+					indexReader = LuceneHelper.getReader(indexPath);
+					indexSearcher = LuceneHelper.getSearcher(indexReader);
 				} catch (IOException e) {
 					throw new LuceneException(
 							"Could not open reader on the index ["
@@ -808,7 +816,7 @@ public class LocalLuceneSession implements LuceneSession {
 				return resultTitles;
 			}
 		} finally {
-			LuceneUtil.closeSearcher();
+			LuceneHelper.closeSearcher();
 		}
 	}
 	
@@ -821,11 +829,11 @@ public class LocalLuceneSession implements LuceneSession {
 	public void clearIndex() {
 		long startTime = System.currentTimeMillis();
 
-		LuceneUtil.closeAll();
+		LuceneHelper.closeAll();
 		
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = LuceneUtil.getWriter(indexPath, true);
+			indexWriter = LuceneHelper.getWriter(indexPath, true);
 		} catch (IOException e) {
 			throw new LuceneException(
 					"Could not open writer on the index [" + this.indexPath
@@ -846,5 +854,44 @@ public class LocalLuceneSession implements LuceneSession {
 			return text.substring(0,1024);
 		else return text;
 	}
-	
+	public static Analyzer getAnalyzer(String snippet) {
+		// pass the snippet to the language taster and see which
+		// analyzer to use
+		String language = LanguageTaster.taste(snippet.toCharArray());
+		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
+			return defaultAnalyzer;
+		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
+			return new ChineseAnalyzer();
+		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
+			// return new HEBREWAnalyzer;
+			Analyzer analyzer = defaultAnalyzer;
+			String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
+			if (!aName.equalsIgnoreCase("")) {
+				// load the hebrew analyzer here
+				try {
+					Class hebrewClass = ReflectHelper.classForName(aName);
+					analyzer = (Analyzer) hebrewClass.newInstance();
+				} catch (Exception e) {
+					logger.error("Could not initialize hebrew analyzer class: "
+							+ e.toString());
+				}
+			}
+			return analyzer;
+		} else {
+			// return new ARABICAnalyzer;
+			Analyzer analyzer = defaultAnalyzer;
+			String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
+			if (!aName.equalsIgnoreCase("")) {
+				// load the arabic analyzer here
+				try {
+					Class arabicClass = ReflectHelper.classForName(aName);
+					analyzer = (Analyzer) arabicClass.newInstance();
+				} catch (Exception e) {
+					logger.error("Could not initialize arabic analyzer class: "
+							+ e.toString());
+				}
+			}
+			return analyzer;
+		}
+	}
 }

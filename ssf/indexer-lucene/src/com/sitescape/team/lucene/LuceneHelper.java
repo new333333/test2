@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.util;
+package com.sitescape.team.lucene;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,18 +21,16 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 
-import com.sitescape.team.lucene.ChineseAnalyzer;
-import com.sitescape.team.lucene.SsfIndexAnalyzer;
 
-public class LuceneUtil {
+public class LuceneHelper {
 
-	protected static Log logger = LogFactory.getLog(LuceneUtil.class);
+	protected static Log logger = LogFactory.getLog(LuceneHelper.class);
 
 	private static final int SEARCH = 1;
 	private static final int READ = 2;
 	private static final int WRITE = 3;
 
-	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
+
 
 	private static int prevState = SEARCH;
 
@@ -43,7 +41,7 @@ public class LuceneUtil {
 	
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
-		synchronized (LuceneUtil.class) {
+		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (READ):
 				if (indexReader != null)
@@ -63,7 +61,7 @@ public class LuceneUtil {
 
 	public static IndexSearcher getSearcher(String indexPath)
 			throws IOException {
-		synchronized (LuceneUtil.class) {
+		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (SEARCH):
 				if (indexSearcher != null)
@@ -85,7 +83,7 @@ public class LuceneUtil {
 
 	public static IndexWriter getWriter(String indexPath, boolean create)
 			throws IOException {
-		synchronized (LuceneUtil.class) {
+		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (WRITE):
 				if (indexWriter != null && !create)
@@ -172,7 +170,7 @@ public class LuceneUtil {
 	}
 
 	public static IndexSearcher getSearcher(IndexReader reader) {
-		synchronized (LuceneUtil.class) {
+		synchronized (LuceneHelper.class) {
 			indexSearcher = new IndexSearcher(reader);
 			// prevState = READSEARCH;
 		}
@@ -184,7 +182,7 @@ public class LuceneUtil {
 	}
 
 	private static boolean initializeIndex(String indexPath) throws IOException {
-		synchronized (LuceneUtil.class) {
+		synchronized (LuceneHelper.class) {
 			if (IndexReader.indexExists(indexPath)) {
 				// Index already exists at the specified directory.
 				// We shouldn't initialize index in this case.
@@ -207,7 +205,7 @@ public class LuceneUtil {
 	}
 
 	public static void closeAll() {
-		synchronized (LuceneUtil.class) {
+		synchronized (LuceneHelper.class) {
 			closeWriter();
 			closeReader();
 			closeSearcher();
@@ -264,45 +262,14 @@ public class LuceneUtil {
 	}
 
 	// return the correct analyzer based on the text passed in.
-	public static Analyzer getAnalyzer(String snippet) {
-		// pass the snippet to the language taster and see which
-		// analyzer to use
-		String language = LanguageTaster.taste(snippet.toCharArray());
-		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
-			return defaultAnalyzer;
-		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
-			return new ChineseAnalyzer();
-		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
-			// return new HEBREWAnalyzer;
-			Analyzer analyzer = defaultAnalyzer;
-			String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
-			if (!aName.equalsIgnoreCase("")) {
-				// load the hebrew analyzer here
-				try {
-					Class hebrewClass = ReflectHelper.classForName(aName);
-					analyzer = (Analyzer) hebrewClass.newInstance();
-				} catch (Exception e) {
-					logger.error("Could not initialize hebrew analyzer class: "
-							+ e.toString());
-				}
-			}
-			return analyzer;
-		} else {
-			// return new ARABICAnalyzer;
-			Analyzer analyzer = defaultAnalyzer;
-			String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
-			if (!aName.equalsIgnoreCase("")) {
-				// load the arabic analyzer here
-				try {
-					Class arabicClass = ReflectHelper.classForName(aName);
-					analyzer = (Analyzer) arabicClass.newInstance();
-				} catch (Exception e) {
-					logger.error("Could not initialize arabic analyzer class: "
-							+ e.toString());
-				}
-			}
-			return analyzer;
+
+	
+	public static Class classForName(String name) throws ClassNotFoundException {
+		try {
+			return Thread.currentThread().getContextClassLoader().loadClass(name);
+		}
+		catch (Exception e) {
+			return Class.forName(name);
 		}
 	}
-
 }

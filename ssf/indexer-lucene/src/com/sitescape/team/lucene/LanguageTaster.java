@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.util;
+package com.sitescape.team.lucene;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
