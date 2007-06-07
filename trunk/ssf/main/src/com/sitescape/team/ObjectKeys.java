@@ -256,7 +256,7 @@ public interface ObjectKeys {
     public static final String XTAG_ELEMENT_TYPE_DASHBOARD_COMPONENT="component";
     public static final String XTAG_ELEMENT_TYPE_DASHBOARD_COMPONENT_DATA="data";
     public static final String XTAG_ELEMENT_TYPE_DASHBOARD_LAYOUT="layout";
-
+    public static final String XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP="workAreaFunctionMembership";
     
     public static final String XTAG_HISTORY_BY="author";
     public static final String XTAG_HISTORY_WHEN="when";
@@ -314,9 +314,10 @@ public interface ObjectKeys {
     
     public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
     public static final String XTAG_BINDER_LIBRARY="library";
-    public static final String XTAG_BINDER_INHERITMEMBERSHIP="inheritMembership";
+    public static final String XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP="inheritFunctionMembership";
     public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";
-    
+    public static final String XTAG_BINDER_INHERITTEAMMEMBERS="inheritTeamMembers";
+    public static final String XTAG_BINDER_TEAMMEMBERS="teamMembers";
     public static final String XTAG_TEMPLATE_TITLE="templateTitle";
     public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
     

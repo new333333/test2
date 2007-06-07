@@ -164,7 +164,6 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) throws AccessControlException;
-	public void setTeamMembershipInherited(Long binderId, boolean inherit);
 	/**
 	 * Ordered list of binders by title
 	 * @param id
@@ -294,6 +293,7 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public void setTeamMembers(Long binderId, Collection<Long> membersIds) throws AccessControlException;  
+	public void setTeamMembershipInherited(Long binderId, boolean inherit);
 	/**
 	 * Test access to a binder.  The method name to be called is used as the operation.   This
 	 * allows the binderModule to check for multiple rights or change requirments in the future.
