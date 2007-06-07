@@ -96,7 +96,7 @@ public class SearchUtils {
     	
     	if (fieldName == null) return false;
 	    	
-    	if (fieldName.equals(EntityIndexUtils.CREATION_DATE_FIELD)) 	return true;
+    	if (fieldName.equals(EntityIndexUtils.CREATION_DATE_FIELD)) return true;
 	    	
 	    if (fieldName.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD)) return true;
 
@@ -105,6 +105,8 @@ public class SearchUtils {
     	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_START_DATE)) return true;
 
 	    if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_END_DATE)) return true;
+	    
+	    if (fieldName.equals("due_date")) return true;
 	    	
 	    return false;
     }
