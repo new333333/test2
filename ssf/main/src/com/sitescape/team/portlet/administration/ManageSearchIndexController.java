@@ -68,7 +68,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 			}
 			
 			// Create a new status ticket
-			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(null, request);
+			StatusTicket statusTicket = WebStatusTicket.newStatusTicket("test", request);
 			
 			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
 			//if people selected and not yet index; index content only, not the whole ws tree
