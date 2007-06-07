@@ -2743,6 +2743,24 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+function ss_moreTeamMembers(binderId, pageNumber, pageSize, divId, componentId) {
+	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
+	url += "\&operation=team_more";
+	url += "\&operation2="+componentId;
+	url += "\&divId="+divId;
+	url += "\&pageNumber="+pageNumber;
+	url += "\&pageSize="+pageSize;
+	url += "\&randomNumber="+ss_random++;
+	ss_fetch_url(url, ss_moreTeamMembersCallback, divId);
+}
+
+function ss_moreTeamMembersCallback(s, divId) {
+	var divObj = document.getElementById(divId);
+	divObj.innerHTML = s;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
 //Start: Add Attachment Related Functions
 
 //Browse Related Functions
