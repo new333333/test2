@@ -27,9 +27,11 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 	onSubmit="return ss_submitIndexingForm();" >
 
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_startSpinner();">
+<input type="submit" class="ss_submit" name="okBtn" 
+  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" 
+ value="<ssf:nlt tag="button.close" text="Close"/>" onClick="ss_buttonSelect('closeBtn');">
 </div>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.configure.index.select" text="Select the forums to be re-indexed:"/></span>
