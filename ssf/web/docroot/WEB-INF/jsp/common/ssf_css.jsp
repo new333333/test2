@@ -807,8 +807,8 @@ div.ss_popup_bottomleft {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: top left;
-  height: 16px;
+  background-position: bottom left;
+  height: 10px;
   width: 40px;
   padding: 0px;
 }
@@ -817,8 +817,8 @@ div.ss_popup_bottomcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: -50px top;
-  height: 16px;
+  background-position: -50px bottom;
+  height: 10px;
   padding: 0px;
 }
 
@@ -826,8 +826,8 @@ div.ss_popup_bottomright {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: top right;
-  height: 16px;
+  background-position: bottom right;
+  height: 10px;
   width: 40px;
   padding: 0px;
 }
@@ -894,6 +894,7 @@ div.ss_popup_body {
 }
 .ss_helpToc {
   border: 1px solid ${ss_style_border_color_light};
+  padding-right: 5px;
   background-color:${ss_help_spot_background_color} !important;
   visibility:hidden;
   display:none;
