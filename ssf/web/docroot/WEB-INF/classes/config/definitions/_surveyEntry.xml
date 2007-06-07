@@ -111,7 +111,7 @@
 		
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="57" formItem="date">
 			<properties>
-				<property name="name" value="date"/>
+				<property name="name" value="due_date"/>
 				<property name="caption" value="__due_date"/>
 			</properties>
 		</item>
@@ -157,22 +157,10 @@
 			<property name="type" value="survey"/>
 		</properties>
 		
-		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="54" formItem="user_list">
+		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="54" formItem="due_date">
 			<properties>
-				<property name="name" value="assignment"/>
-				<property name="caption" value="Assigned to"/>
-			</properties>
-		</item>
-		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="55" formItem="selectbox">
-			<properties>
-				<property name="name" value="priority"/>
-				<property name="caption" value="Priority"/>
-			</properties>
-		</item>
-		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="56" formItem="selectbox">
-			<properties>
-				<property name="name" value="status"/>
-				<property name="caption" value="Status"/>
+				<property name="name" value="due_date"/>
+				<property name="caption" value="__due_date"/>
 			</properties>
 		</item>
 	</item>
