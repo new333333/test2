@@ -19,7 +19,7 @@ if (!window.ssSurvey) {
 			ss_questionsArray[ss_questionsCounter].type=type;
 		
 			var questionContainer = document.createElement('div');
-			dojo.html.setClass(questionContainer, "questionContainer");
+			dojo.html.setClass(questionContainer, "ss_questionContainer");
 			questionContainer.id = "question"+ss_questionsCounter;
 			dojo.byId('ss_surveyForm_questions').appendChild(questionContainer);
 			ss_addQuestionHeader(questionContainer);
