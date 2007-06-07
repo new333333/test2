@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.remoting.impl;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -18,7 +20,10 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import net.fortuna.ical4j.data.ParserException;
+
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
@@ -35,6 +40,8 @@ public class DomInputData implements InputDataAccessor {
 
 	private Document doc;
 	private Element root;
+	private IcalModule icalModule;
+	
 	private static SimpleDateFormat[] formats = {
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"),
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
@@ -44,15 +51,16 @@ public class DomInputData implements InputDataAccessor {
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
 		new SimpleDateFormat("yyyy-MM-dd")
 	};
-	public DomInputData(Document doc) {
+	public DomInputData(Document doc, IcalModule icalModule) {
+		this(doc.getRootElement(), icalModule);
 		this.doc = doc;
-		this.root = doc.getRootElement();
 	}
 	
-	public DomInputData(Element root) {
+	public DomInputData(Element root, IcalModule icalModule) {
 		this.root = root;
+		this.icalModule = icalModule;
 	}
-	
+
 	public String getSingleValue(String key) {
 		Element elem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
 		Element valueElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']/value");
@@ -88,24 +96,15 @@ public class DomInputData implements InputDataAccessor {
 
 	public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
 	{
-		Event e = null;
-		Element startElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']/startDate");
-		Element endElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']/endDate");
-		if(startElem != null && endElem != null) {
-			Date startDate = parseDate(startElem.getText());
-			Date endDate = parseDate(endElem.getText());
-			if(startDate != null && endDate != null) {
-	            GregorianCalendar startc = new GregorianCalendar();
-	            GregorianCalendar endc = new GregorianCalendar();
-	            startc.setTime(startDate);
-	            endc.setTime(endDate);
-	            e = new Event();
-	            e.setDtStart(startc);
-	            e.setDtEnd(endc);				
-			}
+		Element eventElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
+		try {
+			List<Event> events = icalModule.parseEvents(new StringReader(eventElem.getText()));
+			return events.get(0);
+		} catch(IOException e) {
+		} catch(ParserException e) {
+		} catch(IndexOutOfBoundsException e) {
 		}
-		
-		return e;
+		return null;
 	}
 
 	public Survey getSurveyValue(String key)

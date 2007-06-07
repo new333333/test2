@@ -20,6 +20,7 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 /**
@@ -40,11 +41,7 @@ public class NotifyBuilderGraphic extends AbstractNotifyBuilder {
 		    			notifyDef.addAttachment(att);
 		    		else if (entry instanceof FolderEntry) {
 		    			FolderEntry fEntry = (FolderEntry)entry;
-		    		
-		    			String webUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
-		    			WebKeys.URL_BINDER_ID + "=" + fEntry.getParentFolder().getId().toString() +
-		    			"&" + WebKeys.URL_ENTRY_ID + "=" + fEntry.getId().toString() +
-		    			"&" + WebKeys.URL_FILE_ID + "=" + att.getId(); 
+		    			String webUrl = DefinitionUtils.getViewURL(fEntry, att); 
 		    			value.addAttribute("href", webUrl);
 		    		}
 		    	}

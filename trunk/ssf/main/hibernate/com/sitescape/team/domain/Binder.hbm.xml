@@ -20,7 +20,7 @@
     <property name="resourceDriverName" length="64"/>
     <property name="resourcePath" length="1024"/>
     <many-to-one name="parentBinder">
-          <column name="parentBinder" index="owningBinder"/>
+          <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>
     <many-to-one name="owner" access="field"/>
     <!-- exclude evict, refresh, delete-orphan-->    

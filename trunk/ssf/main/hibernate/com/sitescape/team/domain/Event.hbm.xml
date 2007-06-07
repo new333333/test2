@@ -9,10 +9,10 @@
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
    <component name="owner" class="com.sitescape.team.domain.AnyOwner">
-      <many-to-one name="folderEntry" index="ownerFolderEntry"/>
-      <many-to-one name="principal" index="ownerPrincipal"/>
-      <many-to-one name="binder" index="ownerBinder"/>
-      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner" >
+      <many-to-one name="folderEntry" index="ownerFolderEntry_Event"/>
+      <many-to-one name="principal" index="ownerPrincipal_Event"/>
+      <many-to-one name="binder" index="ownerBinder_Event"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_Event" >
         <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
         <meta-value class="com.sitescape.team.domain.User" value="user"/>
         <meta-value class="com.sitescape.team.domain.Group" value="group"/>
@@ -26,7 +26,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningBinderKey" length="255"/>
-      <property name="owningBinderId" index="owningBinder"/>
+      <property name="owningBinderId" index="owningBinder_Event"/>
     </component>
     <property name="name" length="64"/>
     <property name="HDtStart">

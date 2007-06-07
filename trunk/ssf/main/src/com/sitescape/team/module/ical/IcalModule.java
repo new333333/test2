@@ -60,6 +60,20 @@ public interface IcalModule {
 		throws IOException, ParserException;
 
 	/**
+	 * parseEvents
+	 * 
+	 * Convenience method that returns the parsed events as a list, rather than calling a handler.
+	 *  SUMMARY and DESCRIPTION from the VEVENTS is discarded.
+	 * 
+	 * @param icalData
+	 * @param handler
+	 * @throws IOException
+	 * @throws ParserException
+	 */
+	List<Event> parseEvents(Reader icalData)
+		throws IOException, ParserException;
+
+	/**
 	 * parseToEntries
 	 * 
 	 * Creates an entry in the given folder for each VEVENT in the given ical input stream, returning a list of

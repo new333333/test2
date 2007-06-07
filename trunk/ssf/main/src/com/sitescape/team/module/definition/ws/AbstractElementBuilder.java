@@ -24,9 +24,9 @@ import com.sitescape.team.util.ObjectPropertyNotFoundException;
  */
 public abstract class AbstractElementBuilder implements ElementBuilder {
     
-	protected AllModulesInjected moduleSource = null;
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, AllModulesInjected moduleSource) {
-    	this.moduleSource = moduleSource;
+	protected BuilderContext context = null;
+    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, BuilderContext context) {
+    	this.context = context;
     	element.addAttribute("name", dataElemName);
     	element.addAttribute("type", element.attributeValue("name"));
         CustomAttribute attribute = entity.getCustomAttribute(dataElemName);

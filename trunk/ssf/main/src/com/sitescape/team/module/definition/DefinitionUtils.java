@@ -22,10 +22,13 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
@@ -85,5 +88,13 @@ public class DefinitionUtils {
 		return null;
 
    }
-    
+
+   public static String getViewURL(FolderEntry fEntry, FileAttachment att)
+   {
+		return WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
+		WebKeys.URL_BINDER_ID + "=" + fEntry.getParentFolder().getId().toString() +
+		"&entityType=folderEntry" +
+		"&" + WebKeys.URL_ENTRY_ID + "=" + fEntry.getId().toString() +
+		"&" + WebKeys.URL_FILE_ID + "=" + att.getId(); 
+   }
 }

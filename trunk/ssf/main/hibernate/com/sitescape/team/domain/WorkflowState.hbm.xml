@@ -8,10 +8,10 @@
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <component name="owner" class="com.sitescape.team.domain.AnyOwner">
-      <many-to-one name="folderEntry" index="ownerFolderEntry"/>
-      <many-to-one name="principal" index="ownerPrincipal"/>
-      <many-to-one name="binder" index="ownerBinder"/>
-      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_wState"/>
+      <many-to-one name="principal" index="ownerPrincipal_wState"/>
+      <many-to-one name="binder" index="ownerBinder_wState"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_wState">
         <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
         <meta-value class="com.sitescape.team.domain.User" value="user"/>
         <meta-value class="com.sitescape.team.domain.Group" value="group"/>
@@ -25,7 +25,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningBinderKey" length="255"/>
-      <property name="owningBinderId" index="owningBinder"/>
+      <property name="owningBinderId" index="owningBinder_wState"/>
     </component>
     <component name="workflowChange" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="wrk_date" type="timestamp"/>

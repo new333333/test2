@@ -12,10 +12,10 @@
     <property name="type" update="false" insert="false"/>
      
     <component name="owner" class="com.sitescape.team.domain.AnyOwner">
-      <many-to-one name="folderEntry" index="ownerFolderEntry"/>
-      <many-to-one name="principal" index="ownerPrincipal"/>
-      <many-to-one name="binder" index="ownerBinder"/>
-      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_Att"/>
+      <many-to-one name="principal" index="ownerPrincipal_Att"/>
+      <many-to-one name="binder" index="ownerBinder_Att"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_Att">
         <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
         <meta-value class="com.sitescape.team.domain.User" value="user"/>
         <meta-value class="com.sitescape.team.domain.Group" value="group"/>
@@ -29,7 +29,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningBinderKey" length="255"/>
-      <property name="owningBinderId" index="owningBinder"/>
+      <property name="owningBinderId" index="owningBinder_Att"/>
     </component>
     <property name="name" length="64"/>
     <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
@@ -72,7 +72,7 @@
         <property name="versionNumber"/>
         <property name="versionName" length="256"/>
         <many-to-one class="com.sitescape.team.domain.FileAttachment" name="parentAttachment">
-          <column name="parentAttachment" sql-type="char(32)" index="owningAttachment"/>
+          <column name="parentAttachment" sql-type="char(32)" index="owningAttachment_Att"/>
         </many-to-one>
       </subclass>
     </subclass>

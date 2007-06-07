@@ -13,6 +13,7 @@ package com.sitescape.team.module.definition.ws;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.util.AllModulesInjected;
 
 /**
@@ -20,6 +21,9 @@ import com.sitescape.team.util.AllModulesInjected;
  * @author Joe DeStefano
  */
 public interface ElementBuilder {
-    
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, AllModulesInjected moduleSource);
+
+	public static interface BuilderContext extends AllModulesInjected {
+		void handleAttachment(FileAttachment att, String webUrl);
+	}
+    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, BuilderContext moduleSource);
 }
