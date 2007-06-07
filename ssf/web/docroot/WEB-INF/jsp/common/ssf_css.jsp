@@ -177,7 +177,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_lightBox_background_color" value="#ECECEC" scope="request"/>	
 				
 <% //HEADER COLORS	 %>
-    <c:set var="ss_style_header_bar_background" value="#EDF2E0" scope="request"/>
+    <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
     <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
     <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>	
     
@@ -194,8 +194,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% //MUTED %>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_muted_label_color" value="#003782" scope="request"/>
-	<c:set var="ss_style_muted_text_color" value="#666666" scope="request"/>
-	
+			
 <% //PORTLET COLORS	 %>
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/>
@@ -297,23 +296,23 @@ body.ss_style_body {
 }
 
 .ss_style {
-  font-family: ${ss_style_folder_view_font_family};
+  font-family: ${ss_style_font_family};
   font-weight: inherit;
-  font-size: ${ss_style_font_smallprint}; 
+  font-size: ${ss_style_font_size}; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
 }
 
 .ss_style td, .ss_style th {
-  font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_smallprint}; 
+  font-family: ${ss_style_font_family};
+  font-size: ${ss_style_font_size}; 
   color: ${ss_style_text_color};
 }
 
 .ss_style_trans , .ss_style_trans td, .ss_style_trans th{
-  font-family: ${ss_style_folder_view_font_family};
+  font-family: ${ss_style_font_family};
   font-weight: inherit;
-  font-size: ${ss_style_font_smallprint}; 
+  font-size: ${ss_style_font_size}; 
   background-color: transparent;
   color: ${ss_style_text_color};
 }
@@ -713,7 +712,7 @@ div.ss_iconed_label a {
 }
 
 .ss_muted_cloud_tag {
-  color: ${ss_style_muted_text_color};
+  color: ${ss_style_muted_label_color};
 }
 .ss_muted_tag_cloud {
   width: 70%;
@@ -1680,7 +1679,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   width:19px;
   height:20px;
   border:none;
-  margin:0px;
+  margin: 0px 2px 0px 0px !important;
   padding:0px;
   }
 .ss_twPlus {
@@ -2171,7 +2170,7 @@ img.ss_tabs_close {
     width:11px;
     min-width:11px;	
 }
-img.ss_tabs_close:hover {
+img.ss_tabs_close:hover, a:hover img.ss_tabs_close {
     background:url(<html:imagesPath/>pics/sym_s_delete.gif) no-repeat right;
 }
 
@@ -4066,6 +4065,7 @@ div.ss_questionContainer {
 	border-bottom: 1px solid #afc8e3;
 	padding: 0 0 10px 0;
 	margin: 0 0 5px 0;
+	background-color:#ffffff;
 }
 div.ss_questionContainer h4 {
 	border: 1px solid #afc8e3;
@@ -4098,7 +4098,6 @@ table.ss_surveys_list td {
 	padding: 6px  3px 6px 3px;
 	border-bottom: 1px solid #afc8e3;
 }
-
 
 .ss_savedQueriesListPane {
 	display: none;
