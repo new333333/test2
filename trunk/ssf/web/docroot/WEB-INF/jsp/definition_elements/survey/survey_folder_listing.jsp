@@ -17,6 +17,7 @@
 	<tr>
 		<th><ssf:nlt tag="survey.title"/></th>
 		<th><ssf:nlt tag="survey.creator"/></th>
+		<th><ssf:nlt tag="survey.dueDate"/></th>
 	</tr>
 <c:forEach var="entry" items="${ssFolderEntries}" >
 	<tr>
@@ -40,7 +41,10 @@
 			</span>
 		</td>
 		<td>
-${entry._principal.title}
+			${entry._principal.title}
+		</td>
+		<td>
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="date" pattern="dd MMM yyyy" />					
 		</td>
 	</tr>
 </c:forEach>
