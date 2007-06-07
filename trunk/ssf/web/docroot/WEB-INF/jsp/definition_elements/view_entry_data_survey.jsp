@@ -27,11 +27,7 @@
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 
-<p>TEST
-<ssf:drawChart count="30" total="100"/>
-</p>
-
-<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+<!-- c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/ -->
 
 
 
@@ -42,7 +38,11 @@
 			<c:if test="${question.type == 'multiple' || question.type == 'single'}">
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
-					<li><ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/><c:out value="${answer.text}" escapeXml="false"/></li>
+					<li>
+						<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
+						<span><c:out value="${answer.text}" escapeXml="false"/></span>
+						<div class="ss_clear"></div>
+					</li>
 				</c:forEach>
 				</ol>
 			</c:if>
@@ -51,14 +51,20 @@
 			<c:if test="${question.type == 'multiple'}">
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
-					<li><input type="checkbox" name="${questionNo}"><c:out value="${answer.text}" escapeXml="false"/></li>
+					<li>
+						<input type="checkbox" name="${questionNo}">
+						<c:out value="${answer.text}" escapeXml="false"/>
+					</li>
 				</c:forEach>
 				</ol>
 			</c:if>
 			<c:if test="${question.type == 'single'}">
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
-					<li><input type="radio" name="${questionNo}"><c:out value="${answer.text}" escapeXml="false"/></li>
+					<li>
+						<input type="radio" name="${questionNo}">
+						<c:out value="${answer.text}" escapeXml="false"/>
+					</li>
 				</c:forEach>
 				</ol>
 			</c:if>
