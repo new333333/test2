@@ -330,6 +330,8 @@ public class WebKeys {
 	
 	public static final String OPERATION_SAVE_SEARCH_QUERY="save_search_query";
 	
+	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
+	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";

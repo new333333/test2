@@ -157,17 +157,23 @@ if (!window.ssSurvey) {
 			var ss_toSend = new Array();
 			var ind = 0;
 			var aCounter = 0;
+			var content;
 			for (var i=0; i<ss_questionsArray.length;i++){
 				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
 					ss_toSend[ind] = {};
 					ss_toSend[ind].type = ss_questionsArray[i].type;
-					ss_toSend[ind].question = dojo.byId("questionText"+i).value;
+					
+					content = tinyMCE.getContent("questionText"+i).replace(/\+/g, "&#43");
+					content = content.replace(/\\/g, "&#92");
+					content = escape(content);
+					
+					ss_toSend[ind].question = content;
 					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
 						ss_toSend[ind].answers = new Array();
 						aCounter = 0;
 						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
 							if (dojo.byId("question"+i+"answer"+j)) {
-								ss_toSend[ind].answers[aCounter] = {'answer' : dojo.byId("question"+i+"answer"+j).value};
+								ss_toSend[ind].answers[aCounter] = {'text' : dojo.byId("question"+i+"answer"+j).value};
 								aCounter++;
 							}
 						}
@@ -206,6 +212,26 @@ if (!window.ssSurvey) {
 		for (var i in ssCurrentFormSurveys) {
 			ssCurrentFormSurveys[i].prepareSubmit(formObj);
 		}
+	}
+	
+	ssSurvey.vote = function(formId, binderId, entryId) {
+		var url = ss_AjaxBaseUrl + "&operation=vote_survey";
+		url += "\&binderId=" + binderId;
+		url += "\&entryId=" + entryId;
+		
+		dojo.io.bind({
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+				alert(ssSurvey.votedLabel);
+				try { window.close(); } catch (e){}
+				try { parent.ss_hideEntryDiv(); } catch (e){}
+			},
+			mimetype: "text/json",
+			formNode: document.getElementById(formId)
+		});
 	}
 
 }

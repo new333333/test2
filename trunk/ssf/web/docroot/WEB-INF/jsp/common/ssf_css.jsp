@@ -4063,7 +4063,8 @@ input.ss_saveQueryName {
 }
 div.ss_questionContainer {
 	border-bottom: 1px solid #afc8e3;
-	padding: 0px 0px 0px 0px;
+	padding: 0 0 10px 0;
+	margin: 0 0 5px 0;
 }
 div.ss_questionContainer h4 {
 	border: 1px solid #afc8e3;

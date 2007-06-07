@@ -61,37 +61,6 @@
 		</div>
 	</form>
 	
-<script type="text/javascript">
-// test only 
-	var ss_initialArray = new Array();
-	ss_initialArray[0] = new Array();
-	ss_initialArray[0].type = "multiple";
-	ss_initialArray[0].question = "Bla bla bla - multiple";
-	ss_initialArray[0].answers = new Array();
-	ss_initialArray[0].answers[0] = "a";
-	ss_initialArray[0].answers[1] = "b";
-	ss_initialArray[0].answers[2] = "c";
-	ss_initialArray[0].answers[3] = "d";
-	ss_initialArray[1] = new Array();
-	ss_initialArray[1].type = "single";
-	ss_initialArray[1].question = "2nd question - single test";
-	ss_initialArray[1].answers = new Array();
-	ss_initialArray[1].answers[0] = "1";
-	ss_initialArray[1].answers[1] = "2";
-	ss_initialArray[1].answers[2] = "3";
-	ss_initialArray[2] = new Array();
-	ss_initialArray[2].type = "input";
-	ss_initialArray[2].question = "Your favourites name:";	
-	ss_initialArray[3] = new Array();
-	ss_initialArray[3].type = "single";
-	ss_initialArray[3].question = "last single";	
-	ss_initialArray[3].answers = new Array(); 
-	ss_initialArray[3].answers[0] = "yes";
-	ss_initialArray[3].answers[1] = "no";
-
-	// dojo.addOnLoad(function() {ss_initSurveyQuestions(ss_initialArray)});
-
-</script>
 </div>
 
 
