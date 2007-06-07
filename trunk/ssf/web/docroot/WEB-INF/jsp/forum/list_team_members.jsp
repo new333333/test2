@@ -10,10 +10,17 @@
  *
  */
 %>
+<ssf:ifnotadapter>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+</ssf:ifnotadapter>
 
 <% // List team members %>
 <% // Template used also on dashboard %>
+<c:set var="hitCount" value="0"/>
+<c:set var="componentId" value="${ssComponentId}"/>
+<c:if test="${empty ssComponentId}">
+<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
+</c:if>
 
 
 <div class="ss_buddies">
@@ -75,6 +82,7 @@
 		<c:choose>
 			<c:when test="${ssTeamMembersCount > 0}">					
 				<c:forEach var="member" items="${ssTeamMembers}">
+				  <c:set var="hitCount" value="${hitCount + 1}"/>
 					<tr>
 						<td class="picture">
 							<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" 
@@ -105,5 +113,44 @@
 		
 	</table>
 	
+<div>
+  <table width="100%">
+   <tr>
+    <td>
+<c:if test="${hitCount > 0}">
+      <span class="ss_light ss_fineprint">
+	    [<ssf:nlt tag="folder.Results">
+	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
+	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
+	    <ssf:param name="value" value="${ssTeamMembersCount}"/>
+	    </ssf:nlt>]
+	  </span>
+</c:if>
+	</td>
+	<c:if test="${ssDashboard.scope != 'portlet'}">
+		<c:set var="binderId" value="${ssBinder.id}"/>
+	</c:if>
+	<c:if test="${ssDashboard.scope == 'portlet'}">
+		<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+	</c:if>
+	
+	<td align="right">
+	  <c:if test="${ss_pageNumber > 0}">
+	    <span>
+	      <a onClick="ss_moreTeamMembers('${ssBinder.id}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}'); return false;"
+	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
+	    </span>
+	  </c:if>
+	  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssTeamMembersCount}">
+	    <span>&nbsp;&nbsp;
+	      <a onClick="ss_moreTeamMembers('${ssBinder.id}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}'); return false;"
+	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
+	    </span>
+	  </c:if>
+    </td>
+   </tr>
+  </table>
+</div>
+
 </div>
 

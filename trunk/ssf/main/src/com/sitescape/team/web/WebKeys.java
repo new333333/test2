@@ -234,6 +234,7 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
     public static final String OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
+    public static final String OPERATION_DASHBOARD_TEAM_MORE="team_more";
     public static final String OPERATION_DELETE_TAB="delete_tab";
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
 	public static final String OPERATION_FIND_ENTRY_TYPES_WIDGET = "get_entry_types_widget";

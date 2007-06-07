@@ -161,7 +161,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT) || 
-					op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE)) {
+					op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE) || 
+					op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
@@ -293,6 +294,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE)) {
 			return ajaxGetDashboardSearchMore(request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE)) {
+			return ajaxGetDashboardTeamMore(request, response);
 
 		} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
 			return ajaxGetMyTeams(request, response);
@@ -1556,6 +1560,44 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_TASK)) view = "dashboard/task_view2";
 		if (displayType.equals("comments")) view = "dashboard/comments_view2";
+		return new ModelAndView(view, model);
+	}
+	
+	private ModelAndView ajaxGetDashboardTeamMore(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String componentId = op2;
+		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
+		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
+		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
+	
+		if (Validator.isNotNull(componentId)) {
+			String scope = PortletRequestUtils.getStringParameter(request, "_scope", null);
+			if (Validator.isNull(scope)) {
+				if (componentId.contains("_")) scope = componentId.split("_")[0];
+			}
+			if (!DashboardHelper.Portlet.equals(scope)) {
+				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				if (Validator.isNull(scope)) scope = DashboardHelper.Local;
+				DashboardHelper.getDashboardMap(binder, 
+					getProfileModule().getUserProperties(user.getId()).getProperties(), 
+					model, scope, componentId, false);
+			} else {
+				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID);				
+				DashboardPortlet dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);
+				model.put(WebKeys.DASHBOARD_PORTLET, dashboard);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				DashboardHelper.getDashboardMap(dashboard, 
+					getProfileModule().getUserProperties(user.getId()).getProperties(), 
+					model, false);
+				
+			}
+		}
+		String view = "dashboard/team_members_list_ajax";
 		return new ModelAndView(view, model);
 	}
 	

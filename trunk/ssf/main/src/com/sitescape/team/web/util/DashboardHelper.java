@@ -593,9 +593,33 @@ public class DashboardHelper extends AbstractAllModulesInjected {
         	beans.put(id, idData);
     	}
     	if (!isConfig) {
+    		int pageSize = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+    		if (data.containsKey(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT)) {
+    			try {
+    				String resultsCount = (String)data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
+    				pageSize = Integer.valueOf(resultsCount);
+    				model.put(WebKeys.PAGE_SIZE, resultsCount);
+    			} catch (Exception e) {}
+    		}
+    		int pageNumber = 0;
+    		if (model.containsKey(WebKeys.PAGE_SIZE)) {
+    			pageSize = Integer.valueOf((String)model.get(WebKeys.PAGE_SIZE));
+    		}
+    		if (model.containsKey(WebKeys.PAGE_NUMBER)) {
+    			pageNumber = Integer.valueOf((String)model.get(WebKeys.PAGE_NUMBER));
+    		}
+    		idData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
+    		idData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
     		try {
     			Collection users = getBinderModule().getTeamMembers(binder.getId(), true);
-    			idData.put(WebKeys.TEAM_MEMBERS, users);
+    			Object[] usersSet = users.toArray();
+    			Collection usersPage = new HashSet();
+    			int iEnd = pageSize*pageNumber + pageSize;
+    			if (iEnd > usersSet.length) iEnd = usersSet.length;
+    			for (int i = pageSize*pageNumber; i < iEnd; i++) {
+    				usersPage.add(usersSet[i]);
+    			}
+    			idData.put(WebKeys.TEAM_MEMBERS, usersPage);
     			idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
     		} catch (AccessControlException ac) {} //justskip
     	}

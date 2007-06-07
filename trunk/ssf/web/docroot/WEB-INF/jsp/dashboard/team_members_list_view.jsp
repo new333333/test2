@@ -48,5 +48,8 @@ function ${ssNamespace}_user_url(binderId, entryId, type) {
 
 <c:set var="ssTeamMembersCount" value="${ssDashboard.beans[componentId].ssTeamMembersCount}" />
 <c:set var="ssTeamMembers" value="${ssDashboard.beans[componentId].ssTeamMembers}" />
+<c:set var="ss_divId" value="ss_teamMembers_${ssNamespace}"/>
 
+<div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
+</div>
