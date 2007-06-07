@@ -41,7 +41,7 @@
 			</span>
 		</td>
 		<td>
-			${entry._principal.title}
+			<ssf:showUser user="${entry._principal}" />
 		</td>
 		<td>
 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="date" pattern="dd MMM yyyy" />					
