@@ -17,4 +17,4 @@
 <div class="ss_chartContainer">
 	<div class="ss_bar" style="width:<%= percent %>%;"><%= percent %>%</div>
 </div>
-<div class="ss_clear"/>
+<!-- div class="ss_clear"></div -->
