@@ -13,13 +13,15 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageWorkspaceMenu"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>
 
 <p><ssf:nlt tag="help.manageMenuBar.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.manageMenuBar.menuDescription" /></p>
+<p><ssf:nlt tag="help.manageMenuBar.folders.menuDescription" /></p>
 
 <p><ssf:nlt tag="help.manageMenuBar.aclsTeams" /></p>
+
+<p><ssf:nlt tag="help.manageMenuBar.folders.subscriptions"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.manageMenuBar.adminMoreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
