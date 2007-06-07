@@ -34,7 +34,7 @@
 <ssf:skipLink tag="<%= NLT.get("skip.navigation.links") %>" id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
 
 <div class="ss_breadcrumb">
-  <ssHelpSpot helpId="navigation_bar/breadcrumbs" offsetX="0" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" offsetY="4" 
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 
 <ul style="margin-left:-15px;">
