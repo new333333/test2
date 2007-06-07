@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.DisposableBean;
 
+import com.sitescape.team.lucene.LuceneHelper;
 import com.sitescape.team.search.AbstractLuceneSessionFactory;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
-import com.sitescape.team.util.LuceneUtil;
 
 /**
  * @author Jong Kim
@@ -44,7 +44,7 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 		}
 		if (!indexNameMap.containsKey(indexName)) {
 			indexNameMap.put(indexName, indexDirPath);
-			LuceneUtil.unlock(indexDirPath);
+			LuceneHelper.unlock(indexDirPath);
 		}
         return new LocalLuceneSession(indexDirPath);
     }
@@ -70,8 +70,8 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 		Iterator iter = indexNameMap.keySet().iterator();
 		while (iter.hasNext()) {
 			indexDirPath = indexNameMap.get(iter.next());
-			LuceneUtil.closeAll();
-			LuceneUtil.unlock(indexDirPath);
+			LuceneHelper.closeAll();
+			LuceneHelper.unlock(indexDirPath);
 		}
 		
 	}

@@ -21,8 +21,8 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
 import com.sitescape.team.lucene.ChineseAnalyzer;
+import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
-import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 

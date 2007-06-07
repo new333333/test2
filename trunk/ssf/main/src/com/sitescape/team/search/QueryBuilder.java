@@ -24,8 +24,8 @@ import org.dom4j.io.SAXReader;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.util.LanguageTaster;
 import com.sitescape.team.util.SPropsUtil;
 
 public class QueryBuilder {
