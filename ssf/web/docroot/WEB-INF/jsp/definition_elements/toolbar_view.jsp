@@ -67,7 +67,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
-         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_dashboard" offsetY="-5" offsetX="-20" 
+         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories" offsetY="-5" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
