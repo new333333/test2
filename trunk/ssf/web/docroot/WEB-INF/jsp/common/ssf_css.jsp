@@ -1665,7 +1665,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   width:19px;
   height:20px;
   border:none;
-  margin:0px;
+  margin: 0px 2px 0px 0px !important;
   padding:0px;
   }
 .ss_twImg8 {
