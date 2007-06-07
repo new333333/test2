@@ -48,9 +48,11 @@ public class TeamController extends AbstractBinderController {
 			//Save the inheritance flag
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", true);
 			boolean inheritBefore = binder.isTeamMembershipInherited();
-			getBinderModule().setTeamMembershipInherited(binderId, inherit);
-
-			if (!inherit) {
+			//inheritance change
+			//if go from yes to no, bindermodule sets initial membership to be same as parent
+			if (inherit != inheritBefore) {
+				getBinderModule().setTeamMembershipInherited(binderId, inherit);
+			} else if (!inherit) {
 				Set memberIds = new HashSet();
 				if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
@@ -71,11 +73,9 @@ public class TeamController extends AbstractBinderController {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_BINDER_ID);
-		model.put(WebKeys.INHERIT_FROM_PARENT, false);
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
-			model.put(WebKeys.INHERIT_FROM_PARENT, binder.isTeamMembershipInherited());
 		}
 		Set memberIds = getBinderModule().getTeamMemberIds(binderId, false);
 		//split into users/groups

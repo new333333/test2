@@ -127,13 +127,6 @@ public interface AdminModule {
      */
     public void deletePosting(String postingId) throws AccessControlException;
     /**
-     * Remove a function from the workArea
-     * @param workArea
-     * @param functionId
-     * @throws AccessControlException
-     */
-    public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) throws AccessControlException; 
-    /**
      * Get change logs for a binder and its entries.  Null operation returns all changes.  Must have had access to 
      * the entity at the time of the change to see the change log.
      * @param binderId
@@ -191,8 +184,8 @@ public interface AdminModule {
     public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
  
-    public void modifyFunction(Long functionId, Map updates);
-    public void modifyPosting(String postingId, Map updates);
+    public void modifyFunction(Long functionId, Map<String, Object> updates);
+    public void modifyPosting(String postingId, Map<String, Object> updates);
 	public void modifyTemplate(Long id, Map updates);
  
 	/**
@@ -209,7 +202,7 @@ public interface AdminModule {
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception;
 
     public void setPostingSchedule(ScheduleInfo config) throws ParseException;
-	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships);
+	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships);
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId);
     

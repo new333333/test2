@@ -392,7 +392,7 @@ public class ListProfilesController extends   SAbstractController {
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
 
 		//Access control
-		if (getBinderModule().testAccess(binder, "accessControl")) {
+		if (getAdminModule().testAccess(binder, "setWorkAreaFunctionMembership")) {
 			adminMenuCreated = true;
 			Map qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");

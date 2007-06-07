@@ -198,11 +198,6 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         // The following query performs 4 table joins in a single SQL query.
-                        // To increase performance, it only asks for the first matching 
-                        // record. In addition, it actually fetches only the ID (ie, primary
-                        // key) field of the record, which eliminates the need for another 
-                        // SELECT statement that would have been normally required otherwise. 
-                        // So, in summary, this query is as efficient as it can get. 
                         return session.getNamedQuery("get-WorkAreaFunctionMembershipByOperation")
                        		.setLong(ZONE_ID, zoneId)
                             .setLong(WORK_AREA_ID, workAreaId.longValue())

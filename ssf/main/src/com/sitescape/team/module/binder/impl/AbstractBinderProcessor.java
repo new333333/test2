@@ -25,6 +25,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -81,6 +82,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.SpringContextUtil;
@@ -92,7 +94,8 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-   protected DefinitionModule definitionModule;
+	public static  String[] docTypes = new String[] {BasicIndexUtils.DOC_TYPE_BINDER, BasicIndexUtils.DOC_TYPE_ENTRY,BasicIndexUtils.DOC_TYPE_ATTACHMENT};
+    protected DefinitionModule definitionModule;
 
  
 	protected DefinitionModule getDefinitionModule() {
@@ -1016,7 +1019,128 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_BINDER);
     
     }    
-    
+    //***********************************************************************************************************
+    //not really meant to be overridden, but here to share code
+    public void indexFunctionMembership(Binder binder, boolean cascade) {
+    	updateIndexAcl(binder, cascade, false);
+    }
+    public void indexTeamMembership(Binder binder, boolean cascade) {
+       	updateIndexAcl(binder, cascade, true);    	  
+    }
+    protected void updateIndexAcl(Binder binder, boolean cascade, boolean teamCheck) {
+    	List<Binder> binders = new ArrayList();
+    	binders.add(binder);
+    	
+    	if (cascade) {
+    		List<Binder>candidates = new ArrayList(binder.getBinders());
+    		while (!candidates.isEmpty()) {
+    			Binder c = candidates.get(0);
+    			candidates.remove(0);
+       			if (teamCheck && c.isTeamMembershipInherited()) {
+    				binders.add(c);
+    				candidates.addAll(c.getBinders());
+       			} else if (!teamCheck && c.isFunctionMembershipInherited()) {
+    				binders.add(c);
+    				candidates.addAll(c.getBinders());
+    			}
+    			// limit list to 100 or index will be locked
+    			if (binders.size() >= 100) {
+    				updateIndexAcl(binders);
+    				if (binders.get(0).equals(binder)) binders.remove(0);
+    				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
+    				binders.clear();
+    			}
+    		}
+    	};
+    	
+    	//finish list
+    	if (!binders.isEmpty()) {
+    		updateIndexAcl(binders);
+    	}
+    }
+    protected void updateIndexAcl(List<Binder> binders) {
+    	ArrayList<Query> updateQueries = new ArrayList();
+    	ArrayList<String> updateIds = new ArrayList();
+		// Now, create a query which can be used by the index update method to modify all the
+		// entries, replies, attachments, and binders(workspaces) in the index with this new 
+		// Acl list.
+		//find descendent binders with the same owner team membership and re-index together
+		//the owner  may be part of the acl set, so cannot always share
+		while (!binders.isEmpty()) {
+			Binder top = binders.get(0);
+			binders.remove(0);
+			List ids = new ArrayList();
+			ids.add(top.getId());
+			List<Binder> others = new ArrayList(binders);
+			for (Binder b:others) {
+				//have same owner and team membership have same acl
+				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId()) &&
+						top.getTeamMemberIds().equals(b.getTeamMemberIds())) {
+					binders.remove(b);
+					ids.add(b.getId());
+				}
+			}
+			org.dom4j.Document qTree = buildQueryforUpdate(ids);
+	    	//don't need to add access check to update of acls
+			//access to entries is not required to update the folder acl
+	    	QueryBuilder qb = new QueryBuilder(null);
+			// add this query and list of ids to the lists we'll pass to updateDocs.
+			updateQueries.add(qb.buildQuery(qTree, true).getQuery());
+			updateIds.add(EntityIndexUtils.getBinderAccess(top));
+		}
+		
+    	if (updateQueries.size() > 0) {
+    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    		try {
+    			
+    			luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
+    						updateIds);
+    		} finally {
+    			luceneSession.close();
+    		}
+    	}
+    		
+    }
+	private static org.dom4j.Document buildQueryforUpdate(List<Long> binderIds) {
+		org.dom4j.Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+    	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+ 
+    	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	//get all the entrys, replies and attachments
+    	// Folderid's and doctypes:{entry, binder, attachment}
+    	for (Iterator iter = binderIds.iterator(); iter.hasNext();) {
+    		Element field = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(iter.next().toString());
+    	}
+    	
+    	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	for (int i =0; i < docTypes.length; i++) {
+    		Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(docTypes[i]);
+    	}
+    	// Get all the binder's themselves
+    	// OR Doctype=binder and binder id's
+    	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
+    	Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+    	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+	   	for (Iterator iter = binderIds.iterator(); iter.hasNext();) {
+    		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(iter.next().toString());
+    	}
+	   	return qTree;
+	}
+	
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {
     	//call overloaded methods
@@ -1396,12 +1520,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	public ChangeLog processChangeLog(Binder binder, String operation) {
 		ChangeLog changes = new ChangeLog(binder, operation);
+		//any changes here should be considered to template export
 		Element element = ChangeLogUtils.buildLog(changes, binder);
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-		//TODO: do we need config info?
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
 		if (!binder.isFunctionMembershipInherited()) {
 			List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
 					binder.getZoneId(), binder);

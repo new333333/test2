@@ -34,7 +34,12 @@ public interface BinderProcessor {
   	public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
-  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
+    public void indexFunctionMembership(Binder binder, boolean cascade);
+    public void indexTeamMembership(Binder binder, boolean cascade);
+	public void indexBinder(Binder binder, boolean includeEntries);	
+    public Collection indexTree(Binder binder, Collection exclusions);
+   
+ 	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
     public void moveBinder(Binder source, Binder destination);
     /**
@@ -42,7 +47,5 @@ public interface BinderProcessor {
      * @param binder
      */
     public void moveBinderFixup(Binder binder);
-	public void indexBinder(Binder binder, boolean includeEntries);	
-    public Collection indexTree(Binder binder, Collection exclusions);
 	public ChangeLog processChangeLog(Binder binder, String operation);
 }

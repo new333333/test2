@@ -19,13 +19,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.lucene.search.Query;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
@@ -69,18 +72,16 @@ import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
-import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.web.util.DashboardHelper;
@@ -161,6 +162,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
+	private TransactionTemplate transactionTemplate;
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
 
    	/**
    	 * Use method names as operation so we can keep the logic out of application
@@ -190,6 +198,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 		
 	}
+	private BinderProcessor loadBinderProcessor(Binder binder) {
+		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+
+	}
+
    	/**
 	 * Use method names as operation so we can keep the logic out of application
 	 * and easisly change the required rights
@@ -495,7 +508,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 template.setLibrary(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_LIBRARY), false));
 		 template.setUniqueTitles(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_UNIQUETITLES), false));
 		 template.setDefinitionsInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS), false));
-		 template.setFunctionMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP), true));
+		 template.setFunctionMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP), true));
+		 template.setTeamMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS), true));
+		 if (!template.isTeamMembershipInherited())
+			 template.setTeamMemberIds(LongIdUtil.getIdsAsLongSet(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_TEAMMEMBERS)));
 		 //get attribute from document
 		 Map updates = XmlUtils.getAttributes(config);
 		 doAddTemplate(template, type, updates);
@@ -631,15 +647,15 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		XmlUtils.addAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, binder.getIconName());			
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
 		Set<Map.Entry> mes = binder.getCustomAttributes().entrySet();
 		for (Map.Entry me: mes) {
 			CustomAttribute attr = (CustomAttribute)me.getValue();
 			attr.toXml(element);
 		}
-		//TODO:write out function memberships
-
+		//cannot rely export function memberships cause functions and most members are site specific
 		List<Definition> defs = binder.getDefinitions();
 		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
 			Definition def = binder.getEntryDef();
@@ -769,8 +785,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    		
 	    	}	    	
 	    	getCoreDao().flush();
-	    	//need to reindex acls
-    		indexMembership(binder, true);
+	    	//need to reindex acls - since new shouldn't have any children
+	       	loadBinderProcessor(binder).indexFunctionMembership(binder, false);
 	    } else {
 	    	//	do child configs
 	    	//	first flush updates, addBinder does a refresh which overwrites changes
@@ -814,110 +830,88 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//let anyone read them			
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
-    public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
+    public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, Set<Long>> functionMemberships) {
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
-		
-		Iterator itFunctions = functionMemberships.entrySet().iterator();
-		while (itFunctions.hasNext()) {
-			Map.Entry fm = (Map.Entry)itFunctions.next();
-			setWorkAreaFunctionMembership(workArea, (Long)fm.getKey(), (Set)fm.getValue());
-		}
-		//flush so next query works
-		getCoreDao().flush();
-		if (functionMemberships.size() > 0) indexMembership(workArea, true);
-		
-	}
-
-	private void indexMembership(WorkArea workArea, boolean cascade) {
-		ArrayList<Query> updateQueries = new ArrayList();
-		ArrayList<String> updateIds = new ArrayList();
-		if (!(workArea instanceof Binder)) return;
-		// Now, create a query which can be used by the index update method to modify all the
-		// entries, replies, attachments, and binders(workspaces) in the index with this new 
-		// Acl list.
-		Binder binder = (Binder)workArea;
-		List<Binder> binders = new ArrayList();
-		if (cascade) {
-			binders = getInheritingDescendentBinderIds(binder, binders);
-		} else {
-			binders.add(binder);
-		}
-		SearchUtils.buildMembershipUpdate(binders, updateQueries, updateIds);
-
-		if (updateQueries.size() > 0) {
-			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-			try {
-				
-				luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
-						updateIds);
-			} finally {
-				luceneSession.close();
-			}
-		}
-		
-	}
-	// a recursive routine which walks down the tree
-	// from here and builds a list of the binders
-	// who inherit acls from their parents.  The tree is pruned at
-	// the highest branch that does not inherit from it's parent.
-	private List getInheritingDescendentBinderIds(Binder binder, List binders) {
-  		binders.add(binder);
-		List<Binder> childBinders = binder.getBinders();
- 		for (Binder c: childBinders) {
-			if (c.isFunctionMembershipInherited()) {
-				binders = getInheritingDescendentBinderIds(c, binders);
-			}
+		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		//get list of current readers to compare for indexing
+		List<WorkAreaFunctionMembership>wfms = 
+	       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
+       	TreeSet<Long> origional = new TreeSet();
+        for (WorkAreaFunctionMembership wfm:wfms) {
+        	origional.addAll(wfm.getMemberIds());
     	}
-    	return binders;
-	}
-	
-	
-	private void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set<Long> memberIds) {
-     	Workspace zone = RequestContextHolder.getRequestContext().getZone();
-      	WorkAreaFunctionMembership membership =
-      		getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(zone.getId(), workArea, functionId);
-		if (membership == null) { 
-	       	membership = new WorkAreaFunctionMembership();
-	       	membership.setZoneId(zone.getId());
-	       	membership.setWorkAreaId(workArea.getWorkAreaId());
-	       	membership.setWorkAreaType(workArea.getWorkAreaType());
-	       	membership.setFunctionId(functionId);
-	       	membership.setMemberIds(memberIds);
-	        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-	        processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
-		} else {
-			Set mems = membership.getMemberIds();
-			mems.clear();
-			mems.addAll(memberIds);
-			membership.setMemberIds(mems);
-			getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
-    	    processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+        //first remove any that are not in the new list
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		//get list of current memberships
+        		List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneId, workArea);
+                		for( WorkAreaFunctionMembership wfm:wfms) {
+        			if (!functionMemberships.containsKey(wfm.getFunctionId()))
+        				getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);       	
+        		}
+        		for (Map.Entry<Long, Set<Long>> fm : functionMemberships.entrySet()) {
+        			WorkAreaFunctionMembership membership=null;
+        			//find in current list
+        			for (int i=0; i<wfms.size(); ++i) {
+        				WorkAreaFunctionMembership wfm = wfms.get(i);
+        				if (wfm.getFunctionId().equals(fm.getKey())) {
+        					membership = wfm;
+        					break;	        	
+        				}
+        			}
+        			Set members = fm.getValue();
+        			if (membership == null) { 
+        				membership = new WorkAreaFunctionMembership();
+        				membership.setZoneId(zoneId);
+        				membership.setWorkAreaId(workArea.getWorkAreaId());
+        				membership.setWorkAreaType(workArea.getWorkAreaType());
+        				membership.setFunctionId(fm.getKey());
+        				membership.setMemberIds(members);
+        				getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+        			} else if (members == null || members.isEmpty()) {
+        				getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(membership);       	
+        			} else {
+        				Set mems = membership.getMemberIds();
+        				if (!mems.equals(members)) {
+        					mems.clear();
+        					mems.addAll(members);
+        					membership.setMemberIds(mems);
+        				}
+        			}
+        		}
+				processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+				return null;
+        	}});
+		//get new list of readers
+      	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
+      	TreeSet<Long> current = new TreeSet();
+      	for (WorkAreaFunctionMembership wfm:wfms) {
+      		current.addAll(wfm.getMemberIds());
+      	}
+      	//only reindex if readers were affected.  Do outside transaction
+		if (!origional.equals(current) && (workArea instanceof Binder)) {
+			Binder binder = (Binder)workArea;
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
 		}
 	}
-	
 
 
-    public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
-		checkAccess(workArea, "deleteWorkAreaFunctionMembership");
-
-        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
-   				(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
-        if (wfm != null) {
-	        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
-	        indexMembership(workArea, true);
-	        processAccessChangeLog(workArea, ChangeLog.ACCESSDELETE);
-
-        }
-    }
-    public void setWorkAreaOwner(WorkArea workArea, Long userId) {
+     public void setWorkAreaOwner(final WorkArea workArea, final Long userId) {
     	checkAccess(workArea, "setWorkAreaOwner");
     	if (!workArea.getOwnerId().equals(userId)) {
-    		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
-    		workArea.setOwner(user);
-    		//need to update access, since owner has changed
-   			indexMembership(workArea, false);
+    		getTransactionTemplate().execute(new TransactionCallback() {
+   		        	public Object doInTransaction(TransactionStatus status) {
+   		        		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+   		        		workArea.setOwner(user);
+   		        		return null;
+   		       }});
+    		//do outside transaction
+    		//need to update access, since owner has changed - assume read access is effected
+			if (workArea instanceof Binder) {
+				Binder binder = (Binder)workArea;
+				loadBinderProcessor(binder).indexFunctionMembership(binder, false);
+			}
     	}
-   		
     }
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		// open to anyone - only way to get parentMemberships
@@ -962,51 +956,58 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         return source;
 	}
 
-	public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) 
+	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit) 
     throws AccessControlException {
     	checkAccess(workArea, "setWorkAreaFunctionMembershipInherited");
-    	if (inherit) {
-    		//remove them
-    	   	List current = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), workArea);
-    	   	for (int i=0; i<current.size(); ++i) {
-    	        WorkAreaFunctionMembership wfm = (WorkAreaFunctionMembership)current.get(i);
-   		        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
-    	   	}
+        Boolean index = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		if (inherit) {
+        			//remove them
+        			List current = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), workArea);
+        			for (int i=0; i<current.size(); ++i) {
+	    	        WorkAreaFunctionMembership wfm = (WorkAreaFunctionMembership)current.get(i);
+	    	        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+        			}
     		
-    	} else if (workArea.isFunctionMembershipInherited() && !inherit) {
-    		//copy parent values as beginning values
-    		List current = getWorkAreaFunctionMembershipsInherited(workArea);
-           	for (int i=0; i<current.size(); ++i) {
-    			WorkAreaFunctionMembership wf = (WorkAreaFunctionMembership)current.get(i);
-    			WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-    			membership.setZoneId(wf.getZoneId());
-    			membership.setWorkAreaId(workArea.getWorkAreaId());
-    			membership.setWorkAreaType(workArea.getWorkAreaType());
-    			membership.setFunctionId(wf.getFunctionId());
-    			membership.setMemberIds(new HashSet(wf.getMemberIds()));    		
-    	        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-     		}
-    	}
-    	//see if there is a real change
-    	if (workArea.isFunctionMembershipInherited()  != inherit) {
-    		workArea.setFunctionMembershipInherited(inherit);
-    		//just changed from not inheritting to inherit = need to update index
-    		//if changed from inherit to not, index remains the same
-    		if (inherit) indexMembership(workArea, true);
+        		} else if (workArea.isFunctionMembershipInherited() && !inherit) {
+        			//copy parent values as beginning values
+        			List current = getWorkAreaFunctionMembershipsInherited(workArea);
+        			for (int i=0; i<current.size(); ++i) {
+        				WorkAreaFunctionMembership wf = (WorkAreaFunctionMembership)current.get(i);
+        				WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+        				membership.setZoneId(wf.getZoneId());	
+ 	          			membership.setWorkAreaId(workArea.getWorkAreaId());
+ 	          			membership.setWorkAreaType(workArea.getWorkAreaType());
+ 	          			membership.setFunctionId(wf.getFunctionId());
+ 	          			membership.setMemberIds(new HashSet(wf.getMemberIds()));    		
+ 	          			getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+        			}
+        		}
+        	   	//see if there is a real change
+            	if (workArea.isFunctionMembershipInherited()  != inherit) {
+            		workArea.setFunctionMembershipInherited(inherit);
+             		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+             		//just changed from not inheritting to inherit = need to update index
+            		//if changed from inherit to not, index remains the same
+              		if (inherit) return Boolean.TRUE;
 
-    		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
-    	}
-    } 
+            	}
+        		return Boolean.FALSE;
+        	}});
+        //index outside of transaction
+        if (index && (workArea instanceof Binder)) {
+			Binder binder = (Binder)workArea;
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
+		}
+     } 
 	private void processAccessChangeLog(WorkArea workArea, String operation) {
         if ((workArea instanceof Binder) && !(workArea instanceof TemplateBinder)) {
         	Binder binder = (Binder)workArea;
         	User user = RequestContextHolder.getRequestContext().getUser();
         	binder.incrLogVersion();
         	binder.setModification(new HistoryStamp(user));
-        	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-        	processor.processChangeLog(binder, operation);
+        	loadBinderProcessor(binder).processChangeLog(binder, operation);
        	}
-		
 	}
 
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception {

@@ -21,12 +21,12 @@
 <span class="ss_titlebold"><ssf:nlt tag="team.addDeleteMembers"/></span></br></br>
 
 <span class="ss_bold"><ssf:nlt tag="team.inheritTeamFromParent"/></span><br/>
-<c:if test="${ssInheritFromParent}">
+<c:if test="${ssBinder.teamMembershipInherited}">
 <input type="radio" name="inherit" value="true" checked/><span><ssf:nlt tag="yes"/></span>
 &nbsp;&nbsp;&nbsp;
 <input type="radio" name="inherit" value="false"/><span><ssf:nlt tag="no"/></span>
 </c:if>
-<c:if test="${!ssInheritFromParent}">
+<c:if test="${!ssBinder.teamMembershipInherited}">
 <input type="radio" name="inherit" value="true"/><span><ssf:nlt tag="yes"/></span>
 &nbsp;&nbsp;&nbsp;
 <input type="radio" name="inherit" value="false" checked/><span><ssf:nlt tag="no"/></span>
@@ -37,16 +37,19 @@
 <br/>
 <br/>
 
-<c:if test="${ssInheritFromParent}">
+<c:if test="${ssBinder.teamMembershipInherited}">
 <span class="ss_bold"><ssf:nlt tag="team.inheritedTeamMembers"/></span><br/>
 <ul>
 <c:forEach var="teamMember" items="${ssUsers}">
   <li>${teamMember.title} <span class="ss_smallprint">(${teamMember.name})</span></li>
 </c:forEach>
+<c:forEach var="teamMember" items="${ssGroups}">
+  <li>${teamMember.title} <span class="ss_smallprint">(${teamMember.name})</span></li>
+</c:forEach>
 </ul>
 </c:if>
 
-<c:if test="${!ssInheritFromParent}">
+<c:if test="${!ssBinder.teamMembershipInherited}">
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>

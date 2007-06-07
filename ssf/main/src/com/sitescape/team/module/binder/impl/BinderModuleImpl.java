@@ -83,7 +83,6 @@ import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.StatusTicket;
@@ -112,7 +111,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
-		operations.put("accessControl", new WorkAreaOperation[]{WorkAreaOperation.CHANGE_ACCESS_CONTROL});
 		operations.put("setTag", new WorkAreaOperation[]{WorkAreaOperation.ADD_COMMUNITY_TAGS});
 		operations.put("deleteTag", new WorkAreaOperation[]{WorkAreaOperation.ADD_COMMUNITY_TAGS});
 	}
@@ -173,7 +171,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   					if (teamIds.contains(user.getId())) return;
   					Set myIds = getProfileDao().getPrincipalIds(user);
   					if (!Collections.disjoint(myIds, teamIds)) return;
-  	 				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 			  					
+  	 				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 	
+  	 				return;
   					
   				}
   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
@@ -746,90 +745,69 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return ids;
 	}
 	
-	public void setTeamMembershipInherited(Long binderId, boolean inherit) {
-		Binder binder = loadBinder(binderId);
+	public void setTeamMembershipInherited(Long binderId, final boolean inherit) {
+		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, "setTeamMembershipInherited");
-		if (inherit) {
-			binder.setTeamMemberIds(null);			
-		} else if (binder.isTeamMembershipInherited() && !inherit) {
-			//going from was inheriting to not inheriting => copy
-			Set ids = new HashSet(binder.getTeamMemberIds());
-			binder.setTeamMemberIds(ids);
+	    Boolean index = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+	    	public Object doInTransaction(TransactionStatus status) {
+	    		Set oldMbrs = binder.getTeamMemberIds();
+	    		if (inherit) {
+	    			binder.setTeamMemberIds(null);			
+	    		} else if (binder.isTeamMembershipInherited()) {
+	    			//going from was inheriting to not inheriting => copy
+	    			Set ids = new HashSet(binder.getTeamMemberIds());
+	    			binder.setTeamMemberIds(ids);
+	    		}
+	    		//see if there is a real change
+	    		if (binder.isTeamMembershipInherited() != inherit) {
+	    			binder.setTeamMembershipInherited(inherit);
+	    			if (!(binder instanceof TemplateBinder)) {
+	    				User user = RequestContextHolder.getRequestContext().getUser();
+	    				binder.incrLogVersion();
+	    				binder.setModification(new HistoryStamp(user));
+	    				BinderProcessor processor = loadBinderProcessor(binder);
+	    				processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
+	    				//	Always reindex top binder to update the team members field
+	    				processor.indexBinder(binder, false);
+	    				//just changed from not inheritting to inherit = need to update index acls
+	    				//if changed from inherit to not, acls remains the same
+	    				if (inherit && !oldMbrs.equals(binder.getTeamMemberIds())) return Boolean.TRUE;
+	    			}
+	    		}
+	    		return Boolean.FALSE;
+	    	}});
+	    //only index if change occured
+        if (index) {
+			loadBinderProcessor(binder).indexTeamMembership(binder, true);
 		}
-    	//see if there is a real change
-    	if (binder.isTeamMembershipInherited() != inherit) {
-    		binder.setTeamMembershipInherited(inherit);
-            if (!(binder instanceof TemplateBinder)) {
-            	User user = RequestContextHolder.getRequestContext().getUser();
-            	binder.incrLogVersion();
-            	binder.setModification(new HistoryStamp(user));
-           		BinderProcessor processor = loadBinderProcessor(binder);
-           		processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
-    			//Always reindex top binder to update the team members field
-        		processor.indexBinder(binder, false);
-        		//just changed from not inheritting to inherit = need to update index acls
-        		//if changed from inherit to not, acls remains the same
-        		if (inherit) indexMembership(binder, true);
-           	}
-
-    	}
 		
 	}
-	public void setTeamMembers(Long binderId, Collection<Long> memberIds) throws AccessControlException {
-		Binder binder = loadBinder(binderId);
+	public void setTeamMembers(Long binderId, final Collection<Long> memberIds) throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, "setTeamMembers");
-		binder.setTeamMemberIds(new HashSet(memberIds));
-		binder.setTeamMembershipInherited(false);
-        if (!(binder instanceof TemplateBinder)) {
-        	User user = RequestContextHolder.getRequestContext().getUser();
-        	binder.incrLogVersion();
-        	binder.setModification(new HistoryStamp(user));
-       		BinderProcessor processor = loadBinderProcessor(binder);
-       		processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
-			//Always reindex top binder to update the team members field
-    		processor.indexBinder(binder, false);
-    		indexMembership(binder, true);
-       	}
+		if (binder.getTeamMemberIds().equals(memberIds)) return;
+		final BinderProcessor processor = loadBinderProcessor(binder);
+	    Boolean index = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+	    	public Object doInTransaction(TransactionStatus status) {
+	    		binder.setTeamMemberIds(new HashSet(memberIds));
+	    		binder.setTeamMembershipInherited(false);
+	    		if (!(binder instanceof TemplateBinder)) {
+	    			User user = RequestContextHolder.getRequestContext().getUser();
+	    			binder.incrLogVersion();
+	    			binder.setModification(new HistoryStamp(user));
+	    			processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
+	    			return Boolean.TRUE;
+	    		}
+	    		return Boolean.FALSE;
+	    	}});
+	    if (index) {
+	    	//Always reindex top binder to update the team members field
+	    	processor.indexBinder(binder, false);
+	    	//update readAcl on binders and entries
+			processor.indexTeamMembership(binder, true);
+	    }
 	}
-	private void indexMembership(Binder binder, boolean cascade) {
-		ArrayList<Query> updateQueries = new ArrayList();
-		ArrayList<String> updateIds = new ArrayList();
-		// Now, create a query which can be used by the index update method to modify all the
-		// entries, replies, attachments, and binders(workspaces) in the index with this new 
-		// Acl list.
-		List<Binder> binders = new ArrayList();
-		if (cascade) {
-			binders = getInheritingDescendentBinderIds(binder, binders);
-		} else {
-			binders.add(binder);
-		}
-		SearchUtils.buildMembershipUpdate(binders, updateQueries, updateIds);
-		if (updateQueries.size() > 0) {
-			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-			try {
-				
-				luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
-						updateIds);
-			} finally {
-				luceneSession.close();
-			}
-		}
-		
-	}
-	// a recursive routine which walks down the tree
-	// from here and builds a list of the binders
-	// who inherit teammembership from their parents.  The tree is pruned at
-	// the highest branch that does not inherit from it's parent.
-	private List getInheritingDescendentBinderIds(Binder binder, List<Binder> binders) {
-  		binders.add(binder);
-		List<Binder> childBinders = binder.getBinders();
- 		for (Binder c: childBinders) {
-			if (c.isTeamMembershipInherited()) {
-				binders = getInheritingDescendentBinderIds(c, binders);
-			}
-    	}
-    	return binders;
-	}
+
 	//return binders this user is a team_member of
 	public List<Map> getTeamMemberships(Long userId) {
 

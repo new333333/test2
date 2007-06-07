@@ -1174,7 +1174,7 @@ public static final String[] monthNamesShort = {
 		if (!adminMenuCreated) folderToolbar.deleteToolbarMenu("1_administration");
 
 		//Access control
-		if (getBinderModule().testAccess(folder, "accessControl")) {
+		if (getAdminModule().testAccess(folder, "setWorkAreaFunctionMembership")) {
 			qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();

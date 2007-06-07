@@ -469,7 +469,19 @@
 				<property name="dashboardModule"><ref local="dashboardModule"/></property>
 				<property name="fileModule"><ref local="fileModule"/></property>
 				<property name="icalModule"><ref local="icalModule"/></property>
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
+		</property>
+		<!-- setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setPostingSchedule">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedException</prop>
+			</props>
 		</property>
 	</bean>
 
@@ -532,7 +544,7 @@
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
-		<!-- modifyBinder provide transaction semantics at a finer
+		<!-- modifyBinder, setTeamMembers, setTeamMembershipInherited provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
@@ -544,7 +556,11 @@
 				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="move*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setDefinition*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setProperty*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setNotification*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setPosting*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				
 			</props>
 		</property>
 	</bean>
