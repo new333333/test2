@@ -12,16 +12,10 @@
 %>
 
 <c:if test="${!empty ss_portletInitialization}">
-<div class="ss_style">
-<br/>
-<span class="ss_italic"><ssf:nlt tag="portlet.reloadNeeded"/></span>
-<br/>
-<br/>
-<a href="${ss_portletInitializationUrl}">
-  <ssf:nlt tag="portlet.clickForReload"/>
-</a>
-<br/>
-</div>
+<script type="text/javascript">
+var url = '${ss_portletInitializationUrl}';
+if (url != '') self.location.href = url;
+</script>
 </c:if>
 <c:if test="${empty ss_portletInitialization}">
 <c:if test="${empty ssf_support_files_loaded}">

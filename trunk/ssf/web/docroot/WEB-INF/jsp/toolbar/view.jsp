@@ -11,12 +11,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${!empty ss_portletInitialization}">
-<script type="text/javascript">
-var url = '${ss_portletInitializationUrl}';
-if (url != '') self.location.href = url;
-</script>
-</c:if>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${empty ss_portletInitialization}">
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
