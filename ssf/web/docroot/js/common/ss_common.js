@@ -1851,6 +1851,8 @@ var ss_help_position_rightOffset = 20;
 var ss_help_position_leftOffset = 10;
 var ss_helpSystem = {
 
+	tocBuilt:  false,
+	
 	run : function() {
 		this.show();
 		this.showHelpSpots()
@@ -1898,7 +1900,12 @@ var ss_helpSystem = {
 	        }
 	    	dojo.html.setOpacity(welcomeDiv, 0);
 	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
+	    	dojo.event.connect(window, "onscroll", this, "moveWelcomeIntoView");
 		}
+	},
+
+	moveWelcomeIntoView : function (e) {
+		dojo.html.placeOnScreen(dojo.byId("ss_help_welcome"),0,0,[5,5],false, ['TL'], false);
 	},
 	
 	hide : function() {
@@ -1909,6 +1916,7 @@ var ss_helpSystem = {
 		if (welcomeDiv) {
 	    	welcomeDiv.style.visibility = "hidden";
 	    	welcomeDiv.style.display = "none";
+	    	dojo.event.disconnect(window, "onscroll", this, "moveWelcomeIntoView");
 		    //Call the routines that want to be called on layout changes
 		    ssf_onLayoutChange();
 		}
@@ -2111,29 +2119,13 @@ var ss_helpSystem = {
 	
 	addTOC : function(id, title, xAlignment, yAlignment) {
 		//ss_debug("addToc " + id + ", " + title)
-		var tocDiv = document.getElementById('ss_help_toc');
-		if (!tocDiv) return;
-		var uls = tocDiv.getElementsByTagName("ul");
-		var ulObj = null;
-		if (uls == null || uls.length <= 0) {
-			ulObj = document.createElement("ul");
-			tocDiv.appendChild(ulObj);
-		} else {
-			ulObj = uls.item(0);
-		}
 		// Don't add nodes with duplicate titles.
-		for (var i=0; i<ulObj.childNodes.length; i++) {
-		    if (dojo.dom.textContent(ulObj.childNodes[i]) == title) {
+		for (var i=0; i<ss_helpSystemTOC.length; i++) {
+		    if (ss_helpSystemTOC[i].title == title) {
 		    	return;
 		    }
 		}
-		var liObj = document.createElement("li");
-		var aObj = document.createElement("a");
-		aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "', '" + xAlignment + "', '" + yAlignment + "');");
-		aObj.appendChild(document.createTextNode(title));
-		liObj.appendChild(aObj);
-		ulObj.appendChild(liObj);
-		ss_helpSystemTOC[ss_helpSystemTOC.length] = id;
+		ss_helpSystemTOC[ss_helpSystemTOC.length] = {id: id, title: title, x: xAlignment, y: yAlignment};
 	},
 	
 	clearTOC : function() {
@@ -2146,6 +2138,7 @@ var ss_helpSystem = {
 		}
 		ss_helpSystemTOCindex = -1;
 		ss_helpSystemTOC = new Array();
+		this.tocBuilt = false;
 	},
 	
 	toggleTOC : function() {
@@ -2161,6 +2154,29 @@ var ss_helpSystem = {
 	showTOC : function() {
 		var tocDiv = document.getElementById('ss_help_toc');
 		if (!tocDiv) return;
+
+		if (!this.tocBuilt) {
+			var uls = tocDiv.getElementsByTagName("ul");
+			var ulObj = null;
+			if (uls == null || uls.length <= 0) {
+				ulObj = document.createElement("ul");
+				tocDiv.appendChild(ulObj);
+			} else {
+				ulObj = uls.item(0);
+			}
+		
+			for (var i=0; i<ss_helpSystemTOC.length; i++) {
+			    var t = ss_helpSystemTOC[i];
+				var liObj = document.createElement("li");
+				var aObj = document.createElement("a");
+				aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + t.id + "', '" + t.x + "', '" + t.y + "');");
+				aObj.appendChild(document.createTextNode(t.title));
+				liObj.appendChild(aObj);
+				ulObj.appendChild(liObj);
+			}
+			this.tocBuilt = true;		
+		}
+
     	tocDiv.style.visibility = "visible";
     	tocDiv.style.display = "block";
     	tocDiv.style.zIndex = parseInt(ssHelpWelcomeZ + 1);
@@ -2181,7 +2197,7 @@ var ss_helpSystem = {
 		if (ss_helpSystemTOCindex >= ss_helpSystemTOC.length) ss_helpSystemTOCindex = 0;
 		if (ss_helpSystemTOCindex < ss_helpSystemTOC.length) {
 			this.hideTOC();
-			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex], xAlignment, yAlignment);
+			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex].id, xAlignment, yAlignment);
 		}
 	},
 	
@@ -2193,7 +2209,7 @@ var ss_helpSystem = {
 		if (ss_helpSystemTOCindex >= ss_helpSystemTOC.length) ss_helpSystemTOCindex = 0;
 		if (ss_helpSystemTOCindex >= 0 && ss_helpSystemTOCindex < ss_helpSystemTOC.length) {
 			this.hideTOC();
-			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex], xAlignment, yAlignment);
+			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex].id, xAlignment, yAlignment);
 		}
 	},
 	
@@ -2203,7 +2219,7 @@ var ss_helpSystem = {
 		//ss_debug('showHelpSpotInfo id = '+id)
 		this.hideTOC();
 		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
-			if (id == ss_helpSystemTOC[i]) {
+			if (id == ss_helpSystemTOC[i].id) {
 				ss_helpSystemTOCindex = i;
 				break;
 			}
@@ -2231,6 +2247,7 @@ var ss_helpSystem = {
 		    var x = parseInt(left + 3);
 		    var y = parseInt(top + height - 8);
 			this.showHelpPanel(id, "ss_help_panel", x, y, xAlignment, yAlignment)
+			dojo.html.scrollIntoView(helpSpot);
 		}
 	},
 	
