@@ -51,5 +51,8 @@ public class Question {
 		// TODO: implement
 		return false;
 	}
-
+	public int getTotalResponses() {
+		// TODO implement
+		return 100;
+	}
 }
