@@ -9,10 +9,10 @@
     </id>
     <discriminator type="char" column="type"/>
    <component name="owner" class="com.sitescape.team.domain.AnyOwner">
-      <many-to-one name="folderEntry" index="ownerFolderEntry"/>
-      <many-to-one name="principal" index="ownerPrincipal"/>
-      <many-to-one name="binder" index="ownerBinder"/>
-      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner" >
+      <many-to-one name="folderEntry" index="ownerFolderEntry_cAtt"/>
+      <many-to-one name="principal" index="ownerPrincipal_cAtt"/>
+      <many-to-one name="binder" index="ownerBinder_cAtt"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_cAtt" >
         <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
         <meta-value class="com.sitescape.team.domain.User" value="user"/>
         <meta-value class="com.sitescape.team.domain.Group" value="group"/>
@@ -26,7 +26,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningBinderKey" length="255"/>
-      <property name="owningBinderId" index="owningBinder"/>
+      <property name="owningBinderId" index="owningBinder_cAtt"/>
     </component>
     <property name="name" length="64"/>
     <property name="stringValue" length="2000"/>
@@ -46,7 +46,7 @@
     <property name="valueType"/>
     <subclass name="com.sitescape.team.domain.CustomAttributeListElement" lazy="false" discriminator-value="L" dynamic-update="true">
       <many-to-one name="parent">
-        <column name="parent" sql-type="char(32)" index="owningAttribute"/>
+        <column name="parent" sql-type="char(32)" index="owningAttribute_cAtt"/>
       </many-to-one>
     </subclass>
   </class>

@@ -26,12 +26,12 @@ import com.sitescape.team.util.ReflectHelper;
 public class ElementBuilderUtil {
 
     public static void buildElement(Element parent, DefinableEntity entity, String dataElemName, 
-    			String fieldBuilderClassName, AllModulesInjected moduleSource) {
+    			String fieldBuilderClassName, ElementBuilder.BuilderContext context) {
         try {
             Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
             ElementBuilder fieldBuilder = (ElementBuilder) fieldBuilderClass.newInstance();
             Element element = DocumentHelper.createElement("attribute");
-            if (fieldBuilder.buildElement(element, entity, dataElemName, moduleSource))
+            if (fieldBuilder.buildElement(element, entity, dataElemName, context))
             	parent.add(element);
         } catch (ClassNotFoundException e) {
             throw new InternalException (e);

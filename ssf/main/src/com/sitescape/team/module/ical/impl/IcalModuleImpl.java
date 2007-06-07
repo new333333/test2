@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -222,6 +223,33 @@ public class IcalModuleImpl implements IcalModule {
 		}
 	}
 	
+	/**
+	 * parseEvents
+	 * 
+	 * Convenience method that returns the parsed events as a list, rather than calling a handler.
+	 *  SUMMARY and DESCRIPTION from the VEVENTS is discarded.
+	 * 
+	 * @param icalData
+	 * @param handler
+	 * @throws IOException
+	 * @throws ParserException
+	 */
+	public List<Event> parseEvents(Reader icalData)
+		throws IOException, ParserException
+	{
+		final List<Event> events = new LinkedList<Event>();
+		
+		EventHandler myHandler = new EventHandler() {
+			public void handleEvent(Event e, String description, String summary)
+			{
+				events.add(e);
+			}
+		};
+
+		parseEvents(icalData, myHandler);
+		
+		return events;
+	}
 	/**
 	 * parseToEntries
 	 * 

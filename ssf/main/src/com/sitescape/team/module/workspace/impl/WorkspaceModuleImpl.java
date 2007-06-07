@@ -252,7 +252,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	--levels;
 		TreeSet ws = new TreeSet(c);
 		List searchBinders = null;
-		if (!domTreeHelper.getPage().equals("") || top.getBinderCount() > 10) {  //what is the best number to avoid search??
+		if (levels >= 0 && (!domTreeHelper.getPage().equals("") || top.getBinderCount() > 10)) {  //what is the best number to avoid search??
 			//do search
 			BinderProcessor processor = loadProcessor(top);
 			if (domTreeHelper.getPage().equals("")) {
@@ -307,7 +307,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 						Long id = Long.valueOf(sId);
 						ws.add(getCoreDao().load(Workspace.class, id));
 					} catch (Exception ex) {continue;}					
-				}				
+				}
 			}
 	    	
 	      	for (Iterator iter=ws.iterator(); iter.hasNext();) {

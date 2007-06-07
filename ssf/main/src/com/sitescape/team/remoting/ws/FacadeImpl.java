@@ -10,23 +10,43 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
 import javax.xml.soap.SOAPException;
+
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
+import com.sitescape.team.remoting.impl.AbstractFacade.AttachmentHandler;
+import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.util.FileUtil;
 
 /**
  * This class extends protocol-neutral <code>AbstractFacade</code> class with
@@ -96,5 +116,77 @@ public class FacadeImpl extends AbstractFacade {
 		}
 		return attachments;
 	}
-	
+
+	private static class CalendarDataSource implements DataSource
+	{
+		String data = "";
+		
+		public CalendarDataSource(Calendar cal)
+		{
+			StringWriter writer = new StringWriter();
+			CalendarOutputter out = new CalendarOutputter();
+			try {
+				out.output(cal, writer);
+				data = writer.toString();
+			} catch(IOException e) {
+			} catch(ValidationException e) {
+			}
+		}
+		
+		public String getName() { return "com.sitescape.team.CalendarDataSource"; }
+		public String getContentType() { return "text/calendar"; }
+		
+		public InputStream getInputStream() throws IOException
+		{
+			return new StringBufferInputStream(data);
+		}
+		
+		public OutputStream getOutputStream() throws IOException
+		{
+			throw new IOException("Output not supported to this DataSource");
+		}
+	}
+
+	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
+		if(includeAttachments) {
+			attachmentHandler = new AttachmentHandler() {
+				public void handleAttachment(FileAttachment att, String webUrl)
+				{
+					FolderEntry entry = (FolderEntry)att.getOwner().getEntity();
+					String shortFileName = FileUtil.getShortFileName(att.getFileItem().getName());	
+					DataSource ds = RepositoryUtil.getDataSourceVersioned(att.getRepositoryName(),
+							entry.getParentFolder(), 
+							entry, att.getFileItem().getName(), att.getHighestVersion().getVersionName(),
+							FileTypeMap.getDefaultFileTypeMap());
+					DataHandler dh = new DataHandler(ds);
+					MessageContext messageContext = MessageContext.getCurrentContext();
+					Message responseMessage = messageContext.getResponseMessage();
+					AttachmentPart part = new AttachmentPart(dh);
+					part.setContentLocation(webUrl);
+					part.setMimeHeader("Content-Disposition",
+							"attachment;filename=\"" + shortFileName + "\"");
+					responseMessage.addAttachmentPart(part);
+				}
+			};
+		} else {
+			attachmentHandler = new AttachmentHandler();
+		}
+
+		String xml = super.getFolderEntryAsXML(binderId, entryId, includeAttachments);
+
+		Long bId = new Long(binderId);
+		Long eId = new Long(entryId);
+		FolderEntry entry = 
+			getFolderModule().getEntry(bId, eId);
+
+		if(!entry.getEvents().isEmpty()) {
+			Calendar eventCalendar = getIcalModule().generate(entry, entry.getEvents(), MailModule.DEFAULT_TIMEZONE);
+			DataHandler dh = new DataHandler(new CalendarDataSource(eventCalendar));
+			MessageContext messageContext = MessageContext.getCurrentContext();
+			Message responseMessage = messageContext.getResponseMessage();
+			responseMessage.addAttachmentPart(new AttachmentPart(dh));
+		}
+
+		return xml;
+	}
 }

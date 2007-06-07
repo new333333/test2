@@ -28,8 +28,8 @@
     </component>
     <subclass name="com.sitescape.team.domain.EntityDashboard" discriminator-value="E" dynamic-update="true">
      <component name="ownerIdentifier" class="com.sitescape.team.domain.EntityIdentifier">
-	    <property name="entityId" column="owner_id" index="ownerKey"/>
-   		<property name="type" column="owner_type" index="ownerKey"/>
+	    <property name="entityId" column="owner_id" index="ownerKey_Dash"/>
+   		<property name="type" column="owner_type" index="ownerKey_Dash"/>
     </component>
 	</subclass>
     <subclass name="com.sitescape.team.domain.UserDashboard" discriminator-value="U" dynamic-update="true">

@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.module.definition.ws;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -24,17 +25,21 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 /**
-* Handle graphic type fields in mail notification.  
+* Handle file field in mail notification.
 * @author Janet McCann
 */
-public class ElementBuilderGraphic extends AbstractElementBuilderFile {
-	protected boolean build(Element element, CustomAttribute attribute) {
-		DefinableEntity entry = attribute.getOwner().getEntity();
-		if (entry instanceof FolderEntry) {
-			FolderEntry fEntry = (FolderEntry)entry;
-			Set files = attribute.getValueSet();
-			generateValues(files, element, fEntry, "graphic");
+public class AbstractElementBuilderFile extends AbstractElementBuilder {
+	protected void generateValues(Collection files, Element element, FolderEntry fEntry, String elementName)
+	{
+		for (Iterator iter=files.iterator(); iter.hasNext();) {
+			Element value = element.addElement(elementName);
+			FileAttachment att = (FileAttachment)iter.next();
+			if (att != null && att.getFileItem() != null) {
+				value.setText(att.getFileItem().getName());
+				String webUrl = DefinitionUtils.getViewURL(fEntry, att); 
+				value.addAttribute("href", webUrl);
+				context.handleAttachment(att, webUrl);
+			}
 		}
-		return true;
 	}
 }
