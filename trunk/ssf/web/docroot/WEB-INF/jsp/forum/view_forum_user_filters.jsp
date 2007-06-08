@@ -27,7 +27,7 @@
 	}
 %>
 <span class="ss_toolBarItemTxt"><ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
-  helpId="tools/folder_control_and_filtering" offsetX="0" 
+  helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
   title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
 <ul>
 	<li>

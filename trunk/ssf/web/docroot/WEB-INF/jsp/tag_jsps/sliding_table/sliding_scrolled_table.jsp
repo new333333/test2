@@ -90,7 +90,7 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 <script type="text/javascript">
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
-  <ssHelpSpot helpId="tools/folder_table" offsetX="0" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/folder_table" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.folderTable"/>"></ssHelpSpot>
 <div id="<c:out value="${ss_slidingTableId}"/>" style="position:relative; 
  height:<%= slidingTableFolderHeight %>px; overflow:scroll; 
