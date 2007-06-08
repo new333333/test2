@@ -55,11 +55,11 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
      <% // BEGIN Helpspots for folder menus %>
      <c:choose>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
-         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_folder" offsetY="-16" offsetX="-5" 
+         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_folder" offsetY="-3" offsetX="-5" 
 		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
-         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-16" offsetX="-20" 
+         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-3" offsetX="-10" 
 		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
@@ -67,7 +67,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
-         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories" offsetY="-16" offsetX="-20" 
+         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories" offsetY="-4" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
