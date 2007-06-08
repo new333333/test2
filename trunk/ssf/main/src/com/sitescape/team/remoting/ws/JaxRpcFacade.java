@@ -60,6 +60,11 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
+	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
+	{
+		this.facade.uploadCalendarEntries(folderId, iCalDataAsXML);
+	}
+
 	/*
 	public void deleteFolderEntry(long binderId, long entryId) {
 		this.facade.deleteFolderEntry(binderId, entryId);
@@ -93,5 +98,12 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public String getWorkspaceTreeAsXML(long binderId, int levels) {
 		return this.facade.getWorkspaceTreeAsXML(binderId, levels);
 	}
+	
+	public String getTeamMembersAsXML(long binderId) {
+		return this.facade.getTeamMembersAsXML(binderId);
+	}
 
+	public String getTeamsAsXML() {
+		return this.facade.getTeamsAsXML();
+	}
 }
