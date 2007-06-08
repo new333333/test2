@@ -531,6 +531,10 @@ div.ss_replies div.ss_entryDescription {
   padding-left: 5px;
 }
 
+div.ss_replies .ss_editableTab {
+	background-color: ${ss_replies_background_color};
+}
+
 div.ss_workflow { 
   border: 1px #666666 solid;
   padding: 2px;
