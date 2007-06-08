@@ -22,8 +22,10 @@
 var count = 0
 function <portlet:namespace/>_getUnseenCounts() {
 	ss_setupStatusMessageDiv()
-	<c:forEach var="folder" items="${ssFolderList}">
-		document.getElementById("<portlet:namespace/>_count_<c:out value="${folder.id}"/>").style.color = "silver";
+	<c:forEach var="binder" items="${ssFolderList}">
+	  <c:if test="${binder.entityIdentifier.entityType == 'folder'}">
+		document.getElementById("<portlet:namespace/>_count_<c:out value="${binder.id}"/>").style.color = "silver";
+	  </c:if>
 	</c:forEach>
 	var url = "<ssf:url 
     	adapter="true" 
@@ -61,10 +63,10 @@ function <portlet:namespace/>_getUnseenCounts() {
     href="<portlet:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
-    ><ssf:nlt tag="portlet.configure"/></a>
+    ><ssf:nlt tag="portlet.forum.configure"/></a>
 </div>
 <div>
-  <ssf:nlt tag="portlet.notConfigured"/>
+  <ssf:nlt tag="portlet.bookmarksNotConfigured"/>
 </div>
 </c:if>
 
@@ -78,33 +80,51 @@ function <portlet:namespace/>_getUnseenCounts() {
 
 <c:if test="${!empty ssFolderList}">
 <table cellspacing="0" cellpadding="0">
-<c:forEach var="folder" items="${ssFolderList}">
-<jsp:useBean id="folder" type="com.sitescape.team.domain.Folder" />
+<c:forEach var="binder" items="${ssFolderList}">
+<jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
   <tr>
-  <td><span id="<portlet:namespace/>_count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
+  <td>
+	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
+      <span id="<portlet:namespace/>_count_<c:out value="${binder.id}"/>"><font color="silver">-</font></span>
+    </c:if>
+  </td>
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td>
-	<a href="<portlet:renderURL windowState="maximized">
+	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
+	  <a href="<portlet:renderURL windowState="maximized">
 			<portlet:param name="action" value="view_folder_listing"/>
-			<portlet:param name="binderId" value="${folder.id}"/>
-		</portlet:renderURL>"><span>${folder.title}</span></a>
-	<c:if test="${folder.parentBinder.entityIdentifier.entityType == 'folder'}">
-	  <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized"><portlet:param 
+			<portlet:param name="binderId" value="${binder.id}"/>
+		    </portlet:renderURL>"><span>${binder.title}</span></a>
+	  <c:if test="${binder.parentBinder.entityIdentifier.entityType == 'folder'}">
+	    <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized"><portlet:param 
 			name="action" value="view_folder_listing"/><portlet:param 
-			name="binderId" value="${folder.parentBinder.id}"/></portlet:renderURL>">
-			<span class="ss_smallprint ss_light">(${folder.parentBinder.title})</span></a>
-	</c:if>
-	<c:if test="${folder.parentBinder.entityIdentifier.entityType != 'folder'}">
-	  <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized">
+			name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>">
+			<span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
+	  </c:if>
+	  <c:if test="${binder.parentBinder.entityIdentifier.entityType != 'folder'}">
+	    <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized">
 			<portlet:param name="action" value="view_ws_listing"/>
-			<portlet:param name="binderId" value="${folder.parentBinder.id}"/></portlet:renderURL>">
-			<span  class="ss_smallprint ss_light">(${folder.parentBinder.title})</span></a>
+			<portlet:param name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>">
+			<span  class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
+	  </c:if>
+	</c:if>
+	<c:if test="${binder.entityIdentifier.entityType == 'workspace'}">
+	  <a href="<portlet:renderURL windowState="maximized">
+			<portlet:param name="action" value="view_ws_listing"/>
+			<portlet:param name="binderId" value="${binder.id}"/>
+		    </portlet:renderURL>"><span>${binder.title}</span></a>
+	</c:if>
+	<c:if test="${binder.entityIdentifier.entityType == 'profiles'}">
+	  <a href="<portlet:renderURL windowState="maximized">
+			<portlet:param name="action" value="view_profile_listing"/>
+			<portlet:param name="binderId" value="${binder.id}"/>
+		    </portlet:renderURL>"><span>${binder.title}</span></a>
 	</c:if>
   </td>
   </tr>
   <%
   	if (!folderIdList.equals("")) folderIdList += " ";
-  	folderIdList += folder.getId().toString();
+  	folderIdList += binder.getId().toString();
   %>
 </c:forEach>
 </table>
@@ -113,7 +133,7 @@ function <portlet:namespace/>_getUnseenCounts() {
     href="<portlet:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
-    ><ssf:nlt tag="portlet.configure"/></a>
+    ><ssf:nlt tag="portlet.forum.configure"/></a>
 </div>
 </c:if>
 

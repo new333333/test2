@@ -120,7 +120,7 @@ public class ViewController  extends SAbstractController {
 			for (int i = 0; i < preferredBinderIds.length; i++) {
 				binderIds.add(new Long(preferredBinderIds[i]));
 			}
-			model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
+			model.put(WebKeys.FOLDER_LIST, getBinderModule().getBinders(binderIds));
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
@@ -147,6 +147,10 @@ public class ViewController  extends SAbstractController {
  			Set ids = new HashSet();		
  			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
  			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			if (ids.isEmpty()) {
+ 				//Initialize an empty presence list to have the current user as a buddy so there is always something to show
+ 				ids.add(user.getId());
+ 			}
  			//This is the portlet view; get the configured list of principals to show
  			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  			//if we list groups, then we have issues when a user appears in multiple groups??

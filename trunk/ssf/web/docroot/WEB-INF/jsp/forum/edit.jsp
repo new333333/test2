@@ -21,8 +21,7 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
 <table class="ss_style" cellspacing="0" cellpadding="0">
-<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.forums"/></th></tr>
-<tr><td>&nbsp;</td></tr>
+<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.bookmarks"/></th></tr>
 <c:forEach var="folder" items="${ssFolderList}">
 <tr>
   <td>
