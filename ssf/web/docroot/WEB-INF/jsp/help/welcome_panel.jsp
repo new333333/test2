@@ -33,7 +33,7 @@
    <div class="ss_popup_close" onClick="ss_helpSystem.hide();return false;"><img border="0" src="<html:imagesPath/>pics/1pix.gif"/></div>
  </td>
 </tr>
-<tr><td colspan="3"><div id="ss_help_welcome_panel_body" class="ss_popup_body" style="padding-top: 2px; padding-left: 10px; padding-right: 10px; padding-bottom: 1px;<c:if test="${!help_cpanel_show}"> display: none;</c:if>">
+<tr id="ss_help_welcome_panel_body" style="<c:if test="${!help_cpanel_show}"> display: none;</c:if>"><td colspan="3"><div class="ss_popup_body" style="padding-top: 2px; padding-left: 10px; padding-right: 10px; padding-bottom: 1px;">
 
 <table align="center">
 <tr>
@@ -63,8 +63,8 @@
 
 </div></td></tr>
 <tr>
- <td width="40"><div class="ss_popup_bottomleft" style="height: 5px;"></div></td>
- <td width="100%"><div class="ss_popup_bottomcenter" style="height: 5px;"></div></td>
- <td width="40"><div class="ss_popup_bottomright" style="height: 5px;"></div></td>
+ <td width="40"><div class="ss_popup_bottomleft" style="height: 8px;"></div></td>
+ <td width="100%"><div class="ss_popup_bottomcenter" style="height: 8px;"></div></td>
+ <td width="40"><div class="ss_popup_bottomright" style="height: 8px;"></div></td>
 </tr>
 </tbody></table>
