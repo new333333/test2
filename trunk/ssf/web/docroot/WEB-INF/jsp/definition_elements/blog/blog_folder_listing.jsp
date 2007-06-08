@@ -58,7 +58,11 @@
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  <tr>
 		  <td><a href="${ssBlogMonthUrls[monthYear.key]}" 
-		  class="<c:if test="${!empty selectedYearMonth && selectedYearMonth == ssBlogMonthTitles[monthYear.key]}">ss_bold</c:if>">
+		  class="<c:if test="${!empty selectedYearMonth && selectedYearMonth == ssBlogMonthTitles[monthYear.key]}">ss_bold</c:if>"
+		  <ssf:title tag="title.entries.archived.on">
+		  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
+		  	<ssf:param name="value" value="${ssBinder.title}" />
+		  </ssf:title> >
 		  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
 		  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
 		  </tr>
@@ -71,7 +75,11 @@
 					name="action" value="view_folder_listing"/><portlet:param 
 					name="binderId" value="${ssBinder.id}"/><portlet:param 
 					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>"
+					  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
+					  	<ssf:param name="value" value="${tag.ssTag}" />
+					  </ssf:title>
+					>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
@@ -82,8 +90,11 @@
 				name="action" value="view_folder_listing"/><portlet:param 
 				name="binderId" value="${ssBinder.id}"/><portlet:param 
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
-						
+				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>"
+				  <ssf:title tag="title.search.entries.in.folder.for.personal.tag">
+				  	<ssf:param name="value" value="${tag.ssTag}" />
+				  </ssf:title>
+				>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 	  </div>
      </div>

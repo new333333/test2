@@ -140,23 +140,28 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							</ssf:ifnotaccessible>
 							
 							<ssf:ifaccessible>
-								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;">
+								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;"
+								title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
 								</a><br/>
 
-								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '10');return false;">
+								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '10');return false;"
+								title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
 								</a><br/>
 
-								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '25');return false;">
+								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '25');return false;"
+								title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
 								</a><br/>
 
-								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '50');return false;">
+								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '50');return false;"
+								title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
 								</a><br/>
 
-								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '100');return false;">
+								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '100');return false;"
+								title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 								</a><br/>
 							</ssf:ifaccessible>
@@ -178,7 +183,9 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 					&nbsp;&nbsp;
 				    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
 				    <input name="ssGoToPage" size="1" type="text" class="form-text" />
-					<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
+					<a class="ss_linkButton ss_smallprint" href="javascript: ;" 
+					<ssf:title tag="title.goto.page" />
+					onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
 				</td>
 			</form>				
 			

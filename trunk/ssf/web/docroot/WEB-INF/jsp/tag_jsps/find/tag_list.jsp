@@ -171,7 +171,14 @@ function ss_userListInterceptCR(e) {
 </td>
 <td valign="top">
   <div>
-    <b><ssf:nlt tag="userlist.findName" text="Find name"/>:</b>
+	<ssf:ifaccessible>
+ 		<label for="ss_userList_searchText"><b><ssf:nlt tag="userlist.findName" />:</b></label>
+ 	</ssf:ifaccessible>
+
+	<ssf:ifnotaccessible>
+ 		<b><ssf:nlt tag="userlist.findName"/>:</b>
+ 	</ssf:ifnotaccessible>
+    
     <input type="text" class="ss_text" size="15" name="ss_userList_searchText" 
       onKeyUp="ss_userListSearch(this.value, '<%= userListElementName %>', '<%= userGroupType %>');">
     <div style="border:solid black 1px;">
