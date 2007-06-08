@@ -35,6 +35,7 @@ public interface ReportModule {
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
 	
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
+	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);

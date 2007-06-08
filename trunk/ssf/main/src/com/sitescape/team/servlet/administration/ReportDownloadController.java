@@ -170,6 +170,13 @@ public class ReportDownloadController extends  SAbstractController {
 					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
 							ReportModule.STATE, ReportModule.COUNT };
 				}
+			} else if ("entry".equals(reportType)) {
+				hasUsers = true;
+				Long binderId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+				Long entryId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+				report = getReportModule().generateActivityReport(binderId, entryId);
+				columns = new String[] {ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
+						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			}
 			printReport(response.getWriter(), report, columns, hasUsers);
 			response.getWriter().flush();

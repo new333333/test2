@@ -470,6 +470,24 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 		
+		if (getFolderModule().testAccess(entry, "report")) {
+			accessControlEntryMap.put("report", new Boolean(true));
+			Map qualifiers = new HashMap();
+			toolbar.addToolbarMenu("8_reports", NLT.get("toolbar.reports"), "", qualifiers);
+
+			String servletUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
+			WebKeys.URL_BINDER_ID + "=" + folderId + "&" + WebKeys.URL_ENTRY_ID + "=" + entryId + "&" +
+			WebKeys.URL_REPORT_TYPE + "=entry&forumOkBtn=OK"; 
+			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.activity"), servletUrl, qualifiers);
+
+			qualifiers.put("popup", Boolean.TRUE);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_EDITABLE_HISTORY);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_ENTRY);
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
+			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
+		}
+
 		Iterator itWorkflows = binder.getWorkflowDefinitions().iterator();
 		if (itWorkflows.hasNext() && getFolderModule().testAccess(entry, "modifyEntry")) {
 			//The "Workflow" menu

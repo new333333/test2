@@ -199,6 +199,7 @@ public class WebKeys {
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_ADD_MEETING="add_meeting";
+	public static final String ACTION_VIEW_EDITABLE_HISTORY="view_editable_history";
 	
 	
 	//operations
@@ -334,6 +335,8 @@ public class WebKeys {
 	
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	
+	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
+
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";

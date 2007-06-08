@@ -30,18 +30,6 @@
   ><span class="ss_fineprint"><ssHelpSpot 
     helpId="tools/more_entry_tools" offsetX="0" 
 	title="<ssf:nlt tag="helpSpot.moreEntryTools"/>"></ssHelpSpot>[<ssf:nlt tag="Edit"/>]</span></a>
-  <a style="padding-left:6px;" href="<ssf:url     
-		adapter="true" 
-		portletName="ss_forum" 
-		action="view_editable_history" 
-		actionUrl="false">
-		<ssf:param name="entityId" value="${ssDefinitionEntry.id}" />
-		<ssf:param name="operation" value="modifyEntry" />
-		</ssf:url>"
-     onClick="ss_openUrlInWindow(this, '_blank');return false;"
-     <ssf:title tag="title.view.version.history" />
-     >
-  <span class="ss_fineprint">[<ssf:nlt tag="entry.versionHistory"/>]</span></a>
 </div>
 <c:set var="ss_editableDivIdNumber" value="${ss_editableDivIdNumber + 1}" scope="request"/>
 </c:if>
