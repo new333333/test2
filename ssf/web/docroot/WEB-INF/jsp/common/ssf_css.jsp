@@ -2196,6 +2196,18 @@ a:hover img.ss_tabs_close {
 	background-position: left -9px;
 }
 
+
+img.ss_generic_close {
+    background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat left 0px;
+    width:9px;
+    height: 9px;
+}
+
+a:hover img.ss_generic_close {
+	background-position: left -9px;
+}
+
+
 img.ss_accessory_modify {
 	position:relative;
     background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left -18px;

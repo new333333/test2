@@ -18,12 +18,12 @@
 <c:forEach var="ptag" items="${ssTags}">
 <tr>
   <td style="padding-left:10px;">
-    <span class="ss_tags" style="padding-right:10px;"><c:out value="${ptag.name}"/></span>
+    <a href="javascript:;"
+      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntryId}');return false;"
+    ><img border="0" src="<html:imagesPath/>pics/1pix.gif" class="ss_generic_close"/></a>
   </td>
   <td>
-    <a class="ss_fineprint ss_linkButton" href="#"
-      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntryId}');return false;"
-    ><ssf:nlt tag="button.delete"/></a>
+    <span class="ss_tags" style="padding-right:10px;"><c:out value="${ptag.name}"/></span>
   </td>
 </tr>
 </c:forEach>
