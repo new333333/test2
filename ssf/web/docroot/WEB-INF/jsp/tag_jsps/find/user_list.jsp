@@ -46,7 +46,14 @@
     clickRoutine="ss_userListSelectItem"
     clickRoutineArgs="${prefix}"
     leaveResultsVisible="${leaveResultsVisible}"
-    singleItem="true"/> 
+    singleItem="true"
+    <c:if test="${list_type == 'user'}">
+    	accessibilityText="navigation.findUser"
+    </c:if>
+    <c:if test="${list_type == 'group'}">
+    	accessibilityText="navigation.findGroup"
+    </c:if>
+    /> 
     <c:if test="${list_type == 'user'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
     </c:if>

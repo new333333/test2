@@ -88,6 +88,10 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 	ss_showTags<portlet:namespace/>(obj.getData("divNumber"), obj.getData("entryId"));
 }
 </script>
+
+<c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
+<c:set var="ssEntryId" value="${ssDefinitionEntry.id}" scope="request"/>
+
 <table cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
@@ -108,9 +112,6 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 </td></tr>
 </tbody>
 </table>
-
-<c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
-<c:set var="ssEntryId" value="${ssDefinitionEntry.id}" scope="request"/>
 
 <ssf:ifaccessible>
 	<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>

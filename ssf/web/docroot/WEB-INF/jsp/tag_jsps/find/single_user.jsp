@@ -33,15 +33,20 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
 
 <div class="ss_style_trans">
-<div style="margin:0px; padding:0px;"><textarea 
-    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
-    name="<%= findUserElementName %>" 
-    id="ss_findUser_searchText_${prefix}"
-    onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"
-    onBlur="ss_findUserBlurTextArea('${prefix}');"
-    <c:if test="${!empty label}">
-    	title="${label}"
-    </c:if>
+<div style="margin:0px; padding:0px;">
+	<ssf:ifaccessible>
+ 		<label for="ss_findUser_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+ 	</ssf:ifaccessible>
+
+	<textarea 
+	    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
+	    name="<%= findUserElementName %>" 
+	    id="ss_findUser_searchText_${prefix}"
+	    onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"
+	    onBlur="ss_findUserBlurTextArea('${prefix}');"
+	    <c:if test="${!empty label}">
+	    	title="${label}"
+	    </c:if>
     ></textarea>
     <img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
       onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 

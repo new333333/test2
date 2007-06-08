@@ -141,12 +141,20 @@ function ss_findUserNextPage() {
 <c:set var="ss_find_user_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
 
-<div style="margin:0px; padding:0px;"><textarea 
-    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
-    name="ss_findUser_searchText_<portlet:namespace/>" 
-    id="ss_findUser_searchText_<portlet:namespace/>"
-    onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findPlacesType %>');"
-    onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
+<div style="margin:0px; padding:0px;">
+	<ssf:ifaccessible>
+ 		<label for="ss_findUser_searchText_<portlet:namespace/>"><ssf:nlt tag="${accessibilityText}" /></label>
+ 	</ssf:ifaccessible>
+
+	<textarea 
+	    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
+	    name="ss_findUser_searchText_<portlet:namespace/>" 
+	    id="ss_findUser_searchText_<portlet:namespace/>"
+	    onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findPlacesType %>');"
+	    onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);">
+	</textarea>
+</div>
+
 <div id="ss_findUserNavBarDiv_<portlet:namespace/>"
     class="ss_findUserList" style="visibility:hidden;">
     <ul id="available_<%= findUserElementName %>_${prefix}">

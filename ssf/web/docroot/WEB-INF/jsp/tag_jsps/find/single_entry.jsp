@@ -325,15 +325,21 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
 <c:set var="ss_find_entries_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
 
-<div style="margin:0px; padding:0px;"><textarea 
-    class="ss_text" style="height:17px; width:<%= findEntriesElementWidth %>; overflow:hidden;" 
-    name="ss_findEntries_searchText_<portlet:namespace/>" 
-    id="ss_findEntries_searchText_<portlet:namespace/>"
-    onKeyUp="ss_findEntriesSearch_${prefix}(this.id, '<%= findEntriesElementName %>', '<%= findEntriesType %>');"
-    onBlur="ss_findEntriesBlurTextArea<portlet:namespace/>();"
-    <c:if test="${!empty label}">
-    	title="${label}"
-    </c:if>
+<div style="margin:0px; padding:0px;">
+	<ssf:ifaccessible>
+ 		<label for="ss_findEntries_searchText_<portlet:namespace/>"><ssf:nlt tag="${accessibilityText}" /></label>
+ 	</ssf:ifaccessible>
+
+	<textarea 
+	    class="ss_text" style="height:17px; width:<%= findEntriesElementWidth %>; overflow:hidden;" 
+	    name="ss_findEntries_searchText_<portlet:namespace/>" 
+	    id="ss_findEntries_searchText_<portlet:namespace/>"
+	    onKeyUp="ss_findEntriesSearch_${prefix}(this.id, '<%= findEntriesElementName %>', '<%= findEntriesType %>');"
+	    onBlur="ss_findEntriesBlurTextArea<portlet:namespace/>();"
+	    <ssf:title tag="wiki.findPage" />
+	    <c:if test="${!empty label}">
+	    	title="${label}"
+	    </c:if>
     ></textarea></div>
 <div id="ss_findEntries_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findEntriesNavBarDiv_<portlet:namespace/>"

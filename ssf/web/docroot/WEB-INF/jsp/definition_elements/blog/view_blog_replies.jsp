@@ -50,7 +50,7 @@
   style="display:none; visibility:hidden;"></div>
 <div id="<portlet:namespace/>ss_blog_add_reply_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;">
-<iframe 
+<iframe <ssf:title tag="title.add.reply" />
   id="<portlet:namespace/>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
   name="<portlet:namespace/>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
   onLoad="if (parent.ss_showBlogReplyIframe<portlet:namespace/>) parent.ss_showBlogReplyIframe<portlet:namespace/>(this, '${ssDefinitionEntry.id}');" 

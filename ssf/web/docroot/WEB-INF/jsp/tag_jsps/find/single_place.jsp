@@ -308,15 +308,20 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
 <c:set var="ss_find_places_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
 
-<div style="margin:0px; padding:0px;"><textarea 
-    class="ss_text" style="height:17px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
-    name="ss_findPlaces_searchText_${prefix}" 
-    id="ss_findPlaces_searchText_${prefix}"
-    onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
-    onBlur="ss_findPlacesBlurTextArea${prefix}();"
-    <c:if test="${!empty label}">
-    	title="${label}"
-    </c:if>
+<div style="margin:0px; padding:0px;">
+	<ssf:ifaccessible>
+ 		<label for="ss_findPlaces_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+ 	</ssf:ifaccessible>
+
+	<textarea 
+	    class="ss_text" style="height:17px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
+	    name="ss_findPlaces_searchText_${prefix}" 
+	    id="ss_findPlaces_searchText_${prefix}"
+	    onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
+	    onBlur="ss_findPlacesBlurTextArea${prefix}();"
+	    <c:if test="${!empty label}">
+	    	title="${label}"
+	    </c:if>
     ></textarea></div>
 <div id="ss_findPlaces_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findPlacesNavBarDiv_${prefix}"

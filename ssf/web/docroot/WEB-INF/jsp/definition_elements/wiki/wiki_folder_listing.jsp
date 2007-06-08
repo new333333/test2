@@ -66,6 +66,8 @@
 		    action="view_folder_entry" 
 		    entryId="${ss_wikiHomepageEntryId}" 
 		    actionUrl="true"><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+
+		    <ssf:title tag="title.open.folderEntrySimple" />
 		    
 		    <ssf:ifnotaccessible>
 		    	onClick="ss_loadWikiEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
@@ -96,7 +98,9 @@
 		    binderId="${ssBinder.id}"
 		    searchSubFolders="false"
 		    singleItem="true"
-		    clickRoutine="ss_loadWikiEntryId${renderResponse.namespace}"/> 
+		    clickRoutine="ss_loadWikiEntryId${renderResponse.namespace}"
+		    accessibilityText="wiki.findPage"
+		    /> 
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
 		</c:if>
@@ -158,6 +162,10 @@
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
 		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+
+		    <ssf:title tag="title.open.folderEntry">
+			    <ssf:param name="value" value="${entry1.title}" />
+		    </ssf:title>
 
 		    <ssf:ifnotaccessible>
 		    	onClick="ss_loadWikiEntry(this, '${entry1._docId}');return false;" 		    	
