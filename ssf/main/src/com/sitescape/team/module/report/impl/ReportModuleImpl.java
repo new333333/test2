@@ -218,6 +218,49 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 	
+	public List<Map<String,Object>> generateActivityReport(final Long binderId, final Long entryId) {
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+				List auditTrail = null;
+				try {
+					ProjectionList proj = Projections.projectionList()
+									.add(Projections.groupProperty("transactionType"))
+									.add(Projections.rowCount())
+									.add(Projections.groupProperty("startBy"));
+					Criteria crit = session.createCriteria(AuditTrail.class)
+						.setProjection(proj)
+						.add(Restrictions.eq("owningBinderId", binderId))
+						.add(Restrictions.eq("entityId", entryId))
+						.add(Restrictions.in("transactionType", activityTypes))
+						.addOrder(Order.asc("startBy"));
+					auditTrail = crit.list();
+				} catch(Exception e) {
+				}
+				return auditTrail;
+			}});
+		Long lastUserId = new Long(-1);
+		Long userId = null;
+		HashMap<String,Object> row = null;
+		for(Object o : result) {
+			Object[] col = (Object []) o;
+			userId = (Long) col[2];
+			if(row == null || !lastUserId.equals(userId)) {
+				row = new HashMap<String,Object>();
+				report.add(row);
+				row.put(ReportModule.USER_ID, userId);
+				for(String t : activityTypes) {
+					row.put(t, new Integer(0));
+				}
+				lastUserId = userId;
+			}
+			row.put((String) col[0], col[1]);
+		}
+    	return report;
+	}
+
 	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate) {
 		checkAccess("generateLoginReport");
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();

@@ -282,6 +282,7 @@ function dodiff()
   <ssf:param name="value" value="yxzzx"/>
   </ssf:nlt>
 </h3>
+<h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
 <div id="diff-title" class="ss_largeprint"></div>
 <div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
 </div>
