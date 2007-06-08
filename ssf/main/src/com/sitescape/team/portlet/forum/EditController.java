@@ -38,6 +38,7 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.FolderConfigHelper;
+import com.sitescape.team.web.tree.SearchTreeHelper;
 import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DashboardHelper;
@@ -71,6 +72,7 @@ public class EditController extends SAbstractController {
 			}
 			if (ViewController.FORUM_PORTLET.equals(displayType)) {
 				List forumPrefIdList = new ArrayList();
+				List forumDelIdList = new ArrayList();
 				String[] currentForumPrefIdList = PortletPreferencesUtil.getValues(prefs, 
 						WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 				
@@ -85,6 +87,7 @@ public class EditController extends SAbstractController {
 					if (((String)me.getKey()).startsWith("del_")) {
 						String forumId = ((String)me.getKey()).substring(4);
 						if (forumPrefIdList.contains(forumId)) forumPrefIdList.remove(forumId);
+						forumDelIdList.add(forumId);
 					}
 				}
 				//	Get the forums to be displayed
@@ -93,7 +96,7 @@ public class EditController extends SAbstractController {
 					Map.Entry me = (Map.Entry) itFormData.next();
 					if (((String)me.getKey()).startsWith("id_")) {
 						String forumId = ((String)me.getKey()).substring(3);
-						if (!forumPrefIdList.contains(forumId)) forumPrefIdList.add(forumId);
+						if (!forumPrefIdList.contains(forumId) && !forumDelIdList.contains(forumId)) forumPrefIdList.add(forumId);
 					}
 				}
 				prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, 
@@ -144,8 +147,8 @@ public class EditController extends SAbstractController {
 			displayType = ViewController.getDisplayType(request);
 		}
 		if (ViewController.FORUM_PORTLET.equals(displayType)) {	
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new WsDomTreeBuilder(null, true, this, new FolderConfigHelper()),1);
+	    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+					new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
 		
@@ -156,7 +159,7 @@ public class EditController extends SAbstractController {
 			for (int i = 0; i < forumPrefIdList.length; i++) {
 				folderIds.add(Long.valueOf(forumPrefIdList[i]));
 			}
-			Collection folders = getFolderModule().getFolders(folderIds);
+			Collection folders = getBinderModule().getBinders(folderIds);
 		
 			model.put(WebKeys.FOLDER_LIST, folders);
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
