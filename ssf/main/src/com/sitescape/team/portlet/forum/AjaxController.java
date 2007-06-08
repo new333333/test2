@@ -103,6 +103,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class AjaxController  extends SAbstractControllerRetry {
+	
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -129,8 +130,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				ajaxChangeDashboardComponent(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
+					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) {
+				ajaxShowHideHelpControlPanel(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
-				ajaxUploadImageFile(request, response);
+				ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				ajaxUploadICalendarFile(request, response);
 			} else if (op.equals(WebKeys.OPERATION_ADD_TO_CLIPBOARD)) {
@@ -154,7 +158,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 		}
 	}
-
+	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -700,6 +704,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return adapterUrl.toString();
 	}
 	
+	private void ajaxShowHideHelpControlPanel(ActionRequest request,
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		Boolean showHelpCPanel = Boolean.TRUE;
+		if (op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) showHelpCPanel = Boolean.FALSE;
+		getProfileModule().setUserProperty(user.getId(), 
+					ObjectKeys.USER_PROPERTY_HELP_CPANEL_SHOW, showHelpCPanel);
+	}
+
 	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -1705,6 +1719,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String helpPanelId = PortletRequestUtils.getStringParameter(request, 
 				WebKeys.HELP_PANEL_ID, "ss_help_panel_id");
 		model.put(WebKeys.HELP_PANEL_ID, helpPanelId);
+		UserProperties folderProps = getProfileModule().getUserProperties(null);
+		Boolean showHelpCPanel = (Boolean) folderProps.getProperty(ObjectKeys.USER_PROPERTY_HELP_CPANEL_SHOW);
+		if (showHelpCPanel == null) showHelpCPanel = Boolean.TRUE;
+		model.put(WebKeys.HELP_CPANEL_SHOW, showHelpCPanel);
+		
+		
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String tagId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_ID, "");
 		String jsp = "";

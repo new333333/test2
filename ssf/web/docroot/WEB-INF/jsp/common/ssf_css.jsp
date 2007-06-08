@@ -912,6 +912,26 @@ div.ss_help_popup_body_frame {
   padding: 10px;
 }
 
+
+img.ss_help_cpanel_show {
+	background-image: url(<html:imagesPath/>icons/accessory_hide.gif);
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	position: relative;
+	top: 3px;
+}
+
+img.ss_help_cpanel_hide {
+	background-image: url(<html:imagesPath/>icons/accessory_show.gif);
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	position: relative;
+	top: 3px;
+}
+	
+
 .ss_inlineHelp {
   visibility:hidden; 
   display:none; 
@@ -2166,12 +2186,47 @@ img.ss_tabs_close2 {
 img.ss_tabs_close {
 	position:relative;
 	vertical-align: middle;
-    background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat right;
-    width:11px;
-    min-width:11px;	
+    background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat left 0px;
+    width:9px;
+    height: 9px;
+
 }
-img.ss_tabs_close:hover, a:hover img.ss_tabs_close {
-    background:url(<html:imagesPath/>pics/sym_s_delete.gif) no-repeat right;
+
+a:hover img.ss_tabs_close {
+	background-position: left -9px;
+}
+
+img.ss_accessory_modify {
+	position:relative;
+    background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left -18px;
+    width:18px;
+    height: 18px;
+}
+
+a:hover img.ss_accessory_modify {
+	background-position: left 0px;
+}
+
+img.ss_accessory_delete {
+	position:relative;
+    background:url(<html:imagesPath/>icons/accessory_delete.gif) no-repeat left 0px;
+    width:9px;
+    height: 9px;
+}
+
+a:hover img.ss_accessory_delete {
+	background-position: left -9px;
+}
+
+img.ss_dashboard_config_control {
+	position:relative;
+    background:url(<html:imagesPath/>icons/dashboardconfig.gif) no-repeat left 0px;
+    width: 23px;
+    height: 18px;
+}
+
+a:hover img.ss_dashboard_config_control {
+	background-position: left -18px;
 }
 
 

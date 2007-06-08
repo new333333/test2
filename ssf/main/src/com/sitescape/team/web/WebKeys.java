@@ -312,6 +312,8 @@ public class WebKeys {
 	public static final String OPERATION_UPDATE_TASK = "update_task";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";
 	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
+	public static final String OPERATION_SHOW_HELP_CPANEL = "show_help_cpanel";
+	public static final String OPERATION_HIDE_HELP_CPANEL = "hide_help_cpanel";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -526,6 +528,7 @@ public class WebKeys {
     public static final String HELP_PANEL_JSP="ss_help_panel_jsp";
     public static final String HELP_PANEL_TAG="ss_help_panel_tag";
     public static final String HELP_SPOT="helpSpot";
+    public static final String HELP_CPANEL_SHOW="help_cpanel_show";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String INHERIT_FROM_PARENT="ssInheritFromParent";
     public static final String IS_ACCESSIBLE="ss_isAccessible";

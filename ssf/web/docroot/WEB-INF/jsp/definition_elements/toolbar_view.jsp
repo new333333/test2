@@ -84,9 +84,13 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 	      onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
 	      	<img border="0" 
-	      	src="<html:imagesPath/>/icons/${toolbarMenu.value.qualifiers.icon}" 
+	      	src="<html:imagesPath/>icons/${toolbarMenu.value.qualifiers.icon}" 
 	      	alt="${toolbarMenu.value.title}" >
-	      </c:if><c:if test="${empty toolbarMenu.value.qualifiers.icon}"
+	      </c:if><c:if test="${!empty toolbarMenu.value.qualifiers.iconclass}">
+	      	<img border="0" 
+	      	src="<html:imagesPath/>pics/1pix.gif" class="${toolbarMenu.value.qualifiers.iconclass}" 
+	      	alt="${toolbarMenu.value.title}" >
+	      </c:if><c:if test="${empty toolbarMenu.value.qualifiers.icon && empty toolbarMenu.value.qualifiers.iconclass}"
 	      ><span>${toolbarMenu.value.title}</c:if
 	      ><c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"
 	      > <img border="0" <ssf:alt tag="alt.showMenu"/>

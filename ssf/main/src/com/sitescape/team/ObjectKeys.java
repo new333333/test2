@@ -159,6 +159,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_DEBUG = "debugMode";
     public static final String USER_PROPERTY_DISPLAY_STYLE = "displayStyle";
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
+    public static final String USER_PROPERTY_HELP_CPANEL_SHOW = "help_cpanel_show";
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";

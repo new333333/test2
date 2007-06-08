@@ -11,22 +11,29 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 275px;"><tbody>
+<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 300px;"><tbody>
 <tr>
  <td width="40"><div class="ss_popup_topleft"></div></td>
  <td width="100%"><div class="ss_popup_topcenter"><span class="ss_bold"><ssf:nlt tag="help.welcome"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
   <a href="javascript:;" onClick="ss_helpSystem.showPreviousHelpSpot();return false;"
   ><img border="0" style="margin-left: 20px;" src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a>
    <a href="javascript:;" onClick="ss_helpSystem.showNextHelpSpot();return false;"
-  ><img border="0" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>   
- 
+  ><img border="0" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+	<img id="ss_help_cpanel_show_control" border="0" src="<html:imagesPath/>pics/1pix.gif"
+   <c:if test="${help_cpanel_show}">
+   class="ss_help_cpanel_show"
+   </c:if>
+   <c:if test="${!help_cpanel_show}">
+   class="ss_help_cpanel_hide"
+   </c:if>
+   onClick="javascript: ss_helpSystem.toggleShowHelpCPanel(); return false;"/>
  </div></td>
  <td width="40">
    <div class="ss_popup_topright">
    <div class="ss_popup_close" onClick="ss_helpSystem.hide();return false;"><img border="0" src="<html:imagesPath/>pics/1pix.gif"/></div>
  </td>
 </tr>
-<tr><td colspan="3"><div id="ss_help_welcome_panel_body" class="ss_popup_body" style="padding-top: 2px; padding-left: 10px; padding-right: 10px; padding-bottom: 1px;">
+<tr><td colspan="3"><div id="ss_help_welcome_panel_body" class="ss_popup_body" style="padding-top: 2px; padding-left: 10px; padding-right: 10px; padding-bottom: 1px;<c:if test="${!help_cpanel_show}"> display: none;</c:if>">
 
 <table align="center">
 <tr>

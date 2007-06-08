@@ -1114,7 +1114,7 @@ public class BinderHelper {
 			//This folder is showing the dashboard
 			Map qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageDashboard");
-			qualifiers.put("icon", "dashboardconfig.gif");
+			qualifiers.put("iconclass", "ss_dashboard_config_control");
 			dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"), "", qualifiers);
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");

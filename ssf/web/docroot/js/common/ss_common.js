@@ -2271,6 +2271,39 @@ var ss_helpSystem = {
 			this.showHelpPanel(jspId, "ss_help_panel", x, y, xAlignment, yAlignment, tagId)
 		}
 	},
+
+	toggleShowHelpCPanel: function () {
+		if (dojo.html.isDisplayed("ss_help_welcome_panel_body")) {
+			this.recordShowHelpCPanel("hidden");
+			dojo.html.setClass("ss_help_cpanel_show_control", "ss_help_cpanel_hide");
+		} else {
+			this.recordShowHelpCPanel("visible");
+			dojo.html.setClass("ss_help_cpanel_show_control", "ss_help_cpanel_show");
+		}		
+		dojo.html.toggleDisplay("ss_help_welcome_panel_body");
+	},
+
+	recordShowHelpCPanel : function (visible) {
+
+		var url = ss_helpSystemHideCPanelUrl;
+		if (visible == "visible") {
+			url = ss_helpSystemShowCPanelUrl;
+		}
+		var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+			},
+			preventCache: true,				
+			mimetype: "text/xml",
+			method: "get"
+		};   
+		dojo.io.bind(bindArgs);
+	
+	
+	},
 	
 	showHelpPanel : function(id, panelId, x, y, xAlignment, yAlignment, tagId) {
 		if (tagId == null) tagId = "";

@@ -92,11 +92,11 @@ if (displayStyle == null || displayStyle.equals("")) {
 			  <c:if test="${ss_dashboard_scope == 'local' || ss_dashboard_scope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
-				  ><img border="0" src="<html:imagesPath/>icons/accessory_modify.gif" 
+				  ><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
 				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}'); return false;"
-				><img border="0" src="<html:imagesPath/>icons/accessory_delete.gif" 
+				><img border="0" class="ss_accessory_delete" src="<html:imagesPath/>pics/1pix.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${ss_dashboard_visible}">
