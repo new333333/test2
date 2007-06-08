@@ -21,9 +21,9 @@
         <resource-bundle>content.workspacetree</resource-bundle>
     </portlet>
     <portlet>
-        <description xml:lang="en">ICEcore Folder Bookmarks Portlet</description>
+        <description xml:lang="en">ICEcore Bookmarks Portlet</description>
         <portlet-name>ss_forum</portlet-name>
-        <display-name xml:lang="en">Folder bookmarks</display-name>
+        <display-name xml:lang="en">Bookmarks</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
