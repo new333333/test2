@@ -38,6 +38,8 @@ public interface Facade {
 	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 
+	public void uploadCalendarEntries(long folderId, String iCalDataAsXML);
+
 	/*
     public void deleteFolderEntry(long folderId, long entryId);
 
@@ -74,5 +76,21 @@ public interface Facade {
 	 * @return XML representation of the workspace tree
 	 */
 	public String getWorkspaceTreeAsXML(long binderId, int levels);
+	
+	/**
+	 * Returns team members for the given binder as Principal entries in XML
+	 * 
+	 * @param binderId id of binder
+	 * 
+	 * @return XML representation of team membership
+	 */
+	public String getTeamMembersAsXML(long binderId);
+	
+	/**
+	 * Returns the teams that the caller is on
+	 * 
+	 * @return XML representation of teams
+	 */
+	public String getTeamsAsXML();
 }
 

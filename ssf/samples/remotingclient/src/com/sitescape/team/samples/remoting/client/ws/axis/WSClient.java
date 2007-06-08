@@ -51,6 +51,10 @@ public class WSClient
 				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});			
 			} else if(args[0].equals("printFolderEntries")) {
 				fetchAndPrintXML("getFolderEntriesAsXML", new Object[] {Long.parseLong(args[1])});			
+			} else if(args[0].equals("printTeamMembers")) {
+				fetchAndPrintXML("getTeamMembersAsXML", new Object[] {Long.parseLong(args[1])});			
+			} else if(args[0].equals("printTeams")) {
+				fetchAndPrintXML("getTeamsAsXML", new Object[] {});			
 			} else if(args[0].equals("printFolderEntry")) {
 				fetchAndPrintXML("getFolderEntryAsXML", new Object[] {Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
 			} else if(args[0].equals("printDefinition")) {
@@ -67,6 +71,14 @@ public class WSClient
 				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});			
 			} else if(args[0].equals("uploadFile")) {
 				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);			
+			} else if(args[0].equals("uploadCalendar")) {
+				String s = readText(args[2]);
+				System.out.println("XML: " + s);
+				String attachFile = null;
+				if(args.length > 3) {
+					attachFile = args[3];
+				}
+				justDoIt("uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);			
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -171,11 +183,14 @@ public class WSClient
 		System.out.println("printWorkspaceTree <workspace id> <depth>");
 		System.out.println("printPrincipal <binder id> <principal id>");
 		System.out.println("printFolderEntries <folder id>");
+		System.out.println("printTeamMembers <binder id>");
+		System.out.println("printTeams");
 		System.out.println("printFolderEntry <folder id> <entry id> <includeAttachments>");
 		System.out.println("printDefinition <definition id>");
 		System.out.println("printDefinitionConfig");
 		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString>");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
+		System.out.println("uploadCalendarEntries <folder id> <xmlFilename> [<iCalFilename>]");
 	}
 }

@@ -16,25 +16,34 @@ import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+
+import net.fortuna.ical4j.data.ParserException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -162,7 +171,23 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	
 	public abstract void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
-	
+
+	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
+	{
+		Document doc = getDocument(iCalDataAsXML);
+		List<Node> entryNodes = (List<Node>) doc.selectNodes("//entry");
+		for(Node entryNode : entryNodes) {
+			String iCal = entryNode.getText();
+			try {
+				getIcalModule().parseToEntries(folderId, new StringBufferInputStream(iCal));
+			} catch(IOException e) {
+				throw new RemotingException(e);
+			} catch(ParserException e) {
+				throw new RemotingException(e);
+			}
+		}
+	}
+
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -191,6 +216,21 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 	}
 	
+	private Element addPrincipalToDocument(Branch doc, Principal entry)
+	{
+		Element entryElem = doc.addElement("entry");
+		
+		// Handle structured fields of the entry known at compile time. 
+		entryElem.addAttribute("id", entry.getId().toString());
+		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
+		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
+		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
+		
+		return entryElem;
+	}
+	
 	public String getPrincipalAsXML(long binderId, long principalId) {
 		Long bId = new Long(binderId);
 		Long pId = new Long(principalId);
@@ -201,15 +241,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 
 		Document doc = DocumentHelper.createDocument();
 		
-		Element entryElem = doc.addElement("entry");
-		
-		// Handle structured fields of the entry known at compile time. 
-		entryElem.addAttribute("id", entry.getId().toString());
-		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
-		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
-		entryElem.addAttribute("title", entry.getTitle());
-		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
-		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
+		Element entryElem = addPrincipalToDocument(doc, entry);
 		
 		// Handle custom fields driven by corresponding definition. 
 		addCustomElements(entryElem, entry);
@@ -291,6 +323,35 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		//System.out.println(xml);
 
 		return xml;
+	}
+	
+	public String getTeamMembersAsXML(long binderId)
+	{
+		Binder binder = getBinderModule().getBinder(new Long(binderId));
+		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder.getId(), true);
+		Document doc = DocumentHelper.createDocument();
+		Element team = doc.addElement("team");
+		team.addAttribute("inherited", binder.isTeamMembershipInherited()?"true":"false");
+		for(Principal p : principals) {
+			addPrincipalToDocument(team, p);
+		}
+		
+		return doc.getRootElement().asXML();
+	}
+	
+	public String getTeamsAsXML()
+	{
+		User user = RequestContextHolder.getRequestContext().getUser();
+		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+		Document doc = DocumentHelper.createDocument();
+		Element teams = doc.addElement("teams");
+		teams.addAttribute("principalId", user.getId().toString());
+		for(Map binder : myTeams) {
+			Element team = teams.addElement("team");
+			team.addAttribute("title", (String) binder.get("title"));
+			team.addAttribute("binderId", (String) binder.get("_docId"));
+		}
+		return doc.getRootElement().asXML();
 	}
 	
 	private Document getDocument(String xml) {

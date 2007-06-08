@@ -33,9 +33,6 @@ import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
@@ -44,7 +41,6 @@ import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
-import com.sitescape.team.remoting.impl.AbstractFacade.AttachmentHandler;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.util.FileUtil;
 
@@ -92,7 +88,23 @@ public class FacadeImpl extends AbstractFacade {
 			throw new RemotingException(e);
 		}
 	}
-	
+
+	/**
+	 * Extend basic support in AbstractFacade to include importing calendar entries
+	 *  from attachments.
+	 */
+	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
+	{
+		super.uploadCalendarEntries(folderId, iCalDataAsXML);
+		try {
+			for(AttachmentPart part : getMessageAttachments()) {
+				getIcalModule().parseToEntries(folderId, part.getDataHandler().getInputStream());
+			}
+		} catch (Exception e) {
+			throw new RemotingException(e);
+		}
+	}
+
 	/**
 	* Extract attachments from the current request
 	* @return a list of attachmentparts or an empty array for no attachments 
