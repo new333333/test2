@@ -79,7 +79,6 @@ public class AddEntryController extends SAbstractController {
 			}
 			
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
-				formData = TaskHelper.adjustTaskAttributesDependencies(entryType, formData);
 				MapInputData inputData = new MapInputData(formData);
 				
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);

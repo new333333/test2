@@ -91,9 +91,6 @@ public class ModifyEntryController extends SAbstractController {
 						deleteAtts.add(key.substring(8));
 					}
 				}
-				
-				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
-				formData = TaskHelper.adjustTaskAttributesDependencies(entry, formData);
 			
 				getFolderModule().modifyEntry(folderId, entryId, 
 						new MapInputData(formData), fileMap, deleteAtts, null);

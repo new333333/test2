@@ -100,15 +100,6 @@
 				<property name="caption" value="__entry_attachments"/>
 			</properties>
 		</item>
-		<item name="entryReplies" caption="__entry_replies" id="15">
-			<properties>
-				<property name="caption" value="__entry_replies"/>
-			</properties>
-		</item>
-		
-		
-
-		
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="57" formItem="date">
 			<properties>
 				<property name="name" value="due_date"/>
@@ -120,8 +111,12 @@
 				<property name="name" value="survey"/>
 				<property name="caption" value="__survey_questions"/>
 			</properties>
+		</item>		
+		<item name="entryReplies" caption="__entry_replies" id="15">
+			<properties>
+				<property name="caption" value="__entry_replies"/>
+			</properties>
 		</item>
-		
 		<properties>
 			<property name="type" value="survey"/>
 		</properties>
@@ -165,7 +160,7 @@
 		</item>
 	</item>
 	<properties>
-		<property name="name" value="_Entry"/>
+		<property name="name" value="_surveyEntry"/>
 		<property name="caption" value="__definition_default_survey_entry"/>
 		<property name="replyStyle" value="402883c6115753d801115777f284000b"/>
 	</properties>

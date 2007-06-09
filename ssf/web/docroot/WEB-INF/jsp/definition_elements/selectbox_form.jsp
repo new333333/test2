@@ -11,7 +11,10 @@
  */
 %>
 <% // The selectbox form element %>
+<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -40,12 +43,29 @@
 	} else {
 		required = "";
 	}
+	
+	// get form type
+	String formType = "";
+	if(ssConfigDefinition != null) {
+		formType = DefinitionHelper.findFormType(ssConfigDefinition);
+	}
+	
 %>
+<c:set var="formType" value="<%= formType %>"/>
+
+<c:if test="${formType == 'task'}">
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js"></script>
+</c:if>
+
 <div class="ss_entryContent">
 <div class="ss_labelLeft"><%= caption %><%= required %></div><select 
-  name="<%= elementName %>" <%= multiple %> <%= size %>>
+  name="<%= elementName %>" <%= multiple %> <%= size %>
+  <c:if test="${formType == 'task'}">
+  	onchange="ss_tasks.adjustFormAttributes(this.name);"
+  </c:if>>
+  >
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" />
+  configJspStyle="${ssConfigJspStyle}" />task
 </select>
 </div>
