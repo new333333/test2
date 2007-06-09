@@ -162,11 +162,7 @@ if (!window.ssSurvey) {
 				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
 					ss_toSend[ind] = {};
 					ss_toSend[ind].type = ss_questionsArray[i].type;
-					
 					content = tinyMCE.getContent("questionText"+i).replace(/\+/g, "&#43");
-					content = content.replace(/\\/g, "&#92");
-					content = escape(content);
-					
 					ss_toSend[ind].question = content;
 					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
 						ss_toSend[ind].answers = new Array();

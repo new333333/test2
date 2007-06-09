@@ -115,36 +115,41 @@ public class Question {
 		Iterator<Answer> it = answers.iterator();
 		while (it.hasNext()) {
 			Answer answer = it.next();
-			if (answer.getIndex() == index) {
+			if (answer.getIndex() == i) {
 				return answer;
 			}
 		}
 		return null;
 	}
 
-	public void vote(String[] value) {
+	public List<Answer> vote(String[] value) {
+		List<Answer> answers = new ArrayList();
 		if (isAlreadyVoted()) {
-			return;
+			return answers;
 		}
 		if (value == null || value.length == 0) {
-			return;
+			return answers;
 		}
 		
 		for (int i = 0; i < value.length; i++) {
 			if (this.type.equals(Type.multiple) || this.type.equals(Type.single)) {
 				Answer answer = getAnswerByIndex(Integer.parseInt(value[i]));
 				answer.vote();
+				answers.add(answer);
 			} else {
-				addInputAnswer(value[i]);
+				Answer answer = addInputAnswer(value[i]);
+				answers.add(answer);
 			}
 		}
 		this.totalResponses++;
 		
 		this.jsonObj.remove("totalResponses");
 		this.jsonObj.put("totalResponses", this.totalResponses);
+		
+		return answers;
 	}
 
-	private void addInputAnswer(String txt) {
+	private Answer addInputAnswer(String txt) {
 		JSONObject newInputAnswer = new JSONObject();
 		newInputAnswer.put("text", txt);
 		
@@ -161,7 +166,10 @@ public class Question {
 			jsonObj.put("answers", a);
 		}
 		
-		this.answers.add(new Answer(newInputAnswer, this));
+		Answer answer = new Answer(newInputAnswer, this);
+		this.answers.add(answer);
+		
+		return answer;
 	}
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definition name="_surveyEntry" caption="__definition_default_survey_entry" type="1" nextId="59" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50004">
+<definition name="_surveyEntry" caption="__definition_default_survey_entry"	type="1" nextId="59" definitionType="1"	databaseId="402883c1129b1f8101129b28bbe50004">
 	<item name="entryForm" caption="__entry_form_definition" type="form" id="1">
 		<properties/>
 		<item name="entryFormForm" caption="__form" id="2">
@@ -37,7 +37,7 @@
 				<property name="name" value="form1"/>
 				<property name="type" value="survey"/>
 			</properties>
-
+			
 			<item name="date" caption="__due_date" type="data" id="23">
 				<properties>
 					<property name="name" value="due_date"/>
@@ -54,7 +54,7 @@
 					<property name="hide" value=""/>
 				</properties>
 			</item>
-
+			
 			<item name="entryFormButtons" caption="__form_buttons" id="6">
 				<properties>
 					<property name="alignment" value=""/>
@@ -100,18 +100,20 @@
 				<property name="caption" value="__entry_attachments"/>
 			</properties>
 		</item>
-		<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="57" formItem="date">
+		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
+			category="entryViewData" id="57" formItem="date">
 			<properties>
 				<property name="name" value="due_date"/>
 				<property name="caption" value="__due_date"/>
 			</properties>
 		</item>
-		<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="58" formItem="survey">
+		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
+			category="entryViewData" id="58" formItem="survey">
 			<properties>
 				<property name="name" value="survey"/>
 				<property name="caption" value="__survey_questions"/>
 			</properties>
-		</item>		
+		</item>
 		<item name="entryReplies" caption="__entry_replies" id="15">
 			<properties>
 				<property name="caption" value="__entry_replies"/>
@@ -152,16 +154,19 @@
 			<property name="type" value="survey"/>
 		</properties>
 		
-		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="54" formItem="due_date">
+		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item"
+			category="blogEntryViewData" id="54" formItem="due_date">
 			<properties>
 				<property name="name" value="due_date"/>
 				<property name="caption" value="__due_date"/>
 			</properties>
 		</item>
 	</item>
+	
 	<properties>
 		<property name="name" value="_surveyEntry"/>
 		<property name="caption" value="__definition_default_survey_entry"/>
 		<property name="replyStyle" value="402883c6115753d801115777f284000b"/>
+		<property name="replyStyle" value="40288182131025d101131029d4920002"/>
 	</properties>
 </definition>

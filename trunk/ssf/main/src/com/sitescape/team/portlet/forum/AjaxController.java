@@ -2448,6 +2448,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return;
 		}
 		
+		StringBuilder surveyVoteDescription = new StringBuilder();
 		Iterator formDataIt = request.getParameterMap().entrySet().iterator();
 		while (formDataIt.hasNext()) {
 			Map.Entry mapEntry = (Map.Entry)formDataIt.next();
@@ -2464,19 +2465,33 @@ public class AjaxController  extends SAbstractControllerRetry {
 					if (questionIndex != -1) {
 						Question question = survey.getQuestionByIndex(questionIndex);
 						if (question != null) {
-							question.vote(value);
+							Iterator<Answer> answers = question.vote(value).iterator();
+							surveyVoteDescription.append(question.getQuestion()).append(": ");
+							while (answers.hasNext()) {
+								surveyVoteDescription.append(answers.next().getText());
+								if (answers.hasNext()) {
+									surveyVoteDescription.append(", ");
+								}
+							}
 						}
 					}
 				}
 			}
 		}
 		
+		Map formDataReply = new HashMap();
+		formDataReply.put("binderId", new String[]{binderId.toString()});
+		formDataReply.put("entryId", new String[]{entryId.toString()});
+		formDataReply.put("entryType", new String[]{ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG});
+		formDataReply.put("title", new String[]{NLT.get("survey.vote.title")});
+		formDataReply.put("description", new String[]{surveyVoteDescription.toString()});
+		getFolderModule().addReply(binderId, entryId, ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG, new MapInputData(formDataReply), new HashMap());
+		
+		
 		Map formData = new HashMap(); 
 		formData.put(attributeName, surveyAttrValue.toString());
-		
 		getFolderModule().modifyEntry(binderId, entryId, 
 				new MapInputData(formData), new HashMap(), new HashSet(), null);
-		
 	}
 	
 	private ModelAndView ajaxVoteSurveyStatus(RenderRequest request, RenderResponse response) {

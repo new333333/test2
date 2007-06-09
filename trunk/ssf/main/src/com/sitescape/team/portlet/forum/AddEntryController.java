@@ -89,17 +89,20 @@ public class AddEntryController extends SAbstractController {
 					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
 				}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
-				MapInputData inputData = new MapInputData(formData);
-				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap);
-				//Show the parent entry when this operation finishes
-				setupReloadOpener(response, folderId, id);
-				if (!blogReply.equals("")) {
-			    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
-					response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
-					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
-					response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
-					response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getParentEntry().getTotalReplyCount()));
+				// survey vote can be added only by vote (AjaxController)
+				if (!entryType.equals(ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG)) {
+					MapInputData inputData = new MapInputData(formData);
+					Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+					entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap);
+					//Show the parent entry when this operation finishes
+					setupReloadOpener(response, folderId, id);
+					if (!blogReply.equals("")) {
+				    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+						response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
+						response.setRenderParameter(WebKeys.NAMESPACE, namespace);
+						response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
+						response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getParentEntry().getTotalReplyCount()));
+					}
 				}
 			}
 			//flag reload of folder listing
