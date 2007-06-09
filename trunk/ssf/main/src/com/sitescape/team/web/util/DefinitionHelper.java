@@ -318,4 +318,11 @@ public class DefinitionHelper {
     	if(captionNode != null) { result = captionNode.getStringValue();}
     	return result;
     }
+    
+    public static String findFormType(Document definitionConfig)
+    {
+    	Node formTypeNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']/properties/property[@name='type']/@value");
+    	if(formTypeNode != null) { return formTypeNode.getStringValue();}
+    	return null;
+    }
 }

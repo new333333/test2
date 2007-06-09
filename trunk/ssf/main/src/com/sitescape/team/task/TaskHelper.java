@@ -270,7 +270,7 @@ public class TaskHelper {
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
 		Definition entryDef = entry.getEntryDef();
 		String entryDefId = entryDef.getId();
-		TaskHelper.adjustTaskAttributesDependencies(null, entryDefId, formData, newPriority, newStatus, newCompleted);
+		TaskHelper.adjustTaskAttributesDependencies(entry, entryDefId, formData, newPriority, newStatus, newCompleted);
 	}
 	
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, String entryDefId, Map formData, String newPriority, String newStatus, String newCompleted) {
