@@ -32,8 +32,7 @@
 						<td>
 							<a class="ss_searchButton" 
 							  href="javascript: document.getElementById('advSearchForm').submit();" ><img 
-							  src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a> 
-							  <ssf:nlt tag="searchForm.button.label"/>
+							  src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /> <ssf:nlt tag="searchForm.button.label"/></a> 
 							<input type="hidden" name="quickSearch" value="true"/>
 							<input type="hidden" name="operation" value="ss_searchResults"/>
 						</td>

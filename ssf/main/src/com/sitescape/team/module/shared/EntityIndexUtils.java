@@ -102,6 +102,7 @@ public class EntityIndexUtils {
     public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
     public static final String BINDER_ID_FIELD = "_binderId"; // used on binder contents (not sub-binders)
     public static final String BINDERS_PARENT_ID_FIELD = "_binderParentId";  //used only on binders
+    public static final String ENTRY_PARENT_ID_FIELD = "_entryParentId";
     public static final String FILENAME_FIELD = "_fileName";
     public static final String FILE_EXT_FIELD = "_fileExt";
     public static final String FILE_TYPE_FIELD = "_fileType";
@@ -197,6 +198,10 @@ public class EntityIndexUtils {
 	        } else {
 	        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_REPLY, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryTypeField);
+	        	
+	        	FolderEntry folderEntry = (FolderEntry)entry;
+	        	Field entryParentEntryId = new Field(EntityIndexUtils.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	doc.add(entryParentEntryId);
 	        }
     	} else if (entry instanceof User) {
         	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.UN_TOKENIZED);
