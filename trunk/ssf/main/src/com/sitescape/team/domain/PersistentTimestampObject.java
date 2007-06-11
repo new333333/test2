@@ -24,7 +24,7 @@ package com.sitescape.team.domain;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PersistentTimestampObject extends PersistentObject 
-	implements PersistentTimestamp {
+	implements PersistentTimestamp, Comparable {
     protected HistoryStamp creation;
     protected HistoryStamp modification;
     /**
@@ -44,5 +44,14 @@ public class PersistentTimestampObject extends PersistentObject
     }
     public void setModification(HistoryStamp stamp) {
         this.modification = (HistoryStamp) stamp;
+    }
+    public int compareTo(Object o) {
+    	int result;
+    	if (o == null) throw new NullPointerException();
+    	if (!(o instanceof PersistentTimestampObject)) return -1;
+    	PersistentTimestampObject obj = (PersistentTimestampObject)o;
+    	result = getCreation().compareDate(obj.getCreation());
+    	if (result != 0) return result;
+    	return this.getId().compareTo(obj.getId());	 
     }
  }

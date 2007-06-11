@@ -21,7 +21,7 @@ if (isIECheck) strBrowserType = "ie";
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 <div class="ss_entryContent">
 <span class="ss_bold"><c:out value="${property_caption}" /></span>
-
+<br>
 <span>
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
 <c:forEach var="selection" items="${selections}">

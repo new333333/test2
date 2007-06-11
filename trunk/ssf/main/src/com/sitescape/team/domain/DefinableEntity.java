@@ -18,10 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.comparator.FileAttachmentComparator;
+import com.sitescape.team.context.request.RequestContextHolder;
 
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title=""; //initialized by hibernate access=field
@@ -329,13 +333,16 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * Return list of FileAttachments
      * @return
      */
-    public List getFileAttachments() {
+    public SortedSet<FileAttachment> getFileAttachments() {
     	Set atts = getAttachments();
-    	List result = new ArrayList();
+    	FileAttachmentComparator c = new FileAttachmentComparator(
+    			RequestContextHolder.getRequestContext().getUser().getLocale(), FileAttachmentComparator.SortByField.name);
+    	
+    	SortedSet result = new TreeSet(c);
     	Attachment att;
     	for (Iterator iter=atts.iterator(); iter.hasNext();) {
     		att = (Attachment)iter.next();
-    		//return only file attachments, not versions
+    		//return only file attachments.  Version not in attachment list
     		if (att instanceof FileAttachment) {
     			result.add(att);
     		}
@@ -523,4 +530,5 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public String getTypedId() {
     	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
+    
 }

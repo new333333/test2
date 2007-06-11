@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Collection;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -407,9 +408,8 @@ public class EntityIndexUtils {
 	}
 	
 	public static void addAttachedFileIds(Document doc, DefinableEntity entry) {
-		List atts = entry.getFileAttachments();
-        for (int j = 0; j < atts.size(); j++) {
-        	FileAttachment fa = (FileAttachment)atts.get(j);
+		Collection<FileAttachment> atts = entry.getFileAttachments();
+        for (FileAttachment fa : atts) {
         	appendFileAttachmentUid(doc, fa);
         }
     }

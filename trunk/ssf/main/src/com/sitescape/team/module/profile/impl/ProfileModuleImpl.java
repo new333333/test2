@@ -30,6 +30,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.PrincipalComparator;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
@@ -56,7 +57,6 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.profile.PrincipalComparator;
 import com.sitescape.team.module.profile.ProfileCoreProcessor;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;

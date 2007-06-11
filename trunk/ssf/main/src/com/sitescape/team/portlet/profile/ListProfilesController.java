@@ -37,6 +37,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -191,6 +192,9 @@ public class ListProfilesController extends   SAbstractController {
 
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+		Map tagResults = TagUtil.uniqueTags(getBinderModule().getTags(binder));
+		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		
 		return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
 	}

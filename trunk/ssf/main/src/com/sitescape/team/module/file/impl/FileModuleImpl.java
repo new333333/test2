@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -220,11 +221,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(errors == null)
 			errors = new FilesErrors();
 		
-		List fAtts = entry.getFileAttachments();
+		Collection<FileAttachment> fAtts = entry.getFileAttachments();
 		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
 		boolean updateMetadata = deleteAttachment;
-		for(int i = 0; i < fAtts.size(); i++) {
-			final FileAttachment fAtt = (FileAttachment) fAtts.get(i);
+		for(FileAttachment fAtt :fAtts) {
 
 			try {
 				ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
@@ -694,9 +694,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void moveFiles(Binder binder, DefinableEntity entity, 
 			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
-    	List atts = entity.getFileAttachments();
-    	for(int i = 0; i < atts.size(); i++) {
-    		FileAttachment fa = (FileAttachment) atts.get(i);
+    	Collection<FileAttachment> atts = entity.getFileAttachments();
+    	for(FileAttachment fa :atts) {
     		moveFile(binder, entity, fa, destBinder, destEntity);
     	}
 	}
@@ -705,13 +704,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
 		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
-    	List atts = entity.getFileAttachments();
+    	Collection<FileAttachment> atts = entity.getFileAttachments();
     	FileUploadItem fui;
-    	FileAttachment fa;
-    	String name;
+     	String name;
     	SimpleMultipartFile file;
-    	for(int i = 0; i < atts.size(); i++) {
-    		fa = (FileAttachment) atts.get(i);
+    	for(FileAttachment fa :atts) {
     		name = fa.getName(); 
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(name))
@@ -1600,9 +1597,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	boolean metadataDirty = false; 
     	
 		// Iterate over file attachments and close each expired lock.
-		List fAtts = entity.getFileAttachments();
-		for(int i = 0; i < fAtts.size(); i++) {
-			FileAttachment fa = (FileAttachment) fAtts.get(i);
+		Collection<FileAttachment> fAtts = entity.getFileAttachments();
+    	for(FileAttachment fa :fAtts) {
 			if(closeExpiredLock(binder, entity, fa, commit))
 				metadataDirty = true;
 		}

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -454,10 +455,9 @@ public class CustomAttribute  {
     	    	} catch (Exception ex) {
            			throw new IllegalArgumentException(ex.getLocalizedMessage());
     	    	}
-    	    case SET:
     	    case ORDEREDSET:
     	    	Set v = new LinkedHashSet();
-    	    	if (iValues == null) {
+    	    	if (iValues == null) {//probably not in order if bulk loaded, but not a problem for indexing
     	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
     	    			v.add(((CustomAttributeListElement)iter.next()).getValue());
     	    		}
@@ -467,6 +467,18 @@ public class CustomAttribute  {
     	    		}
     	    	}
     	    	return v;
+    	    case SET:   	    	
+    	    	Set s = new TreeSet();  // order naturally
+    	    	if (iValues == null) {
+    	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
+    	    			s.add(((CustomAttributeListElement)iter.next()).getValue());
+    	    		}
+    	    	} else {
+    	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
+    	    			s.add(((CustomAttributeListElement)iter.next()).getValue());
+    	    		}
+    	    	}
+    	    	return s;
        		case EVENT:
     		    return owner.getEntity().getEvent(stringValue);
        		case SURVEY:

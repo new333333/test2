@@ -19,7 +19,7 @@
 <tr>
   <td style="padding-left:10px;">
     <a href="javascript:;"
-      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntryId}');return false;"
+      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntry.entityType}', '${ssEntry.id}');return false;"
     ><img border="0" src="<html:imagesPath/>pics/1pix.gif" class="ss_generic_close"/></a>
   </td>
   <td>

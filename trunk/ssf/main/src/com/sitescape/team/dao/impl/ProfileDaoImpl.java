@@ -35,6 +35,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.LongIdComparator;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.dao.util.FilterControls;
@@ -61,7 +62,6 @@ import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
-import com.sitescape.team.util.LongIdComparator;
 import com.sitescape.team.util.SPropsUtil;
 /**
  * @author Jong Kim

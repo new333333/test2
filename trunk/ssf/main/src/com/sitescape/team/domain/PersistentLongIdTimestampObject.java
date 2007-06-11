@@ -10,8 +10,6 @@
  */
 package com.sitescape.team.domain;
 
-import java.util.Date;
-
 import com.sitescape.team.domain.HistoryStamp;
 
 /**
@@ -21,7 +19,7 @@ import com.sitescape.team.domain.HistoryStamp;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PersistentLongIdTimestampObject extends PersistentLongIdObject 
-	implements PersistentLongIdTimestamp {
+	implements PersistentLongIdTimestamp, Comparable {
     protected HistoryStamp creation;
     protected HistoryStamp modification;
     /**
@@ -41,5 +39,14 @@ public class PersistentLongIdTimestampObject extends PersistentLongIdObject
     }
     public void setModification(HistoryStamp stamp) {
         this.modification = stamp;
+    }
+    public int compareTo(Object o) {
+    	int result;
+    	if (o == null) throw new NullPointerException();
+    	if (!(o instanceof PersistentLongIdTimestamp)) return -1;
+    	PersistentLongIdTimestamp obj = (PersistentLongIdTimestamp)o;
+    	result = getCreation().compareDate(obj.getCreation());
+    	if (result != 0) return result;
+    	return this.getId().compareTo(obj.getId());	 
     }
  }

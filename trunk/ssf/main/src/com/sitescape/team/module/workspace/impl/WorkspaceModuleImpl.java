@@ -31,6 +31,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.InternalException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -41,7 +42,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;

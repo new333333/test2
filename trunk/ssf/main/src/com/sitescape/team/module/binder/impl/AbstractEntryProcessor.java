@@ -682,38 +682,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         Definition def = entry.getEntryDef();
         if (def != null) {
             Map entryDataAll = getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
-            //see if request to reorder attachments is present
-            Map<String, CustomAttribute> attrs = entry.getCustomAttributes();
-            for (Map.Entry<String, CustomAttribute> me: attrs.entrySet()) {
-            	String name = me.getKey();
-			    String key = name + ObjectKeys.INPUT_FIELD_ORDER_SUFFIX;
-			    if (inputData.exists(key)) {
-			    	String val = inputData.getSingleValue(key);
-			    	if (Validator.isNull(val)) continue;
-			    	String [] vals = StringUtil.split(val, " ");
-			    	//the values are the string id of an attachment
-			    	CustomAttribute current = me.getValue();
-			    	Object currentObj = current.getValue();
-			    	if (!(currentObj instanceof Collection)) continue;
-			    	Collection currentVal = (Collection)currentObj;
-			    	//if not the same size, something is wrong
-			    	if (currentVal.size() != vals.length) continue;
-			    	List attVals = new ArrayList();
-			    	boolean process = true;
-			    	for (int i=0; i<vals.length; ++i) {
-			    		String id = vals[i];
-			    		Attachment file = entry.getAttachment(id);
-			    		if (file != null) attVals.add(file);
-			    		else {
-			    			process = false;
-			    			break;
-			    		}
-			    	}
-			    	if (process) current.setValue(attVals);
-			    }
-	
-            }
-            return entryDataAll;
+             return entryDataAll;
         } else {
            	Map entryDataAll = new HashMap();
 	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  new HashMap());
@@ -752,6 +721,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
     	//create history - using timestamp and version from fillIn
   		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, (String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
+    	reorderFiles(entry, inputData, entryData);
     	processChangeLog(entry, ChangeLog.MODIFYENTRY);
     	getReportModule().addAuditTrail(AuditType.modify, entry);
 
@@ -1253,7 +1223,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
 	protected void indexEntryWithAttachments(Binder binder, Entry entry,
-			List fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			
@@ -1265,8 +1235,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(buildIndexDocumentFromEntry(entry.getParentBinder(), entry, tags));
         //Create separate documents one for each attached file and index them.
-        for(int i = 0; i < fileAttachments.size(); i++) {
-        	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
+        for(FileAttachment fa : fileAttachments) {
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
