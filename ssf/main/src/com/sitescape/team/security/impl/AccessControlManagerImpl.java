@@ -84,7 +84,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
             	ids.addAll(wfm.getMemberIds());
         	}
         	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(workAreaStart.getOwnerId());
-        	if (ids.remove(ObjectKeys.TEAM_MEMBER_ID)) ids.add(workAreaStart.getTeamMemberIds());
+        	if (ids.remove(ObjectKeys.TEAM_MEMBER_ID)) ids.addAll(workAreaStart.getTeamMemberIds());
 	        return ids;
 	        
         }    	
