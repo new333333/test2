@@ -39,13 +39,14 @@
     <property name="serializedValue"  type="com.sitescape.team.dao.util.SSBlobSerializableType"/>
     <property name="xmlValue" type="com.sitescape.team.dao.util.SSClobStringType"/>
     <property name="booleanValue" />
-    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values">
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values" order-by="position asc">
       <key column="parent"/>
       <one-to-many class="com.sitescape.team.domain.CustomAttributeListElement"/>
     </set>
     <property name="valueType"/>
     <subclass name="com.sitescape.team.domain.CustomAttributeListElement" lazy="false" discriminator-value="L" dynamic-update="true">
-      <many-to-one name="parent">
+  	 <property name="position"/>
+     <many-to-one name="parent">
         <column name="parent" sql-type="char(32)" index="owningAttribute_cAtt"/>
       </many-to-one>
     </subclass>

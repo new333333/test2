@@ -51,11 +51,11 @@ src="<html:imagesPath/>icons/button_move_up.gif"
 <br/>
 <br/>
   <c:if test="${count > 0}">
-    <input type="hidden" name="_graphic_id_order"/>
+    <input type="hidden" name="${property_name}__order"/>
     <script type="text/javascript">
 function ss_saveGraphicOrder(obj) {
 	var formObj = ss_getContainingForm(obj);
-	var hiddenObj = formObj['_graphic_id_order']
+	var hiddenObj = formObj['${property_name}__order']
 	hiddenObj.value = "";
 	var tableNode = ss_findOwningElement(obj, 'tbody')
 	for (var i = 0; i < tableNode.childNodes.length; i++) {

@@ -538,7 +538,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     }    
  	public void bulkLoadCollections(final Collection<Principal> entries) {
 		//try loading the isMemberOf collection - we will get the Membership and assume the groups are in the secondary cache.
-	    getHibernateTemplate().execute(
+/* membership is not cached
+ * 	    getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	//ids will be sorted
@@ -585,7 +586,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                  }
             }
         );
-	    getCoreDao().bulkLoadCollections(entries);
+*/
+ 		getCoreDao().bulkLoadCollections(entries);
 		
 	}
  	

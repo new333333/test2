@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.LinkedHashSet;
 
 import javax.mail.internet.InternetAddress;
 
@@ -410,11 +411,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					if (dfa != null) source.addCustomAttribute(ca.getName(), dfa);
 					break;
 				}
+				case CustomAttribute.ORDEREDSET:
 				case CustomAttribute.SET: {
 					//should be the same type
 					Set values = ca.getValueSet();
 					if (!values.isEmpty()) {
-						Set newV = new HashSet();
+						Set newV;
+						if (ca.getValueType() == CustomAttribute.ORDEREDSET) newV = new LinkedHashSet(); 
+						else newV = new HashSet();
 						for (Iterator it=values.iterator(); it.hasNext();) {
 							Object val = iter.next();
 							if (val == null) continue;

@@ -124,10 +124,7 @@ public class EntryBuilder {
 								changed=true;
 							}
 						} else {
-							if (!val.equals(oldVal)) {
-								cAttr.setValue(val);
-								changed=true;
-							}
+							changed = cAttr.setValue(val);
 						}
 					} else {
 						changed=true;

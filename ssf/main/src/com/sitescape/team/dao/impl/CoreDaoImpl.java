@@ -865,7 +865,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 
 	//build collections manually as an optimization for indexing
-	//evict from session cache, so not longer available to everyone else
+	//evict from session cache, so no longer available to everyone else
 	//The entries must be of the same type
 	public void bulkLoadCollections(Collection entries) {
 		if ((entries == null) || entries.isEmpty())  return;
@@ -953,11 +953,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    		objs.removeAll(tSet);
                     }
                 	//Load customAttributes
-                 	objs = session.createCriteria(CustomAttribute.class)
-                    	.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
-       					.add(Expression.in("owner.ownerId", ids))
-                 		.addOrder(Order.asc("owner.ownerId"))
-                  		.list();
+                 	//Cannot criteria query, cause different order-by is specified in mapping files and it appears to take precedence
+                 	objs = session.createQuery("from com.sitescape.team.domain.CustomAttribute  where owner.ownerType=:type and owner.ownerId in (:pList) order by owner.ownerId")
+                    	.setParameter("type", id.getEntityType().name())
+       					.setParameterList("pList", ids)
+                   		.list();
                    	readObjs.addAll(objs);
                   	HashMap tMap;
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {

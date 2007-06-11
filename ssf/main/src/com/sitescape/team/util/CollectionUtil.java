@@ -12,14 +12,10 @@
 package com.sitescape.team.util;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
-
-import com.sitescape.team.domain.PersistentLongId;
-import com.sitescape.team.domain.PersistentStringId;
-import com.sitescape.util.StringUtil;
 /**
  * @author Janet McCann
  *

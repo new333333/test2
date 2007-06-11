@@ -18,6 +18,7 @@ package com.sitescape.team.domain;
  */
 public class CustomAttributeListElement extends CustomAttribute {
 	private CustomAttribute parent;
+	private Integer position=null;
 	protected CustomAttributeListElement() {
 	}
 	protected CustomAttributeListElement(String name, CustomAttribute parent, DefinableEntity owner) {
@@ -25,7 +26,9 @@ public class CustomAttributeListElement extends CustomAttribute {
 		setParent(parent);
 		//don't set foreign key, so not read in to map
 		setOwner(new AnyOwner(owner, false));
+		
 	}
+
 	/**
 	 * @hibernate.many-to-one
      * @hibernate.column name="parent" sql-type="char(32)"
@@ -37,5 +40,18 @@ public class CustomAttributeListElement extends CustomAttribute {
 	protected void setParent(CustomAttribute parent) {
 		this.parent = parent;
 	}
-	
+	/**
+	 * @hibernate.property
+	 * We are adding list semantics after the fact, so instead of changeing everything to use hibernate lists we will manage
+	 * list ordering ourselves.
+	 * Users better be careful or things could change from sets to lists and back arbitrarily
+	 */
+	protected Integer getPosition() {
+		return position;
+	}
+	protected void setPosition(Integer position) {
+		this.position = position;
+	}
+ 
+
 }
