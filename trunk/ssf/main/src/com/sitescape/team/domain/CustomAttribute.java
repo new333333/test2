@@ -15,10 +15,16 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.team.domain;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -66,6 +72,7 @@ public class CustomAttribute  {
     	public static final int DATE= 3;
     	public static final int SERIALIZED= 4;
     	public static final int SET=5;
+    	public static final int ORDEREDSET=13;
        	public static final int BOOLEAN=6;
        	public static final int DESCRIPTION=7;
        	public static final int XML=8;
@@ -89,11 +96,11 @@ public class CustomAttribute  {
    public void setId(String id) {
        this.id = id;
    }
-   //keep protected, want name set up
+   //keep protected for hibernate want name set up
    protected CustomAttribute() {   	
    }
  
-   //only accessible threw entry
+   //only accessible through entry
    protected CustomAttribute(DefinableEntity parent, String name, Object value) {
    		setName(name);
    		//do before setValue incase value needs owner
@@ -195,7 +202,7 @@ public class CustomAttribute  {
         this.booleanValue = value;
     }  
    /**
-     * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan"  batch-size="4" 
+     * @hibernate.set lazy="true" inverse="true" cascade="all,delete-orphan"  batch-size="4" order-by="position"
      * @hibernate.key column="parent"
  	 * @hibernate.one-to-many class="com.sitescape.team.domain.CustomAttributeListElement"
      * 
@@ -246,13 +253,74 @@ public class CustomAttribute  {
         if (values != null) values.clear();
         
     }
-    public void setValue(Object value) {
-    	//don't do unnecessary updates - especially for descriptions
-    	if ((value != null) && value.equals(getValue())) return;
-    	setValue(value, true);
+    public boolean setValue(Object value) {
+    	if (value == null) {
+       		setValue(value, true);
+    		return true;
+    	}
+    	if (value instanceof String[]) {
+    		//convert to set than compare, order not maintained
+         	Set newValues = new HashSet();
+         	String[] vals = (String[]) value;
+         	for (int i=0; i<vals.length; ++i) {
+         		newValues.add(vals[i]);
+         	}
+         	value = newValues;
+    	}
+
+       	//don't do unnecessary updates - especially for descriptions
+    	if ((valueType != SET) && (valueType != ORDEREDSET)) {
+    		if (value.equals(getValue())) return false;
+    		setValue(value, true);
+    		return true;
+    	}
+    	if (valueType == SET) {
+    		//currently unordered, if input unorderd, do compare
+    		if (!(value instanceof LinkedHashSet) &&
+    				!(value instanceof SortedSet) && !(value instanceof List)) {
+    	   		//set compares don't seem to care about order
+    			 if (value.equals(getValue())) return false;
+    		}
+            setValue(value, true);
+    		return true;   			
+    	} 
+    	
+    	//currently ordered
+   		if ((value instanceof LinkedHashSet) ||
+				(value instanceof SortedSet) || (value instanceof List)) {
+   			//make sure values are in same order
+   			Set currentValues = getValues();
+   			Collection newValues = (Collection)value;
+   			if (currentValues.size() == newValues.size()) {
+   				Iterator cI = currentValues.iterator();
+   				Iterator nI = newValues.iterator();
+   				while (cI.hasNext()) {
+   					if (!cI.next().equals(nI.next())) {
+   			         	setValue(newValues, true);
+   						return true;   						
+   					}
+   				}
+   				return false; //must be equal   				
+   			}
+         	setValue(value, true);
+			return true;
+			
+		} else if (value.equals(getValue())) {
+			//if currently ordered and now don't care, don't have to change anything
+			return false;
+		} else {
+        	setValue(value, true);
+			return true;   			
+		}
+
     }
 
     protected void setValue(Object value, boolean allowed)  {
+       	if (value == null) {
+    		clearVals();
+    		valueType=NONE;
+    		return;    		
+    	}
     	if (value instanceof String) {
             clearVals();
             valueType = STRING;
@@ -260,10 +328,8 @@ public class CustomAttribute  {
             // this is returning unicode-16 lengths
             if (val.length() <= 1000) {
                 stringValue=val;
-                description = null;
             } else {
                 description = new Description(val);
-                stringValue = null;
             }
         } else if (value instanceof Description) {
             valueType = DESCRIPTION;
@@ -284,33 +350,41 @@ public class CustomAttribute  {
             clearVals();
             valueType = DATE;
             dateValue = (Date)value;
-         } else if (allowed && (value instanceof Set)) {
-            Set oldValues = values;
-            values = null;
+        } else if (allowed && (value instanceof Collection)) {
+        	if (((Collection)value).isEmpty()) {
+        		clearVals();
+        		valueType=NONE;
+        		return;
+        	}
+        	Map oldValues = new HashMap();
+        	//convert old set into map for easier locating
+        	if (values != null) {
+        		for (Iterator iter=values.iterator(); iter.hasNext();) {
+        			CustomAttributeListElement le = (CustomAttributeListElement)iter.next();
+        			oldValues.put(le.getValue(), le);
+        		}
+        	}
             clearVals();
-            values = oldValues;
-            valueType = SET;
-         	HashSet newValues =	new HashSet();
-         	for (Iterator iter=((Set)value).iterator(); iter.hasNext();) {
-     			CustomAttributeListElement element = new CustomAttributeListElement(getName(), this, getOwner().getEntity());
-     			//don't allow recursive collections
-     			element.setValue(iter.next(), false);
+      		if ((value instanceof LinkedHashSet) ||
+    				(value instanceof SortedSet) || (value instanceof List)) {
+      			valueType = ORDEREDSET;
+      		} else {
+      			valueType = SET;
+      		}
+         	LinkedHashSet newValues = new LinkedHashSet();
+         	int count = 0;
+         	for (Iterator iter=((Collection)value).iterator(); iter.hasNext();) {
+         		Object val = iter.next();
+         		CustomAttributeListElement element = (CustomAttributeListElement)oldValues.get(val);
+         		if (element == null) {
+         			element = new CustomAttributeListElement(getName(), this, getOwner().getEntity());
+         		}
+         		element.setValue(val, false);
+         		if (valueType == ORDEREDSET) element.setPosition(count++);
      			newValues.add(element);
      		}
-         	if (values == null) {
-         		values = new HashSet();
-         	}
-         	Set remM = CollectionUtil.differences(values, newValues);
-         	Set addM = CollectionUtil.differences(newValues, values);
-         	values.removeAll(remM);
-         	values.addAll(addM);
-         } else if (value instanceof String[]) {
-         	Set newValues = new HashSet();
-         	String[] vals = (String[]) value;
-         	for (int i=0;i<vals.length; ++i) {
-         		newValues.add(vals[i]);
-         	}
-         	setValue(newValues);
+         	if (values == null) values = new LinkedHashSet();
+         	values.addAll(newValues);
          } else if (value instanceof CommaSeparatedValue) {
         	 //store as a string
         	 setValue(value.toString());
@@ -339,18 +413,9 @@ public class CustomAttribute  {
         	owner.getEntity().addEvent(e);
          	stringValue = e.getId();
          } else if (value instanceof Survey) {
-          	clearVals();
+        	 setValue(value.toString());
             valueType = SURVEY;
-            String val = (String) value.toString();
-            // this is returning unicode-16 lengths
-            if (val.length() <= 1000) {
-                stringValue=val;
-                description = null;
-            } else {
-                description = new Description(val);
-                stringValue = null;
-            }
-          } else {
+         } else {
             if (valueType != SERIALIZED) clearVals();
             valueType = SERIALIZED;
             serializedValue = new SSBlobSerializable(value);
@@ -390,7 +455,8 @@ public class CustomAttribute  {
            			throw new IllegalArgumentException(ex.getLocalizedMessage());
     	    	}
     	    case SET:
-    	    	Set v = new HashSet();
+    	    case ORDEREDSET:
+    	    	Set v = new LinkedHashSet();
     	    	if (iValues == null) {
     	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
     	    			v.add(((CustomAttributeListElement)iter.next()).getValue());
@@ -411,6 +477,7 @@ public class CustomAttribute  {
 	 		    return null;
     		case ATTACHMENT:
     			return owner.getEntity().getAttachment(stringValue);
+
  	    }
 	    return null;
 	}
@@ -419,8 +486,8 @@ public class CustomAttribute  {
 		if (result instanceof Set) return (Set)result;
 		if (result instanceof CommaSeparatedValue) 
 			return ((CommaSeparatedValue)(result)).getValueSet();
-    	Set v = new HashSet();
-    	v.add(result);
+    	Set v = new LinkedHashSet();
+    	if (result != null) v.add(result);
     	return v;
 		
 	}
@@ -454,16 +521,11 @@ public class CustomAttribute  {
 	    if (getValueType() == SET ) {
   			element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE_SET);
   			element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
-   	    	if (iValues == null) {
-   	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-   	    			((CustomAttributeListElement)iter.next()).addChangeLog(element);
-  	    		}
-   	    	} else {
-   	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-   	    			((CustomAttributeListElement)iter.next()).addChangeLog(element);
-   	    		}
-   	    	}
-	    } else {
+  			//don't use ivalues = not ordered correctly
+    		for (Iterator iter=values.iterator(); iter.hasNext();) {
+	    			((CustomAttributeListElement)iter.next()).addChangeLog(element);
+    		}
+ 	    } else {
 	    	switch(getValueType()) {
        			case STRING:
        				if (!Validator.isNull(stringValue))

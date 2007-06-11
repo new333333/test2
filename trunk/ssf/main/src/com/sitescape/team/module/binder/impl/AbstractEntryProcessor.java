@@ -30,8 +30,10 @@ import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.SFQuery;
+import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
@@ -72,6 +74,7 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 /**
  *
@@ -678,7 +681,39 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         //Call the definition processor to get the entry data to be stored
         Definition def = entry.getEntryDef();
         if (def != null) {
-            return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+            Map entryDataAll = getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+            //see if request to reorder attachments is present
+            Map<String, CustomAttribute> attrs = entry.getCustomAttributes();
+            for (Map.Entry<String, CustomAttribute> me: attrs.entrySet()) {
+            	String name = me.getKey();
+			    String key = name + ObjectKeys.INPUT_FIELD_ORDER_SUFFIX;
+			    if (inputData.exists(key)) {
+			    	String val = inputData.getSingleValue(key);
+			    	if (Validator.isNull(val)) continue;
+			    	String [] vals = StringUtil.split(val, " ");
+			    	//the values are the string id of an attachment
+			    	CustomAttribute current = me.getValue();
+			    	Object currentObj = current.getValue();
+			    	if (!(currentObj instanceof Collection)) continue;
+			    	Collection currentVal = (Collection)currentObj;
+			    	//if not the same size, something is wrong
+			    	if (currentVal.size() != vals.length) continue;
+			    	List attVals = new ArrayList();
+			    	boolean process = true;
+			    	for (int i=0; i<vals.length; ++i) {
+			    		String id = vals[i];
+			    		Attachment file = entry.getAttachment(id);
+			    		if (file != null) attVals.add(file);
+			    		else {
+			    			process = false;
+			    			break;
+			    		}
+			    	}
+			    	if (process) current.setValue(attVals);
+			    }
+	
+            }
+            return entryDataAll;
         } else {
            	Map entryDataAll = new HashMap();
 	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  new HashMap());

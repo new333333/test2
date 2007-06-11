@@ -491,7 +491,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     		if (type == CustomAttribute.ATTACHMENT) {
     			if (attachment.equals(attr.getValue())) 
     				removeCustomAttribute(attr);
-    		} else if (type == CustomAttribute.SET) {
+    		} else if ((type == CustomAttribute.SET) || (type == CustomAttribute.ORDEREDSET)) {
     			Set vals = (Set)attr.getValue();
     			//if in set, see if set now empty, otherwise update value
     			if (vals.remove(attachment)) {	
