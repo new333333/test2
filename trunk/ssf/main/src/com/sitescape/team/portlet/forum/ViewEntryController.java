@@ -51,14 +51,12 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
@@ -191,7 +189,7 @@ public class ViewEntryController extends  SAbstractController {
 			} else {
 				fe = getShowEntry(entryId, formData, request, response, folderId, model);
 			}
-			buildEntryToolbar(request, response, model, fe, userProperties);
+			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
 			setRepliesAccessControl(model, fe);
 
 			//Build the navigation beans
@@ -304,7 +302,7 @@ public class ViewEntryController extends  SAbstractController {
 	}
 	
 	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, 
-			Map model, FolderEntry entry, Map userProperties) {
+			Map model, FolderEntry entry, String viewType, Map userProperties) {
 
 		PortletURL url;
 		
@@ -343,10 +341,7 @@ public class ViewEntryController extends  SAbstractController {
 		String entryDefId=def.getId().toString();
 		String entryId = entry.getId().toString();
 		String folderId = entry.getParentFolder().getId().toString();
-		
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
-		String viewType = getViewType(folderId);
-		
+				
 	    //Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		if (getFolderModule().testAccess(entry, "addReply")) {
@@ -497,7 +492,7 @@ public class ViewEntryController extends  SAbstractController {
 			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
 		}
 
-		Iterator itWorkflows = binder.getWorkflowDefinitions().iterator();
+		Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
 		if (itWorkflows.hasNext() && getFolderModule().testAccess(entry, "modifyEntry")) {
 			//The "Workflow" menu
 			Map qualifiers = new HashMap();

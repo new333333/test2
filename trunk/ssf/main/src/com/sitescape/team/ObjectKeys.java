@@ -32,7 +32,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_USER_DEF="402883b90cc53079010cc539bf260007";
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
 
-	
+	//reserved internalIds for templates.
 	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
 	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
@@ -43,6 +43,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 	public static final String DEFAULT_FOLDER_LIBRARY_CONFIG="402883b90d0de1f3010d0df5582b0011";
 	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883c1129b1f8101129b28bc620003";
+	public static final String DEFAULT_TEAM_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620004";
 	
 	public static final String DEFAULT_ENTRY_TASK_CONFIG="402883c1129b1f8101129b28bbe50002";
 	public static final String DEFAULT_ENTRY_CALENDAR_CONFIG="402883c6115753d80111577dbe29000d";
