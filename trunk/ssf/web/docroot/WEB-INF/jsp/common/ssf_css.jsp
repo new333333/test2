@@ -2214,9 +2214,9 @@ a:hover img.ss_generic_close {
 
 img.ss_accessory_modify {
 	position:relative;
-    background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left -18px;
-    width:18px;
-    height: 18px;
+    background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left -16px;
+    width:16px;
+    height: 16px;
 }
 
 a:hover img.ss_accessory_modify {
