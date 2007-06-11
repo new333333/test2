@@ -32,6 +32,19 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 
 
+<c:choose>
+	<c:when test="${list_type == 'user'}">
+		<c:set var="accessibilityText" value="navigation.findUser" />
+	</c:when>
+	<c:when test="${list_type == 'group'}">
+		<c:set var="accessibilityText" value="navigation.findGroup" />
+	</c:when>
+	<c:otherwise>">
+		<c:set var="accessibilityText" value="" />
+	</c:otherwise>
+</c:choose>
+
+
 <input type="hidden" name="<%= userListElementName %>" id="ss_usersListInput${prefix}"/>		
 <table class="ss_style" cellspacing="0px" cellpadding="0px" style="padding-bottom:5px;">
 <tbody>
@@ -47,12 +60,7 @@
     clickRoutineArgs="${prefix}"
     leaveResultsVisible="${leaveResultsVisible}"
     singleItem="true"
-    <c:if test="${list_type == 'user'}">
-    	accessibilityText="navigation.findUser"
-    </c:if>
-    <c:if test="${list_type == 'group'}">
-    	accessibilityText="navigation.findGroup"
-    </c:if>
+    accessibilityText="${accessibilityText}"
     /> 
     <c:if test="${list_type == 'user'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
