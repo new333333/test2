@@ -1223,16 +1223,17 @@ public static final String[] monthNamesShort = {
 			folderToolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
 			//Add
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			qualifiers = new HashMap();
-			qualifiers.put("popup", Boolean.TRUE);
-			qualifiers.put("popupWidth", "500");
-			qualifiers.put("popupHeight", "600");
-			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
-			
+			if (getBinderModule().testAccess(folder, "setTeamMembers")) {
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+				qualifiers = new HashMap();
+				qualifiers.put("popup", Boolean.TRUE);
+				qualifiers.put("popupWidth", "500");
+				qualifiers.put("popupHeight", "600");
+				folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
+			}
 			//View
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
