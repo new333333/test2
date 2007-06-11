@@ -44,13 +44,13 @@
   </c:if>
   <input type="checkbox" name="number" ${numberChecked}> <ssf:nlt tag="folder.column.Number"/><br/>
   <input type="checkbox" name="title" ${titleChecked}> <ssf:nlt tag="folder.column.Title"/><br/>
+  <input type="checkbox" name="size" ${htmlChecked}> <ssf:nlt tag="folder.column.Size"/><br/>
   <input type="checkbox" name="download" ${htmlChecked}> <ssf:nlt tag="folder.column.Download"/><br/>
   <input type="checkbox" name="html" ${htmlChecked}> <ssf:nlt tag="folder.column.Html"/><br/>
   <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>
   <input type="checkbox" name="author" ${authorChecked}> <ssf:nlt tag="folder.column.Author"/><br/>
   <input type="checkbox" name="date" ${dateChecked}> <ssf:nlt tag="folder.column.LastActivity"/><br/>
   <br/>
-  
   
   <c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
   	
