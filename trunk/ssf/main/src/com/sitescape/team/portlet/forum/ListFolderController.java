@@ -159,6 +159,9 @@ public static final String[] monthNamesShort = {
 						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
 				//Reset the column positions to the default
 			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
+				//Reset the Sort Order information in the User Properties
+				getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), ObjectKeys.SEARCH_SORT_BY, "");
+				getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), ObjectKeys.SEARCH_SORT_DESCEND, "");
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");

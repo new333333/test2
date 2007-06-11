@@ -16,6 +16,7 @@
 <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.getProperty("userFolderColumns");
 	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
 		ssFolderColumns.put("title", "title");
 		ssFolderColumns.put("size", "size");
 		ssFolderColumns.put("download", "download");

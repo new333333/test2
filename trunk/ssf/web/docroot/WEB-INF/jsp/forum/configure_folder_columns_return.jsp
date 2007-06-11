@@ -24,6 +24,10 @@
 <c:if test="${empty folderColumns || !empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
 <c:set var="titleChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
+<c:set var="sizeChecked" value=""/>
+<c:if test="${empty folderColumns || !empty folderColumns.size}"><c:set var="sizeChecked" value="checked"/></c:if>
+<c:set var="downloadChecked" value=""/>
+<c:if test="${empty folderColumns || !empty folderColumns.download}"><c:set var="downloadChecked" value="checked"/></c:if>
 <c:set var="htmlChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.html}"><c:set var="htmlChecked" value="checked"/></c:if>
 <c:set var="stateChecked" value=""/>
@@ -44,8 +48,8 @@
   </c:if>
   <input type="checkbox" name="number" ${numberChecked}> <ssf:nlt tag="folder.column.Number"/><br/>
   <input type="checkbox" name="title" ${titleChecked}> <ssf:nlt tag="folder.column.Title"/><br/>
-  <input type="checkbox" name="size" ${htmlChecked}> <ssf:nlt tag="folder.column.Size"/><br/>
-  <input type="checkbox" name="download" ${htmlChecked}> <ssf:nlt tag="folder.column.Download"/><br/>
+  <input type="checkbox" name="size" ${sizeChecked}> <ssf:nlt tag="folder.column.Size"/><br/>
+  <input type="checkbox" name="download" ${downloadChecked}> <ssf:nlt tag="folder.column.Download"/><br/>
   <input type="checkbox" name="html" ${htmlChecked}> <ssf:nlt tag="folder.column.Html"/><br/>
   <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>
   <input type="checkbox" name="author" ${authorChecked}> <ssf:nlt tag="folder.column.Author"/><br/>
