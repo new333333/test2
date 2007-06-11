@@ -330,7 +330,7 @@ public class AccessUtils  {
  			//check explicit users
  			Set allowedIds = acl.getPrincipals();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
-        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.add(binder.getTeamMemberIds());
+        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
 			if (testAccess(user, allowedIds)) return;
  			
  			if (acl.isUseDefault()) { 		
@@ -353,7 +353,7 @@ public class AccessUtils  {
  			//This basically AND's the binder and entry, since we already passed the binder
 			Set allowedIds = acl.getPrincipals();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
-        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.add(binder.getTeamMemberIds());
+        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
  			if (testAccess(user, allowedIds)) return;
  			 throw new AclAccessControlException(user.getName(), type.toString());
    		}
