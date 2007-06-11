@@ -341,6 +341,17 @@ a img.ss_icon_link {
   border: 0px solid black;
 }
 
+a.ss_download_link {
+	border: 0px solid #666666;
+	font-size: ${ss_style_font_finestprint};
+	background-image: url(<html:imagesPath/>icons/accessory_move_down.gif);
+	background-repeat: no-repeat;
+	background-position: left center;
+	padding-left: 15px;
+	padding-right: 0px;
+	line-height: 11px;
+}
+
 .ss_largestprint {
   font-size: ${ss_style_font_largestprint} !important; 
 }  
