@@ -107,6 +107,7 @@ public class EntityIndexUtils {
     public static final String FILE_EXT_FIELD = "_fileExt";
     public static final String FILE_TYPE_FIELD = "_fileType";
     public static final String FILE_ID_FIELD = "_fileID";
+    public static final String FILE_SIZE_FIELD = "_fileSize";
     public static final String FILE_UNIQUE_FIELD="_fileNameUnique";
     public static final String RATING_FIELD="_rating";
     public static final String ENTITY_FIELD="_entityType";
@@ -622,11 +623,18 @@ public class EntityIndexUtils {
     	doc.removeFields(FILE_ID_FIELD);
     	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
+    	doc.removeFields(FILE_SIZE_FIELD);
+    	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	doc.add(fileSizeField); 
     }
 
     public static void appendFileAttachmentUid(Document doc, FileAttachment fa) {
     	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
+    	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	doc.add(fileSizeField); 
+      	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	doc.add(fileNameField);
     }
     
     // in the _allText field for this attachment, just add the contents of

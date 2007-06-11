@@ -15,7 +15,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<%
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "";
+if (isIECheck) strBrowserType = "ie";
+%>
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 
 <%
@@ -161,6 +167,47 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
     </ssf:slidingTableColumn>
   </c:if>
 
+  <c:if test="${!empty ssFolderColumns['size']}">
+    <ssf:slidingTableColumn width="12%">
+
+    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_fileSize"/>
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  </c:otherwise>
+		</c:choose>
+		<portlet:param name="tabId" value="${tabId}"/>
+	</portlet:actionURL>">
+    	<ssf:nlt tag="folder.column.Size"/>
+	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
+			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+		</c:if>
+	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'false' }">
+			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+		</c:if>
+    <a/>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['download']}">
+    <ssf:slidingTableColumn width="13%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Download"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['html']}">
+    <ssf:slidingTableColumn width="10%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Html"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+
   <c:if test="${!empty ssFolderColumns['state']}">
     <ssf:slidingTableColumn width="20%">
 
@@ -289,13 +336,22 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 	String seenStyle = "";
 	String seenStyleAuthor = "";
-	String seenStyleFine = "class=\"ss_finePrint\"";
+	String seenStyleFine = "class=\"ss_fineprint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
 		seenStyle = "class=\"ss_unseen\"";
 		seenStyleAuthor="ss_unseen";
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
+	boolean hasFile = false;
+	boolean oneFile = false;
+	if (entry1.containsKey("_fileID")) {
+		String srFileID = entry1.get("_fileID").toString();
+		hasFile = true;
+		if (!srFileID.contains(",")) oneFile = true;
+	}
 %>
+<c:set var="hasFile2" value="<%= hasFile %>"/>
+<c:set var="oneFile2" value="<%= oneFile %>"/>
 <ssf:slidingTableRow id="<%= folderLineId %>">
 
  <c:if test="${!empty ssFolderColumns['number']}">
@@ -331,7 +387,49 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${!empty ssFolderColumns['state']}">
+ <c:if test="${!empty ssFolderColumns['size']}">
+  <ssf:slidingTableColumn>
+    <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileSize}">
+      <span <%= seenStyle %>>${entry1._fileSize}KB</span>
+    </c:if>
+  </ssf:slidingTableColumn>
+ </c:if>
+  
+ <c:if test="${!empty ssFolderColumns['download']}">
+  <ssf:slidingTableColumn>
+    <c:if test="${hasFile2 && oneFile2}">
+      <a href="<ssf:url 
+	    webPath="viewFile"
+	    folderId="${entry1._binderId}"
+	    entryId="${entry1._docId}" >
+		<ssf:param name="entityType" value="${entry1._entityType}"/>
+	    <ssf:param name="fileId" value="${entry1._fileID}"/>
+	    </ssf:url>"
+		onClick="return ss_openUrlInWindow(this, '_blank');"
+	  ><span <%= seenStyle %>>[<ssf:nlt tag="entry.download"/>]</span></a>
+    </c:if>
+  </ssf:slidingTableColumn>
+ </c:if>
+  
+ <c:if test="${!empty ssFolderColumns['html']}">
+  <ssf:slidingTableColumn>
+    <c:if test="${hasFile2 && oneFile2}">
+		<ssf:ifSupportsViewAsHtml relativeFilePath="${entry1._fileName}" browserType="<%=strBrowserType%>">
+			<a target="_blank" style="text-decoration: none;" href="<ssf:url 
+				webPath="viewFile"
+			    folderId="${entry1._binderId}"
+			    entryId="${entry1._docId}" >
+				<ssf:param name="entityType" value="${entry1._entityType}"/>
+			    <ssf:param name="fileId" value="${entry1._fileID}"/>
+			    <ssf:param name="viewType" value="html"/>
+			    </ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> 
+			><span <%= seenStyle %>>[<ssf:nlt tag="entry.HTML" />]</span></a>
+		</ssf:ifSupportsViewAsHtml>
+    </c:if>
+  </ssf:slidingTableColumn>
+ </c:if>
+  
+<c:if test="${!empty ssFolderColumns['state']}">
   <ssf:slidingTableColumn>
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
