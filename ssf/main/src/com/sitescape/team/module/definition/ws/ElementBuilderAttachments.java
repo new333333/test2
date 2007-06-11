@@ -10,18 +10,12 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebUrlUtil;
 
 /**
 * Handle unnamed attachments in mail notification.  This implememtation will
@@ -33,7 +27,7 @@ public class ElementBuilderAttachments extends AbstractElementBuilderFile {
 	protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
 		if (entity instanceof FolderEntry) {
 			FolderEntry fEntry = (FolderEntry)entity;
-			List atts = entity.getFileAttachments();
+			Collection atts = entity.getFileAttachments();
 			generateValues(atts, element, fEntry, "file");
 		}
 		return true;

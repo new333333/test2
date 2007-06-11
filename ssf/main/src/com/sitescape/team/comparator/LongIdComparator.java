@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.util;
+package com.sitescape.team.comparator;
 
 import java.util.Comparator;
 

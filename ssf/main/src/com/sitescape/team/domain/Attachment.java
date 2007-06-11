@@ -82,5 +82,6 @@ public abstract class Attachment extends PersistentTimestampObject
     	return true;
     	
     }
+
     public abstract Element addChangeLog(Element parent); 
 }

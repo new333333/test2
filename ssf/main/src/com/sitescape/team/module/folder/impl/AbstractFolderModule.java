@@ -34,6 +34,7 @@ import org.springframework.beans.factory.InitializingBean;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
@@ -62,7 +63,6 @@ import com.sitescape.team.jobs.FillEmailSubscription;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.AccessUtils;
-import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.FilesErrors;
@@ -793,9 +793,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     		// Now that lock states are up-to-date, we can examine them.
     		
     		boolean atLeastOneFileLockedByAnotherUser = false;
-    		List fAtts = entry.getFileAttachments();
-    		for(int i = 0; i < fAtts.size(); i++) {
-    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+    		Collection<FileAttachment> fAtts = entry.getFileAttachments();
+    		for(FileAttachment fa :fAtts) {
     			if(fa.getFileLock() != null && !fa.getFileLock().getOwner().equals(user)) {
     				atLeastOneFileLockedByAnotherUser = true;
     				break;
@@ -811,8 +810,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     		else { // One or more lock is held by someone else.
     			// Build error information.
     			List<FileLockInfo> info = new ArrayList<FileLockInfo>();
-	    		for(int i = 0; i < fAtts.size(); i++) {
-	    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+        		for(FileAttachment fa :fAtts) {
 	    			if(fa.getFileLock() != null) {
 	    				info.add(new FileLockInfo
 	    						(fa.getRepositoryName(), 

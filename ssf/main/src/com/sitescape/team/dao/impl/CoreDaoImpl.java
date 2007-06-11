@@ -40,6 +40,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.LongIdComparator;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
@@ -73,7 +74,6 @@ import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.Constants;
-import com.sitescape.team.util.LongIdComparator;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 /**

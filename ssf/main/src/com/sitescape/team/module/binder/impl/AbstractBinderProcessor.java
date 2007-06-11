@@ -39,6 +39,7 @@ import com.sitescape.team.docconverter.TextConverter;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
@@ -86,6 +87,7 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -584,6 +586,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
+    	reorderFiles(binder, inputData, entryData);
     	processChangeLog(binder, ChangeLog.MODIFYBINDER);
     	getReportModule().addAuditTrail(AuditType.modify, binder);
    }
@@ -1229,7 +1232,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param newEntry
      */
 	protected void indexBinderWithAttachments(Binder binder,
-			List fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			indexDeleteBinder(binder);	        
@@ -1244,8 +1247,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         IndexSynchronizationManager.addDocument(indexDoc);        
         
         //Create separate documents one for each attached file and index them.
-        for(int i = 0; i < fileAttachments.size(); i++) {
-        	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
+        for(FileAttachment fa : fileAttachments) {
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
@@ -1517,6 +1519,40 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				return fui;
 		}
 		return null;
+	}
+	protected void reorderFiles(DefinableEntity entity, InputDataAccessor inputData, Map entryData) {
+        //see if request to reorder attachments is present
+        Map<String, CustomAttribute> attrs = entity.getCustomAttributes();
+        for (Map.Entry<String, CustomAttribute> me: attrs.entrySet()) {
+        	String name = me.getKey();
+		    String key = name + ObjectKeys.INPUT_FIELD_ORDER_SUFFIX;
+		    if (inputData.exists(key)) {
+		    	String val = inputData.getSingleValue(key);
+		    	if (Validator.isNull(val)) continue;
+		    	String [] vals = StringUtil.split(val, " ");
+		    	//the values are the string id of an attachment
+		    	CustomAttribute current = me.getValue();
+		    	Object currentObj = current.getValue();
+		    	if (!(currentObj instanceof Collection)) continue;
+		    	Collection currentVal = (Collection)currentObj;
+		    	//if not the same size, something is wrong
+		    	if (currentVal.size() != vals.length) continue;
+		    	List attVals = new ArrayList();
+		    	boolean process = true;
+		    	for (int i=0; i<vals.length; ++i) {
+		    		String id = vals[i];
+		    		Attachment file = entity.getAttachment(id);
+		    		if (file != null) attVals.add(file);
+		    		else {
+		    			process = false;
+		    			break;
+		    		}
+		    	}
+		    	if (process) current.setValue(attVals);
+		    }
+
+        }
+		
 	}
 	public ChangeLog processChangeLog(Binder binder, String operation) {
 		ChangeLog changes = new ChangeLog(binder, operation);
