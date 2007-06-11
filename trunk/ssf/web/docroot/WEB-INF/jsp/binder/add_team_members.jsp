@@ -20,20 +20,32 @@
   method="post" onSubmit="return ss_onSubmit(this);">
 <span class="ss_titlebold"><ssf:nlt tag="team.addDeleteMembers"/></span></br></br>
 
-<span class="ss_bold"><ssf:nlt tag="team.inheritTeamFromParent"/></span><br/>
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
 <c:if test="${ssBinder.teamMembershipInherited}">
-<input type="radio" name="inherit" value="true" checked/><span><ssf:nlt tag="yes"/></span>
-&nbsp;&nbsp;&nbsp;
-<input type="radio" name="inherit" value="false"/><span><ssf:nlt tag="no"/></span>
+<tr>
+  <td colspan="3"><span class="ss_bold"><ssf:nlt tag="team.inheritingTeamFromParent"/></span></td>
+</tr>
+<tr>
+  <td>&nbsp;&nbsp;&nbsp;</td>
+  <td><ssf:nlt tag="team.inheritTeamFromParent.no"/></td>
+  <td><input type="submit" class="ss_submit" name="inheritBtnNo" value="<ssf:nlt tag="button.Yes"/>" 
+    onClick="ss_buttonSelect('inheritBtnNo');">
+  </td>
+</tr>
 </c:if>
 <c:if test="${!ssBinder.teamMembershipInherited}">
-<input type="radio" name="inherit" value="true"/><span><ssf:nlt tag="yes"/></span>
-&nbsp;&nbsp;&nbsp;
-<input type="radio" name="inherit" value="false" checked/><span><ssf:nlt tag="no"/></span>
+<tr>
+  <td colspan="3"><span class="ss_bold"><ssf:nlt tag="team.inheritingTeamFromParentNot"/></span></td>
+</tr>
+<tr>
+  <td>&nbsp;&nbsp;&nbsp;</td>
+  <td><ssf:nlt tag="team.inheritTeamFromParent.yes"/></td>
+  <td><input type="submit" class="ss_submit" name="inheritBtnYes" value="<ssf:nlt tag="button.Yes"/>" 
+    onClick="ss_buttonSelect('inheritBtnYes');">
+  </td>
+</tr>
 </c:if>
-&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>" 
-  onClick="ss_buttonSelect('applyBtn');">
+</table>
 <br/>
 <br/>
 
