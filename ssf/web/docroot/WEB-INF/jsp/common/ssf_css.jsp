@@ -274,8 +274,8 @@ body.ss_style_body {
 }
 
 .ss_style td, .ss_style th {
-  font-family: ${ss_style_font_family};
-  font-size: ${ss_style_font_size}; 
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: ${ss_style_font_smallprint}; 
   color: ${ss_style_text_color};
 }
 
@@ -3557,6 +3557,7 @@ div.ss_smallRBoxBody {
 
 div.ss_profileBox1 {
   background: ${ss_style_header_bar_background};
+  font-family:${ss_style_folder_view_font_family};
 }
 
 div.ss_profileBox2 {
@@ -3564,7 +3565,7 @@ div.ss_profileBox2 {
 }
 
 div.ss_profile_box_title {
-  font-size: 15px;
+  font-size: 13px;
   color: ${ss_style_metadata_color};
   height: 20px;
 }
