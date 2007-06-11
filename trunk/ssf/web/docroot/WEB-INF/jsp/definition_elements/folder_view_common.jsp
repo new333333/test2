@@ -404,9 +404,9 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	    entryId="${entry1._docId}" >
 		<ssf:param name="entityType" value="${entry1._entityType}"/>
 	    <ssf:param name="fileId" value="${entry1._fileID}"/>
-	    </ssf:url>"
+	    </ssf:url>"  class="ss_download_link"
 		onClick="return ss_openUrlInWindow(this, '_blank');"
-	  ><span <%= seenStyle %>>[<ssf:nlt tag="entry.download"/>]</span></a>
+	  ><span><ssf:nlt tag="entry.download"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
