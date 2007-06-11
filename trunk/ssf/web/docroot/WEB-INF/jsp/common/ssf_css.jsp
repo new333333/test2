@@ -136,40 +136,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 <% //GUESTBOOK %>
 	<c:set var="ss_guestbook_rule_color" value="#AFC8E3" scope="request"/>
-	 
-
-<% //TOOLBAR %>
-
-    <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
-    <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
-    <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-    <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
-    <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
-    <c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
-    
-	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
-	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
-	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
-	<c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/>
-	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>
-
-	<c:set var="ss_toolbar2_background_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/>
-	<c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
-	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
-	<c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/>
-
-	<c:set var="ss_toolbar4_background_color" value="#DBE6F2" scope="request"/>
-	<c:set var="ss_toolbar4_text_color" value="#666666" scope="request"/>
-	<c:set var="ss_toolbar4_link_hover_color" value="#E8EFF7" scope="request"/>
-	<c:set var="ss_toolbar4_border_color" value="#DBE6F2" scope="request"/>
-	<c:set var="ss_toolbar4_dropdown_menu_color" value="#DBE6F2" scope="request"/>
-	<c:set var="ss_toolbar4_inactive" value="#333333" scope="request"/>
-	
-	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
 	
 <% //HELP COLORS %>
 	<c:set var="ss_help_spot_background_color" value="#E8EFF7" scope="request"/>
@@ -180,12 +146,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
     <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
     <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>	
-    
+
+<% //ICON LABEL COLORS	 %> 
+	<c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
+
 <%  //LINK COLORS   %>
 	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_link_visited_color" value="#333333" scope="request"/>	
-	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 
-	
+	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/> 	
 	
 <% //METADATA COLORS %>
 
@@ -193,7 +161,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     
 <% //MUTED %>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
-	<c:set var="ss_style_muted_label_color" value="#003782" scope="request"/>
+	<c:set var="ss_style_muted_label_color" value="#666666" scope="request"/>
+	<c:set var="ss_style_muted_tag_color" value="#003782" scope="request"/>
+	
 			
 <% //PORTLET COLORS	 %>
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
@@ -218,7 +188,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <% //TOOLBARs %>
 
-
     <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
     <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
     <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
@@ -250,13 +219,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
 	
-	
+
 	<% //REPLYS %>
 	<c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/>
 	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
 	
 <% //TITLE	 %>
-	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
+	<c:set var="ss_title_line_color" value="#003782" scope="request"/>
 
 <% //TREE	 %>
 	<c:set var="ss_tree_highlight_line_color" value="#999966" scope="request"/>
@@ -290,6 +259,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="<%= isIE %>">
 html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); } 
 </c:if>
+
 
 body.ss_style_body {
 	margin: 0px 2px 0px 2px;
@@ -460,7 +430,6 @@ div.ss_replies div.ss_entryContent {
 div.ss_replies div.ss_entryDescription {
 	background-color: ${ss_replies_background_color};
 }
-
 
 .ss_style_color, .ss_style_color table, .ss_style form {
   color: ${ss_style_text_color};
@@ -700,7 +669,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   font-size: ${ss_style_font_normalprint};
 }
 
-
 div.ss_iconed_label {
   display: inline;
   font-family: ${ss_style_title_font_family};
@@ -727,7 +695,7 @@ div.ss_iconed_label a {
 }
 
 .ss_muted_cloud_tag {
-  color: ${ss_style_muted_label_color};
+  color: ${ss_style_muted_tag_color};
 }
 .ss_muted_tag_cloud {
   width: 70%;
@@ -780,7 +748,6 @@ div.ss_send_friend {
   padding:2px;
   background-color:${ss_style_background_color};
   }
-
 
 table.ss_popup {
 	position: relative;
@@ -1614,7 +1581,6 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   color: ${ss_tree_highlight_line_color};
   text-decoration: underline !important;
   }
-
   
 .ss_tree_bucket_text_div {
   position:absolute;
@@ -2069,12 +2035,11 @@ div.ss_global_toolbar_help {
 span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch {
 	color:#333333;
 	background: transparent;
-	font-weight: bold;	
 	white-space: nowrap;
 }
 
 span.ss_global_toolbar_label_text_quickSearch {
-	font-size: 9px;
+	font-size: 10px;
 }
 span.ss_global_toolbar_label_text {
 	font-size: 10px;
@@ -2106,8 +2071,6 @@ div.ss_global_toolbar_search_text {
 div.ss_global_toolbar_search_text span {
 	background:inherit !important;
 }
-
-
 
 
 /* tabs: */
@@ -2272,7 +2235,6 @@ span.ss_tabs_title {
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
-
 
 
 /* titlebar */
@@ -2820,7 +2782,7 @@ div.ss_bottomlinks {
 
 /* Profile elements */
 .ss_table_spacer_right {
-	padding-right:10px;
+	padding-right:3px;
 }
 
 /* Photo gallery */
