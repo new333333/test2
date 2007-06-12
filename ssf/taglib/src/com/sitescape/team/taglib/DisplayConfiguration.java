@@ -26,11 +26,16 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
+import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -145,6 +150,7 @@ public class DisplayConfiguration extends TagSupport {
 									}
 										
 								}
+								
 									
 								//not sure if this is necessary
 //								List<Element> itProperties = nextItem.selectNodes("properties/property");

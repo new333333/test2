@@ -240,6 +240,10 @@
 		</item>
 	</item>
 	<item name="entryView" caption="__entry_view_definition" id="9">
+		<properties>
+			<property name="type" value="entryView"/>
+		</properties>
+		
 		<item name="titleView" caption="__title" id="10">
 			<properties>
 				<property name="caption" value="__title"/>
@@ -271,9 +275,6 @@
 			</properties>
 		</item>
 		
-		<properties>
-			<property name="type" value="task"/>
-		</properties>
 		<item name="entryDataItem" type="dataView" caption="__entry_data_item"
 			category="entryViewData" id="48" formItem="selectbox">
 			<properties>
@@ -318,6 +319,10 @@
 		</item>
 	</item>
 	<item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
+		<properties>
+			<property name="type" value="blog"/>
+		</properties>
+		
 		<item name="titleBlogView" caption="__title" id="17">
 			<properties>
 				<property name="caption" value="__title"/>
@@ -343,10 +348,6 @@
 				<property name="caption" value="__entry_replies"/>
 			</properties>
 		</item>
-		
-		<properties>
-			<property name="type" value="task"/>
-		</properties>
 		
 		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item"
 			category="blogEntryViewData" id="54" formItem="user_list">

@@ -170,6 +170,9 @@ public class ModifyEntryController extends SAbstractController {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
 				
+			Workspace ws = getWorkspaceModule().getWorkspace();
+			model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1));
+
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");

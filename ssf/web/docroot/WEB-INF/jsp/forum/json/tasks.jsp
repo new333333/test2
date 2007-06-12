@@ -16,21 +16,22 @@
 {
 tasks : [<%--
 --%><c:forEach var="entry" items="${ssFolderEntries}" varStatus="status"><%--
+  --%><jsp:useBean id="entry" type="java.util.HashMap" /><%--
   --%>{"title" : "<c:out value="${entry.title}" escapeXml="false"/>",
   		"id" : "${entry._docId}",
   		"dueDate" : "<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-					      value="${entry.dueDate}" type="both" 
+					      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
 						  timeStyle="short" dateStyle="short" />",
-  		"dueDateObj" : {year : <fmt:formatDate value="${entry.dueDate}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
-						month : <fmt:formatDate value="${entry.dueDate}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>, 
-						dayOfMonth : <fmt:formatDate value="${entry.dueDate}" pattern="d" timeZone="${ssUser.timeZone.ID}"/>,
-						hour : <fmt:formatDate value="${entry.dueDate}" pattern="H" timeZone="${ssUser.timeZone.ID}"/>,
-						minute : <fmt:formatDate value="${entry.dueDate}" pattern="m" timeZone="${ssUser.timeZone.ID}"/>},					  						  						  						  						 
+  		"dueDateObj" : {year : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
+						month : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="M" timeZone="${ssUser.timeZone.ID}"/>, 
+						dayOfMonth : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="d" timeZone="${ssUser.timeZone.ID}"/>,
+						hour : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="H" timeZone="${ssUser.timeZone.ID}"/>,
+						minute : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="m" timeZone="${ssUser.timeZone.ID}"/>},					  						  						  						  						 
 		"status" : "${entry.status}",
 		"completed" : "${entry.completed}",
 		"priority" : "${entry.priority}",
 		"completted" : "${entry.completed}",
-		"assigned" : [<c:forEach var="user" items="${entry.assignedUsers}" varStatus="assignedStatus">
+		"assigned" : [<c:forEach var="user" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>" varStatus="assignedStatus">
 						"${user.title}"<c:if test="${!assignedStatus.last}">,</c:if>
 					</c:forEach>]
 		}<c:if test="${!status.last}">,</c:if><%--

@@ -86,6 +86,7 @@
 		  showIdRoutine="parent.${ss_tree_showIdRoutine}"
 		  multiSelect="<%= ss_tree_select %>"
 		  multiSelectPrefix="${ss_tree_select_id}"
+			fixedMultiSelectParamsMode="${ss_tree_fixedMultiSelectParamsMode}" 			  
 		/>
 		<ssf:tree treeName="${ss_tree_treeName}" 
 		  treeDocument="<%= ssWsDomTree %>"  
@@ -96,6 +97,7 @@
 		  showIdRoutine="parent.${ss_tree_showIdRoutine}"
 		  multiSelect="<%= ss_tree_select %>"
 		  multiSelectPrefix="${ss_tree_select_id}"
+			fixedMultiSelectParamsMode="${ss_tree_fixedMultiSelectParamsMode}" 			  
 		/>
 	</c:when>
 </c:choose>

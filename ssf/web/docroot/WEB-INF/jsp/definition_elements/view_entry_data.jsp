@@ -58,6 +58,9 @@
 
 	} else if (itemType.equals("event")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
+	} else if (itemType.equals("places")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_places.jsp" %><%
+
 	} else if (itemType.equals("entryIcon")) {
         %>
         <c:if test="${!empty ssDefinitionEntry.iconName}">

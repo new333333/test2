@@ -44,7 +44,7 @@
 			<ssf:showUser user="${entry._principal}" />
 		</td>
 		<td>
-			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="date" pattern="dd MMM yyyy" />					
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="date" dateStyle="medium" />		
 		</td>
 	</tr>
 </c:forEach>

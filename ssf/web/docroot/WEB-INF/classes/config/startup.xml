@@ -10,6 +10,7 @@
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		
 	<definitionFile>config/definitions/_libraryEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_guestbookEntry.xml</definitionFile>		
+	<definitionFile>config/definitions/_milestoneEntry.xml</definitionFile>	
 	<definitionFile>config/definitions/_taskEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_surveyEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_surveyVote.xml</definitionFile>
@@ -21,6 +22,7 @@
 	<definitionFile>config/definitions/_discussionFolderTable.xml</definitionFile>
 	<definitionFile>config/definitions/_libraryFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_guestbookFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_milestoneFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_taskFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_surveyFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_photoFolder.xml</definitionFile>
@@ -32,6 +34,7 @@
 	<templateFile>config/templates/__template_folder.xml</templateFile>
 	<templateFile>config/templates/__template_folder_guestbook.xml</templateFile>
 	<templateFile>config/templates/__template_folder_library.xml</templateFile>
+	<templateFile>config/templates/__template_folder_milestone.xml</templateFile>
 	<templateFile>config/templates/__template_folder_photo.xml</templateFile>
 	<templateFile>config/templates/__template_user_workspace.xml</templateFile>
 	<templateFile>config/templates/__template_folder_wiki.xml</templateFile>

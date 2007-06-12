@@ -12,6 +12,7 @@
 %>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
 <% // This is JSON type AJAX response  %>
 {
 		"title" : "<c:out value="${ssEntry.title}" escapeXml="false"/>",
@@ -30,7 +31,7 @@
 		"priority" : <c:forEach var="priority" items="${ssEntry.customAttributes['priority'].valueSet}" varStatus="loopStatus">
 						<c:if test="${loopStatus.first}">"${priority}"</c:if>
 					</c:forEach>,
-		"assigned" : [<c:forEach var="user" items="${assignedUsers}" varStatus="assignedStatus">
+		"assigned" : [<c:forEach var="user" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assigned")) %>" varStatus="assignedStatus">
 						"${user.title}"<c:if test="${!assignedStatus.last}">,</c:if>
 					</c:forEach>]
 }

@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 
 import com.sitescape.team.dao.ProfileDao;
@@ -35,6 +37,8 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class MiniBusinessCard extends BodyTagSupport {
 
+	protected static final Log logger = LogFactory.getLog(MiniBusinessCard.class);
+	
 	private Principal user = null;
 
 	public int doStartTag() {
@@ -60,6 +64,7 @@ public class MiniBusinessCard extends BodyTagSupport {
 				try {
 					user1 = profileDao.loadUser(user.getId(), user.getZoneId());
 				} catch (Exception e) {
+					logger.error(e);
 				}
 			}
 
