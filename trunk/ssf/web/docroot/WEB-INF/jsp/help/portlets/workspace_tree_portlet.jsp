@@ -12,8 +12,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
+<div class="ss_help_style">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.workspaceTreePortlet"/></span>
+<div class="ss_titlebold"><ssf:nlt tag="helpSpot.workspaceTreePortlet"/></div>
 
 <p><ssf:nlt tag="help.workspaceTreePortlet.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
@@ -23,4 +24,5 @@
 
 <p><ssf:nlt tag="help.getStartedProduct.content.workspaces.access"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
+</div>
 </div>

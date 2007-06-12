@@ -11,12 +11,16 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
+
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span>
+</div>
 
 <p><ssf:nlt tag="help.myWorkspaceIcon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<ul style="list-style-type:disc;">
+<ul>
 
 <li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.pictures"/></li>
 
@@ -36,14 +40,13 @@
 
 <p><ssf:nlt tag="help.myWorkspaceIcon.content.ifNew"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/></p>
+</div>
 
-<div style="margin-left:25px;">
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/></p>
 
+<div class="ss_help_moreinfo">
 <p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
-
 <p><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.globalStrings.newWindow"/></a></p>
-
 </div>
 
 </div>

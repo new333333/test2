@@ -13,7 +13,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.bottomLinks"/> folder navigation bar</span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreFolderNavigation"/></span>
 
 <p><ssf:nlt tag="help.bottomLinks.intro" /></p>
 

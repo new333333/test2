@@ -926,6 +926,88 @@ img.ss_help_cpanel_hide {
   background-color:${ss_lightBox_background_color};
 }
 
+/******************************************************************/
+/* Help content */
+
+/* Horizontal and vertical spacing */
+DIV.ss_help_style {
+    text-align: left;
+}
+
+DIV.ss_help_title {
+    margin-top: 0px;
+    margin-bottom: 1px;
+}
+
+DIV.ss_help_style P {
+    margin-top: 2px;
+    margin-bottom: 10px;
+}
+
+DIV.ss_help_style LI {
+    margin-top: 3px;
+    margin-bottom: 6px;
+    margin-left: 10px;
+}
+
+DIV.ss_help_style UL, OL {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+DIV.ss_help_style UL {
+  list-style-type: square;
+}
+
+P.ss_help_moreinfo {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    color: ${ss_title_line_color};  
+}
+
+DIV.ss_help_moreinfo P {
+    margin-top: 3px;
+    margin-bottom: 1px;
+    margin-left: 15px;
+}
+
+DIV.ss_help_moreinfo {
+    margin-bottom: 3px;
+}
+
+DIV.ss_help_more_pages_section {
+    font-size: ${ss_style_font_smallprint};
+    text-align: center;
+    margin-bottom: 3px;
+    margin-top: 0px;
+}
+
+DIV.ss_help_more_pages_section DIV {
+    display: inline;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+DIV.ss_help_more_pages_section .not_last_link {
+    margin-right: 10px;
+}
+
+DIV.ss_help_more_pages_section .no_next_page {
+    color: ${ss_help_panel_background_color};
+}
+
+
+/*  Word styling */
+.clickable_item, .document_title, .light_emphasis, .new_term {
+    font-style: italic;
+}
+
+.strong-emphasis, .defined-item, .subtitle {
+    font-weight: bold;
+}
+
+
 /* Blogs */
 .ss_blog {
  
