@@ -10,11 +10,8 @@
  */
 package com.sitescape.team.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-
 import com.sitescape.team.SingletonViolationException;
+import com.sitescape.util.PropsUtil;
 
 /**
  * This class provides unified access to the SSF properties loaded from the 
@@ -30,12 +27,10 @@ import com.sitescape.team.SingletonViolationException;
  * @author jong
  *
  */
-public class SPropsUtil {
+public class SPropsUtil extends PropsUtil {
 	// This is a singleton class. 
 	
 	private static SPropsUtil instance; // A singleton instance
-	
-	private Properties props;
 	
 	public static final String DEBUG_WEB_REQUEST_ENV_PRINT = "debug.web.request.env.print";
 	
@@ -53,130 +48,6 @@ public class SPropsUtil {
 	}
 	
     public void setConfig(PropertiesClassPathConfigFiles config) {
-        this.props = config.getProperties();
+    	setProperties(config.getProperties());
     }
-	
-    public static Properties getProperties() {
-    	return getInstance().getProps();
-    }
-    
-	public static boolean containsKey(String key) {
-		return getInstance().getProps().containsKey(key);
-	}
-	
-	public static String getString(String key) throws ConfigPropertyNotFoundException {
-		return getRequired(key);
-	}
-	
-	public static String getString(String key, String defValue) {
-		String val = get(key);
-		if(val == null)
-			return defValue;
-		else
-			return val;		
-	}
-	
-	public static boolean getBoolean(String key) throws ConfigPropertyNotFoundException {
-		String val = getRequired(key);
-		
-		return Boolean.valueOf(val).booleanValue();
-	}
-	
-	public static boolean getBoolean(String key, boolean defValue) {
-		String val = get(key);
-		if(val == null)
-			return defValue;
-		else
-			return Boolean.valueOf(val).booleanValue();
-	}
-	
-	public static int getInt(String key) throws ConfigPropertyNotFoundException {
-		String val = getRequired(key);
-		
-		return Integer.parseInt(val);
-	}
-	
-	public static int getInt(String key, int defValue) {
-		String val = get(key);
-		if(val == null)
-			return defValue;
-		else
-			return Integer.parseInt(val);		
-	}
-	
-	public static String getDirPath(String key) throws ConfigPropertyNotFoundException, IOException {
-		String dirPath = new File(getString(key)).getAbsolutePath();
-		if(!dirPath.endsWith(File.separator))
-			dirPath += File.separator;
-		return dirPath;
-	}
-	
-	public static File getFile(String key) throws ConfigPropertyNotFoundException {
-		return new File(getString(key));
-	}
-	
-	public static String[] getStringArray(String key, String delim) {
-		String val = get(key);
-		if(val == null) {
-			return new String[0];
-		}
-
-		val = val.trim();
-		if(val.length() == 0)
-			return new String[0];
-
-		String[] vals = val.split(delim);
-		for(int i = 0; i < vals.length; i++)
-			vals[i] = vals[i].trim();
-		
-		return vals;
-	}
-	
-	private static String get(String key) {
-		return (String) getInstance().getProps().get(key);			
-	}
-    
-	private static String getRequired(String key) {
-		String val = get(key);
-		
-		if(val == null)
-			throw new ConfigPropertyNotFoundException(key);
-		else
-			return val;
-	}
-	
-    private static SPropsUtil getInstance() {
-    	return instance;
-    }
-    
-    private Properties getProps() {
-    	return props;
-    }
-    
-	//Property comma-separated lists
-	//Routine to get a combined String[] array
-	//  This routine combines the factory list and a user custom list (if any)
-	static public String[] getCombinedPropertyList(String name, String customPrefix) {
-		String[] propertyList = SPropsUtil.getStringArray(name, ",");
-		String[] customPropertyList = SPropsUtil.getStringArray(customPrefix + name, ",");
-		
-		String[] combinedPropertyList = new String[propertyList.length + customPropertyList.length];
-		int next = 0;
-		for (int i = 0; i < propertyList.length; i++) {
-			String propertyValue = propertyList[i].trim();
-			if (!propertyValue.equals("")) {
-				combinedPropertyList[next] = propertyValue;
-				next++;
-			}
-		}
-		for (int i = 0; i < customPropertyList.length; i++) {
-			String propertyValue = customPropertyList[i].trim();
-			if (!propertyValue.equals("")) {
-				combinedPropertyList[next] = propertyValue;
-				next++;
-			}
-		}
-		return combinedPropertyList;
-	}
-
 }

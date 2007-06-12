@@ -13,7 +13,7 @@
 <% // Tabs %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.team.util.ConfigPropertyNotFoundException" %>
+<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="numTabs" value="0"/>
 <c:forEach var="tab" items="${ss_tabs.tablist}">
@@ -122,7 +122,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 
 	try {
 		maxTitle = SPropsUtil.getInt("tabs.max.title");
-	} catch (ConfigPropertyNotFoundException e) {
+	} catch (PropertyNotFoundException e) {
 	}
 
 	String tabTitle = (String) tab.get("title");
