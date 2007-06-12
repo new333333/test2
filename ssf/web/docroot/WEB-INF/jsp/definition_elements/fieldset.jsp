@@ -21,8 +21,10 @@
 <c:if test="${!empty property_legend}">
 <legend class="ss_legend"><c:out value="${property_legend}"/></legend>
 </c:if>
+<table>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
+</table>
 </fieldset>
 </div>
