@@ -27,7 +27,7 @@
   <td valign="top">
     <span class="ss_bold"><c:out 
       value="${ssDefinitionEntry.customAttributes[property_name].value}" 
-      escapeXml="false"/></div>
+      escapeXml="false"/></span>
   </td>
 </tr>
 </c:if>
