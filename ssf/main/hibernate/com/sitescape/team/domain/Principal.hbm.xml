@@ -87,6 +87,7 @@
       <property name="password" access="field" length="64"/>
 	  <property name="timeZone" access="field" length="16"/>
 	  <property name="locale" access="field" length="32"/>
+	  <property name="digestSeed"/>
     </subclass>
   </class>
   <query name="find-User-Company"><![CDATA[from com.sitescape.team.domain.User user where user.name=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
