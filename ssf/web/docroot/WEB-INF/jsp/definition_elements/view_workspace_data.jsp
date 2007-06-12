@@ -14,6 +14,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" scope="request" />
+
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -36,9 +39,20 @@
 	
 	} else if (itemType.equals("attachFiles")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
-	
+
+	} else if (itemType.equals("selectbox")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_selectbox.jsp" %><%
+		
+	} else if (itemType.equals("date")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" %><%
+		
+	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_user_list.jsp" %><%
+
+	} else {
+        %>
+        It's <%= itemType %>, baby!
+        <%
 	}
-	
-	
 	
 %>
