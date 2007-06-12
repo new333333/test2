@@ -23,7 +23,7 @@
 	<c:set var="places_entry" value="${ssDefinitionEntry}"/>
 	<jsp:useBean id="places_entry" type="com.sitescape.team.domain.DefinableEntity" />
 	<%
-		if (propertyName != null && !propertyName.equals("")) { 
+		if (propertyName != null && !propertyName.equals("") && places_entry.getCustomAttribute(propertyName) != null) { 
 			folderIds = places_entry.getCustomAttribute(propertyName).getValueSet();
 		}
 		if (folderIds == null) {
