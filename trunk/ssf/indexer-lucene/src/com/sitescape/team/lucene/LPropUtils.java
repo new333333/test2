@@ -7,10 +7,11 @@ import java.util.Properties;
 public class LPropUtils {
 	private static Properties props;
 	private String propsFileName = "";
-	private static LPropUtils instance;
+	private static LPropUtils instance = null;
 	
 
 	public LPropUtils(String filename) throws IOException {
+		if (instance != null) return;
 		propsFileName = filename;
 		try {
 
@@ -25,9 +26,16 @@ public class LPropUtils {
 		instance = this;
 	}
 	
-	public static String getProp(String propName) {	
-		String retVal =props.getProperty(propName);
-		if (retVal == null) retVal = "";
-		return retVal;
+	
+	public static Properties getProps() throws IOException {	
+		if (instance == null) {
+			try {
+				new LPropUtils("lucene-server.properties");
+			} catch (IOException ioe) {
+				throw new IOException(
+						"The lucene-server.properties could not be found");
+			}
+		}
+		return instance.props;
 	}
 }

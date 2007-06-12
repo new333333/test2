@@ -15,11 +15,12 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
+
+import com.sitescape.util.PropsUtil;
 
 
 public class LuceneHelper {
@@ -30,7 +31,17 @@ public class LuceneHelper {
 	private static final int READ = 2;
 	private static final int WRITE = 3;
 
+	private static int maxMerge = 1000;
+	private static int mergeFactor = 10;
 
+	static {
+		try {
+			maxMerge = Integer.parseInt(PropsUtil.getString("lucene.max.merge.docs"));
+		} catch (Exception e) {};
+		try {
+			mergeFactor = Integer.parseInt(PropsUtil.getString("lucene.merge.factor"));
+		} catch (Exception e) {};
+	}
 
 	private static int prevState = SEARCH;
 
@@ -38,7 +49,6 @@ public class LuceneHelper {
 	private static IndexReader indexReader = null;
 	private static IndexSearcher indexSearcher = null;
 
-	
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		synchronized (LuceneHelper.class) {
@@ -161,6 +171,8 @@ public class LuceneHelper {
 				IndexReader.unlock(FSDirectory.getDirectory(indexPath));
 				indexWriter = new IndexWriter(indexPath,
 						new SsfIndexAnalyzer(), create);
+				indexWriter.setMaxMergeDocs(maxMerge);
+				indexWriter.setMergeFactor(mergeFactor);
 			} catch (IOException e) {
 				throw e;
 			}
