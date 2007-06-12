@@ -84,9 +84,11 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.util.StatusTicket;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
@@ -1156,11 +1158,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
     public Collection indexTree(Binder binder, Collection exclusions) {
+    	return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);
+    }
+    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
        	TreeSet indexedIds = new TreeSet();
        	if (exclusions == null) exclusions = new TreeSet();
+   		String oldStatus = statusTicket.getStatus();
+   		if(oldStatus != null) {
+   			statusTicket.setStatus(oldStatus + " // " + binder.getTitle());
+   		} else {
+   			statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {binder.getTitle()}));
+   		}
        	if (!exclusions.contains(binder.getId())) {
         	//index self.
-        	indexBinder(binder, true, false, null);
+       		indexBinder(binder, true, false, null);
         	indexedIds.add(binder.getId());
         }
        	List binders = binder.getBinders();
@@ -1169,12 +1180,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	    	if (b.isDeleted()) continue;
    	    	//index children
    	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-   	    	indexedIds.addAll(processor.indexTree(b, exclusions));
+   	    	indexedIds.addAll(processor.indexTree(b, exclusions, statusTicket));
    	   	 }
    		//apply after we have gathered a few
    		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
-   		return indexedIds;
-        	
+   		statusTicket.setStatus(oldStatus);
+
+   		return indexedIds;	
     }
     //***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {

@@ -113,6 +113,7 @@ public class WebKeys {
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
 	public static final String URL_REPORT_TYPE = "ss_reportType";
 	public static final String URL_START_DATE = "ss_startDate";
+	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";
@@ -230,6 +231,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_TAB="add_tab";
     public static final String OPERATION_MODIFY_TAGS="modify_tags";
     public static final String OPERATION_CHECK_BINDER_TITLE="check_binder_title";
+    public static final String OPERATION_CHECK_STATUS="check_status";
     public static final String OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";
     public static final String OPERATION_DASHBOARD_DELETE_COMPONENT="delete_component";
     public static final String OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";

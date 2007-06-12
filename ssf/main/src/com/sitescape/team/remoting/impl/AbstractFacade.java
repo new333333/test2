@@ -199,10 +199,12 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			throw new RemotingException(e);
 		}			
 	}
-	
+
+	/*
 	public void deleteFolderEntry(long binderId, long entryId) {
-		getFolderModule().deleteEntry(new Long(binderId), new Long(entryId));
+		getFolderModule().deleteEntry(new Long(binderId), new Long(entryId), WebStatusTicket.nullTicket);
 	}
+	*/
 	
 	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);

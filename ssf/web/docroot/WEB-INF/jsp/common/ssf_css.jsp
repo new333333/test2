@@ -4452,6 +4452,17 @@ div.ssPageNavi {
 	background-color: #E8EFF7;
 }
 
+#ss_operation_status {
+	width: 300px;
+	text-align: center;
+}
+
+#ss_operation_status span {
+	width: 100%;
+	text-align: center;
+	color: ${ss_style_link_hover_color};
+	font-weight: bold;
+}
 
 
 

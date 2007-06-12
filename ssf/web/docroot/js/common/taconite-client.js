@@ -29,6 +29,7 @@
     @param {String} a String repesenting the URL to which the Ajax request
     will be sent.
 */
+
 function ss_AjaxRequest(url) {
     /** @private */
     var self = this;
@@ -341,7 +342,7 @@ function ss_AjaxRequest(url) {
         }
     }
 
-    handleStateChange = function(ajaxRequest) {
+    var handleStateChange = function(ajaxRequest) {
         if(ajaxRequest.getXMLHttpRequestObject().readyState != 4) {
             return;
         }

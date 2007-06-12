@@ -24,6 +24,7 @@ import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.StatusTicket;
 /**
  * This processor is used to setup the attributes of the target binder.  It is mostly here so
  * that the binder module and controllers can use existing code .
@@ -62,6 +63,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     }
 	//nothing to index
 	public Collection indexTree(Binder binder, Collection exclusions) {
+		return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);
+	}
+	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
 		return new ArrayList();
 	}
 	//nothing to log
