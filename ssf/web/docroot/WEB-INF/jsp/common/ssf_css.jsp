@@ -4143,6 +4143,10 @@ table.ss_surveys_list td, table.ss_milestones_list td {
 	padding: 6px  3px 6px 3px;
 	border-bottom: 1px solid #afc8e3;
 }
+div.ss_questionContainer input.ss_survay_checkbox, div.ss_questionContainer input.ss_survay_radio {
+	width:20px;
+	vertical-align:bottom;
+}
 
 table.ss_milestones_list td.ss_completed, table.ss_milestones_list td.ss_completed a {
 	color: #999966;
