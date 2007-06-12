@@ -14,6 +14,7 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%
+boolean isIE = BrowserSniffer.is_ie(request);
 String ss_portletNamespace = renderResponse.getNamespace();
 
 // General variables
@@ -59,7 +60,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
-         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-3" offsetX="-10" 
+         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-5" offsetX="-13" 
 		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
@@ -67,8 +68,14 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
-         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories" offsetY="-4" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
+         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories"
+          <c:if test="<%= !isIE %>">
+              offsetX="-150" offsetY="-2" 
+          </c:if>
+          <c:if test="<%= isIE %>">
+              offsetX="-15"  offsetY="2" 
+          </c:if>
+		  title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
          <ssHelpSpot helpId="workspaces_folders/entries/set_wiki_homepage" offsetY="-16" offsetX="-20" 
@@ -187,23 +194,29 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
      <% // BEGIN Helpspots for folder menus %> 
      <c:choose>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
-         <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="-16" offsetX="-5" 
+         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_folder" offsetY="-3" offsetX="-5" 
 		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}">
-         <ssHelpSpot helpId="folder_menu/manage_workspace" offsetY="-16" offsetX="-20" 
+         <ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-5" offsetX="-13" 
 		     title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}">
-         <ssHelpSpot helpId="folder_menu/modify_profile" offsetY="-16" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"/>
+         <ssHelpSpot helpId="people/modify_profile" 
+          <c:if test="<%= !isIE %>">
+              offsetY="0" offsetX="-160" 
+          </c:if>
+          <c:if test="<%= isIE %>">
+              offsetY="-4" offsetX="79" 
+          </c:if>
+		  title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
-         <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="-16" offsetX="-20" 
+         <ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories" offsetY="-4" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>"/>
          </c:when>
 	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
-         <ssHelpSpot helpId="tools/set_wiki_homepage" offsetY="-16" offsetX="-20" 
+         <ssHelpSpot helpId="workspaces_folders/entries/set_wiki_homepage" offsetY="-16" offsetX="-20" 
 		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"/>
          </c:when>
          <c:otherwise>

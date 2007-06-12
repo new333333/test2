@@ -11,9 +11,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
+
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span><br />
-<span style="font-weight:bold;"><ssf:nlt tag="help.getStartedProduct.subtopic.workspaces"/></span>
+<span class="subtitle"><ssf:nlt tag="help.getStartedProduct.subtopic.workspaces"/></span>
+</div>
 
 <p><ssf:nlt tag="help.getStartedProduct.content.workspaces.intro"/> <ssf:nlt tag="help.getStartedProduct.content.workspaces.defaults"/></p>
 
@@ -25,11 +29,9 @@
 
 </div>
 
-<br/>
-
-<div align="center" style="margin-bottom:5px;" title="This Help topic has more than one page of information">
-<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><img border="0" <ssf:alt tag="general.previous"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a></div>
-<div style="display:inline;margin-right:10px;"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');">1</a></div> 
-<div style="display:inline;margin-right:10px;">2</div>
-<div style="display:inline;"><img border="0" <ssf:alt tag="general.next"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></div>
+<div class="ss_help_more_pages_section" title="This Help topic has more than one page of information">
+<div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><<</a></div>
+<div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');">1</a></div> 
+<div class="not_last_link">2</div>
+<div title="No next page"><span class="no_next_page">>></span></div>
 </div>
