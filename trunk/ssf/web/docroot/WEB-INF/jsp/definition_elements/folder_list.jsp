@@ -45,3 +45,6 @@
 <c:if test="${ss_folderViewStyle == 'table'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
 </c:if>
+<c:if test="${ss_folderViewStyle == 'milestone'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_view.jsp" />
+</c:if>

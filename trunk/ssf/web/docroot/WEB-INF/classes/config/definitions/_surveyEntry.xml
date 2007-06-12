@@ -120,7 +120,7 @@
 			</properties>
 		</item>
 		<properties>
-			<property name="type" value="survey"/>
+			<property name="type" value="entryView"/>
 		</properties>
 	</item>
 	<item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
@@ -151,7 +151,7 @@
 		</item>
 		
 		<properties>
-			<property name="type" value="survey"/>
+			<property name="type" value="blog"/>
 		</properties>
 		
 		<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item"

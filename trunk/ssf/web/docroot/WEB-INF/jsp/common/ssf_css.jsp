@@ -4127,21 +4127,30 @@ div.ss_questionContainer h4 span {
 }
 div.ss_questionContainer input {width:300px;}
 
-table.ss_surveys_list {
+table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
 	margin-top:6px;
 	padding: 0px;
 	border-collapse: collapse;
 }
-table.ss_surveys_list th {
+table.ss_surveys_list th, table.ss_milestones_list th {
 	background-color: #dbe6f2;
 	border:1px solid #afc8e3;
 	text-align: left;
 	padding: 3px 3px 3px 3px;
 }
-table.ss_surveys_list td {
+table.ss_surveys_list td, table.ss_milestones_list td {
 	padding: 6px  3px 6px 3px;
 	border-bottom: 1px solid #afc8e3;
+}
+
+table.ss_milestones_list td.ss_completed, table.ss_milestones_list td.ss_completed a {
+	color: #999966;
+}
+
+table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a {
+	color: #CC0000;
+	font-weight: bold;
 }
 
 .ss_savedQueriesListPane {

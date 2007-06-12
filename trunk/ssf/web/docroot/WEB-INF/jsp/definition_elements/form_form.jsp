@@ -48,10 +48,6 @@
 		<jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook_form.jsp" />
   </c:when>
 
-  <c:when test="${ss_formViewStyle == 'task'}">
-		<jsp:include page="/WEB-INF/jsp/definition_elements/task/task_form.jsp" />
-  </c:when>
-
   <c:when test="${ss_formViewStyle == 'survey'}">
 		<jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey_form.jsp" />
   </c:when>

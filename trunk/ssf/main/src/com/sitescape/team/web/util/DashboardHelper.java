@@ -201,7 +201,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);
     	
     	List items = (List) ((Map)((Map)((Map)ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP)).get(id)).get(WebKeys.SEARCH_FORM_DATA)).get(WebKeys.SEARCH_FORM_RESULTS);
-    	TaskHelper.extendTasksInfo(items);
 	}
     
 	private static void doComponentConfigSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {

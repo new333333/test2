@@ -46,13 +46,13 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 	</tr>
 
 <c:forEach var="entry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
-
+	<jsp:useBean id="entry" type="java.util.HashMap" />
   <c:set var="hitCount" value="${hitCount + 1}"/>
 
 	<tr>
 		<td>
 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			      value="${entry.dueDate}" type="both" 
+			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
 				  timeStyle="short" dateStyle="short" />
 		</td>
 		<td>
@@ -121,9 +121,9 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 		</td>
 		<td>
 			<ul>
-			<c:forEach var="assigned" items="${entry.assignedUsers}">
-				<li><ssf:showUser user="${assigned}" /></li>
-			</c:forEach>
+				<c:forEach var="assigned" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>">
+					<li><ssf:showUser user="${assigned}" /></li>
+				</c:forEach>
 			</ul>
 		</td>
 		<td>

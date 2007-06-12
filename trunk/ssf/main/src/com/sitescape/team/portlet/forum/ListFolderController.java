@@ -665,10 +665,8 @@ public static final String[] monthNamesShort = {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
 			}
-//			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-//				//Get the list of all entries with assigned people & due date
-//				TaskHelper.extendTaskInfo((List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
-//			}
+			// viewType == task is pure ajax solution (view AjaxController)
+
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));

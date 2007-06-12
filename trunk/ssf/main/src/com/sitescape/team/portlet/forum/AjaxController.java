@@ -1317,6 +1317,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put("ss_tree_topId", op2);
 			model.put("ss_tree_select_id", "");
 			model.put("ss_tree_select_type", selectType);
+			model.put("ss_tree_fixedMultiSelectParamsMode", false);
 			if (selectType.equals("2")) {
 				//multi select
 				String joinedMultiSelect = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_MULTI_SELECT, "");
@@ -1327,6 +1328,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 				}
 				model.put("ss_tree_select", multiSelect);
 				model.put("ss_tree_select_id", selectId);
+				
+				boolean fixedMultiSelectParamsMode = PortletRequestUtils.getBooleanParameter(request, "fixedMultiSelectParamsMode", false);
+				model.put("ss_tree_fixedMultiSelectParamsMode", fixedMultiSelectParamsMode);
 			} else if (selectType.equals("1")) {
 				//single select, get name and selectedId
 				model.put("ss_tree_select_id", selectId);				
@@ -2189,7 +2193,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				//a template
 				entries = new ArrayList();
 			}
-			TaskHelper.extendTasksInfo(entries);
 			model.put(WebKeys.FOLDER_ENTRIES, entries);
 			
 		} else {
@@ -2240,9 +2243,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 			getFolderModule().modifyEntry(binderId, entryId, 
 					new MapInputData(formData), new HashMap(), new HashSet(), null);
-			
 		
-			model.putAll(TaskHelper.extendTaskInfo(entry));
 			model.put(WebKeys.ENTRY, entry);
 			
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());

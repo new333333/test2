@@ -259,8 +259,6 @@
 				  default="entryView" value="entryView">
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
-				<option name="task" caption="__entry_task" />
-				<option name="survey" caption="__entry_survey" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -343,8 +341,6 @@
 				  default="blog" value="blog">
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
-				<option name="task" caption="__entry_task" />
-				<option name="survey" caption="__entry_survey" />
 				<help>ihelp.other.entry_view_type</help>
 			</property>
 		</properties>
@@ -450,7 +446,6 @@
 			<option name="graphic" />
 			<option name="file" />
 			<option name="user_list" />
-			<option name="survey" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='folderData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
@@ -491,6 +486,7 @@
 				<option name="guestbook" caption="__folder_guestbook" />
 				<option name="task" caption="__folder_task" />
 				<option name="survey" caption="__folder_survey" />
+				<option name="milestone" caption="__folder_milestone" />
 				<help>ihelp.other.folder_view_type</help>
 			</property>
 		</properties>
@@ -1260,7 +1256,7 @@
 		</jsps>
 		<help>ihelp.designers.selectbox</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
@@ -1341,6 +1337,27 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp" />
 		</jsps>
+	</item>
+	
+	<item name="places" caption="__places" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/places_form.jsp" />
+		</jsps>
+		<help>ihelp.designers.places</help>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderPlaces" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderPlaces" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces" />
 	</item>
 
 	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData">
@@ -1492,7 +1509,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
 	</item>
 

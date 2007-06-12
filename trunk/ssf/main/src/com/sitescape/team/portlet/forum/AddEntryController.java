@@ -39,6 +39,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
@@ -48,6 +49,7 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
@@ -303,6 +305,10 @@ public class AddEntryController extends SAbstractController {
 				} else {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
+			
+				Workspace ws = getWorkspaceModule().getWorkspace();
+				model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1));
+			
 				parseInitialCalendarEventData(model, request);
 			} else {
 		    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));

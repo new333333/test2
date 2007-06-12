@@ -55,6 +55,7 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
@@ -1365,6 +1366,23 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							if (!users.isEmpty()) {
 								CommaSeparatedValue v = new CommaSeparatedValue();
 								v.setValue((String[])users.toArray(userIds));
+								entryData.put(nameValue, v);
+							}
+						}
+					} else if (itemName.equals("places")) {
+						if (inputData.exists(nameValue)) {
+							String[] folderIds = inputData.getValues(nameValue);
+							Set folders = new HashSet();
+							for (int i = 0; i < folderIds.length; i++) {
+								try {
+									Long.parseLong(folderIds[i]);
+									folders.add(folderIds[i]);
+								} catch (NumberFormatException ne) {}
+							}
+							if (!folders.isEmpty()) {
+								CommaSeparatedValue v = new CommaSeparatedValue();
+								folderIds = new String[folders.size()];
+								v.setValue((String[])folders.toArray(folderIds));
 								entryData.put(nameValue, v);
 							}
 						}
