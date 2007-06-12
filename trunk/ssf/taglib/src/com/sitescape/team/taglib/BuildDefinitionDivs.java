@@ -410,7 +410,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + 
 						operationElementName + "', '" + 
 						operationElement.attributeValue("item", "") + "'); return false;\">");
-				sb.append(NLT.getDef(operationElement.attributeValue("caption").replaceAll("&", "&amp;")));
+				sb.append(NLT.getDef(operationElement.attributeValue("caption", "").replaceAll("&", "&amp;")));
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
 			}
@@ -696,7 +696,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption").replaceAll("&", "&amp;")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
 							sb.append("\n<br/>\n");
 						}
 						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+Html.formatTo(propertyValue0)+"</textarea>\n<br/>\n");
@@ -711,12 +711,12 @@ public class BuildDefinitionDivs extends TagSupport {
 							checked = "checked=\"checked\"";
 						}
 						sb.append("<input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
-						sb.append(NLT.getDef(propertyConfig.attributeValue("caption").replaceAll("&", "&amp;")));
+						sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption").replaceAll("&", "&amp;")));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
 							sb.append("\n<br/>\n");
 						}
 						if (type.equals("selectbox")) {
@@ -842,7 +842,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("itemSelect")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						//Get the list of items in this definition
@@ -884,7 +884,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("replyStyle")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 					
@@ -918,7 +918,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("iconList")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						String iconListPath = propertyConfig.attributeValue("path", "");
@@ -943,7 +943,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("repositoryList")) {
 						int optionCount = 0;
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						//See if multiple selections are allowed
@@ -1155,7 +1155,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")).replaceAll("&", "&amp;"));
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
 							sb.append("\n<br/>\n");
 						}
 						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");

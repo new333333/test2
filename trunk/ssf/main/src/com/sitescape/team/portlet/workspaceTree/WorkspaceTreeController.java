@@ -411,6 +411,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			if (showModifyProfileMenu && !showDeleteProfileMenu) {
 				//	The "Modify" menu item
 				qualifiers = new HashMap();
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
 				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
 				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
@@ -421,6 +422,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			if (!showModifyProfileMenu && showDeleteProfileMenu) {
 				//	The "delete" menu item
 				qualifiers = new HashMap();
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
 				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);

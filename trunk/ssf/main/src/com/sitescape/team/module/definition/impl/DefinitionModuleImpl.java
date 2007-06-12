@@ -1541,9 +1541,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
 					if (Validator.isNull(nameValue)) nameValue = itemName;
 						
-					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption").replaceAll("&", "&amp;");							
+					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
 					if (Validator.isNull(captionValue)) captionValue = nameValue;							
-					itemData.put("caption", NLT.getDef(captionValue));
+					itemData.put("caption", NLT.getDef(captionValue).replaceAll("&", "&amp;"));
 								
 					//We have the element name, see if it has option values
 					if (itemName.equals("selectbox")) {
@@ -1553,10 +1553,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Element selection = (Element) itSelectionItems.next();
 							//Get the element name (property name)
 							String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
-							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption").replaceAll("&", "&amp;");
+							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
 							if (Validator.isNotNull(selectionNameValue)) {
 								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
-								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
+								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue).replaceAll("&", "&amp;"));
 							}
 						}
 						itemData.put("length", new Integer(valueMap.size()).toString());
@@ -1570,10 +1570,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Element selection = (Element) itSelectionItems.next();
 							//Get the element name (property name)
 							String selectionNameValue = DefinitionUtils.getPropertyValue(selection, "name");
-							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption").replaceAll("&", "&amp;");
+							String selectionCaptionValue = DefinitionUtils.getPropertyValue(selection, "caption");
 							if (Validator.isNotNull(selectionNameValue)) {
 								if (Validator.isNull(selectionCaptionValue)) {selectionCaptionValue = selectionNameValue;}
-								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue));
+								valueMap.put(selectionNameValue, NLT.getDef(selectionCaptionValue).replaceAll("&", "&amp;"));
 							}
 						}
 						itemData.put("length", new Integer(valueMap.size()).toString());
@@ -1615,9 +1615,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
 				if (Validator.isNull(nameValue)) nameValue = itemName;
 						
-				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption").replaceAll("&", "&amp;");							
+				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
 				if (Validator.isNull(captionValue)) captionValue = nameValue;							
-				itemData.put("caption", NLT.getDef(captionValue));
+				itemData.put("caption", NLT.getDef(captionValue).replaceAll("&", "&amp;"));
 								
 				//Add this state to the results
 				dataStates.put(nameValue, itemData);
