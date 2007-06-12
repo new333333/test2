@@ -40,26 +40,49 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 
 <script type="text/javascript">
 
+var ss_indexTimeout = null;
+var ss_indexStatusTicket = ss_random++;
+var ss_checkStatusUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="false" >
+	<ssf:param name="operation" value="check_status" />
+	</ssf:url>";
+
+function ss_getOperationStatus()
+{
+	ss_setupStatusMessageDiv();
+	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("ss_statusId",ss_indexStatusTicket);
+	ajaxRequest.sendRequest();  //Send the request
+	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
+}
+
 function ss_submitIndexingForm() {
 	var formObj = document.forms['<portlet:namespace />fm'];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
-		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>'
+		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
 		ss_submitFormViaAjax('<portlet:namespace />fm', 'ss_indexingDone');
+		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 		return false;
 	} else {
+		if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
 		formObj.action = '<portlet:actionURL><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
 		return true;
 	}
 }
 
 function ss_indexingDone() {
+	if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
 	ss_buttonSelect('closeBtn');
 	var formObj = document.forms['<portlet:namespace />fm'];
 	formObj.btnClicked.value = 'closeBtn';
 	formObj.action = '<portlet:actionURL><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
 	formObj.submit();
 }
+
 
 function <%= wsTreeName %>_showId(forum, obj, action) {
 	var prefix = action+"_";

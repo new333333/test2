@@ -3566,11 +3566,18 @@ function ss_showPopupDivCentered(divId, focusId) {
 	}
 }
 
-function ss_centerPopupDiv(targetDiv) {
-		var x = parseInt(ss_getWindowWidth() / 2);
-		var y = parseInt(ss_getWindowHeight() / 2);
-	    var bodyX = self.document.body.scrollLeft
-	    var bodyY = self.document.body.scrollTop
+function ss_centerPopupDiv(targetDiv, inContainer) {
+		if(inContainer) {
+			var x = inContainer.offsetWidth / 2;
+			var y = inContainer.offsetHeight / 2;
+	    	var bodyX = inContainer.offsetLeft
+	    	var bodyY = inContainer.offsetTop
+		} else {
+			var x = parseInt(ss_getWindowWidth() / 2);
+			var y = parseInt(ss_getWindowHeight() / 2);
+	    	var bodyX = self.document.body.scrollLeft
+	    	var bodyY = self.document.body.scrollTop
+	    }
 		x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
 		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
 		targetDiv.style.left = x;
@@ -5064,19 +5071,23 @@ function ss_confirmStopWorkflow(text) {
 function ss_startSpinner()
 {
 	var spinner = document.getElementById("ss_spinner")
+	var bodyObj = document.getElementsByTagName("body").item(0)
 	if (!spinner) {
-		var bodyObj = document.getElementsByTagName("body").item(0)
 		spinner = document.createElement("div");
         spinner.setAttribute("id", "ss_spinner");
 		var spinImg = document.createElement("img");
 		spinImg.setAttribute("src", ss_imagesPath + "pics/spinner.gif");
 		spinner.appendChild(spinImg);
+		var status = document.createElement("div");
+		status.setAttribute("id", "ss_operation_status");
+		spinner.appendChild(status);
+		
         bodyObj.appendChild(spinner);
 	}
 	spinner.style.position='absolute';
     spinner.style.zIndex = 1000;
 	spinner.style.display='block';
-	ss_centerPopupDiv(spinner);
+	ss_centerPopupDiv(spinner, bodyObj);
 }
 
 function ss_stopSpinner()

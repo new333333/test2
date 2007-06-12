@@ -236,7 +236,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public Set<Long> indexTree(Long binderId) {
     	Set<Long> ids = new HashSet();
     	ids.add(binderId);
-    	return indexTree(ids, null);
+    	return indexTree(ids, StatusTicket.NULL_TICKET);
     }
     //optimization so we can manage the deletion to the searchEngine
     public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket) {
@@ -275,9 +275,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				}
 			}
 		   	for (Binder binder:checked) {
-				if (statusTicket != null)
-					statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {binder.getTitle()}));
-		   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done));
+		   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done, statusTicket));
 		   	}
 		   	return done;
 		}

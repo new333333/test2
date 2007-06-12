@@ -19,6 +19,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.StatusTicket;
 
 /**
  * <code>EntryProcessor</code> is used by model processors for binders that
@@ -38,6 +39,7 @@ public interface BinderProcessor {
     public void indexTeamMembership(Binder binder, boolean cascade);
 	public void indexBinder(Binder binder, boolean includeEntries);	
     public Collection indexTree(Binder binder, Collection exclusions);
+    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
    
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;

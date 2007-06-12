@@ -96,6 +96,7 @@ import com.sitescape.team.web.util.Favorites;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 /**
@@ -379,6 +380,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxListSavedQueries(request, response);
 		} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
 			return ajaxVoteSurveyStatus(request, response);	
+		} else if (op.equals(WebKeys.OPERATION_CHECK_STATUS)) {
+			return ajaxCheckStatus(request, response);
 		}
 		
 		return ajaxReturn(request, response);
@@ -2500,5 +2503,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		model.put("status", true);
 		return new ModelAndView("forum/json/vote_survey", model);	
+	}
+	
+	private ModelAndView ajaxCheckStatus(RenderRequest request, RenderResponse response)  throws PortletRequestBindingException { 
+		Map model = new HashMap();
+		model.put("status", true);
+		model.put("ss_operation_status", WebStatusTicket.findStatusTicket(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_STATUS_TICKET_ID), request).getStatus());
+		response.setContentType("text/xml");
+		return new ModelAndView("common/check_status", model);	
 	}
 }

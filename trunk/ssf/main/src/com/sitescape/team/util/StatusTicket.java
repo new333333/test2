@@ -30,4 +30,12 @@ public interface StatusTicket {
 	 * @return
 	 */
 	public void done();
+	
+	public static final StatusTicket NULL_TICKET = new StatusTicket()
+	{
+		public String getId() { return "__NULL__"; }
+		public void setStatus(String status) {}
+		public String getStatus() { return ""; }
+		public void done() {}
+	};
 }
