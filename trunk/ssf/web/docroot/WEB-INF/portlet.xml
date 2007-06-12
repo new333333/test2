@@ -18,6 +18,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.workspacetree</resource-bundle>
     </portlet>
     <portlet>
@@ -36,6 +38,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.forum</resource-bundle>
     </portlet>
 
@@ -55,6 +59,8 @@
             <portlet-mode>view</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.administration</resource-bundle>
     </portlet>
  
@@ -74,6 +80,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.presence</resource-bundle>
     </portlet>
  
@@ -92,6 +100,8 @@
             <portlet-mode>view</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.toolbar</resource-bundle>
     </portlet>
      <portlet>
@@ -110,6 +120,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.blog</resource-bundle>
     </portlet>
      <portlet>
@@ -128,6 +140,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.guestbook</resource-bundle>
     </portlet>
      <portlet>
@@ -146,6 +160,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.wiki</resource-bundle>
     </portlet>
      <portlet>
@@ -164,6 +180,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.search</resource-bundle>
     </portlet>
  
@@ -183,6 +201,8 @@
             <portlet-mode>edit</portlet-mode>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.gallery</resource-bundle>
     </portlet>
 
@@ -200,6 +220,8 @@
             <mime-type>text/html</mime-type>
         </supports>
         <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>de</supported-locale>
         <resource-bundle>content.welcome</resource-bundle>
     </portlet>
 
