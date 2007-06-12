@@ -39,7 +39,7 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.rss.impl.RssModuleImplMBean;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.util.ConfigPropertyNotFoundException;
+import com.sitescape.util.PropertyNotFoundException;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
@@ -79,7 +79,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements RssModul
 
 		try {
 			maxDays = SPropsUtil.getInt("rss.max.elapseddays");
-		} catch (ConfigPropertyNotFoundException e) {
+		} catch (PropertyNotFoundException e) {
 		}
 
 		monthAgoTime = new Date().getTime() - (maxDays * DAYMILLIS);

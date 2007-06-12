@@ -72,7 +72,7 @@ public class SZoneConfig {
 		return getElement(RequestContextHolder.getRequestContext().getZoneName(), key);
 	}
 
-	public static String getString(String key) throws ConfigPropertyNotFoundException {
+	public static String getString(String key) {
 		return get(RequestContextHolder.getRequestContext().getZoneName(), key);
 	}
 	public static String getString(String zoneName, String key) {
