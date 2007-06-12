@@ -77,11 +77,38 @@ public class DisplayConfiguration extends TagSupport {
 						//Find the jsp to run. Look in the definition configuration for this.
 						//Get the item type of the current item being processed 
 						String itemType = nextItem.attributeValue("name", "");
+						String formItem = nextItem.attributeValue("formItem", "");
 						//get Item from main config document
 						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
 							// Jsps are contained in the configDefaultDefinition only
 							String jsp = configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
+							if (itemType.equals("customJsp")) {
+								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='formJsp']");
+								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+							} else if (itemType.equals("entryDataItem") && formItem.equals("customJsp")) {
+								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+								if (entryFormItem != null) {
+									//see if item is generated and save source
+									Element nameEle = (Element) nextItem.selectSingleNode("properties/property[@name='name']");
+									if (nameEle != null) {
+										String nameValue = nameEle.attributeValue("value", "");
+										Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+										if (itemEle != null) {
+											String jspName = "viewJsp";
+											if (configJspStyle.equals("mail")) jspName = "mailJsp";
+											Element jspEle = (Element) itemEle.getParent().getParent().selectSingleNode("properties/property[@name='"+jspName+"']");
+											if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+										}
+									}
+								}
+							} else if (itemType.equals("customJspView") && configJspStyle.equals("view")) {
+								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='viewJsp']");
+								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+							} else if (itemType.equals("customJspView") && configJspStyle.equals("mail")) {
+								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mailJsp']");
+								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+							}
 							if (!Validator.isNull(jsp)) {
 								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									

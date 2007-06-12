@@ -1379,6 +1379,20 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
+	<item name="hidden" caption="__hidden" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="value" caption="__value" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderHidden" />
+	</item>
+	
 	<item name="graphic" caption="__graphic" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
@@ -1796,10 +1810,15 @@
 		</jsps>
 	</item>
 		
-	<item name="customJsp" caption="__custom_jsp" category="generalLayout">
+	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout">
 		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
 			<property name="formJsp" caption="__form_jsp_name" type="text"/>
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
+			<property name="mailJsp" caption="__mail_jsp_name" type="text"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -1819,6 +1838,7 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<help>ihelp.designers.custom_jsp</help>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderHidden" />
 	</item>
 <!-- General layout views -->	
 	<item name="boxView" caption="__box" category="generalViewLayout">
@@ -2007,8 +2027,8 @@
 		
 	<item name="customJspView" caption="__custom_jsp" category="generalViewLayout">
 		<properties>
-			<property name="formJsp" caption="__form_jsp_name" type="text"/>
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
+			<property name="mailJsp" caption="__mail_jsp_name" type="text"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
@@ -2025,6 +2045,10 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
+		</jsps>
 	</item>
 <!-- Workflow items -->
 	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
