@@ -111,7 +111,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 	 </c:choose>
 
       <div id="<%= menuTagDivId %><portlet:namespace/>" 
-        class="${ss_toolbar_style}_submenu" style="width:<%= menuDivWidth %>;">
+        class="${ss_toolbar_style}_submenu" style="">
       <ul class="${ss_toolbar_style}_submenu">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">

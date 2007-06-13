@@ -2473,6 +2473,9 @@ ul.ss_actions_bar1  {
 	height: 26px;
 }
 
+.ss_action_bar ul, .ss_actions_bar_submenu {
+	list-style-type: none;
+}
 .ss_actions_bar li {
 	float:left;
 	display: inline;
@@ -2577,6 +2580,7 @@ div.ss_actions_bar_submenu {
 	position:absolute;
 	display:none;
 	z-index:500;
+	white-space: nowrap;
 }
 
 div.ss_actions_bar_submenu ul.ss_actions_bar1 {
