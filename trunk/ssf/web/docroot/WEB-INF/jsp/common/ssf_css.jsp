@@ -2824,8 +2824,25 @@ div.ss_findUserList {
 	text-align:left;
 }
 .ss_findUserList li {
-	padding:1px;
+	padding: 0px;
 	float:none;
+	line-height: 13px;
+}
+
+.ss_findUserList li a  {
+	font-family: ${ss_style_folder_view_font_family};
+	font-size: ${ss_style_font_smallprint};
+	font-weight: bold;
+	color: #666666;
+	text-decoration: none;
+}
+
+.ss_findUserList li a:hover {
+	font-family: ${ss_style_folder_view_font_family};
+	font-size: ${ss_style_font_smallprint};
+	font-weight: bold;
+	color: #333333;
+	text-decoration: none;
 }
 
 a.ss_title_menu img {
