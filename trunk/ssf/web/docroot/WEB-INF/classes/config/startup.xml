@@ -30,6 +30,8 @@
 	<definitionFile>config/definitions/_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_userWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_projectWorkspace.xml</definitionFile>
+	<definitionFile>config/definitions/_team_workspace.xml</definitionFile>
+	<definitionFile>config/definitions/_team_root.xml</definitionFile>
 	<templateFile>config/templates/__template_folder_blog.xml</templateFile>
 	<templateFile>config/templates/__template_folder_calendar.xml</templateFile>
 	<templateFile>config/templates/__template_folder.xml</templateFile>

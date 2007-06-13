@@ -353,9 +353,9 @@ public class IcalModuleImpl implements IcalModule {
 		Definition entryDef = entry.getEntryDef();
 		String entryDefId = entryDef.getId();
 
-		if (entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG)) {
+		if (entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_DEF)) {
 			return ComponentType.Task;
-		} else if (entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_CALENDAR_CONFIG)) {
+		} else if (entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_CALENDAR_DEF)) {
 			return ComponentType.Calendar;
 		}
 		return ComponentType.Calendar;

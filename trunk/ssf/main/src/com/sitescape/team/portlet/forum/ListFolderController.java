@@ -344,7 +344,7 @@ public static final String[] monthNamesShort = {
 			if (!entryIdToBeShown.equals("")) options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
 		}
 		if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-			Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG);
+			Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_DEF);
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
 			
 			
