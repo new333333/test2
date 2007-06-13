@@ -101,7 +101,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				    		logger.error(fe.getLocalizedMessage(), fe);
 				    	}
 					}
-
+					response.setRenderParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_ADD);
+					response.setRenderParameter("cfgType", "-2");
 				} else {
 					Map updates = new HashMap();
 					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
