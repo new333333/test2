@@ -1098,6 +1098,14 @@
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
 		multipleAllowed="false" >		
+		<properties>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="folder" value="folder">
+				<option name="workspace" caption="__workspace" />
+				<option name="team_root" caption="__team_root_workspace" />
+				<option name="team" caption="__team_workspace" />
+			</property>
+		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="workspaceTitleView" />
 			<option name="dashboardCanvas" initial="true" />

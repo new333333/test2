@@ -19,6 +19,14 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </div>
 
+<c:if test="${propertyValues_type[0] == 'team_root' && !empty ssAddTeamWorkspaceUrl}">
+<div>
+<a class="ss_linkButton" href="${ssAddTeamWorkspaceUrl}"><ssf:nlt tag="team.addTeam"/></a>
+<br/>
+<br/>
+</div>
+</c:if>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}"
