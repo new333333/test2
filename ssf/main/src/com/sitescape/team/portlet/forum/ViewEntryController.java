@@ -353,7 +353,7 @@ public class ViewEntryController extends  SAbstractController {
 			Iterator replyStylesIt = replyStyles.iterator();
 			while (replyStylesIt.hasNext()) {
 				String replyStyleId = (String)replyStylesIt.next();
-				if (ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG.equals(replyStyleId)) {
+				if (ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF.equals(replyStyleId)) {
 					replyStylesIt.remove();
 				}
 			}

@@ -197,7 +197,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
     }
     private void getTasksBean(Binder binder, Map ssDashboard, Map model, String id, Map component, boolean b) {
-		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG);
+		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_DEF);
 		model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
     	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);
     	

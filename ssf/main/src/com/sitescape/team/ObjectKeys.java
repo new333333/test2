@@ -21,9 +21,7 @@ public interface ObjectKeys {
     //Default name for the product
 	public static final String PRODUCT_NAME_DEFAULT="ICEcore";
 
-	/**
-	 * reserved ids for reserved objects
-	 */
+	 // reserved internalIds for Templates (not necessarily databaseId)
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
@@ -32,31 +30,39 @@ public interface ObjectKeys {
 	public static final String DEFAULT_USER_DEF="402883b90cc53079010cc539bf260007";
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
 
+	//reserved databaseIds for Definitions
+	public static final String DEFAULT_ENTRY_TASK_DEF="402883c1129b1f8101129b28bbe50002";
+	public static final String DEFAULT_ENTRY_CALENDAR_DEF="402883c6115753d80111577dbe29000d";
+	public static final String DEFAULT_ENTRY_SURVEY_DEF="402883c1129b1f8101129b28bbe50004";
+	public static final String DEFAULT_ENTRY_SURVEY_VOTE_DEF="40288182131025d101131029d4920002";
+	public static final String DEFAULT_ENTRY_MILESTONE_DEF="4028818213118b17011311b1f6210017";
+
 	//reserved internalIds for templates.
+	//presence is used to distinquish system templates from customer templates
 	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
-	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
-	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
 	public static final String DEFAULT_FOLDER_BLOG_CONFIG="402883b90d0de1f3010d0df5582b000c";
 	public static final String DEFAULT_FOLDER_WIKI_CONFIG="402883b90d0de1f3010d0df5582b000d";
 	public static final String DEFAULT_FOLDER_CALENDAR_CONFIG="402883b90d0de1f3010d0df5582b000e";
 	public static final String DEFAULT_FOLDER_GUESTBOOK_CONFIG="402883b90d0de1f3010d0df5582b000f";
 	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 	public static final String DEFAULT_FOLDER_LIBRARY_CONFIG="402883b90d0de1f3010d0df5582b0011";
-	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883c1129b1f8101129b28bc620003";
+	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883b90cc53079010cc539bf260009";
+	public static final String DEFAULT_FOLDER_MILESTONE_CONFIG="402883b90cc53079010cc539bf260011";
+	public static final String DEFAULT_FOLDER_SURVEY_CONFIG="402883b90cc53079010cc539bf260010";
+	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
+	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
 	public static final String DEFAULT_TEAM_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620004";
+	public static final String DEFAULT_PROJECT_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620005";
 	
-	public static final String DEFAULT_ENTRY_TASK_CONFIG="402883c1129b1f8101129b28bbe50002";
-	public static final String DEFAULT_ENTRY_CALENDAR_CONFIG="402883c6115753d80111577dbe29000d";
-	public static final String DEFAULT_ENTRY_SURVEY_CONFIG="402883c1129b1f8101129b28bbe50004";
-	public static final String DEFAULT_ENTRY_SURVEY_VOTE_CONFIG="40288182131025d101131029d4920002";
-	public static final String DEFAULT_ENTRY_MILESTONE_CONFIG="4028818213118b17011311b1f6210017";
-	
+	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
-	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
 	public static final String TOP_WORKSPACE_INTERNALID="402883b90d0de1f3010d0df5582b0007";
-	public static final String ANONYMOUS_POSTING_USER_INTERNALID="402883b90d0de1f3010d0df5582b0008";
 	public static final String TEAM_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0009";
 	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
+	//reserverd internalids for alluser group
+	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
+	//reserverd internalId user posting agent
+	public static final String ANONYMOUS_POSTING_USER_INTERNALID="402883b90d0de1f3010d0df5582b0008";
 	//super user bypasses all acl and operation checks
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
 	//id to run background jobs under - also acts as a super user but cannot loggin as this person

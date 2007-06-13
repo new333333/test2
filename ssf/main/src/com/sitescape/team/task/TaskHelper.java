@@ -206,7 +206,7 @@ public class TaskHelper {
 	}
 	
 	private static boolean isTaskEntryType(String entryDefId) {
-		return entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_CONFIG);
+		return entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_DEF);
 	}
 
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {

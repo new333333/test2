@@ -30,20 +30,18 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.zone.ZoneModule;
@@ -388,10 +386,20 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		team.setPathName(top.getPathName() + "/" + team.getTitle());
 		team.setZoneId(top.getId());
 		team.setInternalId(ObjectKeys.TEAM_ROOT_INTERNALID);
-		getDefinitionModule().setDefaultBinderDefinition(team);
+		List<Definition> defs = getCoreDao().loadDefinitions(top.getId(), Definition.WORKSPACE_VIEW);
+		//find the definition for a root team space
+		Definition teamDef=null;
+		for (Definition d:defs) {
+			String viewType = DefinitionUtils.getViewType(d.getDefinition());
+			if (!Definition.VIEW_STYLE_TEAM_ROOT.equals(viewType)) continue;
+			teamDef = d;
+			break;
+		}
+		if (teamDef == null) getDefinitionModule().setDefaultBinderDefinition(team);
+		else team.setEntryDef(teamDef);
 		top.addBinder(team);
 		team.setDefinitionsInherited(false);
-		List defs = team.getDefinitions();
+		defs = team.getDefinitions();
 		defs.add(team.getEntryDef());
 		//generate id for top and profiles
 		getCoreDao().save(team);

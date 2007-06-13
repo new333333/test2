@@ -2488,10 +2488,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map formDataReply = new HashMap();
 		formDataReply.put("binderId", new String[]{binderId.toString()});
 		formDataReply.put("entryId", new String[]{entryId.toString()});
-		formDataReply.put("entryType", new String[]{ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG});
+		formDataReply.put("entryType", new String[]{ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF});
 		formDataReply.put("title", new String[]{NLT.get("survey.vote.title")});
 		formDataReply.put("description", new String[]{surveyVoteDescription.toString()});
-		getFolderModule().addReply(binderId, entryId, ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG, new MapInputData(formDataReply), new HashMap());
+		getFolderModule().addReply(binderId, entryId, ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF, new MapInputData(formDataReply), new HashMap());
 		
 		
 		Map formData = new HashMap(); 

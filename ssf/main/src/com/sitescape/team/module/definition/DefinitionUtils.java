@@ -14,19 +14,13 @@
 package com.sitescape.team.module.definition;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.GetterUtil;
@@ -71,12 +65,12 @@ public class DefinitionUtils {
 		return false;
     }
    public static String getViewType(Document definitionTree) {
-   	if (definitionTree == null) return null;
-	Element root = definitionTree.getRootElement();
-	if (root == null) return null;
-	Element viewItem = (Element)root.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-	if (viewItem == null) return null;
-	return DefinitionUtils.getPropertyValue(viewItem, "type");
+	   	if (definitionTree == null) return null;
+		Element root = definitionTree.getRootElement();
+		if (root == null) return null;
+		Element viewItem = (Element)root.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+		if (viewItem == null) return null;
+		return DefinitionUtils.getPropertyValue(viewItem, "type");
    }
    public static Element getItemByPropertyName(Element item, String itemType, String nameValue) {
 		//Find the item in the definition

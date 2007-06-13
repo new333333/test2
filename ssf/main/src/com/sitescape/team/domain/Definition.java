@@ -60,7 +60,8 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String VIEW_STYLE_TASK="task"; 
 	public static final String VIEW_STYLE_PHOTO_ALBUM="photo"; 
 	public static final String VIEW_STYLE_FILE="file"; 
-	
+	public static final String VIEW_STYLE_TEAM_ROOT="team_root";
+	public static final String VIEW_STYLE_TEAM="team";
 	//visibility values
 	public static final int PUBLIC=1;
 	public static final int LOCAL=2;
