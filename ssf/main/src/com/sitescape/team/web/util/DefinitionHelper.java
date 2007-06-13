@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.web.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -319,10 +321,67 @@ public class DefinitionHelper {
     	return result;
     }
     
-    public static String findFormType(Document definitionConfig)
-    {
+    public static String findFormType(Document definitionConfig) {
     	Node formTypeNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']/properties/property[@name='type']/@value");
     	if(formTypeNode != null) { return formTypeNode.getStringValue();}
     	return null;
     }
+    
+    public static String findCaptionForAttribute(String attributeName, Document definitionConfig)
+    {
+    	Node valueNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName+"']]/properties/property[@name='caption']/@value");
+    	return valueNode.getStringValue();
+    }
+    
+    public static String findAttributeType(String attributeName, Document definitionConfig) {
+    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	return node.attributeValue("name");
+    }
+    
+    public static List findSelectboxSelections(String attributeName, Document definitionConfig) {
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]//item[@name='selectboxSelection']/properties");
+    	if (nodes == null) {
+    		return Collections.EMPTY_LIST;
+    	}
+    	
+    	List result = new ArrayList();
+    	Iterator nodesIt = nodes.iterator();
+    	while (nodesIt.hasNext()) {
+    		Map property = new HashMap();
+    		
+    		Iterator selectionPropertiesIt = ((Element)nodesIt.next()).elementIterator();
+    		while (selectionPropertiesIt.hasNext()) {
+    			Element propertyEl = (Element)selectionPropertiesIt.next();
+    			String propertyName = propertyEl.attributeValue("name");
+   				property.put(propertyName, propertyEl.attributeValue("value"));
+    		}
+    		result.add(property);
+    	}
+    	
+    	return result;
+    }
+    
+    public static List findRadioSelections(String attributeName, Document definitionConfig) {
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName+"']]//item[@name='radioSelection']/properties");
+    	if (nodes == null) {
+    		return Collections.EMPTY_LIST;
+    	}
+    	
+    	List result = new ArrayList();
+    	Iterator nodesIt = nodes.iterator();
+    	while (nodesIt.hasNext()) {
+    		Map property = new HashMap();
+    		
+    		Iterator selectionPropertiesIt = ((Element)nodesIt.next()).elementIterator();
+    		while (selectionPropertiesIt.hasNext()) {
+    			Element propertyEl = (Element)selectionPropertiesIt.next();
+    			String propertyName = propertyEl.attributeValue("name");
+   				property.put(propertyName, propertyEl.attributeValue("value"));
+    		}
+    		result.add(property);
+    	}
+    	
+    	return result;
+    }
+    
 }

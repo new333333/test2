@@ -60,7 +60,11 @@ public class MapInputData implements InputDataAccessor {
 		if(source.containsKey(key) && source.get(key) instanceof Survey) {
 			return (Survey) source.get(key);
 		}
-		return new Survey(this.getSingleValue(key));
+		String stringValue = this.getSingleValue(key);
+		if (stringValue == null || "".equals(stringValue)) {
+			return null;
+		}
+		return new Survey(stringValue);
 	}
 
 	public String[] getValues(String key) {
