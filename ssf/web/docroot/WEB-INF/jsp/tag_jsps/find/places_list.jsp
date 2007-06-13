@@ -156,7 +156,7 @@ function ss_findUserNextPage() {
 </div>
 
 <div id="ss_findUserNavBarDiv_<portlet:namespace/>"
-    class="ss_findUserList" style="visibility:hidden;">
+    class="ss_typeToFindResults" style="visibility:hidden;">
     <ul id="available_<%= findUserElementName %>_${prefix}">
     </ul>
 </div>	

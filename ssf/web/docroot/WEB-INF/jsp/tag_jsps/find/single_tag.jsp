@@ -60,7 +60,7 @@
 </div>
 <div id="ss_findTag_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findTagNavBarDiv_${prefix}" 
-    class="ss_findUserList" style="visibility:hidden;"
+    class="ss_typeToFindResults" style="visibility:hidden;"
     onmouseover="ss_findTagMouseOverList('${prefix}')"
     onmouseout="ss_findTagMouseOutList('${prefix}')">
     <div id="available_${prefix}">

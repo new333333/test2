@@ -343,7 +343,7 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
     ></textarea></div>
 <div id="ss_findEntries_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findEntriesNavBarDiv_<portlet:namespace/>"
-    class="ss_findUserList" style="visibility:hidden;"
+    class="ss_typeToFindResults" style="visibility:hidden;"
     onmouseover="ss_findEntriesMouseOverList<portlet:namespace/>()"
     onmouseout="ss_findEntriesMouseOutList<portlet:namespace/>()">
     <div id="available_<%= findEntriesElementName %>_${prefix}">

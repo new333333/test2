@@ -325,7 +325,7 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
     ></textarea></div>
 <div id="ss_findPlaces_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findPlacesNavBarDiv_${prefix}"
-    class="ss_findUserList" style="visibility:hidden;"
+    class="ss_typeToFindResults" style="visibility:hidden;"
     onmouseover="ss_findPlacesMouseOverList${prefix}()"
     onmouseout="ss_findPlacesMouseOutList${prefix}()">
     <div id="available_<%= findPlacesElementName %>_${prefix}">
