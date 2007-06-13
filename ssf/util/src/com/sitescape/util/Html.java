@@ -203,6 +203,7 @@ public class Html {
 			} else {
 				//This code removes the HTML tags apart from img tags 
 				if (x < intTextLength) {
+					sb.append(" ");
 					sb.append(text.substring(x, y));
 				}
 				x = text.indexOf(">", y) + 1;
