@@ -28,7 +28,12 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
  *
  */
 public interface WorkspaceModule {
-    public boolean testAccess(Workspace workspace, String operation);
+	public enum WorkspaceOperation {
+		addFolder,
+		addWorkspace
+	}
+    public boolean testAccess(Workspace workspace, WorkspaceOperation operation);
+    public void checkAccess(Workspace workspace, WorkspaceOperation operation) throws AccessControlException;
     /**
      * 
      * @return

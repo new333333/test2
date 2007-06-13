@@ -23,15 +23,18 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.module.shared.InputDataAccessor;
-
+import com.sitescape.team.security.AccessControlException;
 /**
  * @author hurley
  *
  */
 public interface DefinitionModule {
 
-	public String addDefinition(Document doc, boolean replace);
-	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
+	public enum DefinitionOperation {
+		manageDefinition,
+	}
+	public String addDefinition(Document doc, boolean replace) throws AccessControlException;
+	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData) throws AccessControlException;
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -46,10 +49,10 @@ public interface DefinitionModule {
 	 * @return the next element in the iteration.
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
-	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
+	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
 	public Definition addDefaultDefinition(int type);
-	public void deleteDefinition(String id);
-	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
+	public void deleteDefinition(String id) throws AccessControlException;
+	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
 	public List<Definition> getDefinitions();
@@ -66,16 +69,16 @@ public interface DefinitionModule {
 	public Map getEntryDefinitionElements(String id);
 	public Map getWorkflowDefinitionStates(String id);
 
-	public void modifyDefinitionName(String id, String name, String caption);
-	public void modifyDefinitionAttribute(String id, String key, String value);
-	public void modifyDefinitionProperties(String id, InputDataAccessor inputData);
-	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException;
-	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;
+	public void modifyDefinitionName(String id, String name, String caption) throws AccessControlException;
+	public void modifyDefinitionAttribute(String id, String key, String value) throws AccessControlException;
+	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) throws AccessControlException;
+	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
+	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;
 	public Definition setDefaultBinderDefinition(Binder binder);
 	public Definition setDefaultEntryDefinition(Entry entry);
-	public void setDefinitionLayout(String id, InputDataAccessor inputData);
+	public void setDefinitionLayout(String id, InputDataAccessor inputData) throws AccessControlException;
 
-  	public boolean testAccess(int type, String operation);
+  	public boolean testAccess(int type, DefinitionOperation operation);
 	
   	public void walkDefinition(DefinableEntity entry, DefinitionModule.DefinitionVisitor visitor);
 	

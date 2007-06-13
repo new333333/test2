@@ -14,16 +14,16 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
 		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
 	}
-	/*
-	 *  (non-Javadoc)
-	 * Check access to folder.  If operation not listed, assume read_entries needed
-	 * Use method names as operation so we can keep the logic out of application
-	 * @see com.sitescape.team.module.folder.FolderModule#testAccess(com.sitescape.team.domain.FolderEntry, java.lang.String)
-	 */
-	public boolean testAccess(FolderEntry entry, String operation) {
-		if ("addEntryWorkflow".equals(operation)) return false;
-		if ("deleteEntryWorkflow".equals(operation)) return false;
-		return super.testAccess(entry, operation);
+
+	public boolean testAccess(FolderEntry entry, FolderOperation operation) {
+		switch (operation) {
+			case addEntryWorkflow:
+			case deleteEntryWorkflow:
+			case setWorkflowResponse:
+				return false;
+			default:
+				return super.testAccess(entry, operation);
+		}
 	}
 
    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) {

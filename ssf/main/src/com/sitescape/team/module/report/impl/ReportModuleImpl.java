@@ -5,21 +5,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -28,20 +25,21 @@ import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
-import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
 	protected Set enabledTypes=new HashSet();
@@ -49,7 +47,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected CoreDao coreDao;
 	protected AccessControlManager accessControlManager;
 	protected BinderModule binderModule;
-	
+	protected AdminModule adminModule;
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -71,6 +69,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return this.binderModule;
 	}
 
+	//circular dependencies prevent spring from setting this up
+	private synchronized AdminModule getAdminModule() {
+		if (adminModule != null) return adminModule;
+		adminModule = (AdminModule)SpringContextUtil.getBean("adminModule");
+		return adminModule;
+	}
 
     /**
      * Called after bean is initialized.  
@@ -159,7 +163,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	protected void generateReport(List<Map<String, Object>> report, Binder binder, final boolean byUser, final Date startDate, final Date endDate) {
-		checkAccess(binder, "generateReport");
+		getBinderModule().checkAccess(binder, BinderOperation.report);
 		final Long binderId = binder.getId();
 		final Collection<Long> userIds;
 		if(byUser) {
@@ -220,10 +224,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	public List<Map<String,Object>> generateActivityReport(final Long binderId, final Long entryId) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		Binder binder = getBinderModule().getBinder(binderId);
+		getBinderModule().checkAccess(binder, BinderOperation.report);
 
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
-				Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 				List auditTrail = null;
 				try {
 					ProjectionList proj = Projections.projectionList()
@@ -262,7 +267,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate) {
-		checkAccess("generateLoginReport");
+		getAdminModule().checkAccess(AdminOperation.report);
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		List result = (List) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -297,7 +302,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	for (Binder binder:binders) {
     		try {
    			if (binder.isDeleted()) continue;
-    			generateWorkflowStateRow(report, binder, startDate, endDate);
+   			generateWorkflowStateRow(report, binder, startDate, endDate);
     		} catch (Exception ex) {};
     		
     	}
@@ -306,7 +311,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	protected void generateWorkflowStateRow(List<Map<String, Object>> report, final Binder binder, final Date startDate, final Date endDate) {
-		checkAccess(binder, "generateReport");
+		if (!getBinderModule().testAccess(binder, BinderOperation.report)) return;
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				List auditTrail = null;
@@ -356,7 +361,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 	protected void generateWorkflowStateCountRow(List<Map<String, Object>> report, final Binder binder) {
-		checkAccess(binder, "generateReport");
+		if (!getBinderModule().testAccess(binder, BinderOperation.report)) return;
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				List states = null;
@@ -383,31 +388,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			row.put(ReportModule.DEFINITION_ID, col[0]);
 			row.put(ReportModule.STATE, col[1]);
 			row.put(ReportModule.COUNT, col[2]);
-		}
-	}
-
-	public boolean testAccess(FolderEntry entry, String operation) {
-		return testAccess(operation);
-	}
-
-	public boolean testAccess(String operation) {
-		try {
-			checkAccess(operation);
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-	}
-	
-	protected void checkAccess(Binder binder, String operation) {
-		checkAccess(operation);
-	}
-	
-	protected void checkAccess(String operation) {
-		if(operation.equals("generateLoginReport")) {
-			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
-		} else {
-			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.GENERATE_REPORTS);			
 		}
 	}
 

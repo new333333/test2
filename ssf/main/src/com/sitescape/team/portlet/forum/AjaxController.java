@@ -62,6 +62,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
@@ -1897,10 +1898,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		boolean isEntryReserved = false;
 		boolean isLockedByAndLoginUserSame = false;
 
-		if (getFolderModule().testAccess(entry, "reserveEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
 			reserveAccessCheck = true;
 		}
-		if (getFolderModule().testAccess(entry, "overrideReserveEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
 			isUserBinderAdministrator = true;
 		}
 		
@@ -1914,18 +1915,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 		}
 		
-		if (getFolderModule().testAccess(entry, "addReply")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 			accessControlEntryMap.put("addReply", new Boolean(true));
 		}		
 		
-		if (getFolderModule().testAccess(entry, "modifyEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
 			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
 			} else {
 				accessControlEntryMap.put("modifyEntry", new Boolean(true));
 			}
 		}
 		
-		if (getFolderModule().testAccess(entry, "deleteEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
 			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
 			} else {
 				accessControlEntryMap.put("deleteEntry", new Boolean(true));

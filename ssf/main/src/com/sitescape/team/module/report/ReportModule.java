@@ -7,7 +7,6 @@ import java.util.Collection;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.AuditTrail;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LoginInfo;
@@ -40,6 +39,4 @@ public interface ReportModule {
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
 
-    public boolean testAccess(FolderEntry entry, String operation);	
-    public boolean testAccess(String operation);	
 }

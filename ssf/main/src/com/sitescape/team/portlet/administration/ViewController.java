@@ -29,12 +29,14 @@ import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
+import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReleaseInfo;
 import com.sitescape.team.web.WebKeys;
@@ -75,7 +77,7 @@ public class ViewController extends  SAbstractController {
 
 		}
 		
-		if (getAdminModule().testAccess("addFunction")) model.put(WebKeys.IS_SITE_ADMIN, true);
+		if (getAdminModule().testAccess(AdminOperation.manageFunction)) model.put(WebKeys.IS_SITE_ADMIN, true);
 		
 		PortletURL url;
 		//Build the tree
@@ -101,7 +103,7 @@ public class ViewController extends  SAbstractController {
 		designerElement.addAttribute("id", String.valueOf(nextId++));
 		boolean hasDefAccess=false;
 		//Definition builder - Entry form designer
-		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 			element.addAttribute("image", "bullet");
@@ -116,7 +118,7 @@ public class ViewController extends  SAbstractController {
 		}
 				
 		//Definition builder - Folder view designer
-		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
 			element.addAttribute("image", "bullet");
@@ -131,7 +133,7 @@ public class ViewController extends  SAbstractController {
 		}
 				
 		//Definition builder - Workflow designer
-		if (getDefinitionModule().testAccess(Definition.WORKFLOW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
 			element.addAttribute("image", "bullet");
@@ -146,7 +148,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - Profile listing designer
-		if (getDefinitionModule().testAccess(Definition.PROFILE_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
 			element.addAttribute("image", "bullet");
@@ -161,7 +163,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - Profile designer
-		if (getDefinitionModule().testAccess(Definition.PROFILE_ENTRY_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
 			element.addAttribute("image", "bullet");
@@ -176,7 +178,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - Workspace designer
-		if (getDefinitionModule().testAccess(Definition.WORKSPACE_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
 			element.addAttribute("image", "bullet");
@@ -191,7 +193,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - User workspace designer
-		if (getDefinitionModule().testAccess(Definition.USER_WORKSPACE_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_user_workspace_designer"));
 			element.addAttribute("image", "bullet");
@@ -222,7 +224,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Roles configuration
-		if (getAdminModule().testAccess("addFunction")) {
+		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			element = rootElement.addElement("child");
 			element.addAttribute("title", NLT.get("administration.configure_roles"));
 			element.addAttribute("image", "bullet");
@@ -235,7 +237,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Posting schedule
-		if (getAdminModule().testAccess("setPostingSchedule")) {
+		if (getAdminModule().testAccess(AdminOperation.managePosting)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_posting_job"));
 			element.addAttribute("image", "bullet");
@@ -248,7 +250,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Search index
-		if (getBinderModule().testAccess(top, "indexBinder")) {
+		if (getBinderModule().testAccess(top, BinderOperation.indexBinder)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_search_index"));
 			element.addAttribute("image", "bullet");
@@ -261,7 +263,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Manage groups
-		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), "addEntries")) {
+		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.manage.groups"));
 			element.addAttribute("image", "bullet");
@@ -274,7 +276,7 @@ public class ViewController extends  SAbstractController {
 		}
 	
 		//Import profiles
-		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), "addEntries")) {
+		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.import.profiles"));
 			element.addAttribute("image", "bullet");
@@ -287,7 +289,7 @@ public class ViewController extends  SAbstractController {
 		}
 	
 		//Definition import
-		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.import.definitions"));
 			element.addAttribute("image", "bullet");
@@ -300,7 +302,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Definition export
-		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, "addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.export.definitions"));
 			element.addAttribute("image", "bullet");
@@ -313,7 +315,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//templates
-		if (getAdminModule().testAccess("addTemplate")) {
+		if (getAdminModule().testAccess(AdminOperation.manageTemplate)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_configurations"));
 			element.addAttribute("image", "bullet");
@@ -326,7 +328,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Report
-		if (getReportModule().testAccess("report")) {
+		if (getAdminModule().testAccess(AdminOperation.report)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.report"));
 			element.addAttribute("image", "bullet");
@@ -339,8 +341,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//For debug - keep off everyones menus
-		if (getAdminModule().testAccess("addPosting") &&
-				logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled() && getAdminModule().testAccess(AdminOperation.managePosting)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.view_change_log"));
 			element.addAttribute("image", "bullet");

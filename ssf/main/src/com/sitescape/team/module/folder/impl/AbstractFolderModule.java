@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
@@ -33,6 +32,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -65,7 +65,6 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
-import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FileLockInfo;
 import com.sitescape.team.module.folder.FilesLockedByOtherUsersException;
@@ -102,6 +101,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     AtomicInteger deCount = new AtomicInteger();
     AtomicInteger arCount = new AtomicInteger();
     AtomicInteger afCount = new AtomicInteger();
+
 
     protected ReportModule getReportModule() {
 		return reportModule;
@@ -150,13 +150,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
  	   } 
  	   
      }
-	/*
-	 *  (non-Javadoc)
-	 * Check access to folder.  If operation not listed, assume read_entries needed
-	 * Use method names as operation so we can keep the logic out of application
-	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
-	 */
-	public boolean testAccess(Folder folder, String operation) {
+
+	public boolean testAccess(Folder folder, FolderOperation operation) {
 		try {
 			checkAccess(folder, operation);
 			return true;
@@ -164,28 +159,21 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			return false;
 		}
 	}
-	protected void checkAccess(Folder folder, String operation) throws AccessControlException {
-		if ("getFolder".equals(operation)) {
-			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
-		} else if ("addEntry".equals(operation)) {
-	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
-		} else if ("addFolder".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
-		} else if ("setTag".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_COMMUNITY_TAGS);
-		} else if ("deleteTag".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.ADD_COMMUNITY_TAGS);
-		} else {
-	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
+	public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException {
+		switch (operation) {
+			case addEntry: 
+			case synchronize:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
+				break;
+			case addFolder:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
+				break;
+			default:
+				throw new NotSupportedException(operation.toString(), "checkAccess");
+				
 		}
 	}
-	/*
-	 *  (non-Javadoc)
-	 * Check access to folder.  If operation not listed, assume read_entries needed
-	 * Use method names as operation so we can keep the logic out of application
-	 * @see com.sitescape.team.module.folder.FolderModule#testAccess(com.sitescape.team.domain.FolderEntry, java.lang.String)
-	 */
-	public boolean testAccess(FolderEntry entry, String operation) {
+	public boolean testAccess(FolderEntry entry, FolderOperation operation) {
 		try {
 			checkAccess(entry, operation);
 			return true;
@@ -193,30 +181,38 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			return false;
 		}
 	}
-	protected void checkAccess(FolderEntry entry, String operation) throws AccessControlException {
-		if ("getEntry".equals(operation)) {
-	    	AccessUtils.readCheck(entry);			
-		} else if ("addReply".equals(operation)) { 
-	    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
-	    } else if ("deleteEntry".equals(operation)) {
-			AccessUtils.deleteCheck(entry);   		
-		} else if ("modifyEntry".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   
-		} else if ("addEntryWorkflow".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   
-		} else if ("modifyEntryWorkflow".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   
-		} else if ("reserveEntry".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   		
-		} else if ("moveEntry".equals(operation)) {
-			AccessUtils.modifyCheck(entry);
-		} else if ("deleteEntryWorkflow".equals(operation)) {
-			AccessUtils.modifyCheck(entry);			
-	    } else if ("overrideReserveEntry".equals(operation)) {
-	    	AccessUtils.overrideReserveEntryCheck(entry);
-	    } else {
-	    	AccessUtils.readCheck(entry);
-	    }
+	public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException {
+		switch (operation) {
+			case modifyEntry:
+			case addEntryWorkflow:
+			case setWorkflowResponse:
+			case deleteEntryWorkflow:
+			case reserveEntry:
+			case moveEntry:
+				AccessUtils.modifyCheck(entry);   
+				break;
+			case deleteEntry:
+				AccessUtils.deleteCheck(entry);   		
+				break;
+			case overrideReserveEntry:
+				AccessUtils.overrideReserveEntryCheck(entry);
+				break;
+			case addReply:
+		    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
+		    	break;				
+			case manageTag:
+				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_COMMUNITY_TAGS);
+				break;
+			case report:
+				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.GENERATE_REPORTS);
+				break;
+			case modifyWorkflowState:
+				AccessUtils.modifyCheck(entry);   
+	    		break;				
+			default:
+				throw new NotSupportedException(operation.toString(), "checkAccess");
+					
+		}
 
 	}
 	
@@ -267,7 +263,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		Folder folder = loadFolder(folderId);
 	
 		// Check if the user has "read" access to the folder.
-		checkAccess(folder, "getFolder");		
+		getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		return folder;        
 	}
 	
@@ -292,7 +288,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	afCount.incrementAndGet();
     	
         Folder parentFolder = loadFolder(parentFolderId);
-        checkAccess(parentFolder, "addFolder");
+        checkAccess(parentFolder, FolderOperation.addFolder);
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
@@ -315,7 +311,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	aeCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
-        checkAccess(folder, "addEntry");
+        checkAccess(folder, FolderOperation.addEntry);
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
@@ -335,7 +331,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
-        checkAccess(entry, "addReply");
+        checkAccess(entry, FolderOperation.addReply);
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
         Date stamp = reply.getCreation().getDate();
         scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
@@ -359,7 +355,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkAccess(entry, "modifyEntry");
+        checkAccess(entry, FolderOperation.modifyEntry);
         
         User user = RequestContextHolder.getRequestContext().getUser();
         HistoryStamp reservation = entry.getReservation();
@@ -389,8 +385,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	return getDomFolderTree(folderId, domTreeHelper, -1);
     }
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels) {
-        Folder top = loadFolder(folderId);
-        checkAccess(top, "getDomFolderTree");
+    	//access check in get Folder
+    	Folder top = getFolder(folderId);
         
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
@@ -605,15 +601,15 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
            
     public FolderEntry getEntry(Long parentFolderId, Long entryId) {
         FolderEntry entry = loadEntry(parentFolderId, entryId);
-        checkAccess(entry, "getEntry");
+        AccessUtils.readCheck(entry);
         return entry;
     }
     public Map getEntryTree(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkAccess(entry, "getEntryTree");
-        return processor.getEntryTree(folder, entry);   	
+        AccessUtils.readCheck(entry);
+       return processor.getEntryTree(folder, entry);   	
     }
     public void deleteEntry(Long parentFolderId, Long entryId) {
     	deleteEntry(parentFolderId, entryId, true);
@@ -624,16 +620,16 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkAccess(entry, "deleteEntry");
+        checkAccess(entry, FolderOperation.deleteEntry);
         processor.deleteEntry(folder, entry, deleteMirroredSource);
     }
     public void moveEntry(Long folderId, Long entryId, Long destinationId) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkAccess(entry, "moveEntry");
+        checkAccess(entry, FolderOperation.moveEntry);
         Folder destination =  loadFolder(destinationId);
-        checkAccess(destination, "addEntry");
+        checkAccess(destination, FolderOperation.addEntry);
         processor.moveEntry(folder, entry, destination);
     }
     public void addSubscription(Long folderId, Long entryId, int style) {
@@ -676,7 +672,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		List tags = new ArrayList();
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
-		if (community) checkAccess(entry.getParentFolder(), "setTag");
+		if (community) checkAccess(entry, FolderOperation.manageTag);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier eei = entry.getEntityIdentifier();
@@ -701,7 +697,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	   	} catch(Exception e) {
 	   		return;
 	   	}
-	   	if (tag.isPublic()) checkAccess(entry.getParentFolder(), "deleteTag");
+	   	if (tag.isPublic()) checkAccess(entry, FolderOperation.manageTag);
 	   	//if created tag for this entry, by this user- can delete it
 	   	else if (!tag.isOwner(RequestContextHolder.getRequestContext().getUser())) return;
 	   	getCoreDao().delete(tag);
@@ -778,7 +774,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 
         // For now, check against the same access right needed for modifying
         // entry. We might want to have a separate right for reserving entry...
-    	checkAccess(entry, "reserveEntry");
+    	checkAccess(entry, FolderOperation.reserveEntry);
 
         User user = RequestContextHolder.getRequestContext().getUser();
     	
@@ -857,7 +853,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	else {
     		boolean isUserBinderAdministrator = false;
     		try {
-    			checkAccess(entry, "overrideReserveEntry");
+    			checkAccess(entry, FolderOperation.overrideReserveEntry);
     			isUserBinderAdministrator = true;
     		}
     		catch (AccessControlException ac) {};    		

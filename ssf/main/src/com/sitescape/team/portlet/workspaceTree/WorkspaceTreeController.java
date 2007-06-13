@@ -41,6 +41,10 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
+import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.security.AccessControlException;
@@ -248,7 +252,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		
 		//Get the info for the "add a team" button
-		if (!ws.isRoot() && getWorkspaceModule().testAccess(ws, "addWorkspace")) {
+		if (!ws.isRoot() && getWorkspaceModule().testAccess(ws, WorkspaceOperation.addWorkspace)) {
 			Long cfgType = null;
 			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
@@ -293,7 +297,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Toolbar dashboardToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
-		boolean canGetTeamMembers = getBinderModule().testAccess(workspace, "getTeamMembers");
+		boolean canGetTeamMembers = getBinderModule().testAccess(workspace, BinderOperation.getTeamMembers);
 
 		
 		//The "Administration" menu
@@ -305,7 +309,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//	The "Add" menu
 		PortletURL url;
 		//Add Workspace except to top or a user workspace
-		if (!workspace.isRoot() && getWorkspaceModule().testAccess(workspace, "addWorkspace")) {
+		if (!workspace.isRoot() && getWorkspaceModule().testAccess(workspace, WorkspaceOperation.addWorkspace)) {
 			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
@@ -314,7 +318,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
 		}
 		//Add Folder except to top
-		if (!workspace.isRoot() && getWorkspaceModule().testAccess(workspace, "addFolder")) {
+		if (!workspace.isRoot() && getWorkspaceModule().testAccess(workspace, WorkspaceOperation.addFolder)) {
 			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
@@ -324,7 +328,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 	
 		//Configuration
-		if (getBinderModule().testAccess(workspace, "modifyBinder")) {
+		if (getBinderModule().testAccess(workspace, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
@@ -348,7 +352,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//Delete
 		if (!workspace.isReserved()) {
-			if (getBinderModule().testAccess(workspace, "deleteBinder")) {
+			if (getBinderModule().testAccess(workspace, BinderOperation.deleteBinder)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "return ss_confirmDeleteWorkspace();");
@@ -363,7 +367,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//Move
 		if (!workspace.isReserved()) {
-			if (getBinderModule().testAccess(workspace, "moveBinder")) {
+			if (getBinderModule().testAccess(workspace, BinderOperation.moveBinder)) {
 				adminMenuCreated=true;
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
@@ -374,7 +378,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			}
 		}
 		//Reporting
-		if (getBinderModule().testAccess(workspace, "report")) {
+		if (getBinderModule().testAccess(workspace, BinderOperation.report)) {
 			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
@@ -387,7 +391,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
 		
 		//Access control
-		if (getAdminModule().testAccess(workspace, "setWorkAreaFunctionMembership")) {
+		if (getAdminModule().testAccess(workspace, AdminOperation.manageFunctionMembership)) {
 			qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();
@@ -404,11 +408,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 			Principal owner = workspace.getOwner();
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
-			if (getProfileModule().testAccess(owner, "modifyEntry")) {
+			if (getProfileModule().testAccess(owner, ProfileOperation.modifyEntry)) {
 				showModifyProfileMenu = true;
 			}
 		
-			if (getProfileModule().testAccess(owner, "deleteEntry")) {
+			if (getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
 				//Don't let a user delete his or her own account
 				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
 			}
@@ -468,7 +472,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
 			//Add
-			if (getBinderModule().testAccess(workspace, "setTeamMembers")) {
+			if (getBinderModule().testAccess(workspace, BinderOperation.manageTeamMembers)) {
 				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);

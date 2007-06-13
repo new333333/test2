@@ -30,6 +30,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.InternalException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -68,13 +69,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 
 	protected Log logger = LogFactory.getLog(getClass());
     protected DefinitionModule definitionModule;
-	/*
-	 * Check access to folder.  If operation not listed, assume read_entries needed
-   	 * Use method names as operation so we can keep the logic out of application
-	 * and easisly change the required rights
-	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
-	 */
-	public boolean testAccess(Workspace workspace, String operation) {
+
+	public boolean testAccess(Workspace workspace, WorkspaceOperation operation) {
 		try {
 			checkAccess(workspace, operation);
 			return true;
@@ -82,15 +78,16 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 			return false;
 		}
 	}
-	protected void checkAccess(Workspace workspace, String operation) throws AccessControlException {
-		if ("getWorkspace".equals(operation)) {
-			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
-		} else if ("addFolder".equals(operation)) {
+	public void checkAccess(Workspace workspace, WorkspaceOperation operation) throws AccessControlException {
+		switch (operation) {
+		case addFolder:
 	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_FOLDERS);
-		} else if ("addWorkspace".equals(operation)) { 	
+	    	break;
+		case addWorkspace:
 	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_WORKSPACES);
-		} else {
-	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
+	    	break;
+	    default:
+	    	throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
 	}
 
@@ -133,7 +130,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         }
         if (workspace.isDeleted()) throw new NoBinderByTheIdException(workspace.getId());
 		// Check if the user has "read" access to the workspace.
-        checkAccess(workspace, "getWorkspace");
+		getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
  
        return workspace;
     }
@@ -497,7 +494,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-        checkAccess(parentWorkspace, "addFolder");
+        checkAccess(parentWorkspace, WorkspaceOperation.addFolder);
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
@@ -518,10 +515,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         //allow users workspaces to be created for all users
     	if (parentWorkspace.isReserved() && ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentWorkspace.getInternalId())) { 
     		if ((def == null) || (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
-        		checkAccess(parentWorkspace, "addWorkspace");
+                checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
     		}
     	} else {
-    		checkAccess(parentWorkspace, "addWorkspace");
+            checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
     	}
         
         return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();

@@ -42,6 +42,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
@@ -352,7 +353,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 		
 		//Check the access rights of the user
-		if (getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+		if (getInstance().getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(true));
 		} else {
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(false));			
@@ -873,7 +874,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	
 	public static String addComponent(ActionRequest request, Binder binder, 
 			String listName, String scope) {
-		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 			Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
 			return DashboardHelper.addComponent(request, dashboard, listName, scope);
 		}
@@ -916,7 +917,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	public static void saveComponentData(ActionRequest request, Binder binder, String scope) {
 		//Get the dashboard component
-		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 			String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 			String componentScope = "";
 			if (componentId.contains("_")) componentScope = componentId.split("_")[0];
@@ -1139,7 +1140,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	
 	public static void deleteComponent(ActionRequest request, Binder binder, String componentId, 
 			String scope) {
-		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 			//Get the dashboard component
 			String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 			String componentScope = "";

@@ -109,7 +109,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
     //NO transaction
-    public boolean testAccess(ProfileBinder binder, String operation) {
+    public boolean testAccess(ProfileBinder binder, ProfileOperation operation) {
 		try {
 			checkAccess(binder, operation);
 			return true;
@@ -117,18 +117,21 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return false;
 		}
 	}
-	protected void checkAccess(ProfileBinder binder, String operation) throws AccessControlException {
-		if ("getProfileBinder".equals(operation)) {
-			getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-		} else if ("addFolder".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_FOLDERS);
-		} else if ("addWorkspace".equals(operation)) { 	
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_WORKSPACES);
-		} else if (operation.startsWith("add")) {
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-		} else {
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+	public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
+		switch (operation) {
+			case addEntry:
+		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+		    	break;
+			default:
+		    	throw new NotSupportedException(operation.toString(), "checkAccess");				    		
 		}
+	}
+	protected void checkReadAccess(ProfileBinder binder) {
+    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
+	}
+	protected void checkReadAccess(Principal principal) {
+    	AccessUtils.readCheck(principal);
+
 	}
 	/*
  	 * Check access to folder.  If operation not listed, assume read_entries needed
@@ -137,7 +140,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see com.sitescape.team.module.profile.ProfileModule#testAccess(com.sitescape.team.domain.Principal, java.lang.String)
 	 */
     //NO transaction
-	public boolean testAccess(Principal entry, String operation) {
+	public boolean testAccess(Principal entry, ProfileOperation operation) {
 		try {
 			checkAccess(entry, operation);
 			return true;
@@ -145,19 +148,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return false;
 		}
 	}
-	protected void checkAccess(Principal entry, String operation) throws AccessControlException {
-		if ("getEntry".equals(operation)) {
-	    	AccessUtils.readCheck(entry);			
-	    } else if ("deleteEntry".equals(operation)) {
-			AccessUtils.deleteCheck(entry);   		
-		} else if ("modifyEntry".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   		
-		} else if ("setUserProperty".equals(operation)) {
-			if (RequestContextHolder.getRequestContext().getUser().equals(entry)) return;
-			AccessUtils.modifyCheck(entry);   		
-	    } else {
-	    	AccessUtils.readCheck(entry);
-	    }
+	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException {
+		switch (operation) {
+			case modifyEntry:
+				AccessUtils.modifyCheck(entry);   		
+				break;
+			case deleteEntry:
+				AccessUtils.deleteCheck(entry);   		
+				break;
+			default:
+		    	throw new NotSupportedException(operation.toString(), "checkAccess");				    		
+		}
 
 	}
     private ProfileCoreProcessor loadProcessor(ProfileBinder binder) {
@@ -178,7 +179,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public ProfileBinder getProfileBinder() {
 	   ProfileBinder binder = loadBinder();
 		// Check if the user has "read" access to the folder.
-	   checkAccess(binder, "getProfileBinder");		
+	   checkReadAccess(binder);		
 	   return binder;
     }
 
@@ -186,7 +187,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public Principal getEntry(Long binderId, Long principaId) {
         ProfileBinder binder = loadBinder(binderId);
         Principal p = (Principal)loadProcessor(binder).getEntry(binder, principaId);        
-        checkAccess(p, "getEntry");
+    	checkReadAccess(p);			
         return p;
     }
     //RW transaction
@@ -195,7 +196,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		User user;
 		if (userId == null) user = currentUser;
 		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
- 		checkAccess(user, "setUserProperty");
+		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
  		UserProperties uProps = getProfileDao().loadUserProperties(user.getId(), binderId);
 		uProps.setProperty(property, value); 	
   		return uProps;
@@ -217,7 +218,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		User user;
 		if (userId == null) user = currentUser;
 		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
- 		checkAccess(user, "setUserProperty");
+		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
  		UserProperties uProps = getProfileDao().loadUserProperties(user.getId());
 		uProps.setProperty(property, value); 	
 		return uProps;
@@ -275,14 +276,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	//RO transaction
    public Map getGroups(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
-		checkAccess(binder, "getEntries");
+    	checkReadAccess(binder);
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
 	//RO transaction
 	public SortedSet<Group> getGroups(Collection<Long> entryIds) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
-		checkAccess(binder, "getEntries");
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Group> result = new TreeSet(c);
@@ -291,8 +291,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId) {
 		ProfileBinder binder = getProfileBinder();
-		checkAccess(binder, "getEntries");
-	    User user = RequestContextHolder.getRequestContext().getUser();
+ 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Principal> result = new TreeSet(c);
  		result.addAll(getProfileDao().loadPrincipals(ids, zoneId, false));
@@ -305,7 +304,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         ProfileBinder binder = loadBinder(binderId);
-        checkAccess(binder, "addEntry");
+        checkAccess(binder, ProfileOperation.addEntry);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
         return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
     }
@@ -337,7 +336,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId) ||
         		(inputData.getCount() > 1) ||
         		!inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
-        	checkAccess(entry, "modifyEntry");
+        	checkAccess(entry, ProfileOperation.modifyEntry);
         }
        	List atts = new ArrayList();
     	if (deleteAttachments != null) {
@@ -353,7 +352,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    //NO transaction
     public void addEntries(Long binderId, Document doc) {
        ProfileBinder binder = loadBinder(binderId);
-       checkAccess(binder, "addEntries");
+       checkAccess(binder, ProfileOperation.addEntry);
        //process the document
        Element root = doc.getRootElement();
        List defList = root.selectNodes("/profiles/user");
@@ -506,7 +505,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
-        checkAccess(binder, "addEntry");
+        checkAccess(binder, ProfileOperation.addEntry);
         Definition definition;
         if (!Validator.isNull(definitionId))
         	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
@@ -522,7 +521,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, principalId);
-        checkAccess(entry, "deleteEntry");
+        checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
     		throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});       	
        	processor.deleteEntry(binder, entry, true); // third arg is irrelevant 
@@ -546,24 +545,25 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	//RO transaction
     public Map getUsers(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
-		checkAccess(binder, "getEntries");
+		checkReadAccess(binder);
         return loadProcessor(binder).getBinderEntries(binder, userDocType, options);
         
    }
 	//RO transaction 
 	public SortedSet<User> getUsers(Collection<Long> entryIds) {
-		checkAccess(getProfileBinder(), "getEntries");
+		//does read check
+		ProfileBinder profile = getProfileBinder();
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet(c);
-       	result.addAll(getProfileDao().loadUsers(entryIds, user.getZoneId()));
+       	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
  		return result;
 	}
    
 	//RO transaction
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {
+		//does read check
 		ProfileBinder profile = getProfileBinder();
-		checkAccess(profile, "getEntries");
 		Set ids = getProfileDao().explodeGroups(principalIds, profile.getZoneId());
 		return getUsers(ids);
 	}

@@ -32,6 +32,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
@@ -172,10 +173,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 
    	/**
-   	 * Use method names as operation so we can keep the logic out of application
+   	 * Use operation so we can keep the logic out of application
 	 * and easisly change the required rights
 	 */
-   	public boolean testAccess(WorkArea workArea, String operation) {
+   	public boolean testAccess(WorkArea workArea, AdminOperation operation) {
    		try {
    			checkAccess(workArea, operation);
    			return true;
@@ -183,33 +184,30 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    			return false;
    		}
    	}
-   	protected void checkAccess(WorkArea workArea, String operation) {
+   	public void checkAccess(WorkArea workArea, AdminOperation operation) {
    		if (workArea instanceof TemplateBinder) {
 			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
-   		} else if (operation.startsWith("setWorkAreaFunctionMembership")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("deleteWorkAreaFunctionMembership")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("setWorkAreaFunctionMembershipInherited")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("setWorkAreaOwner")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.READ_ENTRIES);
-		}
-		
+   		} else {
+   			switch (operation) {
+   			case manageFunctionMembership:
+    				getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+   				break;
+   			default:
+   				throw new NotSupportedException(operation.toString(), "checkAccess");
+  					
+   			}
+   		}		
 	}
 	private BinderProcessor loadBinderProcessor(Binder binder) {
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-
 	}
 
    	/**
-	 * Use method names as operation so we can keep the logic out of application
+	 * Use operation so we can keep the logic out of application
 	 * and easisly change the required rights
    	 * 
    	 */
-  	public boolean testAccess(String operation) {
+  	public boolean testAccess(AdminOperation operation) {
    		try {
    			checkAccess(operation);
    			return true;
@@ -217,51 +215,34 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    			return false;
    		}
    	}
-    protected void checkAccess(String operation) {
+  	public void checkAccess(AdminOperation operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
- 
-        if ("modifyPosting".equals(operation)) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("addPosting")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("deletePosting")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
- 		} else if (operation.startsWith("setPostingSchedule")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("addTemplate")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("deleteTemplate")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("modifyTemplate")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("addFunction")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("modifyFunction")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("deleteFunction")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("getFunctions") || operation.startsWith("getPostingSchedule")) {
-			//anyone can get them 
-
-			return;
-		} else {
-			accessControlManager.checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+		switch (operation) {
+			case manageFunction:
+			case managePosting:
+			case manageTemplate:
+  				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   				break;
+			case report:
+   				if (getAccessControlManager().testOperation(top, WorkAreaOperation.GENERATE_REPORTS)) break;
+ 				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   				break;
+			default:
+   				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
 
-		
    	}
 
     public List<PostingDef> getPostings() {
-    	//TODO: access check
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void modifyPosting(String postingId, Map updates) {
-    	checkAccess("modifyPosting");
+    	checkAccess(AdminOperation.managePosting);
     	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
     	ObjectBuilder.updateObject(post, updates);
     }
     public void addPosting(Map updates) {
-    	checkAccess("addPosting");
+    	checkAccess(AdminOperation.managePosting);
     	PostingDef post = new PostingDef();
     	post.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
        	ObjectBuilder.updateObject(post, updates);
@@ -269,7 +250,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
       	coreDao.save(post);   	
     }
     public void deletePosting(String postingId) {
-    	checkAccess("deletePosting");
+    	checkAccess(AdminOperation.managePosting);
     	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
     	if (post.getBinder() != null) {
     		post.getBinder().setPosting(null);
@@ -281,7 +262,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	return getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void setPostingSchedule(ScheduleInfo config) throws ParseException {
-       	checkAccess("setPostingSchedule");
+       	checkAccess(AdminOperation.managePosting);
     	getPostingObject().setScheduleInfo(config);
     }	     
     private EmailPosting getPostingObject() {
@@ -455,7 +436,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	//add top level template
 	 public Long addTemplate(int type, Map updates) {
-	    checkAccess("addTemplate");
+	    checkAccess(AdminOperation.manageTemplate);
 		TemplateBinder template = new TemplateBinder();
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
 		template.setEntryDef(entryDef);
@@ -473,7 +454,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	 
 		//add top level template
 	 public Long addTemplate(Document doc) {
-		 checkAccess("addTemplate");
+		 checkAccess(AdminOperation.manageTemplate);
 		 Element config = doc.getRootElement();
 		 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
 		 if (Validator.isNotNull(internalId)) {
@@ -506,7 +487,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 getCoreDao().flush();
 		 return template.getId();
 	 }
-	 public void doTemplate(TemplateBinder template, Element config) {
+	 protected void doTemplate(TemplateBinder template, Element config) {
 		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
 
 		 template.setLibrary(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_LIBRARY), false));
@@ -545,7 +526,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
 	 //clone a top level template as a child of another template
 	 public Long addTemplate(Long parentId, Long srcConfigId) {
-	    checkAccess("addTemplate");
+		 checkAccess(AdminOperation.manageTemplate);
 	    TemplateBinder parentConfig = (TemplateBinder)getCoreDao().loadBinder(parentId, RequestContextHolder.getRequestContext().getZoneId());
 	    TemplateBinder srcConfig = (TemplateBinder)getCoreDao().loadBinder(srcConfigId, RequestContextHolder.getRequestContext().getZoneId());
 	    return addTemplate(parentConfig, srcConfig);
@@ -583,7 +564,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 return config.getId();
 	 }
 	   public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
-		   checkAccess("addTemplate");
+		   checkAccess(AdminOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
 		   TemplateBinder config = templateFromBinder(null, binder);
@@ -630,7 +611,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			
 	}
 	public void modifyTemplate(Long id, Map updates) {
-		checkAccess("modifyTemplate");
+		checkAccess(AdminOperation.manageTemplate);
 		TemplateBinder config = (TemplateBinder)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
 		ObjectBuilder.updateObject(config, updates);
 	}
@@ -805,7 +786,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	
  
 	public void addFunction(String name, Set<WorkAreaOperation> operations) {
-		checkAccess("addFunction");
+		checkAccess(AdminOperation.manageFunction);
 		Function function = new Function();
 		function.setName(name);
 		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
@@ -820,13 +801,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	 
     }
     public void modifyFunction(Long id, Map updates) {
-		checkAccess("modifyFunction");
+		checkAccess(AdminOperation.manageFunction);
 		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		ObjectBuilder.updateObject(function, updates);
 		functionManager.updateFunction(function);			
     }
     public void deleteFunction(Long id) {
-		checkAccess("deleteFunction");
+		checkAccess(AdminOperation.manageFunction);
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		functionManager.deleteFunction(f);
     }
@@ -835,7 +816,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, Set<Long>> functionMemberships) {
-		checkAccess(workArea, "setWorkAreaFunctionMembership");
+		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		//get list of current readers to compare for indexing
 		List<WorkAreaFunctionMembership>wfms = 
@@ -901,7 +882,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
 
      public void setWorkAreaOwner(final WorkArea workArea, final Long userId) {
-    	checkAccess(workArea, "setWorkAreaOwner");
+    	 checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	if (!workArea.getOwnerId().equals(userId)) {
     		getTransactionTemplate().execute(new TransactionCallback() {
    		        	public Object doInTransaction(TransactionStatus status) {
@@ -962,7 +943,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit) 
     throws AccessControlException {
-    	checkAccess(workArea, "setWorkAreaFunctionMembershipInherited");
+    	checkAccess(workArea, AdminOperation.manageFunctionMembership);
         Boolean index = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		if (inherit) {

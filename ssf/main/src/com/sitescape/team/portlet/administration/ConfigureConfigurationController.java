@@ -42,6 +42,7 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -395,7 +396,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisTemplate"));
 		String configId = config.getId().toString();
 		//see if have rights to change anything
-		boolean manager = getBinderModule().testAccess(config, "setProperty");
+		boolean manager = getBinderModule().testAccess(config, BinderOperation.setProperty);
 		Map qualifiers = new HashMap();
 		if (manager) {
 			//Add Folder

@@ -633,7 +633,6 @@ public class WebKeys {
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";
-    public static final String SHOW_POSTING="ssShowPosting";
     public static final String SKIP_LINK_ID="ssSkipLinkId";
     public static final String SKIP_LINK_TAG="ssSkipLinkTag";
     public static final String SUBSCRIPTION="ssSubscription";
