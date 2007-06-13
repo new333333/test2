@@ -164,6 +164,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	SimpleProfiler.startProfiler("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
+        	
+        	//Fixup the description one more time
+        	WebHelper.scanDescriptionForAttachmentUrls(entry.getDescription(), entry);
+        	
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
         	SimpleProfiler.stopProfiler("addEntry_indexAdd");
         	

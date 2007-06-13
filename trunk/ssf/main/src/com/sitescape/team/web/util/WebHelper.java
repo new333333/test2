@@ -44,6 +44,7 @@ import com.sitescape.team.domain.AnyOwner;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -359,6 +360,44 @@ public class WebHelper {
         		description.setText(m.replaceFirst(img.replace("$", "\\$")));
         		m = pattern.matcher(description.getText());
         	}
+    	}
+	}
+	
+	public static void scanDescriptionForAttachmentUrls(Description description, DefinableEntity entity) {
+		String entityType = entity.getEntityType().toString();
+		String binderId = "";
+		String entryId = "";
+		if (entityType.equals(EntityIdentifier.EntityType.folder.name()) || 
+				entityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
+				entityType.equals(EntityIdentifier.EntityType.profiles.name())) {
+			binderId = entity.getId().toString();
+			entryId = entity.getId().toString();
+		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.name())) {
+			binderId = entity.getParentBinder().getId().toString();
+			entryId = entity.getId().toString();
+		}
+		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
+    	Matcher m1 = p1.matcher(description.getText());
+    	int loopDetector = 0;
+    	while (m1.find()) {
+    		if (loopDetector > 2000) {
+	        	logger.error("Error processing markup: " + description.getText());
+    			return;
+    		}
+    		loopDetector++;
+    		String url = m1.group(2);
+			if (entity != null) {
+	    		//Look for the attachment
+	    		FileAttachment fa = entity.getFileAttachment(url.trim());
+	    		if (fa != null) {
+    		    	//Now, replace the url with special markup version
+    	        		String newText = new String("{{attachmentFileId: fileId=" + fa.getId() 
+    	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId 
+    	        				+ "&amp;entityType=" + entityType + "}}\"");
+    	        		description.setText(m1.replaceFirst(newText.replace("$", "\\$")));
+    	        		m1 = p1.matcher(description.getText());
+	    		}
+			}
     	}
 	}
 	
