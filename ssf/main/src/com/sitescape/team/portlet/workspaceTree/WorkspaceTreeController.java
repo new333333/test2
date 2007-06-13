@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -25,6 +26,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,6 +37,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
@@ -242,8 +245,32 @@ public class WorkspaceTreeController extends SAbstractController  {
 		} else {
 			wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		}
-
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+		
+		//Get the info for the "add a team" button
+		if (!ws.isRoot() && getWorkspaceModule().testAccess(ws, "addWorkspace")) {
+			Long cfgType = null;
+			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
+			if (result.isEmpty()) {
+				result.add(getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
+			}
+			for (int i = 0; i < result.size(); i++) {
+				TemplateBinder tb = (TemplateBinder) result.get(i);
+				if (tb.getInternalId() != null && tb.getInternalId().toString().equals(ObjectKeys.DEFAULT_TEAM_WORKSPACE_CONFIG)) {
+					//We have found the team workspace template, get its config id
+					cfgType = tb.getId();
+					break;
+				}
+			}
+			if (cfgType != null) {
+				PortletURL url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+				url.setParameter(WebKeys.URL_BINDER_ID, ws.getId().toString());
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_TEAM_WORKSPACE);
+				url.setParameter(WebKeys.URL_BINDER_CONFIG_ID, cfgType.toString());
+				model.put(WebKeys.ADD_TEAM_WORKSPACE_URL, url);
+			}
+		}
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
 	}
 	

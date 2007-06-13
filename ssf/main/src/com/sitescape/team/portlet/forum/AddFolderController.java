@@ -81,6 +81,7 @@ public class AddFolderController extends SAbstractController {
 				result.add(getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
+		} else if (operation.equals(WebKeys.OPERATION_ADD_TEAM_WORKSPACE)) {
 		}
 	
 		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);

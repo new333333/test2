@@ -63,6 +63,7 @@ public class WebKeys {
     public static final String URL_FOLDER_ID = "folderId";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
+    public static final String URL_BINDER_CONFIG_ID="binderConfigId";
     public static final String URL_BINDER_TYPE="binderType";
     public static final String URL_BLOG_REPLY="blogReply";
     public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";
@@ -211,6 +212,7 @@ public class WebKeys {
  	public static final String OPERATION_ADMINISTRATION = "administration";
     public static final String OPERATION_ADD_FOLDER = "add_folder";
     public static final String OPERATION_ADD_SUB_FOLDER = "add_subFolder";
+    public static final String OPERATION_ADD_TEAM_WORKSPACE = "add_team_workspace";
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
     public static final String OPERATION_ADD="add";
@@ -358,6 +360,7 @@ public class WebKeys {
 	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
 	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
+	public static final String ADD_TEAM_WORKSPACE_URL="ssAddTeamWorkspaceUrl";
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String AJAX_ERROR_MESSAGE="ssAjaxErrorMessage";
 	public static final String AJAX_ERROR_DETAIL="ssAjaxErrorDetail";
@@ -367,6 +370,7 @@ public class WebKeys {
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
     public static final String BINDER_ID_LIST = "ssBinderIdList";
 	public static final String BINDER_CONFIG="ssBinderConfig";
+	public static final String BINDER_CONFIG_TEAM="ssBinderConfigTeam";
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";

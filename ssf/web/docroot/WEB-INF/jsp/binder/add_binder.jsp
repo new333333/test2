@@ -34,8 +34,12 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <ssf:nlt tag="binder.add.workspace.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
 </ssf:nlt>
 </c:if>
-<c:if test="${ssOperation != 'add_workspace'}">
+<c:if test="${ssOperation == 'add_folder'}">
 <ssf:nlt tag="binder.add.folder.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
+</ssf:nlt>
+</c:if>
+<c:if test="${ssOperation == 'add_team_workspace'}">
+<ssf:nlt tag="binder.add.team.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
 </ssf:nlt>
 </c:if>
 
@@ -44,6 +48,8 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	<span class="ss_labelLeft" id="title_label"><ssf:nlt tag="folder.label.title" text="Title"/></span>
     <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 	<input type="text" class="ss_text" size="70" name="title" id="title" onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'title_label', 'ss_titleCheck');"><br/><br/>
+
+<c:if test="${!empty ssBinderConfigs}">
   <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span> <ssf:inlineHelp tag="ihelp.other.select_template"/>
   <br/>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
@@ -52,6 +58,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
       ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 <br/>  
+</c:if>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">

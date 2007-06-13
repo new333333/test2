@@ -89,6 +89,7 @@ public interface ObjectKeys {
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
+    public static final String DEFINITION_TEAM_TYPE="team";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";
