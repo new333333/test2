@@ -58,7 +58,7 @@
     	</div>
 <div id="ss_findUser_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findUserNavBarDiv_${prefix}" 
-    class="ss_findUserList" style="display:none; visibility:hidden;"
+    class="ss_typeToFindResults" style="display:none; visibility:hidden;"
     onmouseover="ss_findUserMouseOverList('${prefix}')"
     onmouseout="ss_findUserMouseOutList('${prefix}')">
     <div id="available_${prefix}">

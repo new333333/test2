@@ -2806,7 +2806,7 @@ div.ss_search_results_pane {
 }
 .ss_search_results_selection_inactive {
 }
-div.ss_findUserList {
+div.ss_typeToFindResults {
 	position:absolute;
 	margin:2px;
 	padding:0px 15px;
@@ -2817,19 +2817,19 @@ div.ss_findUserList {
 	background:${ss_style_background_color};
 	z-index:500;
 }
-.ss_findUserList div ul {
+.ss_typeToFindResults div ul {
 	list-style-type:none;
 	margin:-6px 0px 0px -6px;
 	padding:6px;
 	text-align:left;
 }
-.ss_findUserList li {
+.ss_typeToFindResults li {
 	padding: 0px;
 	float:none;
 	line-height: 13px;
 }
 
-.ss_findUserList li a  {
+.ss_typeToFindResults li a  {
 	font-family: ${ss_style_folder_view_font_family};
 	font-size: ${ss_style_font_smallprint};
 	font-weight: bold;
@@ -2837,7 +2837,7 @@ div.ss_findUserList {
 	text-decoration: none;
 }
 
-.ss_findUserList li a:hover {
+.ss_typeToFindResults li a:hover {
 	font-family: ${ss_style_folder_view_font_family};
 	font-size: ${ss_style_font_smallprint};
 	font-weight: bold;
