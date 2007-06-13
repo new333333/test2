@@ -36,20 +36,29 @@ import com.sitescape.team.security.function.WorkAreaFunctionMembership;
  *
  */
 public interface AdminModule {
+	public enum AdminOperation {
+		manageFunction,
+		managePosting,
+		manageTemplate,
+		report,
+		manageFunctionMembership,
+	}
 	/**
 	 * The method name to be called is used as the operation.   This
 	 * allows the adminModule to check for multiple rights or change requirments in the future.
 	 * @param operation
 	 * @return
 	 */
-   	public boolean testAccess(String operation);
+   	public boolean testAccess(AdminOperation operation);
+   	public void checkAccess(AdminOperation operation) throws AccessControlException;
    	/**
    	 * Same as <code>testAccess</code> 
    	 * @param workArea
    	 * @param operation
    	 * @return
    	 */
-   	public boolean testAccess(WorkArea workArea, String operation);
+   	public boolean testAccess(WorkArea workArea, AdminOperation operation);
+   	public void checkAccess(WorkArea workArea, AdminOperation operation) throws AccessControlException;
    	/**
    	 * Create a new binder from an existing template.  If title is null, use the title from the template
    	 * @param templateId
@@ -184,9 +193,9 @@ public interface AdminModule {
     public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
  
-    public void modifyFunction(Long functionId, Map<String, Object> updates);
-    public void modifyPosting(String postingId, Map<String, Object> updates);
-	public void modifyTemplate(Long id, Map updates);
+    public void modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
+    public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
+	public void modifyTemplate(Long id, Map updates) throws AccessControlException;
  
 	/**
 	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments and ICals from entries if specified  
@@ -201,10 +210,10 @@ public interface AdminModule {
 	 */
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception;
 
-    public void setPostingSchedule(ScheduleInfo config) throws ParseException;
-	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships);
+    public void setPostingSchedule(ScheduleInfo config) throws ParseException, AccessControlException;;
+	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
-    public void setWorkAreaOwner(WorkArea workArea, Long userId);
+    public void setWorkAreaOwner(WorkArea workArea, Long userId) throws AccessControlException;
     
  
  }

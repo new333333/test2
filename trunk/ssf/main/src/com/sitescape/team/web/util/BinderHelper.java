@@ -44,8 +44,10 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
@@ -61,6 +63,32 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
 
 public class BinderHelper {
+	static public String getViewType(AllModulesInjected bs, Long binderId) {
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		
+		String viewType = "";
+		
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId); 
+		String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		Definition displayDef = binder.getDefaultViewDef();
+		if (displayDefId != null && !displayDefId.equals("")) {
+			displayDef = DefinitionHelper.getDefinition(displayDefId);
+		}
+		Document defDoc = null;
+		if (displayDef != null) defDoc = displayDef.getDefinition();
+		
+		if (defDoc != null) {
+			Element rootElement = defDoc.getRootElement();
+			Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+			if (elementView != null) {
+				Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+				if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+			}
+		}
+		return viewType;
+	}
 
 	static public String getViewListingJsp(AllModulesInjected bs) {
 		return getViewListingJsp(bs, "");
@@ -209,17 +237,18 @@ public class BinderHelper {
 			}
 			while (parentBinder != null) {
 				Document tree = null;
-				if (!bs.getBinderModule().testAccess(parentBinder.getId(), 
-						WorkAreaOperation.READ_ENTRIES.toString()))
+				try {
+					if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+						tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
+								new WsDomTreeBuilder(null, true, bs, helper),0);
+					} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+						tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
+					} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+						tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
+								new WsDomTreeBuilder(null, true, bs, helper),0);
+					}
+				} catch (AccessControlException ac) {
 					break;
-				if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-					tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new WsDomTreeBuilder(null, true, bs, helper),0);
-				} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-					tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
-				} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
-					tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-							new WsDomTreeBuilder(null, true, bs, helper),0);
 				}
 				navigationLinkMap.put(parentBinder.getId(), tree);
 				parentBinder = ((Binder)parentBinder).getParentBinder();
@@ -1140,7 +1169,7 @@ public class BinderHelper {
 				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
 	
 				//Check the access rights of the user
-				if (bs.getBinderModule().testAccess(binder, "setProperty")) {
+				if (bs.getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());

@@ -46,7 +46,9 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.ical.util.UrlUtil;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -116,7 +118,7 @@ public class ViewEntryController extends  SAbstractController {
 			} else if (op.equals(WebKeys.OPERATION_SET_WIKI_HOMEPAGE)) {
 				Binder binder = getBinderModule().getBinder(folderId);
 				//Check the access rights of the user
-				if (getBinderModule().testAccess(binder, "setProperty")) {
+				if (getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 					getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, entryId.toString());
 				}
 			} 
@@ -128,7 +130,7 @@ public class ViewEntryController extends  SAbstractController {
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Map formData = request.getParameterMap();
 				
-		String viewType = getViewType(folderId.toString());
+		String viewType = BinderHelper.getViewType(this, folderId);
 		
 		String viewPath = BinderHelper.getViewListingJsp(this, viewType);
 		Map model = new HashMap();
@@ -319,10 +321,10 @@ public class ViewEntryController extends  SAbstractController {
 		boolean isEntryReserved = false;
 		boolean isLockedByAndLoginUserSame = false;
 
-		if (getFolderModule().testAccess(entry, "reserveEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
 			reserveAccessCheck = true;
 		}
-		if (getFolderModule().testAccess(entry, "overrideReserveEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
 			isUserBinderAdministrator = true;
 		}
 		
@@ -344,7 +346,7 @@ public class ViewEntryController extends  SAbstractController {
 				
 	    //Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		if (getFolderModule().testAccess(entry, "addReply")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 			accessControlEntryMap.put("addReply", new Boolean(true));
 			List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
 			// remove survey vote from list
@@ -396,7 +398,7 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 	    
-		if (getFolderModule().testAccess(entry, "modifyEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
 			if (isEntryReserved && !isLockedByAndLoginUserSame ) {
 				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
 				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
@@ -420,7 +422,55 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
 			}
-		}
+			Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
+			if (itWorkflows.hasNext()) {
+				//The "Workflow" menu
+				Map qualifiers = new HashMap();
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
+				toolbar.addToolbarMenu("6_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
+				
+				//See if there are workflows running
+				Map runningWorkflowDefs = new HashMap();
+				Iterator itWorkflowStates = entry.getWorkflowStates().iterator();
+				while (itWorkflowStates.hasNext()) {
+					WorkflowState state = (WorkflowState) itWorkflowStates.next();
+					Definition workflowDef = state.getDefinition();
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+						String wfTitle = NLT.getDef(workflowDef.getTitle());
+						String wfTitle1 = wfTitle.replaceAll("'", "\\'");
+						qualifiers = new HashMap();
+						qualifiers.put("onClick", "if (ss_confirmStopWorkflow) {return ss_confirmStopWorkflow('"+wfTitle1+"')} else {return false}");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
+						url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+						toolbar.addToolbarMenuItem("6_workflow", "", 
+								NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
+						runningWorkflowDefs.put(workflowDef.getId(), "1");
+					}
+				}
+				
+				while (itWorkflows.hasNext()) {
+					Definition workflowDef = (Definition) itWorkflows.next();
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+						String wfTitle = NLT.getDef(workflowDef.getTitle());
+						String wfTitle1 = wfTitle.replaceAll("'", "\\'");
+						qualifiers = new HashMap();
+						qualifiers.put("onClick", "if (ss_confirmStartWorkflow) {return ss_confirmStartWorkflow('"+wfTitle1+"')} else {return false}");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
+						url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+						toolbar.addToolbarMenuItem("6_workflow", "", 
+								NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
+					}
+				}
+			}
+					}
 
 		//Does the user have access to reserve the entry
 		if (reserveAccessCheck) {
@@ -455,7 +505,7 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 		
-		if (getFolderModule().testAccess(entry, "deleteEntry")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
 			//The "Delete" menu
 			if (isEntryReserved && !isLockedByAndLoginUserSame ) {
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), nullPortletUrl, disabledQual);
@@ -474,7 +524,7 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 		
-		if (getFolderModule().testAccess(entry, "report")) {
+		if (getFolderModule().testAccess(entry, FolderOperation.report)) {
 			accessControlEntryMap.put("report", new Boolean(true));
 			Map qualifiers = new HashMap();
 			toolbar.addToolbarMenu("8_reports", NLT.get("toolbar.reports"), "", qualifiers);
@@ -492,55 +542,7 @@ public class ViewEntryController extends  SAbstractController {
 			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
 		}
 
-		Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
-		if (itWorkflows.hasNext() && getFolderModule().testAccess(entry, "modifyEntry")) {
-			//The "Workflow" menu
-			Map qualifiers = new HashMap();
-			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
-			toolbar.addToolbarMenu("6_workflow", NLT.get("toolbar.entryWorkflow"), "", qualifiers);
-			
-			//See if there are workflows running
-			Map runningWorkflowDefs = new HashMap();
-			Iterator itWorkflowStates = entry.getWorkflowStates().iterator();
-			while (itWorkflowStates.hasNext()) {
-				WorkflowState state = (WorkflowState) itWorkflowStates.next();
-				Definition workflowDef = state.getDefinition();
-				if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
-					String wfTitle = NLT.getDef(workflowDef.getTitle());
-					String wfTitle1 = wfTitle.replaceAll("'", "\\'");
-					qualifiers = new HashMap();
-					qualifiers.put("onClick", "if (ss_confirmStopWorkflow) {return ss_confirmStopWorkflow('"+wfTitle1+"')} else {return false}");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
-					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
-					url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-					toolbar.addToolbarMenuItem("6_workflow", "", 
-							NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
-					runningWorkflowDefs.put(workflowDef.getId(), "1");
-				}
-			}
-			
-			while (itWorkflows.hasNext()) {
-				Definition workflowDef = (Definition) itWorkflows.next();
-				if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
-					String wfTitle = NLT.getDef(workflowDef.getTitle());
-					String wfTitle1 = wfTitle.replaceAll("'", "\\'");
-					qualifiers = new HashMap();
-					qualifiers.put("onClick", "if (ss_confirmStartWorkflow) {return ss_confirmStartWorkflow('"+wfTitle1+"')} else {return false}");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
-					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
-					url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-					toolbar.addToolbarMenuItem("6_workflow", "", 
-							NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
-				}
-			}
-		}
-		
+
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
@@ -601,35 +603,6 @@ public class ViewEntryController extends  SAbstractController {
 		return toolbar;
 	}
 
-	public String getViewType(String folderId) {
-
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
-		
-		String viewType = "";
-		
-		//Check the access rights of the user
-		if (getBinderModule().testAccess(binder, "setProperty")) {
-			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
-			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-			Definition displayDef = binder.getDefaultViewDef();
-			if (displayDefId != null && !displayDefId.equals("")) {
-				displayDef = DefinitionHelper.getDefinition(displayDefId);
-			}
-			Document defDoc = null;
-			if (displayDef != null) defDoc = displayDef.getDefinition();
-			
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
-				}
-			}
-		}
-		return viewType;
-	}
 
 	protected void buildNoEntryBeans(RenderRequest request, 
 			RenderResponse response, Folder folder, String entryTitle, Map model) {
@@ -644,7 +617,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ADD_ENTRY_URLS,  urls);
 		model.put(WebKeys.ADD_ENTRY_TITLES,  titles);
 		model.put(WebKeys.ADD_ENTRY_TITLE,  entryTitle);
-		if (getFolderModule().testAccess(folder, "addEntry")) {				
+		if (getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
 			accessControlFolderMap.put("addEntry", new Boolean(true));
 			if (!defaultEntryDefinitions.isEmpty()) {
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {

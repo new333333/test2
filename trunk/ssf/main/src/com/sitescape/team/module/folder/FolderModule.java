@@ -26,7 +26,6 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.fi.FIException;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.StatusTicket;
@@ -42,6 +41,26 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
  * @author Jong Kim
  */
 public interface FolderModule {
+	//these are input to the testAccess methods
+	//usefull for UI's.  Use to determine which operations are allowed
+	//if not listed, you have the entry and the operation only needs read access
+   public enum FolderOperation {
+	   addEntry,
+	   addFolder,
+	   addEntryWorkflow,
+	   addReply,
+	   deleteEntry,
+	   deleteEntryWorkflow,
+	   manageTag,
+	   modifyEntry,
+	   modifyWorkflowState,
+	   moveEntry,
+	   report,
+	   reserveEntry,
+	   overrideReserveEntry,
+	   setWorkflowResponse, 
+	   synchronize
+   }
 
 	   /**
      * Create an entry object from the input data and add it to the specified
@@ -56,7 +75,7 @@ public interface FolderModule {
     		Map fileItems) throws AccessControlException, WriteFilesException;
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException;
-    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId);
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) throws AccessControlException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
 
@@ -80,7 +99,7 @@ public interface FolderModule {
     public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) throws AccessControlException;
     public void deleteEntryWorkflow(Long parentFolderId, Long entryId, String definitionId) throws AccessControlException;
     public void deleteSubscription(Long folderId, Long entryId);
-    public void deleteTag(Long binderId, Long entryId, String tagId);
+    public void deleteTag(Long binderId, Long entryId, String tagId) throws AccessControlException;
     
 	  /**
      * Return Dom tree of folders starting at the topFolder of the specified folder
@@ -100,7 +119,7 @@ public interface FolderModule {
 	public Map getEntries(Long folderId, Map options) throws AccessControlException;
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
-    public Folder getFolder(Long folderId);
+    public Folder getFolder(Long folderId) throws AccessControlException;
 	public Set<Folder> getFolders(Collection<Long> folderIds);
     public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
 	public Map getFullEntries(Long folderId) throws AccessControlException;
@@ -148,13 +167,13 @@ public interface FolderModule {
      */
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
-    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
-    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 
-    public void moveEntry(Long folderId, Long entryId, Long destinationId);
+    public void moveEntry(Long folderId, Long entryId, Long destinationId) throws AccessControlException;
 
     /**
      * Reserve the entry.
@@ -170,14 +189,16 @@ public interface FolderModule {
     	FilesLockedByOtherUsersException;
     
     
-	public void setTag(Long binderId, Long entryId, String tag, boolean community);
-    public void setUserRating(Long folderId, Long entryId, long value);
-	public void setUserRating(Long folderId, long value);
+	public void setTag(Long binderId, Long entryId, String tag, boolean community) throws AccessControlException;
+    public void setUserRating(Long folderId, Long entryId, long value) throws AccessControlException;
+	public void setUserRating(Long folderId, long value) throws AccessControlException;
 	public void setUserVisit(FolderEntry entry);
-    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData);
+    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) throws AccessControlException;
     
-    public boolean testAccess(Folder folder, String operation);
-    public boolean testAccess(FolderEntry entry, String operation);
+    public boolean testAccess(Folder folder, FolderOperation operation);
+    public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException;
+    public boolean testAccess(FolderEntry entry, FolderOperation operation);
+    public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException;
     public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId);
 	public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState);
    
@@ -206,5 +227,5 @@ public interface FolderModule {
 	 * Otherwise returns <code>true</code>
 	 * @throws FIException
 	 */
-	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException;
+	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws AccessControlException, FIException, UncheckedIOException;
 }

@@ -9,42 +9,28 @@
  *
  */
 package com.sitescape.team.portlet.administration;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
-import org.dom4j.Document;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.portlet.binder.AbstractBinderController;
-import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.tree.SearchTreeHelper;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class WorkflowReportController extends  AbstractReportController {
 	
 	protected void populateModel(RenderRequest request, Map model) {
 		super.populateModel(request, model);
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId());
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, RequestContextHolder.getRequestContext().getZoneId());
 		model.put(WebKeys.ENTRY_ID, entryId);
-		
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
 		//Initialize the acl bean
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
-		accessControlMap.put("generateLoginReport", getReportModule().testAccess("generateLoginReport"));
+		accessControlMap.put("generateLoginReport", getFolderModule().testAccess(entry, FolderOperation.report));
 	}
 
 	protected String chooseView(Map formData) {

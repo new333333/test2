@@ -30,6 +30,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ScheduleInfo;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.MailTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -101,11 +102,6 @@ public class EmailConfigController extends  AbstractBinderController  {
 				model.put(WebKeys.USERS, uList);
 				model.put(WebKeys.GROUPS, gList); 
 			}
-			//only show posting if access allowed
-			if (getBinderModule().testAccess(folder, "setPosting"))
-				model.put(WebKeys.SHOW_POSTING, Boolean.TRUE);
-			else
-				model.put(WebKeys.SHOW_POSTING, Boolean.FALSE);
 			model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
 			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
 		} catch (Exception e) {

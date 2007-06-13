@@ -9,30 +9,20 @@
  *
  */
 package com.sitescape.team.portlet.administration;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.portlet.binder.AbstractBinderController;
-import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.SearchTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class ActivityReportController extends  AbstractReportController {
@@ -41,9 +31,6 @@ public class ActivityReportController extends  AbstractReportController {
 		super.populateModel(request, model);
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId());
 
-		//Initialize the acl bean
-		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
-		accessControlMap.put("generateReport", getReportModule().testAccess("generateReport"));
 
 		Binder binder = null;
 		try {
@@ -51,6 +38,9 @@ public class ActivityReportController extends  AbstractReportController {
 		} catch (Exception ex) {
 			binder = getWorkspaceModule().getWorkspace();				
 		}
+		//Initialize the acl bean
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		accessControlMap.put("generateReport", getBinderModule().testAccess(binder, BinderOperation.report));
 		Document wsTree = null;
 		if(binder instanceof Folder) {
 			wsTree = getFolderModule().getDomFolderTree(binder.getId(), 

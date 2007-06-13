@@ -34,7 +34,12 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 
 public interface ProfileModule {
-
+	public enum ProfileOperation {
+		addEntry,
+		deleteEntry,
+		modifyEntry
+	}
+	
 	 public void addEntries(Long binderId, Document doc) throws AccessControlException;
 	 public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
@@ -51,8 +56,6 @@ public interface ProfileModule {
 	 * @return created user object
 	 */
 	public User addUserFromPortal(String zoneName, String userName, String password, Map updates);
-	public boolean checkUserSeeCommunity();
-	public boolean checkUserSeeAll();
 
 	public void deleteEntry(Long binderId, Long id, boolean deleteWS)
 		throws AccessControlException, WriteFilesException;
@@ -60,11 +63,11 @@ public interface ProfileModule {
      * @param userId
      * @return
      */
-    public Principal getEntry(Long binderId, Long userId);
+    public Principal getEntry(Long binderId, Long userId) throws AccessControlException;
 
-    public Map getGroups(Long binderId);
-    public Map getGroups(Long binderId, Map options);
-	public SortedSet<Group> getGroups(Collection<Long> groupIds);
+    public Map getGroups(Long binderId) throws AccessControlException;
+    public Map getGroups(Long binderId, Map options) throws AccessControlException;
+	public SortedSet<Group> getGroups(Collection<Long> groupIds) throws AccessControlException;
  	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId);
 	public ProfileBinder getProfileBinder();
     public UserProperties getUserProperties(Long userId);
@@ -99,8 +102,10 @@ public interface ProfileModule {
     public UserProperties setUserProperty(Long userId, String property, Object value);
     public void setSeen(Long userId, Entry entry);
     public void setSeen(Long userId, Collection<Entry> entries);
-	public boolean testAccess(ProfileBinder binder, String operation);
-	public boolean testAccess(Principal entry, String operation);
+	public boolean testAccess(ProfileBinder binder, ProfileOperation operation);
+	public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException;
+	public boolean testAccess(Principal entry, ProfileOperation operation);
+	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 
 
 }

@@ -51,7 +51,10 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -265,7 +268,7 @@ public static final String[] monthNamesShort = {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())));
+			return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)));
 		}
 		Binder binder = null;
 		try {
@@ -600,35 +603,7 @@ public static final String[] monthNamesShort = {
 		}
 
 	}
-	public String getViewType(String folderId) {
 
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
-		
-		String viewType = "";
-		
-		//Check the access rights of the user
-		if (getBinderModule().testAccess(binder, "setProperty")) {
-			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
-			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-			Definition displayDef = binder.getDefaultViewDef();
-			if (displayDefId != null && !displayDefId.equals("")) {
-				displayDef = DefinitionHelper.getDefinition(displayDefId);
-			}
-			Document defDoc = null;
-			if (displayDef != null) defDoc = displayDef.getDefinition();
-			
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
-				}
-			}
-		}
-		return viewType;
-	}
 	
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
@@ -1023,13 +998,13 @@ public static final String[] monthNamesShort = {
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
-		boolean canGetTeamMembers = getBinderModule().testAccess(folder, "getTeamMembers");
+		boolean canGetTeamMembers = getBinderModule().testAccess(folder, BinderOperation.getTeamMembers);
 		Map qualifiers;
 		//	The "Add entry" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
-			if (getFolderModule().testAccess(folder, "addEntry")) {				
+			if (getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
 				int count = 1;
 				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
 				qualifiers = new HashMap();
@@ -1061,7 +1036,7 @@ public static final String[] monthNamesShort = {
 		boolean adminMenuCreated=false;
 		folderToolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
-		if (getFolderModule().testAccess(folder, "addFolder")) {
+		if (getFolderModule().testAccess(folder, FolderOperation.addFolder)) {
 			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
@@ -1071,7 +1046,7 @@ public static final String[] monthNamesShort = {
 		}
 		
 		//Move binder
-		if (getBinderModule().testAccess(folder, "moveBinder")) {
+		if (getBinderModule().testAccess(folder, BinderOperation.moveBinder)) {
 			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
@@ -1082,7 +1057,7 @@ public static final String[] monthNamesShort = {
 		}
 
 		//Configuration
-		if (getBinderModule().testAccess(folder, "modifyBinder")) {
+		if (getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
@@ -1092,7 +1067,7 @@ public static final String[] monthNamesShort = {
 		}
 		
 		//Reporting
-		if (getFolderModule().testAccess(folder, "report")) {
+		if (getBinderModule().testAccess(folder, BinderOperation.report)) {
 			adminMenuCreated=true;
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
@@ -1121,7 +1096,7 @@ public static final String[] monthNamesShort = {
 		*/
 		
 		//Delete binder
-		if (getBinderModule().testAccess(folder, "deleteBinder")) {
+		if (getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			url = response.createActionURL();
@@ -1133,7 +1108,7 @@ public static final String[] monthNamesShort = {
 		}
 
 		//Modify binder
-		if (getBinderModule().testAccess(folder, "modifyBinder")) {
+		if (getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
@@ -1148,7 +1123,7 @@ public static final String[] monthNamesShort = {
 	
 		//Synchronize mirrored folder
 		if(folder.isMirrored() &&
-				getFolderModule().testAccess(folder, "addEntry")) {
+				getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("showSpinner", new Boolean(true));
@@ -1161,7 +1136,7 @@ public static final String[] monthNamesShort = {
 		}
 
 		//set email
-		if (getBinderModule().testAccess(folder, "setNotificationConfig")) {
+		if (getBinderModule().testAccess(folder, BinderOperation.manageMail)) {
 			try {
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
@@ -1175,7 +1150,7 @@ public static final String[] monthNamesShort = {
 		if (!adminMenuCreated) folderToolbar.deleteToolbarMenu("1_administration");
 
 		//Access control
-		if (getAdminModule().testAccess(folder, "setWorkAreaFunctionMembership")) {
+		if (getAdminModule().testAccess(folder, AdminOperation.manageFunctionMembership)) {
 			qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();
@@ -1221,7 +1196,7 @@ public static final String[] monthNamesShort = {
 			folderToolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
 			//Add
-			if (getBinderModule().testAccess(folder, "setTeamMembers")) {
+			if (getBinderModule().testAccess(folder, BinderOperation.manageTeamMembers)) {
 				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1518,7 +1493,7 @@ public static final String[] monthNamesShort = {
 			isAccessible = true;
 		}
 		
-		if (isAppletSupported && getFolderModule().testAccess(folder, "addEntry") && !isAccessible) {
+		if (isAppletSupported && getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
@@ -1570,7 +1545,7 @@ public static final String[] monthNamesShort = {
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
 			Definition def = entry.getEntryDef();
-			if (getFolderModule().testAccess(entry, "addReply")) {
+			if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 				accessControlEntryMap.put("addReply", new Boolean(true));
 				Document defDoc = def.getDefinition();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
@@ -1594,10 +1569,10 @@ public static final String[] monthNamesShort = {
 			boolean isEntryReserved = false;
 			boolean isLockedByAndLoginUserSame = false;
 
-			if (getFolderModule().testAccess(entry, "reserveEntry")) {
+			if (getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
 				reserveAccessCheck = true;
 			}
-			if (getFolderModule().testAccess(entry, "overrideReserveEntry")) {
+			if (getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
 				isUserBinderAdministrator = true;
 			}
 			
@@ -1610,7 +1585,7 @@ public static final String[] monthNamesShort = {
 					isLockedByAndLoginUserSame = true;
 				}
 			}
-			if (getFolderModule().testAccess(entry, "modifyEntry")) {
+			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
 				if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
 				} else {
 					accessControlEntryMap.put("modifyEntry", new Boolean(true));

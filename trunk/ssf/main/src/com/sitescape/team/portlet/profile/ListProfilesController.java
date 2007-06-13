@@ -21,17 +21,17 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -109,7 +109,7 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
+			return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)), model);
 		} 
 		Binder binderObj = getBinderModule().getBinder(binderId);
 		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
@@ -196,7 +196,7 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		
-		return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)), model);
 	}
 
 	protected void initPageCounts(RenderRequest request, Map userProperties, Map tabOptions, Map options) {
@@ -375,7 +375,7 @@ public class ListProfilesController extends   SAbstractController {
 		//The "Administration" menu
 		boolean adminMenuCreated=false;
 		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
-		if (getBinderModule().testAccess(binder, "modifyBinder")) {
+		if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
@@ -396,7 +396,7 @@ public class ListProfilesController extends   SAbstractController {
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
 
 		//Access control
-		if (getAdminModule().testAccess(binder, "setWorkAreaFunctionMembership")) {
+		if (getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership)) {
 			adminMenuCreated = true;
 			Map qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
@@ -490,34 +490,4 @@ public class ListProfilesController extends   SAbstractController {
 		return toolbar;
 	}
 
-	public String getViewType(String folderId) {
-
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
-		
-		String viewType = "";
-		
-		//Check the access rights of the user
-		if (getBinderModule().testAccess(binder, "setProperty")) {
-			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
-			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-			Definition displayDef = binder.getDefaultViewDef();
-			if (displayDefId != null && !displayDefId.equals("")) {
-				displayDef = DefinitionHelper.getDefinition(displayDefId);
-			}
-			Document defDoc = null;
-			if (displayDef != null) defDoc = displayDef.getDefinition();
-			
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
-				}
-			}
-		}
-		return viewType;
-	}	
-	
 }

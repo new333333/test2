@@ -10,12 +10,9 @@
  */
 package com.sitescape.team.servlet.forum;
 
-import java.io.OutputStream;
-import java.security.Principal;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,29 +20,17 @@ import javax.servlet.http.HttpSession;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 
+import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import javax.activation.FileTypeMap;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.mail.MailModule;
-import com.sitescape.team.module.rss.RssModule;
-import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.servlet.PrincipalServletRequest;
 import com.sitescape.team.web.servlet.SAbstractController;
-import com.sitescape.util.FileUtil;
-
-import org.springframework.web.bind.RequestUtils;
 
 public class ViewICalController extends SAbstractController {
 	
@@ -85,16 +70,14 @@ public class ViewICalController extends SAbstractController {
 		}
 		
 
-		if (getFolderModule().testAccess(entry, "getEntry")) {
-			response.resetBuffer();
-			response.setContentType("text/calendar; charset=" + XmlFileUtil.FILE_ENCODING);
-			response.setHeader("Cache-Control", "private");
-			response.setHeader("Pragma", "no-cache");
-			
-			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
-			calendarOutputter.output(calendar, response.getWriter());
-		}	
+		response.resetBuffer();
+		response.setContentType("text/calendar; charset=" + XmlFileUtil.FILE_ENCODING);
+		response.setHeader("Cache-Control", "private");
+		response.setHeader("Pragma", "no-cache");
+		
+		CalendarOutputter calendarOutputter = new CalendarOutputter();
+		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+		calendarOutputter.output(calendar, response.getWriter());
 		
 		response.flushBuffer();
 

@@ -35,12 +35,27 @@ import com.sitescape.team.util.StatusTicket;
  *
  */
 public interface BinderModule {
+	public enum BinderOperation {
+		deleteBinder,
+		getTeamMembers,
+		indexBinder,
+		indexTree,
+		manageDefinitions,
+		manageMail,
+		manageTag,
+		manageTeamMembers,
+		modifyBinder,
+		moveBinder,
+		report,
+		setProperty,
+		
+	}
 	/**
 	 * Subscribe to a binder.  Use to request notification of changes.
 	 * @param binderId
 	 * @param style
 	 */
-	public void addSubscription(Long binderId, int style);
+	public void addSubscription(Long binderId, int style) throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
@@ -174,26 +189,26 @@ public interface BinderModule {
 	 * Index only the binder and its attachments.  Do not include entries or sub-binders
 	 * @param binderId
 	 */
-	public void indexBinder(Long binderId);
+	public void indexBinder(Long binderId) throws AccessControlException;
 	/**
 	 * Index the binder and its attachments and optionally its entries.  Do not index sub-binders
 	 * @param binderId
 	 * @param includeEntries
 	 */
-    public void indexBinder(Long binderId, boolean includeEntries);
+    public void indexBinder(Long binderId, boolean includeEntries) throws AccessControlException;
     /**
      * Index a binder and its child binders, including all entries
      * @param binderId
      * @return Set of binderIds indexed
      */
-    public Set<Long> indexTree(Long binderId);
+    public Set<Long> indexTree(Long binderId) throws AccessControlException;
     /**
      * Same as <code>indexTree</code> except handles a collection of binders.  Use this as a
      * performance optimzation for multiple binders- it handles the index cleanup better
      * @param binderId
      * @return Set of binderIds indexed
      */
-     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket);
+     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket) throws AccessControlException;
    
     /**
      * Modify a binder
@@ -293,22 +308,15 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public void setTeamMembers(Long binderId, Collection<Long> membersIds) throws AccessControlException;  
-	public void setTeamMembershipInherited(Long binderId, boolean inherit);
+	public void setTeamMembershipInherited(Long binderId, boolean inherit) throws AccessControlException;
 	/**
-	 * Test access to a binder.  The method name to be called is used as the operation.   This
+	 * Test access to a binder.   This
 	 * allows the binderModule to check for multiple rights or change requirments in the future.
-	 * @param binderId
-	 * @param operation - the method name
-	 * @return
-	 */
-	public boolean testAccess(Long binderId, String operation);
-		
-	/**
-	 * Same as <code>testAccess</code> 
 	 * @param binder
-	 * @param operation
+	 * @param operation 
 	 * @return
 	 */
-	public boolean testAccess(Binder binder, String operation);
+	public boolean testAccess(Binder binder, BinderOperation operation);
+	public void checkAccess(Binder binder, BinderOperation operation) throws AccessControlException;
 	
 }

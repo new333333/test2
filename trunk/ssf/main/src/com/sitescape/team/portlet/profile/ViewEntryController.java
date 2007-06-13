@@ -19,18 +19,11 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -43,8 +36,6 @@ public class ViewEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -55,7 +46,8 @@ public class ViewEntryController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Map formData = request.getParameterMap();
-		String viewPath = BinderHelper.getViewListingJsp(this, getViewType(binderId.toString()));
+		String viewType = BinderHelper.getViewType(this, binderId);
+		String viewPath = BinderHelper.getViewListingJsp(this, viewType);
 		if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -88,7 +80,7 @@ public class ViewEntryController extends SAbstractController {
 		//	Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		PortletURL url;
-		if (getProfileModule().testAccess(entry, "modifyEntry")) {
+		if (getProfileModule().testAccess(entry, ProfileOperation.modifyEntry)) {
 			//	The "Modify" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
@@ -99,7 +91,7 @@ public class ViewEntryController extends SAbstractController {
 	
     
 		//	The "Delete" menu
-		if (getProfileModule().testAccess(entry, "deleteEntry")) {
+		if (getProfileModule().testAccess(entry, ProfileOperation.deleteEntry)) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
@@ -111,37 +103,9 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
 //		if (operation.equals("buddy")) 
 //			return new ModelAndView("presence/view_entry", model);
-		return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
+		return new ModelAndView(viewPath, model);
 	}	
 
-	public String getViewType(String folderId) {
 
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
-		
-		String viewType = "";
-		
-		//Check the access rights of the user
-		if (getBinderModule().testAccess(binder, "setProperty")) {
-			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
-			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-			Definition displayDef = binder.getDefaultViewDef();
-			if (displayDefId != null && !displayDefId.equals("")) {
-				displayDef = DefinitionHelper.getDefinition(displayDefId);
-			}
-			Document defDoc = null;
-			if (displayDef != null) defDoc = displayDef.getDefinition();
-			
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
-				}
-			}
-		}
-		return viewType;
-	}		
 	
 } 
