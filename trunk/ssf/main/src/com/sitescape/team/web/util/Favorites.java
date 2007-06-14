@@ -68,6 +68,7 @@ public class Favorites {
 			
 			for(int i = 0; i < list.size(); i++)
 			{
+				if(list.get(i) != null)
 				if(((Element)list.get(i)).attributeValue("value").equals(value))
 				{
 					return this.favorites;
