@@ -153,6 +153,13 @@ function ss_postFindTagRequest(obj) {
 	}
 	ss_findTagSearchInProgress[prefix] = 0;
 
+	var ulObj = document.getElementById('available_'+prefix);
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 0) {
+		ss_hideDiv('ss_findTagNavBarDiv_' + prefix);
+		return;
+	}
+
 	ss_showFindTagSelections(prefix);
 	
  	//Show this at full brightness

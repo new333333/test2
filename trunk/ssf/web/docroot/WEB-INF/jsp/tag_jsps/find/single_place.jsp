@@ -151,6 +151,13 @@ function ss_postfindPlacesRequest${prefix}(obj) {
 	}
 	ss_findPlacesSearchInProgress = 0;
 
+	var ulObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 0) {
+		ss_hideDiv('ss_findPlacesNavBarDiv_${prefix}');
+		return;
+	}
+
 	var divObj = document.getElementById('ss_findPlacesNavBarDiv_${prefix}');
 	ss_moveDivToBody('ss_findPlacesNavBarDiv_${prefix}');
 	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findPlaces_searchText_bottom_${prefix}") + ss_findPlacesDivTopOffset))
