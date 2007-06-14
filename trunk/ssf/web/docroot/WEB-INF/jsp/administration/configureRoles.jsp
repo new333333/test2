@@ -63,9 +63,7 @@
 	<input type="hidden" name="roleId" value="${function.id}">
 <div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
-<c:if test="${!function.reserved}">
-	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
-</c:if>
+
 </div>
 </form>
 <br/>
