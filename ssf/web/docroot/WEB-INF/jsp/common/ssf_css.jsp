@@ -609,22 +609,12 @@ table.ss_guestbook {
 
 
 input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
-  color: ${ss_linkbutton_text_color};
-  font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_fineprint};
-  border-top: 1px solid ${ss_linkbutton_border_color_in};
-  border-left: 1px solid ${ss_linkbutton_border_color_in};
-  border-right: 1px solid ${ss_linkbutton_border_color_out};
-  border-bottom: 1px solid ${ss_linkbutton_border_color_out};
-  background-color: ${ss_linkbutton_background_color};
-  background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
-  background-repeat: repeat-x;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-bottom: 1px;
-  vertical-align: middle;
-  text-decoration: none;
-  cursor: pointer;
+	font-family: ${ss_style_folder_view_font_family};
+  	font-size: ${ss_style_font_fineprint};
+  	background-color: #dbe6f2;
+	border: 1px solid #afc8e3;
+	padding: 0px 6px 0px 12px;
+  	cursor: pointer;
   }
 
 
@@ -632,18 +622,9 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   color: ${ss_linkbutton_link_hover_color};
   font-family: ${ss_style_folder_view_font_family};
   font-size: ${ss_style_font_fineprint};
-  border-top: 1px solid ${ss_linkbutton_border_color_out};
-  border-left: 1px solid ${ss_linkbutton_border_color_out};
-  border-right: 1px solid ${ss_linkbutton_border_color_in};
-  border-bottom: 1px solid ${ss_linkbutton_border_color_in};
-  background-color: ${ss_linkbutton_background_color};
-  background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
-  background-repeat: repeat-x;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-bottom: 1px;
-  vertical-align: bottom;
-  text-decoration: none;
+  background-color: #dbe6f2;
+  border: 1px solid #afc8e3;
+  padding: 0px 6px 0px 12px;
   cursor: pointer;
   }
 
