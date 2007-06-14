@@ -21,7 +21,7 @@ public interface ObjectKeys {
     //Default name for the product
 	public static final String PRODUCT_NAME_DEFAULT="ICEcore";
 
-	 // reserved internalIds for Templates (not necessarily databaseId)
+	 // reserved internalIds for Definitions (not necessarily databaseId)
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
@@ -322,7 +322,9 @@ public interface ObjectKeys {
     public static final String XTAG_FILE_ARCHIVE_URI="archiveURI";
     
     public static final String XTAG_WA_FUNCTION="function";
+    public static final String XTAG_WA_FUNCTION_NAME="functionName";
     public static final String XTAG_WA_MEMBERS="members";
+    public static final String XTAG_WA_MEMBER_NAME="memberName";
 
     
     public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
@@ -331,6 +333,7 @@ public interface ObjectKeys {
     public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";
     public static final String XTAG_BINDER_INHERITTEAMMEMBERS="inheritTeamMembers";
     public static final String XTAG_BINDER_TEAMMEMBERS="teamMembers";
+    public static final String XTAG_BINDER_TEAMMEMBER_NAME="teamMemberName";
     public static final String XTAG_TEMPLATE_TITLE="templateTitle";
     public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
     
