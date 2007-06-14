@@ -33,7 +33,7 @@
 				}
 			%>
 				
-			<c:set var="surveyVoteDefinitionId" value="<%= ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG  %>" />
+			<c:set var="surveyVoteDefinitionId" value="<%= ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF  %>" />
 			<li>
 				<c:choose>
 					<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry' &&
