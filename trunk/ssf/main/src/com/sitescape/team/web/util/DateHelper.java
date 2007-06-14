@@ -124,7 +124,7 @@ public class DateHelper {
             }
         }
         
-        if (applyTimeZone && inputData.exists(datePrefix + "timezoneid") && inputData.exists(timePrefix + "hour")) {
+        if (applyTimeZone && inputData.exists(datePrefix + "timezoneid")) {
             String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
             TimeZone tz = TimeZone.getTimeZone(tzs);
             cal.setTimeZone(tz);

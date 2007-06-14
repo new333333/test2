@@ -17,10 +17,7 @@
 	if (request.getAttribute("ssDefinitionEntry") != null &&
 		((DefinableEntity)request.getAttribute("ssDefinitionEntry")).getCustomAttribute("due_date") != null) {
 		Date dueDate = (Date) ((DefinableEntity)request.getAttribute("ssDefinitionEntry")).getCustomAttribute("due_date").getValue();
-		if (dueDate != null) {
-			Date now = new Date();
-			overdue = dueDate.after(now);
-		}
+		overdue = com.sitescape.team.util.DateComparer.isOverdue(dueDate);
 	}
 %>
 <c:set var="overdue" value="<%= overdue %>" />
@@ -37,7 +34,9 @@
 <c:set var="alreadyVoted" value="false"/>
 <form id="ssSurveyForm_${property_name}" method="post">
 	<input type="hidden" name="attributeName" value="${property_name}" />
+	<c:set var="hasAnyQuestion" value="false" />
 	<c:forEach var="question" items="${ssDefinitionEntry.customAttributes[property_name].value.surveyModel.questions}" >
+	<c:set var="hasAnyQuestion" value="true" />
 	<div class="ss_questionContainer">
 		<p><c:out value="${question.question}" escapeXml="false"/></p>
 		<c:if test="${overdue || question.alreadyVoted}">
@@ -82,7 +81,7 @@
 		<c:set var="alreadyVoted" value="${question.alreadyVoted}"/>
 	</c:forEach>
 
-	<c:if test="${!alreadyVoted}">
+	<c:if test="${!alreadyVoted && !overdue && hasAnyQuestion}">
 		<input type="button" value="Vote!" onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
 	</c:if>	
 </form>

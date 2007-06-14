@@ -1330,7 +1330,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							WebHelper.scanDescriptionForAttachmentFileUrls(description);
 							entryData.put(nameValue, description);
 						}
-					} else if (itemName.equals("date")) {
+					} else if (itemName.equals("date") || itemName.equals("date_time")) {
 						//Use the helper routine to parse the date into a date object
 						Date date = inputData.getDateValue(nameValue);
 						if (date != null) {entryData.put(nameValue, date);}

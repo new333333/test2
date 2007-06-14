@@ -20,7 +20,7 @@
   		"dueDate" : <c:forEach var="event" items="${ssEntry.events}" varStatus="loopStatus">
 						<c:if test="${loopStatus.first}">"<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					      value="${event.dtEnd.time}" type="both" 
-						  timeStyle="short" dateStyle="short" />"</c:if>
+						  dateStyle="medium" timeStyle="short" />"</c:if>
 					</c:forEach>,
 		"status" : <c:forEach var="status" items="${ssEntry.customAttributes['status'].valueSet}" varStatus="loopStatus">
 						<c:if test="${loopStatus.first}">"${status}"</c:if>

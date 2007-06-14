@@ -4181,7 +4181,7 @@ a.ss_button {
 
 #ss_searchForm_main h4 {float:left;}
 #ss_searchForm_main a.ss_advanced {float:right;}
-#ss_searchForm_main table, #ss_surveyForm_main table {
+#ss_searchForm_main table {
 	width: 100%;
 }
 #ss_searchForm_main th, #ss_searchForm_main td, #ss_surveyForm_main th, #ss_surveyForm_main td {
@@ -4566,6 +4566,7 @@ div.ssPageNavi {
 	color: ${ss_style_link_hover_color};
 	font-weight: bold;
 }
+
 
 
 

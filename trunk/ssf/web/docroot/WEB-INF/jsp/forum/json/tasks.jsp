@@ -21,7 +21,7 @@ tasks : [<%--
   		"id" : "${entry._docId}",
   		"dueDate" : "<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
-						  timeStyle="short" dateStyle="short" />",
+						  dateStyle="medium" timeStyle="short" />",
   		"dueDateObj" : {year : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
 						month : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="M" timeZone="${ssUser.timeZone.ID}"/>, 
 						dayOfMonth : <fmt:formatDate value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" pattern="d" timeZone="${ssUser.timeZone.ID}"/>,
