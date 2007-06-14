@@ -11,8 +11,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
+
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="help.createTeam.subTopic.restrictAccess"/></span>
+</div>
 
 <p><ssf:nlt tag="help.setTeamAccess.content.listIntro"/></p>
 
@@ -36,6 +40,7 @@
 
 </ol>
 
+</div>
 </div>
 
 

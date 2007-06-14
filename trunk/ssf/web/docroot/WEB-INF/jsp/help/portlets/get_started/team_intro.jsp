@@ -11,8 +11,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
+
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
+</div>
 
 <p><ssf:nlt tag="help.understandingTeams.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
@@ -22,5 +26,6 @@
 
 <p><ssf:nlt tag="help.understandingTeams.communicate"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
+</div>
 </div>
 

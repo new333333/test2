@@ -21,13 +21,13 @@
 	  <td>
 <c:if test="${ss_isSiteAdmin}">
 	    <ssHelpSpot helpId="portlets/admin/admin_portlet_site" 
-	      title="<ssf:nlt tag="helpSpot.adminPortletSite" />xx" 
+	      title="<ssf:nlt tag="helpSpot.adminPortletSite"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
 </c:if>
 <c:if test="${!ss_isSiteAdmin}">
 	    <ssHelpSpot helpId="portlets/admin/admin_portlet" 
-	      title="<ssf:nlt tag="helpSpot.adminPortlet" />ff" 
+	      title="<ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
 </c:if>

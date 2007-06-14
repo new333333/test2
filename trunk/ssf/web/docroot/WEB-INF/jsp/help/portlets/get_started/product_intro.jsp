@@ -28,15 +28,23 @@
 
 </div>
 
-<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.header" /></p>
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.header" />
+<a href="#skip_nav_all" title="<ssf:nlt tag="title.skipNavAll" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+<a href="#skip_nav_titles" title="<ssf:nlt tag="title.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+</p>
 
 <div class="ss_help_moreinfo">
 <p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.subtopic.workspaces"/></a></p>
 </div>
 
-<div  class="ss_help_more_pages_section" title="This Help topic has more than one page of information">
-<div class="not_last_link" title="No previous page"><span class="no_next_page"><<</span></div>
+<a id="skip_nav_titles" />
+
+<div class="ss_help_more_pages_section"><a href="#skip_nav_panel_numbers" title="<ssf:nlt tag="title.skipNavPanelNumbers" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+<div class="not_last_link" title="<ssf:nlt tag="title.noPrevPage" />"><span class="no_next_page"><<</span></div>
 <div class="not_last_link">1</div> 
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');">2</a></div>
 <div><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');">>></a></div>
 </div>
+
+<a id="skip_nav_panel_numbers" />
+<a id="skip_nav_all" />
