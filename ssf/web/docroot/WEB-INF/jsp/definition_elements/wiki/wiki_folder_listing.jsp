@@ -114,7 +114,7 @@
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
 		<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
 		<portlet:param name="ssFolderSortDescend" value="false"/>
-		</portlet:actionURL>"
+		</portlet:actionURL>" <ssf:title tag="wiki.showAll" />
 	  ><ssf:nlt tag="wiki.showAll"/></a>
 		</c:if>
 	    <c:if test="${ssConfigJspStyle == 'template'}">
@@ -131,7 +131,7 @@
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
 		<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
 		<portlet:param name="ssFolderSortDescend" value="true"/>
-		</portlet:actionURL>"
+		</portlet:actionURL>" <ssf:title tag="wiki.showRecent" />
 	  ><ssf:nlt tag="wiki.showRecent"/></a>
 		</c:if>
 	    <c:if test="${ssConfigJspStyle == 'template'}">
@@ -195,7 +195,12 @@
 					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
 					class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 					<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>
-					<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+					<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>"
+
+					  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
+					  	<ssf:param name="value" value="${tag.ssTag}" />
+					  </ssf:title>
+					>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		   </c:if>
 		
@@ -208,7 +213,11 @@
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
 				class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 				<c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>
-				<c:if test="${empty pTag || pTag != tag.ssTag}">ss_normal</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+				<c:if test="${empty pTag || pTag != tag.ssTag}">ss_normal</c:if>"
+				  <ssf:title tag="title.search.entries.in.folder.for.personal.tag">
+				  	<ssf:param name="value" value="${tag.ssTag}" />
+				  </ssf:title>
+				>${tag.ssTag}</a>&nbsp;&nbsp;
 						
 		   </c:forEach>
 		   </c:if>

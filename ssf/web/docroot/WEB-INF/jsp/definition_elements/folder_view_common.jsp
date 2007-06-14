@@ -125,13 +125,27 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		  </c:otherwise>
 		</c:choose>
 		<portlet:param name="tabId" value="${tabId}"/>
-	</portlet:actionURL>">
+	</portlet:actionURL>"
+
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>
+	>
     	<ssf:nlt tag="folder.column.Number"/>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
-			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false'}">
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -154,13 +168,27 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		  </c:otherwise>
 		</c:choose>
 		<portlet:param name="tabId" value="${tabId}"/>
-	</portlet:actionURL>">
+	</portlet:actionURL>"
+	
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>	
+	 >
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
     	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
       
@@ -225,13 +253,27 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		  </c:otherwise>
 		</c:choose>
 		<portlet:param name="tabId" value="${tabId}"/>
-	</portlet:actionURL>">
+	</portlet:actionURL>"
+	
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>
+	>
     	<ssf:nlt tag="folder.column.State"/>
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -254,13 +296,27 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		  </c:otherwise>
 		</c:choose>
 		<portlet:param name="tabId" value="${tabId}"/>
-	</portlet:actionURL>">
+	</portlet:actionURL>"
+	
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>
+	>
 		<ssf:nlt tag="folder.column.Author"/>
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -283,13 +339,27 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		  </c:otherwise>
 		</c:choose>
 		<portlet:param name="tabId" value="${tabId}"/>
-	</portlet:actionURL>">
+	</portlet:actionURL>"
+	
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>
+	>
 		<ssf:nlt tag="folder.column.LastActivity"/>
 	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
