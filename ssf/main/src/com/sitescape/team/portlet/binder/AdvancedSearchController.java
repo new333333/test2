@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -41,28 +43,41 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
+import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
+import com.sitescape.team.web.util.Toolbar;
 
 /**
  * @author Renata Nowicka
@@ -97,14 +112,17 @@ public class AdvancedSearchController extends AbstractBinderController {
         if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model.putAll(prepareSearchResultData(request));
         	addPropertiesForFolderView(model);
+        	buildToolbars(model, request);
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else if (op.equals(WebKeys.SEARCH_VIEW_PAGE)) {
         	model.putAll(prepareSearchResultPage(request));
         	addPropertiesForFolderView(model);
+        	buildToolbars(model, request);
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else if (op.equals(WebKeys.SEARCH_SAVED_QUERY)) {
         	model.putAll(prepareSavedQueryResultData(request));
         	addPropertiesForFolderView(model);
+        	buildToolbars(model, request);
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else {
         	model.putAll(prepareSearchFormData(request));
@@ -687,5 +705,62 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return result;
 			}
 	}	
+	
+	protected void buildToolbars(Map model, RenderRequest request) {
+		model.put(WebKeys.FOOTER_TOOLBAR,  buildFooterToolbar(model, request).getToolbar());
+	}
+	
+	private Toolbar buildFooterToolbar(Map model, RenderRequest request) {
+		Toolbar footerToolbar = new Toolbar();
+		List users = (List)model.get(WebKeys.FOLDER_ENTRIES);
+		String[] contributorIds = collectContributorIds(users);
 
+		addClipboardOption(footerToolbar, contributorIds);
+		addStartMeetingOption(footerToolbar, request, contributorIds);
+		return footerToolbar;
+	}
+
+	private void addStartMeetingOption(Toolbar footerToolbar, RenderRequest request, String[] contributorIds) {
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+		Map qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);		
+		qualifiers.put("post", Boolean.TRUE);
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+		
+		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+	}
+	
+	private void addClipboardOption(Toolbar toolbar, String[] contributorIds) {
+		// clipboard
+		Map qualifiers = new HashMap();
+		String contributorIdsAsJSString = "";
+		for (int i = 0; i < contributorIds.length; i++) {
+			contributorIdsAsJSString += contributorIds[i];
+			if (i < (contributorIds.length -1)) {
+				contributorIdsAsJSString += ", ";	
+			}
+		}
+		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]);return false;");
+		toolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
+	}
+	
+	private String[] collectContributorIds(List entries) {
+		Set principals = new HashSet();
+		
+		if (entries != null) {
+			Iterator entriesIt = entries.iterator();
+			while (entriesIt.hasNext()) {
+				Map entry = (Map)entriesIt.next();
+				String creatorId = entry.get(EntityIndexUtils.CREATORID_FIELD).toString();
+				String modificationId = entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString();
+				principals.add(creatorId);
+				principals.add(modificationId);
+			}	
+		}
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
+	
 }
