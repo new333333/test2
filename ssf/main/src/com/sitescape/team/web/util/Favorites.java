@@ -58,13 +58,28 @@ public class Favorites {
 	public Document addFavorite(String name, String type, String value, String action, String categoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
+		
 		int id = Integer.parseInt((String)root.attributeValue("nextId"));
+		
 		Element newFavorite = null;
 		if (categoryId.equals("")) {
+			
+			List list = root.elements();
+			
+			for(int i = 0; i < list.size(); i++)
+			{
+				if(((Element)list.get(i)).attributeValue("value").equals(value))
+				{
+					return this.favorites;
+				}
+			}
+			
 			newFavorite = root.addElement("favorite");
 		} else {
+			
 			Element category = (Element)root.selectSingleNode("//category[@id='"+categoryId+"']");
 			if (category == null) category = root;
+			
 			newFavorite = category.addElement("favorite");
 		}
 		newFavorite.addAttribute("id", String.valueOf(id));
