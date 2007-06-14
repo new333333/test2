@@ -275,7 +275,7 @@ body.ss_style_body {
 
 .ss_style td, .ss_style th {
   font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_smallprint}; 
+  font-size: 12px; 
   color: ${ss_style_text_color};
 }
 
@@ -815,6 +815,7 @@ div.ss_popup_bottomright {
 
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
+   font-size: ${ss_style_font_size};
    font-weight: bold;
    color: ${ss_style_header_bar_title_color};
    position: relative;
@@ -2825,19 +2826,20 @@ div.ss_search_results_pane {
 }
 div.ss_typeToFindResults {
 	position:absolute;
-	margin:2px;
-	padding:0px 15px;
+	margin: 2px;
+	padding: 0px;
 	border-top:    solid 1px ${ss_generic_border_color}; 
 	border-left:   solid 1px ${ss_generic_border_color}; 
 	border-right:  solid 1px ${ss_generic_border_shadow_color}; 
 	border-bottom: solid 1px ${ss_generic_border_shadow_color}; 
 	background:${ss_style_background_color};
 	z-index:500;
+	text-align: left;
 }
 .ss_typeToFindResults div ul {
 	list-style-type:none;
-	margin:-6px 0px 0px -6px;
-	padding:6px;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 5px;
 	text-align:left;
 }
 .ss_typeToFindResults li {
@@ -2861,6 +2863,13 @@ div.ss_typeToFindResults {
 	color: #333333;
 	text-decoration: none;
 }
+
+table.ss_typeToFindNav {
+	width: 150px;
+	padding-top: 3px;
+	padding-bottom: 1px;
+}
+
 
 a.ss_title_menu img {
 	margin-right:4px;

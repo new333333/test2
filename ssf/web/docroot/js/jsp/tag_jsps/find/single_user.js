@@ -156,6 +156,13 @@ function ss_postFindUserRequest(obj) {
 	}
 	ss_findUserSearchInProgress[prefix] = 0;
 
+	var ulObj = document.getElementById('available_'+prefix);
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 0) {
+		ss_hideDiv('ss_findUserNavBarDiv_' + prefix);
+		return;
+	}
+
 	ss_showFindUserSelections(prefix);
 	
  	//Show this at full brightness
