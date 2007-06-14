@@ -53,7 +53,7 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 		<td>
 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
-				  timeStyle="short" dateStyle="short" />
+				  dateStyle="medium" timeStyle="short" />
 		</td>
 		<td>
 			<c:if test="${! empty entry.priority}">

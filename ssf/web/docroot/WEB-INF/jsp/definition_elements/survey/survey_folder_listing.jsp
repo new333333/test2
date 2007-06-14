@@ -20,6 +20,13 @@
 		<th><ssf:nlt tag="survey.dueDate"/></th>
 	</tr>
 <c:forEach var="entry" items="${ssFolderEntries}" >
+	<jsp:useBean id="entry" type="java.util.HashMap" />
+	<% boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date")); %>
+	<c:set var="overdue" value="<%= overdue %>"/>
+	<c:if test="${overdue && entry.status != 'completed'}">
+		<c:set var="tdClass" value="class='ss_overdue'" />
+	</c:if>
+		
 	<tr>
 		<td>
 			<span class="ss_entryTitle ss_normalprint">
@@ -43,8 +50,11 @@
 		<td>
 			<ssf:showUser user="${entry._principal}" />
 		</td>
-		<td>
-			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="date" dateStyle="medium" />		
+		<td ${tdClass}>
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
+			<c:if test="${overdue}">
+				<ssf:nlt tag="survey.overdue"/>
+			</c:if>		
 		</td>
 	</tr>
 </c:forEach>

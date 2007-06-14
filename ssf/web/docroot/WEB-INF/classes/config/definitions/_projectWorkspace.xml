@@ -56,7 +56,7 @@
 					<property name="required" value="false"/>
 				</properties>
 			</item>
-			<item name="date" caption="__date" type="data"
+			<item name="date_time" caption="__date" type="data"
 				category="commonEntryData" id="11">
 				<properties>
 					<property name="name" value="due_date"/>
@@ -97,7 +97,7 @@
 			</item>
 			<item name="workspaceDataItem" type="dataView"
 				caption="__workspace_data_item" category="workspaceViewData"
-				id="18" formItem="date">
+				id="18" formItem="date_time">
 				<properties>
 					<property name="name" value="due_date"/>
 					<property name="caption" value="__project_due_date"/>

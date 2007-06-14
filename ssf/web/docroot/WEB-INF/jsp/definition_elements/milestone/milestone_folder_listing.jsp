@@ -29,7 +29,7 @@
 			<c:set var="tdClass" value="class='ss_completed'" />
 		</c:if>
 		<%
-			boolean overdue = com.sitescape.team.util.DateComparer.isOverdueDate((Date)entry.get("due_date"));
+			boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date"));
 		%>
 		<c:set var="overdue" value="<%= overdue %>"/>
 		<c:if test="${overdue && entry.status != 'completed'}">
@@ -80,7 +80,7 @@
 				<ssf:nlt tag="__milestone_status_${entry.status}"/>
 			</td>
 			<td ${tdClass}>
-				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="date" dateStyle="medium" />
+				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
 				<c:if test="${overdue && entry.status != 'completed'}">
 					<ssf:nlt tag="milestone.overdue"/>
 				</c:if>
