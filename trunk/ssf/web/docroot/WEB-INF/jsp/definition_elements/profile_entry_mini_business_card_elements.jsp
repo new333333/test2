@@ -25,7 +25,7 @@
 			value="${ssDefinitionEntry.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
 			value="${ssDefinitionEntry.creation.principal.id}"/>
 	    <ssf:param name="newTab" value="1" />
-		</ssf:url>">
+		</ssf:url>" <ssf:title tag="title.goto.profile.page" />>
 			<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_small" 
 				photos="${ssDefinitionEntry.customAttributes['picture'].value}" 
 				folderId="${ssDefinitionEntry.parentBinder.id}" entryId="${ssDefinitionEntry.id}" />
