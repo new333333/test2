@@ -18,9 +18,6 @@ import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.fi.connection.ResourceDriverManager;
-import com.sitescape.team.module.ical.impl.IcalModuleImpl;
-import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;
 import com.sitescape.team.search.LuceneSessionFactory;
@@ -89,43 +86,43 @@ public abstract class CommonDependencyInjection {
 	public void setPresenceService(PresenceService presenceService) {
 		this.presenceService = presenceService;
 	}
-	protected LuceneSessionFactory getLuceneSessionFactory() {
+	public LuceneSessionFactory getLuceneSessionFactory() {
 		return luceneSessionFactory;
 	}
-	protected AccessControlManager getAccessControlManager() {
+	public AccessControlManager getAccessControlManager() {
 		return accessControlManager;
 	}
-	protected AclManager getAclManager() {
+	public AclManager getAclManager() {
 		return aclManager;
 	}
-	protected CoreDao getCoreDao() {
+	public CoreDao getCoreDao() {
 		return coreDao;
 	}
-	protected FolderDao getFolderDao() {
+	public FolderDao getFolderDao() {
 		return folderDao;
 	}
-	protected ProfileDao getProfileDao() {
+	public ProfileDao getProfileDao() {
 		return profileDao;
 	}
-	protected FunctionManager getFunctionManager() {
+	public FunctionManager getFunctionManager() {
 		return functionManager;
 	}
-	protected ProcessorManager getProcessorManager() {
+	public ProcessorManager getProcessorManager() {
 		return processorManager;
 	}
-	protected Scheduler getScheduler() {
+	public Scheduler getScheduler() {
 		return scheduler;
 	}
-	protected PresenceService getPresenceService() {
+	public PresenceService getPresenceService() {
 		return presenceService;
 	}
 	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
 		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;
 	}
-	protected WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
+	public WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
 		return workAreaFunctionMembershipManager;
 	}
-	protected ResourceDriverManager getResourceDriverManager() {
+	public ResourceDriverManager getResourceDriverManager() {
 		return resourceDriverManager;
 	}
 	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {

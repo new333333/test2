@@ -152,13 +152,14 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				File listOfFilesTempFile = TempFileUtil.createTempFile("exportTemplates");
 				XmlFileUtil.writeFile(listOfFiles, listOfFilesTempFile.getAbsolutePath());
 
-				response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
-						WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
-						listOfFilesTempFile.getName());
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
-				response.setRenderParameter("redirect", "true");
-				
-						
+				if (errors.isEmpty()) {
+					response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
+							WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
+							listOfFilesTempFile.getName());
+				} else {
+					response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+					response.setRenderParameter("redirect", "true");
+				}
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//	The modify form was submitted. Go process it
@@ -381,6 +382,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		} else {
 			List<TemplateBinder> configs = getAdminModule().getTemplates();
 			model.put(WebKeys.BINDER_CONFIGS, configs);
+			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
 
 		}
 		return new ModelAndView(path, model);

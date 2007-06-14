@@ -10,7 +10,20 @@
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">false</property>
   <property name="inheritDefinitions">false</property>
-  <property name="teamMembers"/>
+  <property name="inheritTeamMembers">true</property>
+  <workAreaFunctionMembership>
+    <property name="functionName">Visitor</property>
+    <property name="memberName">allUsers</property>
+    <property name="members"></property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">Workspace and folder administrator</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">Participant</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
   <definition name="_workspace" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005"/>
   <dashboard>
     <property name="nextComponentId">2</property>

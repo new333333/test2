@@ -37,7 +37,6 @@ public class Function {
     private String name;
     private Set operations; // A set of WorkSpaceOperation - this is not persistent
     private Set operationNames; // Used for persistence only
-    private String iId;
     private long lockVersion; // Used for optimistic locking support
     
 	/**
@@ -87,21 +86,6 @@ public class Function {
         this.lockVersion = lockVersion;
     }
     
-    /**
-     * Internal id used to identify reserved functions.  This id plus
-     * the zoneId are used to locate reserved functions.  If we just used the primary key id
-     * the zones would need the same default and that may not be desirable.
-     * @hibernate.property length="32"
-     */
-    public String getInternalId() {
-    	return this.iId;
-    }
-    public void setInternalId(String iId) {
-    	this.iId = iId;
-    }
-    public boolean isReserved() {
-    	return Validator.isNotNull(iId);
-    }
     
     public Set getOperations() {
         if(operations == null)
