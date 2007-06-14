@@ -944,10 +944,16 @@ DIV.ss_help_style P {
     margin-bottom: 10px;
 }
 
-DIV.ss_help_style LI {
+DIV.ss_help_style UL LI {
     margin-top: 3px;
     margin-bottom: 6px;
     margin-left: 10px;
+}
+
+DIV.ss_help_style OL LI {
+    margin-top: 3px;
+    margin-bottom: 6px;
+    margin-left: 0px;
 }
 
 DIV.ss_help_style UL, OL {
@@ -980,7 +986,7 @@ DIV.ss_help_more_pages_section {
     font-size: ${ss_style_font_smallprint};
     text-align: center;
     margin-bottom: 3px;
-    margin-top: 0px;
+    margin-top: 10px;
 }
 
 DIV.ss_help_more_pages_section DIV {
@@ -1003,8 +1009,19 @@ DIV.ss_help_more_pages_section .no_next_page {
     font-style: italic;
 }
 
-.strong-emphasis, .defined-item, .subtitle {
+.strong-emphasis, .def_list_term, .subtitle, .footnote, .header {
     font-weight: bold;
+}
+
+DIV.footnote_text {
+    border-top: solid, black, 1px;
+    font-style: italic;
+    font-weight: bold;
+    width: 100%;
+}
+
+DIV.example, DIV.note {
+    margin-left: 15px;
 }
 
 
