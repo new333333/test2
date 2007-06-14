@@ -90,27 +90,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
     	throws WriteFilesException {
-		Boolean filesFromApplet = new Boolean (false);
-		return addEntry(binder, def, clazz, inputData, fileItems, filesFromApplet);
-	}
-	
-	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems, Boolean filesFromApplet) 
-    	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
         final Map ctx = addEntry_setCtx(binder, null);
     	Map entryDataAll;
-    	if (!filesFromApplet) {
-        	SimpleProfiler.startProfiler("addEntry_toEntryData");
-            entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
-            SimpleProfiler.stopProfiler("addEntry_toEntryData");
-    	}
-    	else {
-	    	SimpleProfiler.startProfiler("createNewEntryWithAttachmentAndTitle");
-	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems, ctx);
-		    SimpleProfiler.stopProfiler("createNewEntryWithAttachmentAndTitle");
-    	}        
+    	
+    	SimpleProfiler.startProfiler("addEntry_toEntryData");
+        entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
+        SimpleProfiler.stopProfiler("addEntry_toEntryData");
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
@@ -186,55 +173,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            	cleanupFiles(fileUploadItems);       	
         }
     }
-	
-    //Method Used to get the files uploaded by the Applet and title information from the entry
-    protected Map createNewEntryWithAttachmentAndTitle(Definition def, InputDataAccessor inputData, Map fileItems, Map ctx)
-    {
-    	List fileData = new ArrayList();
-    	String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
 
-    	Map entryDataAll = new HashMap();
-    	Map entryData = new HashMap();
-        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  entryData);    	
-
-		if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE));
-        
-        if (def != null) {
-        	boolean blnCheckForAppletFile = true;
-        	int intFileCount = 1;
-
-        	while (blnCheckForAppletFile) {
-        		String fileEleName = nameValue + Integer.toString(intFileCount);
-        		if (fileItems.containsKey(fileEleName)) {
-        	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-        	    	String fileName = myFile.getOriginalFilename();
-        	    	
-        	    	if (fileName != null && !fileName.equals("")) {
-            	    	// Different repository can be specified for each file uploaded.
-            	    	// If not specified, use the statically selected one.  
-            	    	String repositoryName = null;
-            	    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
-            	    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
-            	    	if (repositoryName == null) {
-            		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-            	    	}
-            	    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-            	    	fileData.add(fui);
-        	    	}
-        	    	intFileCount++;
-        		}
-        		else {
-        			blnCheckForAppletFile = false;
-        		}
-        	}
-	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  fileData);
-            
-        } else {
-	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  new ArrayList());
-        }
-    	
-        return entryDataAll;
-    }
     protected Map addEntry_setCtx(Binder binder, Map ctx) {
     	return ctx;
     }
@@ -472,17 +411,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         final Map ctx = modifyEntry_setCtx(entry, null);
 
     	Map entryDataAll;
-    	if (!filesFromApplet) {
-	    	SimpleProfiler.startProfiler("modifyEntry_toEntryData");
-	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
-		    SimpleProfiler.stopProfiler("modifyEntry_toEntryData");
-    	}
-    	else {
-	    	SimpleProfiler.startProfiler("getFilesUploadedByApplet");
-	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems, ctx);
-		    SimpleProfiler.stopProfiler("getFilesUploadedByApplet");
-    	}
-	    
+
+    	SimpleProfiler.startProfiler("modifyEntry_toEntryData");
+    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
+	    SimpleProfiler.stopProfiler("modifyEntry_toEntryData");
+    	
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         
@@ -546,55 +479,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    }
 	}
 
-    //Method Used to get the files uploaded by the Applet
-    protected Map getFilesUploadedByApplet(Entry entry, InputDataAccessor inputData, Map fileItems, Map ctx)
-    {
-    	List fileData = new ArrayList();
-    	String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
-    	Map entryDataAll = new HashMap();
-    	
-    	//No Definition Related Information - So it is set to empty HashMap
-        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  new HashMap());    	
-    	
-        //Call the definition processor to get the entry data to be stored
-        Definition def = entry.getEntryDef();
-        if (def != null) {
-        	boolean blnCheckForAppletFile = true;
-        	int intFileCount = 1;
-
-        	while (blnCheckForAppletFile) {
-        		String fileEleName = nameValue + Integer.toString(intFileCount);
-        		if (fileItems.containsKey(fileEleName)) {
-        	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-        	    	String fileName = myFile.getOriginalFilename();
-        	    	
-        	    	if (fileName != null && !fileName.equals("")) {
-            	    	// Different repository can be specified for each file uploaded.
-            	    	// If not specified, use the statically selected one.  
-            	    	String repositoryName = null;
-            	    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
-            	    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
-            	    	if (repositoryName == null) {
-            	    		repositoryName = RepositoryUtil.getDefaultRepositoryName();
-            		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-            	    	}
-            	    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-            	    	fileData.add(fui);
-        	    	}
-        	    	intFileCount++;
-        		}
-        		else {
-        			blnCheckForAppletFile = false;
-        		}
-        	}
-	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  fileData);
-            
-        } else {
-	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  new ArrayList());
-        }
-    	
-        return entryDataAll;
-    }
     protected Map modifyEntry_setCtx(Entry entry, Map ctx) {
     	if (ctx == null) ctx = new HashMap();
     	//save normalized title and title before changes

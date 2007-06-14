@@ -68,4 +68,11 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		</td>
 	</tr>
 </table>
+
+<ssf:ifaccessible>
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_content_accessible.jsp" %>
+</ssf:ifaccessible>
+
+<ssf:ifnotaccessible>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_content.jsp" %>
+</ssf:ifnotaccessible>

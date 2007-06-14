@@ -162,6 +162,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "fileLoadingInProgress" value="ss_startLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileLoadingEnded" value="ss_endLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
+			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
 			<c:if test="<%= !isIE %>">
 			</applet>
 			</c:if>

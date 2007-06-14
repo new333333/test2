@@ -304,15 +304,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
         return binder.getId();
     }
- 
-    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
-		Boolean filesFromApplet = new Boolean (false);
-		return addEntry(folderId, definitionId, inputData, fileItems, filesFromApplet);    	
-    }
     
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException {
+    		Map fileItems) throws AccessControlException, WriteFilesException {
     	aeCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
@@ -328,7 +322,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         	def = folder.getDefaultEntryDef();
         }
         
-        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, filesFromApplet);
+        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
         
         Statistics statistics = getFolderStatistics(folder);
         statistics.addStatistics(def, entry.getCustomAttributes());
@@ -392,7 +386,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Statistics statistics = getFolderStatistics(folder);
         statistics.deleteStatistics(entry.getEntryDef(), customAttributesOld);
     	try {
-    		processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo, filesFromApplet);
+    		processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo);
 
             statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
             setFolderStatistics(folder, statistics);

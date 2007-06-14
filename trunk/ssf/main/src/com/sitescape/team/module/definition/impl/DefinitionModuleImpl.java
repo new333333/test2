@@ -1458,29 +1458,34 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    }
 					} else if (itemName.equals("attachFiles")) {
 					    if (fileItems != null) {
-							int number = GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "number"), 1);
-							for (int i=1;i <= number;i++) {
-								String fileEleName = nameValue + Integer.toString(i);
+					    	boolean blnCheckForFileUntilTrue = true;
+					    	int intFileCount = 1;
+					    	while (blnCheckForFileUntilTrue) {
+								String fileEleName = nameValue + Integer.toString(intFileCount);
 								if (fileItems.containsKey(fileEleName)) {												
 							    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
 							    	String fileName = myFile.getOriginalFilename();
-							    	if (fileName.equals("")) continue;
-							    	// Different repository can be specified for each file uploaded.
-							    	// If not specified, use the statically selected one.  
-							    	String repositoryName = null;
-							    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
-							    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
-							    	if (repositoryName == null) {
-								    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-								    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+							    	if (fileName != null && !fileName.equals("")) {
+								    	// Different repository can be specified for each file uploaded.
+								    	// If not specified, use the statically selected one.  
+								    	String repositoryName = null;
+								    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
+								    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
+								    	if (repositoryName == null) {
+									    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+									    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+								    	}
+								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+								    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
+								    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
+								    	}
+								    	fileData.add(fui);
 							    	}
-							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-							    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
-							    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
-							    	}
-							    	fileData.add(fui);
+							    	intFileCount++;
+								} else {
+									blnCheckForFileUntilTrue = false;
 								}
-							}
+					    	}
 					    }
 					} else {
 						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));

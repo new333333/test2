@@ -241,7 +241,7 @@ public class AddEntryController extends SAbstractController {
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
 	        	    	
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
-	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, new Boolean(true));
+	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap);
 	        		} else {
 	        			blnCheckForAppletFile = false;
 	        		}
