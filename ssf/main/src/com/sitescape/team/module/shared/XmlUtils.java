@@ -14,9 +14,11 @@ import java.util.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.dom4j.Element;
 
@@ -25,10 +27,15 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.security.function.Function;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.util.Validator;
 import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.util.LongIdUtil;
 
 public class XmlUtils {
 
@@ -137,7 +144,7 @@ public class XmlUtils {
 		 }
 		 return updates;
 	 }
-	 public static void getDefinitions(Binder binder, Element config, CoreDao coreDao) {
+	 public static void getDefinitionsFromXml(Binder binder, Element config, CommonDependencyInjection ci) {
 		 List<Definition> defs = new ArrayList();
 		 Map workflows = new HashMap();
 		 List<Element> defElements = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
@@ -147,14 +154,14 @@ public class XmlUtils {
 			 String dId = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_ID);
 			 if (Validator.isNotNull(dId)) {
 				 try {
-					 def = coreDao.loadDefinition(dId, RequestContextHolder.getRequestContext().getZoneId());
+					 def = ci.getCoreDao().loadDefinition(dId, RequestContextHolder.getRequestContext().getZoneId());
 				} catch (NoDefinitionByTheIdException nd) {};				 
 			 }
 		 	String id = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
 		 	if (Validator.isNotNull(id)) {
 				 //first try internalId
 				 try {
-					 def = coreDao.loadReservedDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
+					 def = ci.getCoreDao().loadReservedDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 				 } catch (NoDefinitionByTheIdException nd) {};
 			 }
 			 // last try name
@@ -162,7 +169,7 @@ public class XmlUtils {
 				 String name = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_NAME);
 				 if (Validator.isNotNull(name)) {
 					 try {
-						 List<Definition> matches = coreDao.loadObjects(Definition.class, 
+						 List<Definition> matches = ci.getCoreDao().loadObjects(Definition.class, 
 								 new FilterControls(new String[] {ObjectKeys.FIELD_BINDER_NAME, ObjectKeys.FIELD_ZONE}, 
 										 new Object[]{name, RequestContextHolder.getRequestContext().getZoneId()}));
 						 if (!matches.isEmpty())  def = matches.get(0);
@@ -181,4 +188,46 @@ public class XmlUtils {
 		 binder.setDefinitions(defs);
 		 binder.setWorkflowAssociations(workflows);
 	 }
+	 public static Set getFunctionMembershipFromXml(Binder binder, Element config, CommonDependencyInjection ci) {
+		 Long zoneId = RequestContextHolder.getRequestContext().getZoneId();  //may not be set yet on binder
+		 List<Element> wfmElements = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+		 for (Element wfmElement:wfmElements) {
+			 String functionName = getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
+			 List<Function> fs = ci.getCoreDao().loadObjects(Function.class, 
+					 new FilterControls(new String[] {ObjectKeys.FIELD_ZONE, "name"}, new Object[] {zoneId, functionName}));
+			 if (fs.isEmpty()) continue;
+			 List<Element> teamElements = wfmElement.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY + "[@name='" + ObjectKeys.XTAG_WA_MEMBER_NAME + "']");
+			 Set ids = namesToIds(teamElements, ci);
+			 ids.addAll(LongIdUtil.getIdsAsLongSet(XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_MEMBERS)));
+
+			 if (ids.isEmpty()) continue;
+			 WorkAreaFunctionMembership wfm = new WorkAreaFunctionMembership();
+			 wfm.setFunctionId(fs.get(0).getId());
+			 wfm.setZoneId(zoneId);
+			 wfm.setMemberIds(ids);
+			 wfm.setWorkAreaId(binder.getWorkAreaId());
+			 wfm.setWorkAreaType(binder.getWorkAreaType());
+			 ci.getCoreDao().save(wfm);
+		 }
+		 return new HashSet();
+	 }
+	 //convert principal names to real principals
+	 public static void getTeamMembersFromXml(Binder binder, Element config, CommonDependencyInjection ci) {
+		 List<Element> teamElements = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY + "[@name='" + ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME + "']");
+		 binder.setTeamMemberIds(namesToIds(teamElements, ci));
+	 }
+	protected static Set namesToIds(List<Element>nameAttributes, CommonDependencyInjection ci) {
+		Set<String> names = new HashSet();
+		for (Element nameElement:nameAttributes) {
+			 names.add(nameElement.getTextTrim());
+		 }
+		if (names.isEmpty()) return new HashSet();
+		 Map filter = new HashMap();
+		 filter.put(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
+		 filter.put("name", names);
+		 
+		 List ids = ci.getCoreDao().loadObjects("select id from com.sitescape.team.domain.Principal where zoneId=:zoneId and name in (:name)", filter);
+		 return new HashSet(ids);
+	 }
+
 }

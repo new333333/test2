@@ -32,6 +32,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -50,6 +51,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheNameException;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
@@ -495,12 +497,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 template.setDefinitionsInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS), false));
 		 template.setFunctionMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP), true));
 		 template.setTeamMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS), true));
-		 if (!template.isTeamMembershipInherited())
-			 template.setTeamMemberIds(LongIdUtil.getIdsAsLongSet(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_TEAMMEMBERS)));
 		 //get attribute from document
 		 Map updates = XmlUtils.getAttributes(config);
 		 doAddTemplate(template, type, updates);
-		 XmlUtils.getDefinitions(template, config, getCoreDao());
+		 //setup after template is saved
+		 if (!template.isTeamMembershipInherited()) XmlUtils.getTeamMembersFromXml(template, config, this);
+		 XmlUtils.getDefinitionsFromXml(template, config, this);
+		 if (!template.isFunctionMembershipInherited()) XmlUtils.getFunctionMembershipFromXml(template, config, this);
 		 template.setEntryDef(template.getDefaultViewDef());
 		 Element dashboardConfig = (Element)config.selectSingleNode(ObjectKeys.XTAG_ELEMENT_TYPE_DASHBOARD);
 		 if (dashboardConfig != null) {
@@ -634,13 +637,45 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
-		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
+		if (!binder.isTeamMembershipInherited()) {
+			//store as names, not ids
+			Set<Long> ids = binder.getTeamMemberIds();
+			List<Principal> members = getProfileDao().loadPrincipals(ids, binder.getZoneId(), true);
+			for (Principal p:members) {
+				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME, p.getName());	    				 
+			}
+		}
 		Set<Map.Entry> mes = binder.getCustomAttributes().entrySet();
 		for (Map.Entry me: mes) {
 			CustomAttribute attr = (CustomAttribute)me.getValue();
 			attr.toXml(element);
 		}
-		//cannot rely export function memberships cause functions and most members are site specific
+		
+		if (!binder.isFunctionMembershipInherited()) {
+			 //need to convert all ids to names??
+	    	 List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(binder);
+	    	 for (WorkAreaFunctionMembership fm: wfms) {
+	    		 Set ids = fm.getMemberIds();
+	    		 List<Principal> members = getProfileDao().loadPrincipals(ids, binder.getZoneId(), true);
+	    		 try {
+	    			 Element e = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+	    			 Function function = getFunctionManager().getFunction(binder.getZoneId(), fm.getFunctionId());
+	    			 XmlUtils.addProperty(e, ObjectKeys.XTAG_WA_FUNCTION_NAME, function.getName());
+	    			 for (Principal p:members) {
+	    				 //Not sure is their is a universal separator that could be used,..
+		    			 XmlUtils.addProperty(e, ObjectKeys.XTAG_WA_MEMBER_NAME, p.getName());	    				 
+	    			 }
+	    			 StringBuffer idsString = new StringBuffer();
+	    			 if (ids.contains(ObjectKeys.OWNER_USER_ID))
+	    				 idsString.append(ObjectKeys.OWNER_USER_ID.toString() + " ");
+	    			 if (ids.contains(ObjectKeys.TEAM_MEMBER_ID))
+	    				 idsString.append(ObjectKeys.TEAM_MEMBER_ID.toString() + " ");
+	    			 XmlUtils.addProperty(e, ObjectKeys.XTAG_WA_MEMBERS, idsString);
+	    		 } catch (NoObjectByTheIdException no) {continue;} 
+	    		 
+	    	 }	    
+		}
 		List<Definition> defs = binder.getDefinitions();
 		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
 			Definition def = binder.getEntryDef();

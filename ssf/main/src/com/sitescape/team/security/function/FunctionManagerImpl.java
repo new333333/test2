@@ -38,7 +38,6 @@ public class FunctionManagerImpl implements FunctionManager {
     }
 
     public void deleteFunction(Function function) throws NotSupportedException {
-    	if (function.isReserved()) throw new NotSupportedException("errorcode.role.reserved", new Object[]{function.getName()});
     	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
     	if (result.isEmpty()) getSecurityDao().delete(function);
     	else throw new NotSupportedException("errorcode.role.inuse", new Object[]{function.getName()});
