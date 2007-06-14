@@ -57,7 +57,10 @@
 
 		<div id="ss_content">
 			<c:set var="disableSearchButton" value="1"/>
-			<c:set var="activateDashboardFolder" value="true"/>		
+			<c:set var="activateDashboardFolder" value="true"/>
+			<c:if test="${ssDashboard.scope == 'portlet'}">
+				<c:set var="activateDashboardFolder" value="false"/>
+			</c:if>	
 			<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
 		
 		</div>
