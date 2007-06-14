@@ -28,30 +28,6 @@
 		
 		return false;
 	}
-	
-	function ss_addAuthor(authorId, authorName) {
-		var div = document.createElement('div');
-	
-		var aDiv = document.createElement('div');
-		aDiv.id = "placeholderAuthor";
-
-		div.appendChild(document.createTextNode("<ssf:nlt tag="dashboard.task.assignedTo"/>: "));
-		div.appendChild(aDiv);
-		document.getElementById("ss_authors_options").appendChild(div);
-
-		var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
-		var props = {name : "assignedTo", 
-						id : "assignedTo", 
-						dataUrl:url,
-						maxListLength : 12,
-						autoComplete: false};
-		var usersWidget = dojo.widget.createWidget("SelectPageable", props, document.getElementById("placeholderAuthor"));
-		if (authorId && authorName && authorId!="" && authorName!="") {
-			usersWidget.setValue(authorId);
-			usersWidget.setLabel(authorName);
-		}
-	}
-	
 
 </script>
 
@@ -83,21 +59,21 @@
 <table class="ss_style" width="100%">
 	<tr>
 		<td>
-			<!--
-			<div>
-				<input type="checkbox" name="filterAssignedToCurrentUser" id="filterAssignedToCurrentUser${renderResponse.namespace}" 
-					<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.assignedToCurrentUser}">checked="checked"</c:if>>
-				<label for="filterAssignedToCurrentUser${renderResponse.namespace}"><ssf:nlt tag="dashboard.task.assignedToCurrentUser"/></label>
+			<ssf:nlt tag="dashboard.task.assignedTo"/>:  
+			<div dojoType="SelectPageable" widgetId="assignedTo_${renderResponse.namespace}" name="assignedTo" 
+						id="ss_authors_options_${renderResponse.namespace}"
+						maxListLength="12"
+						autoComplete="false"
+						dataUrl="<ssf:url 
+								adapter="true" 
+								portletName="ss_forum" 
+								action="__ajax_request" 
+								actionUrl="true">
+									<ssf:param name="operation" value="get_users_widget" />
+									<ssf:param name="operation" value="check_status" />
+								</ssf:url>&searchText=%{searchString}&pager=%{pagerString}"							
+				>
 			</div>
-
-			<div>
-				<input type="checkbox" name="filterAssignedToMe" id="filterAssignedToMe${renderResponse.namespace}" 
-					<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.assignedToMe}">checked="checked"</c:if>>
-				<label for="filterAssignedToMe${renderResponse.namespace}"><ssf:nlt tag="dashboard.task.assignedToMe"/></label>
-			</div>
-			-->
-			
-			<div id="ss_authors_options"></div>
 			
 			<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
 				<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
@@ -129,11 +105,14 @@
 
 <script type="text/javascript">
 
+	djConfig.searchIds.push("ss_authors_options_${renderResponse.namespace}");
+
 	<c:if test="${! empty ssDashboard.dashboard.components[ssComponentId].data.assignedTo}">
-		ss_addAuthor("${ssDashboard.dashboard.components[ssComponentId].data.assignedTo}", "${ssDashboard.dashboard.components[ssComponentId].data.assignedToName}");
+	dojo.addOnLoad(function () {
+		var assignetToWidget${renderResponse.namespace} = dojo.widget.byId("assignedTo_${renderResponse.namespace}");
+		assignetToWidget${renderResponse.namespace}.setValue("${ssDashboard.dashboard.components[ssComponentId].data.assignedTo}");
+		assignetToWidget${renderResponse.namespace}.setLabel("${ssDashboard.dashboard.components[ssComponentId].data.assignedToName}");
+	});
 	</c:if>
-	
-	<c:if test="${empty ssDashboard.dashboard.components[ssComponentId].data.assignedTo}">
-		ss_addAuthor();
-	</c:if>
+
 </script>
