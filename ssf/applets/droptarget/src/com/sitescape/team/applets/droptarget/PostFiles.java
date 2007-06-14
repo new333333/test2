@@ -171,7 +171,7 @@ public class PostFiles extends Thread {
           localfn = new String(localf + "/" + localRelFileName);
         }
         //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
-        out.write(new String("content-disposition: form-data; name=\"ss_attachFile\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
+        out.write(new String("content-disposition: form-data; name=\""+ topFrame.getParameter("appletFileName") +"\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
 
         FileInputStream fis = new FileInputStream(localFileName);
         if (localFile.length() != 0) {
@@ -241,6 +241,8 @@ public class PostFiles extends Thread {
             //ChunkedOutputStream out = new ChunkedOutputStream(conn.getOutputStream());
             out.write(new String("--" + boundary + "\r\n").getBytes());
             
+            String strFileName = topFrame.getParameter("appletFileName");
+            
             for (int i=0; i<fileList.size(); i++) {
               File file = (File)(fileList.get(i));
               String localFilePath = file.getAbsolutePath();
@@ -250,7 +252,10 @@ public class PostFiles extends Thread {
               }
               filename = f.getName();
               
-              writeFile(localFilePath, out, boundary, topFrame, topDir, "filesFromApplet"+(i+1));
+              //Hemanth: 06/13/2007 - Used for Applet specific code in AbstractEntryProcessor.createNewEntryWithAttachmentAndTitle
+              //writeFile(localFilePath, out, boundary, topFrame, topDir, "filesFromApplet"+(i+1));
+              writeFile(localFilePath, out, boundary, topFrame, topDir, strFileName+(i+1));
+              
               writeParam("startingDir", filename, out, boundary);
               writeParam("savePreviousVersions", topFrame.getParameter("savePreviousVersions"), out, boundary);
               writeFolderAndFileName(localFilePath, topDir, topFrame, "filesFromAppletFolderInfo"+(i+1), out, boundary);              

@@ -196,6 +196,10 @@ public class TopFrame extends JApplet implements Runnable {
            if (null == paramValue) {
                paramValue = "";
            }
+       if (paramName.equals("appletFileName"))
+           if (null == paramValue) {
+               paramValue = "ss_attachFile";
+           }       
        return paramValue;
     }
 

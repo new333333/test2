@@ -23,6 +23,12 @@
 	</tag>
 
 	<tag>
+		<name>appletFileName</name>
+		<tag-class>com.sitescape.team.taglib.AppletFileName</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+
+	<tag>
 		<name>box</name>
 		<tag-class>com.sitescape.team.taglib.BoxTag</tag-class>
 		<body-content>JSP</body-content>
