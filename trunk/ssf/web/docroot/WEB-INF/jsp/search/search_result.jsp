@@ -104,10 +104,12 @@
 						</td>
 					</tr>
 				</table>			
-					
 			</div>
-			
 		</div>
+		
+		<% // Footer toolbar %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+			
 	</div>
 </div>
 
