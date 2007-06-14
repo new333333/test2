@@ -79,13 +79,15 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 		</td>
 		<td>
 			<span class="ss_entryTitle ss_normalprint">
-				<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${entry._docId}" 
-				binderId="${entry._binderId}" entityType="${entry._entityType}" 
-				imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-			    menuDivId="ss_emd_${renderResponse.namespace}"
-				linkMenuObjIdx="${renderResponse.namespace}" 
-				namespace="${renderResponse.namespace}"
-				entryCallbackRoutine="${showEntryCallbackRoutine}">
+				<c:set var="isDashboard" value="yes"/>
+				
+			<ssf:menuLink 
+				displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
+				entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+		    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+				namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+				useBinderFunction="no" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+
 				
 					<ssf:param name="url" useBody="true">
 						<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
@@ -189,3 +191,8 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
    </tr>
   </table>
 </div>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
+	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+	namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
+</ssf:menuLink>	
