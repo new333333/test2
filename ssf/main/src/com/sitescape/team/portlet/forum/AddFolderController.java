@@ -11,8 +11,11 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -21,11 +24,16 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -36,6 +44,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 public class AddFolderController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		if (formData.containsKey("okBtn")) {
@@ -43,6 +52,47 @@ public class AddFolderController extends SAbstractController {
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
 			Long newId = getAdminModule().addBinderFromTemplate(cfgType, binderId, 
 						PortletRequestUtils.getStringParameter(request, "title", ""), null);
+			Binder newBinder = getBinderModule().getBinder(newId);
+			
+			//Now process the rest of the form
+			if (newBinder != null) {
+				//See if there are any team members specified
+				if (formData.containsKey("inheritBtnNo")) {
+					//Save the inheritance state
+					getBinderModule().setTeamMembershipInherited(newId, false);
+				} else {
+					getBinderModule().setTeamMembershipInherited(newId, true);
+				}
+				if (!newBinder.isTeamMembershipInherited()) {
+					Set memberIds = new HashSet();
+					if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+					if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+					//Save the team members 
+					getBinderModule().setTeamMembers(newId, memberIds);
+				}
+				
+				//See if there are any folders to be created
+				Iterator itFormData = formData.entrySet().iterator();
+				while (itFormData.hasNext()) {
+					Map.Entry me = (Map.Entry) itFormData.next();
+					if (me.getKey().toString().startsWith("folderConfigId_")) {
+						String configId = me.getKey().toString().substring(15);
+						getAdminModule().addBinderFromTemplate(Long.valueOf(configId), newId, "", null);
+					}
+				}
+				
+				//Announce this new workspace?
+				if (formData.containsKey("announce")) {
+					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");
+					Set teamMemberIds = newBinder.getTeamMemberIds();
+					if (!teamMemberIds.isEmpty()) {
+						Map status = getAdminModule().sendMail(teamMemberIds, null, 
+								NLT.get("binder.announcement", new Object[] {user.getTitle(), newBinder.getTitle()}), 
+								new Description(announcementText, Description.FORMAT_HTML), 
+								null, false);
+					}
+				}
+			}
 			
 			setupViewBinder(response, newId);
 			
@@ -56,12 +106,14 @@ public class AddFolderController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder); 
 		model.put(WebKeys.OPERATION, operation);
+		model.put(WebKeys.USER_PRINCIPAL, user);
 
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
@@ -81,7 +133,19 @@ public class AddFolderController extends SAbstractController {
 				result.add(getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
+			
+			//Get the list of folder types
+			result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			if (result.isEmpty()) {
+				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
+			}
+			model.put(WebKeys.FOLDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_TEAM_WORKSPACE)) {
+			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			if (result.isEmpty()) {
+				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
+			}
+			model.put(WebKeys.FOLDER_CONFIGS, result);
 		}
 	
 		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);
