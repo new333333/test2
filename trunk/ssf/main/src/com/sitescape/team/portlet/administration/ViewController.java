@@ -28,6 +28,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
@@ -39,6 +40,7 @@ import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReleaseInfo;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -64,6 +66,8 @@ public class ViewController extends  SAbstractController {
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
+		//Put in the product name
+		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
