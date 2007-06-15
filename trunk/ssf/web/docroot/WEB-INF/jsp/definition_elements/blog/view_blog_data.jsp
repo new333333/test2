@@ -14,6 +14,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" scope="request" />
+
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");

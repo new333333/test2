@@ -11,41 +11,41 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" 
-  scope="request" />
-<%
-	long i_rating = 0;
-	if (ssDefinitionEntry.getAverageRating() != null) {
-		Double rating = ssDefinitionEntry.getAverageRating().getAverage();
-		if (rating != null) i_rating = Math.round(rating);
-	}
-%>
+
+<c:set var="i_rating" value="0"/>
+<c:if test="${!empty ssDefinitionEntry.averageRating.average}">
+	<c:set var="i_rating" value="${ssDefinitionEntry.averageRating.average}"/>
+</c:if>
+
 <div id="${ss_ratingDivId}" style="margin:0px; padding:0px;">
 <table style="border-spacing:0px; border-width:thin;"><tbody><tr>
-<%
-	for (long i = 0; i < i_rating; i++) {
-%>
-  <td><a style="text-decoration: none;" 
-    onMouseover="ss_showRating('<%= i+1 %>', '${ssDefinitionEntry.id}');" 
-    onMouseout="ss_clearRating('<%= i+1 %>', '${ssDefinitionEntry.id}');"
-    onClick="ss_saveRating('<%= i+1 %>', '${ssDefinitionEntry.id}');return false;"
-  ><img border="0" id="ss_rating_img_${ssDefinitionEntry.id}_<%= i+1 %>" 
-    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.gif"/></a></td>
-<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_<%= i+1 %>'] = "<html:imagesPath/>pics/star_gold.gif";</script>
-<%
-	}
-	for (long i = i_rating; i < 5; i++) {
-%>
-  <td><a style="text-decoration: none;" 
-    onMouseover="ss_showRating('<%= i+1 %>', '${ssDefinitionEntry.id}');" 
-    onMouseout="ss_clearRating('<%= i+1 %>', '${ssDefinitionEntry.id}');"
-    onClick="ss_saveRating('<%= i+1 %>', '${ssDefinitionEntry.id}');return false;"
-  ><img <ssf:alt tag="alt.grayStar"/> border="0" id="ss_rating_img_${ssDefinitionEntry.id}_<%= i+1 %>" 
-    src="<html:imagesPath/>pics/star_gray.gif"/></a></td>
-<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_<%= i+1 %>'] = "<html:imagesPath/>pics/star_gray.gif";</script>
-<%
-	}
-%>
+
+	<c:if test="${i_rating > 0}">
+		<c:forEach var="i" begin="0" end="${i_rating - 1}" step="1">
+	
+		  <td><a style="text-decoration: none;" 
+		    onMouseover="ss_showRating('${i + 1}', '${ssDefinitionEntry.id}');" 
+		    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}');"
+		    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}');return false;"
+		  ><img border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
+		    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.gif"/></a></td>
+			<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = "<html:imagesPath/>pics/star_gold.gif";</script>
+	
+		</c:forEach>
+	</c:if>
+	
+	<c:if test="${i_rating < 5}">
+		<c:forEach var="i" begin="${i_rating}" end="4" step="1">
+		  <td><a style="text-decoration: none;" 
+			    onMouseover="ss_showRating('${i + 1}', '${ssDefinitionEntry.id}');" 
+			    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}');"
+			    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}');return false;"
+			  ><img <ssf:alt tag="alt.grayStar"/> border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
+			    src="<html:imagesPath/>pics/star_gray.gif"/></a></td>
+			<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = "<html:imagesPath/>pics/star_gray.gif";</script>
+		</c:forEach>
+	</c:if>
+
 <c:if test="${!empty ssDefinitionEntry.averageRating}">
 <td class="ss_nowrap">
 <c:if test="${ssDefinitionEntry.averageRating.count == 1}">

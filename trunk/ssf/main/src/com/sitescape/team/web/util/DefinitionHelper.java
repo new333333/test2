@@ -338,6 +338,30 @@ public class DefinitionHelper {
     	return node.attributeValue("name");
     }
     
+    public static Map findSelectboxSelectionsAsMap(String attributeName, String definitionId) {
+    	Map result = new HashMap();
+		Iterator attributeValuesIt = DefinitionHelper.findSelectboxSelections(attributeName, 
+    			DefinitionHelper.getDefinition(definitionId).getDefinition()).iterator();
+		while (attributeValuesIt.hasNext()) {
+			
+			String name = null;
+			String caption = null;
+			
+			Iterator attributeValueIt = ((Map)attributeValuesIt.next()).entrySet().iterator();
+			while (attributeValueIt.hasNext()) {
+				Map.Entry mapEntry = (Map.Entry)attributeValueIt.next();
+				if ("name".equals(mapEntry.getKey())) {
+					name = (String)mapEntry.getValue();
+				} else if ("caption".equals(mapEntry.getKey())) {
+					caption = (String)mapEntry.getValue();
+				}
+			}
+			result.put(name, caption);
+			
+		}
+		return result;
+    }
+    
     public static List findSelectboxSelections(String attributeName, Document definitionConfig) {
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]//item[@name='selectboxSelection']/properties");
     	if (nodes == null) {
@@ -359,6 +383,11 @@ public class DefinitionHelper {
     	}
     	
     	return result;
+    }
+    
+    public static List findRadioSelections(String attributeName, String definitionId) {
+    	return DefinitionHelper.findRadioSelections(attributeName, 
+    			DefinitionHelper.getDefinition(definitionId).getDefinition());
     }
     
     public static List findRadioSelections(String attributeName, Document definitionConfig) {
