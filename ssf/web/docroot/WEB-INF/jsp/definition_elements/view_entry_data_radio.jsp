@@ -12,6 +12,8 @@
 %>
 <%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+
+
 <%
 	String caption = "";
 	if(ssDefinitionEntry.getCustomAttributes().get(property_name) != null) {

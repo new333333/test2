@@ -77,7 +77,11 @@
 				</ul>
 			</td>
 			<td ${tdClass}>
-				<ssf:nlt tag="__milestone_status_${entry.status}"/>
+				<%
+					java.util.Map statusCaptions = com.sitescape.team.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
+					String caption = (String)statusCaptions.get(entry.get("status"));
+				%>
+				<ssf:nlt tag="<%= caption %>"/>
 			</td>
 			<td ${tdClass}>
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />

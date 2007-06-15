@@ -14,6 +14,7 @@
 <%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
+
 <c:if test="${!empty ss_element_display_style && 
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
