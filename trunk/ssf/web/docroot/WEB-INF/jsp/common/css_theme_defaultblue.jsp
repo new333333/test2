@@ -177,7 +177,7 @@
     <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
     <c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
     
-	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_toolbar1_background_color" value="#DEE7C6" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
