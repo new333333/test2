@@ -364,6 +364,7 @@ public class WebHelper {
 	}
 	
 	public static void scanDescriptionForAttachmentUrls(Description description, DefinableEntity entity) {
+		if(description == null) return;
 		String entityType = entity.getEntityType().toString();
 		String binderId = "";
 		String entryId = "";
