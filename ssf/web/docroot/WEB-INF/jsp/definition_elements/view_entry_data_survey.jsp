@@ -80,10 +80,31 @@
 	</div>
 		<c:set var="alreadyVoted" value="${question.alreadyVoted}"/>
 	</c:forEach>
+	
+	<c:choose>
+		<c:when test="${!hasAnyQuestion}">
+			<ssf:nlt tag="survey.vote.notAllowed.empty"/>
+		</c:when>
+		<c:otherwise>
+			<c:choose>
+				<c:when test="${alreadyVoted}">
+					<ssf:nlt tag="survey.vote.notAllowed.alreadyVoted"/>
+				</c:when>
+				<c:otherwise>
+					<c:choose>
+						<c:when test="${overdue}">
+							<ssf:nlt tag="survey.vote.notAllowed.overdue"/>
+						</c:when>
+						<c:otherwise>
+							<input type="button" value="Vote!" 
+								onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
+						</c:otherwise>
+					</c:choose>
+				</c:otherwise>
+			</c:choose>
+		</c:otherwise>
+	</c:choose>
 
-	<c:if test="${!alreadyVoted && !overdue && hasAnyQuestion}">
-		<input type="button" value="Vote!" onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
-	</c:if>	
 </form>
 
 
