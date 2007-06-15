@@ -21,7 +21,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%
 //Color themes: "defaultblue", "defaultgreen", "defaultgray"
 %>
-<c:set var="ss_color_theme" value="defaultgreen" scope="request"/>
+<c:set var="ss_color_theme" value="defaultblue" scope="request"/>
 <c:if test="${!empty ssCssTheme}">
   <c:set var="ss_color_theme" value="${ssCssTheme}" scope="request"/>
 </c:if>
