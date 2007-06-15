@@ -56,6 +56,7 @@ public class ChartTag extends BodyTagSupport {
 
 			float p = (this.count * 100) / this.total;
 			httpReq.setAttribute("percent", new Float(p));
+			httpReq.setAttribute("count", count);
 			
 			String jsp = "/WEB-INF/jsp/tag_jsps/charts/chart.jsp";
 			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);

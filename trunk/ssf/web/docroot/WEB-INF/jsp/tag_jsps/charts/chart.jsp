@@ -10,11 +10,18 @@
  *
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
 	Object percent = request.getAttribute("percent"); 
+	String count = request.getAttribute("count").toString(); 
 %>
 
-<div class="ss_chartContainer">
-	<div class="ss_bar" style="width:<%= percent %>%;"><%= percent %>%</div>
+
+<div class="ss_surveyChartContainer">
+	<div class="ss_total">
+		<div class="ss_bar" style="width:<%= percent %>%;"></div>
+	</div>
+	<%= percent %>% <ssf:nlt tag="survey.xvotes"><ssf:param name="value" value="<%= count %>"/></ssf:nlt>
 </div>
-<!-- div class="ss_clear"></div -->
+
+

@@ -2,17 +2,30 @@ dojo.require("dojo.json");
 
 if (!window.ssSurvey) {
 
-	function ssSurvey(hiddenInputValueId) {
+	function ssSurvey(hiddenInputValueId, surveyContainerId) {
 		
 		var inputId = hiddenInputValueId;
+		
+		var surveyContainerId = surveyContainerId;
 	
 		var ss_questionsArray = new Array();
 		
 		var ss_questionsCounter = 0;
 	
 		var that = this;
-	
-		this.ss_newSurveyQuestion = function(type, questionText, withDefaultAnswers) {
+		
+		this.initialize = function(currentSurveyAsJSONString) {
+			if (currentSurveyAsJSONString) {
+				var currentSurvey = dojo.json.evalJson(currentSurveyAsJSONString);
+				ss_initSurveyQuestions(currentSurvey.questions);
+			}
+		}
+		
+		this.ss_newSurveyQuestion = function(type, questionText, questionIndex, withDefaultAnswers) {
+			ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers);
+		}
+
+		function ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers) {
 			if (!ss_questionsArray[ss_questionsCounter] || ss_questionsArray[ss_questionsCounter] == 'undefined') {
 				ss_questionsArray[ss_questionsCounter] = new Array();
 			}
@@ -21,9 +34,9 @@ if (!window.ssSurvey) {
 			var questionContainer = document.createElement('div');
 			dojo.html.setClass(questionContainer, "ss_questionContainer");
 			questionContainer.id = "question"+ss_questionsCounter;
-			dojo.byId('ss_surveyForm_questions').appendChild(questionContainer);
+			dojo.byId(surveyContainerId).appendChild(questionContainer);
 			ss_addQuestionHeader(questionContainer);
-			ss_addQuestionDescription(questionContainer, questionText);
+			ss_addQuestionDescription(questionContainer, questionText, questionIndex);
 			ss_addQuestionAnswers(type, ss_questionsCounter, withDefaultAnswers);
 			ss_refreshAllHeaders();
 			ss_questionsCounter++;
@@ -59,15 +72,21 @@ if (!window.ssSurvey) {
 			}
 		}
 		
-		function ss_addQuestionDescription(questionContainer,questionText) {
+		function ss_addQuestionDescription(questionContainer, questionText, questionIndex) {
 			var question = document.createElement('textarea');
 			if (questionText) {
 				question.value = questionText;
 			}
-			dojo.html.setClass(question, "mceEditable");
 			question.id = "questionText"+ss_questionsCounter;
 			questionContainer.appendChild(question);
 			tinyMCE.execCommand("mceAddControl", false, question.id);
+			if (questionIndex) {
+				var questionIndexInput = document.createElement('input');
+				questionIndexInput.setAttribute("type", "hidden");
+				questionIndexInput.id = "questionText"+ss_questionsCounter+"_index";
+				questionIndexInput.value = questionIndex;
+				questionContainer.appendChild(questionIndexInput);
+			}
 		}
 		
 		function ss_refreshAllHeaders() {
@@ -111,6 +130,70 @@ if (!window.ssSurvey) {
 		function ss_callAddAnswerOption(obj, index) {
 			return function(evt) {obj.ss_addAnswerOption(index);};
 		}
+
+		
+		function ss_callRemoveAnswer(obj, questionNo, answerNo) {
+			return function(evt) {obj.ss_removeAnswer(questionNo, answerNo);};
+		}
+		
+		this.ss_removeAnswer = function(questionNo, answerNo) {
+			var li = dojo.byId("option_question"+questionNo+"answer"+answerNo);
+			li.parentNode.removeChild(li);
+		}
+		
+		this.prepareSubmit = function(obj) {
+			var ss_toSend = new Array();
+			var ind = 0;
+			var aCounter = 0;
+			var content;
+			var questionIndexInput;
+			for (var i=0; i<ss_questionsArray.length;i++){
+				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
+					ss_toSend[ind] = {};
+					ss_toSend[ind].type = ss_questionsArray[i].type;
+					content = tinyMCE.getContent("questionText"+i).replace(/\+/g, "&#43");
+					ss_toSend[ind].question = content;
+					questionIndexInput = dojo.byId("questionText"+i+"_index");
+					if (questionIndexInput) {
+						ss_toSend[ind].index = questionIndexInput.value;
+					}
+					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
+						ss_toSend[ind].answers = new Array();
+						aCounter = 0;
+						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
+							if (dojo.byId("question"+i+"answer"+j)) {
+								var answerIndexInput = dojo.byId("question"+i+"answer"+j+"_index");
+								ss_toSend[ind].answers[aCounter] = {
+									'text' : dojo.byId("question"+i+"answer"+j).value
+								};
+								if (dojo.byId("question"+i+"answer"+j+"_index")) {
+									ss_toSend[ind].answers[aCounter].index = dojo.byId("question"+i+"answer"+j+"_index").value;
+								}
+								aCounter++;
+							}
+						}
+					}
+					ind++;
+				}
+			}
+			var inputObj = document.getElementById(inputId);
+			if (inputObj) {
+				inputObj.value = dojo.json.serialize({'questions' : ss_toSend});
+			}
+			return ss_onSubmit(obj);
+		}
+		
+		function ss_initSurveyQuestions(questionsArray) {
+			for (var i=0; i<questionsArray.length; i++) {
+				ss_newSurveyQuestion(questionsArray[i].type, questionsArray[i].question, questionsArray[i].index,  false);
+				
+				if (questionsArray[i].type == 'multiple' || questionsArray[i].type == 'single') {
+					for (var j=0; j<questionsArray[i].answers.length; j++) {
+						ss_addAnswerOption(ss_questionsCounter-1, questionsArray[i].answers[j]);
+					}
+				}
+			}
+		}
 		
 		function ss_addAnswerOption(index, value) {
 			that.ss_addAnswerOption(index, value);
@@ -135,66 +218,21 @@ if (!window.ssSurvey) {
 			var newOption = document.createElement('input');
 			newOption.name = "question"+index+"answer"+lastAnswerNo;
 			newOption.id = "question"+index+"answer"+lastAnswerNo;
+			
+			var newOptionIndex = document.createElement('input');
+			newOptionIndex.setAttribute("type", "hidden");
+			newOptionIndex.id = "question"+index+"answer"+lastAnswerNo+"_index";
+			
 			if (value) {
-				newOption.value = value;
+				newOption.value = value.text;
+				newOptionIndex.value = value.index;
 			}
+			
 			lastAnswerNo++;
 			ss_questionsArray[index].answersNo = lastAnswerNo;
 			answer.appendChild(newOption);
+			answer.appendChild(newOptionIndex);
 			dojo.byId('answers'+index).appendChild(answer);
-		}
-		
-		function ss_callRemoveAnswer(obj, questionNo, answerNo) {
-			return function(evt) {obj.ss_removeAnswer(questionNo, answerNo);};
-		}
-		
-		this.ss_removeAnswer = function(questionNo, answerNo) {
-			var li = dojo.byId("option_question"+questionNo+"answer"+answerNo);
-			li.parentNode.removeChild(li);
-		}
-		
-		this.prepareSubmit = function(obj) {
-			var ss_toSend = new Array();
-			var ind = 0;
-			var aCounter = 0;
-			var content;
-			for (var i=0; i<ss_questionsArray.length;i++){
-				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
-					ss_toSend[ind] = {};
-					ss_toSend[ind].type = ss_questionsArray[i].type;
-					content = tinyMCE.getContent("questionText"+i).replace(/\+/g, "&#43");
-					ss_toSend[ind].question = content;
-					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
-						ss_toSend[ind].answers = new Array();
-						aCounter = 0;
-						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
-							if (dojo.byId("question"+i+"answer"+j)) {
-								ss_toSend[ind].answers[aCounter] = {'text' : dojo.byId("question"+i+"answer"+j).value};
-								aCounter++;
-							}
-						}
-					}
-					ind++;
-				}
-			}
-			var inputObj = document.getElementById(inputId);
-			if (inputObj) {
-				inputObj.value = dojo.json.serialize({'questions' : ss_toSend});
-			}
-			return ss_onSubmit(obj);
-		}
-		
-		this.ss_initSurveyQuestions = function(questionsArray) {
-			for (var i=0; i<questionsArray.length; i++) {
-				ss_newSurveyQuestion(questionsArray[i].type, questionsArray[i].question, false);
-				
-				if (questionsArray[i].type == 'multiple' || questionsArray[i].type == 'single') {
-					for (var j=0; j<questionsArray[i].answers.length; j++) {
-						ss_addAnswerOption(ss_questionsCounter-1, questionsArray[i].answers[j]);
-					}
-				}
-			}
-			// alert("Done");
 		}
 	}
 	
