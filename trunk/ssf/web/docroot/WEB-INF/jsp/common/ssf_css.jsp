@@ -947,17 +947,37 @@ DIV.ss_help_style UL {
   list-style-type: square;
 }
 
+DIV.ss_help_style DIV.picture {
+    text-align: center;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+
+DIV.footnote_text {
+    border-top: solid, black, 1px;
+    font-style: italic;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+
+DIV.example, DIV.note {
+    margin-left: 15px;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+
 P.ss_help_moreinfo {
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin: 0px;
     font-weight: bold;
     color: ${ss_title_line_color};  
 }
 
 DIV.ss_help_moreinfo P {
     margin-top: 3px;
-    margin-bottom: 1px;
     margin-left: 15px;
+    margin-bottom: 1px;
 }
 
 DIV.ss_help_moreinfo {
@@ -985,6 +1005,11 @@ DIV.ss_help_more_pages_section .no_next_page {
     color: ${ss_help_panel_background_color};
 }
 
+DIV.ss_help_more_pages_section .no_prev_page {
+    color: ${ss_help_panel_background_color};
+    margin-right: 10px;
+}
+
 
 /*  Word styling */
 .clickable_item, .document_title, .light_emphasis, .new_term {
@@ -994,18 +1019,6 @@ DIV.ss_help_more_pages_section .no_next_page {
 .strong-emphasis, .def_list_term, .subtitle, .footnote, .header {
     font-weight: bold;
 }
-
-DIV.footnote_text {
-    border-top: solid, black, 1px;
-    font-style: italic;
-    font-weight: bold;
-    width: 100%;
-}
-
-DIV.example, DIV.note {
-    margin-left: 15px;
-}
-
 
 /* Blogs */
 .ss_blog {

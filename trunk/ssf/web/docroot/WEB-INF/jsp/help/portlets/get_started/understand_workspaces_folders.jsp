@@ -29,11 +29,12 @@
 
 </div>
 
-<div class="ss_help_more_pages_section"><a href="#skip_nav_panel_numbers" title="<ssf:nlt tag="title.skipNavPanelNumbers" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+<div class="ss_help_more_pages_section">
+<a href="#skip_nav_panel_numbers" title="<ssf:nlt tag="helpTitleAlt.skipNavPanelNumbers" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><<</a></div>
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');">1</a></div> 
 <div class="not_last_link">2</div>
-<div title="No next page"><span class="<ssf:nlt tag="title.noNextPage" />">>></span></div>
+<div title="<ssf:nlt tag="helpTitleAlt.noNextPage" />"><span class="no_next_page">>></span><a id="skip_nav_panel_numbers" /></div>
 </div>
 
-<a id="skip_nav_panel_numbers" />
+</div>
