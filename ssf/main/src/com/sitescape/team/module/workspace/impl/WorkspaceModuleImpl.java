@@ -280,7 +280,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 						String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
 						try {
 							Long id = Long.valueOf(sId);
-							ws.add(getCoreDao().load(Folder.class, id));
+							Object obj = getCoreDao().load(Folder.class, id);
+							if (obj != null) ws.add(obj);
 						} catch (Exception ex) {continue;}					
 					}				
 				}
@@ -302,7 +303,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 					String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
 					try {
 						Long id = Long.valueOf(sId);
-						ws.add(getCoreDao().load(Workspace.class, id));
+						Object obj = getCoreDao().load(Workspace.class, id);
+						if (obj != null) ws.add(obj);
 					} catch (Exception ex) {continue;}					
 				}
 			}
