@@ -73,7 +73,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private static final String NONLIBRARY_VIRTUAL_HELP_FILE = "ssfs.nonlibrary.virtual.help.file";
 	private static final String NONLIBRARY_VIRTUAL_HELP_FILE_CONTENT_CODE = "ssfs.nonlibrary.virtual.help.content"; 
 	private static final String NONLIBRARY_VIRTUAL_HELP_FILE_CONTENT_DEFAULT = 
-		"This directory does not represent a library folder in Aspen.\nOnly files in library folder are exposed through WebDAV.";
+		"This directory does not represent an ICEcore file folder.\nOnly files in library folder are exposed through WebDAV.";
 	
 	private String helpFileName;
 	private byte[] helpFileContentInUTF8;
