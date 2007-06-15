@@ -12,11 +12,6 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
-    <property name="functionName">Visitor</property>
-    <property name="memberName">allUsers</property>
-    <property name="members"></property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
     <property name="functionName">Workspace and folder administrator</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>

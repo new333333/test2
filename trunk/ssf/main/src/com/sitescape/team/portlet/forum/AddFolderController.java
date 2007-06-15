@@ -32,6 +32,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
@@ -83,12 +84,20 @@ public class AddFolderController extends SAbstractController {
 				
 				//Announce this new workspace?
 				if (formData.containsKey("announce")) {
+					String messageBody = "<a href=\"";
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, newId.toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, newBinder.getEntityType().toString());
+					messageBody += adapterUrl.toString();
+					messageBody += "\">" + newBinder.getTitle() + "</a><br/><br/>";
 					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");
+					messageBody += announcementText;
 					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
 						Map status = getAdminModule().sendMail(teamMemberIds, null, 
 								NLT.get("binder.announcement", new Object[] {user.getTitle(), newBinder.getTitle()}), 
-								new Description(announcementText, Description.FORMAT_HTML), 
+								new Description(messageBody, Description.FORMAT_HTML), 
 								null, false);
 					}
 				}
