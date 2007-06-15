@@ -66,6 +66,6 @@
   >
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}" />task
+  configJspStyle="${ssConfigJspStyle}" />
 </select>
 </div>
