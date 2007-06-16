@@ -2214,6 +2214,8 @@ var ss_helpSystem = {
 	},
 	
 	showHelpSpotInfo : function(id, xAlignment, yAlignment) {
+        //Hide moreinfo panel, if exists
+        ss_hideDiv('ss_moreinfo_panel')
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
 		//ss_debug('showHelpSpotInfo id = '+id)
