@@ -648,7 +648,7 @@ div.ss_popup_body {
   display:none;
   margin:2px;
   padding:2px;
-  width:450px;
+  width:500px;
 }
 .ss_helpToc {
   border: 1px solid ${ss_style_border_color_light};
@@ -665,12 +665,10 @@ div.ss_popup_body {
 	list-style-type: disc;
 }
 
-
 div.ss_help_popup_body_frame {
   border: 1px solid #6B78A9;
   padding: 10px;
 }
-
 
 img.ss_help_cpanel_show {
 	background-image: url(<html:imagesPath/>icons/accessory_hide.gif);
@@ -717,7 +715,7 @@ DIV.ss_help_title {
 }
 
 DIV.ss_help_style P {
-    margin-top: 2px;
+    margin-top: 3px;
     margin-bottom: 10px;
 }
 
@@ -731,6 +729,10 @@ DIV.ss_help_style OL LI {
     margin-top: 3px;
     margin-bottom: 6px;
     margin-left: 0px;
+}
+
+DIV.ss_help_style LI P {
+    margin-top: 4px;
 }
 
 DIV.ss_help_style UL, OL {
@@ -748,16 +750,16 @@ DIV.ss_help_style DIV.picture {
     margin-bottom: 5px;
 }
 
-DIV.footnote_text {
-    border-top: solid  black  1px;
+DIV.ss_help_style DIV.footnote_text {
+    font-size: ${ss_style_font_smallprint} !important;
+    color: ${ss_style_gray_color}; 
+    border-top: solid  ${ss_style_light_color}  1px;
     font-style: italic;
-    font-weight: bold;
-    width: 100%;
     margin-top: 2px;
     margin-bottom: 5px;
 }
 
-DIV.example, DIV.note {
+DIV.ss_help_style DIV.example, DIV.note {
     margin-left: 15px;
     margin-top: 2px;
     margin-bottom: 5px;
@@ -769,18 +771,18 @@ P.ss_help_moreinfo {
     color: ${ss_title_line_color};  
 }
 
+DIV.ss_help_moreinfo {
+    margin-bottom: 3px;
+}
+
 DIV.ss_help_moreinfo P {
     margin-top: 3px;
     margin-left: 15px;
     margin-bottom: 1px;
 }
 
-DIV.ss_help_moreinfo {
-    margin-bottom: 3px;
-}
-
 DIV.ss_help_more_pages_section {
-    font-size: ${ss_style_font_smallprint};
+    font-size: ${ss_style_font_smallprint} !important;
     text-align: center;
     margin-bottom: 3px;
     margin-top: 10px;
@@ -792,26 +794,39 @@ DIV.ss_help_more_pages_section DIV {
     margin-bottom: 0px;
 }
 
-DIV.ss_help_more_pages_section .not_last_link {
-    margin-right: 10px;
+DIV.ss_help_more_pages_section DIV.current_page {
+    padding: 2px 2px 2px 2px;
+    margin-right: 8px;
+    border: solid ${ss_style_light_color} 1px;
 }
 
-DIV.ss_help_more_pages_section .no_next_page {
+DIV.ss_help_more_pages_section DIV.not_last_link {
+    padding: 2px 2px 2px 2px;
+    margin-right: 8px;
+}
+
+DIV.ss_help_more_pages_section DIV.no_next_page {
+    padding: 2px 2px 2px 2px;
     color: ${ss_help_panel_background_color};
 }
 
-DIV.ss_help_more_pages_section .no_prev_page {
+DIV.ss_help_more_pages_section DIV.no_prev_page {
+    padding: 2px 2px 2px 2px;
+    margin-right: 8px;
     color: ${ss_help_panel_background_color};
-    margin-right: 10px;
 }
 
 
 /*  Word styling */
-.clickable_item, .document_title, .light_emphasis, .new_term {
+DIV.ss_help_style .clickable_item, .document_title, .light_emphasis, .new_term {
     font-style: italic;
 }
 
-.strong-emphasis, .def_list_term, .subtitle, .footnote, .header {
+DIV.ss_help_moreinfo .document_title {
+    font-style: italic;
+}
+
+DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
     font-weight: bold;
 }
 
