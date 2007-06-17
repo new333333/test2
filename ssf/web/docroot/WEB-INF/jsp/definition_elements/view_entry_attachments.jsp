@@ -31,7 +31,17 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	</td>
 
 	<td valign="top" width="100%" align="left">
-  <ssHelpSpot helpId="tools/attachments" offsetX="0" 
+  <ssHelpSpot helpId="workspaces_folders/entries/attachments" 
+  
+    <c:if test="<%= isIE %>">
+    offsetX="-10" offsetY="2"  
+    </c:if>
+    <c:if test="<%= !isIE %>">
+    offsetX="-10" offsetY="-20"   
+    </c:if>
+    
+    
+     
     title="<ssf:nlt tag="helpSpot.attachments"/>"></ssHelpSpot>
 	<ssf:ifnotaccessible>
 	

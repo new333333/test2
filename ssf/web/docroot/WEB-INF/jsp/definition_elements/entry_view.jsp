@@ -31,7 +31,7 @@
 %>
 <table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar4_pane">
 <tr><td valign="top">
-  <ssHelpSpot helpId="tools/entry_toolbar" offsetX="0" 
+  <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 </td>

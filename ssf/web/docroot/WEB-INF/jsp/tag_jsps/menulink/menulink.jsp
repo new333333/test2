@@ -50,10 +50,20 @@ String dashboardType = ParamUtil.get(request, "dashboardType", "");
 String isFile = ParamUtil.get(request, "isFile", "no");
 %>
 
-<% if (isAccessible.equals("false")) { %>
+<% if (isAccessible.equals("false")) { %><%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
 
 <c:if test="${empty ss_menuLinkHelpShown}"><ssHelpSpot 
-  helpId="tools/display_entry_control" offsetX="0" 
+  helpId="workspaces_folders/entries/display_entry_control" 
+  <c:if test="<%= !isIE %>">
+  offsetX="-10" offsetY="-13" 
+  </c:if>
+  <c:if test="<%= isIE %>">
+  offsetX="24"  
+  </c:if>
   title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot></c:if><c:set 
   var="ss_menuLinkHelpShown" value="1" scope="request"/><a class="ss_title_menu" href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
