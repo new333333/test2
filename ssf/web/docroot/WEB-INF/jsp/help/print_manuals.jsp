@@ -11,36 +11,43 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
 
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="help.viewBooks.title"/></span> 
+</div>
 
 <p><ssf:nlt tag="help.viewBooks.content.intro"/></p>
 
-<ul style="list-style-type:disc;">
-<!--<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
-</li>-->
+<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.users"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></p>
 
+<ul>
 <li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
+
+<p><ssf:nlt tag="help.viewBooks.content.quickTips.explain"/></p>
 </li>
 
-<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore QuickStart User Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
+<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore User Guide.pdf">
+  <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
+
+<p><ssf:nlt tag="help.viewBooks.content.userGuide.explain"/></p>
 </li>
 
-<!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
-</li>-->
-
-<!--<li><a target="ss_new" href="<html:rootPath/>docs/aspen_workflow.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.workflowTutorial"/></a>
-</li>-->
 </ul>
 
-<div align="center">
-<a class="ss_linkButton ss_smallprint" href="#" 
-  onClick="ss_hideDiv('ss_help_print_manuals'); return false;"><ssf:nlt tag="button.close"/></a>
+<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.administrators"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></p>
+
+<ul>
+<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf">
+  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
+
+<p><ssf:nlt tag="help.viewBooks.content.installConfigGuide.explain"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+</li>
+
+</ul>
+
 </div>
+
 </div>

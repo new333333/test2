@@ -14,7 +14,9 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderControlAndFiltering"/></span>
+</div>
 
 <p><ssf:nlt tag="help.bottomLinks.intro" /></p>
 
@@ -23,4 +25,5 @@
 <p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
+
 </div>

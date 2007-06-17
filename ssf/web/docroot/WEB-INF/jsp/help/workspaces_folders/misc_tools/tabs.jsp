@@ -11,9 +11,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
 
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.tabs"/></span>
+</div>
 
 <p><ssf:nlt tag="help.tabs.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
@@ -21,7 +24,7 @@
 
 <p><ssf:nlt tag="help.tabs.types.listIntro" /></p>
 
-<ul style="list-style-type:disc;">
+<ul>
 
 <li><ssf:nlt tag="help.tabs.types.listItem.workspaces" /></li>
 
@@ -34,5 +37,7 @@
 </ul>
 
 <p><ssf:nlt tag="help.tabs.entries"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+</div>
 
 </div>

@@ -16,7 +16,12 @@
 <div class="ss_style" style="padding:4px;">
 <h1><ssf:nlt tag="welcome.header"/></h1>
 
-<ul style="list-style: outside;">
+
+<p><a href="javascript:;" 
+    onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');"><ssf:nlt tag="help.viewBooks.title"/>hello</a></p>
+
+
+<!--<ul style="list-style: outside;">
   <li style="list-style-type: disc;">
     <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
@@ -32,7 +37,7 @@
     <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.installationGuide"/></span></a>
-  </li>
+  </li>-->
 </c:if>
 </ul>
 

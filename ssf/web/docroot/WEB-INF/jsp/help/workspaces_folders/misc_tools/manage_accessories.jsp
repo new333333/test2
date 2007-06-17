@@ -11,13 +11,16 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
 
+<div class="ss_help_title">
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageDashboard"/></span>
+</div>
 
 <p><ssf:nlt tag="helpSpot.accessory.listIntro" /></p>
 
-<ul  style="list-style-type:disc;">
+<ul>
 
 <li><ssf:nlt tag="helpSpot.accessory.listItem.search" /></li>
 
@@ -32,5 +35,7 @@
 <p><ssf:nlt tag="helpSpot.accessory.adding"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="helpSpot.accessory.using" /></p>
+
+</div>
 
 </div>

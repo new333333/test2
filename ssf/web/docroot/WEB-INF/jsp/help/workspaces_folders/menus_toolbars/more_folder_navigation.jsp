@@ -11,9 +11,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style">
+<div class="ss_help_style">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreFolderNavigation"/></span>
+<div class="ss_help_title">
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreFolderNavigation"/>
+</span></div>
 
 <p><ssf:nlt tag="help.bottomLinks.intro" /></p>
 
@@ -21,4 +24,5 @@
 
 <p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
+</div>
 </div>

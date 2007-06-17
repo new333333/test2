@@ -12,8 +12,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
+<div class="ss_help_style">
 
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderBookmarksPortlet"/></span>
+<div class="ss_titlebold"><ssf:nlt tag="helpSpot.folderBookmarksPortlet"/></div>
 
 <p><ssf:nlt tag="help.folderBookmarksPortlet.info" /></p>
 
@@ -21,10 +22,14 @@
 
 <p><ssf:nlt tag="help.folderBookmarksPortlet.viewingUnread" /></p>
 
-<div style="margin-left:25px;">
+</div>
 
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
+<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+</p>
 
+<div class="ss_help_moreinfo">
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a><a id="skip_nav_titles"/></p>
 </div>
 
 </div>
