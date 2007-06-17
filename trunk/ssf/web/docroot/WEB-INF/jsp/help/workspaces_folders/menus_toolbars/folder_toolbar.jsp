@@ -18,11 +18,21 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderControlAndFiltering"/></span>
 </div>
 
-<p><ssf:nlt tag="help.bottomLinks.intro" /></p>
+<p><ssf:nlt tag="help.folderControlAndFiltering.listIntro" /></p>
 
-<p><ssf:nlt tag="help.bottomLinks.exceptions" /></p>
+<ul>
 
-<p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.newMenu" /></li>
+
+<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.sorting" /></li>
+
+<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.folderView" /></li>
+
+<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.folderAction" /></li>
+
+<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.filter" /></li>
+
+</ul>
 
 </div>
 

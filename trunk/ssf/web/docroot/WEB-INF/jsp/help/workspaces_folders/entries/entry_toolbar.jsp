@@ -15,20 +15,24 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderTable"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.entryToolbar"/></span>
 </div>
 
-<p><ssf:nlt tag="help.folderTable.listIntro" /></p>
+<p><ssf:nlt tag="help.entryToolbar.listIntro"/></p>
 
 <ul>
 
-<li><ssf:nlt tag="help.folderTable.listItem.columnWidth" /></li>
+<li><ssf:nlt tag="help.entryToolbar.listItem.comment"/></li>
 
-<li><ssf:nlt tag="help.folderTable.listItem.sortColumn" /></li>
+<li><ssf:nlt tag="help.entryToolbar.listItem.modify"/></li>
 
-<li><ssf:nlt tag="help.folderTable.listItem.seeWholeTitle"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.entryToolbar.listItem.lock"/></li>
 
-<li><ssf:nlt tag="help.folderTable.listItem.viewEntry" /></li>
+<li><ssf:nlt tag="help.entryToolbar.listItem.move"/></li>
+
+<li><ssf:nlt tag="help.entryToolbar.listItem.delete"/></li>
+
+<li><ssf:nlt tag="help.entryToolbar.listItem.reports"/></li>
 
 </ul>
 

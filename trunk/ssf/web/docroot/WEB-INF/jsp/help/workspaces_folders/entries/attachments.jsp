@@ -15,22 +15,16 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderTable"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.attachments"/></span>
 </div>
 
-<p><ssf:nlt tag="help.folderTable.listIntro" /></p>
+<p><ssf:nlt tag="help.attachments.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<ul>
+<p><ssf:nlt tag="help.attachments.dragDrop.folders"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<li><ssf:nlt tag="help.folderTable.listItem.columnWidth" /></li>
+<p><ssf:nlt tag="help.attachments.dragDrop.viewPics"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<li><ssf:nlt tag="help.folderTable.listItem.sortColumn" /></li>
-
-<li><ssf:nlt tag="help.folderTable.listItem.seeWholeTitle"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
-
-<li><ssf:nlt tag="help.folderTable.listItem.viewEntry" /></li>
-
-</ul>
+<p><ssf:nlt tag="help.attachments.dragDrop.workWithNonPics"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 

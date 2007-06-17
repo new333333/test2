@@ -18,11 +18,22 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreFolderNavigation"/>
 </span></div>
 
-<p><ssf:nlt tag="help.bottomLinks.intro" /></p>
+<p><ssf:nlt tag="help.moreFolderNavigation.listIntro" /></p>
 
-<p><ssf:nlt tag="help.bottomLinks.exceptions" /></p>
+<ul>
 
-<p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.entryNumbers"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.howManyEntries" /></li>
+
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPage"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPageNumber" /></li>
+
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.configureColumns" /></li>
+
+</ul>
 
 </div>
+
 </div>

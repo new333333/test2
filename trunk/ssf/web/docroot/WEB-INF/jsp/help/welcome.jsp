@@ -18,9 +18,14 @@
 
 
 <p><a href="javascript:;" 
-    onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');"><ssf:nlt tag="help.viewBooks.title"/>hello</a></p>
+    onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');"><ssf:nlt tag="help.viewBooks.title"/></a></p>
+
+<p><a href="<html:rootPath/>help/${ssUser.locale.language}/welcome.html" 
+  onClick="javascript:return ss_openUrlInWindow(this,'help')"><ssf:nlt tag="help.welcomePortlet.clickHere"/></a></p>
 
 
+
+<!-- Peter's original code... -->
 <!--<ul style="list-style: outside;">
   <li style="list-style-type: disc;">
     <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"
@@ -37,14 +42,10 @@
     <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.installationGuide"/></span></a>
-  </li>-->
+  </li>
 </c:if>
-</ul>
+</ul>-->
 
-<div align="right">
-<a href="<html:rootPath/>help/${ssUser.locale.language}/welcome.html" 
-  onClick="javascript:return ss_openUrlInWindow(this,'help')">[<ssf:nlt tag="general.more"/>]</a>
-</div>
 
 </div>
 </div>
