@@ -72,6 +72,6 @@ ss_createOnSubmitObj('ss_prepareAdditionalSearchOptions', '${ss_dashboard_config
 <%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 
 dojo.addOnLoad(function() {
-	ss_showAdditionalOptions('ss_searchForm_additionalFilters', null, '${ssNamespace}');
+	ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
 });
 </script>

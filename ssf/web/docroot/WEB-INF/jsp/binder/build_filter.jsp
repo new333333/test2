@@ -88,6 +88,6 @@
 	ss_createOnSubmitObj('ss_prepareAdditionalFilterCheck', 'filterData', ss_checkFilterForm);
 	
 	dojo.addOnLoad(function() {
-		ss_showAdditionalOptions('ss_searchForm_additionalFilters', null, '${ssNamespace}');
+		ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
 	});
 </script>
