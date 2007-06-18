@@ -354,13 +354,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         
-        Boolean filesFromApplet = new Boolean(false);
-        modifyEntry(folderId, entryId, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
-    }
-
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
-    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
     	meCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);

@@ -715,13 +715,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String uiTheme = PortletRequestUtils.getStringParameter(request, "theme", "");
 		if (uiTheme.length() > 50) {
-			user.setTheme(uiTheme.substring(0,50));
-		} else {
-			user.setTheme(uiTheme);
-			//
-			getProfileModule().setUserProperty(user.getId(), 
-					ObjectKeys.USER_PROPERTY_HELP_CPANEL_SHOW, Boolean.TRUE);
-		}
+			uiTheme = uiTheme.substring(0,50);
+		} 
+		
+		Map updates = new HashMap();
+		updates.put(ObjectKeys.FIELD_PRINCIPAL_THEME, uiTheme);
+		getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 	}
 	
 	private void ajaxShowHideHelpControlPanel(ActionRequest request,
