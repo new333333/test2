@@ -232,7 +232,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_GROUP_MEMBERS="members";
- 
+    public static final String FIELD_PRINCIPAL_THEME="theme";
     public static final String TASK_FIELD_ASSIGNMENT="assignment";
     public static final String TASK_FIELD_EVENT="start_end#EndDate";
     
