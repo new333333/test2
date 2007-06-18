@@ -320,7 +320,7 @@
 
     <!-- ============================== RSS Generator ============================ -->
 	
-    <bean id="rssModule" class="com.sitescape.team.module.rss.impl.RssModuleImpl">
+    <bean id="rssModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.rss.impl.RssModuleImpl">
     	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
     </bean>
 	
