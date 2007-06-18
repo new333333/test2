@@ -83,10 +83,6 @@
 											</c:if>
 											
 										</c:when>
-										<c:when test="${ss_showSearchResults}">
-											<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
-
-										</c:when>
 										<c:otherwise>
 											<% // Navigation links %>
 											<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
