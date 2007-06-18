@@ -19,6 +19,7 @@ import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.profile.ProfileModule;
@@ -89,4 +90,7 @@ public interface AllModulesInjected {
 	
 	void setRssModule(RssModule rssModule);
 	RssModule getRssModule();
+	
+	void setLicenseModule(LicenseModule licenseModule);
+	LicenseModule getLicenseModule();
 }

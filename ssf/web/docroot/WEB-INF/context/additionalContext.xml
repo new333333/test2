@@ -26,6 +26,9 @@
 		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 
+	<bean id="licenseModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.license.impl.BaseLicenseModule">
+	</bean>
+
 	<!-- ============================== Services ============================= -->
 
 	<bean id="archiveStore" class="com.sitescape.team.repository.archive.impl.NullArchiveStore">

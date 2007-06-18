@@ -12,6 +12,7 @@ import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.rss.RssModule;
@@ -36,6 +37,7 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 	private ICBrokerModule icBrokerModule;
 	private IcalModule icalModule;
 	private RssModule rssModule;
+	private LicenseModule licenseModule;
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -146,5 +148,11 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 	public void setRssModule(RssModule rssModule) {
 		this.rssModule = rssModule;
 	}
-
+	
+	public LicenseModule getLicenseModule() {
+		return licenseModule;
+	}
+	public void setLicenseModule(LicenseModule licenseModule) {
+		this.licenseModule = licenseModule;
+	}
 }
