@@ -36,6 +36,7 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -65,7 +66,7 @@ public class LocalLuceneSession implements LuceneSession {
 	Object SyncObj = new Object();
 	
 	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
-	
+	private Query warmingQuery = new TermQuery(new Term(BasicIndexUtils.ALL_TEXT_FIELD, "sitescape"));
 	// Note: I'm not convinced that this implementation makes good use of
 	// Lucene,
 	// primarily due to my lack of intimiate knowledge of Lucene.
@@ -94,6 +95,9 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public LocalLuceneSession(String indexPath) {
 		this.indexPath = indexPath;
+		// WARM UP the index by issuing a single query
+		search(warmingQuery);
+		
 	}
 
 	public void addDocument(Document doc) {
