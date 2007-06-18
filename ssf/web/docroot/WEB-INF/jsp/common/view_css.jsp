@@ -78,7 +78,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_1pix = ss_imagesPath + "pics/1pix.gif";
 	ss_forumColorsCssUrl = "<ssf:url
 	    webPath="viewCss">
-	    <ssf:param name="theme" value=""/>
+	    <ssf:param name="theme" value="${ssUser.theme}"/>
 	    </ssf:url>";
 	
 	//Help system url (used to request a help panel to be shown).

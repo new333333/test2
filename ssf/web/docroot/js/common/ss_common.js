@@ -5160,3 +5160,51 @@ function ss_postSubmitFormViaAjax(obj) {
 		eval("setTimeout('"+doneRoutine+"();', 100)");
 	}
 }
+
+function ss_changeUITheme(idListText, nameListText) {
+	var idList = idListText.split(",");
+	var nameList = nameListText.split(",");
+	var divObj = ss_createDivInBody('ss_uiThemeSelector', 'ss_themeMenu');
+	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	var divHtml = '<ul>';	
+	for (var t=0; t<idList.length; t++) {
+		var link = '<li><a href="javascript: ;" onclick="ss_changeUIThemeRequest(';
+		link += "'" + idList[t] + "'" + ');">';
+		link += nameList[t] + '</a></li>';
+		divHtml += link;
+	}
+	divHtml += '</ul>';
+	divObj.innerHTML = divHtml;
+	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+	lightBox.onclick = function(e) {ss_cancelUITheme();};
+	divObj.style.visibility = "visible";
+	divObj.style.display= "block";	
+	ss_centerPopupDiv(divObj);
+}
+
+function ss_changeUIThemeRequest(themeId) {
+    var setUrl = ss_AjaxBaseUrl;
+    setUrl +=  "&operation=set_ui_theme";
+    setUrl +=  "&theme=" + themeId;
+	var bindArgs = {
+    	url: setUrl,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+  		  try {
+		  	document.location.reload();	  	
+	      } catch (e) {alert(e);}
+		},
+		preventCache: true,				
+		mimetype: "text/plain",
+		method: "get"
+	};   
+	dojo.io.bind(bindArgs);
+	    
+}
+
+function ss_cancelUITheme() {
+	ss_hideLightbox();
+	ss_hideDiv('ss_uiThemeSelector');
+}
