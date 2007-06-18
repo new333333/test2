@@ -324,13 +324,11 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         
         Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
         
-        /* Temporarily commented out to workaround the problem reported in issue #748
         Statistics statistics = getFolderStatistics(folder);
         statistics.addStatistics(def, entry.getCustomAttributes());
         setFolderStatistics(folder, statistics);
         
         processor.modifyBinder(folder, new MapInputData(new HashMap()), new HashMap(), new HashSet());
-        */
         
         return entry.getId();
     }

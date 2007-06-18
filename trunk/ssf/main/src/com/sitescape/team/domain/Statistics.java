@@ -66,14 +66,14 @@ public class Statistics implements Serializable {
 		}
 		Map entryDefinitionIdStats = (Map)value.get(entryDefinitionId);
 		
-		if (!isStatisticable(attribute)) {
+		String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinition.getDefinition());
+		if (!isStatisticable(attributeType, attribute)) {
 			return;
 		}
 		
 		if (entryDefinitionIdStats.get(attribute.getName()) == null) {
 			
 			String attributeCaption = DefinitionHelper.findCaptionForAttribute(attribute.getName(), entryDefinition.getDefinition());
-			String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinition.getDefinition());
 			List attributesValueCaption = Collections.EMPTY_LIST;
 			if ("selectbox".equals(attributeType)) {
 				attributesValueCaption = DefinitionHelper.findSelectboxSelections(attribute.getName(), entryDefinition.getDefinition());
@@ -126,7 +126,8 @@ public class Statistics implements Serializable {
 		Map attributeValueStats = (Map)attributeStats.get(VALUES);
 		
 		if (isSimpleValueAttribute(attribute)) {
-			if (attribute.getValue() == null || "".equals(attribute.getValue())) {
+			if (attribute.getValue() == null || "".equals(attribute.getValue()) || 
+					FileAttachment.class.isAssignableFrom(attribute.getValue().getClass())) {
 				return;
 			}
 			if (attributeValueStats.get(attribute.getValue()) == null) {
@@ -143,7 +144,8 @@ public class Statistics implements Serializable {
 			Iterator valuesIt = attribute.getValueSet().iterator();
 			while (valuesIt.hasNext()) {
 				Object attrValue = valuesIt.next();
-				if (attrValue == null || "".equals(attrValue)) {
+				if (attrValue == null || "".equals(attrValue) || 
+						FileAttachment.class.isAssignableFrom(attrValue.getClass())) {
 					continue;
 				}
 				if (attributeValueStats.get(attrValue) == null) {
@@ -163,7 +165,8 @@ public class Statistics implements Serializable {
 			return;
 		}
 		
-		if (!isStatisticable(attribute)) {
+		String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinition.getDefinition());
+		if (!isStatisticable(attributeType, attribute)) {
 			return;
 		}
 
@@ -188,7 +191,8 @@ public class Statistics implements Serializable {
 		Map attributeValueStats = (Map)attributeStats.get(VALUES);
 		
 		if (isSimpleValueAttribute(attribute)) {
-			if (attribute.getValue() == null || "".equals(attribute.getValue())) {
+			if (attribute.getValue() == null || "".equals(attribute.getValue()) || 
+					FileAttachment.class.isAssignableFrom(attribute.getValue().getClass())) {
 				return;
 			}
 			if (attributeValueStats.get(attribute.getValue()) != null) {
@@ -203,7 +207,8 @@ public class Statistics implements Serializable {
 			Iterator valuesIt = attribute.getValueSet().iterator();
 			while (valuesIt.hasNext()) {
 				Object attrValue = valuesIt.next();
-				if (attrValue == null || "".equals(attrValue)) {
+				if (attrValue == null || "".equals(attrValue) || 
+						FileAttachment.class.isAssignableFrom(attrValue.getClass())) {
 					continue;
 				}
 				if (attributeValueStats.get(attrValue) != null) {
@@ -218,13 +223,16 @@ public class Statistics implements Serializable {
 		}
 	}
 	
-	private boolean isStatisticable(CustomAttribute attribute) {
+	private boolean isStatisticable(String attributeType, CustomAttribute attribute) {
 		return (attribute.getValueType() == CustomAttribute.BOOLEAN ||
 				attribute.getValueType() == CustomAttribute.LONG ||
 				attribute.getValueType() == CustomAttribute.STRING ||
 				attribute.getValueType() == CustomAttribute.COMMASEPARATEDSTRING ||
 				attribute.getValueType() == CustomAttribute.ORDEREDSET ||
-				attribute.getValueType() == CustomAttribute.SET);
+				attribute.getValueType() == CustomAttribute.SET) && 
+				!("file".equals(attributeType) || "graphic".equals(attributeType) ||
+						"profileEntryPicture".equals(attributeType) ||
+						"attachFiles".equals(attributeType));
 	}
 	
 	private boolean isSimpleValueAttribute(CustomAttribute attribute) {
