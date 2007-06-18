@@ -20,13 +20,13 @@ public class Statistics implements Serializable {
 
 	public static final String ATTRIBUTE_NAME = "statistics";
 	
-	private static final String TOTAL_KEY = "total";
+	public static final String TOTAL_KEY = "total";
 	
-	private static final String ATTRIBUTE_CAPTION = "attributeCaption";
+	public static final String ATTRIBUTE_CAPTION = "attributeCaption";
 	
-	private static final String CAPTIONS = "captions";
+	public static final String CAPTIONS = "captions";
 	
-	private static final String VALUES = "values";
+	public static final String VALUES = "values";
 
 	private Map value = new HashMap();
 
