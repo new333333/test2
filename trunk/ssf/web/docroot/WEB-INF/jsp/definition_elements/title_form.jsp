@@ -12,6 +12,8 @@
 %>
 <% //Title form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!property_generated}">
+
 <c:if test='${ssBinderMarker}'>
  <script type="text/javascript">
 var ss_checkTitleUrl = "<ssf:url 
@@ -57,8 +59,8 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		 <c:if test="${!empty ssDefinitionEntry.title}">
 		   value="<c:out value="${ssDefinitionEntry.title}"/>" />
 		 </c:if>
-		 <c:if test="${property_generated}">&nbsp;(<ssf:nlt tag="entry.titleGenerated"/>)</c:if>
 		</div>
   </c:otherwise>
 </c:choose>
 
+</c:if>
