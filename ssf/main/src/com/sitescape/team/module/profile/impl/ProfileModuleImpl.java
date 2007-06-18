@@ -332,10 +332,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, entryId);
-        //user can set their own display style
+        //user can set their own display style and theme
+        int noCheckCount = 0;
+        if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) ++noCheckCount;
+        if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME)) ++noCheckCount;
+   	        
         if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId) ||
-        		(inputData.getCount() > 1) ||
-        		!inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
+        		(inputData.getCount() > noCheckCount)) {
         	checkAccess(entry, ProfileOperation.modifyEntry);
         }
        	List atts = new ArrayList();
