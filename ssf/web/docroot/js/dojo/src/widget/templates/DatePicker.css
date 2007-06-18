@@ -26,7 +26,6 @@
 	padding:0.4em;
 	background: url("images/dpVertLine.gif") top right repeat-y;
 	cursor:pointer;
-	cursor:hand;
 }
 
 
@@ -135,7 +134,7 @@
 }
 
 .nextYear, .previousYear {
-	cursor:pointer;cursor:hand;
+	cursor:pointer;
 	padding:0;
 }
 
@@ -148,7 +147,7 @@
 }
 
 .incrementControl {
-	cursor:pointer;cursor:hand;
+	cursor:pointer;
 	width:1em;
 }
 
