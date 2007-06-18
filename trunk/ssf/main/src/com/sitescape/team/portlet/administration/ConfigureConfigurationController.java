@@ -475,47 +475,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		}
 		
 		//	The "Manage dashboard" menu
-		//See if the dashboard is being shown in the definition
-		if (DefinitionHelper.checkIfBinderShowingDashboard(config)) {
-			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
-			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
-			
-			//This folder is showing the dashboard
-			dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-
-			if (dashboardContentExists) {
-				qualifiers = new HashMap();
-				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
-	
-	
-				//Check the access rights of the user
-				if (manager) {
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-					url.setParameter(WebKeys.URL_BINDER_ID, configId);
-					url.setParameter("_scope", "binder");
-					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
-				}
-	
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-						response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
-						configId+"');return false;");
-				
-				if (DashboardHelper.checkIfShowingAllComponents(config)) {
-					qualifiers.put("icon", "dashboard_hide.gif");
-					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-				} else {
-					qualifiers.put("icon", "dashboard_show.gif");
-					dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
-				}
-			}
-		}
+		BinderHelper.buildDashboardToolbar(request, response, this, config, dashboardToolbar, model);
 		
 		model.put(WebKeys.FORUM_TOOLBAR,  toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR,  dashboardToolbar.getToolbar());

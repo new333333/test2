@@ -1159,19 +1159,20 @@ public class BinderHelper {
 				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
 				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
 	
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
-				url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-				url.setParameter("_scope", "local");
-				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+				if (!(binder instanceof TemplateBinder)) {
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+					url.setParameter("_scope", "local");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
 	
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
-				url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-				url.setParameter("_scope", "global");
-				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
-	
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+					url.setParameter("_scope", "global");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+				}
 				//Check the access rights of the user
 				if (bs.getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 					url = response.createActionURL();
