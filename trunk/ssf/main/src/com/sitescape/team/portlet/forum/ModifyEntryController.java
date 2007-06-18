@@ -34,6 +34,7 @@ import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.tree.FolderConfigHelper;
@@ -95,6 +96,9 @@ public class ModifyEntryController extends SAbstractController {
 				getFolderModule().modifyEntry(folderId, entryId, 
 						new MapInputData(formData), fileMap, deleteAtts, null);
 								
+				//See if the user wants to send mail
+				BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
+
 				setupReloadOpener(response, folderId, entryId);
 				//flag reload of folder listing
 				//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");

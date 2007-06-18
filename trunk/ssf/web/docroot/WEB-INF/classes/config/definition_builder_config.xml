@@ -37,7 +37,7 @@
 	
 	<definition name="profileEntryViewDefinition" definitionType="7" caption="__profile_entry_view" canBeDeleted="false">
 		<operations/>
-<!-- only one 
+<!-- only one profile definition is allowed (i.e., use the default definition)
 			<operation name="addDefinition" item="profileEntryViewType" caption="__add_a_new_profile_entry_view" />
 		</operations>
 -->	
@@ -252,6 +252,17 @@
 	    <webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEvent" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
 	</item>
+
+	<item name="sendMail" caption="__sendMail" multipleAllowed="false" category="entryData">
+		<properties>
+			<property name="name" caption="__name" type="text" value="_sendMail" readonly="true" />
+			<property name="caption" caption="__caption" type="text" value="__sendMail" />
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/send_mail_form_entry.jsp" />
+		</jsps>
+	</item>
+	
 <!-- folder entry view -->
 	<item name="entryView" caption="__entry_view_definition" canBeDeleted="false" multipleAllowed="false">
 		<properties>

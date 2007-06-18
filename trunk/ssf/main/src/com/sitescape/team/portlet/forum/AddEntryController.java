@@ -50,6 +50,7 @@ import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
@@ -107,6 +108,9 @@ public class AddEntryController extends SAbstractController {
 					}
 				}
 			}
+			//See if the user wants to send mail
+			BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
+			
 			//flag reload of folder listing
 			//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("cancelBtn")) {

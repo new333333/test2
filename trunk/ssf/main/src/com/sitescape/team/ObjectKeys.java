@@ -110,6 +110,7 @@ public interface ObjectKeys {
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
     
+    public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
 

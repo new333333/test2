@@ -73,9 +73,16 @@
        </c:if>
   	</c:forEach>
   </c:forEach>
-  
-  
-  
+   
+<c:if test="${ss_accessControlMap[ssBinder.id]['modifyBinder']}">
+  <br/>
+  <input type="checkbox" name="setFolderDefaultColumns"/>
+  <span class="ss_labelAfter"><label for="setFolderDefaultColumns">
+	 <ssf:nlt tag="misc.configureColumns.folderDefault"/>
+  </label></span>
+</c:if>
+
+  <br/>
   <br/>
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
   &nbsp;&nbsp;&nbsp;
