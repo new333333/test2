@@ -399,16 +399,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
     		throws WriteFilesException {
-    	
-    	Boolean filesFromApplet = new Boolean(false);
-    	modifyEntry(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
-    }
-    
-    public void modifyEntry(final Binder binder, final Entry entry, 
-    		final InputDataAccessor inputData, Map fileItems, 
-    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)  
-    		throws WriteFilesException {
-        final Map ctx = modifyEntry_setCtx(entry, null);
+       final Map ctx = modifyEntry_setCtx(entry, null);
 
     	Map entryDataAll;
 
