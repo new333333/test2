@@ -34,6 +34,10 @@
 </ssf:ifaccessible>
 >${binder.title}</a><br/>
 </c:forEach>
+
+<c:if test="${empty ss_myTeams}">
+<span class="ss_italic"><ssf:nlt tag="team.noTeams"/></span>
+</c:if>
 </div>
 
 <ssf:ifaccessible>
