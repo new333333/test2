@@ -4,7 +4,7 @@
 	     meaningful only at the top-level. In other words, it does not
 	     apply to individual zone instances. This element is required. -->
 	<defaultZone name="liferay.com"/>
-	<property name="adminUser">liferay.com.1</property>
+	<property name="adminUser">administrator</property>
 	<property name="startupConfig">config/startup.xml</property>
 	<mailConfiguration>	
 		<notify session="java:comp/env/mail/SiteScape"/>
