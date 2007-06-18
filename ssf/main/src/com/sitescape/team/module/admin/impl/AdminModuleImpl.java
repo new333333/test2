@@ -741,9 +741,15 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		while (!binders.isEmpty()) {
 			Binder b = binders.remove(0);
 			binders.addAll(b.getBinders());
-			EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
-			if (dashboard != null) {
-				DashboardHelper.resolveRelativeBinders(b, dashboard);
+			try {
+				EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
+				if (dashboard != null) {
+					DashboardHelper.resolveRelativeBinders(b, dashboard);
+				}
+			} catch (Exception ex) {
+				//at this point just log errors  index has already been updated
+				//if throw errors, rollback will take effect and must manualy remove from index
+				logger.error("Error adding dashboard " + ex.getLocalizedMessage());
 			}
 		}
 		return binder.getId();
