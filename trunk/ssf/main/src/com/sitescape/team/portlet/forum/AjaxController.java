@@ -136,6 +136,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) {
 				ajaxShowHideHelpControlPanel(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SET_UI_THEME)) {
+				ajaxSetUiTheme(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
@@ -384,6 +386,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxVoteSurveyStatus(request, response);	
 		} else if (op.equals(WebKeys.OPERATION_CHECK_STATUS)) {
 			return ajaxCheckStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_WIKILINK_FORM)) {
+			return ajaxWikiLinkForm(request, response);
 		}
 		
 		return ajaxReturn(request, response);
@@ -704,6 +708,20 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 
 		return adapterUrl.toString();
+	}
+	
+	private void ajaxSetUiTheme(ActionRequest request,
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String uiTheme = PortletRequestUtils.getStringParameter(request, "theme", "");
+		if (uiTheme.length() > 50) {
+			user.setTheme(uiTheme.substring(0,50));
+		} else {
+			user.setTheme(uiTheme);
+			//
+			getProfileModule().setUserProperty(user.getId(), 
+					ObjectKeys.USER_PROPERTY_HELP_CPANEL_SHOW, Boolean.TRUE);
+		}
 	}
 	
 	private void ajaxShowHideHelpControlPanel(ActionRequest request,
@@ -2528,4 +2546,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/xml");
 		return new ModelAndView("common/check_status", model);	
 	}
+
+
+	private ModelAndView ajaxWikiLinkForm(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
+		model.put("binderId", binderIdText);
+
+		return new ModelAndView("binder/wikilink_ajax_return", model);
+	}
+
+
 }

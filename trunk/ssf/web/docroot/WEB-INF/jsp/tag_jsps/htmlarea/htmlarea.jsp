@@ -28,12 +28,12 @@ tinyMCE.init(
   accessibility_focus: true,
 </ssf:ifaccessible>
   remove_script_host: false,
-  plugins: "table,ss_addimage,preview,contextmenu,paste", 
+  plugins: "table,ss_addimage,preview,contextmenu,paste,ss_wikilink", 
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 
   theme_advanced_styles: "Large=ss_largerprint;Fine=ss_fineprint",
-  theme_advanced_buttons2_add: "pastetext,pasteword,ss_addimage,spellchecker",
+  theme_advanced_buttons2_add: "pastetext,pasteword,ss_addimage,ss_wikilink,spellchecker",
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
 
@@ -44,6 +44,14 @@ var ss_imageUploadUrl = "<ssf:url
     portletName="ss_forum" 
     action="__ajax_request">
 	  <ssf:param name="operation" value="upload_image_file" />
+    </ssf:url>";
+var ss_wikiLinkUrl = "<ssf:url 
+    adapter="true" 
+    actionUrl="true"
+    portletName="ss_forum" 
+    action="__ajax_request">
+	  <ssf:param name="operation" value="wikilink_form" />
+	  <ssf:param name="binderId" value="${ssDefinitionEntry.parentFolder.id}" />
     </ssf:url>";
 </script>
 <div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};

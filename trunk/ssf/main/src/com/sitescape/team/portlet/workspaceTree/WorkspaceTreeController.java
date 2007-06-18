@@ -569,7 +569,14 @@ public class WorkspaceTreeController extends SAbstractController  {
 			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+		
 
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+				NLT.get("ui.availableThemeIds") + "', '" +
+				NLT.get("ui.availableThemeNames") + "'); return false;");
+		footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+		
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());

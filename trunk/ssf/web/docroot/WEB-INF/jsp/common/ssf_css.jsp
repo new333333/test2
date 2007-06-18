@@ -504,6 +504,7 @@ div.ss_send_friend {
   padding-left: 19px;
 }
 
+
 .ss_popupMenu {
   position:absolute;
   border:1px solid black;
@@ -4438,6 +4439,24 @@ div.ssPageNavi {
 }
 
 
+div.ss_themeMenu {
+  position:absolute;
+  border:1px solid #333333;
+  margin: 0px;
+  padding: 10px 30px;
+  background-color:${ss_style_background_color};
+  text-align: left;
+}
+
+div.ss_themeMenu a {
+  font-family: ${ss_style_font_family};
+  font-size: ${ss_style_font_size}; 
+  font-weight: bold;
+}
+
+div.ss_themeMenu ul {
+	list-style-type: square;
+}
 
 
 <% // Place all CSS code above this line %>

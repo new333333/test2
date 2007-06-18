@@ -1474,6 +1474,12 @@ public static final String[] monthNamesShort = {
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		}
 		
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+				NLT.get("ui.availableThemeIds") + "', '" +
+				NLT.get("ui.availableThemeNames") + "'); return false;");
+		footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+		
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
