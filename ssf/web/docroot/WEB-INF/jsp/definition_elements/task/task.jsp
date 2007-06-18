@@ -26,6 +26,32 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 
 <div style="margin:0px;">
 
+<!------------ STATISTICS EXAMPLE -------------->
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="com.sitescape.team.domain.Statistics"%>
+<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Folder" scope="request" />
+<%
+	Map statusStatistics = null;
+	Map priorityStatistics = null;
+	
+	Statistics statistics = (Statistics)ssBinder.getCustomAttribute("statistics").getValue();
+	if (statistics!=null) {
+		Map allDefinitionStatistics = statistics.getValue();
+		if (allDefinitionStatistics != null) {
+			Map taskStatistics = (Map)allDefinitionStatistics.get("402883c1129b1f8101129b28bbe50002");
+			if (taskStatistics != null) {
+				statusStatistics = (Map)taskStatistics.get("status");
+				priorityStatistics = (Map)taskStatistics.get("priority");
+			}
+		}
+	}
+
+%>
+<ssf:drawStatistic statistic="<%= statusStatistics%>"/>
+<ssf:drawStatistic statistic="<%= priorityStatistics%>" style="shortColoredBar" showLabel="true" showLegend="false"/>
+<!------------- STATISTICS END ------------------>
+
 
 <div class="ss_folder_border">
 
@@ -44,7 +70,5 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 <div class="ss_folder" id="ss_task_folder_div">
 
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
-
-
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
 </div>
