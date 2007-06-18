@@ -33,7 +33,7 @@
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 <script type="text/javascript">    	
-function ${ss_divId}_guestbookurl(binderId, entryId, type) {
+function ${ss_divId}_taskurl(binderId, entryId, type) {
 	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
 }
 </script>
@@ -41,7 +41,7 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 
 <c:if test="${ssConfigJspStyle == 'template'}">
 <script type="text/javascript">
-function ${ss_divId}_guestbookurl(binderId, entryId, type) {
+function ${ss_divId}_taskurl(binderId, entryId, type) {
 	return false;
 }
 </script>
@@ -53,10 +53,10 @@ function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 <tr>
   <td>
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${portletNamespace}', 'yes');"
+		onClick="return ${ss_divId}_taskurl('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}');"
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${portletNamespace}', 'yes');"
+		onClick="return ${ss_divId}_taskurl('${folder.id}', '${folder.id}', 'folder');"
 		><span class="ss_bold">${folder.title}</span></a>
   </td>
 </tr>

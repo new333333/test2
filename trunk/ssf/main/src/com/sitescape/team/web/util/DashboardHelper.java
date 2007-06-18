@@ -788,6 +788,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, folderIds);
 
 		boolean doSearch = true;		
+		Collection folders=null;
+		if (folderIds != null) {
+			folders = getBinderModule().getBinders(folderIds);		//may include have templates		
+			idData.put(WebKeys.FOLDER_LIST, folders);
+		}
 		if (binder instanceof TemplateBinder) {
 			//don't do the search - cannot support links between portlets
 			doSearch = false;
@@ -800,11 +805,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
 				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
 				
-				Collection folders=null;
-				if (folderIds != null) {
-					folders = getBinderModule().getBinders(folderIds);		//may have templates		
-					idData.put(WebKeys.FOLDER_LIST, folders);
-				}
 				idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
 
 				if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
@@ -1135,7 +1135,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} 
 			}
 		}
-		getInstance().getDashboardModule().setProperty(d.getId(), Dashboard.COMPONENTS, components);
+  		d.setProperty(Dashboard.COMPONENTS, components);
 	}
 	
 	public static void deleteComponent(ActionRequest request, Binder binder, String componentId, 

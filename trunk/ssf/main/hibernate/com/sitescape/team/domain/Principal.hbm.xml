@@ -9,7 +9,7 @@
     </id>
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <map inverse="true" access="field" cascade="all,delete-orphan" embed-xml="false" lazy="true" name="customAttributes">
+    <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="true" name="customAttributes">
       <key column="principal"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.team.domain.CustomAttribute"/>
@@ -32,6 +32,7 @@
     <property name="emailAddress" length="256"/>
     <property name="name" length="64"/>
     <property name="foreignName" length="128" />
+	<property name="theme" length="64"/>
 <properties name="nameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>
 <property name="name" update="false" insert="false"/>
