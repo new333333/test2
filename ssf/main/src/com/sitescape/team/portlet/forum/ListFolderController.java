@@ -155,6 +155,15 @@ public static final String[] monthNamesShort = {
 				}
 				getProfileModule().setUserProperty(user.getId(), binderId, 
 						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
+				
+				//See if this request was to set the folder default
+				if (formData.containsKey("setFolderDefaultColumns")) {
+					Binder binder = getBinderModule().getBinder(binderId);
+					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+						binder.setProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
+					}
+				}
+				
 				//Reset the column positions to the default
 			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
 			} else if (formData.containsKey("defaultBtn")) {

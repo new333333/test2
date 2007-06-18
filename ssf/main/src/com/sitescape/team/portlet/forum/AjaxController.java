@@ -61,6 +61,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.ic.ICBrokerModule;
@@ -797,15 +798,29 @@ public class AjaxController  extends SAbstractControllerRetry {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		} catch(PortletRequestBindingException ex) {}
 		
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		Map binderAccessMap = new HashMap();
+		if (accessControlMap.containsKey(binderId)) {
+			binderAccessMap = (Map) accessControlMap.get(binderId);
+		}
+		Binder binder = null;
+		if (binderId != null) binder = getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, binder);
+		if (binder != null && getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+			binderAccessMap.put(BinderOperation.modifyBinder.toString(), true);
+		}
+		accessControlMap.put(binderId, binderAccessMap);
+		
 		UserProperties userProperties;
-		Map columns;
+		Map columns = null;
 		if (binderId == null) {
 			userProperties = getProfileModule().getUserProperties(null);
 			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS);
 		} else {
 			userProperties = getProfileModule().getUserProperties(null, binderId);
 			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
-			Binder binder = getBinderModule().getBinder(binderId);
+			if (columns == null || columns.isEmpty()) 
+				columns = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS);
 			Map entryDefs = DefinitionHelper.getEntryDefsAsMap(binder);
 			Map entryElements = new HashMap();
 			Iterator itDefs = entryDefs.entrySet().iterator();

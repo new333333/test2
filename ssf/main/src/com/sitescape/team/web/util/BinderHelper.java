@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.portlet.ActionRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -37,7 +38,9 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
@@ -46,12 +49,14 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
@@ -1191,6 +1196,49 @@ public class BinderHelper {
 				}
 			}
 		}		
+	}
+	
+	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
+			Long folderId, Long entryId) {
+		String toList = PortletRequestUtils.getStringParameter(request, "_sendMail_toList", "");
+		String toTeam = PortletRequestUtils.getStringParameter(request, "_sendMail_toTeam", "");
+		String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "");
+		String body = PortletRequestUtils.getStringParameter(request, "_sendMail_body", "");
+		String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
+		if (!toList.equals("") || !toTeam.equals("")) {
+			FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
+			Set entrySet = new HashSet();
+			entrySet.add(entry);
+			String[] userIds = toList.trim().split(" ");
+			Set users = new HashSet();
+			users.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("_sendMail_toList")));
+			
+			Set teamMemberIds = entry.getParentFolder().getTeamMemberIds();
+			if (!teamMemberIds.isEmpty()) users.addAll(teamMemberIds);
+			
+			String messageBody = "<a href=\"";
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
+			messageBody += adapterUrl.toString();
+			messageBody += "\">" + entry.getTitle() + "</a><br/><br/>";
+			messageBody += body;
+			
+			boolean incAtt = false;
+			if (!includeAttachments.equals("")) incAtt = true;
+
+			if (!users.isEmpty()) {
+				try {
+					Map status = bs.getAdminModule().sendMail(users, null, subject, 
+							new Description(messageBody, Description.FORMAT_HTML), 
+							entrySet, incAtt);
+				} catch (Exception e) {
+					//TODO Log that mail wasn't sent
+				}
+			}
+}
 	}
 	
 }
