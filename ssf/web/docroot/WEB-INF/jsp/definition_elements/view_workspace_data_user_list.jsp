@@ -12,7 +12,7 @@
 %>
 <% //User_list view %>
 <tr>
-	<td><c:out value="${property_caption}" />:</td>
+	<td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
 	<td>
 		<ul class="ss_nobullet">
 		<c:forEach var="principal" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals((CustomAttribute) ssDefinitionEntry.getCustomAttribute(property_name)) %>" >

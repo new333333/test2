@@ -15,7 +15,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <tr>
-  <td><c:out value="${property_caption}" />:</td>
+  <td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
   <td class="ss_bold" valign="top">
 	<ul class="ss_nobullet">
 	<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
@@ -30,3 +30,4 @@
 	</ul>
   </td>
 </tr>
+
