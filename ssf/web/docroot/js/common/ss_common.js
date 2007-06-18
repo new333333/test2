@@ -4985,7 +4985,11 @@ function ss_createValidationErrorsDiv()
 		p.setAttribute("id", "ss_ved_text");
 		var i = document.createElement("input");
 		i.setAttribute("type", "button");
-		i.setAttribute("onclick", "ss_cancelPopupDiv('ss_validation_errors_div')");
+		// i.setAttribute("onclick", "ss_cancelPopupDiv('ss_validation_errors_div')");
+		dojo.event.connect(i, "onclick", function(evt) {
+			ss_cancelPopupDiv('ss_validation_errors_div');
+			return false;
+	    });
 		i.setAttribute("name", ss_findButtonClose);
 		i.setAttribute("value", ss_findButtonClose);
 		var vDiv = document.createElement("div");
