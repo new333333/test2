@@ -236,36 +236,40 @@ if (!window.ssSurvey) {
 		}
 	}
 	
-	var ssCurrentFormSurveys = new Array();
-	
-	ssSurvey.addToOnSubmit = function(surveyObj) {
-		ssCurrentFormSurveys.push(surveyObj);
-	}
-	
-	ssSurvey.prepareSubmit = function(formObj) {
-		for (var i in ssCurrentFormSurveys) {
-			ssCurrentFormSurveys[i].prepareSubmit(formObj);
-		}
-	}
-	
-	ssSurvey.vote = function(formId, binderId, entryId) {
-		var url = ss_AjaxBaseUrl + "&operation=vote_survey";
-		url += "\&binderId=" + binderId;
-		url += "\&entryId=" + entryId;
-		
-		dojo.io.bind({
-	    	url: url,
-			error: function(type, data, evt) {
-				alert(ss_not_logged_in);
-			},
-			load: function(type, data, evt) {
-				alert(ssSurvey.votedLabel);
-				try { window.close(); } catch (e){}
-				try { parent.ss_hideEntryDiv(); } catch (e){}
-			},
-			mimetype: "text/json",
-			formNode: document.getElementById(formId)
-		});
-	}
 
+
+}
+
+if (!window["ssCurrentFormSurveys"]) {
+	var ssCurrentFormSurveys = new Array();	
+}
+
+ssSurvey.addToOnSubmit = function(surveyObj) {
+	ssCurrentFormSurveys.push(surveyObj);
+}
+
+ssSurvey.prepareSubmit = function(formObj) {
+	for (var i in ssCurrentFormSurveys) {
+		ssCurrentFormSurveys[i].prepareSubmit(formObj);
+	}
+}
+
+ssSurvey.vote = function(formId, binderId, entryId) {
+	var url = ss_AjaxBaseUrl + "&operation=vote_survey";
+	url += "\&binderId=" + binderId;
+	url += "\&entryId=" + entryId;
+	
+	dojo.io.bind({
+    	url: url,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+			alert(ssSurvey.votedLabel);
+			try { window.close(); } catch (e){}
+			try { parent.ss_hideEntryDiv(); } catch (e){}
+		},
+		mimetype: "text/json",
+		formNode: document.getElementById(formId)
+	});
 }
