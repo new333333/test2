@@ -63,6 +63,7 @@
 		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
 		<property name="icalModule"><ref local="icalModule"/></property>
 		<property name="rssModule"><ref local="rssModule"/></property>
+		<property name="licenseModule"><ref local="licenseModule"/></property>
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -627,6 +628,10 @@
 				<property name="binderModule"><ref bean="binderModule"/></property>
 			</bean>
 		</property>
+	</bean>			
+
+	<bean id="licenseModule"  parent="baseTransactionProxy">
+		<property name="target"><ref bean="licenseModuleTarget"/></property>
 	</bean>			
 
 	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
