@@ -20,23 +20,22 @@
 
 <p><ssf:nlt tag="help.displayEntryControl.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.displayEntryControl.overRideDefault" /></p>
+<div class="picture">
+<img border="0" <ssf:alt tag="helpTitleAlt.displayEntryIcon"/> src="<html:imagesPath/>pics/downarrow.gif" /> 
+</div>
 
-<p><ssf:nlt tag="help.displayEntryControl.listIntro" /></p>
+<p><ssf:nlt tag="help.displayEntryControl.displayOptions" /></p>
 
-<ul>
+<p><ssf:nlt tag="help.displayEntryControl.contactPeopleIntro" /></p>
 
-<li><ssf:nlt tag="help.displayEntryControl.listItem.default" /></li>
+<div class="picture">
+<img border="0" <ssf:alt tag="helpTitleAlt.presence.online"/> src="<html:imagesPath/>pics/sym_s_green_dude.gif" /> 
+<img border="0" <ssf:alt tag="helpTitleAlt.presence.away"/> src="<html:imagesPath/>pics/sym_s_yellow_dude.gif" /> 
+<img border="0" <ssf:alt tag="helpTitleAlt.presence.offline"/> src="<html:imagesPath/>pics/sym_s_gray_dude.gif" /> 
+<img border="0" <ssf:alt tag="helpTitleAlt.presence.unavailable"/> src="<html:imagesPath/>pics/sym_s_white_dude.gif" /> 
+</div>
 
-<li><ssf:nlt tag="help.displayEntryControl.listItem.currentTab" /></li>
-
-<li><ssf:nlt tag="help.displayEntryControl.listItem.anotherTab" /></li>
-
-<li><ssf:nlt tag="help.displayEntryControl.listItem.newWindow" /></li>
-
-</ul>
-
-<p><ssf:nlt tag="help.displayEntryControl.contactPeople" /></p>
+<p><ssf:nlt tag="help.displayEntryControl.presenceIconDescription" /> <ssf:nlt tag="help.displayEntryControl.contactPeople" /></p>
 
 </div>
 

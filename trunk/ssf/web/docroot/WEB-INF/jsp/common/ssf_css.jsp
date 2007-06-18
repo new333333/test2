@@ -818,7 +818,7 @@ DIV.ss_help_more_pages_section DIV.no_prev_page {
 
 
 /*  Word styling */
-DIV.ss_help_style .clickable_item, .document_title, .light_emphasis, .new_term {
+DIV.ss_help_style .clickable_item, .document_title, .light_emphasis, .new_term, .keyboard_keys {
     font-style: italic;
 }
 
