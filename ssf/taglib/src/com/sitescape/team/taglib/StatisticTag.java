@@ -77,7 +77,7 @@ public class StatisticTag extends BodyTagSupport {
 				Iterator it = statisticValues.keySet().iterator();
 				while (it.hasNext()) {
 					Object key = it.next();
-					if (key != null && statisticValues.get(key) != null && (Integer)statisticValues.get(key)>0) {
+					if (key != null && statisticValues.get(key) != null) {
 						Map attrValues = new HashMap();
 						attrValues.put("percent", ((Integer)statisticValues.get(key)*100)/internalTotal);
 						attrValues.put("total", total);

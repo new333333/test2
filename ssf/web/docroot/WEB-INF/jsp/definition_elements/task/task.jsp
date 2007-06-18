@@ -35,21 +35,30 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 	Map statusStatistics = null;
 	Map priorityStatistics = null;
 	
-	Statistics statistics = (Statistics)ssBinder.getCustomAttribute("statistics").getValue();
-	if (statistics!=null) {
-		Map allDefinitionStatistics = statistics.getValue();
-		if (allDefinitionStatistics != null) {
-			Map taskStatistics = (Map)allDefinitionStatistics.get("402883c1129b1f8101129b28bbe50002");
-			if (taskStatistics != null) {
-				statusStatistics = (Map)taskStatistics.get("status");
-				priorityStatistics = (Map)taskStatistics.get("priority");
+	if (ssBinder.getCustomAttribute("statistics") != null) {
+		Statistics statistics = (Statistics)ssBinder.getCustomAttribute("statistics").getValue();
+		if (statistics!=null) {
+			Map allDefinitionStatistics = statistics.getValue();
+			if (allDefinitionStatistics != null) {
+				Map taskStatistics = (Map)allDefinitionStatistics.get("402883c1129b1f8101129b28bbe50002");
+				if (taskStatistics != null) {
+					statusStatistics = (Map)taskStatistics.get("status");
+					priorityStatistics = (Map)taskStatistics.get("priority");
+				}
 			}
 		}
 	}
 
 %>
-<ssf:drawStatistic statistic="<%= statusStatistics%>"/>
-<ssf:drawStatistic statistic="<%= priorityStatistics%>" style="shortColoredBar" showLabel="true" showLegend="false"/>
+<c:set var="statusStatistics" value="<%= statusStatistics %>" />
+<c:set var="priorityStatistics" value="<%= priorityStatistics %>" />
+
+<c:if test="${!empty statusStatistics}">
+	<ssf:drawStatistic statistic="${statusStatistics}"/>
+</c:if>
+<c:if test="${!empty priorityStatistics}">
+	<ssf:drawStatistic statistic="${priorityStatistics}" style="shortColoredBar" showLabel="true" showLegend="false"/>
+</c:if>
 <!------------- STATISTICS END ------------------>
 
 
