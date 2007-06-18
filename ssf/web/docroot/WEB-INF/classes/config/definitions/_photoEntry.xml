@@ -16,8 +16,8 @@
           <property name="inline" caption="__inline" type="boolean" value="false">
             <help>ihelp.designers.mark_as_inline</help>
           </property>
-          <property name="generated" value="true"/>
-          <property name="itemSource" value="photo"/>
+          <property name="generated" value=""/>
+          <property name="itemSource" value=""/>
         </properties>
       </item>
       <item name="description" caption="__description" type="data" id="4">
