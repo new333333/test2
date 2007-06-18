@@ -519,6 +519,18 @@
 	</tag>
 	
 	<tag>
+		<name>ifAuthorizedByLicense</name>
+		<tag-class>com.sitescape.team.taglib.IfAuthorizedByLicense</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>featureName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>ifSupportsEditInPlace</name>
 		<tag-class>com.sitescape.team.taglib.IfSupportsEditInPlaceTag</tag-class>
 		<body-content>JSP</body-content>
