@@ -4168,23 +4168,59 @@ div.ss_chartContainer div {
 }
 /* Charts styles - end*/
 
+/* Statistic styles - start */
+div.ss_statisticContainer {
+	float:left;
+	margin: 3px 0px 3px 6px;
+	padding:0px;
+	font-size: ${ss_style_font_finestprint};	
+}
+div.shortColoredBar { width: 100px;}
+div.coloredBar { width: 300px;}
+
+div.statistic0 {background-color:#EF5612;}
+div.statistic1 {background-color:#EC9112;}
+div.statistic2 {background-color:#B5CB38;}
+div.statistic3 {background-color:#995DB2;}
+div.statistic4 {background-color:#6B0B20;}
+div.statistic5 {background-color:#72AF58;}
+div.statistic6 {background-color:#617F9F;}
+div.statistic7 {background-color:#547AA5;}
+
+div.ss_statisticBar {float:left;color:#ffffff;}
+h5.ss_statisticLabel {
+	margin:6px 0px 0px 6px;
+}
+ul.ss_statisticLegend {
+	margin:0px 0px 0px 6px;
+	padding:0px;
+}
+/* Statistic styles - end */
+
 /* Tasks */
 table.ss_tasks_list {
 	width:100%;
 	margin-top:6px;
 	padding: 0px;
 	border-collapse: collapse;
+	border:1px solid #afc8e3;
 }
 table.ss_tasks_list th {
 	background-color: #dbe6f2;
 	border:1px solid #afc8e3;
 	text-align: left;
-	padding: 3px 3px 3px 3px;
+	padding: 2px 0px 2px 2px;
+	white-space: nowrap;
+	overflow: visible;
 }
 table.ss_tasks_list td {
-	padding: 6px  3px 6px 3px;
-	border-bottom: 1px solid #afc8e3;
+	padding: 3px 2px 3px 2px;
+	border: 1px solid #afc8e3;
 }
+table.ss_tasks_list td.iconsContainer {
+	white-space: nowrap;
+}
+
 table.ss_tasks_list ul, table.ss_tasks_list li {
 	margin:0px;
 	padding:0px;
