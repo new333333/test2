@@ -29,7 +29,7 @@
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.team.domain.Binder"/>
     </bag>
-    <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
+    <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="true" name="customAttributes">
       <key column="binder"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.team.domain.CustomAttribute"/>

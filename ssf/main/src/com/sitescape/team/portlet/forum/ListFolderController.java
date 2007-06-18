@@ -670,7 +670,7 @@ public static final String[] monthNamesShort = {
 		BinderHelper.buildNavigationLinkBeans(this, folder, model);
 		
 		String forumId = folderId.toString();
-		buildFolderToolbars(req, response, folder, forumId, model);
+		buildFolderToolbars(req, response, folder, forumId, model, viewType);
 		return BinderHelper.getViewListingJsp(this, viewType);
 	}
 	
@@ -734,7 +734,7 @@ public static final String[] monthNamesShort = {
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, folder, model);
 		
-		buildFolderToolbars(req, response, folder, folder.getId().toString(), model);
+		buildFolderToolbars(req, response, folder, folder.getId().toString(), model, viewType);
 		return "entry/view_listing_team_members";
 	}
 	
@@ -750,26 +750,13 @@ public static final String[] monthNamesShort = {
 		Toolbar entryToolbar = new Toolbar();
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
-		List folderViewDefs = folder.getViewDefinitions();
-		for (int i = 0; i < folderViewDefs.size(); i++) {
-			String defViewType = "";
-			Definition def = (Definition)folderViewDefs.get(i);
-			Document defDoc = null;
-			if (def != null) defDoc = def.getDefinition();
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) {
-						defViewType = viewElement.attributeValue("value", "");
-						if (defViewType.equals("")) defViewType = viewElement.attributeValue("default", "");
-					}
-				}
-			}
+		//Get the definitions available for use in this folder
+		List<Definition> folderViewDefs = folder.getViewDefinitions();
+		Definition currentDef = (Definition)model.get(WebKeys.DEFAULT_FOLDER_DEFINITION);  //current definition in use
+		for (Definition def: folderViewDefs) {
 			//Build a url to switch to this view
 			Map qualifiers = new HashMap();
-			if (viewType.equals(defViewType)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			if (def.equals(currentDef)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			//Build a url to switch to this view
 			PortletURL url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -996,7 +983,7 @@ public static final String[] monthNamesShort = {
 	}
 	
 	protected void buildFolderToolbars(RenderRequest request, 
-			RenderResponse response, Folder folder, String forumId, Map model) {
+			RenderResponse response, Folder folder, String forumId, Map model, String viewType) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
@@ -1243,13 +1230,6 @@ public static final String[] monthNamesShort = {
 			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
 		}
 		
-		//Get the view type that the user is using
-		String viewType = "";
-		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (configElement != null) {
-			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
-			if (viewType == null) viewType = "";
-		}
 		
 		//See if a "sort by" menu is needed
 		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT)) {
@@ -1328,26 +1308,12 @@ public static final String[] monthNamesShort = {
 		//	The "Display styles" menu
 		entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
-		List folderViewDefs = folder.getViewDefinitions();
-		for (int i = 0; i < folderViewDefs.size(); i++) {
-			String defViewType = "";
-			Definition def = (Definition)folderViewDefs.get(i);
-			Document defDoc = null;
-			if (def != null) defDoc = def.getDefinition();
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) {
-						defViewType = viewElement.attributeValue("value", "");
-						if (defViewType.equals("")) defViewType = viewElement.attributeValue("default", "");
-					}
-				}
-			}
+		List<Definition> folderViewDefs = folder.getViewDefinitions();
+		Definition currentDef = (Definition)model.get(WebKeys.DEFAULT_FOLDER_DEFINITION);  //current definition in use
+		for (Definition def: folderViewDefs) {
 			//Build a url to switch to this view
 			qualifiers = new HashMap();
-			if (viewType.equals(defViewType)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			if (def.equals(currentDef)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);

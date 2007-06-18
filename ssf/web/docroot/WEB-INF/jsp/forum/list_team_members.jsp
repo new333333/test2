@@ -90,9 +90,14 @@
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
 						<td>
+				<c:if test="${ssConfigJspStyle != 'template'}">
 							<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 								value="${member.parentBinder.id}"/><ssf:param name="entryId" 
 								value="${member.id}"/></ssf:url>">${member.title}</a>
+				</c:if>
+				<c:if test="${ssConfigJspStyle == 'template'}">
+				${member.title}
+				</c:if>
 						</td>
 						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>
 						<td>

@@ -42,12 +42,14 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -66,32 +68,29 @@ import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
-
+import com.sitescape.util.Validator;
 public class BinderHelper {
 	static public String getViewType(AllModulesInjected bs, Long binderId) {
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		
-		String viewType = "";
-		
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId); 
 		String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		Definition displayDef = binder.getDefaultViewDef();
-		if (displayDefId != null && !displayDefId.equals("")) {
-			displayDef = DefinitionHelper.getDefinition(displayDefId);
-		}
-		Document defDoc = null;
-		if (displayDef != null) defDoc = displayDef.getDefinition();
-		
-		if (defDoc != null) {
-			Element rootElement = defDoc.getRootElement();
-			Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
-			if (elementView != null) {
-				Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-				if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+		if (Validator.isNotNull(displayDefId)) {
+			List<Definition> folderViewDefs = binder.getViewDefinitions();
+			for (Definition def: folderViewDefs) {
+				//Is this an allowed definition?
+				if (displayDefId.equals(def.getId())) {
+					//Ok, this definition is allowed
+					displayDef = def;
+					break;
+				}
 			}
 		}
+		String viewType = DefinitionUtils.getViewType(displayDef.getDefinition());
+		if (viewType == null) return "";
 		return viewType;
 	}
 

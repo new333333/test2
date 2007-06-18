@@ -47,6 +47,7 @@ public abstract class Principal extends Entry  {
     protected String internalId;
     protected String type;
     protected String emailAddress="";
+    protected String theme="";
     
      public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
@@ -116,7 +117,15 @@ public abstract class Principal extends Entry  {
     public void setZoneId(Long zoneId) {
     	this.zoneId = zoneId;
     }
-
+    /**
+     * @hibernate.property
+     */
+    public String getTheme() {
+    	return theme;
+    }
+    public void setTheme(String theme) {
+    	this.theme = theme;
+    }
  
     /**
      * @hibernate.property length="256"

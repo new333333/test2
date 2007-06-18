@@ -14,7 +14,7 @@
 <% // View entry replies %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:set var="surveyVoteDefinitionId" value="<%= ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF  %>" />
+<c:set var="surveyVoteDefinitionId" value="<%= ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_CONFIG  %>" />
 
 <% // Process the replies only if this is the top level entry being displayed %>
 <c:if test="${ssEntry == ssDefinitionEntry}" >

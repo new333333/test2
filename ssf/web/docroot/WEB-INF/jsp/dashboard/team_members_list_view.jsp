@@ -28,21 +28,9 @@
 
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
-<script type="text/javascript">    	
-function ${ssNamespace}_user_url(binderId, entryId, type) {
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
-}
+
 </script>
 </c:if>
-
-<c:if test="${ssConfigJspStyle == 'template'}">
-<script type="text/javascript">
-function ${ssNamespace}_user_url(binderId, entryId, type) {
-	return false;
-}
-</script>
-</c:if>
-
 
 
 
