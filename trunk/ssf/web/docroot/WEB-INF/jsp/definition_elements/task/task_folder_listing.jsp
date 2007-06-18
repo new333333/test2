@@ -28,7 +28,7 @@
 	</tbody>
 </table>
 <script type="text/javascript">
-	var myTasks_<portlet:namespace/> = new ss_tasks ('ss_tasks_list_<portlet:namespace/>', ${ssFolder.id}, '<portlet:namespace/>');
+	var myTasks_<portlet:namespace/> = new ss_tasks ('ss_tasks_list_<portlet:namespace/>', '${ssFolder.id}', '<portlet:namespace/>');
 </script>
 
 <ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
