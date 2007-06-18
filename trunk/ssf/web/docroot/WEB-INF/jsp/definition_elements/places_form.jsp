@@ -43,8 +43,9 @@
 				  rootOpen="false" 
 				  multiSelect="<%= folderIds %>" 
 				  multiSelectPrefix="${propertyName}"
-				  fixedMultiSelectParamsMode="true"
-				  showIdRoutine="t_advSearchForm_wsTree_showId"/>
+				  fixedMultiSelectParamsMode="true"/>
+				  
+			
 		</c:when>
 		<c:otherwise>
 			<ssf:nlt tag="milestone.entryDesigner.tree.placeholder"/>

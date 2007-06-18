@@ -49,6 +49,8 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.FolderConfigHelper;
+import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -311,7 +313,7 @@ public class AddEntryController extends SAbstractController {
 				}
 			
 				Workspace ws = getWorkspaceModule().getWorkspace();
-				model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1));
+				model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 			
 				parseInitialCalendarEventData(model, request);
 			} else {

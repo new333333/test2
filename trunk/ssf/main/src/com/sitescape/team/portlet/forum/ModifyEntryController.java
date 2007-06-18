@@ -175,7 +175,7 @@ public class ModifyEntryController extends SAbstractController {
 			entry  = getFolderModule().getEntry(folderId, entryId);
 				
 			Workspace ws = getWorkspaceModule().getWorkspace();
-			model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1));
+			model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
