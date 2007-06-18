@@ -121,7 +121,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
-	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "administrator");
 	        			//	get super user from config file - must exist or throws and error
 	        			User superU = getProfileDao().findUserByName(superName, zone.getName());
 	        			if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
@@ -222,6 +222,13 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 			
 	        		//indexing needs the user
 	        		RequestContextHolder.getRequestContext().setUser(user);
+	        		Function visitorsRole = addVisitorsRole(top);
+	        		Function participantsRole = addParticipantsRole(top);
+	        		Function teamMemberRole = addTeamMemberRole(top);
+	        		Function binderRole = 	addBinderRole(top);
+	        		Function adminRole = addAdminRole(top);
+	        		Function teamWsRole = addTeamWorkspaceRole(top);
+
 	        		importDefaultDefs(name);
 
 	        		//need request context
@@ -256,12 +263,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		Workspace teamRoot = addTeamRoot(top, stamp);
 	        		teamRoot.setFunctionMembershipInherited(false);
 	        		
-	        		Function visitorsRole = addVisitorsRole(top);
-	        		Function participantsRole = addParticipantsRole(top);
-	        		Function teamMemberRole = addTeamMemberRole(top);
-	        		Function binderRole = 	addBinderRole(top);
-	        		Function adminRole = addAdminRole(top);
-	        		Function teamWsRole = addTeamWorkspaceRole(top);
 	        		
 	        		//setup allUsers access
 	        		List members = new ArrayList();
