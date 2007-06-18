@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.OrderedMap;
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.dom4j.Document;
 
@@ -81,7 +84,7 @@ public class Statistics implements Serializable {
 				attributesValueCaption = DefinitionHelper.findRadioSelections(attribute.getName(), entryDefinition.getDefinition());
 			}
 			
-			Map attributeAllowedValues = new HashMap();
+			OrderedMap attributeAllowedValues = new LinkedMap();
 			Map attributeCaptions = new HashMap();
 			Iterator attributeValuesIt = attributesValueCaption.iterator();
 			while (attributeValuesIt.hasNext()) {
@@ -121,7 +124,7 @@ public class Statistics implements Serializable {
 		}
 		
 		if (attributeStats.get(VALUES) == null) {
-			attributeStats.put(VALUES, new HashMap());
+			attributeStats.put(VALUES, new LinkedMap());
 		}
 		Map attributeValueStats = (Map)attributeStats.get(VALUES);
 		
@@ -186,7 +189,7 @@ public class Statistics implements Serializable {
 		}
 		
 		if (attributeStats.get(VALUES) == null) {
-			attributeStats.put(VALUES, new HashMap());
+			attributeStats.put(VALUES, new LinkedMap());
 		}
 		Map attributeValueStats = (Map)attributeStats.get(VALUES);
 		
