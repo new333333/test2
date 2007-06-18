@@ -42,8 +42,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dbunit-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/easymock2-2.jar"/>
-	<classpathentry kind="lib" path="lib/easymock.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/easymock.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
