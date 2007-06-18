@@ -102,9 +102,13 @@ if (!window.ss_tasks) {
 			};
 			dojo.io.bind(bindArgs);
 		}
-	
-		
+
+
 		function loadExtendedInfo () {
+			if (!binderId || binderId == "") {
+				return;
+			}
+
 			var url = ss_AjaxBaseUrl + "&operation=get_tasks_extended_info";
 			url += "\&binderId=" + binderId;
 			url += "\&randomNumber=" + ss_random++;
@@ -130,6 +134,10 @@ if (!window.ss_tasks) {
 		}
 		
 		function loadTasks() {
+			if (!binderId || binderId == "") {
+				return;
+			}
+			
 			var url = ss_AjaxBaseUrl + "&operation=find_tasks";
 			url += "\&binderId=" + binderId;
 			url += "\&ssTaskFilterType=" + filterType;
