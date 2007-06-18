@@ -178,8 +178,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			throws NoBinderByTheIdException, AccessControlException {
 		Binder binder = loadBinder(binderId);
 		// Check if the user has "read" access to the binder.
-		 getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-        return binder;        
+		if (!(binder instanceof TemplateBinder))
+			getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+		
+		return binder;        
 	}
 	public SortedSet<Binder> getBinders(Collection<Long> binderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();

@@ -3,7 +3,7 @@ package com.sitescape.team.taglib;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.sitescape.team.license.LicenseChecker;
+import com.sitescape.team.module.license.LicenseChecker;
 
 public class IfAuthorizedByLicense extends TagSupport {
 

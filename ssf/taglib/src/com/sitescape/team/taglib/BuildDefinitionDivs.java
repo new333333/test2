@@ -425,6 +425,7 @@ public class BuildDefinitionDivs extends TagSupport {
 
 			//Add the list of options
 			Element e_options = rootConfigElement.element("options");
+			if (e_options == null) return;
 			Element e_option;
 			Map optionsSeen = new HashMap();
 			//keep sorted list of options
@@ -642,7 +643,7 @@ public class BuildDefinitionDivs extends TagSupport {
 
 			//Add the list of properties
 			Element propertiesConfig = rootConfigElement.element("properties");
-			if (propertiesConfig != null) {
+			if (propertiesConfig == null) return;
 				String  itemType = rootConfigElement.attributeValue("type");
 				//	see if we are adding a "dataView" element
 				Element properties=null;
@@ -1182,7 +1183,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					sb.append("value=\""+Html.formatTo(propertyName)+"\"/>\n");
 					sb.append("<br/><br/>\n");
 				}
-			}
+			
 			sb.append("<br/>");
 			sb.append("<input type=\"hidden\" name=\"definitionType_"+rootElementId+"\" value=\""+ rootElement.attributeValue("definitionType", "") +"\"/>\n");
 
