@@ -12,6 +12,10 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
+    <property name="functionName">Team member</property>
+    <property name="members">-2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
     <property name="functionName">Workspace and folder administrator</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>

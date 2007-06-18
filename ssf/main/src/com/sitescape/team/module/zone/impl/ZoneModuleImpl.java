@@ -258,15 +258,16 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		
 	        		Function visitorsRole = addVisitorsRole(top);
 	        		Function participantsRole = addParticipantsRole(top);
+	        		Function teamMemberRole = addTeamMemberRole(top);
 	        		Function binderRole = 	addBinderRole(top);
 	        		Function adminRole = addAdminRole(top);
 	        		Function teamWsRole = addTeamWorkspaceRole(top);
+	        		
 	        		//setup allUsers access
 	        		List members = new ArrayList();
 	        		members.add(group.getId());
 	        		
 	        		addMembership(top, visitorsRole, top, members);
-	        		addMembership(top, visitorsRole, teamRoot, members);
 	        		addMembership(top, participantsRole, teamRoot, members);
 	        		addMembership(top, teamWsRole, teamRoot, members);
 	        		//add members to participants
@@ -471,6 +472,26 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		return function;
 	}
 
+	private Function addTeamMemberRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(NLT.get("administration.initial.function.teamMember", "Team member"));
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
+		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);
+		function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
+
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
 	private Function addBinderRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
