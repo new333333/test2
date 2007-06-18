@@ -20,6 +20,10 @@
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
@@ -28,7 +32,10 @@
   onClick="ss_editablePopUp('${editUrl}', '<portlet:namespace/>ss_editableDiv${ss_editableDivIdNumber}');return false;"
   <ssf:title tag="title.edit.description" />
   ><span class="ss_fineprint"><ssHelpSpot 
-    helpId="tools/more_entry_tools" offsetX="0" 
+    helpId="workspaces_folders/entries/more_entry_tools" offsetX="-15"
+    <c:if test="<%= !isIE %>">
+     offsetY="-15"
+    </c:if>
 	title="<ssf:nlt tag="helpSpot.moreEntryTools"/>"></ssHelpSpot>[<ssf:nlt tag="Edit"/>]</span></a>
 </div>
 <c:set var="ss_editableDivIdNumber" value="${ss_editableDivIdNumber + 1}" scope="request"/>

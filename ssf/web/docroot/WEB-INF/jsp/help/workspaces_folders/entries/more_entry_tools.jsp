@@ -15,16 +15,13 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.buddyListPortlet"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreEntryTools"/></span>
 </div>
 
-<p><ssf:nlt tag="help.buddyListPortlet.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.moreEntryTools.intro" /></p>
 
-<p><ssf:nlt tag="help.buddyListPortlet.contacting" /> <ssf:nlt tag="help.displayEntryControl.presenceIconDescription" /></p>
-
-<p><ssf:nlt tag="help.displayEntryControl.contactPeople" /> <ssf:nlt tag="help.buddyListPortlet.contactingContinued" /></p>
-
-<p><ssf:nlt tag="help.buddyListPortlet.configure" /></p>
+<p><ssf:nlt tag="help.moreEntryTools.detail" /></p>
 
 </div>
+
 </div>

@@ -18,17 +18,17 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span>
 </div>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.searchboxes.content.intro" /></p>
 
 <div class="picture">
-<img border="0" <ssf:alt tag="alt.exitHelp"/> src="<html:imagesPath/>pics/search_icon.gif" />
+<img border="0" <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" />
 </div>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.content.results"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.searchboxes.content.results"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.content.typeFewLetters"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.searchboxes.content.peoplePlacesTags" /></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.content.peoplePlacesTags"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.searchboxes.content.typeFewLetters"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 
