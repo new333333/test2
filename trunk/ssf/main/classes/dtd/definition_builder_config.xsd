@@ -73,6 +73,7 @@
     <xsd:attribute name="canBeDeleted" type="xsd:boolean"/>
     <xsd:attribute name="x" type="xsd:unsignedInt"/>
     <xsd:attribute name="y" type="xsd:unsignedInt"/>
+	<xsd:attribute name="feature" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="propertiesType">

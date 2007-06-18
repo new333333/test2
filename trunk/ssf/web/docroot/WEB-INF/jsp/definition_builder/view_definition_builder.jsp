@@ -512,9 +512,16 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	ajaxRequest.sendRequest();  //Send the request
 }
 function ss_postLoadNextDivRequest(obj) {
+	// get trimmed content 
+	var trimmed = self.document.getElementById("displayDiv").innerHTML.replace(/^\s+|\s+$/g, '') ;
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
+	} else if (trimmed == "") {
+	//don't display empty options
+		var formObj = self.document.getElementById("definitionbuilder");
+		setSubmitData(formObj)
+		formObj.submit()
 	} else {
 		ss_doImgOnloadCalls()
 		showDisplayDiv()

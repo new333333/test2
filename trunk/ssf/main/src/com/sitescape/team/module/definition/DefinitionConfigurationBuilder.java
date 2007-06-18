@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 import org.dom4j.Element;
 import org.dom4j.Document;
-
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles;
 
 public class DefinitionConfigurationBuilder extends
@@ -48,6 +48,8 @@ public class DefinitionConfigurationBuilder extends
 			String nameValue = nextItem.attributeValue("name");
 			if (nameValue == null)
 				continue;
+			String licenseValue = nextItem.attributeValue("license");
+			if (licenseValue != null && !LicenseChecker.isAuthorizedByLicense(licenseValue)) continue;
 			itemCache.put(nameValue, nextItem);
 			Iterator itJsps = nextItem.selectNodes("jsps/jsp").listIterator();
 			

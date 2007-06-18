@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.license;
+package com.sitescape.team.module.license;
 
 public class LicenseChecker {
 

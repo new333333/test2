@@ -47,6 +47,8 @@
 <%
   } else {
 %>
+
+
 	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
 		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
 	</taconite-replace>
