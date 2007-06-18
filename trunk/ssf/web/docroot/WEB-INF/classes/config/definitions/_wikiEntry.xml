@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="29" definitionType="1" databaseId="402883c6115753d80111578d0fea0011">
+<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="30" definitionType="1" databaseId="402883c6115753d80111578d0fea0011">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
@@ -34,6 +34,12 @@
           <property name="number" value=""/>
           <property name="storage" value="simpleFileRepository"/>
           <property name="hide" value="false"/>
+        </properties>
+      </item>
+      <item name="sendMail" caption="__sendMail" category="entryData" id="29">
+        <properties>
+          <property name="name" value="_sendMail"/>
+          <property name="caption" value="__sendMail"/>
         </properties>
       </item>
       <item name="entryFormButtons" caption="__form_buttons" id="6">
