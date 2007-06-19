@@ -15,16 +15,10 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.bottomLinks"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.calendarEntryControl" /></span>
 </div>
 
-<p><ssf:nlt tag="help.bottomLinks.intro" /></p>
-
-<p><ssf:nlt tag="help.bottomLinks.exceptions" /></p>
-
-<p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.bottomLinks.iCal"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.calendarEntryControl.intro" /></p>
 
 </div>
 

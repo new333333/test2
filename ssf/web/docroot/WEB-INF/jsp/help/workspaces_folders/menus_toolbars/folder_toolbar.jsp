@@ -30,6 +30,8 @@
 
 <li><ssf:nlt tag="help.folderControlAndFiltering.listItem.folderAction" /></li>
 
+<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.importCalendar" /></li>
+
 <li><ssf:nlt tag="help.folderControlAndFiltering.listItem.filter" /></li>
 
 </ul>

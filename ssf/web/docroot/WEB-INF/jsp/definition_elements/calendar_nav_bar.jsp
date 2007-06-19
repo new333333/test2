@@ -12,7 +12,7 @@
 %>
 <div class="ss_clear"></div>
 <div>
-  <ssHelpSpot helpId="tools/calendar_tools" offsetX="0" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_tools" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.calendarTools"/>"></ssHelpSpot>
     
 	<ul id="ss_calendarNaviBar">

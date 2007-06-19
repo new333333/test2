@@ -138,6 +138,10 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	
 	<div class="ss_global_toolbar_divider"></div>
 
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
 	<!-- Search -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_quick">
@@ -159,7 +163,13 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 						<portlet:param name="action" value="advanced_search"/>
 						<portlet:param name="newTab" value="1"/>
 						</portlet:actionURL>">
-			  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="157" offsetY="-2"
+			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
+                 <c:if test="<%= isIE %>">
+                   offsetX="159" 
+                 </c:if>
+                 <c:if test="<%= !isIE %>">
+                   offsetX="147" 
+                 </c:if>
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" type="text" /> 
 					<a class="ss_searchButton" 
@@ -192,7 +202,13 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
 		</div>
 		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>" >
-		  <ssHelpSpot helpId="navigation_bar/search_button" offsetX="145" offsetY="3"
+		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
+                 <c:if test="<%= isIE %>">
+                   offsetX="159" 
+                 </c:if>
+                 <c:if test="<%= !isIE %>">
+                   offsetX="147" 
+                 </c:if>
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		  </ssHelpSpot>
      		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 

@@ -35,9 +35,16 @@
 	  </div>
 	  </div>
 
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
      <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
-	  <ssHelpSpot helpId="tools/blog_controls" offsetX="0" 
+	  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
+         <c:if test="<%= isIE %>">
+           offsetY="25"
+         </c:if>
 	    title="<ssf:nlt tag="helpSpot.blogControls"/>"></ssHelpSpot>
 
 		<div class="ss_blog_sidebar_hole">
