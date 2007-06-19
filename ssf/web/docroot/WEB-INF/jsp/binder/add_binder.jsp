@@ -11,6 +11,10 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%
+	String workspaceId = com.sitescape.team.ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
+%>
+<c:set var="ss_workspaceId" value="<%= workspaceId %>"/>
 
 <script type="text/javascript">
 var ss_checkTitleUrl = "<ssf:url 
@@ -21,6 +25,25 @@ var ss_checkTitleUrl = "<ssf:url
 	<ssf:param name="operation" value="check_binder_title" />
 	</ssf:url>";
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
+
+function ss_enableDisableFolderOptions(id) {
+	var formObj = self.document.getElementById('<portlet:namespace/>fm');
+	if (id == '${ss_workspaceId}') {
+	    document.getElementById('folderConfigIdTitle').className = "ss_bold"
+	    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
+	      formObj['folderConfigId_${config.id}'].checked = false;
+	      formObj['folderConfigId_${config.id}'].disabled = false;
+	      document.getElementById('folderConfigIdTitle_${config.id}').className = ""
+	    </c:forEach>
+	} else {
+	    document.getElementById('folderConfigIdTitle').className = "ss_light"
+	    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
+	      formObj['folderConfigId_${config.id}'].checked = false;
+	      formObj['folderConfigId_${config.id}'].disabled = true;
+	      document.getElementById('folderConfigIdTitle_${config.id}').className = "ss_light"
+	    </c:forEach>
+	}
+}
  </script>
 
 <div class="ss_portlet">
@@ -65,7 +88,8 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
   <br/>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
       <input type="radio" name="binderConfigId" value="${config.id}" 
-      <c:if test="${status.count == 1}">checked="checked"</c:if>
+      <c:if test="${config.internalId == ss_workspaceId}">checked="checked"</c:if>
+      onChange="ss_enableDisableFolderOptions('${config.internalId}')"
       ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 <br/>  
@@ -111,11 +135,12 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <br/>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="workspace.folders" /></legend>
-  <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.folders"/></span> 
+  <span id="folderConfigIdTitle" class="ss_bold"><ssf:nlt tag="binder.add.binder.select.folders"/></span> 
   <br/>
   <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
       <input type="checkbox" name="folderConfigId_${config.id}" /> 
-      <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
+      <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
+      ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span><br/>
   </c:forEach>
 <br/>  
 </fieldset>
