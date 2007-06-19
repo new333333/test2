@@ -15,16 +15,24 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.bottomLinks"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.calendarTools" /></span>
 </div>
 
-<p><ssf:nlt tag="help.bottomLinks.intro" /></p>
+<p><ssf:nlt tag="help.calendarTools.intro" /></p>
 
-<p><ssf:nlt tag="help.bottomLinks.exceptions" /></p>
+<p><ssf:nlt tag="help.calendarTools.tools.listIntro" /></p>
 
-<p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<ul>
 
-<p><ssf:nlt tag="help.bottomLinks.iCal"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<li><ssf:nlt tag="help.calendarTools.tools.listItem.countDays"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+
+<li><ssf:nlt tag="help.calendarTools.tools.listItem.folderPage" /></li>
+
+<li><ssf:nlt tag="help.calendarTools.tools.listItem.navigation" /></li>
+
+<li><ssf:nlt tag="help.calendarTools.tools.listItem.calendarApplet" /></li>
+
+</ul>
 
 </div>
 

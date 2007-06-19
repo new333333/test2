@@ -77,10 +77,6 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
           </c:if>
 		  offsetY="-2" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot>
          </c:when>
-	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
-         <ssHelpSpot helpId="workspaces_folders/entries/set_wiki_homepage" offsetY="-5" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"></ssHelpSpot>
-         </c:when>
          <c:otherwise>
 	     </c:otherwise>
 	 </c:choose>
@@ -235,10 +231,6 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
               offsetX="-15"  
           </c:if>
 		  offsetY="-2" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot>
-         </c:when>
-	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.setWikiHomepage'}">
-         <ssHelpSpot helpId="workspaces_folders/entries/set_wiki_homepage" offsetY="-5" offsetX="-20" 
-		     title="<ssf:nlt tag="helpSpot.setWikiHomepage"/>"></ssHelpSpot>
          </c:when>
          <c:otherwise>
 	     </c:otherwise>

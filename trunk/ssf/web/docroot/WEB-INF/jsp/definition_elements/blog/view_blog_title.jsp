@@ -82,6 +82,10 @@
 </span>
 </div>
 </div>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
 <%-- Subscribe, Ratings bar, visits --%>
 <c:if test="${empty ssDefinitionEntry.parentEntry}">
 <div style="height: 20px;">
@@ -93,7 +97,13 @@
 	    entryId="${ssDefinitionEntry.id}"/>" 
   onClick="ss_openUrlInWindow(this, '_blank');return false;"
   <ssf:title tag="title.send.entry.to.friends" />
-><div class="ss_iconed_label ss_send_friend"><ssHelpSpot helpId="tools/more_blog_tools" offsetX="0" 
+><div class="ss_iconed_label ss_send_friend"><ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
+<c:if test="<%= !isIE %>">
+offsetX="-25" offsetY="-15" 
+</c:if>
+<c:if test="<%= isIE %>">
+offsetX="-5"  
+</c:if>
 title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
 <a href="javascript: ;" 
   onClick="ss_showPopupDivCentered('<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;"
