@@ -89,7 +89,8 @@ public class BinderHelper {
 				}
 			}
 		}
-		String viewType = DefinitionUtils.getViewType(displayDef.getDefinition());
+		String viewType = null;
+		if (displayDef != null) viewType = DefinitionUtils.getViewType(displayDef.getDefinition());
 		if (viewType == null) return "";
 		return viewType;
 	}
