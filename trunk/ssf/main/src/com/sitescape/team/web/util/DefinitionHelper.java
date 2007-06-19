@@ -330,11 +330,13 @@ public class DefinitionHelper {
     public static String findCaptionForAttribute(String attributeName, Document definitionConfig)
     {
     	Node valueNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName+"']]/properties/property[@name='caption']/@value");
+    	if (valueNode == null) return "";
     	return valueNode.getStringValue();
     }
     
     public static String findAttributeType(String attributeName, Document definitionConfig) {
     	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	if (node == null) return "";
     	return node.attributeValue("name");
     }
     

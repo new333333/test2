@@ -513,7 +513,8 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 }
 function ss_postLoadNextDivRequest(obj) {
 	// get trimmed content 
-	var trimmed = self.document.getElementById("displayDiv").innerHTML.replace(/^\s+|\s+$/g, '') ;
+	var trimmed = "xxx" ;
+	//var trimmed = self.document.getElementById("displayDiv").innerHTML.replace(/^\s+|\s+$/g, '') ;
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
