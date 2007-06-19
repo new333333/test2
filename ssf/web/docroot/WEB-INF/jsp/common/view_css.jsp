@@ -89,6 +89,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		actionUrl="true" >
 		<ssf:param name="operation" value="show_help_panel" />
 		<ssf:param name="operation2" value="ss_help_panel_id_place_holder" />
+		<ssf:param name="tagId" value="ss_help_panel_tag_id_place_holder" />
 		</ssf:url>";
 
 	ss_helpSystemWelcomePanelUrl = "<ssf:url 
