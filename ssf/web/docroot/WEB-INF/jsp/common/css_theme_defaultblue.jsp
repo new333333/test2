@@ -204,7 +204,7 @@
 	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
 
-	<c:set var="ss_page_nav_background_color" value="#AFC8E3" scope="request"/>	
+	<c:set var="ss_page_nav_background_color" value="#AAAABB" scope="request"/>	
 	
 	<% //REPLYS %>
 	<c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/>

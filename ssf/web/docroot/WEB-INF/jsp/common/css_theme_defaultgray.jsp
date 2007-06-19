@@ -203,7 +203,7 @@
 	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
 	
-	<c:set var="ss_page_nav_background_color" value="#AAAAAA" scope="request"/>	
+	<c:set var="ss_page_nav_background_color" value="#AFAFAF" scope="request"/>	
 
 	<% //REPLYS %>
 	<c:set var="ss_replies_background_color" value="#EEEEEE" scope="request"/>
