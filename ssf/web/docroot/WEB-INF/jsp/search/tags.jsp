@@ -25,7 +25,7 @@
 						<span class="${tag.searchResultsRatingCSS}">
 						<a href="<portlet:actionURL windowState="maximized" portletMode="view">
 							<portlet:param name="action" value="advanced_search"/>
-							<portlet:param name="searchTags" value="${tag.ssTag}"/>
+							<portlet:param name="searchCommunityTags_hidden" value="${tag.ssTag}"/>
 							<portlet:param name="operation" value="ss_searchResults"/>
 							<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 							<portlet:param name="newTab" value="1"/>
@@ -39,7 +39,7 @@
 					<c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 						<span class="${tag.searchResultsRatingCSS}"><a href="<portlet:actionURL windowState="maximized" portletMode="view">
 							<portlet:param name="action" value="advanced_search"/>
-							<portlet:param name="searchTags" value="${tag.ssTag}"/>
+							<portlet:param name="searchPersonalTags_hidden" value="${tag.ssTag}"/>
 							<portlet:param name="operation" value="ss_searchResults"/>
 							<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 							<portlet:param name="newTab" value="1"/>
