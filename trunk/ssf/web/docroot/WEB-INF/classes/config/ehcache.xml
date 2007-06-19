@@ -79,17 +79,29 @@
 	maxElementsInMemory="500" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
+<cache name="com.sitescape.team.domain.Dashboard" 
+	maxElementsInMemory="500" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
 	
 <cache name="com.sitescape.team.domain.Definition" 
 	maxElementsInMemory="100" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
+<cache name="com.sitescape.team.domain.FolderEntry" 
+	maxElementsInMemory="500" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
 
 <cache name="com.sitescape.team.security.function.Function" 
-	maxElementsInMemory="300" eternal="false"
+	maxElementsInMemory="50" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
 <cache name="com.sitescape.team.security.function.Function.operationNames" 
+	maxElementsInMemory="100" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
+<cache name="com.sitescape.team.domain.Membership" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
