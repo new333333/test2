@@ -24,8 +24,9 @@ public interface ResourceSession {
 	 * Set the path.
 	 * @param resourcePath
 	 * @return
+	 * @throws IOException 
 	 */
-	public ResourceSession setPath(String resourcePath);
+	public ResourceSession setPath(String resourcePath) throws UncheckedIOException;
 	
 	/**
 	 * Set the path.
@@ -33,7 +34,7 @@ public interface ResourceSession {
 	 * @param childName
 	 * @return
 	 */
-	public ResourceSession setPath(String parentResourcePath, String childName);
+	public ResourceSession setPath(String parentResourcePath, String childName) throws UncheckedIOException;
 	
 	/**
 	 * Close the session.
