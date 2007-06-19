@@ -21,7 +21,6 @@
 %>
 
 <div class="ss_blog">
-
   <div class="ss_blog_content_container1">
     <div class="ss_blog_content_container2">
 	  <div class="ss_blog_content">
@@ -48,18 +47,16 @@
     		height="95%" width="100%" 
     		onLoad="ss_setWikiIframeSize<portlet:namespace/>();" frameBorder="0" >xxx</iframe>
         </div>
-        
-     </div>
+      </div>
+    </div>
   </div>
-</div>
-<div class="ss_blog_sidebar_container">
-	  <div class="ss_blog_sidebar">
+  <div class="ss_blog_sidebar_container">
+	<div class="ss_blog_sidebar">
 	  <ssHelpSpot helpId="tools/wiki_controls" offsetX="0" 
 	    title="<ssf:nlt tag="helpSpot.wikiControls"/>"></ssHelpSpot>
 
 	    <c:if test="${!empty ss_wikiHomepageEntryId}">
-	    <span class="ss_bold">
-	    <a href="<ssf:url     
+	    <a class="ss_linkButton" href="<ssf:url     
 		    adapter="<%= useAdaptor %>" 
 		    portletName="ss_forum" 
 		    folderId="${ssFolder.id}" 
@@ -78,13 +75,11 @@
 		    </ssf:ifaccessible>
 		    
 		><ssf:nlt tag="wiki.homePage"/></a>
-	    </span>
-	    <br/>
 	    <br/>
 	    </c:if>
 
-	    <span class="ss_bold"><ssf:nlt tag="wiki.findPage"/></span>
-	    <br/>
+        <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
+        <div class="ss_blog_sidebar_box">		
 	    <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
 	    	action="<portlet:actionURL 
@@ -104,11 +99,15 @@
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
 		</c:if>
+		</div>
 	  <br/>
 
-	  <span class="ss_bold">
+
+	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" titleClass="ss_blog_sidebar_subhead" action="wipe" initOpen="true">
+	  <div class="ss_blog_sidebar_box">
+       <div style="padding-bottom: 10px;">
 	    <c:if test="${ssConfigJspStyle != 'template'}">
-	  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+	  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -117,15 +116,9 @@
 		</portlet:actionURL>" <ssf:title tag="wiki.showAll" />
 	  ><ssf:nlt tag="wiki.showAll"/></a>
 		</c:if>
-	    <c:if test="${ssConfigJspStyle == 'template'}">
-	    <ssf:nlt tag="wiki.showAll"/>
-		</c:if>
-	  </span>
-	  <br/>
 	  
-	  <span class="ss_bold">
 	    <c:if test="${ssConfigJspStyle != 'template'}">
-	  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+	  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -134,15 +127,8 @@
 		</portlet:actionURL>" <ssf:title tag="wiki.showRecent" />
 	  ><ssf:nlt tag="wiki.showRecent"/></a>
 		</c:if>
-	    <c:if test="${ssConfigJspStyle == 'template'}">
-		<ssf:nlt tag="wiki.showRecent"/>
-		</c:if>
-	  </span>
-	  <br/>
-	  <br/>
-
-	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" action="wipe" initOpen="true">
-		<table cellspacing="0" cellpadding="0">
+       </div>
+       <table cellspacing="0" cellpadding="0">
 		  <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
@@ -176,17 +162,18 @@
 		    </ssf:ifaccessible>
 		    
 		    ><c:if test="${empty entry1.title}"
-		    ><span id="folderLine_${entry1._docId}" class="ss_normal <%= seenStyleFine %>"
+		    ><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
 		      >--<ssf:nlt tag="entry.noTitle"/>--</span
-		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_normal <%= seenStyle %>"
+		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
 		      ><c:out value="${entry1.title}"/></span></a>
 		    </td></tr>
 		  </c:forEach>
 		</table>
+       </div>
       </ssf:expandableArea>
 
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
-		
+    <div class="ss_blog_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryCommunityTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
@@ -203,8 +190,9 @@
 					>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		   </c:if>
-		
+    </div>		
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
+    <div class="ss_blog_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryPersonalTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
@@ -221,12 +209,12 @@
 						
 		   </c:forEach>
 		   </c:if>
+    </div>		
 
 
-	  </div>
-     </div>
-
-
-	  <div class="ss_clear_float"></div>
    </div>
+  </div>
+  <div class="ss_clear_float">
+ </div>
+</div>
    

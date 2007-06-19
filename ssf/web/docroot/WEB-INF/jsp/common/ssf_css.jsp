@@ -404,24 +404,24 @@ table.ss_guestbook {
 
 
 input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
-	font-family: ${ss_style_folder_view_font_family};
-  	font-size: ${ss_style_font_fineprint};
-  	background-color: #dbe6f2;
-	border: 1px solid #afc8e3;
-	padding: 0px 6px 0px 12px;
-  	cursor: pointer;
-  }
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: ${ss_style_font_fineprint};
+  background-color: ${ss_linkbutton_background_color};
+  border: 1px solid ${ss_linkbutton_outline_color};
+  padding: 0px 6px 0px 6px;
+  cursor: pointer;
+}
 
 
 a.ss_linkButton:focus, a.ss_linkButton:hover {
   color: ${ss_linkbutton_link_hover_color};
   font-family: ${ss_style_folder_view_font_family};
   font-size: ${ss_style_font_fineprint};
-  background-color: #dbe6f2;
-  border: 1px solid #afc8e3;
-  padding: 0px 6px 0px 12px;
+  background-color: ${ss_linkbutton_background_color};
+  border: 1px solid ${ss_linkbutton_outline_color};
+  padding: 0px 6px 0px 6px;
   cursor: pointer;
-  }
+}
 
 /* styles for labels: required for forms; optional for views */
 .ss_labelAbove {
@@ -908,6 +908,34 @@ div.ss_blog_sidebar {
     margin-top: 10px;
 }
 
+.ss_blog_sidebar table {
+	background-color: transparent;
+}
+
+div.ss_blog_sidebar_hole {
+	background-color: ${ss_entry_description_background_color};
+	margin-left: 8px;
+	margin-right: 9px;
+}
+
+div.ss_blog_sidebar_box {
+	background-color: ${ss_style_background_color};
+	border: 1px solid ${ss_blog_sidebar_box_outline};
+	padding: 2px 5px;
+}
+
+.ss_blog_sidebar_subhead {
+	font-size: 14px;
+	font-weight: normal;
+	font-family: ${ss_style_title_font_family};
+	color: ${ss_style_muted_label_color};
+}
+
+div.ss_blog_sidebar_subhead {
+	padding-top: 20px;
+	padding-bottom: 5px;
+}
+
 div.ss_clear_float {
 	height: 0px;
 	line-height:0px;
@@ -1001,27 +1029,12 @@ a.ss_header_bar_title_link:hover, a.ss_header_bar_title_link:visited:hover {
 	text-decoration: underline;
 }
 
-.ss_blog_sidebar table {
-	background-color: transparent;
-}
-
-div.ss_blog_sidebar_hole {
-	background-color: ${ss_entry_description_background_color};
-	margin-left: 8px;
-	margin-right: 9px;
-}
 
 
 a.ss_displaytag {
 	color: ${ss_style_metadata_color};
 }
 
-div.ss_blog_sidebar_subhead {
-	padding-top: 20px;
-	padding-bottom: 5px;
-	font-size: 12px;
-	font-weight: bold;
-}
 
 /* Sliding tables */
 div.ss_sliding_table_column0 {
@@ -4374,7 +4387,7 @@ div.ssPageNavi {
 }
 
 .ssPageNavi, .ssPageNavi table, .ssPageNavi td, .ssPageNavi div {
-	background-color: #AFC8E3;
+	background-color: ${ss_page_nav_background_color};
 }
 
 .ssPageNavi .ssVisibleEntryNumbers {
@@ -4393,8 +4406,8 @@ div.ssPageNavi {
 }
 
 .ssPageNavi a.ss_linkButton:link, .ssPageNavi a.ss_linkButton:visited, .ssPageNavi a.ss_linkButton:hover {
-	border: 1px solid #000099;
-	background-color: #AFC8E3;
+	border: 1px solid ${ss_linkbutton_outline_color};
+	background-color: ${ss_linkbutton_background_color};
 	background-image: none;
 }
 

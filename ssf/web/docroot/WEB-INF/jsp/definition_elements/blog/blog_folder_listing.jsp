@@ -54,6 +54,7 @@
         </div>
          
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
+        <div class="ss_blog_sidebar_box">		
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  <tr>
@@ -68,8 +69,10 @@
 		  </tr>
 		</c:forEach>
 		</table>
+		</div>
 		
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+        <div class="ss_blog_sidebar_box">				
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 
@@ -81,9 +84,9 @@
 					  </ssf:title>
 					>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
-		
+		</div>
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
-
+        <div class="ss_blog_sidebar_box">		
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		
 		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
@@ -96,6 +99,7 @@
 				  </ssf:title>
 				>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
+		</div>
 	  </div>
      </div>
 
