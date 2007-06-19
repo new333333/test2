@@ -98,7 +98,10 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <tbody>
 <tr>
 <td valign="top" style="padding-right:2px;">
-<a href="#" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetY="-20" offsetX="-10" 
+      title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+  </ssHelpSpot>
+<a href="javascript:;" 
 	<ssf:ifaccessible>
   		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
 	</ssf:ifaccessible>
