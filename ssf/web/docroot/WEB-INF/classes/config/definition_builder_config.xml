@@ -1854,6 +1854,7 @@
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="formJsp" caption="__form_jsp_name" type="text"/>
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
 			<property name="mailJsp" caption="__mail_jsp_name" type="text"/>
