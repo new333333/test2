@@ -718,7 +718,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
   <hr style="width: 90%" class="ss_att_divider"/>
   <div class="ss_style_trans" id="ss_favorites<portlet:namespace/>" align="left">
 	  <div style="float: right;" id="ss_favorites_loading<portlet:namespace/>"><ssf:nlt tag="Loading"/></div>
-	  <div id="ss_favorites_list<portlet:namespace/>"></div>
+	  <div id="ss_favorites_list<portlet:namespace/>">&nbsp;</div>
   </div>
   <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor<portlet:namespace/>">
      <div style="padding: 10px 0px 7px 0px;">
