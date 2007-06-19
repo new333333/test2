@@ -27,6 +27,7 @@ renderRequest.setAttribute("ss_expandable_area_name_count", new Integer(nameCoun
 
 String name = "ss_expandableAreaDiv" + nameCount.toString();
 String title = ParamUtil.get(request, "title", "");
+String titleClass = ParamUtil.get(request, "titleClass", "");
 String openAction = ParamUtil.get(request, "openAction", "");
 boolean initOpen = ParamUtil.getBoolean(request, "initOpen", false);
 
@@ -80,7 +81,7 @@ border="0"
 id="<portlet:namespace/>img_<%= name %>" name="<portlet:namespace/>img_<%= name %>" /></td>
 <td valign="middle"><a href="javascript: ;" 
   onClick="<portlet:namespace/>_toggleExpandableArea('<%= name %>', 'img_<%= name %>'); return false;"
-><span class="ss_bold"><%= title %></span></a></td>
+><span class="<%= titleClass %>"><%= title %></span></a></td>
 </tr>
 </table>
 </div>
