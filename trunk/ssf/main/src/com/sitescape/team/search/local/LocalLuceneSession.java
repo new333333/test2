@@ -36,7 +36,6 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -66,26 +65,7 @@ public class LocalLuceneSession implements LuceneSession {
 	Object SyncObj = new Object();
 	
 	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
-	private Query warmingQuery = new TermQuery(new Term(BasicIndexUtils.ALL_TEXT_FIELD, "sitescape"));
-	// Note: I'm not convinced that this implementation makes good use of
-	// Lucene,
-	// primarily due to my lack of intimiate knowledge of Lucene.
-	// Two major implementation questions:
-	// 1) Is it allowed to open more than one IndexWriter (using multiple
-	// instances of sessions in multiple threads) in a program?
-	// What are the ramifications when we do that?
-	// 2) What is the best practise around using IndexSearcher? Specifically,
-	// should it be opened and closed for each query or re-used for multiple
-	// queries? If re-used for extended period of time, then I assume that
-	// the index snapshot represented by the handle won't incorporate the
-	// changes that may have been made to the index since the handle was
-	// obtained. Is that right?
-
-	// Updated Note: This implementation is rewritten to simply use Liferay's
-	// local index support, which is not very scalable. Since local index
-	// configuration should only be used for testing and/or demo installation,
-	// I wouldn't bother with making this a production quality service.
-
+	
 	private static final Log logger = LogFactory
 			.getLog(LocalLuceneSession.class);
 
@@ -94,10 +74,7 @@ public class LocalLuceneSession implements LuceneSession {
 	private String indexPath;
 
 	public LocalLuceneSession(String indexPath) {
-		this.indexPath = indexPath;
-		// WARM UP the index by issuing a single query
-		search(warmingQuery);
-		
+		this.indexPath = indexPath;		
 	}
 
 	public void addDocument(Document doc) {
