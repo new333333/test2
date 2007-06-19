@@ -451,15 +451,13 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      	List eDefinitions = getViewDefinitions();
      	if (eDefinitions.size() > 0)
      		return (Definition)eDefinitions.get(0);
-     	return null;
+     	//return original so have something.
+     	return entryDef;
  	}
      public Definition getEntryDef() {
     	 //Peter wants the currently configured default for binders.
     	 //doesn't care what it was created with
-     	Definition result = getDefaultViewDef();
-     	//return original so have something.
-     	if (result == null) return entryDef;
-     	return result;
+     	return getDefaultViewDef();
      }
        // Setup by hibernate
      public Map getWorkflowAssociations() {

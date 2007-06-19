@@ -366,7 +366,11 @@ public class Validator {
 	}
 
 	public static final String pathCharacterRegex = ".*[\\\\/*:?<>|\"].*";
+	private static final String pathCharacterReplacementRegex = "[\\\\/*:?<>|\"]";
 	public static boolean containsPathCharacters(String str) {
 		return str.matches(pathCharacterRegex);
+	}
+	public static final String replacePathCharacters(String str) {
+		return str.replaceAll(pathCharacterReplacementRegex, "-");
 	}
 }

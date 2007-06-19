@@ -316,7 +316,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		p.setDeleted(true);
       		Map updatesCtx = new HashMap();
        		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
-       		String newName = NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString();
+       		String newName = Validator.replacePathCharacters(NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString());
        		p.setName(newName); //mark as deleted - change name incase re-added -unique key
       		p.setForeignName(newName); //clear name incase re-added - unique key
       	    p.setTitle(p.getTitle() + " (" + newName + ")");
