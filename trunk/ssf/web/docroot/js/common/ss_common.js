@@ -2356,6 +2356,7 @@ var ss_helpSystem = {
 		var i1 = id.indexOf("___");
 		if (i1 >= 0) orgHelpId = id.substr(id.indexOf("___") + 3);
 		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  orgHelpId);
+		url = ss_replaceSubStr(url, "ss_help_panel_tag_id_place_holder",  tagId);
 
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.setData("id", id)
