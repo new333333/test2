@@ -56,6 +56,7 @@
 	<c:set var="ss_blog_summary_title_background_color" value="#ECECEC" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_blog_sidebar_box_outline" value="#666666" scope="request"/>
 	
 <% //BORDER COLORS %>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
@@ -71,7 +72,8 @@
 	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
 	
 <% //BUTTON %>
-	<c:set var="ss_linkbutton_background_color" value="#CFCFCF" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#DDDDDD" scope="request"/>
+	<c:set var="ss_linkbutton_outline_color" value="#CACACA" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
 	<c:set var="ss_linkbutton_border_color_in" value="#CACACA" scope="request"/>
@@ -201,6 +203,7 @@
 	<c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/>	
 	
+	<c:set var="ss_page_nav_background_color" value="#AAAAAA" scope="request"/>	
 
 	<% //REPLYS %>
 	<c:set var="ss_replies_background_color" value="#EEEEEE" scope="request"/>

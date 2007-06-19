@@ -153,6 +153,12 @@ function ss_postfindEntriesRequest<portlet:namespace/>(obj) {
 		alert(ss_not_logged_in);
 	}
 	ss_findEntriesSearchInProgress = 0;
+	var ulObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 0) {
+		ss_hideDiv('ss_findEntriesNavBarDiv_<portlet:namespace/>');
+		return;
+	}
 
 	var divObj = document.getElementById('ss_findEntriesNavBarDiv_<portlet:namespace/>');
 	ss_moveDivToBody('ss_findEntriesNavBarDiv_<portlet:namespace/>');

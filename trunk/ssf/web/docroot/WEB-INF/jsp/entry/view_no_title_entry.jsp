@@ -49,7 +49,7 @@ function ss_setPageFormActionUrl2<portlet:namespace/>() {
 <input type="hidden" name="title" value="${ssEntryTitle}"/>
 <c:if test="${count == 1}">
   <c:forEach var="title" items="${ssAddEntryTitles}">
-    <input type="submit" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
+    <input type="submit" class="ss_linkButton" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
       onClick="ss_setPageFormActionUrl<portlet:namespace/>('${ssAddEntryUrls[title.value]}');"/>
   </c:forEach>
   <a href="#" style="padding-left: 10px;" class="ss_linkButton"
@@ -68,7 +68,7 @@ function ss_setPageFormActionUrl2<portlet:namespace/>() {
   </c:forEach>
   </td>
   <td valign="top">
-    <input type="submit" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
+    <input type="submit" class="ss_linkButton" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
       onClick="ss_setPageFormActionUrl2<portlet:namespace/>();"/>
   </td></tr></table>
   <br/>
