@@ -45,6 +45,10 @@ var ss_imageUploadUrl = "<ssf:url
     action="__ajax_request">
 	  <ssf:param name="operation" value="upload_image_file" />
     </ssf:url>";
+
+
+<c:choose>
+  <c:when test="${ssDefinitionEntry.entityType == 'folderEntry'}">
 var ss_wikiLinkUrl = "<ssf:url 
     adapter="true" 
     actionUrl="true"
@@ -53,6 +57,19 @@ var ss_wikiLinkUrl = "<ssf:url
 	  <ssf:param name="operation" value="wikilink_form" />
 	  <ssf:param name="binderId" value="${ssDefinitionEntry.parentFolder.id}" />
     </ssf:url>";
+  </c:when>
+  <c:otherwise>
+var ss_wikiLinkUrl = "<ssf:url 
+    adapter="true" 
+    actionUrl="true"
+    portletName="ss_forum" 
+    action="__ajax_request">
+	  <ssf:param name="operation" value="wikilink_form" />
+	  <ssf:param name="binderId" value="${ssDefinitionEntry.id}" />
+    </ssf:url>";
+  </c:otherwise>
+</c:choose>
+
 </script>
 <div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};
 </c:if>">
