@@ -67,7 +67,7 @@ public class ExportDefinitionController extends  SAbstractController {
 							if (Validator.isNull(name)) name = def.getTitle();
 							// explicity set encoding so their is not mistake.
 							//cannot guarentee default will be set to UTF-8
-							String filePath = dirPath + File.separator +  name + ".xml";
+							String filePath = dirPath + File.separator +  Validator.replacePathCharacters(name) + ".xml";
 							XmlFileUtil.writeFile(def.getDefinition(), filePath);
 							uniqueFilenames.add(filePath);
 						} catch (Exception ex) {

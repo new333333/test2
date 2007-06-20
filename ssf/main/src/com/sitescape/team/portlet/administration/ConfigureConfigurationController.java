@@ -135,7 +135,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 								if (Validator.isNull(name)) name = binder.getTemplateTitle();
 								// explicity set encoding so their is no mistake.
 								//cannot guarentee default will be set to UTF-8
-								String filePath = dirPath + File.separator +  name + ".xml";
+								String filePath = dirPath + File.separator +  Validator.replacePathCharacters(name) + ".xml";
 								XmlFileUtil.writeFile(doc, filePath);
 								uniqueFilenames.add(filePath);
 							} catch (Exception ex) {
