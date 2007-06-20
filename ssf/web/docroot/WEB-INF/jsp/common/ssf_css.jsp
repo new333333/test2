@@ -4401,7 +4401,8 @@ a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_tas
 /* Task - end*/
 
 div.ssPageNavi {
-	margin: 0;
+	margin: 0px;
+	padding-left: 15px;
 }
 
 .ssPageNavi, .ssPageNavi table, .ssPageNavi td, .ssPageNavi div {

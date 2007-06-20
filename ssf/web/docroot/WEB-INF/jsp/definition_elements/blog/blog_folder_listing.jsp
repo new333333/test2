@@ -77,7 +77,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		</c:forEach>
 		</table>
 		</div>
-		
+        <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
         <div class="ss_blog_sidebar_box">				
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
@@ -92,6 +92,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 					>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		</div>
+		</c:if>
+        <c:if test="${!empty ssFolderEntryPersonalTags}"> 
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
         <div class="ss_blog_sidebar_box">		
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
@@ -107,6 +109,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		</div>
+		</c:if>
 	  </div>
      </div>
 

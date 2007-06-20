@@ -81,7 +81,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
+		    <span class="ss_muted_label_small"><ssf:nlt tag="misc.configureColumns"/></span></a>
 		</td>
 	</tr>
 </table>
