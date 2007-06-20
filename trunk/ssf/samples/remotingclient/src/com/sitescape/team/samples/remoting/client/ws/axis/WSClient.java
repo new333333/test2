@@ -131,7 +131,7 @@ public class WSClient
 		// the username in the WS deployment descriptor client_deploy.wsdd
 		// if the username is known at deployment time and does not change
 		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "liferay.com.1");
+		call.setProperty(WSHandlerConstants.USER, "administrator");
 		
 		if(filename != null) {
 			DataHandler dhSource = new DataHandler(new FileDataSource(new File(filename)));

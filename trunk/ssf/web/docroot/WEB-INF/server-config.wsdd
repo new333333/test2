@@ -31,7 +31,7 @@
 	 	<requestFlow>
    			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
     			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
-    			<parameter name="action" value="UsernameToken"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
    			</handler>
   		</requestFlow>
 	
