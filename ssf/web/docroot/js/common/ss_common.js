@@ -3343,7 +3343,9 @@ function ss_setFavoritesList(favList, namespace) {
 		t += ');">' + f.name + '</a>';
 		t += '</li>';
 	}
-	t += '</ul>';
+	// Close the list and add a space so the div has something in it
+	// even when empty so a floating div has something to float in.
+	t += '</ul>&nbsp;';
 	d.innerHTML = t;
 }
 
