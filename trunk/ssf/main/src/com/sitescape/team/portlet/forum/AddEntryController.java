@@ -94,20 +94,17 @@ public class AddEntryController extends SAbstractController {
 					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
 				}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
-				// survey vote can be added only by vote (AjaxController)
-				if (!entryType.equals(ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF)) {
-					MapInputData inputData = new MapInputData(formData);
-					Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-					entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap);
-					//Show the parent entry when this operation finishes
-					setupReloadOpener(response, folderId, id);
-					if (!blogReply.equals("")) {
-				    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
-						response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
-						response.setRenderParameter(WebKeys.NAMESPACE, namespace);
-						response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
-						response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getParentEntry().getTotalReplyCount()));
-					}
+				MapInputData inputData = new MapInputData(formData);
+				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap);
+				//Show the parent entry when this operation finishes
+				setupReloadOpener(response, folderId, id);
+				if (!blogReply.equals("")) {
+			    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+					response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
+					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
+					response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
+					response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getParentEntry().getTotalReplyCount()));
 				}
 			}
 			//See if the user wants to send mail

@@ -13,7 +13,6 @@
 	<definitionFile>config/definitions/_milestoneEntry.xml</definitionFile>	
 	<definitionFile>config/definitions/_taskEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_surveyEntry.xml</definitionFile>		
-	<definitionFile>config/definitions/_surveyVote.xml</definitionFile>
 	<definitionFile>config/definitions/_photoEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_wikiEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_blogFolder.xml</definitionFile>

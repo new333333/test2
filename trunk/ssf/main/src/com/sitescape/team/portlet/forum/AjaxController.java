@@ -62,6 +62,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.ic.ICBrokerModule;
@@ -2517,15 +2518,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				}
 			}
 		}
-		
-		Map formDataReply = new HashMap();
-		formDataReply.put("binderId", new String[]{binderId.toString()});
-		formDataReply.put("entryId", new String[]{entryId.toString()});
-		formDataReply.put("entryType", new String[]{ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF});
-		formDataReply.put("title", new String[]{NLT.get("survey.vote.title")});
-		formDataReply.put("description", new String[]{surveyVoteDescription.toString()});
-		getFolderModule().addReply(binderId, entryId, ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF, new MapInputData(formDataReply), new HashMap());
-		
 		
 		Map formData = new HashMap(); 
 		formData.put(attributeName, surveyAttrValue.toString());

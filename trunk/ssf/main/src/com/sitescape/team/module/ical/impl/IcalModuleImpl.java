@@ -80,6 +80,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.ResolveIds;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.cal.DayAndPosition;
 
 /**
@@ -351,11 +352,12 @@ public class IcalModuleImpl implements IcalModule {
 
 	private ComponentType getComponentType(DefinableEntity entry) {
 		Definition entryDef = entry.getEntryDef();
-		String entryDefId = entryDef.getId();
+		
+		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
 
-		if (entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_DEF)) {
+		if (family.equals(ObjectKeys.FAMILY_TASK)) {
 			return ComponentType.Task;
-		} else if (entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_CALENDAR_DEF)) {
+		} else if (family.equals(ObjectKeys.FAMILY_CALENDAR)) {
 			return ComponentType.Calendar;
 		}
 		return ComponentType.Calendar;

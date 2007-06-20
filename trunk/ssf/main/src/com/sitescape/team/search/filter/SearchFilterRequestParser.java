@@ -1,10 +1,7 @@
 package com.sitescape.team.search.filter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +10,6 @@ import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
 
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
@@ -24,7 +19,7 @@ public class SearchFilterRequestParser {
 	
 	private DefinitionModule definitionModule;
 	
-	private boolean parseMoreOptions = false;
+	private boolean parseAdvancedOptions = false;
 	
 	public SearchFilterRequestParser(PortletRequest request, DefinitionModule definitionModule) {
 		super();
@@ -41,7 +36,7 @@ public class SearchFilterRequestParser {
 		parseFreeText(request, searchFilter);
 		parsePlaces(request, searchFilter);
 		
-		parseMoreOptions = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchParseAdvancedForm, false);
+		parseAdvancedOptions = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchParseAdvancedForm, false);
 		
 		String[] numbers = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchNumbers, "").split(" ");
 		String[] types = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchTypes, "").split(" ");
@@ -61,7 +56,7 @@ public class SearchFilterRequestParser {
 	private void parseLastActivity(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		Integer maxDaysNumber = 0;
 		
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			Integer daysNumber = PortletRequestUtils.getIntParameter(request, SearchFilterKeys.SearchDaysNumber.concat("_hidden"), 0);
 			if (daysNumber > maxDaysNumber) {
 				maxDaysNumber = daysNumber;
@@ -85,7 +80,7 @@ public class SearchFilterRequestParser {
 	private void parseModificationDates(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Period> modificationDates = new ArrayList();
 		
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			int count = PortletRequestUtils.getIntParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat("length"), -1);
 			for (int index = 0; index < count; index++) {
 				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeModificationDate.concat("_").concat(SearchFilterKeys.SearchStartDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
@@ -114,7 +109,7 @@ public class SearchFilterRequestParser {
 	private void parseCreationDates(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Period> creationDates = new ArrayList();
 		
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			int count = PortletRequestUtils.getIntParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat("length"), -1);
 			for (int index = 0; index < count; index++) {
 				String startDate = PortletRequestUtils.getStringParameter(request, SearchFilterToMapConverter.SearchBlockTypeCreationDate.concat("_").concat(SearchFilterKeys.SearchStartDate).concat("_").concat(Integer.toString(index)).concat("_hidden"), "");
@@ -143,7 +138,7 @@ public class SearchFilterRequestParser {
 	private void parseEntries(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers, DefinitionModule definitionModule) {
 		List<SearchFilter.Entry> entries = new ArrayList(); 
 		
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			String[] entryTypeIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterEntryDefIdField.concat("_hidden"));
 			for (int i = 0; i < entryTypeIds.length; i++) {
 				String entryTypeId = entryTypeIds[i];
@@ -186,7 +181,7 @@ public class SearchFilterRequestParser {
 	private void parseWorkflows(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Workflow> workflows = new ArrayList();
 
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			String[] workflowIds =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowId.concat("_hidden"));
 			for (int i = 0; i < workflowIds.length; i++) {
 				String workflowId = workflowIds[i];
@@ -219,7 +214,7 @@ public class SearchFilterRequestParser {
 			}
 		}
 		
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			String[] authorTitles = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_selected").concat("_hidden"));
 			String[] authorIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_hidden"));
 			for (int i = 0; i < authorIds.length; i++) {
@@ -261,7 +256,7 @@ public class SearchFilterRequestParser {
 		}
 		
 		
-		if (!parseMoreOptions) {
+		if (!parseAdvancedOptions) {
 			Iterator personalTagIt = Arrays.asList(PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchPersonalTags.concat("_hidden"))).iterator();
 			while (personalTagIt.hasNext()) {
 				tagsList.add(new SearchFilter.Tag(SearchFilter.Tag.Type.PERSONAL, (String)personalTagIt.next()));

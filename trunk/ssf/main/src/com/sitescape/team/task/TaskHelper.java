@@ -28,6 +28,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class TaskHelper {
@@ -184,39 +185,25 @@ public class TaskHelper {
 		return result;
 	}
 	
-	public static Map adjustTaskAttributesDependencies(String entryType, Map formData) {
-		Map result = new HashMap(formData);
-		if (!TaskHelper.isTaskEntryType(entryType)) {
-			return formData;
-		}
-		
-		String newPriority = TaskHelper.getTaskPriorityValue(formData);
-		String newStatus = TaskHelper.getTaskStatusValue(formData);
-		String newCompleted = TaskHelper.getTaskCompletedValue(formData);
-		
-		TaskHelper.adjustTaskAttributesDependencies(null, entryType, result, newPriority, newStatus, newCompleted);
-		return result;
-	}
-	
 	private static boolean isTaskEntryType(FolderEntry entry) {
 		Definition entryDef = entry.getEntryDef();
-		String entryDefId = entryDef.getId();
-
-		return isTaskEntryType(entryDefId);
+		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
+		
+		return isTaskEntryType(family);
 	}
 	
-	private static boolean isTaskEntryType(String entryDefId) {
-		return entryDefId.equals(ObjectKeys.DEFAULT_ENTRY_TASK_DEF);
+	private static boolean isTaskEntryType(String family) {
+		return ObjectKeys.FAMILY_TASK.equals(family);
 	}
 
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
 		Definition entryDef = entry.getEntryDef();
-		String entryDefId = entryDef.getId();
-		TaskHelper.adjustTaskAttributesDependencies(entry, entryDefId, formData, newPriority, newStatus, newCompleted);
+		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
+		TaskHelper.adjustTaskAttributesDependencies(entry, family, formData, newPriority, newStatus, newCompleted);
 	}
 	
-	public static void adjustTaskAttributesDependencies(FolderEntry entry, String entryDefId, Map formData, String newPriority, String newStatus, String newCompleted) {
-		if ((entryDefId != null && !TaskHelper.isTaskEntryType(entryDefId)) ||
+	public static void adjustTaskAttributesDependencies(FolderEntry entry, String typeOfEntry, Map formData, String newPriority, String newStatus, String newCompleted) {
+		if ((typeOfEntry != null && !TaskHelper.isTaskEntryType(typeOfEntry)) ||
 				(entry != null && !TaskHelper.isTaskEntryType(entry))) {
 			return;
 		}

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -414,5 +415,35 @@ public class DefinitionHelper {
     	
     	return result;
     }
+    
+    public static String findFamily(Document definitionConfig) {
+    	if (definitionConfig != null) {
+    		org.dom4j.Element root = definitionConfig.getRootElement();
+	      	if (root != null) {
+	      		org.dom4j.Element family = (org.dom4j.Element) root.selectSingleNode("./properties/property[@name='family']");
+	      		if (family != null && !family.attributeValue("value", "").equals("")) {
+	      			return family.attributeValue("value", "");
+	      		}
+	      	}
+    	}
+    	return null;
+    }
+    
+    
+	public static List findPlacesAttributes(Document definitionConfig) {
+		List result = new ArrayList();
+		
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and @name='places']/properties/property[@name='name']/@value");
+    	if (nodes == null) {
+    		return result;
+    	}
+    	
+    	Iterator it = nodes.iterator();
+    	while (it.hasNext()) {
+    		Node node = (Node)it.next();
+    		result.add(node.getStringValue());
+    	}
+    	return result;
+	}
     
 }

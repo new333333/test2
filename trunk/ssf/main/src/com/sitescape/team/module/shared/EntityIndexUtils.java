@@ -49,6 +49,7 @@ import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
+import com.sitescape.team.web.util.DefinitionHelper;
 
 /**
  * Index the fields common to all Entry types.
@@ -425,15 +426,10 @@ public class EntityIndexUtils {
     public static void addFamily(Document doc, DefinableEntity entry) {
         if (entry.getEntryDef() != null) {
         	org.dom4j.Document def = entry.getEntryDef().getDefinition();
-        	if (def != null) {
-        		org.dom4j.Element root = def.getRootElement();
-    	      	if (root != null) {
-    	      		org.dom4j.Element family = (org.dom4j.Element) root.selectSingleNode("./properties/property[@name='family']");
-    	      		if (family != null && !family.attributeValue("value", "").equals("")) {
-    	      			Field eField = new Field(FAMILY_FIELD, family.attributeValue("value", ""), Field.Store.NO, Field.Index.UN_TOKENIZED);
-            	       	doc.add(eField);
-    	      		}
-    	      	}
+        	String family = DefinitionHelper.findFamily(def);
+        	if (family != null) {
+      			Field eField = new Field(FAMILY_FIELD, family, Field.Store.NO, Field.Index.UN_TOKENIZED);
+    	       	doc.add(eField);	
         	}
         }
     }

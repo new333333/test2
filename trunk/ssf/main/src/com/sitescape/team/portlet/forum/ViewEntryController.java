@@ -349,15 +349,6 @@ public class ViewEntryController extends  SAbstractController {
 		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 			accessControlEntryMap.put("addReply", new Boolean(true));
 			List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
-			// remove survey vote from list
-			Iterator replyStylesIt = replyStyles.iterator();
-			while (replyStylesIt.hasNext()) {
-				String replyStyleId = (String)replyStylesIt.next();
-				if (ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF.equals(replyStyleId)) {
-					replyStylesIt.remove();
-				}
-			}
-			
 			if (!replyStyles.isEmpty()) {
 				if (replyStyles.size() == 1) {
 					//There is only one reply style, so show it not as a drop down menu

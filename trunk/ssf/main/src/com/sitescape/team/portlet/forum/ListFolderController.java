@@ -62,6 +62,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
@@ -351,12 +352,6 @@ public static final String[] monthNamesShort = {
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//In Blog style we only want to show this entry
 			if (!entryIdToBeShown.equals("")) options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
-		}
-		if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-			Map fieldsData = getDefinitionModule().getEntryDefinitionElements(ObjectKeys.DEFAULT_ENTRY_TASK_DEF);
-			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
-			
-			
 		}
 
 		//Checking the Sort Order that has been set. If not using the Default Sort Order
@@ -649,6 +644,10 @@ public static final String[] monthNamesShort = {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
 			}
+			if (viewType.equals(Definition.VIEW_STYLE_MILESTONE)) {
+				//Get the list of all entries to build the archive list
+				loadFolderStatisticsForPlacesAttributes(response, folder, options, model, folderEntries);
+			}			
 			// viewType == task is pure ajax solution (view AjaxController)
 
 		}
@@ -784,9 +783,6 @@ public static final String[] monthNamesShort = {
 		} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-		} else if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-//			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
-//			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 		}
 		
 	}
@@ -911,6 +907,57 @@ public static final String[] monthNamesShort = {
 	//Routine to build the beans for the blog archives list
 	public void buildWikiBeans(RenderResponse response, Binder binder, Map options, Map model, Map folderEntries) {
 		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
+	}
+	
+	//Routine to build the beans for the blog archives list
+	public void loadFolderStatisticsForPlacesAttributes(RenderResponse response, Binder binder, Map options, Map model, Map folderEntries) {
+		if (folderEntries.get(ObjectKeys.SEARCH_ENTRIES) == null) {
+			return;
+		}
+		Map folders = new HashMap();
+		
+		List placesIds = new ArrayList();
+		
+		Iterator it = ((List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES)).iterator();
+		while (it.hasNext()) {
+			Map entry = (Map)it.next();
+			String definitionId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+			if (definitionId == null) {
+				continue;
+			}
+			Definition def = DefinitionHelper.getDefinition(definitionId);
+			if (def == null) {
+				continue;
+			}
+			Iterator placesAttributeNamesIt = DefinitionHelper.findPlacesAttributes(def.getDefinition()).iterator();
+			while (placesAttributeNamesIt.hasNext()) {
+				String attributeName = (String)placesAttributeNamesIt.next();
+			
+				Object attributeValue = entry.get(attributeName);
+				if (attributeValue != null) {
+					if (attributeValue.getClass().isAssignableFrom(String.class)) {
+						placesIds.add((String)attributeValue);
+					} else if (attributeValue.getClass().isAssignableFrom(SearchFieldResult.class)) {
+						placesIds.addAll(((SearchFieldResult)attributeValue).getValueSet());
+					}
+				}
+			}
+		}
+		
+		Iterator placesIdsIt = placesIds.iterator();
+		while (placesIdsIt.hasNext()) {
+			Long placeId = Long.parseLong((String)placesIdsIt.next());
+			if (folders.get(placeId) != null) {
+				continue;
+			}
+			Folder folder = getFolderModule().getFolder(placeId);
+			folders.put(placeId.toString(), folder);
+		}
+		
+		if (!folders.isEmpty()) {
+			model.put(WebKeys.FOLDERS, folders);
+		}
+		
 	}
 	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,

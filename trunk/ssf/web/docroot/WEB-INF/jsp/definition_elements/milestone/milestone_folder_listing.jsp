@@ -72,6 +72,16 @@
 			  				<ssf:param name="binderId" value="${selection.key}"/>
 			  				<ssf:param name="newTab" value="1"/>
 			  				</ssf:url>"><c:out value="${selection.value.title}" escapeXml="false"/></a>
+			  				
+			  				<c:if test="${!empty ssFolders[selection.key].customAttributes['statistics'].value.value}">		
+				  				<c:forEach var="definition" items="${ssFolders[selection.key].customAttributes['statistics'].value.value}">
+				  					<c:forEach var="attribute" items="${definition.value}">
+				  						<c:if test="${attribute.key == 'status'}">
+				  							<ssf:drawStatistic statistic="${attribute.value}" style="shortColoredBar" showLabel="false" showLegend="false"/>
+				  						</c:if>
+				  					</c:forEach>
+				  				</c:forEach>
+			  				</c:if>
 			  			</li>
 					</c:forEach>
 				</ul>
