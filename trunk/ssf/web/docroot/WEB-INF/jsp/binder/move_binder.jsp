@@ -60,7 +60,7 @@ function ${wsTreeName}_showId(id, obj, action) {
 <ssf:tree treeName="${wsTreeName}"
 	treeDocument="${ssWsDomTree}"  
  	rootOpen="true"
-	singleSelect="true" 
+	singleSelect="" 
 	singleSelectName="destination" />
 
 </div>
