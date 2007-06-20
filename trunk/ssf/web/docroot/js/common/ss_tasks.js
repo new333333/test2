@@ -319,7 +319,7 @@ if (!window.ss_tasks) {
 		
 		function createStatusTD(task) {
 			var tdObj = document.createElement('td');
-			dojo.html.setClass(tdObj, "iconsContainer");
+			dojo.html.setClass(tdObj, "ss_iconsContainer");
 			for (var i in statuses) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
@@ -358,7 +358,7 @@ if (!window.ss_tasks) {
 		
 		function createPriorityTD(task) {
 			var tdObj = document.createElement('td');
-			dojo.html.setClass(tdObj, "iconsContainer");
+			dojo.html.setClass(tdObj, "ss_iconsContainer");
 				
 			for (var i in priorities) {
 				var hrefObj = document.createElement('a');
