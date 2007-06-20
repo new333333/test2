@@ -96,6 +96,15 @@ public interface ObjectKeys {
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
     public static final String DEFINITION_TEAM_TYPE="team";
+    
+    //Default role titles
+    public static final String ROLE_TITLE_VISITOR="__role.visitor";
+    public static final String ROLE_TITLE_PARTICIPANT="__role.participant";
+    public static final String ROLE_TITLE_TEAM_MEMBER="__role.teamMember";
+    public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
+    public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
+    public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin";
+
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";

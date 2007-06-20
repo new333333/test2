@@ -45,7 +45,7 @@
 
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
-<ssf:expandableArea title="<%= function.getName() %>">
+<ssf:expandableArea title="<%= function.getTranslatedName() %>">
 <form class="ss_style ss_form" method="post" 
 	action="<portlet:actionURL><portlet:param 
 		name="action" value="configure_roles"/></portlet:actionURL>">

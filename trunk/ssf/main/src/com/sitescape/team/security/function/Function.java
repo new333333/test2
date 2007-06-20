@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
@@ -65,11 +66,14 @@ public class Function {
     public String getName() {
         return name;
     }
+    public String getTranslatedName() {
+        return NLT.getDef(name);
+    }
     public void setName(String name) {
         if(name == null)
             throw new IllegalArgumentException("Name must not be null");
         
-        if(!StringUtils.isAlphanumericSpace(name))
+        if(!StringUtils.isAlphanumericSpace(name.replaceAll("_", "").replaceAll("\\.", "")))
             throw new IllegalArgumentException("Illegal function name [" + name +
                     "]: It must consist of alphanumeric characters only");
         

@@ -447,7 +447,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	private Function addVisitorsRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.visitor", "Visitor"));
+		function.setName(ObjectKeys.ROLE_TITLE_VISITOR);
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
@@ -459,7 +459,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	private Function addParticipantsRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.particpant", "Participant"));
+		function.setName(ObjectKeys.ROLE_TITLE_PARTICIPANT);
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
@@ -476,7 +476,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	private Function addTeamMemberRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.teamMember", "Team member"));
+		function.setName(ObjectKeys.ROLE_TITLE_TEAM_MEMBER);
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
@@ -496,7 +496,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	private Function addBinderRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.binderadmin", "Workspace and folder administration"));
+		function.setName(ObjectKeys.ROLE_TITLE_BINDER_ADMIN);
 		//add all them remove a few
 		for (Iterator iter=WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
 			function.addOperation((WorkAreaOperation)iter.next());			
@@ -511,7 +511,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	private Function addAdminRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.siteadmin", "Site administration"));
+		function.setName(ObjectKeys.ROLE_TITLE_SITE_ADMIN);
 		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
 			function.addOperation(((WorkAreaOperation)iter.next()));
 		}	
@@ -523,7 +523,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	private Function addTeamWorkspaceRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.workspacecreator", "Workspace Creator"));
+		function.setName(ObjectKeys.ROLE_TITLE_WORKSPACE_CREATOR);
 		function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
 		//generate functionId
 		getFunctionManager().addFunction(function);
