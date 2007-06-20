@@ -13,8 +13,8 @@
 	</mailConfiguration>	
 	<ldapConfiguration>	
 		<property name="java.naming.provider.url">ldap://localhost:389</property>
+		<userAttribute>cn</userAttribute>
 		<userMapping>
-			<mapping from="uid" to="name"/>
 			<mapping from="mail" to="emailAddress"/>
 			<mapping from="gn" to="firstName"/>
 			<mapping from="givenName" to="firstName"/>
@@ -26,8 +26,10 @@
 		<groupMapping>
 			<memberAttribute>member</memberAttribute>
 			<memberAttribute>uniqueMember</memberAttribute>	
-			<mapping from="cn" to="name"/>
-			<mapping from="commonName" to="name"/>
+	<!-- For the title attribute, first we try ou.  If cn also exists it will override ou as long as it appears after ou in this mapping -->
+			<mapping from="ou" to="title"/>
+			<mapping from="cn" to="title"/>
+			<mapping from="commonName" to="title"/>
 			<mapping from="description" to="description"/>
 		</groupMapping>
 	</ldapConfiguration>
