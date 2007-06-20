@@ -17,6 +17,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,8 +78,13 @@ public abstract class HtmlConverter extends Converter<String>
         		|| imageurl.startsWith("http:")
         		|| imageurl.startsWith("https:"))
         			src = imageurl;
-        		else
+        		else {
+            		try {
+            			imageurl = URLEncoder.encode(imageurl, "UTF-8");
+            		} catch(UnsupportedEncodingException e) {
+            		}
         			src = newdata + imageurl;
+        		}
         		
         		altdata = tag + predata;
         		altdata += attrtag + (src + "\"" + data.substring(data.indexOf("\"")+1));
@@ -161,7 +168,7 @@ public abstract class HtmlConverter extends Converter<String>
         return;
 	}
 
-	private void cleanUpURLs(String outFile, String url, Long binderId, Long entryId, String fileId)
+	private void cleanUpURLs(String outFile, String url, Long binderId, Long entryId, String entityType, String fileId)
 		throws IOException
 	{
 		try
@@ -170,12 +177,12 @@ public abstract class HtmlConverter extends Converter<String>
 			//outFile = outFile.substring(0, j+1) + fileId + File.separator + outFile.substring(j+1);
 			
 			// When generating the HMTL equivalent file.
-			// Many HTML files can be generated. Open file(s) an make adjustments to image src attribute
+			// Many HTML files can be generated. Open file(s) and make adjustments to image src attribute
 			// Every HTML file in directory should be related to converter process
 			File outputDir = new File(outFile.substring(0, j+1));
 			if (outputDir.isDirectory())
 			{
-				String src = url + "?binderId=" + binderId + "&entryId=" + entryId + "&fileId=" + fileId + "&viewType=XXXX&filename=";
+				String src = url + "?binderId=" + binderId + "&entryId=" + entryId + "&entityType=" + entityType + "&fileId=" + fileId + "&viewType=XXXX&filename=";
 				File[] files = outputDir.listFiles();
 				for (int x=0; x < files.length; x++)
 				{
@@ -195,7 +202,7 @@ public abstract class HtmlConverter extends Converter<String>
 		throws IOException
 	{
 		super.createCachedFile(convertedFile, binder, entry, fa, filePath, relativeFilePath, url);
-		cleanUpURLs(convertedFile.getAbsolutePath(), url, binder.getId(), entry.getId(), fa.getId());
+		cleanUpURLs(convertedFile.getAbsolutePath(), url, binder.getId(), entry.getId(), entry.getEntityType().name(), fa.getId());
 	
 	}
 	
