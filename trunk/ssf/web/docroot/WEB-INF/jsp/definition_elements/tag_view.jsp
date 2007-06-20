@@ -180,13 +180,20 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <tr><td>
   <table class="ss_tag_pane_color"><tbody><tr><td>
     <!--input type="text" class="ss_text" name="communityTag"/ -->
+   
+<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">    
 <ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
+</ssf:ifAccessAllowed>
    
     </td><td style="padding-left:4px;">
+    
+    <ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">  
     <a class="ss_linkButton" href="#" 
       onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');return false;"
       <ssf:title tag="title.add.community.tags" />
     ><ssf:nlt tag="button.add"/></a>
+    </ssf:ifAccessAllowed>  
+
     </td></tr>
   </tbody></table>
 </td></tr>
