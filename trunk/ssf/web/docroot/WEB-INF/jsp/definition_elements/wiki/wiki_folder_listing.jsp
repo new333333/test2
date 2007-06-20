@@ -79,7 +79,6 @@
 	    </c:if>
 
         <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
-        <div class="ss_blog_sidebar_box">		
 	    <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
 	    	action="<portlet:actionURL 
@@ -99,7 +98,6 @@
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
 		</c:if>
-		</div>
 	  <br/>
 
 
@@ -172,6 +170,7 @@
        </div>
       </ssf:expandableArea>
 
+    <c:if test="${!empty ssFolderEntryCommunityTags}"> 
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
     <div class="ss_blog_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryCommunityTags}">
@@ -183,14 +182,15 @@
 					class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 					<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>
 					<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>"
-
 					  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
 					  	<ssf:param name="value" value="${tag.ssTag}" />
 					  </ssf:title>
 					>${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		   </c:if>
-    </div>		
+    </div>
+    </c:if>
+    <c:if test="${!empty ssFolderEntryPersonalTags}"> 
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
     <div class="ss_blog_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryPersonalTags}">
@@ -210,8 +210,7 @@
 		   </c:forEach>
 		   </c:if>
     </div>		
-
-
+	</c:if>
    </div>
   </div>
   <div class="ss_clear_float">

@@ -118,11 +118,10 @@
 		    clickRoutine="ss_loadPhotoEntryId${renderResponse.namespace}"/> 
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
-	    <br/>
 		
-		<span class="ss_bold">
+		  <div style="margin-top: 15px;">
 		  <c:if test="${ssConfigJspStyle != 'template'}">
-		  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="${action}"/>
 			<portlet:param name="operation" value="save_folder_sort_info"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -134,12 +133,10 @@
 		  <c:if test="${ssConfigJspStyle == 'template'}">
 		    <ssf:nlt tag="photo.showAll"/>
 	      </c:if>
-		</span>
-		<br/>
-		  
-		<span class="ss_bold">
+		  </div>
+		  <div style="margin-top: 5px;">		  		  
 		  <c:if test="${ssConfigJspStyle != 'template'}">
-		  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="${action}"/>
 			<portlet:param name="operation" value="save_folder_sort_info"/>
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -151,11 +148,9 @@
 		  <c:if test="${ssConfigJspStyle == 'template'}">
 			<ssf:nlt tag="photo.showRecent"/>
 		  </c:if>
-		</span>
-		<br/>
-		<br/>
-
+		  </div>
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
+        <div class="ss_blog_sidebar_box">		
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  <tr>
@@ -166,8 +161,11 @@
 		  </tr>
 		</c:forEach>
 		</table>
+        </div>		
 		
+       <c:if test="${!empty ssFolderEntryCommunityTags}"> 
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+        <div class="ss_blog_sidebar_box">		
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 
@@ -175,21 +173,21 @@
 					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
 					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
-		
+        </div>		
+       </c:if>
+       <c:if test="${!empty ssFolderEntryPersonalTags}"> 
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
-
-		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
-		
+        <div class="ss_blog_sidebar_box">		
+		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">		
 		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="view_folder_listing"/><portlet:param 
 				name="binderId" value="${ssBinder.id}"/><portlet:param 
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
-						
+				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;						
 		   </c:forEach>
+		</div>
+	   </c:if>
 	  </div>
      </div>
-
-
-	  <div class="ss_clear_float"></div>
+	 <div class="ss_clear_float"></div>
    </div>
