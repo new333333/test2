@@ -16,11 +16,11 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ssComponentId}">
-<c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
+	<c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
 </c:if>
 <c:set var="portletNamespace" value=""/>
 <ssf:ifnotadapter>
-<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
+	<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
 </ssf:ifnotadapter>
 
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
@@ -28,7 +28,7 @@
 
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
+	<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
@@ -50,7 +50,7 @@ function ${ss_divId}_taskurl(binderId, entryId, type) {
 </c:if>
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
-<table class="ss_style" cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
@@ -64,10 +64,9 @@ function ${ss_divId}_taskurl(binderId, entryId, type) {
 </tr>
 </c:forEach>
 </table>
-<br/>
 </c:if>
 
-<div id="${ss_divId}">
+<div id="${ss_divId}" width="100%">
 <%@ include file="/WEB-INF/jsp/dashboard/task_view2.jsp" %>
 </div>
 

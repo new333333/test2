@@ -4212,12 +4212,23 @@ ul.ss_statisticLegend {
 /* Statistic styles - end */
 
 /* Tasks */
+div.ss_task_list_container {
+	<c:if test="<%= isIE %>">
+		height:1%;
+	</c:if>
+	margin:0px; 
+	padding:0px;
+	width:100%;
+}
 table.ss_tasks_list {
 	width:100%;
-	margin-top:6px;
+	margin:6px 0px 0px 0px;
 	padding: 0px;
 	border-collapse: collapse;
 	border:1px solid #afc8e3;
+	<c:if test="<%= isIE %>">
+		float:left;
+	</c:if>
 }
 table.ss_tasks_list th {
 	background-color: #dbe6f2;
@@ -4228,13 +4239,12 @@ table.ss_tasks_list th {
 	overflow: visible;
 }
 table.ss_tasks_list td {
-	padding: 3px 2px 3px 2px;
+	padding: 3px 0px 3px 2px;
 	border: 1px solid #afc8e3;
 }
-table.ss_tasks_list td.iconsContainer {
+table.ss_tasks_list td.ss_iconsContainer {
 	white-space: nowrap;
 }
-
 table.ss_tasks_list ul, table.ss_tasks_list li {
 	margin:0px;
 	padding:0px;
@@ -4314,9 +4324,9 @@ div.ss_bar_status {
 a.ss_taskStatus img {
 	width: 21px;
 	height: 22px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -4344,9 +4354,9 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 a.ss_taskPriority img {
 	width: 21px;
 	height: 22px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
