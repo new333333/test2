@@ -28,7 +28,20 @@
 	<base target="_self" />
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
-
+<form method="post" name="ss_findWikiPageForm"
+	action="">
+ <ssf:find formName="ss_findWikiPageForm" 
+    formElement="searchTitle" 
+    type="entries"
+    width="140px" 
+    binderId="${ssBinderId}"
+    searchSubFolders="false"
+    singleItem="true"
+    clickRoutine="ss_loadWikiEntryId"
+    accessibilityText="wiki.findPage"
+    /> 
+<input type="hidden" name="searchTitle"/>
+</form>
 <a href="javascript:;" onClick="ss_insertICElink('4', 'testpage', 'test text', '${binderId}');">TEST</a>
 <p>
 <a href="javascript:;" onClick="ss_insertICElink('${binderId}', 'testpage', 'local page', '${binderId}');">Local</a>
