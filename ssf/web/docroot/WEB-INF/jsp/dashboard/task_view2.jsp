@@ -33,13 +33,13 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 	background-position: left top; 
 }
 </style>
-
-<div class="ss_blog">
+<div class="ss_task_list_container">
 <table class="ss_tasks_list">
+	<tbody>
 	<tr>
-		<th><ssf:nlt tag="task.dueDate"/></th>
-		<th><ssf:nlt tag="task.priority"/></th>
 		<th><ssf:nlt tag="task.title"/></th>
+		<th><ssf:nlt tag="task.priority"/></th>
+		<th><ssf:nlt tag="task.dueDate"/></th>
 		<th><ssf:nlt tag="task.status"/></th>
 		<th><ssf:nlt tag="task.assigned"/></th>
 		<th><ssf:nlt tag="task.done"/></th>		
@@ -50,36 +50,8 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
   <c:set var="hitCount" value="${hitCount + 1}"/>
 
 	<tr>
-		<td>
-			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
-				  dateStyle="medium" timeStyle="short" />
-		</td>
-		<td>
-			<c:if test="${! empty entry.priority}">
-				<c:forEach var="prio" items="${ssEntryDefinitionElementData.priority.values}">
-					<a href="javascript: // ;"
-						<c:if test="${entry.priority == prio.key}">
-							class="ss_taskPriority"
-						</c:if>
-						<c:if test="${entry.priority != prio.key}">
-							class="ss_taskPriority ss_taskPriority_${prio.key}_u"
-						</c:if>
-						><img 
-						<c:if test="${entry.priority == prio.key}">
-						src="<html:imagesPath/>icons/prio_${prio.key}.gif"
-						</c:if>
-						<c:if test="${entry.priority != prio.key}">
-						src="<html:imagesPath/>pics/1pix.gif"
-						</c:if>
-						alt="${prio.value}" title="${prio.value}"
-					>
-				</c:forEach>
-			</c:if>
-		</td>
-		<td>
-			<span class="ss_entryTitle ss_normalprint">
-				<c:set var="isDashboard" value="yes"/>
+		<td class="ss_entryTitle ss_normalprint">
+			<c:set var="isDashboard" value="yes"/>
 				
 			<ssf:menuLink 
 				displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -96,35 +68,18 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 				
 					<c:out value="${entry.title}" escapeXml="false"/>
 				</ssf:menuLink>
-			</span>
 		</td>
+		<td class="ss_iconsContainer"><c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${ssEntryDefinitionElementData.priority.values}"><a href="javascript:;" <c:if test="${entry.priority == prio.key}">	class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}"> class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
 		<td>
-			<c:if test="${! empty entry.status}">
-				<c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}">
-					<a href="javascript: //"
-						<c:if test="${entry.status == status.key}">
-							class="ss_taskStatus"
-						</c:if>
-						<c:if test="${entry.status != status.key}">
-							class="ss_taskStatus ss_taskStatus_${status.key}_u"
-						</c:if>>
-						<img 
-						<c:if test="${entry.status == status.key}">
-							src="<html:imagesPath/>icons/status_${status.key}.gif" 
-						</c:if>
-						<c:if test="${entry.status != status.key}">
-							src="<html:imagesPath/>pics/1pix.gif" 
-						</c:if>
-						alt="${status.value}" title="${status.value}">
-					</a>
-				</c:forEach>
-				
-			</c:if>
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
+				  dateStyle="short" timeStyle="short" />
 		</td>
+		<td class="ss_iconsContainer"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${ssEntryDefinitionElementData.status.values}"><a href="javascript: //" <c:if test="${entry.status == status.key}"> class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}"> class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
 		<td>
 			<ul>
 				<c:forEach var="assigned" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>">
-					<li><ssf:showUser user="${assigned}" /></li>
+					<li><ssf:showUser user="${assigned}"/></li>
 				</c:forEach>
 			</ul>
 		</td>
@@ -145,12 +100,11 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 	</tr>
 
 </c:forEach>
+	<tbody>
 </table>
-			
 </div>
-
-<div>
-  <table width="100%">
+			
+<table>
    <tr>
     <td valign="top">
 <c:if test="${hitCount > 0}">
@@ -189,8 +143,7 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 	  </c:if>
     </td>
    </tr>
-  </table>
-</div>
+</table>
 
 <ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
 	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
