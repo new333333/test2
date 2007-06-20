@@ -925,6 +925,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 			model.put(WebKeys.ENTRY, binder);
+			model.put(WebKeys.BINDER, binder);
 		} else {
 			FolderEntry entry = getFolderModule().getEntry(binderId, entityId);
 			Map tagResults = TagUtil.uniqueTags(getFolderModule().getTags(entry));
