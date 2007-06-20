@@ -53,8 +53,6 @@
 <div class="ss_style ss_portlet_style">
 
 	<div class="ss_searchContainer">
-		<div id="ss_searchForm_spacer"></div>
-
 		<div id="ss_content">
 			<c:set var="disableSearchButton" value="1"/>
 			<c:set var="activateDashboardFolder" value="true"/>
