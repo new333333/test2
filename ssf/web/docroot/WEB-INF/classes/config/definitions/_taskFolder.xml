@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <definition name="_taskFolder" caption="__definition_default_folder_task" type="5" nextId="11" definitionType="5" databaseId="402883c1129b1f8101129b28bc620003">
   <item name="folderForm" caption="__folder_form" type="form" id="1">
     <properties/>
@@ -54,6 +55,7 @@
   <properties>
     <property name="name" value="_taskFolder"/>
     <property name="caption" value="__definition_default_folder_task"/>
-	<property name="icon" value="/icons/folder_blue_guestbook.gif" /> 
+    <property name="family" value="task"/>
+    <property name="icon" value="/icons/folder_blue_guestbook.gif"/>
   </properties>
 </definition>
