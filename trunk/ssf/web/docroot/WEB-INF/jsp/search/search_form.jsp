@@ -45,8 +45,6 @@
 						<td id="ss_content_container">
 				
 							<div class="ss_searchContainer">
-								<div id="ss_searchForm_spacer"></div>
-						
 								<div id="ss_content">
 									<c:if test="${quickSearch}">
 										<!-- Quick search form -->

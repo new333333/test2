@@ -44,8 +44,6 @@
 				<legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/> <ssf:inlineHelp tag="ihelp.other.filters"/></legend>
 				<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType"/></span><br/><br/>
 				<div class="ss_searchContainer" style="margin-left: 0;">
-					<div id="ss_searchForm_spacer"></div>
-			
 					<div id="ss_content">
 						<c:set var="disableSearchButton" value="1"/>	
 						<c:set var="filterDefinition" value="true"/>				

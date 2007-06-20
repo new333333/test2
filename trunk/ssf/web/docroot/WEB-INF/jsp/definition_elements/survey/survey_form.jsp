@@ -42,7 +42,6 @@
   
 			<c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
 		<div class="ss_surveyContainer">
-			<div id="ss_surveyForm_spacer">&nbsp;</div>
 			<div id="ss_content">
 
 				<div id="ss_surveyForm_container">

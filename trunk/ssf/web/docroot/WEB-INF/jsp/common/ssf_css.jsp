@@ -3844,30 +3844,30 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
     vertical-align:top;
 }
 div.ss_searchContainer, div.ss_surveyContainer {
-	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;
-	margin-left: 15px;
+	background: transparent url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
+	padding:5px 0px 0px 0px;
+	margin: 0 0 0 15px;
+	border-right:1px solid #afc8e3;
+	width:95%;
+<c:if test="<%= isIE %>">
+  zoom:1; /* a workaround IE bug */
+</c:if>	
 }
 div.ss_searchContainer #ss_content { 
 	border-left: 1px solid #afc8e3; 
-	border-right: 1px solid #afc8e3;
     border-bottom: 1px solid #afc8e3; 
-	margin: 0px; 
+	margin: 0px;
 	padding: 0px;
-	width: 491px;
+<c:if test="<%= isIE %>">
+  zoom:1; /* a workaround IE bug */
+</c:if>	
 }
-#ss_searchForm_container, #ss_surveyForm_container {margin:0px; padding:0px;	}
-#ss_searchForm_spacer, #ss_surveyForm_spacer {
-	background: #e8eff7 url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
-	margin:0px 0px 0px 5px;
-	padding:0px;
-	height:5px;
-	line-height:1px; 
-	font-size:0px;
-	border-right:1px solid #afc8e3;
-}
+
+#ss_searchForm_container, #ss_surveyForm_container {margin:0px; padding:0px; width:100%;}
 #ss_searchForm, #ss_surveyForm {
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
 	padding:6px;
+	margin:0px;
 	border-bottom:1px solid #afc8e3;
 }
 #ss_surveyForm_main form {
@@ -3887,6 +3887,12 @@ div.ss_searchContainer #ss_content {
 #ss_searchForm li {
 	margin: 0;
 	padding: 0;
+}
+#ss_searchForm_additionalFilters {
+	background-color:#ffffff;
+	margin:0px;
+	padding:0px;
+	width:100%;
 }
 a.ss_searchButton img {
 	width: 22px;
@@ -4007,9 +4013,6 @@ span.ss_pageNumber a {
 a.ss_pageNumberCurrent {
 	font-size: 14px;
 }
-
-#ss_searchForm_additionalFilters {background-color:#ffffff;}
-
 div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0px;padding:0px 12px 12px 12px;}
 div.ss_options {padding: 6px 0px 12px 0px;}
 div.ss_options_container h4 {margin:6px 0px 6px 0px;}
