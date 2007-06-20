@@ -1543,5 +1543,22 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>
+	
+	<tag>
+		<name>ifAccessAllowed</name>
+		<tag-class>com.sitescape.team.taglib.IfAccessAllowedTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>binder</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>operation</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>			
+	</tag>
 
 </taglib>
