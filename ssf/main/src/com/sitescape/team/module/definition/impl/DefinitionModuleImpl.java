@@ -43,9 +43,11 @@ import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -590,8 +592,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//no access - fixing up stuff
 		//Create an empty entry definition
 		int definitionType;
-		if (entry instanceof Principal) {
+		if (entry instanceof User) {
 			definitionType = Definition.PROFILE_ENTRY_VIEW;
+		} else	if (entry instanceof Group) {
+			definitionType = Definition.PROFILE_GROUP_VIEW;
 		} else {
 			definitionType = Definition.FOLDER_ENTRY;
 		}

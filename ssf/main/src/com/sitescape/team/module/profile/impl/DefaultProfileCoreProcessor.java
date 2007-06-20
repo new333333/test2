@@ -490,7 +490,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        		}
         			inList.deleteCharAt(inList.length()-1);
         			//set creator to user, but do in bulk to reduce database update operations
-        			getCoreDao().executeUpdate("Update com.sitescape.team.domain.Principal " +
+        			if (definition.getType() == Definition.PROFILE_ENTRY_VIEW)
+        				getCoreDao().executeUpdate("Update com.sitescape.team.domain.Principal " +
         					" set creation_principal=id,modification_principal=id where id in (" + inList + ")");
 
 	                return newEntries;

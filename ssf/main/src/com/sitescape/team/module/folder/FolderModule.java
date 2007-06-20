@@ -189,7 +189,7 @@ public interface FolderModule {
 	public void setUserRating(Long folderId, long value) throws AccessControlException;
 	public void setUserVisit(FolderEntry entry);
     public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) throws AccessControlException;
-    
+ //   public void setVote(Long folderId, Long entryId, String definitionId)
     public boolean testAccess(Folder folder, FolderOperation operation);
     public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException;
     public boolean testAccess(FolderEntry entry, FolderOperation operation);

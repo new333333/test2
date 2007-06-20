@@ -11,7 +11,7 @@
 
 package com.sitescape.team.module.ldap;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.sitescape.team.jobs.ScheduleInfo;
@@ -86,7 +86,7 @@ public class LdapConfig extends ScheduleInfo {
 	}
 	public Map getUserMappings() {
 		Map result = (Map)details.get(USERS_MAPPINGS);
-		if (result == null) return new HashMap();
+		if (result == null) return new LinkedHashMap(); //maintain order
 		return result;
 	}
 	public void setUserMappings(Map mappings) {
