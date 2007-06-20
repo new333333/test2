@@ -4206,7 +4206,10 @@ div.statistic5 {background-color:#72AF58;}
 div.statistic6 {background-color:#617F9F;}
 div.statistic7 {background-color:#547AA5;}
 
-div.ss_statisticBar {float:left;color:#ffffff;}
+div.ss_statisticBar {
+	float: left;
+	color: #ffffff;
+}
 h5.ss_statisticLabel {
 	margin:6px 0px 0px 6px;
 }

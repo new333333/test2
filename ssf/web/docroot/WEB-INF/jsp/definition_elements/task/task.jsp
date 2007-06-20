@@ -50,16 +50,27 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 	}
 
 %>
-<c:set var="statusStatistics" value="<%= statusStatistics %>" />
-<c:set var="priorityStatistics" value="<%= priorityStatistics %>" />
 
-<c:if test="${!empty statusStatistics}">
-	<ssf:drawStatistic statistic="${statusStatistics}"/>
-</c:if>
-<c:if test="${!empty priorityStatistics}">
-	<ssf:drawStatistic statistic="${priorityStatistics}" style="shortColoredBar" showLabel="true" showLegend="false"/>
-</c:if>
 <!------------- STATISTICS END ------------------>
+
+
+
+<c:if test="${!empty ssBinder.customAttributes['statistics'].value.value}">		
+	<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
+		<c:forEach var="attribute" items="${definition.value}">
+			<c:choose>
+				<c:when test="${attribute.key == 'priority'}">
+					<ssf:drawStatistic statistic="${attribute.value}" style="shortColoredBar" showLabel="true" showLegend="false"/>
+				</c:when>			
+				<c:when test="${attribute.key == 'status'}">
+					<ssf:drawStatistic statistic="${attribute.value}"/>
+				</c:when>
+			</c:choose>
+		</c:forEach>
+	</c:forEach>
+</c:if>
+
+
 
 
 <div class="ss_folder_border">

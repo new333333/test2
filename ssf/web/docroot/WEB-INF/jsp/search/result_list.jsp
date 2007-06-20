@@ -33,74 +33,8 @@
 				}
 			%>
 				
-			<c:set var="surveyVoteDefinitionId" value="<%= ObjectKeys.DEFAULT_ENTRY_SURVEY_VOTE_DEF  %>" />
 			<li>
 				<c:choose>
-					<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry' &&
-									entry._entryType == 'reply' && entry._commandDef == surveyVoteDefinitionId}">
-						<div class="ss_thumbnail">
-							<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
-						</div>
-						<div class="ss_entry">
-							<div class="ss_entryHeader">
-								<h3 class="ss_entryTitle">
-
-									<ssf:menuLink 
-										displayDiv="false" entryId="${entry._entryParentId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._entryParentId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
-										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-										
-										<ssf:param name="url" useBody="true">
-											<c:if test="${isDashboard == 'yes'}">
-												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-												action="view_folder_entry" entryId="${entry._entryParentId}" actionUrl="true" />
-											</c:if>
-											
-											<c:if test="${empty isDashboard || isDashboard == 'no'}">
-												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-					      						action="view_folder_entry" entryId="${entry._entryParentId}" actionUrl="true" />
-											</c:if>
-										</ssf:param>
-									
-									    <c:if test="${empty entry.title}">
-									    	(<ssf:nlt tag="entry.noTitle"/>)
-									    </c:if>
-								    	<c:out value="${entry.title}"/>
-									</ssf:menuLink>
-
-								</h3>
-								<div class="ss_clear">&nbsp;</div>
-							</div>
-						</div>
-						<div class="ss_clear">&nbsp;</div>
-										
-						<div id="details_${status.count}" class="ss_entryDetails">
-							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
-							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
-							<c:if test="${!empty entry._workflowStateCaption}">
-								<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> <c:out value="${entry._workflowStateCaption}" /></p>
-							</c:if>
-							<c:if test="${!empty entry.binderTitle}">
-								<ssf:nlt tag="searchResult.label.binder" />: <a 
-								<c:if test="${isDashboard == 'yes'}">
-									href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
-										<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
-								</c:if>
-								<c:if test="${empty isDashboard || isDashboard == 'no'}">
-							     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
-					    			<ssf:param name="binderId" value="${entry._binderId}"/>
-    	  							<ssf:param name="newTab" value="1"/>
-    	  							</ssf:url>" 
-    	  						</c:if>
-								class="ss_parentPointer">
-								${entry.binderTitle}
-								</a>
-							</c:if>
-						</div>
-					</c:when>
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 							<div class="ss_thumbnail">
 								<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>

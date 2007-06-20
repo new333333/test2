@@ -108,7 +108,9 @@ public class Statistics implements Serializable {
 			
 			Map attributeStats = new HashMap();
 			attributeStats.put(TOTAL_KEY, 0);
-			attributeStats.put(ATTRIBUTE_CAPTION, attributeCaption);
+			if (attributeCaption != null) {
+				attributeStats.put(ATTRIBUTE_CAPTION, attributeCaption);
+			}
 			attributeStats.put(CAPTIONS, attributeCaptions);
 			attributeStats.put(VALUES, attributeAllowedValues);
 			entryDefinitionIdStats.put(attribute.getName(), attributeStats);
