@@ -161,6 +161,16 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="family" caption="__family" type="selectbox" 
+				  default="" value="">
+				<option name="" caption="__family_unspecified" />
+				<option name="calendar" caption="__family_calendar" />
+				<option name="task" caption="__family_task" />
+				<option name="milestone" caption="__family_milestone" />
+				<option name="photo" caption="__family_photo" />
+				<option name="file" caption="__family_file" />
+				<help>ihelp.other.definition_family</help>
+			</property>
 			<property name="icon" caption="__icons.entry" type="iconList" path="icons.entry" 
 				default="/icons/page.png" />
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
@@ -437,6 +447,15 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="family" caption="__family" type="selectbox" 
+				  default="" value="">
+				<option name="" caption="__family_unspecified" />
+				<option name="calendar" caption="__family_calendar" />
+				<option name="task" caption="__family_task" />
+				<option name="milestone" caption="__family_milestone" />
+				<option name="file" caption="__family_file" />
+				<help>ihelp.other.definition_family</help>
+			</property>
 			<property name="icon" caption="__icons.folder" type="iconList" 
 				path="icons.folder" default="/icons/folder.png" />
 		</properties>
@@ -1063,6 +1082,14 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="family" caption="__family" type="selectbox" 
+				  default="" value="">
+				<option name="" caption="__family_unspecified" />
+				<option name="workspace" caption="__family_workspace" />
+				<option name="team" caption="__family_team" />
+				<option name="project" caption="__family_project" />
+				<help>ihelp.other.definition_family</help>
+			</property>
 			<property name="icon" caption="__icons.workspace" type="iconList" 
 				path="icons.workspace" default="/icons/workspace.gif" />
 		</properties>
@@ -1174,13 +1201,37 @@
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="family" caption="__family" type="selectbox" 
+				  default="user" value="user">
+				<option name="user" caption="__family_user" />
+				<help>ihelp.other.definition_family</help>
+			</property>
 		</properties>
 		<options>
-			<option name="workspaceForm" initial="true" />
+			<option name="userWorkspaceForm" initial="true" />
 			<option name="userWorkspaceView" initial="true" />
 		</options>
 	</item>
 	
+<!-- User Workspace view -->
+	<item name="userWorkspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options optionCaption="__standard_entry_options">
+		<!-- no title modifications on user workspaces -->
+			<option name="description" initial="true" />
+			<option name="workspaceIcon" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="graphic" />
+			<option name="file" />
+			<option name="attachFiles" />
+			<option_select path="//item[@category='workspaceData']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
+		</jsps>
+	</item>
+
 <!-- User Workspace view -->
 	<item name="userWorkspaceView" caption="__user_workspace_view" canBeDeleted="false" 
 		multipleAllowed="false" >		

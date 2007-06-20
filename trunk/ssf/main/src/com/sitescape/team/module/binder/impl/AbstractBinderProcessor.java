@@ -1414,6 +1414,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add command definition
         EntityIndexUtils.addCommandDefinition(indexDoc, entity); 
        
+        // Add definition family
+        EntityIndexUtils.addFamily(indexDoc, entity); 
+       
         // Add ancestry 
         EntityIndexUtils.addAncestry(indexDoc, entity);
         

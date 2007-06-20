@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <definition name="_userWorkspace" caption="__definition_default_user_workspace" type="12" nextId="10" definitionType="12" databaseId="402883b90cc53079010cc539bf26000b" internalId="402883b90cc53079010cc539bf26000b">
-  <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
+  <item name="userWorkspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
     <item name="description" caption="__description" type="data" id="3">
       <properties>
@@ -39,6 +39,6 @@
   <properties>
     <property name="name" value="_userWorkspace"/>
     <property name="caption" value="__definition_default_user_workspace"/>
-    <property name="icon" value="/icons/user_workspace.gif"/>
+    <property name="family" value="user"/>
   </properties>
 </definition>

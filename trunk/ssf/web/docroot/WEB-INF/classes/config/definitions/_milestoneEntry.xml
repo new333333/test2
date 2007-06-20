@@ -225,5 +225,6 @@
   <properties>
     <property name="name" value="_milestoneEntry"/>
     <property name="caption" value="__definition_default_milestone_entry"/>
+    <property name="family" value="milestone"/>
   </properties>
 </definition>

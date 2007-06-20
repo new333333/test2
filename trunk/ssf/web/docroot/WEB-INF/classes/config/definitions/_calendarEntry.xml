@@ -173,6 +173,7 @@
   <properties>
     <property name="name" value="_calendarEntry"/>
     <property name="caption" value="__definition_default_calendar_entry"/>
+    <property name="family" value="calendar"/>
     <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
   </properties>
 </definition>

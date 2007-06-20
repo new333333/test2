@@ -114,6 +114,7 @@ public class EntityIndexUtils {
     public static final String ENTITY_FIELD="_entityType";
     public static final String ENTRY_FIELD="_entryType"; 
     public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
+    public static final String FAMILY_FIELD="_family"; 
     public static final String TEAM_MEMBERS_FIELD="_teamMembers";
  //   public static final String GROUP_SEE_COMMUNITY="groupCommunity";
  //   public static final String GROUP_SEE_ANY="groupAny";
@@ -421,6 +422,22 @@ public class EntityIndexUtils {
         }
     }
         
+    public static void addFamily(Document doc, DefinableEntity entry) {
+        if (entry.getEntryDef() != null) {
+        	org.dom4j.Document def = entry.getEntryDef().getDefinition();
+        	if (def != null) {
+        		org.dom4j.Element root = def.getRootElement();
+    	      	if (root != null) {
+    	      		org.dom4j.Element family = (org.dom4j.Element) root.selectSingleNode("./properties/property[@name='family']");
+    	      		if (family != null && !family.attributeValue("value", "").equals("")) {
+    	      			Field eField = new Field(FAMILY_FIELD, family.attributeValue("value", ""), Field.Store.NO, Field.Index.UN_TOKENIZED);
+            	       	doc.add(eField);
+    	      		}
+    	      	}
+        	}
+        }
+    }
+
     public static void addCreationPrincipalId(Document doc, DefinableEntity entry) {
     	//Add the id of the creator (no, not that one...)
         if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
