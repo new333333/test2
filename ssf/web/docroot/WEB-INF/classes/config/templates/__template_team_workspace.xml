@@ -12,15 +12,15 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
-    <property name="functionName">Team member</property>
+    <property name="functionName">__role.teamMember</property>
     <property name="members">-2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
-    <property name="functionName">Workspace and folder administrator</property>
+    <property name="functionName">__role.binderAdmin</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
-    <property name="functionName">Participant</property>
+    <property name="functionName">__role.participant</property>
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
   <definition name="_workspace" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005"/>
