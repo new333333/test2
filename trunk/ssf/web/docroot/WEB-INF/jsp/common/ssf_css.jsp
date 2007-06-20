@@ -2575,9 +2575,11 @@ div.ss_utils_bar_submenu {
 	padding:0px;
 	text-align:left;
 	position:absolute;
-	display:none;
+	display: block;
+	visibility: hidden;
 	z-index:500;
 	border: 1px solid #CCCCCC;
+	white-space: nowrap;
 }
 
 ul.ss_utils_bar_submenu {
