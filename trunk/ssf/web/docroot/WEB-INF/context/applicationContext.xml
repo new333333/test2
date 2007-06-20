@@ -66,14 +66,9 @@
 		<property name="licenseModule"><ref local="licenseModule"/></property>
 	</bean>
 
-	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
-<!-- 	  <bean id="lobHandler" class="com.sitescape.util.dao.hibernate.FrontbaseLobHandler">
-	  </bean>
--->	
-	<!-- Default lob handler -->
+	<!-- Default lob handler.  Override this in applicationContext-ext.xml for specific databases -->
   	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
 	</bean>
-
 	
 	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
@@ -91,14 +86,6 @@
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
   
-<!-- oracle only
-	<bean id="oracleExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
-	</bean>
-	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
-		<property name="nativeJdbcExtractor"><ref local="oracleExtractor"/></property>
-	  </bean>
--->
-
 	<bean id="performanceMonitorInterceptor" class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor">
 	</bean>
 	
