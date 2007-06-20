@@ -32,7 +32,7 @@
 	action="">
  <ssf:find formName="ss_findWikiPageForm" 
     formElement="searchTitle" 
-    type="entries"
+    type="places"
     width="140px" 
     binderId="${ssBinderId}"
     searchSubFolders="false"

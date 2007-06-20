@@ -192,21 +192,19 @@ function ss_findPlacesSelectItem0_${prefix}() {
 //Routine called when item is clicked
 function ss_findPlacesSelectItem${prefix}(obj, type) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
-	var url="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param name="binderId" 
-		value="ss_binderIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
+
+    var url = "<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="ss_binderIdPlaceholder">
+		    <ssf:param name="entityType" value="ss_entityTypePlaceholder" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>" 
 	var id = ss_replaceSubStr(obj.id, 'ss_findPlaces_id_', "");
 	url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
-	if (type == 'folder') {
-		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_folder_listing');
-	} else if (type == 'workspace') {
-		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_ws_listing');
-	} else if (type == 'profiles') {
-		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_profile_listing');
-	} else {
-		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_permalink');
-	}
-	self.location.href = url;	
+	url = ss_replaceSubStr(url, 'ss_entityTypePlaceholder', type);
+	if (ss_gotoPermalink(id, id, type, '${renderResponse.namespace}', 'yes')) return true;
+
+	self.location.href = url;
 	return false;
 }
 

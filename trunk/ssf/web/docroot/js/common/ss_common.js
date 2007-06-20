@@ -156,6 +156,17 @@ if (!ss_onLoadRoutineLoaded) {
 	window.onload = ss_onLoadInit;
 }
 
+//Routine to go to a permalink without actually using the permalink
+function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
+
+	var url = ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab);
+	
+	if (url == "") return true;
+
+	self.location.href = url;
+	return false;
+}
+
 //Routine to navigate to a point on the navigation list
 function ss_navigation_goto(url) {
 	if (self.window != self.top) {
@@ -3261,17 +3272,6 @@ function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab)
 	}
 
 	return url;
-}
-
-//Routine to go to a permalink without actually using the permalink
-function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
-
-	var url = ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab);
-	
-	if (url == "") return true;
-
-	self.location.href = url;
-	return false;
 }
 
 function ss_saveDragId(id) {
