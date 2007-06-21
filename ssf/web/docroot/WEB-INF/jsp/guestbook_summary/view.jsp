@@ -39,4 +39,3 @@ var ss_reloadUrl = "<portlet:renderURL/>";
 </div>
 </div>
 </div>
-</table>
