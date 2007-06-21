@@ -33,7 +33,9 @@
 
 <div class="ss_statisticContainer ${barStyle}">
 	<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
-		<div class="ss_statisticBar statistic${status.index}" style="width:${singleValue.value.percent}%;" title="<ssf:nlt tag="${singleValue.value.label}" />-${singleValue.value.percent}%">${singleValue.value.percent}%</div>
+		<c:if test="${singleValue.value.percent > 0}">
+			<div class="ss_statisticBar statistic${status.index}" style="width:${singleValue.value.percent}%;" title="<ssf:nlt tag="${singleValue.value.label}" /> - ${singleValue.value.percent}%">${singleValue.value.percent}%</div>
+		</c:if>
 	</c:forEach>
 </div>
 <div class="ss_clear"></div>
