@@ -70,6 +70,11 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%> title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot><%--
             --%></c:when><%--
 
+            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageSubscriptionsMenu'}"><%--
+                --%><ssHelpSpot helpId="/workspaces_folders/menus_toolbars/subscriptions" offsetY="-5" offsetX="-10" <%--
+                --%> title="<ssf:nlt tag="helpSpot.subscriptionsMenu"/>"></ssHelpSpot><%--
+            --%></c:when><%--
+
             --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}"><%--
                 --%><ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories"<%--
                 --%><c:if test="<%= !isIE %>"><%--
