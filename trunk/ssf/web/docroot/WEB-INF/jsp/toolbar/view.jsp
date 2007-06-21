@@ -24,8 +24,6 @@
 <c:set var="ss_navbar_style" value="portlet" scope="request"/>
 </c:if>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-
-
 <%
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 %>
@@ -103,46 +101,13 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 	  />
 </c:when>
 </c:choose>			
-
 </div>
 </ssHelpSpot>
 </td>
-<td valign="top" width="30%">
-<ssHelpSpot helpId="navigation_bar/my_teams" 
-  title="<ssf:nlt tag="helpSpot.myTeams"/>"
-  offsetX="-22" offsetY="8" xAlignment="center">
-<div style="padding-top:10px;">
-<a href="javascript: ;" onClick="ss_showMyTeams<portlet:namespace/>();return false;">
-  <ssf:nlt tag="navigation.myTeams"/>
-</a>
-<div id="<portlet:namespace/>ss_myTeams"></div>
-</div>
-</ssHelpSpot>
-</td>
-<td valign="top" width="20%">
-<ssHelpSpot helpId="navigation_bar/create_team_button" 
-  title="<ssf:nlt tag="helpSpot.createTeam"/>"
-  offsetX="-22" offsetY="8" xAlignment="center">
-<div style="padding-top:10px;">
-<c:if test="${empty ss_inlineHelpDivIdNumber}">
-  <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
-</c:if>
-<c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
-<a href="javascript: ;" 
-  onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'navigation_bar/create_team_button', '', 200, 20, 'left', 'top');return false;"
-><ssf:nlt tag="navigation.createTeam"/></a>
-<div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
-<div align="right"><a href="#" 
-  onClick="ss_hideDivNone('<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
-  border="0" alt="<ssf:nlt tag="button.close"/>" 
-  src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>
-<div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}"></div>
-</ssHelpSpot>
-</div>
-</div>
+<td valign="top" width="50%">
+<img src="<html:imagesPath/>icons/toolbar_teaming.gif"/>
 </td>
 </tr>
 </table>
-
 </div>
 </c:if>

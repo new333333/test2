@@ -147,7 +147,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<div class="ss_global_toolbar_quick">
 		<div >
 			<span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span>
-			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced" 
+			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 			  href="<portlet:actionURL windowState="maximized" portletMode="view">
 				<portlet:param name="action" value="advanced_search"/>
 				<portlet:param name="tabTitle" value="SEARCH FORM"/>
@@ -193,7 +193,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div >
 			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText<portlet:namespace/>"
 			  ><ssf:nlt tag="navigation.search"/></label></span>
-			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced" 
+			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 			  href="<portlet:actionURL windowState="maximized" portletMode="view">
 				<portlet:param name="action" value="advanced_search"/>
 				<portlet:param name="tabTitle" value="SEARCH FORM"/>
@@ -378,7 +378,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <div class="ss_global_toolbar ss_global_toolbar_in_portlet">
 <table width="100%" cellpadding="1" cellspacing="0" border="0">
 <tr class="ss_row_txt">
-  <td width="75" rowspan="4"><!-- My workspace -->
+  <td valign="top" width="75" rowspan="5"><!-- My workspace -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace_big" 
       onClick="self.location.href='<portlet:renderURL 
@@ -415,7 +415,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  </div>
 </ssf:ifaccessible>
   </td>
-  <td width="75" rowspan="4"><!-- Favorites -->
+  <td valign="top" width="75" rowspan="5"><!-- Favorites -->
 <ssf:ifnotaccessible>
     <div class="ss_global_toolbar_favs_big" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
       onMouseOver="this.style.cursor = 'pointer';"
@@ -452,15 +452,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
         <ssf:nlt tag="navigation.search"/>
       </label>
     </span>
-		<a class="ss_advanced" style="margin-left: 15px;" href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<a class="ss_advanced ss_fineprint" style="margin-left: 15px;" href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="advanced_search"/>
 		<portlet:param name="tabTitle" value="SEARCH FORM"/>
 		<portlet:param name="newTab" value="0"/>
 		</portlet:actionURL>"
 		><ssf:nlt tag="navigation.search.advanced"/></a>
   </td>
-  <td rowspan="4" width="100%"></td>
-  <td valign="top" rowspan="4"><!-- Help button -->
+  <td rowspan="5" width="100%"></td>
+  <td valign="top" rowspan="5"><!-- Help button -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();return false;"
       onMouseOver="this.style.cursor = 'pointer';">
@@ -529,7 +529,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				<input type="hidden" name="operation" value="ss_searchResults"/>
 		</form>
 		
-		<a class="ss_advanced" href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<a class="ss_advanced ss_fineprint" href="<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="advanced_search"/>
 			<portlet:param name="tabTitle" value="SEARCH FORM"/>
 			<portlet:param name="newTab" value="0"/>
@@ -651,6 +651,45 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssf:ifaccessible>
   </td>
 </tr>
+<tr class="ss_row_last">
+  <td colspan="3" class="ss_global_toolbar_portlet_box" align="left" valign="top">
+
+<div style="float: right; padding-top:5px; padding-bottom: 5px;">
+<ssHelpSpot helpId="navigation_bar/create_team_button" 
+  title="<ssf:nlt tag="helpSpot.createTeam"/>"
+  offsetX="-22" offsetY="8" xAlignment="center">
+<c:if test="${empty ss_inlineHelpDivIdNumber}">
+  <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
+</c:if>
+<c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
+<a class="ss_advanced ss_fineprint" href="javascript: ;" 
+  onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'navigation_bar/create_team_button', '', 200, 20, 'left', 'top');return false;"
+><ssf:nlt tag="navigation.createTeam"/></a>
+<div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
+ <div align="right"><a href="#" 
+  onClick="ss_hideDivNone('<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
+  border="0" alt="<ssf:nlt tag="button.close"/>" 
+  src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>
+ <div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}"></div>
+</div>
+</ssHelpSpot>
+</div>
+
+<ssHelpSpot helpId="navigation_bar/my_teams" 
+  title="<ssf:nlt tag="helpSpot.myTeams"/>"
+  offsetX="-22" offsetY="8" xAlignment="center">
+<div style="padding-top:5px; padding-bottom: 5px;">
+<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeams<portlet:namespace/>();return false;">
+  <ssf:nlt tag="navigation.myTeams"/> <img src="<html:imagesPath/>pics/menudown.gif"/>
+</a>
+<div id="<portlet:namespace/>ss_myTeams"></div>
+</div>
+</ssHelpSpot>
+
+  </td>
+</tr>
+
+
 </table>
 </div>
 </c:if>
