@@ -26,51 +26,24 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 
 <div style="margin:0px;">
 
-<!------------ STATISTICS EXAMPLE -------------->
-<%@ page import="java.util.HashMap" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.sitescape.team.domain.Statistics"%>
-<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Folder" scope="request" />
-<%
-	Map statusStatistics = null;
-	Map priorityStatistics = null;
-	
-	if (ssBinder.getCustomAttribute("statistics") != null) {
-		Statistics statistics = (Statistics)ssBinder.getCustomAttribute("statistics").getValue();
-		if (statistics!=null) {
-			Map allDefinitionStatistics = statistics.getValue();
-			if (allDefinitionStatistics != null) {
-				Map taskStatistics = (Map)allDefinitionStatistics.get("402883c1129b1f8101129b28bbe50002");
-				if (taskStatistics != null) {
-					statusStatistics = (Map)taskStatistics.get("status");
-					priorityStatistics = (Map)taskStatistics.get("priority");
-				}
-			}
-		}
-	}
-
-%>
-
-<!------------- STATISTICS END ------------------>
-
-
-
+<!-- STATISTIC -->
+<table class="ss_statisticTable"><tr>
 <c:if test="${!empty ssBinder.customAttributes['statistics'].value.value}">		
 	<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
 		<c:forEach var="attribute" items="${definition.value}">
 			<c:choose>
 				<c:when test="${attribute.key == 'priority'}">
-					<ssf:drawStatistic statistic="${attribute.value}" style="shortColoredBar" showLabel="true" showLegend="false"/>
+					<td><ssf:drawStatistic statistic="${attribute.value}" style="coloredBar" showLabel="true" showLegend="true"/></td>
 				</c:when>			
 				<c:when test="${attribute.key == 'status'}">
-					<ssf:drawStatistic statistic="${attribute.value}"/>
+					<td><ssf:drawStatistic statistic="${attribute.value}"/></td>
 				</c:when>
 			</c:choose>
 		</c:forEach>
 	</c:forEach>
 </c:if>
-
-
+</tr></table>
+<!-- STATISTIC-END -->
 
 
 <div class="ss_folder_border">
