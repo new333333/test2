@@ -1460,6 +1460,13 @@ public static final String[] monthNamesShort = {
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRIES));
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
+		// iCalendar
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+				viewType.equals(Definition.VIEW_STYLE_TASK)) {
+			qualifiers = new HashMap();
+			footerToolbar.addToolbarMenu("iCalendar", NLT.get("toolbar.menu.iCalendar"), com.sitescape.team.ical.util.UrlUtil.getICalURL(request, forumId, null), qualifiers);
+		}
+
 		// clipboard
 		qualifiers = new HashMap();
 		String contributorIdsAsJSString = "";

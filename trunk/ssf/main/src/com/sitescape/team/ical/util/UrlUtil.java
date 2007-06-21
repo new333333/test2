@@ -25,7 +25,7 @@ import com.sitescape.team.web.util.WebUrlUtil;
 public class UrlUtil {
 
 	/**
-	 * Creates iCalendar URL for given entry.
+	 * Creates iCalendar URL for given entry or forum.
 	 * 
 	 * @param req
 	 * @param binderId
@@ -33,6 +33,9 @@ public class UrlUtil {
 	 * @return
 	 */
 	public static String getICalURL(PortletRequest req, String binderId, String entryId) {
+		if (binderId == null) {
+			throw new IllegalArgumentException("'binderId' is required.");
+		}
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		
 		StringBuffer url = new StringBuffer();
@@ -42,10 +45,13 @@ public class UrlUtil {
 			append("?zn=").
 			append(rc.getZoneName()).
 			append("&bi=").
-			append(binderId).
-			append("&entry=").
-			append(entryId).
-			append("&ui=").
+			append(binderId);
+		
+		if (entryId != null) {
+			url.append("&entry=").append(entryId);
+		}
+		
+		url.append("&ui=").
 			append(rc.getUserId()).
 			append("&pd=").
 			append(rc.getUser().getPasswordDigest());

@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.servlet.ical;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,6 +22,7 @@ import net.fortuna.ical4j.model.Calendar;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.mail.MailModule;
@@ -55,9 +59,12 @@ public class GetController extends SAbstractController {
 			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
-//			Map entries = getFolderModule().getFullEntries(binderId);
-//			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
-//			System.out.println(folderEntries);
+			Map entries = getFolderModule().getFullEntries(binderId);
+			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
+			
+			CalendarOutputter calendarOutputter = new CalendarOutputter();
+			Calendar calendar = getIcalModule().generate(folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+			calendarOutputter.output(calendar, response.getWriter());
 		}
 		
 		response.flushBuffer();
