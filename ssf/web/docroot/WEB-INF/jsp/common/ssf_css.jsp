@@ -827,6 +827,10 @@ DIV.ss_help_moreinfo .document_title {
     font-style: italic;
 }
 
+DIV.ss_style .clickable_item {
+    font-style: italic;
+}
+
 DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
     font-weight: bold;
 }
