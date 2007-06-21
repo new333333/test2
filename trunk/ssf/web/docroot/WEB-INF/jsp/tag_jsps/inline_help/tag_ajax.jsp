@@ -15,6 +15,5 @@
 <%@ page contentType="text/xml; charset=UTF-8" %>
 
 <div class="ss_style" align="left">
-<%@ include file="/WEB-INF/jsp/help/hide_help_panel_button.jsp" %>
   <ssf:nlt tag="${ss_help_panel_tag}"/>
 </div>
