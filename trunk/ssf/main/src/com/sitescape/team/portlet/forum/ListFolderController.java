@@ -10,11 +10,13 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,10 +24,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -37,6 +41,7 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -349,6 +354,7 @@ public static final String[] monthNamesShort = {
 			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
 			if (viewType == null) viewType = "";
 		}
+		
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//In Blog style we only want to show this entry
 			if (!entryIdToBeShown.equals("")) options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
@@ -371,8 +377,6 @@ public static final String[] monthNamesShort = {
 		} else {
 			view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
 		}
-		
-		
 		
 		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
@@ -607,17 +611,231 @@ public static final String[] monthNamesShort = {
 		}
 
 	}
-
 	
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 	}
+
+	private Map findCalendarEvents(RenderRequest request, RenderResponse response, Map model) throws PortletRequestBindingException {
+		Map folderEntries = new HashMap();
+		Map options = new HashMap();
 		
+		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Binder binder = getBinderModule().getBinder(binderId);
+		
+		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
+		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
+		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
+		
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		
+		Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
+		currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
+		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+		EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
+		
+		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
+		Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
+		model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, gridType));
+		model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, gridSize));
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+
+		TimeZone timeZone = user.getTimeZone();
+		
+		Calendar calCurrentDate = new GregorianCalendar(timeZone);
+		calCurrentDate.setTime(currentDate);
+
+		Calendar nextDate = new GregorianCalendar(timeZone);
+		nextDate.setTime(currentDate);
+
+		Calendar prevDate = new GregorianCalendar(timeZone);
+		prevDate.setTime(currentDate);
+
+		Calendar calDateRange = new GregorianCalendar(timeZone);
+		calDateRange.setTime(currentDate);
+		
+		Date startDateRange = new Date();
+		Date endDateRange = new Date();
+		
+       	String strSessGridType = EventsViewHelper.getCalendarGridType(portletSession);
+       	Integer sessGridSize = EventsViewHelper.getCalendarGridSize(portletSession);
+       	String strSessGridSize = "";
+       	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
+      	
+       	if (EventsViewHelper.GRID_MONTH.equals(strSessGridType)) {
+
+    		setStartDayOfMonth(calDateRange);
+    		startDateRange = calDateRange.getTime();
+    		
+    		setEndDayOfMonth(calDateRange);
+    		endDateRange = calDateRange.getTime();
+       		
+       		nextDate.add(Calendar.MONTH, 1);
+       		prevDate.add(Calendar.MONTH, -1);
+       		
+       	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType)) {
+       		if (strSessGridSize.equals("1") || strSessGridSize.equals("-1") || strSessGridSize.equals("")) {
+       			setStartOfDay(calDateRange);
+       			startDateRange = calDateRange.getTime();
+       			
+       			setEndOfDay(calDateRange);
+       			endDateRange = calDateRange.getTime();
+       			
+           		nextDate.add(Calendar.DAY_OF_MONTH, 1);
+           		prevDate.add(Calendar.DAY_OF_MONTH, -1);
+       		}
+       		else if (strSessGridSize.equals("3")) {
+
+       			setStartOfDay(calDateRange);
+       			startDateRange = calDateRange.getTime();
+
+       			setDaysToBeSearched(calDateRange, 3);
+       			endDateRange = calDateRange.getTime();
+       			
+           		nextDate.add(Calendar.DAY_OF_MONTH, 3);
+           		prevDate.add(Calendar.DAY_OF_MONTH, -3);
+       		}
+       		else if (strSessGridSize.equals("5")) {
+
+       			setStartOfDay(calDateRange);
+       			startDateRange = calDateRange.getTime();
+
+       			setDaysToBeSearched(calDateRange, 5);
+       			endDateRange = calDateRange.getTime();
+       			
+           		nextDate.add(Calendar.DAY_OF_MONTH, 5);
+           		prevDate.add(Calendar.DAY_OF_MONTH, -5);
+       		}
+       		else if (strSessGridSize.equals("7")) {
+
+       			setStartOfDay(calDateRange);
+       			startDateRange = calDateRange.getTime();
+
+       			setDaysToBeSearched(calDateRange, 7);
+       			endDateRange = calDateRange.getTime();
+       			
+           		nextDate.add(Calendar.DAY_OF_MONTH, 7);
+           		prevDate.add(Calendar.DAY_OF_MONTH, -7);
+       		}
+       		else if (strSessGridSize.equals("14")) {
+
+       			setStartOfDay(calDateRange);
+       			startDateRange = calDateRange.getTime();
+
+       			setDaysToBeSearched(calDateRange, 14);
+       			endDateRange = calDateRange.getTime();
+
+       			nextDate.add(Calendar.DAY_OF_MONTH, 14);
+           		prevDate.add(Calendar.DAY_OF_MONTH, -14);
+       		}
+       	}
+		
+		Calendar calStartDateRange = new GregorianCalendar(timeZone);
+		calStartDateRange.setTime(startDateRange);
+       	
+		Calendar calEndDateRange = new GregorianCalendar(timeZone);
+		calEndDateRange.setTime(endDateRange);
+       	
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		
+		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
+       	
+       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(startDateRange));
+       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(endDateRange));
+
+       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(startDateRange));
+       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(endDateRange));
+
+       	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
+       	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);
+       	model.put(WebKeys.CALENDAR_CURR_DATE, calCurrentDate);
+       	model.put(WebKeys.CALENDAR_RANGE_END_DATE, calEndDateRange);
+       	
+		if (binder instanceof Folder) {
+			folderEntries = getFolderModule().getEntries(binderId, options);
+		}
+		
+		return folderEntries;
+	}
+	
+	public List getExtViewDayDates(Calendar startViewExtWindow, Calendar endViewExtWindow) {
+		Calendar start = (Calendar) startViewExtWindow.clone();
+		Calendar end = (Calendar) endViewExtWindow.clone();
+
+		List result = new ArrayList();
+
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
+		Calendar dayStart = start;
+		
+		Calendar dayEnd = (Calendar)dayStart.clone();
+		dayEnd.add(Calendar.DAY_OF_MONTH, 1);
+		dayEnd.add(Calendar.MILLISECOND, -1);
+		
+		while (dayStart.getTimeInMillis() <= end.getTimeInMillis()) {
+			result.add(new String[] {formatter.format(dayStart.getTime()), formatter.format(dayEnd.getTime())});
+			
+			dayStart.add(Calendar.DAY_OF_MONTH, 1);
+			
+			dayEnd = (Calendar)dayStart.clone();
+			dayEnd.add(Calendar.DAY_OF_MONTH, 1);
+			dayEnd.add(Calendar.MILLISECOND, -1);
+		}
+
+		return result;
+	}	
+
+	private void setStartDayOfMonth(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+	}
+
+	private void setEndDayOfMonth(Calendar startDateOfMonth) {
+		startDateOfMonth.add(Calendar.MONTH, 1);
+		startDateOfMonth.set(Calendar.HOUR_OF_DAY, 0);
+		startDateOfMonth.set(Calendar.MINUTE, 0);
+		startDateOfMonth.set(Calendar.SECOND, 0);
+		startDateOfMonth.set(Calendar.MILLISECOND, 0);
+		startDateOfMonth.add(Calendar.MILLISECOND, -1);
+	}	
+
+	private void setStartOfDay(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+	}
+
+	private void setEndOfDay(Calendar cal) {
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.add(Calendar.MILLISECOND, -1);
+	}
+
+	private void setDaysToBeSearched(Calendar cal, int numberOfDaysToBeSearched) {
+		cal.add(Calendar.DAY_OF_MONTH, numberOfDaysToBeSearched);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.add(Calendar.MILLISECOND, -1);
+	}
+	
 	protected String getShowFolder(Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
-			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
+			Map<String,Object>model, String viewType) throws Exception {
 		Map folderEntries = null;
 		Long folderId = folder.getId();
 					
@@ -629,10 +847,16 @@ public static final String[] monthNamesShort = {
 			//Get the list of all entries to build the archive list
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+			User user = RequestContextHolder.getRequestContext().getUser();
+			String strUserDisplayStyle = user.getDisplayStyle();
+			
+			if ( ( viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !strUserDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) )  ||
 					viewType.equals(Definition.VIEW_STYLE_TASK)) {
 				// do it with ajax
-			} else {
+			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && strUserDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				folderEntries = findCalendarEvents(req, response, model);
+			}
+			else {
 				folderEntries = getFolderModule().getEntries(folderId, options);
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
@@ -649,7 +873,6 @@ public static final String[] monthNamesShort = {
 				loadFolderStatisticsForPlacesAttributes(response, folder, options, model, folderEntries);
 			}			
 			// viewType == task is pure ajax solution (view AjaxController)
-
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));

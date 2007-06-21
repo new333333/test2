@@ -34,6 +34,10 @@ public class WebKeys {
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
 	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
+	public static final String CALENDAR_PREV_DATE= "ssPrevDate";
+	public static final String CALENDAR_NEXT_DATE= "ssNextDate";
+	public static final String CALENDAR_CURR_DATE= "ssCurrDate";
+	public static final String CALENDAR_RANGE_END_DATE= "ssRangeEndDate";
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
