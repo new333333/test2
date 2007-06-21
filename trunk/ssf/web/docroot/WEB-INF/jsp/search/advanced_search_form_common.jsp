@@ -19,18 +19,18 @@
 						<td rowspan="2">
 							<ssf:nlt tag="searchForm.advanced.options.label"/>
 							<select name="data_resultsCount" id="data_resultsCount">
-								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>>5 items</option>							
-								<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>>10 items</option>
-								<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>>25 items</option>							
-								<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>>50 items</option>
-								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>>100 items</option>								
+								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="5"/></ssf:nlt></option>
+								<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="10"/></ssf:nlt></option>
+								<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="25"/></ssf:nlt></option>
+								<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="50"/></ssf:nlt></option>
+								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="100"/></ssf:nlt></option>
 							</select>
 							<select name="data_summaryWordCount" id="data_summaryWordCount">
-								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>>15 words</option>							
-								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>>20 words</option>
-								<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>>30 words</option>							
-								<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>>50 words</option>
-								<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>>100 words</option>
+								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="15"/></ssf:nlt></option>
+								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="20"/></ssf:nlt></option>
+								<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="30"/></ssf:nlt></option>
+								<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="50"/></ssf:nlt></option>
+								<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="100"/></ssf:nlt></option>
 							</select>
 						</td>
 					</tr>
