@@ -199,7 +199,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     private void getTasksBean(Binder binder, Map ssDashboard, Map model, String id, Map component, boolean b) {
     	getInstance().getSearchResultsBean(binder, ssDashboard, model, id, component, b);
     	
-    	List items = (List) ((Map)((Map)((Map)ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP)).get(id)).get(WebKeys.SEARCH_FORM_DATA)).get(WebKeys.SEARCH_FORM_RESULTS);
+    	Map beanMap = (Map)ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beanMap == null || beanMap.get(id) == null) return;
+    	Map searchFormData = (Map) ((Map) beanMap.get(id)).get(WebKeys.SEARCH_FORM_DATA);
+    	if (searchFormData == null) return;
+    	List items = (List) searchFormData.get(WebKeys.SEARCH_FORM_RESULTS);
+    	if (items == null) return;
     	Iterator it = items.iterator();
     	while (it.hasNext()) {
     		Map entry = (Map)it.next();
