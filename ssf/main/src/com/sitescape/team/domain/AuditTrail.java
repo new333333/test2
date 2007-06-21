@@ -12,8 +12,6 @@ package com.sitescape.team.domain;
 
 import java.util.Date;
 
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-
 /**
  * @hibernate.class table="SS_AuditTrail"
  * @hibernate.discriminator type="char" discriminator-value="A" column="type"

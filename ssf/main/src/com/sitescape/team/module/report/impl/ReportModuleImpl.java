@@ -26,6 +26,7 @@ import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
@@ -118,6 +119,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded) {
 		addAuditTrail(new WorkflowStateHistory(state, end, isEnded));		
+	}
+
+	public void addLicenseStats(LicenseStats stats) {
+		getCoreDao().save(stats);
 	}
 
 	public List<Map<String,Object>> generateReport(Collection binderIds, boolean byUser, Date startDate, Date endDate) {

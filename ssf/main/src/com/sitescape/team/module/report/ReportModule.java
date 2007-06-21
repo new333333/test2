@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.AuditTrail;
+import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LoginInfo;
@@ -32,6 +33,8 @@ public interface ReportModule {
 	public void addLoginInfo(LoginInfo loginInfo);
 	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory);
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
+
+	public void addLicenseStats(LicenseStats stats);
 	
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
