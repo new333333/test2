@@ -1,0 +1,20 @@
+<script type="text/javascript">
+function showHelp() {
+	var divObj = document.getElementById('helpDiv');
+	divObj.style.visibility = "visible";
+}
+</script>
+
+<div width="100%" 
+	style="padding:150px 20px 25px 20px; background: url(../../images/pics/watermark_person.gif) no-repeat center;" >
+	<div align="right" style="padding:20px 30px 10px 0px;">
+		<a href="javascript: ;" onClick="showHelp();return false;">
+			<span style="font-family:Lucida Sans Unicode, Arial, sans-serif; font-size:10px;">For administrators...</span></a>
+	</div>
+	<div id="helpDiv" style="visibility:hidden; padding:20px 20px 0px 20px;">
+		<span style="font-family:Lucida Sans Unicode, Arial, sans-serif; font-size:12px;">
+			You change the content of this page by editing "webapps/ssf/help/en/guest.html" 
+			in your ICEcore installation.
+		</span>
+	</div>
+</div>
