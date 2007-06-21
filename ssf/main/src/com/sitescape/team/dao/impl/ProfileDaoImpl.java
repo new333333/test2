@@ -666,6 +666,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 public Object doInHibernate(Session session) throws HibernateException {
                     Set<Long> result = new TreeSet(ids);
                     List mems;
+                    Set loopDectector = new HashSet();
                     Set currentIds = new HashSet(ids);
                     while (!currentIds.isEmpty()) {
                     	mems  = session.createCriteria(Membership.class)
@@ -674,10 +675,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                        	currentIds.clear();
 						for (int i=0; i<mems.size(); ++i) {
 							Membership m = (Membership)mems.get(i);
+							if (loopDectector.contains(m.getGroupId())) continue;
+							loopDectector.add(m.getGroupId());
 							result.remove(m.getGroupId());
 							//potential user - may be another group
-							result.add(m.getUserId());
-							currentIds.add(m.getUserId());
+							if (!result.contains(m.getUserId())) {
+								result.add(m.getUserId());
+								currentIds.add(m.getUserId());
+							}
 						}
 						//note: empty groups may appear in the resultant list
                     }
