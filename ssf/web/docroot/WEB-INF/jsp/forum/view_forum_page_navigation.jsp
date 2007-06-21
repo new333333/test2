@@ -187,6 +187,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<portlet:namespace/>(this))">
 			<td>
 				&nbsp;&nbsp;
+			<c:if test="${ssPageEndIndex < ssTotalRecords}">
 				<ssf:ifnotaccessible>
 			    	<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 			    </ssf:ifnotaccessible>
@@ -198,6 +199,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				<a class="ss_linkButton" href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
+			</c:if>
+				
 			</td>
 
 			</form>
