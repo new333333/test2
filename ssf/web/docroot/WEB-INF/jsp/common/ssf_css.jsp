@@ -3564,6 +3564,16 @@ table.ss_minicard_interior {
  * Calendar event boxes
  */
 
+div.ss_calendarNaviBarAccessible {	
+	font-family: Arial;
+	border: 1px solid #CCCCCC;
+	background-color: #AFC8E3;
+	height: 30px;
+	vertical-align: middle;
+	padding: 0;
+	margin: 0 0 5px 0;
+}
+
 div.ss_cal_eventBody {
   font-size: 11px;
   color: #666666;

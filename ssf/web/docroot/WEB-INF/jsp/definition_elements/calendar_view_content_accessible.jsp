@@ -11,6 +11,7 @@
  */
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="java.util.HashMap" %>
 <script type="text/javascript">
 
 	var ss_findEventsUrl = "<ssf:url 
@@ -52,79 +53,87 @@
 
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar_accessible.jsp" %>
 
+<%
+	Map entriesSeen = new HashMap();
+%>
+			<ul id="ss_searchResult">
+			
+				<c:if test="${empty ssFolderEntries}">
+					<span class="ssVisibleEntryNumbers"><ssf:nlt tag="folder.NoResults" /></span>
+				</c:if>
+			
+				<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
+					<jsp:useBean id="entry" type="java.util.HashMap" />
+					<li>
+					<%
+						if (!entriesSeen.containsKey(entry.get("_docId"))) {
+					%>
+					<c:set var="entryBinderId" value="${entry._binderId}"/>
+					<c:set var="entryDocId" value="${entry._docId}"/>	
+					<c:if test="${entry._entityType == 'folder' || entry._entityType == 'workspace'}">
+					  <c:set var="entryBinderId" value="${entry._docId}"/>
+					  <c:set var="entryDocId" value=""/>
+					</c:if>
+					
+					<div class="ss_thumbnail">
+						<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
+					</div>
+					<div class="ss_entry_folderListView">
+						<div class="ss_entryHeader">
+							<h3 class="ss_entryTitle">
+							
+								<%
+									if (!ssSeenMap.checkAndSetSeen(entry, true)) {
+										%><img <ssf:alt tag="alt.unseen"/> border="0" 
+										src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+									}
+								%>
+						
+								<c:out value="${entry._docNum}" escapeXml="false"/>.
+								<ssf:menuLink 
+									displayDiv="false" action="view_folder_entry" 
+									adapter="true" entryId="${entry._docId}" binderId="${entry._binderId}" 
+									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
+									namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}">
+									<ssf:param name="url" useBody="true">
+										<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+										action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+									</ssf:param>
+									<c:out value="${entry.title}" escapeXml="false"/>
+								</ssf:menuLink>
+							</h3>
+							<div class="ss_clear">&nbsp;</div>
+						</div>
+			
+						<p id="summary_${status.count}">
+							<c:if test="${!empty entry._desc}">
+								<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
+										${entry._desc}
+									</ssf:textFormat>
+								</ssf:markup>
+							</c:if>
+						</p>
+					</div>
+					<div class="ss_clear">&nbsp;</div>
+													
+					<div id="details_${status.count}" class="ss_entryDetails">
+						<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+						<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						<c:if test="${!empty entry._workflowStateCaption}">
+							<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> <c:out value="${entry._workflowStateCaption}" /></p>
+						</c:if>
+					</div>
+					<%
+						}
+						entriesSeen.put(entry.get("_docId"), "1");
+					%>
+					</li>
+				</c:forEach>
+			</ul>
+			
 
-<div style="width: 100%"><%-- IE needs this for some stupid reason --%>
-<div id="ss_cal_DayGridMaster" style="display:none;">
-  <table class="ss_cal_gridTable">
-    <tbody>
-      <tr>
-        <td class="ss_cal_dayGridHourTicksColumn" style="padding-right: 0px;"><div class="ss_cal_gridHeader"></td>
-        <td><div id="ss_cal_dayGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
-      </tr>
-      <tr>
-        <td class="ss_cal_dayGridHourTicksColumn">All day</td>
-        <td><div id="ss_cal_dayGridAllDay" class="ss_cal_dayGridHour ss_cal_dayGridAllDay ss_cal_reserveWidth"></div></td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="ss_cal_dayGridDivider"></div>
-  <div id="ss_cal_dayGridWindowOuter" class="ss_cal_dayGridWindowOuter">
-    <div id="ss_cal_dayGridWindowInner" class="ss_cal_dayGridWindowInner">
-      <table class="ss_cal_gridTable">
-        <tbody>
-          <tr>
-            <td class="ss_cal_dayGridHourTicksColumn"><div id="hourHeader" class="ss_cal_dayGridHour"></div></td>
-            <td><div id="ss_cal_dayGridHour" class="ss_cal_dayGridHour ss_cal_reserveWidth"></div></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-<div id="ss_cal_MonthGridMaster" style="position: relative; display: none;">
-  <table style="width: 100%" cellpadding=0 cellspacing=0 border=0>
-    <tbody>
-      <tr>
-        <td id="ss_cal_monthGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></td>
-      </tr>
-      <tr>
-        <td><div id="ss_cal_monthGrid" class="ss_cal_monthGrid ss_cal_reserveWidth"></div></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-</div>
-
-<div id="infoLightBox" style="display: none; visibility: hidden; width: 100%; height: 100%;"></div>
-
-<div id="infoBox" style="display: none; visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
-        border: 1px solid blue; width: 250px; height: 150px; left: 200px; top: 200px;">
-  <i>Imagine if you will...</i><br/>
-  A particularly stylish form will be here pertaining to the details of this event.
-  <p>
-  <a href="javascript: ;" class="ss_linkButton" onclick="ss_ActiveGrid.saveCurrentEvent(); ss_cancelPopupDiv('infoBox');">Save</a>
-  <a href="javascript: ;" class="ss_linkButton" onclick="ss_ActiveGrid.deleteCurrentEvent(); ss_cancelPopupDiv('infoBox');">Cancel</a>
-</div>
-
-<div id="infoBox2" style="display: none; visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
-          border: 1px solid blue; width: 250px; height: 150px; left: 200px; top: 200px;">
-  Information about event: <span id="ib2eid">EVENT</span>
-  <p>
-  <span id="ib2view">VIEW</span>
-  <p>
-  <a href="javascript: ;" class="ss_linkButton" onclick="ss_cancelPopupDiv('infoBox2');">Save</a>
-  <a href="javascript: ;" class="ss_linkButton" onclick="ss_cancelPopupDiv('infoBox2');">Cancel</a>
-</div>
-
-<div class="ss_cal_eventBody" id="hoverBox" style="display: none; visibility: hidden; position: absolute; padding: 10px; background-color: #FFFFFF; z-index: 2003; border: 1px solid black;"></div>
-<script type="text/javascript">
-	ss_initializeCalendar();
-	ss_createOnLoadObj('ss_cal_hoverBox', function() {
-		ss_moveDivToBody("hoverBox");
-		ss_moveDivToBody("infoLightBox");
-		ss_moveDivToBody("infoBox");
-		ss_moveDivToBody("infoBox2");
-	});
-	
-</script>
-<div id="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/ajax-loader.gif" /></div>
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>

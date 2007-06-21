@@ -58,12 +58,13 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
 					<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 				</ssf:toolbar>
-				
-				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
-					<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_select_events.jsp" %>
-				</ssf:toolbar>
-			
-			
+
+				<ssf:ifnotaccessible>
+					<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
+						<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_select_events.jsp" %>
+					</ssf:toolbar>
+				</ssf:ifnotaccessible>
+
 			</ssf:toolbar>
 		</td>
 	</tr>
