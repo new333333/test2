@@ -231,14 +231,21 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 						} catch (ValidationException e) {
 							logger.error(e);
 						}
-						// helper.addInline("iCalendar" + c + ".ics", new ByteArrayResource( out.toByteArray()), "text/calendar");
+						
+						String fileName = "iCalendar" + c + ".ics";
+						
+						String component = null;
+						if (!ical.getComponents("VTODO").isEmpty()) {
+							component = "VTODO";
+						}
+						String contentType = "text/calendar" + (component != null ? "; component=" + component : "");
 						
 						
-						DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), "text/calendar", "iCalendar" + c + ".ics");
+						DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), contentType, fileName);
 						
 						MimeBodyPart mimeBodyPart = new MimeBodyPart();
 						mimeBodyPart.setDisposition(MimeBodyPart.INLINE);
-						mimeBodyPart.setFileName("iCalendar" + c + ".ics");
+						mimeBodyPart.setFileName(fileName);
 						// We're using setHeader here to remain compatible with JavaMail 1.2,
 						// rather than JavaMail 1.3's setContentID.
 						// mimeBodyPart.setHeader(HEADER_CONTENT_ID, "<" + contentId + ">");
