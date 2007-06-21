@@ -1875,7 +1875,7 @@ div.ss_global_toolbar table td {
 }
 
 .ss_global_toolbar_portlet_box {
-	background: #DBE6F2 !important;
+	background: ${ss_toolbar4_background_color} !important;
 }
 
 .ss_global_toolbar a span, .ss_global_toolbar div span {
