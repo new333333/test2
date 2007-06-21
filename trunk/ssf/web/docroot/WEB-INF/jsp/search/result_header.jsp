@@ -28,10 +28,11 @@
 			</div>
 			<div class="ss_paginator"> 
 			
+			<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 				<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 				<input class="form-text" type="text" size="1" id="ssGoToPageInput<portlet:namespace />"/>
 				<a class="ss_linkButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput<portlet:namespace />'); return false;" href="javascript: ;">Go</a>
-			
+			</c:if>
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
 					<a href="javascript: // ; " <ssf:alt tag="general.previousPage"/> onclick="ss_goToSearchResultPage(${ss_pageNumber-1});">&lt;&lt;</a>
@@ -39,6 +40,8 @@
 				
 				<span class="ss_pageNumber">
 				<c:forEach var="page" items="${ssPageNumbers}" varStatus="status">
+				
+				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssTotalRecords}">	
 					<c:if test="${page == ss_pageNumber}">
 						<span class="ssCurrentPage">${page}</span>
 					</c:if>
@@ -46,6 +49,8 @@
 						<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${page});" 
 							class="ssPageNumber">${page}</a>
 					</c:if>
+				</c:if>
+				
 				</c:forEach>
 				</span>
 				
