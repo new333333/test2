@@ -1839,8 +1839,8 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
-	width: 72px;
 	padding-top: 7px;
+	padding-right: 3px;
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick {
@@ -1891,12 +1891,10 @@ div.ss_global_toolbar table td {
 
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
-	width: 40px;
 	position: relative;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
-	width: 62px;
 	position: relative;
 }
 
