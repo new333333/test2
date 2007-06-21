@@ -74,6 +74,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.ical.util.TimeZoneShorterTransformer;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -324,6 +325,8 @@ public class IcalModuleImpl implements IcalModule {
 			Collection events, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar();
 		generate(calendar, entry, events, defaultTimeZoneId);
+		TimeZoneShorterTransformer timeZoneShorterTransformer = new TimeZoneShorterTransformer();
+		calendar = timeZoneShorterTransformer.transform(calendar);
 		return calendar;
 	}
 	
@@ -336,10 +339,11 @@ public class IcalModuleImpl implements IcalModule {
 		
 		Iterator it = folderEntries.iterator();
 		while (it.hasNext()) {
-			FolderEntry entry = (FolderEntry)it.next();
+			DefinableEntity entry = (DefinableEntity)it.next();
 			generate(calendar, entry, entry.getEvents(), defaultTimeZoneId);
 		}
-		
+		TimeZoneShorterTransformer timeZoneShorterTransformer = new TimeZoneShorterTransformer();
+		calendar = timeZoneShorterTransformer.transform(calendar);
 		return calendar;
 	}
 	
