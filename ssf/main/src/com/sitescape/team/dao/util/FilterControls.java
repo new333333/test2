@@ -18,45 +18,31 @@ import java.util.ArrayList;
  */
 public class FilterControls implements Cloneable {
 
-	private List filterNames=new ArrayList();
-	private List filterValues = new ArrayList();
+	private List<Object> filterValues = new ArrayList();
+	private List<Criterion> criteria = new ArrayList<Criterion>();
 	private OrderBy orderBy;
 	public FilterControls() {
 	}
-	public FilterControls(String name, Object value) {
-		
-		filterNames.add(name);
-		filterValues.add(value);
+	public FilterControls(String name, Object value)
+	{
+		add(name, value);
 	}
 	public FilterControls(String[] filterNames, Object[] filterValues) {
-		addNames(filterNames);
-		addValues(filterValues);
+		for(int i = 0; i < filterNames.length; i++) {
+			add(filterNames[i], filterValues[i]);
+		}
 	}
 	public FilterControls(String[] filterNames, Object[] filterValues, OrderBy filterOrder) {
-		addNames(filterNames);
-		addValues(filterValues);
+		this(filterNames, filterValues);
 		this.orderBy = filterOrder;
 	}
 	public void add(String name, Object value) {
-		filterNames.add(name);
-		filterValues.add(value);
+		Criterion crit = Restrictions.eq(name, value); 
+		add(crit);
 	}
 
-	public List getFilterNames() {
-		return this.filterNames;
-	}
-	private void addNames(String []filterNames) {
-		for (int i=0; i<filterNames.length; ++i) {
-			this.filterNames.add(filterNames[i]);
-		}
-	}
-	private void addValues(Object []filterValues) {
-		for (int i=0; i<filterValues.length; ++i) {
-			this.filterValues.add(filterValues[i]);
-		}
-	}
 	public void appendFilter(String alias, StringBuffer filter) {
-	 	int count = filterNames.size();
+	 	int count = criteria.size();
 	 	if (count > 0) {
    	 		filter.append(" where ");
    	 		filter.append(getWhereString(alias));
@@ -76,20 +62,13 @@ public class FilterControls implements Cloneable {
 		return filter.toString();
 	}
 	//return where string, but not "where" keyword
-	public String getWhereString(String alias) {
+	protected String getWhereString(String alias) {
 		StringBuffer where = new StringBuffer();
-		int count=filterNames.size();
-   		String name;
+		int count=criteria.size();
    		for (int i=0; i<count; ++i) {
   			if (i > 0) where.append(" and ");
-  			name = (String)filterNames.get(i);
-  			int pos = name.lastIndexOf('(');
-  			if (pos == -1)
-  				where.append(alias + "." + name + "=? ");
-  			else {
-  				++pos;
-  	  			where.append(name.substring(0, pos) + alias + "." + name.substring(pos, name.length()) + "=? ");
-  			}
+  			Criterion crit = criteria.get(i);
+  			where.append(crit.toSQLString(alias));
     	}
     	return where.toString();
   
@@ -104,4 +83,10 @@ public class FilterControls implements Cloneable {
 		this.orderBy = orderBy;
 	}
 
+	public FilterControls add(Criterion crit)
+	{
+		criteria.add(crit);
+		filterValues.addAll(crit.getParameterValues());
+		return this;
+	}
 }
