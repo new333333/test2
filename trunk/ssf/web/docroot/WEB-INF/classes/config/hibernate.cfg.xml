@@ -43,6 +43,7 @@
 	    <mapping resource="com/sitescape/team/domain/Event.hbm.xml"/> 
 	    <mapping resource="com/sitescape/team/domain/FolderEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LibraryEntry.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/LicenseStats.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Membership.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/PostingDef.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Principal.hbm.xml"/>
