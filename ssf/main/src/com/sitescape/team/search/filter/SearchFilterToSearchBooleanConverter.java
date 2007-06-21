@@ -10,15 +10,9 @@
  */
 package com.sitescape.team.search.filter;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
@@ -29,21 +23,14 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.LanguageTaster;
-import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.util.NLT;
-import com.sitescape.team.web.WebKeys;
-import com.sun.star.beans.GetDirectPropertyTolerantResult;
 
 /*********************************************************************
  * Object to hold a named search filter
