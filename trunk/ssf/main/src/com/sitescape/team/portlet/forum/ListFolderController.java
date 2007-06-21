@@ -657,11 +657,10 @@ public static final String[] monthNamesShort = {
 		Calendar prevDate = new GregorianCalendar(timeZone);
 		prevDate.setTime(currentDate);
 
-		Calendar calDateRange = new GregorianCalendar(timeZone);
-		calDateRange.setTime(currentDate);
-		
-		Date startDateRange = new Date();
-		Date endDateRange = new Date();
+		Calendar calStartDateRange = new GregorianCalendar(timeZone);
+		Calendar calEndDateRange = new GregorianCalendar(timeZone);
+   		calStartDateRange.setTime(currentDate);
+   		calEndDateRange.setTime(currentDate);
 		
        	String strSessGridType = EventsViewHelper.getCalendarGridType(portletSession);
        	Integer sessGridSize = EventsViewHelper.getCalendarGridSize(portletSession);
@@ -669,89 +668,27 @@ public static final String[] monthNamesShort = {
        	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
       	
        	if (EventsViewHelper.GRID_MONTH.equals(strSessGridType)) {
-
-    		setStartDayOfMonth(calDateRange);
-    		startDateRange = calDateRange.getTime();
-    		
-    		setEndDayOfMonth(calDateRange);
-    		endDateRange = calDateRange.getTime();
+    		setStartDayOfMonth(calStartDateRange);
+    		calEndDateRange = (Calendar) calStartDateRange.clone();
+    		setEndDayOfMonth(calEndDateRange);
        		
        		nextDate.add(Calendar.MONTH, 1);
        		prevDate.add(Calendar.MONTH, -1);
        		
        	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType)) {
-       		if (strSessGridSize.equals("1") || strSessGridSize.equals("-1") || strSessGridSize.equals("")) {
-       			setStartOfDay(calDateRange);
-       			startDateRange = calDateRange.getTime();
-       			
-       			setEndOfDay(calDateRange);
-       			endDateRange = calDateRange.getTime();
-       			
-           		nextDate.add(Calendar.DAY_OF_MONTH, 1);
-           		prevDate.add(Calendar.DAY_OF_MONTH, -1);
-       		}
-       		else if (strSessGridSize.equals("3")) {
-
-       			setStartOfDay(calDateRange);
-       			startDateRange = calDateRange.getTime();
-
-       			setDaysToBeSearched(calDateRange, 3);
-       			endDateRange = calDateRange.getTime();
-       			
-           		nextDate.add(Calendar.DAY_OF_MONTH, 3);
-           		prevDate.add(Calendar.DAY_OF_MONTH, -3);
-       		}
-       		else if (strSessGridSize.equals("5")) {
-
-       			setStartOfDay(calDateRange);
-       			startDateRange = calDateRange.getTime();
-
-       			setDaysToBeSearched(calDateRange, 5);
-       			endDateRange = calDateRange.getTime();
-       			
-           		nextDate.add(Calendar.DAY_OF_MONTH, 5);
-           		prevDate.add(Calendar.DAY_OF_MONTH, -5);
-       		}
-       		else if (strSessGridSize.equals("7")) {
-
-       			setStartOfDay(calDateRange);
-       			startDateRange = calDateRange.getTime();
-
-       			setDaysToBeSearched(calDateRange, 7);
-       			endDateRange = calDateRange.getTime();
-       			
-           		nextDate.add(Calendar.DAY_OF_MONTH, 7);
-           		prevDate.add(Calendar.DAY_OF_MONTH, -7);
-       		}
-       		else if (strSessGridSize.equals("14")) {
-
-       			setStartOfDay(calDateRange);
-       			startDateRange = calDateRange.getTime();
-
-       			setDaysToBeSearched(calDateRange, 14);
-       			endDateRange = calDateRange.getTime();
-
-       			nextDate.add(Calendar.DAY_OF_MONTH, 14);
-           		prevDate.add(Calendar.DAY_OF_MONTH, -14);
-       		}
+       		setDatesForGridDayView(calStartDateRange, calEndDateRange, strSessGridSize, prevDate, nextDate);
        	}
-		
-		Calendar calStartDateRange = new GregorianCalendar(timeZone);
-		calStartDateRange.setTime(startDateRange);
-       	
-		Calendar calEndDateRange = new GregorianCalendar(timeZone);
-		calEndDateRange.setTime(endDateRange);
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
        	
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(startDateRange));
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(endDateRange));
+       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
+       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
 
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(startDateRange));
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(endDateRange));
+       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calStartDateRange.getTime()));
+       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calEndDateRange.getTime()));
 
        	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
        	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);
@@ -763,6 +700,31 @@ public static final String[] monthNamesShort = {
 		}
 		
 		return folderEntries;
+	}
+	
+	public void setDatesForGridDayView(Calendar calStartDateRange, Calendar calEndDateRange, String strSessGridSize, 
+			Calendar prevDate, Calendar nextDate) {
+		
+		if (strSessGridSize == null || strSessGridSize.equals("1") || strSessGridSize.equals("-1") || strSessGridSize.equals(""))
+			strSessGridSize = "1";
+		
+		int intRange = 1;
+		try {
+			intRange = Integer.parseInt(strSessGridSize);
+		} catch (NumberFormatException e) {
+			intRange = 1;
+		}
+	
+		setStartOfDay(calStartDateRange);
+		
+		if (intRange == 1) {
+			setEndOfDay(calEndDateRange);
+		} else {
+			setDaysToBeSearched(calEndDateRange, intRange);			
+		}
+	
+		nextDate.add(Calendar.DAY_OF_MONTH, intRange);
+		prevDate.add(Calendar.DAY_OF_MONTH, ((-1)*(intRange)));
 	}
 	
 	public List getExtViewDayDates(Calendar startViewExtWindow, Calendar endViewExtWindow) {
