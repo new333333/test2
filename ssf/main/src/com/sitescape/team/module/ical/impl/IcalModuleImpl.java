@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,6 +72,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -317,14 +319,42 @@ public class IcalModuleImpl implements IcalModule {
 		logger.error("Entry defintion ["+ definition.asXML() +"] has no events. iCalendar import aborted.");
 		return null;
 	}
-
 	
 	public Calendar generate(DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar();
+		generate(calendar, entry, events, defaultTimeZoneId);
+		return calendar;
+	}
+	
+	public Calendar generate(List folderEntries, String defaultTimeZoneId) {
+		Calendar calendar = createICalendar();
+		
+		if (folderEntries == null) {
+			return calendar;
+		}
+		
+		Iterator it = folderEntries.iterator();
+		while (it.hasNext()) {
+			FolderEntry entry = (FolderEntry)it.next();
+			generate(calendar, entry, entry.getEvents(), defaultTimeZoneId);
+		}
+		
+		return calendar;
+	}
+	
+	protected void generate(Calendar calendar, DefinableEntity entry,
+			Collection events, String defaultTimeZoneId) {
+		if (calendar == null) {
+			throw new InvalidParameterException("'calendar' can't be null.");
+		}
+		
+		if (entry == null) {
+			throw new InvalidParameterException("'entry' can't be null.");
+		}
 
 		if (events == null || events.isEmpty()) {
-			return calendar;
+			return;
 		}
 
 		ComponentType componentType = getComponentType(entry);
@@ -335,8 +365,6 @@ public class IcalModuleImpl implements IcalModule {
 			addEventToICalendar(calendar, entry, event, defaultTimeZoneId,
 					componentType);
 		}
-
-		return calendar;
 	}
 
 	/**

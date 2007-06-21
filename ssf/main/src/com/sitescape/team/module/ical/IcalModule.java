@@ -90,4 +90,6 @@ public interface IcalModule {
 
 
 	public Calendar generate(DefinableEntity entry, Collection events, String defaultTimeZoneId);
+	
+	public Calendar generate(List folderEntries, String defaultTimeZoneId);
 }
