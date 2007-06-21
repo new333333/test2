@@ -4190,10 +4190,13 @@ div.ss_statisticContainer {
 	float:left;
 	margin: 3px 0px 3px 6px;
 	padding:0px;
-	font-size: ${ss_style_font_finestprint};	
+	font-size: ${ss_style_font_finestprint};
+	white-space: nowrap;
 }
 div.shortColoredBar { width: 100px;}
 div.coloredBar { width: 300px;}
+
+table.ss_statisticTable td {vertical-align:top;}
 
 div.statistic0 {background-color:#EF5612;}
 div.statistic1 {background-color:#EC9112;}
