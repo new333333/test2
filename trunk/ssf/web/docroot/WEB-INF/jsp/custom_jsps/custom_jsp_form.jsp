@@ -20,5 +20,6 @@
   <br/>
 </c:if>
 
-<input type="text" name="${property_name}" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+<input type="text" id="${property_name}" name="${property_name}" 
+  value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
 </div>
