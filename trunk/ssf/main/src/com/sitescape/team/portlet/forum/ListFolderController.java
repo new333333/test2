@@ -811,6 +811,7 @@ public static final String[] monthNamesShort = {
 		} else {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String strUserDisplayStyle = user.getDisplayStyle();
+			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 			
 			if ( ( viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) )  ||
 					viewType.equals(Definition.VIEW_STYLE_TASK)) {
