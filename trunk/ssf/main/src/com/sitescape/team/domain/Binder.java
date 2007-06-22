@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.fi.connection.ResourceDriver;
+import com.sitescape.team.fi.connection.ResourceDriverManagerUtil;
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.LongIdUtil;
@@ -521,4 +523,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		this.resourceDriverName = resourceDriverName;
 	}
 
+	public ResourceDriver getResourceDriver() {
+		// Just a convenience method
+		return ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
+	}
 }

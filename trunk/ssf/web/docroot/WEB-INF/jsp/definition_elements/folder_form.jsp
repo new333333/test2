@@ -77,18 +77,23 @@
 <c:if test="${ssDefinitionEntry.mirrored}" >
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
 <input type="text" class="ss_text" size="30" name="resourceDriver" value="<ssf:nlt tag="resource.driver.${ssDefinitionEntry.resourceDriverName}"/>" disabled/>
+<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 </c:if>
 <c:if test="${!ssDefinitionEntry.mirrored && !empty resourceDrivers}" >
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-<select name="resourceDriverName" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
+<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
+<select name="resourceDriverName" onchange="updateResourceRootPath();" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
 <c:forEach var="driver" items="${resourceDrivers}">
-<option value="${driver.name}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.title}</option>
+<option value="${driver.name}" label="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.title}</option>
+<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
 </c:forEach>
 </select>
 </c:if>
 <br/>
 
 <c:if test="${ssDefinitionEntry.mirrored || !empty resourceDrivers}" >
+<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
+<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled></br/>
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
 <input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>></br/>
 </c:if>
@@ -103,3 +108,11 @@
 </div>
 </form>
 </div>
+
+<script type="text/javascript">
+function updateResourceRootPath() {
+	var selectObjs = document.getElementsByName("resourceDriverName");
+	var rootPathObjs = document.getElementsByName("rootPath");
+	rootPathObjs[0].value = selectObjs[0].options[selectObjs[0].selectedIndex].label;
+}
+</script>
