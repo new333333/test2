@@ -4244,6 +4244,9 @@ div.ss_statisticBar {
 	float: left;
 	color: #ffffff;
 }
+div.ss_statisticBar span {
+	margin-left: 2px;
+}
 h5.ss_statisticLabel {
 	margin:6px 0px 0px 6px;
 }
