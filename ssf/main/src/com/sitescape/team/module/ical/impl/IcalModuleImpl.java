@@ -425,20 +425,17 @@ public class IcalModuleImpl implements IcalModule {
 			TimeZone timeZone) {
 		VToDo vToDo = null;
 		if (event.hasDuration()) {
-			DateTime dt = new DateTime(event.getDtStart().getTime());
-			dt.setTimeZone(timeZone);
+			DateTime dtStart = new DateTime(event.getDtStart().getTime());
+			dtStart.setTimeZone(timeZone);
+			
+			DateTime due = new DateTime(event.getDtEnd().getTime());
+			due.setTimeZone(timeZone);
 
-			Dur duration = null;
-			if (event.getDuration().getWeeks() > 0) {
-				duration = new Dur(event.getDuration().getWeeks());
-			} else {
-				duration = new Dur(event.getDuration().getDays(), event
-						.getDuration().getHours(), event.getDuration()
-						.getMinutes(), event.getDuration().getSeconds());
-			}
-			vToDo = new VToDo(dt, duration, entry.getTitle());
+			vToDo = new VToDo(dtStart, due, entry.getTitle());
 			vToDo.getProperties().getProperty(Property.DTSTART).getParameters()
 					.add(Value.DATE_TIME);
+			vToDo.getProperties().getProperty(Property.DUE).getParameters()
+				.add(Value.DATE_TIME);			
 		} else {
 			Date d = new Date(event.getDtStart().getTime());
 			vToDo = new VToDo(d, entry.getTitle());
@@ -454,7 +451,8 @@ public class IcalModuleImpl implements IcalModule {
 		addComponentCompleted(vToDo, entry);
 		setComponentAttendee(vToDo, entry);
 		setComponentOrganizer(vToDo, entry);
-
+		setComponentLocation(vToDo, entry);
+		
 		addRecurrences(vToDo, event);
 
 		return vToDo;
