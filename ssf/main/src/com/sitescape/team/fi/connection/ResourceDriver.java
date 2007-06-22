@@ -42,6 +42,13 @@ public interface ResourceDriver {
 	public String getType();
 	
 	/**
+	 * Return the root path configured for the driver.
+	 * 
+	 * @return
+	 */
+	public String getRootPath();
+	
+	/**
 	 * Open a session.
 	 * 
 	 * @return

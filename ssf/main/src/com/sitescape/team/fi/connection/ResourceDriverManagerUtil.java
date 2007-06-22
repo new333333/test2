@@ -14,6 +14,14 @@ public class ResourceDriverManagerUtil {
 		return getResourceDriverManager().getAllowedResourceDrivers();
 	}
 	
+	public static ResourceDriver findResourceDriver(String driverName) {
+		for(ResourceDriver driver : getResourceDrivers()) {
+			if(driver.getName().equals(driverName))
+				return driver;
+		}
+		return null;
+	}
+	
 	private static ResourceDriverManager getResourceDriverManager() {
 		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}
