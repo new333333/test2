@@ -21,6 +21,7 @@
 	String findPlacesElementName = (String) request.getAttribute("form_element");
 	String findPlacesElementWidth = (String) request.getAttribute("element_width");
 	String label = ParamUtil.get(request, "label", "");
+	String clickRoutine = (String) request.getAttribute("clickRoutine");
 %>
 <c:set var="prefix" value="<%= findPlacesFormName + "_" + findPlacesElementName %>" />
 <c:set var="prefix" value="${prefix}_${renderResponse.namespace}"/>
@@ -192,6 +193,10 @@ function ss_findPlacesSelectItem0_${prefix}() {
 //Routine called when item is clicked
 function ss_findPlacesSelectItem${prefix}(obj, type) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
+	ss_hideDiv('ss_findPlacesNavBarDiv_${prefix}');
+	var id = ss_replaceSubStr(obj.id, 'ss_findPlaces_id_', "");
+
+<c:if test="${empty clickRoutine}">
 
     var url = "<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
@@ -199,13 +204,17 @@ function ss_findPlacesSelectItem${prefix}(obj, type) {
 		    <ssf:param name="entityType" value="ss_entityTypePlaceholder" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-	var id = ss_replaceSubStr(obj.id, 'ss_findPlaces_id_', "");
 	url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
 	url = ss_replaceSubStr(url, 'ss_entityTypePlaceholder', type);
 	if (ss_gotoPermalink(id, id, type, '${renderResponse.namespace}', 'yes')) return true;
 
 	self.location.href = url;
 	return false;
+</c:if>
+<c:if test="${not empty clickRoutine}">
+    <%= clickRoutine %>(id, type, obj);
+</c:if>
+
 }
 
 function ss_savefindPlacesData_${prefix}() {

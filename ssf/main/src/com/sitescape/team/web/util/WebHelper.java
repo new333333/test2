@@ -327,7 +327,7 @@ public class WebHelper {
     	int loopDetector = 0;
     	while (m.find()) {
     		if (loopDetector > 2000) {
-	        	logger.error("Error processing markup: " + description.getText());
+	        	logger.error("Error processing markup [1]: " + description.getText());
     			break;
     		}
     		String img = new String(m.group(0));
@@ -408,7 +408,7 @@ public class WebHelper {
     	int loopDetector = 0;
     	while (m.find()) {
     		if (loopDetector > 2000) {
-	        	logger.error("Error processing markup: " + description.getText());
+	        	logger.error("Error processing markup [2]: " + description.getText());
     			break;
     		}
     		String fileId = "";
@@ -448,6 +448,34 @@ public class WebHelper {
 	    	}
     	}
 	}
+
+	
+	public static void scanDescriptionForICLinks(Description description) {
+    	Pattern pattern = Pattern.compile("(<a [^>]*class=\"ss_icecore_link\"[^>]*>)([^<]*)</a>");
+    	Matcher m = pattern.matcher(description.getText());
+    	int loopDetector = 0;
+    	while (m.find()) {
+    		if (loopDetector > 2000) {
+	        	logger.error("Error processing markup [2a]: " + description.getText());
+    			break;
+    		}
+    		String linkArgs = "";
+    		String link = new String(m.group(0));
+        	Pattern p2 = Pattern.compile("rel=\"([^\"]*)");
+        	Matcher m2 = p2.matcher(link);
+        	if (m2.find() && m2.groupCount() >= 1) linkArgs = m2.group(1).trim();
+    		
+        	String linkText = "" ;
+        	if (m.groupCount() >= 2) { linkText = m.group(2).trim(); }
+
+        	if (!linkArgs.equals("")) {
+        		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs + " text=" + linkText + "}}"));
+        		m = pattern.matcher(description.getText());
+	    	}
+    	}
+	}
+
+	
 	
 	public static String markupStringReplacement(RenderRequest req, RenderResponse res, 
 			HttpServletRequest httpReq, HttpServletResponse httpRes,
@@ -486,7 +514,7 @@ public class WebHelper {
 		    	loopDetector = 0;
 		    	while (m1.find()) {
 		    		if (loopDetector > 2000) {
-			        	logger.error("Error processing markup: " + inputString);
+			        	logger.error("Error processing markup [3]: " + inputString);
 		    			return outputString;
 		    		}
 		    		loopDetector++;
@@ -520,7 +548,7 @@ public class WebHelper {
 		    	loopDetector = 0;
 		    	while (m2.find()) {
 		    		if (loopDetector > 2000) {
-			        	logger.error("Error processing markup: " + inputString);
+			        	logger.error("Error processing markup [4]: " + inputString);
 		    			return outputString;
 		    		}
 		    		loopDetector++;
@@ -541,7 +569,7 @@ public class WebHelper {
 		    	loopDetector = 0;
 		    	while (m2.find()) {
 		    		if (loopDetector > 2000) {
-			        	logger.error("Error processing markup: " + inputString);
+			        	logger.error("Error processing markup [5]: " + inputString);
 		    			return outputString;
 		    		}
 		    		loopDetector++;
@@ -565,8 +593,8 @@ public class WebHelper {
 		        	String titleLink = "";
 	    			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
 	    			Map params = new HashMap();
-	    			params.put(WebKeys.URL_BINDER_ID, new String[] {s_binderId});
-	    			params.put(WebKeys.URL_NORMALIZED_TITLE, new String[] {normalizedTitle});
+	    			params.put(WebKeys.URL_BINDER_ID, s_binderId.toString());
+	    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 	    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 	    			titleLink = "<a href=\"" + webUrl + "\" ";
 	    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
@@ -578,6 +606,44 @@ public class WebHelper {
 				}
 	    	}
 	    	
+	    	//Replace the markup {{titleUrl}} with editing hyperlinks
+	    	if (type.equals(WebKeys.MARKUP_FORM)) {
+		    	Pattern p2 = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
+		    	Matcher m2 = p2.matcher(outputString);
+		    	loopDetector = 0;
+		    	while (m2.find()) {
+		    		if (loopDetector > 2000) {
+			        	logger.error("Error processing markup [5a]: " + inputString);
+		    			return outputString;
+		    		}
+		    		loopDetector++;
+		    		String urlParts = m2.group(2).trim();
+		        	String s_binderId = "";
+		        	Pattern p3 = Pattern.compile("binderId=([^ ]*)");
+		        	Matcher m3 = p3.matcher(urlParts);
+		        	if (m3.find() && m3.groupCount() >= 1) s_binderId = m3.group(1).trim();
+		    		
+		        	String normalizedTitle = "";
+		        	Pattern p4 = Pattern.compile("title=([^ ]*)");
+		        	Matcher m4 = p4.matcher(urlParts);
+		        	if (m4.find() && m4.groupCount() >= 1) normalizedTitle = m4.group(1).trim();
+		        	
+		        	String title = "";
+		        	Pattern p5 = Pattern.compile("text=(.*)$");
+		        	Matcher m5 = p5.matcher(urlParts);
+		        	if (m5.find() && m5.groupCount() >= 1) title = m5.group(1).trim();
+		        	
+		    		//build the link
+		        	String titleLink = "";
+	    			titleLink = "<a class=\"ss_icecore_link\" ";
+	    			titleLink += "rel=\"binderId=" + s_binderId + " title=" + normalizedTitle  + "\">";
+	    			titleLink += title + "</a>";
+	    			titleLink = titleLink.replaceAll("&", "&amp;");
+	    			outputString = outputString.substring(0, m2.start(0)) + titleLink + outputString.substring(m2.end(), outputString.length());
+					m2 = p2.matcher(outputString);
+				}
+	    	}
+
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
 			if (binderId != null && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FILE))) {
 				String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
@@ -586,7 +652,7 @@ public class WebHelper {
 		    	loopDetector = 0;
 		    	while (m3.find()) {
 		    		if (loopDetector > 2000) {
-			        	logger.error("Error processing markup: " + inputString);
+			        	logger.error("Error processing markup [6]: " + inputString);
 		    			return outputString;
 		    		}
 		    		loopDetector++;
@@ -616,7 +682,7 @@ public class WebHelper {
 				}
 			}
 		} catch(Exception e) {
-			logger.error("Error processing markup: " + inputString);
+			logger.error("Error processing markup [7]: " + inputString, e);
 			return inputString;
 		}
      	return outputString;
@@ -675,7 +741,7 @@ public class WebHelper {
 			Iterator it = params.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry me = (Map.Entry) it.next();
-				adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+				adapterUrl.setParameter((String) me.getKey(), (String)me.getValue());
 			}
 			return adapterUrl.toString();
 

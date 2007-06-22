@@ -44,6 +44,7 @@ var ss_findEntriesSearchLastTextObjId = "";
 var ss_findEntriesSearchLastElement = "";
 var ss_findEntriesSearchLastfindEntriesType = "";
 var ss_findEntriesClickRoutine${prefix} = "<%= clickRoutine %>";
+var ss_findEntriesBinderId${prefix} = "<%= findEntriesBinderId %>";
 var ss___findEntriesIsMouseOverList = false;
 function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType) {
 	var textObj = document.getElementById(textObjId);
@@ -134,7 +135,7 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 	ajaxRequest.addKeyValue("pageNumber", ss_findEntries_pageNumber)
 	ajaxRequest.addKeyValue("findType", findEntriesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
-	ajaxRequest.addKeyValue("binderId", "<%= findEntriesBinderId %>")
+	ajaxRequest.addKeyValue("binderId", ss_findEntriesBinderId${prefix})
 	ajaxRequest.addKeyValue("searchSubFolders", "<%= findEntriesSearchSubFolders %>")
 	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
 	//ajaxRequest.setEchoDebugInfo();
@@ -202,7 +203,7 @@ function ss_findEntriesSelectItem<portlet:namespace/>(obj) {
 			</ssf:url>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findEntries_id_', "");
 	if (ss_findEntriesClickRoutine${prefix} != "") {
-		eval(ss_findEntriesClickRoutine${prefix} + "('"+id+"');")
+		eval(ss_findEntriesClickRoutine${prefix} + "('"+id+"', obj);")
 		<% if (leaveResultsVisible) { %>
 		  setTimeout("ss_showFindEntriesSelections${prefix}();", 200)
 		<% } %>

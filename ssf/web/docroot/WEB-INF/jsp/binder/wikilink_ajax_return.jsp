@@ -28,22 +28,56 @@
 	<base target="_self" />
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
-<form method="post" name="ss_findWikiPageForm"
+<p>
+Popup: To link to page in a different folder, enter the folder
+name...
+<br/>
+<form method="post" name="ss_findLinkPlaceForm"
 	action="">
- <ssf:find formName="ss_findWikiPageForm" 
+ <ssf:find formName="ss_findLinkPlaceForm" 
     formElement="searchTitle" 
     type="places"
     width="140px" 
-    binderId="${ssBinderId}"
+    binderId="${binderId}"
     searchSubFolders="false"
     singleItem="true"
-    clickRoutine="ss_loadWikiEntryId"
-    accessibilityText="wiki.findPage"
+    clickRoutine="ss_loadLinkBinderId"
+    accessibilityText="iclink.folder"
     /> 
 <input type="hidden" name="searchTitle"/>
 </form>
-<a href="javascript:;" onClick="ss_insertICElink('4', 'testpage', 'test text', '${binderId}');">TEST</a>
+</p>
 <p>
-<a href="javascript:;" onClick="ss_insertICElink('${binderId}', 'testpage', 'local page', '${binderId}');">Local</a>
+<form>
+Link to folder: <b><span id="linkToFolderName">(current folder)</span></b>
+<input type="hidden" name="binderId" id="binderId" size="5"/>
+</p>
+<p>
+<b>Page name to link to:</b> <input name="pageName" id="pageName" size="30"/>
+</p>
+<p>
+</form>
+<p>
+Popup: find page... 
+<form method="post" name="ss_findLinkEntryForm"
+	action="">
+ <ssf:find formName="ss_findLinkEntryForm"
+    formElement="searchTitle" 
+    type="entries"
+    width="140px" 
+    binderId="${binderId}"
+    searchSubFolders="false"
+    singleItem="true"
+    clickRoutine="ss_loadLinkEntryId"
+    accessibilityText="iclink.entry"
+    /> 
+<input type="hidden" name="searchTitle"/>
+</form>
+</p>
+
+
+<a href="javascript:;" onClick="ss_insertICElinkFromForm('${binderId}');">Insert</a>
+&nbsp;&nbsp;<a href="javascript:;" onClick="ss_cancelICElinkEdit();">Cancel</a>
+</p>
 </body>
 </html>

@@ -1332,6 +1332,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							//Deal with any markup language transformations before storing the description
 							WebHelper.scanDescriptionForUploadFiles(description, fileData);
 							WebHelper.scanDescriptionForAttachmentFileUrls(description);
+							WebHelper.scanDescriptionForICLinks(description);
 							entryData.put(nameValue, description);
 						}
 					} else if (itemName.equals("date") || itemName.equals("date_time")) {

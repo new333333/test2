@@ -42,8 +42,8 @@ var TinyMCE_ssWikiLinkPlugin = {
 				var template = new Array();
 
 				template['file'] = ss_wikiLinkUrl;
-				template['width'] = 350;
-				template['height'] = 350;
+				template['width'] = 450;
+				template['height'] = 300;
 
 				tinyMCE.openWindow(template, {editor_id : editor_id, inline : "yes"});
 
@@ -52,7 +52,30 @@ var TinyMCE_ssWikiLinkPlugin = {
 
 		// Pass to next handler in chain
 		return false;
+	},
+	
+	handleNodeChange : function(editor_id, node, undo_index, undo_levels, visual_aid, any_selection) {
+		if (node == null)
+			return;
+
+		do {
+			if (node.nodeName == "A" && tinyMCE.getAttrib(node, 'rel') != "") {
+				tinyMCE.switchClass(editor_id + '_ss_wikilink', 'mceButtonSelected');
+				return true;
+			}
+		} while ((node = node.parentNode));
+
+		if (any_selection) {
+			tinyMCE.switchClass(editor_id + '_ss_wikilink', 'mceButtonNormal');
+			return true;
+		}
+
+		tinyMCE.switchClass(editor_id + '_ss_wikilink', 'mceButtonDisabled');
+
+		return true;
 	}
+	
+	
 };
 
 // Register plugin
