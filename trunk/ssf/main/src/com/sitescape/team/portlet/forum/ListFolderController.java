@@ -94,33 +94,33 @@ import com.sitescape.util.Validator;
 public class ListFolderController extends  SAbstractController {
 	
 	public static final String[] monthNames = { 
-		NLT.get("calendar.january"),
-		NLT.get("calendar.february"),
-		NLT.get("calendar.march"),
-		NLT.get("calendar.april"),
-		NLT.get("calendar.may"),
-		NLT.get("calendar.june"),
-		NLT.get("calendar.july"),
-		NLT.get("calendar.august"),
-		NLT.get("calendar.september"),
-		NLT.get("calendar.october"),
-		NLT.get("calendar.november"),
-		NLT.get("calendar.december")
+		"calendar.january",
+		"calendar.february",
+		"calendar.march",
+		"calendar.april",
+		"calendar.may",
+		"calendar.june",
+		"calendar.july",
+		"calendar.august",
+		"calendar.september",
+		"calendar.october",
+		"calendar.november",
+		"calendar.december"
 	};
 
 public static final String[] monthNamesShort = { 
-	NLT.get("calendar.abbreviation.january"),
-	NLT.get("calendar.abbreviation.february"),
-	NLT.get("calendar.abbreviation.march"),
-	NLT.get("calendar.abbreviation.april"),
-	NLT.get("calendar.abbreviation.may"),
-	NLT.get("calendar.abbreviation.june"),
-	NLT.get("calendar.abbreviation.july"),
-	NLT.get("calendar.abbreviation.august"),
-	NLT.get("calendar.abbreviation.september"),
-	NLT.get("calendar.abbreviation.october"),
-	NLT.get("calendar.abbreviation.november"),
-	NLT.get("calendar.abbreviation.december")
+	"calendar.abbreviation.january",
+	"calendar.abbreviation.february",
+	"calendar.abbreviation.march",
+	"calendar.abbreviation.april",
+	"calendar.abbreviation.may",
+	"calendar.abbreviation.june",
+	"calendar.abbreviation.july",
+	"calendar.abbreviation.august",
+	"calendar.abbreviation.september",
+	"calendar.abbreviation.october",
+	"calendar.abbreviation.november",
+	"calendar.abbreviation.december"
 };
 
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -555,7 +555,7 @@ public static final String[] monthNamesShort = {
 			String strYear = yearMonth.substring(0, 4);
 			String strMonth = yearMonth.substring(4, 6);
 			int intMonth = Integer.parseInt(strMonth);
-			String strMonthName = monthNames[intMonth-1];
+			String strMonthName = NLT.get(monthNames[intMonth-1]);
 			
 			model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
 		}
@@ -567,7 +567,7 @@ public static final String[] monthNamesShort = {
 				String strYear = strYearMonth.substring(0, 4);
 				String strMonth = strYearMonth.substring(4, 6);
 				int intMonth = Integer.parseInt(strMonth);
-				String strMonthName = monthNames[intMonth-1];
+				String strMonthName = NLT.get(monthNames[intMonth-1]);
 				
 				model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
 			}
@@ -1036,7 +1036,7 @@ public static final String[] monthNamesShort = {
 					String year = yearMonth.substring(0, 4);
 					String monthNumber = yearMonth.substring(4, 6);
 					int m = Integer.valueOf(monthNumber).intValue() - 1;
-					monthTitles.put(yearMonth, EventsViewHelper.monthNames[m%12] + " " + year);
+					monthTitles.put(yearMonth, NLT.get(monthNames[m%12]) + " " + year);
 					PortletURL url = response.createRenderURL();
 					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);

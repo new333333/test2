@@ -54,33 +54,33 @@ public class EventsViewHelper {
 	private static Log logger = LogFactory.getLog(EventsViewHelper.class);
 	
 	public static final String[] monthNames = { 
-		NLT.get("calendar.january"),
-		NLT.get("calendar.february"),
-		NLT.get("calendar.march"),
-		NLT.get("calendar.april"),
-		NLT.get("calendar.may"),
-		NLT.get("calendar.june"),
-		NLT.get("calendar.july"),
-		NLT.get("calendar.august"),
-		NLT.get("calendar.september"),
-		NLT.get("calendar.october"),
-		NLT.get("calendar.november"),
-		NLT.get("calendar.december")
+		"calendar.january",
+		"calendar.february",
+		"calendar.march",
+		"calendar.april",
+		"calendar.may",
+		"calendar.june",
+		"calendar.july",
+		"calendar.august",
+		"calendar.september",
+		"calendar.october",
+		"calendar.november",
+		"calendar.december"
 	};
 	
 	public static final String[] monthNamesShort = { 
-		NLT.get("calendar.abbreviation.january"),
-		NLT.get("calendar.abbreviation.february"),
-		NLT.get("calendar.abbreviation.march"),
-		NLT.get("calendar.abbreviation.april"),
-		NLT.get("calendar.abbreviation.may"),
-		NLT.get("calendar.abbreviation.june"),
-		NLT.get("calendar.abbreviation.july"),
-		NLT.get("calendar.abbreviation.august"),
-		NLT.get("calendar.abbreviation.september"),
-		NLT.get("calendar.abbreviation.october"),
-		NLT.get("calendar.abbreviation.november"),
-		NLT.get("calendar.abbreviation.december")
+		"calendar.abbreviation.january",
+		"calendar.abbreviation.february",
+		"calendar.abbreviation.march",
+		"calendar.abbreviation.april",
+		"calendar.abbreviation.may",
+		"calendar.abbreviation.june",
+		"calendar.abbreviation.july",
+		"calendar.abbreviation.august",
+		"calendar.abbreviation.september",
+		"calendar.abbreviation.october",
+		"calendar.abbreviation.november",
+		"calendar.abbreviation.december"
 	};
 	
 	public static final String EVENT_TYPE_CREATION = "creation";

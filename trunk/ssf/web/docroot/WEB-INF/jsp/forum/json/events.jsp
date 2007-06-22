@@ -24,14 +24,16 @@ dayNamesShort : [<%--
 --%>],
 
 monthNamesShort : [<%--
---%><c:forEach var="d" items="${ssCalendarViewBean.monthNamesShort}" varStatus="status"><%--
-  --%>"<ssf:escapeJavaScript value="${d}"/>"<c:if test="${!status.last}">,</c:if><%--
+--%><c:forEach var="d1" items="${ssCalendarViewBean.monthNamesShort}" varStatus="status"><%--
+--%><jsp:useBean id="d1" type="java.lang.String" />"<ssf:escapeJavaScript 
+  value="<%= com.sitescape.team.util.NLT.get(d1) %>"/>"<c:if test="${!status.last}">,</c:if><%--
 --%></c:forEach><%--
 --%>],
 
 monthNames : [<%--
---%><c:forEach var="d" items="${ssCalendarViewBean.monthNames}" varStatus="status"><%--
-  --%>"<ssf:escapeJavaScript value="${d}"/>"<c:if test="${!status.last}">,</c:if><%--
+--%><c:forEach var="d2" items="${ssCalendarViewBean.monthNames}" varStatus="status"><%--
+  --%><jsp:useBean id="d2" type="java.lang.String" />"<ssf:escapeJavaScript 
+  value="<%= com.sitescape.team.util.NLT.get(d2) %>"/>"<c:if test="${!status.last}">,</c:if><%--
 --%></c:forEach><%--
 --%>],
 
