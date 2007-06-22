@@ -758,7 +758,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 <!-- Only show add a place in maximized view  -->
 <c:if test="${ss_navbar_style != 'portlet'}">
-  <c:if test="${ssBinder != null}">
+  <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
   	<div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_addBinderToFavorites('<portlet:namespace/>');return false;"
