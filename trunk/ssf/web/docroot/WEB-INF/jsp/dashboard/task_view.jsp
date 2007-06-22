@@ -50,7 +50,7 @@ function ${ss_divId}_taskurl(binderId, entryId, type) {
 </c:if>
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
-<table cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0">
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>

@@ -40,7 +40,8 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
 }
 </script>
 </c:if>
-
+<!-- TITLE OR DESCRIPTION?  -->
+<p/>
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/search_view2.jsp" %>
 </div>

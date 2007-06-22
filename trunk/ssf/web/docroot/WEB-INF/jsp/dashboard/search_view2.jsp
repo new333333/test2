@@ -31,29 +31,15 @@
 </c:if>
 
 
-
 <c:set var="ssResultEntries" value="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}"/>
 <c:set var="ssResultTotalRecords" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}" />
 <c:set var="ssPageEndIndex" value="${ss_pageNumber * ss_pageSize + ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}" />
 <c:set var="ssPageStartIndex" value="${ss_pageNumber * ss_pageSize + 1}" />
 <c:set var="isDashboard" value="yes"/>
 
-		<div id="ss_searchResult_header">
-			<div id="ss_searchResult_numbers">			
-				<c:choose>
-				  <c:when test="${ssResultTotalRecords == '0'}">
-					<ssf:nlt tag="search.NoResults" />
-				  </c:when>
-				  <c:otherwise>
-					<ssf:nlt tag="search.results">
-					<ssf:param name="value" value="${ssPageStartIndex}"/>
-					<ssf:param name="value" value="${ssPageEndIndex}"/>
-					<ssf:param name="value" value="${ssResultTotalRecords}"/>
-					</ssf:nlt>
-				  </c:otherwise>
-				</c:choose>
-			</div>
-			<div id="ss_paginator"> 
+		<div class="ss_searchResult_dashboardHeader">
+			
+			<div class="ss_dashboardPaginator"> 
 			
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
@@ -86,11 +72,23 @@
 				</c:if>
 			</c:if>
 			</div>
+			<div class="ss_searchResult_dashboardNumbers">			
+				<c:choose>
+				  <c:when test="${ssResultTotalRecords == '0'}">
+					<ssf:nlt tag="search.NoResults" />
+				  </c:when>
+				  <c:otherwise>
+					<ssf:nlt tag="search.results">
+					<ssf:param name="value" value="${ssPageStartIndex}"/>
+					<ssf:param name="value" value="${ssPageEndIndex}"/>
+					<ssf:param name="value" value="${ssResultTotalRecords}"/>
+					</ssf:nlt>
+				  </c:otherwise>
+				</c:choose>
+			</div>
 			<div class="ss_clear"></div>
 		</div>
-		
-		
-		
+
 		<ul id="ss_searchResult">
 		<c:forEach var="entry" items="${ssResultEntries}" varStatus="status">
 		
@@ -582,7 +580,7 @@
 		</ul>
 		
 		<div id="ss_searchResult_header">
-			<div id="ss_paginator"> 
+			<div class="ss_dashboardPaginator"> 
 			
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">

@@ -57,7 +57,7 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
 </c:if>
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
-<table class="ss_style" cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0">
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
@@ -71,9 +71,7 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
 </tr>
 </c:forEach>
 </table>
-<br/>
 </c:if>
-
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/search_view2.jsp" %>
 </div>
