@@ -293,11 +293,6 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String OPERATION_START_MEETING = "start_meeting";
 	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
-	public static final String OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
-	public static final String OPERATION_GET_SEARCH_FORM_FOLDERS = "get_search_form_folders";
-	public static final String OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
-	public static final String OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES = "get_searchForm_element_values";
-	public static final String OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA = "get_searchForm_element_value_data";
 	public static final String OPERATION_SELECT_FILTER = "select_filter";
 	public static final String OPERATION_USER_FILTER = "user_filter";
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
