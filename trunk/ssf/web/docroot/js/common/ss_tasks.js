@@ -1,5 +1,3 @@
-if (!window.ss_tasks) {
-	
 	function ss_tasks (tableId, binderId, namespace) {
 	
 		var filterType; 	// CLOSED - status: (cancelled + completed)
@@ -514,4 +512,3 @@ if (!window.ss_tasks) {
 		}		
 	}
 	
-}
