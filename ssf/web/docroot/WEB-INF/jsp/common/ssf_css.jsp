@@ -1878,6 +1878,11 @@ div.ss_global_toolbar table td {
 	padding-right: 10px;
 }
 
+div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
+	white-space: nowrap;
+	padding-left: 2px;
+	padding-right: 2px;
+}
 .ss_global_toolbar_portlet_box {
 	background: ${ss_toolbar4_background_color} !important;
 }
