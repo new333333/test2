@@ -41,7 +41,7 @@ public class UrlUtil {
 		StringBuffer url = new StringBuffer();
 		
 		url.append(WebUrlUtil.getIcalRootURL(req)).
-			append("get").
+			append("basic.ics").
 			append("?zn=").
 			append(rc.getZoneName()).
 			append("&bi=").

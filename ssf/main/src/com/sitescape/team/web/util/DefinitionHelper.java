@@ -446,4 +446,19 @@ public class DefinitionHelper {
     	return result;
 	}
     
+	public static List findUserListAttributes(Document definitionConfig) {
+		List result = new ArrayList();
+		
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and @name='user_list']/properties/property[@name='name']/@value");
+    	if (nodes == null) {
+    		return result;
+    	}
+    	
+    	Iterator it = nodes.iterator();
+    	while (it.hasNext()) {
+    		Node node = (Node)it.next();
+    		result.add(node.getStringValue());
+    	}
+    	return result;
+	}
 }

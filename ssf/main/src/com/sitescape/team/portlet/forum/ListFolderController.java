@@ -812,10 +812,10 @@ public static final String[] monthNamesShort = {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String strUserDisplayStyle = user.getDisplayStyle();
 			
-			if ( ( viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !strUserDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) )  ||
+			if ( ( viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) )  ||
 					viewType.equals(Definition.VIEW_STYLE_TASK)) {
 				// do it with ajax
-			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && strUserDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				folderEntries = findCalendarEvents(req, response, model);
 			}
 			else {
