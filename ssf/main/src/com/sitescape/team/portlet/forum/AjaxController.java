@@ -2137,8 +2137,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
 			
 			
-			String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, "");
-			TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, TaskHelper.FilterType.valueOf(filterTypeParam));
+			String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
+			TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);
 			model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 			
 			options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());

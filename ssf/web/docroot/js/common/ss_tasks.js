@@ -2,7 +2,7 @@ if (!window.ss_tasks) {
 	
 	function ss_tasks (tableId, binderId, namespace) {
 	
-		var filterType = "WEEK"; 	// CLOSED - status: (cancelled + completed)
+		var filterType; 	// CLOSED - status: (cancelled + completed)
 									// DAY - start date until today + status: (need action + in progress)
 									// WEEK - start date current week end day + status: (need action + in progress)
 									// MONTH - start date until current month end day + status: (need action + in progress)
@@ -140,7 +140,9 @@ if (!window.ss_tasks) {
 			
 			var url = ss_AjaxBaseUrl + "&operation=find_tasks";
 			url += "\&binderId=" + binderId;
-			url += "\&ssTaskFilterType=" + filterType;
+			if (filterType) {
+				url += "\&ssTaskFilterType=" + filterType;
+			}
 			url += "\&randomNumber=" + ss_random++;
 				
 			var bindArgs = {
