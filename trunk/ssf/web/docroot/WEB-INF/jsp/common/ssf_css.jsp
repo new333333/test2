@@ -4259,6 +4259,17 @@ ul.ss_statisticLegend {
 	margin:0px 0px 0px 6px;
 	padding:0px;
 }
+ul.ss_statisticLegend li {
+	line-height:12px;
+	margin:0px;
+	padding:0px;
+}
+ul.ss_statisticLegend li div.ss_statisticLegend {
+	float:left; 
+	width:12px;
+	height:12px;
+	margin:0px 3px 3px 0px;
+}
 /* Statistic styles - end */
 
 /* Tasks */

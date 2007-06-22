@@ -38,12 +38,12 @@
 		</c:if>
 	</c:forEach>
 </div>
-<div class="ss_clear"></div>
+<div class="ss_clear_float"></div>
 
 <c:if test="${showLegend}">
 	<ul class="ss_statisticLegend">
 	<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
-		<li><ssf:nlt tag="${singleValue.value.label}" />: ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)</li>
+		<li><div class="statistic${status.index mod 8} ss_statisticLegend">&nbsp;</div><ssf:nlt tag="${singleValue.value.label}" />: ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)<div class="ss_clear_float"></div></li>
 	</c:forEach>
 	</ul>
 </c:if>
