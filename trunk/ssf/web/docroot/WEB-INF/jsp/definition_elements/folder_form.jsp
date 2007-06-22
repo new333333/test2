@@ -76,7 +76,7 @@
 
 <c:if test="${ssDefinitionEntry.mirrored}" >
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-<input type="text" class="ss_text" size="30" name="resourceDriver" value="${ssDefinitionEntry.resourceDriverName}" disabled/>
+<input type="text" class="ss_text" size="30" name="resourceDriver" value="<ssf:nlt tag="resource.driver.${ssDefinitionEntry.resourceDriverName}"/>" disabled/>
 </c:if>
 <c:if test="${!ssDefinitionEntry.mirrored && !empty resourceDrivers}" >
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
