@@ -65,8 +65,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 <!-- Start of global toolbar -- MAXIMIZED PORTAL WINDOW MODE -->
 <c:if test="${ss_navbar_style != 'portlet'}">
 <div class="ss_global_toolbar ss_global_toolbar_maximized">
-<table width="100%" cellspacing="0" cellpadding="0" border="0"><tbody><tr>
-<td>
+<table class="ss_global_toolbar_maximized" width="100%" cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+<td width="5%">
 	<!-- My workspace -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace" 
@@ -104,7 +104,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	  </div>
 </ssf:ifaccessible>
 </td>	
-<td>	
+<td width="5%">	
 <!-- Favorites -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
@@ -137,7 +137,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	</div>
 </ssf:ifaccessible>
 </td>
-<td>	
+<td width="90%">	
 	<div class="ss_global_toolbar_divider"></div>
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
