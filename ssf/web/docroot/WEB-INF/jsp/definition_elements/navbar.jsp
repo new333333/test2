@@ -66,7 +66,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 <c:if test="${ss_navbar_style != 'portlet'}">
 <div class="ss_global_toolbar ss_global_toolbar_maximized">
 <table class="ss_global_toolbar_maximized" width="100%" cellspacing="0" cellpadding="0" border="0"><tbody><tr>
-<td width="5%">
+<td>
 	<!-- My workspace -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace" 
@@ -104,7 +104,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	  </div>
 </ssf:ifaccessible>
 </td>	
-<td width="5%">	
+<td>	
 <!-- Favorites -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
