@@ -28,18 +28,25 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 
 <!-- STATISTIC -->
 <table class="ss_statisticTable"><tr>
-<c:if test="${!empty ssBinder.customAttributes['statistics'].value.value}">		
+<c:if test="${!empty ssBinder &&
+				!empty ssBinder.customAttributes['statistics'] && 
+				!empty ssBinder.customAttributes['statistics'].value && 
+				!empty ssBinder.customAttributes['statistics'].value.value}">		
 	<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
-		<c:forEach var="attribute" items="${definition.value}">
-			<c:choose>
-				<c:when test="${attribute.key == 'priority'}">
-					<td><ssf:drawStatistic statistic="${attribute.value}" style="coloredBar" showLabel="true" showLegend="true"/></td>
-				</c:when>			
-				<c:when test="${attribute.key == 'status'}">
-					<td><ssf:drawStatistic statistic="${attribute.value}"/></td>
-				</c:when>
-			</c:choose>
-		</c:forEach>
+		<c:if test="${!empty definition.value}">
+			<c:forEach var="attribute" items="${definition.value}">
+				<c:if test="${!empty attribute.key && !empty attribute.value}">
+					<c:choose>
+						<c:when test="${attribute.key == 'priority'}">
+							<td><ssf:drawStatistic statistic="${attribute.value}" style="coloredBar" showLabel="true" showLegend="true"/></td>
+						</c:when>			
+						<c:when test="${attribute.key == 'status'}">
+							<td><ssf:drawStatistic statistic="${attribute.value}"/></td>
+						</c:when>
+					</c:choose>
+				</c:if>
+			</c:forEach>
+		</c:if>
 	</c:forEach>
 </c:if>
 </tr></table>
