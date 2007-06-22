@@ -23,7 +23,7 @@
 
 <p><ssf:nlt tag="help.getStartedProduct.content.workspaces.defined"/></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.folders.defined"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.projects" /></p>
 
 <p><ssf:nlt tag="help.getStartedProduct.content.workspaces.access"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
@@ -34,7 +34,8 @@
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><<</a></div>
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');">1</a></div> 
 <div class="current_page">2</div>
-<div class="no_next_page" title="<ssf:nlt tag="helpTitleAlt.noNextPage" />">>></a><a id="skip_nav_panel_numbers" /></div>
+<div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/folder_types', 'ss_moreinfo_panel');">3</a></div>
+<div><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/folder_types', 'ss_moreinfo_panel');">>></a><a id="skip_nav_panel_numbers" /><a id="skip_nav_all" /></div>
 </div>
 
 </div>
