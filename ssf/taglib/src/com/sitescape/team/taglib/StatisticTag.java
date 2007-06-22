@@ -25,6 +25,7 @@ package com.sitescape.team.taglib;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedMap;
 
 import javax.portlet.RenderRequest;
 import javax.servlet.RequestDispatcher;
@@ -33,6 +34,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import org.apache.commons.collections.OrderedMap;
+import org.apache.commons.collections.map.LinkedMap;
 
 import com.sitescape.team.domain.Statistics;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -72,14 +76,15 @@ public class StatisticTag extends BodyTagSupport {
 				}
 			}
 			
-			Map percentStatistic = new HashMap();
+			OrderedMap percentStatistic = new LinkedMap();
 			if (internalTotal > 0) {
 				Iterator it = statisticValues.keySet().iterator();
 				while (it.hasNext()) {
 					Object key = it.next();
 					if (key != null && statisticValues.get(key) != null) {
-						Map attrValues = new HashMap();
+						OrderedMap attrValues = new LinkedMap();
 						attrValues.put("percent", ((Integer)statisticValues.get(key)*100)/internalTotal);
+						attrValues.put("value", (Integer)statisticValues.get(key));
 						attrValues.put("total", total);
 						if (statisticLabels != null) {
 							attrValues.put("label", statisticLabels.get(key));
