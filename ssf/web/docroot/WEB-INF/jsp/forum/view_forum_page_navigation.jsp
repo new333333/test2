@@ -187,7 +187,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<portlet:namespace/>(this))">
 			<td>
 				&nbsp;&nbsp;
-			<c:if test="${ssPageEndIndex < ssTotalRecords}">
+			<c:if test="${ssPageCount != '1'}">
 				<ssf:ifnotaccessible>
 			    	<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 			    </ssf:ifnotaccessible>
