@@ -137,7 +137,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	</div>
 </ssf:ifaccessible>
 </td>
-<td width="90%">	
+<td>	
 	<div class="ss_global_toolbar_divider"></div>
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
