@@ -213,11 +213,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA) ||
 					op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 				return new ModelAndView("binder/get_entry_elements", model);
-			} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
-					op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
-					op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
-					op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-				return new ModelAndView("binder/get_condition_entry_element", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
@@ -296,12 +291,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA) || 
 				op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 			return ajaxGetFilterData(request, response);
-
-		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
-				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
-				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-			return ajaxGetSearchFormData(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
@@ -1211,75 +1200,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
-	private ModelAndView ajaxGetSearchFormData(RenderRequest request, 
-				RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String filterTermNumber = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, "");
-		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
-		String filterTermNumberMax = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, "");
-		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
-		
-		//Get the definition id (if present)
-		if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
-				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-			String defId = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber);
-			if (Validator.isNotNull(defId)) {
-				if (defId.equals("_common")) {
-					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, "");
-					Map elementData = BinderHelper.getCommonEntryElements();
-					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
-				} else {
-					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, defId);
-					Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
-					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
-				}
-			}
-		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
-			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_WORKFLOW_DEF_ID+filterTermNumber);
-			if (Validator.isNotNull(defId)) {
-				model.put(WebKeys.FILTER_WORKFLOW_DEF_ID, defId);
-				Map stateData = getDefinitionModule().getWorkflowDefinitionStates(defId);
-				model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
-			}
-		}
-		
-		String elementName = PortletRequestUtils.getStringParameter(request, "elementName" + filterTermNumber);
-		if (Validator.isNotNull(elementName)) {
-			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
-		}
-
-		
-		response.setContentType("text/xml");
-		if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
-			model.put(WebKeys.FILTER_TYPE, op2);
-			if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) && op2.equals("folders")) {
-    			Workspace ws = getWorkspaceModule().getWorkspace();
-    			Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
-    			model.put(WebKeys.DOM_TREE, tree);
-			} else {
-				DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
-		    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-				model.put(WebKeys.WORKFLOW_DEFINITION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
-			}
-			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
-		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
-			model.put(WebKeys.FILTER_TYPE, "entry");
-			return new ModelAndView("tag_jsps/search_form/get_entry_elements", model);
-		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
-			model.put(WebKeys.FILTER_TYPE, "entry");
-			return new ModelAndView("tag_jsps/search_form/get_element_value", model);
-		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
-			model.put(WebKeys.FILTER_TYPE, "workflow");
-			return new ModelAndView("binder/get_entry_elements", model);
-		} else {
-			model.put(WebKeys.FILTER_VALUE_TYPE, PortletRequestUtils.getStringParameter(request,
-					"elementValueDateType" + filterTermNumber, ""));
-			return new ModelAndView("tag_jsps/search_form/get_element_value_data", model);
-		}
-	}
 	
 	private ModelAndView ajaxGetConditionData(RenderRequest request, 
 				RenderResponse response) throws Exception {
