@@ -92,8 +92,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 <table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
 <tr>
-<th><ssf:nlt tag="notify.schedule"/></th>
-<th><ssf:nlt tag="notify.distribution.list"/> <ssf:inlineHelp tag="ihelp.email.notification_list"/></th>
+<th width="30%"><ssf:nlt tag="notify.schedule"/></th>
+<th width="70%"><ssf:nlt tag="notify.distribution.list"/> <ssf:inlineHelp tag="ihelp.email.notification_list"/></th>
 </tr>
 <tr>
 <td valign="top">
