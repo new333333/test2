@@ -2,6 +2,7 @@ package com.sitescape.team.search.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class SearchFilterRequestParser {
+	
+	private static String[] ALL_ITEM_TYPES = new String[] {"workspace", "folder", "user", "attachment", "entry", "reply"};
 	
 	private PortletRequest request;
 	
@@ -50,7 +53,15 @@ public class SearchFilterRequestParser {
 		parseModificationDates(request, searchFilter, types, numbers);
 		parseLastActivity(request, searchFilter, types, numbers);
 
+		fixEmptyQuery(searchFilter);
+		
 		return searchFilter.getFilter();
+	}
+
+	private void fixEmptyQuery(SearchFilter searchFilter) {
+		if (searchFilter.isEmpty()) {
+			searchFilter.addItemTypes(Arrays.asList(ALL_ITEM_TYPES));
+		}
 	}
 
 	private void parseLastActivity(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
