@@ -922,4 +922,14 @@ public class SearchFilter {
 		}
 	}
 
+	/**
+	 * There's no filter or empty filter.
+	 * @return
+	 */
+	public boolean isEmpty() {
+		return (filter == null || 
+					!filter.hasContent() ||
+					!filter.getRootElement().hasContent());
+	}
+
 }
