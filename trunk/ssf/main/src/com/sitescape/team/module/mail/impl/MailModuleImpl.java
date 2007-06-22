@@ -555,6 +555,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		
 		private void prepareICalendars(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			int c = 0;
+			int eventsSize = notify.getEvents().size();
 			Iterator entryEventsIt = notify.getEvents().entrySet().iterator();
 			while (entryEventsIt.hasNext()) { 
 				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
@@ -573,7 +574,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					
 				}
 				
-				String fileName = "iCalendar" + c + ".ics";
+				String fileName = entry.getTitle() + ".ics";
+				if (eventsSize > 1) {
+					fileName = entry.getTitle() + c + ".ics";
+				}
 				
 				String component = null;
 				if (!iCal.getComponents("VTODO").isEmpty()) {

@@ -47,11 +47,14 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.component.VToDo;
 import net.fortuna.ical4j.model.parameter.Cn;
+import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.PercentComplete;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.ProdId;
@@ -450,37 +453,78 @@ public class IcalModuleImpl implements IcalModule {
 		addToDoStatus(vToDo, entry);
 		addComponentCompleted(vToDo, entry);
 		setComponentAttendee(vToDo, entry);
-
-		// TODO: organizer ?
+		setComponentOrganizer(vToDo, entry);
 
 		addRecurrences(vToDo, event);
 
 		return vToDo;
 	}
 
-	private void setComponentAttendee(VToDo toDo, DefinableEntity entry) {
+	private void setComponentAttendee(Component component, DefinableEntity entry) {
+		Iterator userListsIt = DefinitionHelper.findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
+		while (userListsIt.hasNext()) {
+			String attributeName = (String)userListsIt.next();
+		
+			CustomAttribute customAttribute = entry.getCustomAttribute(attributeName);
+	
+			if (customAttribute == null) {
+				return;
+			}
+	
+			Iterator principalsIt = ResolveIds.getPrincipals(customAttribute)
+					.iterator();
+			while (principalsIt.hasNext()) {
+				Principal principal = (Principal) principalsIt.next();
+				ParameterList attendeeParams = new ParameterList();
+				attendeeParams.add(new Cn(principal.getTitle()));
+				attendeeParams.add(Role.REQ_PARTICIPANT);
+	
+				String uri = "MAILTO:" + principal.getEmailAddress();
+				try {
+					component.getProperties().add(new Attendee(attendeeParams, uri));
+				} catch (URISyntaxException e) {
+					logger.warn("Can not add attendee because of URI [" + uri
+							+ "] parsing problem");
+				}
+			}
+		
+		}
+
+	}
+	
+	private void setComponentOrganizer(Component component, DefinableEntity entry) {
+
+		Principal principal = (Principal) entry.getCreation().getPrincipal();
+		ParameterList organizerParams = new ParameterList();
+		organizerParams.add(new Cn(principal.getTitle()));
+
+		String uri = "MAILTO:" + principal.getEmailAddress();
+		try {
+			component.getProperties().add(new Organizer(organizerParams, uri));
+		} catch (URISyntaxException e) {
+			logger.warn("Can not add organizer because of URI [" + uri
+					+ "] parsing problem");
+		}
+
+	}
+	
+	private void setComponentLocation(Component component, DefinableEntity entry) {
+
 		CustomAttribute customAttribute = entry
-				.getCustomAttribute(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
+			.getCustomAttribute("location");
 
 		if (customAttribute == null) {
 			return;
 		}
-
-		Iterator principalsIt = ResolveIds.getPrincipals(customAttribute)
-				.iterator();
-		while (principalsIt.hasNext()) {
-			Principal principal = (Principal) principalsIt.next();
-			ParameterList parameterList = new ParameterList();
-			parameterList.add(new Cn(principal.getTitle()));
-
-			String uri = "MAILTO:" + principal.getEmailAddress();
-			try {
-				toDo.getProperties().add(new Attendee(parameterList, uri));
-			} catch (URISyntaxException e) {
-				logger.error("Can not add attendee because of URI [" + uri
-						+ "] parsing problem");
-			}
+		
+		String value = (String) customAttribute.getValue();
+		
+		if (value == null) {
+			return;
 		}
+
+		component.getProperties().add(new Location(value));
+
 
 	}
 
@@ -494,7 +538,7 @@ public class IcalModuleImpl implements IcalModule {
 
 		Set value = (Set) customAttribute.getValue();
 
-		if (value != null) {
+		if (value == null) {
 			return;
 		}
 
@@ -625,6 +669,9 @@ public class IcalModuleImpl implements IcalModule {
 
 		setComponentDescription(vEvent, entry.getDescription().getText());
 		setComponentUID(vEvent, entry, event);
+		setComponentAttendee(vEvent, entry);
+		setComponentOrganizer(vEvent, entry);
+		setComponentLocation(vEvent, entry);
 		addRecurrences(vEvent, event);
 
 		return vEvent;

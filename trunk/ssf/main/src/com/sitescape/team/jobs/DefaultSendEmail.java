@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataHandler;
@@ -51,6 +52,7 @@ import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.ical.util.ICalUtils;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.repository.RepositoryUtil;
@@ -231,15 +233,17 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 						} catch (ValidationException e) {
 							logger.error(e);
 						}
-						
-						String fileName = "iCalendar" + c + ".ics";
+						String summary = ICalUtils.getSummary(ical);
+						String fileName = summary + ".ics";
+						if (iCals.size() > 1) {
+							fileName = summary + c + ".ics";
+						}
 						
 						String component = null;
 						if (!ical.getComponents("VTODO").isEmpty()) {
 							component = "VTODO";
 						}
 						String contentType = "text/calendar" + (component != null ? "; component=" + component : "");
-						
 						
 						DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), contentType, fileName);
 						
