@@ -15,7 +15,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<c:set var="hitCount" value="0"/>
+<c:set var="hitCount" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}"/>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
@@ -33,6 +33,44 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 	background-position: left top; 
 }
 </style>
+<div class="ss_searchResult_dashboardHeader">
+	<div class="ss_dashboardPaginator"> 
+		<c:if test="${ssDashboard.scope != 'portlet'}">
+			<c:set var="binderId" value="${ssBinder.id}"/>
+		</c:if>
+		<c:if test="${ssDashboard.scope == 'portlet'}">
+			<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+		</c:if>
+		  <c:if test="${ss_pageNumber > 0}">
+		    <span>
+		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'task'); return false;"
+		        href="#" ><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>&nbsp;&nbsp;&nbsp;
+		    </span>
+		  </c:if>
+		  <span class="ss_pageNumber">${ss_pageNumber+1}</span>
+		  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+		    <span>&nbsp;&nbsp;
+		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'task'); return false;"
+		        href="#" ><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+		    </span>
+		  </c:if>
+	</div>
+	<div class="ss_searchResult_dashboardNumbers">
+	<c:if test="${hitCount > 0}">
+		    [<ssf:nlt tag="folder.Results">
+		    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
+		    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
+		    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
+		    </ssf:nlt>]
+	</c:if>
+	<c:if test="${hitCount == 0}">
+	    <span class="ss_light ss_fineprint">
+		  [<ssf:nlt tag="dashboard.noEntriesFound"/>]
+		</span>
+	</c:if>
+	</div>
+	<div class="ss_clear"></div>
+</div>
 <div class="ss_task_list_container">
 <table class="ss_tasks_list">
 	<tbody>
@@ -47,8 +85,6 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 
 <c:forEach var="entry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
 	<jsp:useBean id="entry" type="java.util.HashMap" />
-  <c:set var="hitCount" value="${hitCount + 1}"/>
-
 	<tr>
 		<td class="ss_entryTitle ss_normalprint">
 			<c:set var="isDashboard" value="yes"/>
@@ -104,47 +140,6 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 </table>
 </div>
 			
-<table>
-   <tr>
-    <td valign="top">
-<c:if test="${hitCount > 0}">
-      <span class="ss_light ss_fineprint">
-	    [<ssf:nlt tag="folder.Results">
-	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
-	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
-	    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
-	    </ssf:nlt>]
-	  </span>
-</c:if>
-<c:if test="${hitCount == 0}">
-    <span class="ss_light ss_fineprint">
-	  [<ssf:nlt tag="dashboard.noEntriesFound"/>]
-	</span>
-</c:if>
-	</td>
-	<td align="right">
-	<c:if test="${ssDashboard.scope != 'portlet'}">
-		<c:set var="binderId" value="${ssBinder.id}"/>
-	</c:if>
-	<c:if test="${ssDashboard.scope == 'portlet'}">
-		<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
-	</c:if>
-	  <c:if test="${ss_pageNumber > 0}">
-	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'task'); return false;"
-	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
-	    </span>
-	  </c:if>
-	  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
-	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'task'); return false;"
-	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
-	    </span>
-	  </c:if>
-    </td>
-   </tr>
-</table>
-
 <ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
 	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
 	namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">

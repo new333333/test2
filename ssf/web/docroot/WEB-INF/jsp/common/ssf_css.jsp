@@ -3935,11 +3935,11 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 }
 
 #ss_searchResult {
-	margin:12px 0px 0px 0px;
+	margin: 0px;
 	padding:0px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
-	width: 502px;
+	/* width: 502px;*/
 </c:if>
 }
 #ss_searchResult li {
@@ -3954,14 +3954,33 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	padding: 3px 24px 3px 12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
-	width: 502px;
+/*	width: 502px; */
 </c:if>
 }
 .ss_searchResult_numbers {
 	float:left;
-	padding: 3px 24px 3px 0;
+	padding: 3px 24px 3px 0px;
 }
 .ss_paginator {float:left;}
+
+.ss_searchResult_dashboardHeader {
+	border-bottom: 1px solid #afc8e3;	
+	margin: 0px 0px -12px 0px;
+	padding: 3px 0px 3px 12px;
+	position:relative;
+	top:-18px;
+<c:if test="<%= isIE %>">	
+	zoom: 1; /* a workaround IE bug - parent border disappears */
+</c:if>
+}
+.ss_searchResult_dashboardNumbers {
+	float:right;
+	padding: 0px 24px 3px 0px;
+}
+.ss_dashboardPaginator {
+	float:right; 
+	padding: 0px 24px 0px 0px;
+}
 
 div.ss_thumbnail {float: left; width:62px; text-align:center;}
 div.ss_thumbnail img {width:50px;height:50px;padding:0px; margin:0px;}
