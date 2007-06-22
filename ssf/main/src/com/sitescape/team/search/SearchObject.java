@@ -162,7 +162,7 @@ public class SearchObject {
 			logger.debug("QueryParser instantiating new QP took " + (endTime - startTime) + " milliseconds");
 			return retQ;
 		} catch (ParseException pe){ 
-			logger.info("Parser exception, can't parse: " + queryString);
+			logger.debug("Parser exception, can't parse: " + queryString);
 			return new BooleanQuery();}
 	}
 
