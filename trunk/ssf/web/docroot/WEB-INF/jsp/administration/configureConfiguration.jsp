@@ -46,7 +46,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
 	 <input type="radio" name="cfgType" value="5" ><ssf:nlt tag="general.type.folder"/><br/>
 	 <input type="radio" name="cfgType" value="-1" checked><ssf:nlt tag="administration.configure_cfg.clone"/> <ssf:inlineHelp tag="ihelp.designers.new_template"/><br/>
-	 <input type="radio" name="cfgType" value="-2" checked><ssf:nlt tag="administration.configure_cfg.import"/><br/>
+	 <input type="radio" name="cfgType" value="-2" checked><ssf:nlt tag="administration.configure_cfg.import"/> <ssf:inlineHelp tag="ihelp.designers.import_definitions"/><br/>
 	<br/><br/>
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
