@@ -827,7 +827,7 @@ DIV.ss_help_moreinfo .document_title {
     font-style: italic;
 }
 
-DIV.ss_style .clickable_item {
+DIV.ss_style .clickable_item, .new_term {
     font-style: italic;
 }
 
