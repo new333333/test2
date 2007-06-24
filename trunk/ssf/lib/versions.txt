@@ -40,6 +40,7 @@ JTA 1.0.1b
 JTDS 0.9.1
 JUnit 3.8.1
 Liferay portal-ejb.jar 3.6.1 (modified portal.properties)
+Liferay util-java.jar 4.1.2
 Log4j 1.2.8
 Lucene 1.9.1+indexupdater
 md5crypt.jar
@@ -57,6 +58,7 @@ Slide WebDAV client library 2.1
 Spring 1.2.9
 Spring mock 1.2.9 (comes with Spring)
 Spring Portlet spring-portlet.jar
+Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 Trove 1.0.2
 Velocity 1.4
 WSDL4J 1.5.1
