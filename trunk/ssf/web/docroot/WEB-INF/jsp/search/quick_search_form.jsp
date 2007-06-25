@@ -23,6 +23,8 @@
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value=""/>
 					<portlet:param name="newTab" value="1"/>
+					<portlet:param name="searchText" value="${ss_filterMap.searchText}"/>
+					<portlet:param name="operation" value="ss_searchResults"/>
 					</portlet:actionURL>" class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
 				<div class="ss_clear"></div>
 								
