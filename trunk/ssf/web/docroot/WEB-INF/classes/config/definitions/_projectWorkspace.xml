@@ -38,8 +38,8 @@
 					<property name="required" value="false"/>
 				</properties>
 			</item>
-			<item name="selectbox" caption="__selectbox" type="data"
-				category="commonEntryData" id="9">
+			<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="9">
+
 				<properties>
 					<property name="name" value="status"/>
 					<property name="caption" value="__project_status"/>
@@ -47,6 +47,24 @@
 					<property name="size" value=""/>
 					<property name="required" value="false"/>
 				</properties>
+				<item name="selectboxSelection" caption="__selection" id="19">
+					<properties>
+						<property name="name" value="open"/>
+						<property name="caption" value="__project_status_open"/>
+					</properties>
+				</item>
+				<item name="selectboxSelection" caption="__selection" id="20">
+					<properties>
+						<property name="name" value="cancelled"/>
+						<property name="caption" value="__project_status_cancelled"/>
+					</properties>
+				</item>
+				<item name="selectboxSelection" caption="__selection" id="21">
+					<properties>
+						<property name="name" value="closed"/>
+						<property name="caption" value="__project_status_closed"/>
+					</properties>
+				</item>
 			</item>
 			<item name="user_list" caption="__user_list" type="data"
 				category="commonEntryData" id="10">
