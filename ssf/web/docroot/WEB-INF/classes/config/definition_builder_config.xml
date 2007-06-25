@@ -1410,7 +1410,7 @@
 		</jsps>
 	</item>
 	
-	<item name="places" caption="__places" type="data" category="commonEntryData">
+	<item name="places" caption="__places" type="data" category="entryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
@@ -1617,7 +1617,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
 	</item>
 
-	<item name="survey" caption="__survey_queries" type="data" category="commonEntryData">
+	<item name="survey" caption="__survey_queries" type="data" category="entryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
