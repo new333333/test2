@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import com.sitescape.util.StringUtil;
@@ -20,9 +21,10 @@ import com.sitescape.util.StringUtil;
  * rows in the customAttribute table.
  * This is used to store lists of users.
  */
-public class CommaSeparatedValue {
+public class CommaSeparatedValue implements Serializable {
+	private final static long serialVersionUID=1;
 	private Set values=null;
-    private static String [] sample = new String[0];
+    private transient static String [] sample = new String[0];
 	
     public CommaSeparatedValue() {
     }

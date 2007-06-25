@@ -139,7 +139,8 @@ public class Statistics implements Serializable {
 		
 		if (isSimpleValueAttribute(attribute)) {
 			if (attribute.getValue() == null || "".equals(attribute.getValue()) || 
-					FileAttachment.class.isAssignableFrom(attribute.getValue().getClass())) {
+					FileAttachment.class.isAssignableFrom(attribute.getValue().getClass()) ||
+					Event.class.isAssignableFrom(attribute.getValue().getClass())) {
 				return;
 			}
 			
@@ -162,7 +163,8 @@ public class Statistics implements Serializable {
 			while (valuesIt.hasNext()) {
 				Object attrValue = valuesIt.next();
 				if (attrValue == null || "".equals(attrValue) || 
-						FileAttachment.class.isAssignableFrom(attrValue.getClass())) {
+						FileAttachment.class.isAssignableFrom(attrValue.getClass()) ||
+						Event.class.isAssignableFrom(attribute.getValue().getClass())) {
 					continue;
 				}
 				if (!attributeValues.contains(attribute.getValue())) {
@@ -252,7 +254,8 @@ public class Statistics implements Serializable {
 				attribute.getValueType() == CustomAttribute.SET) && 
 				!("file".equals(attributeType) || "graphic".equals(attributeType) ||
 						"profileEntryPicture".equals(attributeType) ||
-						"attachFiles".equals(attributeType));
+						"attachFiles".equals(attributeType) ||
+						"event".equals(attributeType));
 	}
 	
 	private boolean isSimpleValueAttribute(CustomAttribute attribute) {
