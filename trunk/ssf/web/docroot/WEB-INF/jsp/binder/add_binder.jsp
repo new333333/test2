@@ -84,11 +84,16 @@ function ss_enableDisableFolderOptions(id) {
 	  onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'title_label', 'ss_titleCheck');"><br/><br/>
 
 <c:if test="${!empty ssBinderConfigs}">
+<c:set var="checkedConfig" value=""/>
+  <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+      <c:if test="${status.first}"><c:set var="checkedConfig" value="${config.id}"/></c:if>
+      <c:if test="${config.internalId == ss_workspaceId}"><c:set var="checkedConfig" value="${config.id}"/></c:if>
+  </c:forEach>
   <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span> <ssf:inlineHelp tag="ihelp.other.select_template"/>
   <br/>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
       <input type="radio" name="binderConfigId" value="${config.id}" 
-      <c:if test="${config.internalId == ss_workspaceId}">checked="checked"</c:if>
+      <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
       onChange="ss_enableDisableFolderOptions('${config.internalId}')"
       ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
