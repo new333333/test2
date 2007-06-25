@@ -4227,13 +4227,13 @@ div.ss_selectedItemsContainer img {
 /* Dojo Widgets / end */
 
 /* Survey chart styles */
-div.ss_surveyChartContainer {
+div.ss_chartContainer {
 	float: left;
 	text-align:left;
 	margin-right: 5px;
 }
 
-div.ss_surveyChartContainer div.ss_total {
+div.ss_chartContainer div.ss_total {
 	border: 1px solid #afc8e3;
 	background-color: #e8eff7;
 	width: 300px;
@@ -4241,9 +4241,12 @@ div.ss_surveyChartContainer div.ss_total {
 	padding:0px;
 	height: 15px;
 }
-div.ss_chartContainer div {
+div.ss_chartContainer div.ss_total div {
 	background-color: #afc8e3;
 	color:#000099;
+	<c:if test="<%= isIE %>">
+	  zoom:1; /* a workaround IE bug - font color not display correctly */
+	</c:if>	
 }
 /* Charts styles - end*/
 
