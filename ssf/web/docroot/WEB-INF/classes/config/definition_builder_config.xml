@@ -1142,6 +1142,7 @@
 				<option name="workspace" caption="__workspace" />
 				<option name="team_root" caption="__team_root_workspace" />
 				<option name="team" caption="__team_workspace" />
+				<option name="project" caption="__project_management" />
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
