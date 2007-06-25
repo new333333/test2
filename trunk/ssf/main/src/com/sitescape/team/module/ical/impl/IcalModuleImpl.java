@@ -345,8 +345,19 @@ public class IcalModuleImpl implements IcalModule {
 			DefinableEntity entry = (DefinableEntity)it.next();
 			generate(calendar, entry, entry.getEvents(), defaultTimeZoneId);
 		}
+		
 		TimeZoneShorterTransformer timeZoneShorterTransformer = new TimeZoneShorterTransformer();
 		calendar = timeZoneShorterTransformer.transform(calendar);
+		
+		// Calendar without any components can not exists
+		// so put time zone
+		if (calendar.getComponents().isEmpty()) {
+			TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+			TimeZone timeZone = getTimeZone(null, registry, defaultTimeZoneId);
+				
+			calendar.getComponents().add(timeZone.getVTimeZone());
+		}
+	
 		return calendar;
 	}
 	
@@ -677,8 +688,13 @@ public class IcalModuleImpl implements IcalModule {
 
 	private TimeZone getTimeZone(java.util.TimeZone timeZone,
 			TimeZoneRegistry registry, String defaultTimeZone) {
-		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
-		TimeZone iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
+		TimeZone iCalTimeZone= null;
+		if (timeZone != null) {
+			DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+			if (dateTimeZone != null) {
+				iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
+			}
+		}
 		if (iCalTimeZone == null) {
 			iCalTimeZone = registry.getTimeZone(defaultTimeZone);
 		}
