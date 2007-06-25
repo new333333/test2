@@ -1027,7 +1027,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         if (statisticsAttribute == null) {
         	statistics = new Statistics();
         } else {
-        	statistics = (Statistics)statisticsAttribute.getValue();
+        	 statistics = (Statistics)statisticsAttribute.getValue();
+//        	statistics = new Statistics();
         }
         return statistics;
 	}

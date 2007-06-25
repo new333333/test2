@@ -24,6 +24,7 @@ package com.sitescape.team.taglib;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -63,43 +64,48 @@ public class StatisticTag extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			Integer internalTotal = new Integer(0);
-			Map statisticValues = (Map)this.statistic.get(Statistics.VALUES);
-			Map statisticLabels = (Map)this.statistic.get(Statistics.CAPTIONS);
-			Integer total = (Integer)this.statistic.get(Statistics.TOTAL_KEY);
-			String label = (String)this.statistic.get(Statistics.ATTRIBUTE_CAPTION);
-			Iterator<Integer> iterator = statisticValues.values().iterator();
-			while (iterator.hasNext()) {
-				Integer value = iterator.next();
-				if (value != null && value>0) {
-					internalTotal += value;
-				}
-			}
-			
-			OrderedMap percentStatistic = new LinkedMap();
-			if (internalTotal > 0) {
-				Iterator it = statisticValues.keySet().iterator();
-				while (it.hasNext()) {
-					Object key = it.next();
-					if (key != null && statisticValues.get(key) != null) {
-						OrderedMap attrValues = new LinkedMap();
-						attrValues.put("percent", ((Integer)statisticValues.get(key)*100)/internalTotal);
-						attrValues.put("value", (Integer)statisticValues.get(key));
-						attrValues.put("total", total);
-						if (statisticLabels != null) {
-							attrValues.put("label", statisticLabels.get(key));
-						}
-						percentStatistic.put(key, attrValues);
+			if (this.statistic.get(Statistics.VALUES_LIST) != null) {
+				
+				Integer internalTotal = new Integer(0);
+				List statisticValuesList = (List)this.statistic.get(Statistics.VALUES_LIST);
+				Map statisticValues = (Map)this.statistic.get(Statistics.VALUES);
+				Map statisticLabels = (Map)this.statistic.get(Statistics.CAPTIONS);
+				Integer total = (Integer)this.statistic.get(Statistics.TOTAL_KEY);
+				String label = (String)this.statistic.get(Statistics.ATTRIBUTE_CAPTION);
+				Iterator<Integer> iterator = statisticValues.values().iterator();
+				while (iterator.hasNext()) {
+					Integer value = iterator.next();
+					if (value != null && value>0) {
+						internalTotal += value;
 					}
 				}
+				
+				OrderedMap percentStatistic = new LinkedMap();
+				if (internalTotal > 0) {
+					Iterator it = statisticValuesList.iterator();
+					while (it.hasNext()) {
+						Object key = it.next();
+						if (key != null && statisticValues.get(key) != null) {
+							OrderedMap attrValues = new LinkedMap();
+							attrValues.put("percent", ((Integer)statisticValues.get(key)*100)/internalTotal);
+							attrValues.put("value", (Integer)statisticValues.get(key));
+							attrValues.put("total", total);
+							if (statisticLabels != null) {
+								attrValues.put("label", statisticLabels.get(key));
+							}
+							percentStatistic.put(key, attrValues);
+						}
+					}
+				}
+				
+				
+				httpReq.setAttribute("percentStatistic", percentStatistic);
+				httpReq.setAttribute("statisticLabel", label);
 			}
-			
-			
-			httpReq.setAttribute("percentStatistic", percentStatistic);
-			httpReq.setAttribute("statisticLabel", label);
 			httpReq.setAttribute("showLabel", this.showLabel);
 			httpReq.setAttribute("showLegend", this.showLegend);
 			httpReq.setAttribute("barStyle", this.style);
+			
 			String jsp = "/WEB-INF/jsp/tag_jsps/charts/statistic.jsp";
 			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 			ServletRequest req = pageContext.getRequest();
