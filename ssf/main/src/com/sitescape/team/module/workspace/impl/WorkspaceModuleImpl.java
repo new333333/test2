@@ -39,6 +39,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
+import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;

@@ -173,13 +173,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean
-					if ((binder != null) && (binder instanceof TemplateBinder)) {
 						getInstance().getWorkspaceTreeBean(binder, 
-								ssDashboard, model, id, component, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));	
-					} else {
-						getInstance().getWorkspaceTreeBean(binder, 
-							ssDashboard, model, id, component, null);
-					}
+							ssDashboard, model, id, component, false);
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
@@ -235,7 +230,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean,
 					getInstance().getWorkspaceTreeBean(binder, 
-							ssDashboard, model, id, component, new WorkspaceConfigHelper());
+							ssDashboard, model, id, component, true);
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
 					//Set up the search results bean
@@ -518,7 +513,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
 	}
 	protected void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
-	    		String id, Map component, DomTreeHelper helper) {
+	    		String id, Map component, boolean isConfig) {
 		//make sure data is reflected in toXml
 		Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();
@@ -534,55 +529,72 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		idData = new HashMap();
         	beans.put(id, idData);
     	}
-
     	Document tree = null;
- 
-    	if (binder != null) {
-    		if (!(binder instanceof TemplateBinder)) {
-    			if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-    				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
-    					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
-    				} else {
-    					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, helper),1);
-    					idData.put(Workspace_topId, binder.getId().toString());
-    				}
-    			} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-    				Folder topFolder = ((Folder)binder).getTopFolder();
-    				if (topFolder == null) topFolder = (Folder)binder;
-    				Binder workspace = (Binder)topFolder.getParentBinder();
-    				tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this, helper),1);
-    				idData.put(Workspace_topId, workspace.getId().toString());
-    			}
-    		} else {
-       			if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-    				if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
-    					tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
-    				} else {
-    					tree = BinderHelper.buildTemplateTreeRoot(this, (TemplateBinder)binder, helper);
-    					idData.put(Workspace_topId, binder.getId().toString());
-    				}
-    			} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-    				TemplateBinder top = (TemplateBinder)binder;
-    				while (!top.isRoot()) {
-    					top = (TemplateBinder)top.getParentBinder();
-    				}
-   					tree = BinderHelper.buildTemplateTreeRoot(this, top, helper);
-   					idData.put(Workspace_topId, top.getId().toString());
-    			}			
-    		}
-    	} else {
-    		Long topId = (Long)data.get(Workspace_topId);
-    		if (topId == null) {
-    			Workspace ws = getWorkspaceModule().getWorkspace();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, helper),1);
-    			idData.put(Workspace_topId,ws.getId().toString());
-    		} else {
-    			Workspace ws = getWorkspaceModule().getWorkspace(topId);
-    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new WsDomTreeBuilder(ws, true, this, helper),1);
-    			idData.put(Workspace_topId, topId.toString());			
-    		}
-    			
-    	}
+    	String idString = (String)data.get(Workspace_topId);
+		Long topId = null;
+		try {
+			topId = Long.valueOf(idString);
+		} catch (Exception ex) {};
+       	String startPoint = (String)data.get("start");
+   		if (!(binder instanceof TemplateBinder)) {
+   	       	Workspace topWs = null;
+   			if ("this".equals(startPoint)) {
+   	  			if (binder instanceof Workspace) {
+   	  				topWs = (Workspace)binder;   				
+   	  			} else  {
+   	  				Folder topFolder = ((Folder)binder).getTopFolder();
+   	  				if (topFolder == null) topFolder = (Folder)binder;
+   	  				topWs = (Workspace)topFolder.getParentBinder();
+    			} 				
+   			} else if (topId != null) {
+   				try {
+   					topWs = getWorkspaceModule().getWorkspace(topId);
+   	   				idData.put(WebKeys.BINDER, topWs);
+   				} catch (Exception ex) {}; //ignore error and continue
+   			}
+   			if (isConfig) {
+   				if (topWs != null && !topWs.isZone()) topWs = null;
+   			}
+   			if (topWs == null) topWs = getWorkspaceModule().getTopWorkspace();
+   			idData.put(Workspace_topId, topWs.getId());
+   			if (isConfig)
+   				tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
+   			else
+  				tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
+   		   				
+   		} else {
+   			Binder topWs = null;
+  			if ("this".equals(startPoint)) {
+				topWs = (TemplateBinder)binder;
+				if (!binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+					topWs = (TemplateBinder)binder;
+					while (!topWs.isRoot()) {
+						topWs = (TemplateBinder)topWs.getParentBinder();
+					}
+					if (!topWs.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+						topWs = null;
+					}
+				}
+			} else if (topId != null) {
+   				try {
+   					topWs = getWorkspaceModule().getWorkspace(topId);
+   	   				idData.put(WebKeys.BINDER, topWs);
+   				} catch (Exception ex) {}; //ignore error and continue
+   			}
+  			if (isConfig) {
+   				if (topWs != null && !topWs.isZone()) topWs = null;
+   			}
+   			if (topWs == null) topWs = getWorkspaceModule().getTopWorkspace();
+  			idData.put(Workspace_topId, topWs.getId());
+   			if (topWs instanceof TemplateBinder) {
+   				tree = BinderHelper.buildTemplateTreeRoot(this, (TemplateBinder)topWs, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
+   			} else {
+   				if (isConfig)
+   					tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
+   				else
+  					tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
+   			}
+   		}
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     }
 
@@ -651,7 +663,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		idData = new HashMap();
         	beans.put(id, idData);
     	}
-    	if (isConfig) getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
+    	if (isConfig) {
+    		Workspace ws = getWorkspaceModule().getWorkspace();
+    		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
+    		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
+    	}
 
     	try {
     		String binderId = null;
@@ -721,7 +737,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
 		
 		
-		getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
+    	Workspace ws = getWorkspaceModule().getWorkspace();
+    	Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
+    	idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
 
     }
     protected void getSearchResultsBean(Binder binder, Map ssDashboard, Map model, 

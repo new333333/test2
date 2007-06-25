@@ -27,6 +27,7 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
@@ -36,6 +37,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.FolderHierarchyException;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -58,6 +60,7 @@ import com.sitescape.util.Validator;
 public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor 
 	implements FolderCoreProcessor {
   //***********************************************************************************************************	
+    //inside write transaction
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Folder folder = (Folder)binder;
     	FolderEntry fEntry = (FolderEntry)entry;
@@ -68,19 +71,26 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData, ctx);
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
-   }
- 
+    	if (fEntry.isTop()) {
+    		Statistics statistics = getFolderStatistics(folder);
+    		statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+    		setFolderStatistics(folder, statistics);
+    	}
+    }
+    //inside write transaction
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
     }
+    //no transaction
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
    		getRssModule().updateRssFeed(entry); 
      }
 
     //***********************************************************************************************************
+    //no transaction    
     public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
    		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
@@ -128,7 +138,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		
     	}
     }
-        
+    //no transaction
     protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
      	return addEntry_toEntryData(parent.getParentBinder(), def, inputData, fileItems, ctx);
     }
@@ -137,15 +147,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      * Subclass must implement this.
      * @return
      */
+    //no transaction
     protected FolderEntry addReply_create(Definition def, Map ctx) {
     	return (FolderEntry)addEntry_create(def, FolderEntry.class, ctx);    	
     }
 
+    //no transaction
     protected FilesErrors addReply_filterFiles(Binder binder, Entry reply, 
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
     	return addEntry_filterFiles(binder, reply, entryData, fileUploadItems, ctx);
     }
-
+    //no transaction
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
     		List fileData, FilesErrors filesErrors, Map ctx) {
     	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors, ctx);
@@ -188,10 +200,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     }
     
+    //no transaction
     protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData, Map ctx) {
     	addEntry_done(parent.getParentBinder(), entry, inputData, ctx);
     }
-
+    //no transaction
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, List fileData, Map ctx) {
     	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
@@ -200,7 +213,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
      //***********************************************************************************************************
-
+    //inside write transaction
+    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
+    	Statistics statistics = getFolderStatistics((Folder)binder);
+    	statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+    	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
+    }
+    //inside write transaction
 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
  			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
@@ -208,22 +227,32 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
 		//make sure this is set after lastActivity
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
-   }
+    	Statistics statistics = getFolderStatistics((Folder)binder);
+        statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        setFolderStatistics((Folder)binder, statistics);
+  }
+    //no transaction
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     	getRssModule().updateRssFeed(entry);
  	}
     //***********************************************************************************************************
+    //inside write transaction
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
     	super.modifyWorkflowState(binder, entry, tokenId, toState);
        	getRssModule().updateRssFeed(entry);
            	
     }
+    //inside write transaction    
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
     	if (ctx == null) ctx = new HashMap();
     	return super.deleteEntry_setCtx(entry, ctx);
     }
+    //inside write transaction
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
+        Statistics statistics = getFolderStatistics((Folder)parentBinder);        
+        statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        setFolderStatistics((Folder)parentBinder, statistics);
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
       	//pass replies along as context so we can delete them all at once
      	//load in reverse hkey order so foreign keys constraints are handled correctly
@@ -237,12 +266,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
       	ctx.put(this.getClass().getName(), replies);
+      	
     }
-        
+    //inside write transaction    
     protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
     	//folder Dao will handle
     }
-    
+    //inside write transaction    
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	List replies = (List)ctx.get(this.getClass().getName());
        	for (int i=0; i<replies.size(); ++i) {
@@ -251,6 +281,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
     }
     
+    //inside write transaction    
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
@@ -263,6 +294,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	}
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
     }
+    //inside write transaction    
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted());  //will handle in bulk way
         List replies = (List)ctx.get(this.getClass().getName());
@@ -273,6 +305,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
     
     //***********************************************************************************************************
+    //inside write transaction    
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
@@ -289,6 +322,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    	    from.removeEntry(fEntry);
     	to.addEntry(fEntry);
    		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());		
+        Statistics statistics = getFolderStatistics(from);        
+        statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        setFolderStatistics(from, statistics);
+        statistics = getFolderStatistics((Folder)destination);
+        statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        setFolderStatistics((Folder)destination, statistics);
 
     	User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -345,11 +384,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
          
     //***********************************************************************************************************
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
+    //inside write transaction    
+   public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
     	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
     	else {
+    		//if binder is marked deleted, we are called from cleanup code without a transation 
     		final Folder folder = (Folder)binder;
     		final FilterControls filter = new FilterControls(
     				new String[] {ObjectKeys.FIELD_ENTITY_PARENTBINDER, ObjectKeys.FIELD_ENTITY_DELETED},
@@ -418,11 +459,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      	};
     }
     
+   //inside write transaction    
     protected void deleteBinder_processFiles(Binder binder, Map ctx) {
     	//save for background
 
     }
-    public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
+    //inside write transaction    
+   public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
       	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
@@ -432,12 +475,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
  
     //***********************************************************************************************************
+   //inside write transaction    
     public void moveBinder(Binder source, Binder destination) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
     		super.moveBinder(source, destination);
     	else throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
    	 
     }
+    //inside write transaction    
 	public void moveBinderFixup(Binder binder) {
 		//Some parentage has changed.
 		Folder folder = (Folder)binder;
@@ -536,5 +581,27 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		}
 		getCoreDao().save(changes);
 		return changes;
+	}
+	//***********************************************************************************************************
+    private Statistics getFolderStatistics(Folder folder) {
+        CustomAttribute statisticsAttribute = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
+        Statistics statistics = null;
+        if (statisticsAttribute == null) {
+        	statistics = new Statistics();
+        } else {
+        	 statistics = (Statistics)statisticsAttribute.getValue();
+//        	statistics = new Statistics();
+        }
+        return statistics;
+	}
+    
+    private void setFolderStatistics(Folder folder, Statistics statistics) {
+        CustomAttribute statisticsAttribute = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
+        if (statisticsAttribute != null) {
+        	statisticsAttribute.setValue(null);
+        	statisticsAttribute.setValue(statistics);
+        } else {
+        	folder.addCustomAttribute(Statistics.ATTRIBUTE_NAME, statistics);
+        }
 	}
 }

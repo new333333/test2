@@ -266,10 +266,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
  	    loadBinderProcessor(binder).indexBinder(binder, includeEntries);
     }
 
+    //no transaction    
     public void modifyBinder(Long binderId, final InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException {
     	modifyBinder(binderId, inputData, new HashMap(),  null);
     }
+    //no transaction    
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
     	final Binder binder = loadBinder(binderId);
@@ -387,15 +389,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   		}
     }
  
-    public void setProperty(Long binderId, String property, Object value) {
+    //inside write transaction    
+   public void setProperty(Long binderId, String property, Object value) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.setProperty);
 		binder.setProperty(property, value);	
    }    
+   //inside write transaction    
     public Set<Exception> deleteBinder(Long binderId) {
     	return deleteBinder(binderId, true);
     }
-    public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) {
+    //inside write transaction    
+   public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.deleteBinder);
 		
@@ -432,6 +437,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	}
     	return errors;
     }
+    //inside write transaction    
      public void moveBinder(Long fromId, Long toId) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.moveBinder);
@@ -445,6 +451,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      	loadBinderProcessor(source).moveBinder(source,destination);
            	
     }
+     //inside write transaction    
 	public Binder setDefinitions(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageDefinitions); 
@@ -468,6 +475,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return binder;
 		
 	}
+    //inside write transaction    
     public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
     	//access checked in setDefinitions
@@ -488,6 +496,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		binder.setDefinitionsInherited(false);
 		return binder;
 	}
+    //inside write transaction    
 	public Binder setDefinitions(Long binderId, List<String> definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageDefinitions); 
@@ -521,6 +530,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/**
 	 * Add a new tag, to binder
 	 */
+    //inside write transaction    
 	public void setTag(Long binderId, String newTag, boolean community) {
 		if (Validator.isNull(newTag)) return;
 		Binder binder = loadBinder(binderId);
@@ -553,6 +563,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/**
 	 * Delete a tag on this binder
 	 */
+    //inside write transaction    
 	public void deleteTag(Long binderId, String tagId) {
 		Binder binder = loadBinder(binderId);
 	   	Tag tag;
@@ -565,7 +576,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
  	    loadBinderProcessor(binder).indexBinder(binder, false);
 	}
 	
-    public void addSubscription(Long binderId, int style) {
+    //inside write transaction    
+   public void addSubscription(Long binderId, int style) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -582,6 +594,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
     }
+    //inside write transaction    
     public void deleteSubscription(Long binderId) {
     	//delete your own
 		Binder binder = loadBinder(binderId);
@@ -712,6 +725,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return ids;
 	}
 	
+    //no transaction    
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit) {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageTeamMembers);
@@ -749,6 +763,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 		
 	}
+    //no transaction    
 	public void setTeamMembers(Long binderId, final Collection<Long> memberIds) throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageTeamMembers);
@@ -838,11 +853,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         if (hits == null) return new ArrayList();
     	return SearchUtils.getSearchEntries(hits);	    
     }	
+    //inside write transaction    
     public void setPosting(Long binderId, String emailAddress) {
     	Map updates = new HashMap();
     	updates.put("emailAddress", emailAddress);
     	setPosting(binderId, updates);
     }
+    //inside write transaction    
     public void setPosting(Long binderId, Map updates) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, BinderOperation.manageMail);
@@ -901,6 +918,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   		return process.getScheduleInfo(binder);
 	}
 	    
+    //inside write transaction    
     public void setNotificationConfig(Long binderId, ScheduleInfo config) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, BinderOperation.manageMail); 
@@ -914,6 +932,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      * @param updates
      * @param principals - if null, don't change list.
      */
+    //inside write transaction    
     public void modifyNotification(Long binderId, Map updates, Collection<Long> principalIds) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, BinderOperation.manageMail); 

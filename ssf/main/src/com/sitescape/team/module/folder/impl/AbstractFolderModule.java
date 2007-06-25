@@ -41,7 +41,6 @@ import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.AverageRating;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -56,7 +55,6 @@ import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.SeenMap;
-import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
@@ -78,13 +76,11 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -287,7 +283,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		}
 		return result;
 	}
-   
+    //inside write transaction    
     public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	afCount.incrementAndGet();
@@ -304,7 +300,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
         return binder.getId();
     }
-    
+    //no transaction    
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	aeCount.incrementAndGet();
@@ -323,16 +319,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         }
         
         Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
-        
-        Statistics statistics = getFolderStatistics(folder);
-        statistics.addStatistics(def, entry.getCustomAttributes());
-        setFolderStatistics(folder, statistics);
-        
-        processor.modifyBinder(folder, new MapInputData(new HashMap()), new HashMap(), new HashSet());
-        
         return entry.getId();
     }
-
+    //no transaction    
 	public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
     	arCount.incrementAndGet();
@@ -349,7 +338,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         
         return reply.getId();
     }
-
+    //no transaction    
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
@@ -360,7 +349,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.modifyEntry);
-        Map customAttributesOld = entry.getCustomAttributes();
         
         User user = RequestContextHolder.getRequestContext().getUser();
         HistoryStamp reservation = entry.getReservation();
@@ -376,15 +364,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	}
     	Date stamp = entry.getModification().getDate();
     	
-        Statistics statistics = getFolderStatistics(folder);
-        statistics.deleteStatistics(entry.getEntryDef(), customAttributesOld);
     	try {
     		processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo);
-
-            statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
-            setFolderStatistics(folder, statistics);
-            processor.modifyBinder(folder, new MapInputData(new HashMap()), new HashMap(), new HashSet());
-    		
     		
     	} catch (WriteFilesException ex) {
     		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
@@ -624,9 +605,11 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         AccessUtils.readCheck(entry);
        return processor.getEntryTree(folder, entry);   	
     }
+    //inside write transaction        
     public void deleteEntry(Long parentFolderId, Long entryId) {
     	deleteEntry(parentFolderId, entryId, true);
     }
+    //inside write transaction    
     public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) {
     	deCount.incrementAndGet();
 
@@ -634,59 +617,21 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.deleteEntry);
-        Map customAttributesOld = entry.getCustomAttributes();
-        
-        Statistics statistics = getFolderStatistics(folder);
-        
-        statistics.deleteStatistics(entry.getEntryDef(), customAttributesOld);
-        setFolderStatistics(folder, statistics);
-        try {
-			processor.modifyBinder(folder, new MapInputData(new HashMap()), new HashMap(), new HashSet());
-		} catch (AccessControlException e) {
-			logger.error("Can't save folder statistics.", e);
-		} catch (WriteFilesException e) {
-			logger.error("Can't save folder statistics.", e);
-		}
-        
-        
         processor.deleteEntry(folder, entry, deleteMirroredSource);
     }
+    //inside write transaction    
     public void moveEntry(Long folderId, Long entryId, Long destinationId) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.moveEntry);
         
-        Statistics statistics = getFolderStatistics(folder);
-        statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
-        setFolderStatistics(folder, statistics);
-        
-        try {
-			processor.modifyBinder(folder, new MapInputData(new HashMap()), new HashMap(), new HashSet());
-		} catch (AccessControlException e) {
-			logger.error("Can't save folder statistics.", e);
-		} catch (WriteFilesException e) {
-			logger.error("Can't save folder statistics.", e);
-		}
-
         
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
-        
-        statistics = getFolderStatistics(destination);
-        statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
-        setFolderStatistics(destination, statistics);
-        
-        try {
-			processor.modifyBinder(destination, new MapInputData(new HashMap()), new HashMap(), new HashSet());
-		} catch (AccessControlException e) {
-			logger.error("Can't save folder statistics.", e);
-		} catch (WriteFilesException e) {
-			logger.error("Can't save folder statistics.", e);
-		}
-		
         processor.moveEntry(folder, entry, destination);
     }
+    //inside write transaction    
     public void addSubscription(Long folderId, Long entryId, int style) {
     	//getEntry check read access
 		FolderEntry entry = getEntry(folderId, entryId);
@@ -705,6 +650,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
     }
+    //inside write transaction    
     public void deleteSubscription(Long folderId, Long entryId) {
     	//should be able to delete you own
 		FolderEntry entry = loadEntry(folderId, entryId);
@@ -719,6 +665,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return getCoreDao().loadEntityTags(entry.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
 	}
 	
+    //inside write transaction    
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
 		if (Validator.isNull(newtag)) return;
 		newtag = newtag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
@@ -744,6 +691,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 	
+    //inside write transaction    
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
   		Tag tag = null;
@@ -759,12 +707,13 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 	
-	
+    //inside write transaction    	
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
 		setRating(entry, value);
 	}
+    //inside write transaction    
 	public void setUserRating(Long folderId, long value) {
 		//getFolder does read check
 		Folder folder = getFolder(folderId);
@@ -796,6 +745,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
    		avg.setCount(count);
  			
 	}
+    //inside write transaction    
 	public void setUserVisit(FolderEntry entry) {
 		//assume already have access
 		EntityIdentifier id = entry.getEntityIdentifier();
@@ -816,6 +766,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	}
 	
 
+    //inside write transaction    
     public void reserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException,
 	FilesLockedByOtherUsersException {
@@ -884,7 +835,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	}
     }
     
-    public void unreserveEntry(Long folderId, Long entryId)
+    //inside write transaction    
+   public void unreserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
@@ -1021,22 +973,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
    	
     }
     
-    private Statistics getFolderStatistics(Folder folder) {
-        CustomAttribute statisticsAttribute = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
-        Statistics statistics = null;
-        if (statisticsAttribute == null) {
-        	statistics = new Statistics();
-        } else {
-        	 statistics = (Statistics)statisticsAttribute.getValue();
-//        	statistics = new Statistics();
-        }
-        return statistics;
-	}
-    
-    private void setFolderStatistics(Folder folder, Statistics statistics) {
-        folder.removeCustomAttribute(Statistics.ATTRIBUTE_NAME);
-        folder.addCustomAttribute(Statistics.ATTRIBUTE_NAME, statistics);
-	}
+
     
     /**
      * Helper classs to return folder unseen counts as an objects

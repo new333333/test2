@@ -53,6 +53,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -349,19 +350,18 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
 			TemplateBinder def = addDefaultTemplate(Definition.FOLDER_VIEW);
 			TemplateBinder newDef = new TemplateBinder(def);
-			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
 			newDef.setModification(stamp);
 			newDef.setFunctionMembershipInherited(true);
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
+			getCoreDao().save(newDef);  //generateId for binderKey needed by custom attributes
 			config.addBinder(newDef);
+			copyBinderAttributes(def, newDef);
 			
 		}
 		return config;
 	 }
 	protected Binder copyBinderAttributes(Binder source, Binder destination) {
-		//need real id for linkage
-		if (destination.getId() == null) getCoreDao().save(destination);
 		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
 		if (dashboard != null) {
 			EntityDashboard myDashboard = new EntityDashboard(dashboard);
@@ -374,6 +374,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		for (Iterator iter=catts.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			CustomAttribute ca = (CustomAttribute)me.getValue();
+			if (Statistics.ATTRIBUTE_NAME.equals(ca.getName())) continue;
 			switch (ca.getValueType()) {
 				case CustomAttribute.EVENT: {
 					Event event = (Event)ca.getValue();
@@ -540,13 +541,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 config.setModification(config.getCreation());
 		 if (Validator.isNull(config.getTitle())) config.setTitle(config.getTemplateTitle());
 		 config.setPathName(parentConfig.getPathName() + "/" + config.getTitle());
-		 //by default, inherit from parent
-     	 copyBinderAttributes(srcConfig, config);
       	 getCoreDao().updateFileName(parentConfig, config, null, config.getTitle());
-
 		 //get childen before adding new children incase parent and source are the same
 		 List<TemplateBinder> children = new ArrayList(srcConfig.getBinders());
+      	 
+		 getCoreDao().save(config); // generateId for binderKey needed by custom attributes
 		 parentConfig.addBinder(config);
+     	 copyBinderAttributes(srcConfig, config);
 	     if (!config.isFunctionMembershipInherited()) {
 	    	 //copy to new template
 	    	 List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(srcConfig);
@@ -586,13 +587,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			} else {
 				config.setPathName(parent.getPathName() + "/" + config.getTitle());				
 			}
-			copyBinderAttributes(binder, config);
+			getCoreDao().save(config); //need id for binderKey
 	      	if (parent != null) {
 				parent.addBinder(config);
 	      		getCoreDao().updateFileName(parent, config, null, config.getTitle());
 	      	} else {
 	      		config.setupRoot();
 	      	}
+			copyBinderAttributes(binder, config);
 			if (!config.isFunctionMembershipInherited()) {
 				//copy binders memberships to new Template
 				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(binder);
