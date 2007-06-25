@@ -15,10 +15,6 @@
 <tr>
  <td width="40"><div class="ss_popup_topleft"></div></td>
  <td width="100%"><div class="ss_popup_topcenter"><span class="ss_bold"><ssf:nlt tag="help.welcome"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span>
-  <a href="javascript:;" onClick="ss_helpSystem.showPreviousHelpSpot();return false;"
-  ><img border="0" style="margin-left: 20px;" src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a>
-   <a href="javascript:;" onClick="ss_helpSystem.showNextHelpSpot();return false;"
-  ><img border="0" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 	<img id="ss_help_cpanel_show_control" border="0" src="<html:imagesPath/>pics/1pix.gif"
    <c:if test="${help_cpanel_show}">
    class="ss_help_cpanel_show"
