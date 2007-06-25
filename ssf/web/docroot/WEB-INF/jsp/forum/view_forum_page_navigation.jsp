@@ -63,6 +63,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 
+	<c:if test="${ssFolderViewType != 'blog'}">
 		<table border="0" cellspacing="0px" cellpadding="0px">
 		<tr>
 			<td>
@@ -187,7 +188,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<portlet:namespace/>(this))">
 			<td>
 				&nbsp;&nbsp;
-			<c:if test="${ssPageCount != '1'}">
+			<c:if test="${ssPageCount != '1.0'}">
 				<ssf:ifnotaccessible>
 			    	<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 			    </ssf:ifnotaccessible>
@@ -241,7 +242,9 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				<jsp:useBean id="entryPage" type="java.util.HashMap" />
 					<c:if test="${!empty entryPage.ssPageIsCurrent && entryPage.ssPageIsCurrent == 'true'}">
 						<span class="ssCurrentPage">
+							<c:if test="${ssPageCount != '1.0'}">
 							<c:out value="${entryPage.ssPageDisplayValue}"/>
+							</c:if>
 						</span>
 					</c:if>
 					
@@ -288,6 +291,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			</td>
 		</tr>
 		</table>
+	</c:if>
 </c:if>
 
 </ssf:skipLink>
