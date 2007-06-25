@@ -25,14 +25,6 @@
 <c:set var="portletNamespace" value="${renderResponse.namespace}"/>
 </ssf:ifnotadapter>
 
-<style>
-a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
-	background-position: left top; 
-}
-a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, a.ss_taskStatus_cancelled_u:hover img, a.ss_taskStatus_completed_u:hover img {
-	background-position: left top; 
-}
-</style>
 <div class="ss_searchResult_dashboardHeader">
 	<div class="ss_dashboardPaginator"> 
 		<c:if test="${ssDashboard.scope != 'portlet'}">
@@ -105,13 +97,13 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 					<c:out value="${entry.title}" escapeXml="false"/>
 				</ssf:menuLink>
 		</td>
-		<td class="ss_iconsContainer"><c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a href="javascript:;" <c:if test="${entry.priority == prio.key}">	class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}"> class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
+		<td class="ss_iconsContainer"><c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if><c:if test="${entry.priority != prio.key}"><img src="<html:imagesPath/>pics/1pix.gif" alt="${prio.value}" title="${prio.value}" class="ss_taskPriority ss_taskPriority_${prio.key}_u" /></c:if></c:forEach></c:if></td>
 		<td>
 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
 				  dateStyle="short" timeStyle="short" />
 		</td>
-		<td class="ss_iconsContainer"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a href="javascript: //" <c:if test="${entry.status == status.key}"> class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}"> class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
+		<td class="ss_iconsContainer"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if><c:if test="${entry.status != status.key}"><img src="<html:imagesPath/>pics/1pix.gif" class="ss_taskStatus ss_taskStatus_${status.key}_u" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
 		<td>
 			<ul>
 				<c:forEach var="assigned" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>">
