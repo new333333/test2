@@ -206,8 +206,20 @@ function ss_showForumEntryInIframe_Popup(definitionType) {
     ss_debug('popup width = ' + ss_viewEntryPopupWidth)
     ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
-	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
-	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+
+	if (!wObj) {
+		if (self.parent) {
+			wObj = self.parent.document.getElementById('ss_showfolder')
+		}
+	}
+	
+	if (!wObj) {
+		ss_viewEntryPopupWidth = 700;
+		ss_viewEntryPopupHeight = 350;
+	} else {
+		if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+	}
 	
     self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
     return false;
