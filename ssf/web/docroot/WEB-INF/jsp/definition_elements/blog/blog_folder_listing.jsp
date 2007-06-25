@@ -10,6 +10,10 @@
  *
  */
 %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
 <% //View the listing part of a blog folder %>
 
   <div class="ss_blog">
@@ -35,10 +39,6 @@
 	  </div>
 	  </div>
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
      <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
 	  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
