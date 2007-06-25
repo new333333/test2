@@ -13,6 +13,19 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <br/>
+<c:set var="treeName" value="wsTree${ssComponentId}${renderResponse.namespace}"/>
+<script type="text/javascript">
+function ${treeName}_showId(forum, obj) {
+	var formObj = ss_getContainingForm(obj);
+	var r = formObj.data_topId;
+    for (var b = 0; b < r.length; b++) {
+      if (r[b].value == forum) 	r[b].checked=true;
+	}
+	ss_clearSingleSelect('${treeName}');
+	
+	return false;
+}
+</script>
 <table>
 
 <tr>
@@ -29,7 +42,7 @@
   <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.current"/><br/>
 
 <c:set var="checked" value=""/>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.align == 'select'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start == 'select'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
 <input type="radio" name="data_start" value="select" 
@@ -37,7 +50,15 @@
 </div>
 </td>
 </tr>
-
+<tr><td>
+<ssf:tree 
+  treeName="${treeName}"
+  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
+  rootOpen="false" 
+  singleSelect="${ssDashboard.beans[ssComponentId].ssBinder.id}" 
+  singleSelectName="data_topId"
+/>
+</td></tr>
 <tr>
 <td valign="top"><br/></td>
 </tr>

@@ -274,4 +274,15 @@ public class Statistics implements Serializable {
 	public String toString() {
 		return new ToStringBuilder(this).append("value", value).toString();
 	}
+    public boolean equals(Object obj) {
+    	//used for custom attribute value comparision
+    	if ((obj == null) || !(obj instanceof Statistics))
+            return false;
+        
+        Statistics o = (Statistics) obj;
+        if (getValue().equals(o.getValue()))
+            return true;
+        return false;
+    }	
+	
 }

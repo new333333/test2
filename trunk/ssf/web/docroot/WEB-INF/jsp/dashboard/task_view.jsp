@@ -50,7 +50,7 @@ function ${ss_divId}_taskurl(binderId, entryId, type) {
 </c:if>
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
-<table cellspacing="0" cellpadding="0">
+<table class="ss_style" cellspacing="0" cellpadding="0">
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
@@ -59,11 +59,11 @@ function ${ss_divId}_taskurl(binderId, entryId, type) {
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
 		onClick="return ${ss_divId}_taskurl('${folder.id}', '${folder.id}', 'folder');"
-		><span class="ss_bold">${folder.title}</span></a>
-  </td>
+		><span class="ss_bold">${folder.title}</span></a></td>
 </tr>
 </c:forEach>
 </table>
+<br/>
 </c:if>
 
 <div id="${ss_divId}" width="100%">

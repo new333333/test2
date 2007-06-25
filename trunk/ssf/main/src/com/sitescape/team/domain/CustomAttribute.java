@@ -268,8 +268,12 @@ public class CustomAttribute  {
          	}
          	value = newValues;
     	}
-
-       	//don't do unnecessary updates - especially for descriptions
+    	//immutable types must be set
+    	if ((valueType == XML) || (valueType == SERIALIZED)) {
+       		setValue(value, true);
+    		return true;
+    	}
+      	//don't do unnecessary updates - especially for descriptions
     	if ((valueType != SET) && (valueType != ORDEREDSET)) {
     		if (value.equals(getValue())) return false;
     		setValue(value, true);

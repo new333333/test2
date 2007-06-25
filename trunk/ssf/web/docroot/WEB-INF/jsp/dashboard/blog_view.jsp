@@ -43,34 +43,35 @@
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 </c:if>
 <script type="text/javascript">
-function ${ss_divId}_searchurl(binderId, entryId, type) {
+function ${ss_divId}_blogurl(binderId, entryId, type) {
 	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
 }
 </script>
 
 <c:if test="${ssConfigJspStyle == 'template'}">
 <script type="text/javascript">
-function ${ss_divId}_searchurl(binderId, entryId, type) {
+function ${ss_divId}_blogurl(binderId, entryId, type) {
 	return false;
 }
 </script>
 </c:if>
 
+
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
-<table cellspacing="0" cellpadding="0">
+<table class="ss_style" cellspacing="0" cellpadding="0">
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
     <a href="javascript: ;"
-		onClick="return ${ss_divId}_searchurl('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}');"
+		onClick="return ${ss_divId}_blogurl('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}');"
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
-		onClick="return ${ss_divId}_searchurl('${folder.id}', '${folder.id}', 'folder');"
+		onClick="return ${ss_divId}_blogurl('${folder.id}', '${folder.id}', 'folder');"
 		><span class="ss_bold">${folder.title}</span></a></td>
-
 </tr>
 </c:forEach>
 </table>
+<br/>
 </c:if>
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/search_view2.jsp" %>
