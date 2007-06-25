@@ -10,6 +10,7 @@
  *
  */
 %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
@@ -140,7 +141,6 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 <td>	
 	<div class="ss_global_toolbar_divider"></div>
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>

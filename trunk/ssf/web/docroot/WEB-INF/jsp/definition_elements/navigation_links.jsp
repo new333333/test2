@@ -12,6 +12,8 @@
 %>
 <% // Navigation links %>
 
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${empty ss_breadcrumbsShowIdRoutine}">
@@ -32,8 +34,6 @@
 
 <ssf:skipLink tag="<%= NLT.get("skip.navigation.links") %>" id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
@@ -43,7 +43,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
    offsetX="0" offsetY="4"
   </c:if>
   <c:if test="<%= isIE %>">
-   offsetX="-352" offsetY="4"
+   offsetX="-372" offsetY="2"
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 

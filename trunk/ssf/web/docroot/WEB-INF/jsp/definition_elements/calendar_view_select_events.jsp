@@ -1,6 +1,6 @@
 
-	<form>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
+	<form>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>

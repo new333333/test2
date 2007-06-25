@@ -10,6 +10,7 @@
  *
  */
 %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <% //Blog title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
@@ -82,7 +83,6 @@
 </span>
 </div>
 </div>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
