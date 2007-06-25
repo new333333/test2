@@ -334,11 +334,21 @@ public class ViewController extends  SAbstractController {
 		//Report
 		if (getAdminModule().testAccess(AdminOperation.report)) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.report"));
+			element.addAttribute("title", NLT.get("administration.report.title.login"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+
+			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.report.title.license"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT);
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());

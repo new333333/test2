@@ -42,4 +42,5 @@ public interface ReportModule {
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
 
+	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 }
