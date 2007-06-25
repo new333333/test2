@@ -23,7 +23,7 @@
 <p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.users"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></p>
 
 <ul>
-<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Start Guide.pdf">
+<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
 
 <p><ssf:nlt tag="help.viewBooks.content.quickTips.explain"/></p>
