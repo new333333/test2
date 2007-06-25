@@ -3130,6 +3130,9 @@ function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, names
 }
 
 var menuLinkAdapterURL = "";
+function ss_setMenuLinkAparterURL(adapterURL) {
+	if (adapterURL) menuLinkAdapterURL = adapterURL;
+}
 //Gets called when clicking on the menulink image
 function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard, isFile) {
 
