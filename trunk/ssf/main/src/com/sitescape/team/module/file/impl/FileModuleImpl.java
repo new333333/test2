@@ -1138,6 +1138,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
            			entry.setTitle(title);
            		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
         		} 
+           		//add file name so not null
+            	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
+        			            	
         		ChangeLog changes;
             	if (isNew)
             		changes = new ChangeLog(entry, ChangeLog.FILEADD);
