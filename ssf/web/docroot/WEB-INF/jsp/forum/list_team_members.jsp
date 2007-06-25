@@ -44,15 +44,17 @@
 	<td valign="top" align="right">
 	  <div align="left" style="float:right;">
 	  <ul>
-	    <li><a href="<ssf:url 
-	    		adapter="true" 
-	    		portletName="ss_forum" 
-	    		action="add_team_member" 
-	    		actionUrl="true"><ssf:param 
-	    		name="binderId" value="${ssBinder.id}"/><ssf:param 
-	    		name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
-	    	><ssf:nlt tag="toolbar.teams.addMember"/></a></li>
+		<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTeamMembers">
+		    <li><a href="<ssf:url 
+		    		adapter="true" 
+		    		portletName="ss_forum" 
+		    		action="add_team_member" 
+		    		actionUrl="true"><ssf:param 
+		    		name="binderId" value="${ssBinder.id}"/><ssf:param 
+		    		name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+		    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
+		    	><ssf:nlt tag="toolbar.teams.addMember"/></a></li>
+		</ssf:ifAccessAllowed>
 	    <li><a href="<ssf:url 
 	    		adapter="true" 
 	    		portletName="ss_forum" 

@@ -69,6 +69,7 @@ public class IfAccessAllowedTag extends BodyTagSupport {
 			this.binder = null;
 			this.binderModule = null;
 			this.operation = null;
+			this.binderOperation = null;
 		}
 		
 		return EVAL_PAGE;
@@ -92,5 +93,8 @@ public class IfAccessAllowedTag extends BodyTagSupport {
 		if(operation.equals("manageTag"))
 			this.binderOperation = 
 				com.sitescape.team.module.binder.BinderModule.BinderOperation.manageTag;
+		else if (operation.equals("manageTeamMembers"))
+			this.binderOperation = 
+				com.sitescape.team.module.binder.BinderModule.BinderOperation.manageTeamMembers;
 	}
 }
