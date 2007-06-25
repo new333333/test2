@@ -54,22 +54,55 @@
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
    </div>
-   <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Number of users</th>
-      </tr>
-    </thead>
-    <tbody>
-   <c:forEach var="datum" items="${ssLicenseData}" >
-      <tr>
-       <td>${datum.snapshotDate}</td>
-       <td>${datum.internalUserCount}</td>
-      </tr>
-   </c:forEach>
-     </tbody>
-    </table>
 </form>
-<br>
+<hr>
+<p class="ss_bold">
+ICEcore Enterprise Version 1.0<br/>
+License Audit Report  -- <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
+</p>
+<p>
+License Information<br/>
+  Key id:    BETA<br/>
+  Issued:    BETA<br/>
+  Effective: BETA<br/>
+  Users:     BETA<br/>
+</p><%--
+--%><c:set var="highWater" value="-1"/><%--
+--%><c:set var="highWaterDate" value=""/><%--
+--%><c:set var="currentUser" value="0"/><%--
+	--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
+	--%><c:if test="${datum.internalUserCount > highWater}"><%--
+	    --%><c:set var="highWater" value="${datum.internalUserCount}"/><%--
+	    --%><c:set var="highWaterDate" value="${datum.snapshotDate}"/><%--
+	--%></c:if><%--
+	--%><c:set var="currentUser" value="${datum.internalUserCount}"/><%--
+--%></c:forEach>
+<p>
+Users highwater mark: ${highWater} (${highWaterDate})<br/>
+Current user count: ${currentUser}
+</p>
+<p class="ss_bold">
+Usage History
+</p>
+<table cellspacing="2"><tbody>
+<tr>
+<th>Date</th><th>Registered</th><th>External</th><th>Check</th>
+</tr>
+<c:forEach var="datum" items="${ssLicenseData}" >
+<tr>
+<td><fmt:formatDate value="${datum.snapshotDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/></td>
+<td style="text-align: right">${datum.internalUserCount}</td>
+<td style="text-align: right">${datum.externalUserCount}</td>
+<td style="text-align: right">${datum.checksum}</td>
+</tr>
+</c:forEach>
+</table>
+<p>  
+Report checksum: 41fec13e30afd9cffe48a20ba5ce55982f95c0cf
+</p>
+<p>
+Please send the audit report to: BETA
+</p>   
+
 </td></tr></table>
+

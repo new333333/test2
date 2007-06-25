@@ -20,6 +20,7 @@ public class LicenseReportController extends AbstractReportController {
 
 		Date startDate = (Date) model.get(WebKeys.REPORT_START_DATE);
 		Date endDate = (Date) model.get(WebKeys.REPORT_END_DATE);
+		Date currentDate = new Date();
 		if(endDate != null) {
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.setTime(endDate);
@@ -27,6 +28,7 @@ public class LicenseReportController extends AbstractReportController {
 			endDate = cal.getTime();
 		}
 		model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
+		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 	}
 	
 	@Override
