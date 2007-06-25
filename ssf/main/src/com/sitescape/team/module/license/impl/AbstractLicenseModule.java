@@ -46,13 +46,12 @@ implements LicenseModule, InitializingBean {
     	try {
     		Class processorClass = ReflectHelper.classForName(jobClass);
     		LicenseMonitor job = (LicenseMonitor)processorClass.newInstance();
-    		//make sure a delete job is scheduled for the zone
-    		String hrsString = (String)SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_HOURS + "']");
-    		int hours = 24;
+    		String hrString = (String)SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_HOUR + "']");
+    		int hour = 6;
     		try {
-    			hours = Integer.parseInt(hrsString);
+    			hour = Integer.parseInt(hrString);
     		} catch (Exception ex) {};
-    		job.schedule(zone.getId(), hours);
+    		job.schedule(zone.getId(), hour);
 
     	} catch (ClassNotFoundException e) {
     		throw new ConfigurationException(

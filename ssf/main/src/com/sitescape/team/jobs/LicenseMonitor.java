@@ -14,6 +14,6 @@ public interface LicenseMonitor {
 	public final static String LICENSE_MONITOR_GROUP="license-monitor";
 	public final static String LICENSE_MONITOR_DESCRIPTION="gather licensing statistics";
 	public final static String LICENSE_JOB="license.job";
-	public final static String LICENSE_HOURS="timeout.hours";
-	public void schedule(Long zoneId, int hours);
+	public final static String LICENSE_HOUR="timeout.hour";
+	public void schedule(Long zoneId, int hour);
 }

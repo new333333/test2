@@ -10,7 +10,9 @@
  */
 package com.sitescape.team.jobs;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -36,7 +38,7 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 		licenseModule.createSnapshot();
 	}
 
-	public void schedule(Long zoneId, int hours)
+	public void schedule(Long zoneId, int hour)
 	{
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {
@@ -51,27 +53,26 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 				jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			}
-			int milliSeconds = hours*60*60*1000;
+			int milliSeconds = 24*60*60*1000;
 //DEBUG		 milliSeconds = 2*60*1000;
-			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP);
-			//	see if job exists
-			if (trigger == null) {
-				trigger = new SimpleTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP, zoneId.toString(), LICENSE_MONITOR_GROUP, new Date(), null, 
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, hour);
+			cal.set(Calendar.MINUTE, 0);
+			cal.add(Calendar.DATE, 1);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			
+			SimpleTrigger trigger =
+				new SimpleTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP, zoneId.toString(), LICENSE_MONITOR_GROUP, cal.getTime(), null, 
 						SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
-				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-				trigger.setDescription(LICENSE_MONITOR_DESCRIPTION);
-				trigger.setVolatility(false);
+			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
+			trigger.setDescription(LICENSE_MONITOR_DESCRIPTION);
+			trigger.setVolatility(false);
+			if(scheduler.getTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP) == null) {
 				scheduler.scheduleJob(trigger);				
-    	
 			} else {
-				int state = scheduler.getTriggerState(zoneId.toString(), LICENSE_MONITOR_GROUP);
-				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
-					scheduler.resumeJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
-				}
-				if (trigger.getRepeatInterval() != milliSeconds) {
-					trigger.setRepeatInterval(milliSeconds);
-					scheduler.rescheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP, trigger);
-				}
+				scheduler.rescheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP, trigger);
 			} 
 		} catch (SchedulerException se) {			
 			throw new ConfigurationException(se.getLocalizedMessage());			
