@@ -83,5 +83,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ezmorph.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jboss-common.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/util-java.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
