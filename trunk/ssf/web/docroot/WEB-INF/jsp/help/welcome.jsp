@@ -28,7 +28,7 @@
 <!-- Peter's original code... -->
 <!--<ul style="list-style: outside;">
   <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Tips.pdf"
+    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Start Guide.pdf"
       onClick="javascript:return ss_openUrlInWindow(this,'help')">
       <span><ssf:nlt tag="welcome.quickTipsOnUsage"/></span></a>
   </li>

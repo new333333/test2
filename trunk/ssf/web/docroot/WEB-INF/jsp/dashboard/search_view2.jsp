@@ -74,7 +74,7 @@
 			</div>
 			<div class="ss_searchResult_dashboardNumbers">			
 				<c:choose>
-				  <c:when test="${ssResultTotalRecords == '0'}">
+				  <c:when test="${empty ssResultTotalRecords || ssResultTotalRecords == '0'}">
 					<ssf:nlt tag="search.NoResults" />
 				  </c:when>
 				  <c:otherwise>
