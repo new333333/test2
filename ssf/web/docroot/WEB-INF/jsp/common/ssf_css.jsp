@@ -4320,10 +4320,9 @@ table.ss_tasks_list {
 	padding: 0px;
 	border-collapse: collapse;
 	border:1px solid #afc8e3;
-	<c:if test="<%= isIE %>">
-		float:left;
-	</c:if>
+	clear:both;
 }
+
 table.ss_tasks_list th {
 	background-color: #dbe6f2;
 	border:1px solid #afc8e3;

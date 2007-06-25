@@ -65,7 +65,6 @@
 </div>
 <div class="ss_task_list_container">
 <table class="ss_tasks_list">
-	<tbody>
 	<tr>
 		<th><ssf:nlt tag="task.title"/></th>
 		<th><ssf:nlt tag="task.priority"/></th>
@@ -113,22 +112,15 @@
 		</td>
 		<td>
 			<c:if test="${! empty entry.completed}">
-			<div class="ss_c_">
-				<div class="ss_${entry.completed} ss_smallprint">
-					<c:forEach var="done" items="${entry.ssEntryDefinitionElementData.completed.values}">
-						<c:if test="${entry.completed == done.key}">
-							${done.value}
-						</c:if>
-					</c:forEach>
-				</div>
-			<div>
-			<div class="ss_clear_float"></div>
+				<c:forEach var="done" items="${entry.ssEntryDefinitionElementData.completed.values}">
+					<c:if test="${entry.completed == done.key}">
+						${done.value}
+					</c:if>
+				</c:forEach>
 			</c:if>			
 		</td>		
 	</tr>
-
-</c:forEach>
-	<tbody>
+	</c:forEach>
 </table>
 </div>
 			
