@@ -1,14 +1,13 @@
 package com.sitescape.team.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.OrderedMap;
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.dom4j.Document;
 
@@ -27,6 +26,8 @@ public class Statistics implements Serializable {
 	public static final String CAPTIONS = "captions";
 	
 	public static final String VALUES = "values";
+	
+	public static final String VALUES_LIST = "values_list";
 
 	private Map value = new HashMap();
 
@@ -84,7 +85,8 @@ public class Statistics implements Serializable {
 				attributesValueCaption = DefinitionHelper.findRadioSelections(attribute.getName(), entryDefinition.getDefinition());
 			}
 			
-			OrderedMap attributeAllowedValues = new LinkedMap();
+			List attributeValues = new ArrayList();
+			Map attributeAllowedValues = new HashMap(); // TODO: change to list and interne Map (name, value)
 			Map attributeCaptions = new HashMap();
 			Iterator attributeValuesIt = attributesValueCaption.iterator();
 			while (attributeValuesIt.hasNext()) {
@@ -101,7 +103,7 @@ public class Statistics implements Serializable {
 						caption = (String)mapEntry.getValue();
 					}
 				}
-				
+				attributeValues.add(name);
 				attributeAllowedValues.put(name, 0);
 				attributeCaptions.put(name, caption);
 			}
@@ -113,6 +115,7 @@ public class Statistics implements Serializable {
 			}
 			attributeStats.put(CAPTIONS, attributeCaptions);
 			attributeStats.put(VALUES, attributeAllowedValues);
+			attributeStats.put(VALUES_LIST, attributeValues);
 			entryDefinitionIdStats.put(attribute.getName(), attributeStats);
 		}
 		Map attributeStats = (Map)entryDefinitionIdStats.get(attribute.getName());
@@ -126,15 +129,24 @@ public class Statistics implements Serializable {
 		}
 		
 		if (attributeStats.get(VALUES) == null) {
-			attributeStats.put(VALUES, new LinkedMap());
+			attributeStats.put(VALUES, new HashMap());
 		}
+		if (attributeStats.get(VALUES_LIST) == null) {
+			attributeStats.put(VALUES_LIST, new ArrayList());
+		}		
 		Map attributeValueStats = (Map)attributeStats.get(VALUES);
+		List attributeValues = (List)attributeStats.get(VALUES_LIST);
 		
 		if (isSimpleValueAttribute(attribute)) {
 			if (attribute.getValue() == null || "".equals(attribute.getValue()) || 
 					FileAttachment.class.isAssignableFrom(attribute.getValue().getClass())) {
 				return;
 			}
+			
+			if (!attributeValues.contains(attribute.getValue())) {
+				attributeValues.add(attribute.getValue());
+			}
+			
 			if (attributeValueStats.get(attribute.getValue()) == null) {
 				attributeValueStats.put(attribute.getValue(), 1);
 			} else {
@@ -152,6 +164,9 @@ public class Statistics implements Serializable {
 				if (attrValue == null || "".equals(attrValue) || 
 						FileAttachment.class.isAssignableFrom(attrValue.getClass())) {
 					continue;
+				}
+				if (!attributeValues.contains(attribute.getValue())) {
+					attributeValues.add(attribute.getValue());
 				}
 				if (attributeValueStats.get(attrValue) == null) {
 					attributeValueStats.put(attrValue, 1);
@@ -191,7 +206,7 @@ public class Statistics implements Serializable {
 		}
 		
 		if (attributeStats.get(VALUES) == null) {
-			attributeStats.put(VALUES, new LinkedMap());
+			attributeStats.put(VALUES, new HashMap());
 		}
 		Map attributeValueStats = (Map)attributeStats.get(VALUES);
 		

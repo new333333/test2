@@ -27,24 +27,27 @@
 <c:set var="showLabel" value="<%= showLabel%>" scope="request"/>
 <c:set var="barStyle" value="<%= barStyle%>" scope="request"/>
 
-<c:if test="${showLabel}">
-	<h5 class="ss_statisticLabel"><ssf:nlt tag="<%=statisticLabel%>"/>:</h5>
+<c:if test="${!empty percentStatistic}">
+	
+	<c:if test="${showLabel}">
+		<h5 class="ss_statisticLabel"><ssf:nlt tag="<%=statisticLabel%>"/>:</h5>
+	</c:if>
+	
+	<div class="ss_statisticContainer ${barStyle}">
+		<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
+			<c:if test="${singleValue.value.percent > 0}">
+				<div class="ss_statisticBar statistic${status.index mod 8}" style="width:${singleValue.value.percent}%;" title="<ssf:nlt tag="${singleValue.value.label}" /> - ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)"><span>${singleValue.value.percent}%<span></div>
+			</c:if>
+		</c:forEach>
+	</div>
+	<div class="ss_clear_float"></div>
+	
+	<c:if test="${showLegend}">
+		<ul class="ss_statisticLegend">
+		<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
+			<li><div class="statistic${status.index mod 8} ss_statisticLegend">&nbsp;</div><ssf:nlt tag="${singleValue.value.label}" />: ${singleValue.value.percent}% (${singleValue.value.value} <c:choose><c:when test="${singleValue.value.value == 1}"><ssf:nlt tag="statistic.unity" /></c:when><c:otherwise><ssf:nlt tag="statistic.unity.plural" /></c:otherwise></c:choose>)<div class="ss_clear_float"></div></li>
+		</c:forEach>
+		</ul>
+	</c:if>
+
 </c:if>
-
-<div class="ss_statisticContainer ${barStyle}">
-	<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
-		<c:if test="${singleValue.value.percent > 0}">
-			<div class="ss_statisticBar statistic${status.index mod 8}" style="width:${singleValue.value.percent}%;" title="<ssf:nlt tag="${singleValue.value.label}" /> - ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)"><span>${singleValue.value.percent}%<span></div>
-		</c:if>
-	</c:forEach>
-</div>
-<div class="ss_clear_float"></div>
-
-<c:if test="${showLegend}">
-	<ul class="ss_statisticLegend">
-	<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
-		<li><div class="statistic${status.index mod 8} ss_statisticLegend">&nbsp;</div><ssf:nlt tag="${singleValue.value.label}" />: ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)<div class="ss_clear_float"></div></li>
-	</c:forEach>
-	</ul>
-</c:if>
-
