@@ -16,7 +16,7 @@
 <c:set var="formName"><portlet:namespace />fm</c:set>
 <script type="text/javascript">
 var ssReportURL="<portlet:actionURL><portlet:param 
-		name="action" value="report"/><portlet:param 
+		name="action" value="login_report"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";
 </script>

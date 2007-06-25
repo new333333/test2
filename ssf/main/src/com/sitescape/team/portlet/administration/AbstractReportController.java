@@ -41,8 +41,8 @@ public abstract class AbstractReportController extends  AbstractBinderController
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId());
-		if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
+		String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, null);	
+		if (binderType != null && formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			setupViewBinder(response, binderId, binderType);
 		}
 	}
