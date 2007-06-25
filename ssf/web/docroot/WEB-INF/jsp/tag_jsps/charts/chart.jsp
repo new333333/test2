@@ -15,11 +15,13 @@
 	Object percent = request.getAttribute("percent"); 
 	String count = request.getAttribute("count").toString(); 
 %>
+<c:set var="percent" value="<%= percent %>" scope="request"/>
 
-
-<div class="ss_surveyChartContainer">
+<div class="ss_chartContainer">
 	<div class="ss_total">
-		<div class="ss_bar" style="width:<%= percent %>%;"></div>
+		<c:if test="${percent > 0}">
+		<div class="ss_bar" style="width:<%= percent %>%;">&nbsp;</div>
+		</c:if>
 	</div>
 	<%= percent %>% <ssf:nlt tag="survey.xvotes"><ssf:param name="value" value="<%= count %>"/></ssf:nlt>
 </div>
