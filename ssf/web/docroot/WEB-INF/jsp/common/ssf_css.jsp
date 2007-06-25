@@ -3734,6 +3734,12 @@ ul#ss_calendarNaviBar li.ss_calSelectDate {
 	padding: 0 10px 0 7px;
 }
 
+ul#ss_calendarNaviBar li.ss_taskViewOptions {
+	border: 1px solid white; 
+	height: 24px; 
+	margin: 2px 0 2px 0;
+}
+
 .ss_hoursSelectorList li  {
 	float:none;
 	border-bottom:1px solid #CCCCCC;
@@ -4337,6 +4343,14 @@ table.ss_tasks_list ul, table.ss_tasks_list li {
 	margin:0px;
 	padding:0px;
 	border:0px;
+}
+
+table.ss_tasks_list .ss_due, table.ss_tasks_list .ss_assigned {
+	font-size: 11px;
+}
+
+table.ss_tasks_list .ss_entryTitle a span {
+	background-color: #FFFFAA;
 }
 
 div.ss_completedContainer {

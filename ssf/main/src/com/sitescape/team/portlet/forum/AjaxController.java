@@ -364,8 +364,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetSearchQueryName(request, response);
 		} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
 			return ajaxGetRemovedQueryName(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_TASKS)) {
-			return ajaxFindTasks(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_TASKS_EXTENDED_INFO)) {
 			return ajaxGetTasksExtendedInfo(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
@@ -2116,51 +2114,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/events", model);
 	}
 
-	private ModelAndView ajaxFindTasks(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		
-		if (WebHelper.isUserLoggedIn(request)) {
-			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-			Binder binder = getBinderModule().getBinder(binderId);
-			
-			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-
-			Map folderEntries = new HashMap();
-			Map options = new HashMap();
-			
-			User user = RequestContextHolder.getRequestContext().getUser();
-			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-			options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
-			
-			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-			
-			
-			String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
-			TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);
-			model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
-			
-			options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());
-	       	
-	       	List entries;
-			if (binder instanceof Folder) {
-				folderEntries = getFolderModule().getEntries(binderId, options);
-				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-			} else {
-				//a template
-				entries = new ArrayList();
-			}
-			model.put(WebKeys.FOLDER_ENTRIES, entries);
-			
-		} else {
-			model.put(WebKeys.FOLDER_ENTRIES, Collections.EMPTY_LIST);
-		}
-		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/tasks", model);
-	}
-	
 	private ModelAndView ajaxGetTasksExtendedInfo(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();

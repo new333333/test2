@@ -121,7 +121,7 @@
 				    	statuses = data.statuses;
 				    	priorities = data.priorities;
 				    	completed = data.completed;
-				    	loadTasks();
+				    	// loadTasks();
 					} catch (e) {alert(e);}
 				},
 							
@@ -176,7 +176,7 @@
 			}
 		}
 		
-		function addTask(task) {
+		this.addTask = function(task) {
 			// add always so it can be refresh
 			tasks[task.id] = task;
 		}
@@ -218,13 +218,23 @@
 		}
 		
 		function redrawTask(task) {
-			var taskTRId = getTaskTRId(task.id);
-			var taskTRObjOld = document.getElementById(taskTRId);
-			var taskTRObjNew = createTaskTR(task);
+			var oldPriorityTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_priority");
+			var newPriorityTD = createPriorityTD(task);
+			oldPriorityTD.parentNode.replaceChild(newPriorityTD, oldPriorityTD);
 			
-			taskTRObjOld.parentNode.replaceChild(taskTRObjNew, taskTRObjOld);
+			var oldStatusTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_status");
+			var newStatusTD = createStatusTD(task);
+			oldStatusTD.parentNode.replaceChild(newStatusTD, oldStatusTD);
+			
+			var oldCompletedTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_completed");
+			var newCompletedTD = createCompletedTD(task);
+			oldCompletedTD.parentNode.replaceChild(newCompletedTD, oldCompletedTD);	
+			
+			if (task.status == "completed" || task.status == "cancelled") {
+				dojo.html.addClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
+			}
 		}
-		
+				
 		function drawInteractiveChart(task, parent) {
 			if (!completedStatusDivs[task.id]) {
 				completedStatusDivs[task.id] = new Array();
@@ -233,9 +243,14 @@
 			var value = task.completed;
 			var label = completed[task.completed];
 			
+			
+			completedStatusDivs[task.id][11] = document.createElement('div');
+			completedStatusDivs[task.id][11].innerHTML = completed[task.completed];
+			dojo.html.setClass(completedStatusDivs[task.id][11], "ss_bar_status");
+			
 			var container = document.createElement('div');
 			dojo.html.setClass(container, "ss_completedContainer");
-			dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, value));
+			dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], value));
 		
 			var clearDiv = document.createElement('div');
 			dojo.html.setClass(clearDiv, "ss_clear");
@@ -249,15 +264,13 @@
 	
 				completedStatusDivs[task.id][i].title = completed["c" + tempValue];
 				
-				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, "c" + tempValue));
-				dojo.event.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, "c" + tempValue));
+				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], "c" + tempValue));
+				dojo.event.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], "c" + tempValue));
 		
 				container.appendChild(completedStatusDivs[task.id][i]);
 			}
 			
-			completedStatusDivs[task.id][11] = document.createElement('div');
-			completedStatusDivs[task.id][11].innerHTML = completed[task.completed];
-			dojo.html.setClass(completedStatusDivs[task.id][11], "ss_bar_status");
+
 			parent.appendChild(completedStatusDivs[task.id][11]);
 		}
 		
@@ -270,31 +283,35 @@
 			}
 		}
 		
-		function ss_declare_changeValue(obj, task, value) {
-			return function(evt) { obj.ss_changeValue(task, value);}
+		function ss_declare_changeValue(obj, task, container, statusContainer, value) {
+			return function(evt) { obj.ss_changeValue(task, container, statusContainer, value);}
 		}
 		
-		function ss_declare_saveValue(obj, task, container, newValue) {
-			return function(evt) {obj.ss_saveValue(task, container, newValue);}
+		function ss_declare_saveValue(obj, task, container, statusContainer, newValue) {
+			return function(evt) {obj.ss_saveValue(task, container, statusContainer, newValue);}
 		}
 		
-		this.ss_saveValue = function(task, container, newValue) {
-			dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, newValue));
-			completedStatusDivs[task.id][11].innerHTML = completed[newValue];
+		this.ss_saveValue = function(task, container, statusContainer, newValue) {
+			dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, statusContainer, newValue));
+			statusContainer.innerHTML = completed[newValue];
 			that.changeCompleted(task.id, newValue);
 		}
 		
-		this.ss_changeValue = function(task, newValue) {
-			for (var i=0; i<=10; i++) {
-				var temp = i*10;
-				ss_setStyle(completedStatusDivs[task.id][i], temp, newValue);
+		this.ss_changeValue = function(task, container, statusContainer, newValue) {
+			var counter = 0;
+			for (var i = 0; i < container.childNodes.length; i++) {
+				if (container.childNodes[i].tagName == "DIV") {
+					var temp = counter*10;
+					ss_setStyle(container.childNodes[i], temp, newValue);
+					counter++;
+				}
 			}
-			completedStatusDivs[task.id][11].innerHTML = completed[newValue];
+			statusContainer.innerHTML = completed[newValue];
 		}
 		
 		function createCompletedTD(task) {
 			var tdObj = document.createElement('td');
-			
+			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_completed");
 			var completedDivObj = document.createElement('div');
 			completedDivObj.setAttribute("id", "ss_tasks_completed_" + task.id + "_"  + namespace);
 		
@@ -319,6 +336,7 @@
 		
 		function createStatusTD(task) {
 			var tdObj = document.createElement('td');
+			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_status");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
 			for (var i in statuses) {
 				var hrefObj = document.createElement('a');
@@ -358,6 +376,7 @@
 		
 		function createPriorityTD(task) {
 			var tdObj = document.createElement('td');
+			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_priority");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
 				
 			for (var i in priorities) {
