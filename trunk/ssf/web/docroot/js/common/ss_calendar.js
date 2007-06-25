@@ -161,6 +161,7 @@ var ss_cal_CalData = {
    			ss_cal_Grid.setCurrentDate({year : date.getFullYear(), month : (date.getMonth() + 1), dayOfMonth : date.getDate()});
    			ss_cal_Grid.setFirstDayToShow(date);
     		ss_cal_Grid.activateGrid(grid);
+    		ss_cal_Grid.showViewIcon();
     		ss_cal_Events.redrawAll();
     		
     		if (grid) {
@@ -227,6 +228,7 @@ var ss_cal_CalData = {
 					ss_cal_Grid.setFirstDayToShow(date);
 				}
 				ss_cal_Grid.activateGrid(data.gridType);
+				ss_cal_Grid.showViewIcon();
 				
 				ss_cal_Events.setEventTypeByName(data.eventType);
 				
@@ -620,6 +622,26 @@ var ss_cal_Grid = {
         }
 		ss_cal_Grid.activateGrid(ss_cal_Grid.currentType); // couse of IE... 
     	ss_cal_Events.redrawAll();        
+    },
+    
+    showViewIcon: function() {
+    	// all to inactive
+    	var allHrefIds = ["ss_calDaySelectButton", "ss_cal3DaysSelectButton", "ss_cal5DaysSelectButton", 
+    				"ss_cal7DaysSelectButton", "ss_cal14DaysSelectButton", "ss_calMonthSelectButton"];
+    	for (var i = 0; i < allHrefIds.length; i++) {
+    		dojo.html.setClass(document.getElementById(allHrefIds[i]), allHrefIds[i]);
+    	}
+    	
+    	// current to active
+    	var hrefId = "ss_calMonthSelectButton";
+    	if (ss_cal_Grid.currentType == "day") {
+    		hrefId = "ss_cal" + ss_cal_Grid.gridSize + "DaysSelectButton";
+    		if (ss_cal_Grid.gridSize == 1) {
+    			hrefId = "ss_calDaySelectButton";
+    		}
+    	}
+     	var hrefObj = document.getElementById(hrefId);
+     	dojo.html.setClass(hrefObj, hrefId + "Active");
     }
 }
 
@@ -1424,7 +1446,6 @@ var ss_cal_Events = {
 	            grid = ss_cal_Grid.currentType;
                 break;
         }
-			
 		ss_cal_CalData.loadEventsByDate(grid, dayToShow, requiredDay);
 		
     },
