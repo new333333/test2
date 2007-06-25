@@ -94,11 +94,21 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:set var="ssEntry" value="${ssDefinitionEntry}" scope="request"/>
 
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
 <table cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
 <td valign="top" style="padding-right:2px;">
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetY="-20" offsetX="-10" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" 
+    <c:if test="<%= isIE %>">
+       offsetY="-3" 
+    </c:if>
+    <c:if test="<%= !isIE %>">
+       offsetY="-17" 
+    </c:if>
       title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
   </ssHelpSpot>
 <a href="javascript:;" 
