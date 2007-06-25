@@ -312,7 +312,6 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
-	public static final String OPERATION_FIND_TASKS = "find_tasks";
 	public static final String OPERATION_GET_TASKS_EXTENDED_INFO = "get_tasks_extended_info";
 	public static final String OPERATION_UPDATE_TASK = "update_task";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";

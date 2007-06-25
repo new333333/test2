@@ -16,39 +16,56 @@
     title="<ssf:nlt tag="helpSpot.calendarTools"/>"></ssHelpSpot>
     
 	<ul id="ss_calendarNaviBar">
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a class="ss_calDaySelectButton" href="javascript: ;" 
-			  onclick="myTasks_<portlet:namespace/>.filterTasks('CLOSED'); return false;">
-				<img <ssf:alt tag="alt.viewClosed"/> title="<ssf:nlt tag="alt.viewClosed"/>" 
-				src="<html:imagesPath/>pics/1pix.gif" />
+		<li class="ss_calendarNaviBarOption ss_taskViewOptions">
+			<ssf:nlt tag="task.navi.chooseView"/>:
+			<a class="ss_calDaySelectButton" href="<ssf:url 
+  				folderId="${ssBinder.id}" 
+  				action="view_folder_listing">
+	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+	  				<ssf:param name="tabId" value="${tab.tabId}"/>
+	  				<ssf:param name="ssTaskFilterType" value="CLOSED"/>
+  				</ssf:url>">
+				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'CLOSED'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewClosed"/>
 			</a>
-		</li>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a class="ss_cal3DaysSelectButton" href="javascript: ;" 
-				onclick="myTasks_<portlet:namespace/>.filterTasks('DAY'); return false;">
-				<img <ssf:alt tag="alt.viewToday"/> title="<ssf:nlt tag="alt.viewToday"/>"
-				src="<html:imagesPath/>pics/1pix.gif" />
+		
+			<a class="ss_cal3DaysSelectButton" href="<ssf:url 
+  				folderId="${ssBinder.id}" 
+  				action="view_folder_listing">
+	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+	  				<ssf:param name="tabId" value="${tab.tabId}"/>
+	  				<ssf:param name="ssTaskFilterType" value="DAY"/>
+  				</ssf:url>">
+				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'DAY'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewToday"/>
 			</a>
-		</li>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a class="ss_cal5DaysSelectButton" href="javascript: ;" 
-				onclick="myTasks_<portlet:namespace/>.filterTasks('WEEK'); return false;">
-				<img <ssf:alt tag="alt.viewWeek"/> title="<ssf:nlt tag="alt.viewWeek"/>" 
-				src="<html:imagesPath/>pics/1pix.gif" />
+
+			<a class="ss_cal5DaysSelectButton" href="<ssf:url 
+  				folderId="${ssBinder.id}" 
+  				action="view_folder_listing">
+	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+	  				<ssf:param name="tabId" value="${tab.tabId}"/>
+	  				<ssf:param name="ssTaskFilterType" value="WEEK"/>
+  				</ssf:url>">
+				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'WEEK'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewWeek"/>
 			</a>
-		</li>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a class="ss_cal7DaysSelectButton" href="javascript: ;" 
-				onclick="myTasks_<portlet:namespace/>.filterTasks('MONTH'); return false;">
-				<img <ssf:alt tag="alt.viewMonth"/> title="<ssf:nlt tag="alt.viewMonth"/>" 
-				src="<html:imagesPath/>pics/1pix.gif" />
+
+			<a class="ss_cal7DaysSelectButton" href="<ssf:url 
+  				folderId="${ssBinder.id}" 
+  				action="view_folder_listing">
+	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+	  				<ssf:param name="tabId" value="${tab.tabId}"/>
+	  				<ssf:param name="ssTaskFilterType" value="MONTH"/>
+  				</ssf:url>">
+				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'MONTH'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewMonth"/>
 			</a>
-		</li>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg">
-			<a class="ss_calMonthSelectButton" href="javascript: ;" 
-				onclick="myTasks_<portlet:namespace/>.filterTasks('ACTIVE'); return false;">
-				<img <ssf:alt tag="alt.viewAllActive"/> title="<ssf:nlt tag="alt.viewAllActive"/>" 
-				src="<html:imagesPath/>pics/1pix.gif" />
+
+			<a class="ss_calMonthSelectButton" href="<ssf:url 
+  				folderId="${ssBinder.id}" 
+  				action="view_folder_listing">
+	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+	  				<ssf:param name="tabId" value="${tab.tabId}"/>
+	  				<ssf:param name="ssTaskFilterType" value="ACTIVE"/>
+  				</ssf:url>">
+				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewAllActive"/>
 			</a>
 		</li>
 		<li class="ss_calendarNaviBarOption" />

@@ -86,7 +86,7 @@ public class Statistics implements Serializable {
 			}
 			
 			List attributeValues = new ArrayList();
-			Map attributeAllowedValues = new HashMap(); // TODO: change to list and interne Map (name, value)
+			Map attributeAllowedValues = new HashMap();
 			Map attributeCaptions = new HashMap();
 			Iterator attributeValuesIt = attributesValueCaption.iterator();
 			while (attributeValuesIt.hasNext()) {
@@ -167,8 +167,8 @@ public class Statistics implements Serializable {
 						Event.class.isAssignableFrom(attribute.getValue().getClass())) {
 					continue;
 				}
-				if (!attributeValues.contains(attribute.getValue())) {
-					attributeValues.add(attribute.getValue());
+				if (!attributeValues.contains(attrValue)) {
+					attributeValues.add(attrValue);
 				}
 				if (attributeValueStats.get(attrValue) == null) {
 					attributeValueStats.put(attrValue, 1);
@@ -274,6 +274,7 @@ public class Statistics implements Serializable {
 	public String toString() {
 		return new ToStringBuilder(this).append("value", value).toString();
 	}
+	
     public boolean equals(Object obj) {
     	//used for custom attribute value comparision
     	if ((obj == null) || !(obj instanceof Statistics))

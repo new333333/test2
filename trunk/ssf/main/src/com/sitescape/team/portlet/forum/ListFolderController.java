@@ -71,6 +71,7 @@ import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
@@ -816,9 +817,10 @@ public static final String[] monthNamesShort = {
 			String strUserDisplayStyle = user.getDisplayStyle();
 			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 			
-			if ( ( viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) )  ||
-					viewType.equals(Definition.VIEW_STYLE_TASK)) {
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				// do it with ajax
+			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+				folderEntries = findTaskEntries(req, response, model);
 			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				folderEntries = findCalendarEvents(req, response, model);
 			}
@@ -862,7 +864,6 @@ public static final String[] monthNamesShort = {
 		return BinderHelper.getViewListingJsp(this, viewType);
 	}
 	
-
 	protected Map getSearchAndPagingModels(Map folderEntries, Map options) {
 		Map model = new HashMap();
 		
@@ -1824,5 +1825,48 @@ public static final String[] monthNamesShort = {
 		}
 	}
 
+	private Map findTaskEntries(RenderRequest request, RenderResponse response, Map model) throws PortletRequestBindingException {
+		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Binder binder = getBinderModule().getBinder(binderId);
+		
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+
+		Map folderEntries = new HashMap();
+		Map options = new HashMap();
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+		
+		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+		
+		
+		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
+		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);
+		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+		
+		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());
+       	
+       	List entries;
+		if (binder instanceof Folder) {
+			folderEntries = getFolderModule().getEntries(binderId, options);
+		} else {
+			//a template
+			folderEntries = new HashMap();
+		}
+
+    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+	    		String entryDefId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entryDefId));
+	    	}
+    	}
+		
+		return folderEntries;
+	}
 }
 
