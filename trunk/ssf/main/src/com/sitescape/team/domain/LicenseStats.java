@@ -23,7 +23,8 @@ import java.util.Date;
  */
 public class LicenseStats {
 	protected String id;
-	protected Date snapshotDate;
+    protected Long zoneId; 
+    protected Date snapshotDate;
 	protected long internalUserCount;
 	protected long externalUserCount;
 	protected long checksum;
@@ -41,8 +42,9 @@ public class LicenseStats {
 	 * @param externalUserCount
 	 * @param checksum
 	 */
-	public LicenseStats(Date snapshotDate, long internalUserCount, long externalUserCount, long checksum) {
+	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, long checksum) {
 		super();
+		setZoneId(zoneId);
 		setSnapshotDate(snapshotDate);
 		setInternalUserCount(internalUserCount);
 		setExternalUserCount(externalUserCount);
@@ -58,6 +60,15 @@ public class LicenseStats {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /**
+     * @hibernate.property not-null="true"
+     */
+    public Long getZoneId() {
+    	return this.zoneId;
+    }
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
     }
 	/**
 	 * @hibernate.property  

@@ -396,7 +396,21 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 
-
+	@SuppressWarnings("unchecked")
+	public List<LicenseStats> generateLicenseReport(final Date startDate, final Date endDate) {
+		getAdminModule().checkAccess(AdminOperation.report);
+		return (List<LicenseStats>) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+		
+				List auditTrail = session.createCriteria(LicenseStats.class)
+						.add(Restrictions.ge("snapshotDate", startDate))
+						.add(Restrictions.lt("snapshotDate", endDate))
+						.addOrder(Order.asc("zoneId"))
+						.addOrder(Order.asc("snapshotDate"))
+					.list();
+				return auditTrail;
+			}});
+	}
 }
 
 class TimeInterval

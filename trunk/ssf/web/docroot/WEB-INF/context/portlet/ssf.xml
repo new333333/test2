@@ -44,6 +44,7 @@
 	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 		
 	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
+	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LicenseReportController" />
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
 
@@ -95,6 +96,7 @@
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
 
 						<entry key="login_report"><ref bean="loginReportController"/></entry>
+						<entry key="license_report"><ref bean="licenseReportController"/></entry>
 						<entry key="activity_report"><ref bean="activityReportController"/></entry>
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 					</map>

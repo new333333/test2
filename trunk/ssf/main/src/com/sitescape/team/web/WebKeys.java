@@ -188,6 +188,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
+	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
@@ -546,6 +547,7 @@ public class WebKeys {
     public static final String IS_REFRESH="ssRefresh";
     public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
     public static final String LDAP_CONFIG="ssLdapConfig";
+    public static final String LICENSE_DATA="ssLicenseData";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
@@ -754,6 +756,7 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
     public static final String VIEW_TASK_EDIT="task_summary/edit";
+    public static final String VIEW_LICENSE_REPORT="administration/license_report";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
