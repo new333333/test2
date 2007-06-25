@@ -12,7 +12,16 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<script type="text/javascript">
 
+function <portlet:namespace/>_onsub(obj) {
+	if (obj.name.value == '') {
+		alert('<ssf:nlt tag="general.required.name"/>');
+		return false;
+	}
+	return true;
+}
+</script>
 <div class="ss_style ss_portlet">
 <div style="padding:10px;" id="ss_manageGroups">
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.groups" /></span>
@@ -22,7 +31,7 @@
 <form class="ss_style ss_form" method="post" 
 	action="<portlet:actionURL><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="action" value="manage_groups"/></portlet:actionURL>">
+	name="action" value="manage_groups"/></portlet:actionURL>" onSubmit="return(<portlet:namespace/>_onsub(this))">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.designers.data_name"/><br/>
 	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
