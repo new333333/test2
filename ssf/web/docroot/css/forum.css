@@ -313,6 +313,7 @@ div.ss_widgetContent {
   display: none;
   background-color: #FFFFFF; 
   text-decoration: none;
+  text-align: left;
   border: 1px #3366cc solid;
   padding: 10px;
   width: 300px;
