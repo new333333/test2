@@ -4406,7 +4406,7 @@ div.ss_bar_status {
 	margin-left: 3px;
 }
 
-a.ss_taskStatus img {
+a.ss_taskStatus img, img.ss_taskStatus {
 	width: 21px;
 	height: 22px;
 	margin: 0px;
@@ -4416,19 +4416,19 @@ a.ss_taskStatus img {
 }
 
 
-a.ss_taskStatus_inProcess_u img, a.ss_taskStatus_inProcess_u:link img , a.ss_taskStatus_inProcess_u:focus img, a.ss_taskStatus_inProcess_u:visited img { 
+a.ss_taskStatus_inProcess_u img, a.ss_taskStatus_inProcess_u:link img , a.ss_taskStatus_inProcess_u:focus img, a.ss_taskStatus_inProcess_u:visited img, img.ss_taskStatus_inProcess_u { 
 	background: transparent url(<html:imagesPath/>icons/status_inProcess_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_needsAction_u img, a.ss_taskStatus_needsAction_u:link img , a.ss_taskStatus_needsAction_u:focus img, a.ss_taskStatus_needsAction_u:visited img { 
+a.ss_taskStatus_needsAction_u img, a.ss_taskStatus_needsAction_u:link img , a.ss_taskStatus_needsAction_u:focus img, a.ss_taskStatus_needsAction_u:visited img, img.ss_taskStatus_needsAction_u { 
 	background: transparent url(<html:imagesPath/>icons/status_needsAction_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_cancelled_u img, a.ss_taskStatus_cancelled_u:link img , a.ss_taskStatus_cancelled_u:focus img, a.ss_taskStatus_cancelled_u:visited img { 
+a.ss_taskStatus_cancelled_u img, a.ss_taskStatus_cancelled_u:link img , a.ss_taskStatus_cancelled_u:focus img, a.ss_taskStatus_cancelled_u:visited img, img.ss_taskStatus_cancelled_u { 
 	background: transparent url(<html:imagesPath/>icons/status_cancelled_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_completed_u img, a.ss_taskStatus_completed_u:link img , a.ss_taskStatus_completed_u:focus img, a.ss_taskStatus_completed_u:visited img { 
+a.ss_taskStatus_completed_u img, a.ss_taskStatus_completed_u:link img , a.ss_taskStatus_completed_u:focus img, a.ss_taskStatus_completed_u:visited img, img.ss_taskStatus_completed_u { 
 	background: transparent url(<html:imagesPath/>icons/status_completed_u.gif) no-repeat top left; 
 }
 
@@ -4436,7 +4436,7 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 	background-position: left -22px; 
 }
 
-a.ss_taskPriority img {
+a.ss_taskPriority img, img.ss_taskPriority {
 	width: 21px;
 	height: 21px;
 	margin: 0px;
@@ -4447,23 +4447,23 @@ a.ss_taskPriority img {
 
 
 
-a.ss_taskPriority_least_u img, a.ss_taskPriority_least_u:link img , a.ss_taskPriority_least_u:focus img, a.ss_taskPriority_least_u:visited img { 
+a.ss_taskPriority_least_u img, a.ss_taskPriority_least_u:link img , a.ss_taskPriority_least_u:focus img, a.ss_taskPriority_least_u:visited img, img.ss_taskPriority_least_u { 
 	background: transparent url(<html:imagesPath/>icons/prio_least_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_low_u img, a.ss_taskPriority_low_u:link img , a.ss_taskPriority_low_u:focus img, a.ss_taskPriority_low_u:visited img { 
+a.ss_taskPriority_low_u img, a.ss_taskPriority_low_u:link img , a.ss_taskPriority_low_u:focus img, a.ss_taskPriority_low_u:visited img, img.ss_taskPriority_low_u { 
 	background: transparent url(<html:imagesPath/>icons/prio_low_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_medium_u img, a.ss_taskPriority_medium_u:link img , a.ss_taskPriority_medium_u:focus img, a.ss_taskPriority_medium_u:visited img { 
+a.ss_taskPriority_medium_u img, a.ss_taskPriority_medium_u:link img , a.ss_taskPriority_medium_u:focus img, a.ss_taskPriority_medium_u:visited img, img.ss_taskPriority_medium_u { 
 	background: transparent url(<html:imagesPath/>icons/prio_medium_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_high_u img, a.ss_taskPriority_high_u:link img , a.ss_taskPriority_high_u:focus img, a.ss_taskPriority_high_u:visited img { 
+a.ss_taskPriority_high_u img, a.ss_taskPriority_high_u:link img , a.ss_taskPriority_high_u:focus img, a.ss_taskPriority_high_u:visited img, img.ss_taskPriority_high_u { 
 	background: transparent url(<html:imagesPath/>icons/prio_high_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_critical_u img, a.ss_taskPriority_critical_u:link img , a.ss_taskPriority_critical_u:focus img, a.ss_taskPriority_critical_u:visited img { 
+a.ss_taskPriority_critical_u img, a.ss_taskPriority_critical_u:link img , a.ss_taskPriority_critical_u:focus img, a.ss_taskPriority_critical_u:visited img, img.ss_taskPriority_critical_u { 
 	background: transparent url(<html:imagesPath/>icons/prio_critical_u.gif) no-repeat top left; 
 }
 
