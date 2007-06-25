@@ -3298,7 +3298,7 @@ div.ss_cal_monthGridDayBadge a:hover {
 
 
 
-a.ss_calDaySelectButton img {
+a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0;
@@ -3308,6 +3308,10 @@ a.ss_calDaySelectButton img {
 }
 
 a.ss_calDaySelectButton img, a.ss_calDaySelectButton:link img , a.ss_calDaySelectButton:focus img, a.ss_calDaySelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/day_u.gif) no-repeat top left; 
+}
+
+a.ss_calDaySelectButtonActive img, a.ss_calDaySelectButtonActive:link img , a.ss_calDaySelectButtonActive:focus img, a.ss_calDaySelectButtonActive:visited img { 
 	background: transparent url(<html:imagesPath/>icons/day.gif) no-repeat top left; 
 }
 
@@ -3316,7 +3320,7 @@ a.ss_calDaySelectButton:hover img {
 }
 
 
-a.ss_cal3DaysSelectButton img {
+a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0;
@@ -3326,6 +3330,10 @@ a.ss_cal3DaysSelectButton img {
 }
 
 a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButton:link img , a.ss_cal3DaysSelectButton:focus img, a.ss_cal3DaysSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/3_day_u.gif) no-repeat top left; 
+}
+
+a.ss_cal3DaysSelectButtonActive img, a.ss_cal3DaysSelectButtonActive:link img , a.ss_cal3DaysSelectButtonActive:focus img, a.ss_cal3DaysSelectButtonActive:visited img { 
 	background: transparent url(<html:imagesPath/>icons/3_day.gif) no-repeat top left; 
 }
 
@@ -3333,7 +3341,7 @@ a.ss_cal3DaysSelectButton:hover img {
 	background-position: left -24px; 
 }
 
-a.ss_cal5DaysSelectButton img {
+a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0;
@@ -3343,6 +3351,10 @@ a.ss_cal5DaysSelectButton img {
 }
 
 a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButton:link img , a.ss_cal5DaysSelectButton:focus img, a.ss_cal5DaysSelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/5_day_u.gif) no-repeat top left; 
+}
+
+a.ss_cal5DaysSelectButtonActive img, a.ss_cal5DaysSelectButtonActive:link img , a.ss_cal5DaysSelectButtonActive:focus img, a.ss_cal5DaysSelectButtonActive:visited img { 
 	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
 }
 
@@ -3350,7 +3362,7 @@ a.ss_cal5DaysSelectButton:hover img {
 	background-position: left -24px; 
 }
 
-a.ss_cal7DaysSelectButton img {
+a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0;
@@ -3360,14 +3372,18 @@ a.ss_cal7DaysSelectButton img {
 }
 
 a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButton:link img , a.ss_cal7DaysSelectButton:focus img, a.ss_cal7DaysSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/7_day_u.gif) no-repeat top left; 
+}
+
+a.ss_cal7DaysSelectButtonActive img, a.ss_cal7DaysSelectButtonActive:link img , a.ss_cal7DaysSelectButtonActive:focus img, a.ss_cal7DaysSelectButtonActive:visited img { 
+	background: transparent url(<html:imagesPath/>icons/7_day.gif) no-repeat top left; 
 }
 
 a.ss_cal7DaysSelectButton:hover img {
 	background-position: left -24px; 
 }
 
-a.ss_cal14DaysSelectButton img {
+a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0;
@@ -3377,14 +3393,18 @@ a.ss_cal14DaysSelectButton img {
 }
 
 a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButton:link img , a.ss_cal14DaysSelectButton:focus img, a.ss_cal14DaysSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/14_day_u.gif) no-repeat top left; 
+}
+
+a.ss_cal14DaysSelectButtonActive img, a.ss_cal14DaysSelectButtonActive:link img , a.ss_cal14DaysSelectButtonActive:focus img, a.ss_cal14DaysSelectButtonActive:visited img { 
+	background: transparent url(<html:imagesPath/>icons/14_day.gif) no-repeat top left; 
 }
 
 a.ss_cal14DaysSelectButton:hover img {
 	background-position: left -24px; 
 }
 
-a.ss_calMonthSelectButton img {
+a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0;
@@ -3394,7 +3414,11 @@ a.ss_calMonthSelectButton img {
 }
 
 a.ss_calMonthSelectButton img, a.ss_calMonthSelectButton:link img , a.ss_calMonthSelectButton:focus img, a.ss_calMonthSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/month_u.gif) no-repeat top left; 
+}
+
+a.ss_calMonthSelectButtonActive img, a.ss_calMonthSelectButtonActive:link img , a.ss_calMonthSelectButtonActive:focus img, a.ss_calMonthSelectButtonActive:visited img { 
+	background-image: url(<html:imagesPath/>icons/month.gif); 
 }
 
 a.ss_calMonthSelectButton:hover img {
@@ -4414,7 +4438,7 @@ a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, 
 
 a.ss_taskPriority img {
 	width: 21px;
-	height: 22px;
+	height: 21px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -4444,7 +4468,7 @@ a.ss_taskPriority_critical_u img, a.ss_taskPriority_critical_u:link img , a.ss_t
 }
 
 a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
-	background-position: left -22px; 
+	background-position: left -21px; 
 }
 
 .ss_task_completed {
