@@ -28,6 +28,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
 function ss_enableDisableFolderOptions(id) {
 	var formObj = self.document.getElementById('<portlet:namespace/>fm');
+	if (document.getElementById('folderConfigIdTitle') == null) return;
 	if (id == '${ss_workspaceId}') {
 	    document.getElementById('folderConfigIdTitle').className = "ss_bold"
 	    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
