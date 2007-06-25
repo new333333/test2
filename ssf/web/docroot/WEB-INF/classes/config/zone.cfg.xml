@@ -13,7 +13,7 @@
 	</mailConfiguration>	
 	<ldapConfiguration>	
 		<property name="java.naming.provider.url">ldap://localhost:389</property>
-		<userAttribute>cn</userAttribute>
+		<userAttribute>uid</userAttribute>
 		<userMapping>
 			<mapping from="mail" to="emailAddress"/>
 			<mapping from="gn" to="firstName"/>
