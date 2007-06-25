@@ -17,9 +17,10 @@
 	<span>
 	  ICEcore is brought to you by <a href="http://sitescape.com">SiteScape, Inc.</a>
 	</span>
-
+<br/>
+<br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
-	  name="${ssNamespace}_btnForm" method="post"  action="<portlet:renderURL/>">
+	  name="${ssNamespace}_btnForm" method="post"  action="<portlet:renderURL windowState="normal"/>">
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 	</form>
   </div>

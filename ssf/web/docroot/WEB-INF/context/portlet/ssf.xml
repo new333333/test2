@@ -47,6 +47,7 @@
 	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LicenseReportController" />
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
+	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
 
  	<!-- Handlers -->
 
@@ -94,6 +95,7 @@
 						<entry key="add_team_member"><ref bean="teamController"/></entry>					
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
+						<entry key="view_credits"><ref bean="creditsController"/></entry>
 
 						<entry key="login_report"><ref bean="loginReportController"/></entry>
 						<entry key="license_report"><ref bean="licenseReportController"/></entry>
