@@ -30,11 +30,9 @@
     <c:out value="${property_caption}" />
   </td>
   <td valign="top">
-	<span class="ss_bold">
 	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
 					  pattern="dd MMM yyyy" />
-	</span>
   </td>
 </tr>
 </c:if>

@@ -16,7 +16,7 @@
 
 <tr>
   <td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
-  <td class="ss_bold" valign="top">
+  <td valign="top">
 	<ul class="ss_nobullet">
 	<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
 <%
@@ -25,7 +25,7 @@
 	caption = NLT.getDef(caption);
 %>
 <c:set var="caption" value="<%= caption %>"/>
-	<li><c:out value="${caption}" escapeXml="false"/></span></li>
+	<li><c:out value="${caption}" escapeXml="false"/></li>
 	</c:forEach>
 	</ul>
   </td>

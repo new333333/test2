@@ -44,10 +44,10 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_selectbox.jsp" %><%
 		
 	} else if (itemType.equals("date")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_date.jsp" %><%
 
 	} else if (itemType.equals("date_time")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date_time.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_date_time.jsp" %><%
 		
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_user_list.jsp" %><%
