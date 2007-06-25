@@ -70,7 +70,8 @@ import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
-
+import org.springframework.dao.DataIntegrityViolationException;
+import com.sitescape.team.ObjectExistsException;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
@@ -306,7 +307,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
         checkAccess(binder, ProfileOperation.addEntry);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
-        return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
+        try {
+        	return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
+        } catch (DataIntegrityViolationException de) {
+        	throw new ObjectExistsException("errorcode.user.exists", (Object[])null, de);
+        }
+        	
     }
 
 /* HOLD OFF - need better implementation */
@@ -516,7 +522,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	//get the default
         	definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_GROUP_VIEW);
         }
-        return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
+        try {
+        	return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
+        } catch (DataIntegrityViolationException de) {
+        	throw new ObjectExistsException("errorcode.group.exists", (Object[])null, de);
+        }
     }
 
     //RW transaction
