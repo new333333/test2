@@ -112,7 +112,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
   				<ssf:param name="operation" value="searchForm"/>  				
   				</ssf:url>" 
 		  </c:if>
-		>
+		title="${tab.title}" >
 	<c:if test="${!empty tab.icon}">
 		   <img border="0" class="ss_tabs_icon" <ssf:alt/> src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
