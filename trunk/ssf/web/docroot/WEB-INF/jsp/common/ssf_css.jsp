@@ -4348,10 +4348,6 @@ table.ss_tasks_list .ss_due, table.ss_tasks_list .ss_assigned {
 	font-size: 11px;
 }
 
-table.ss_tasks_list .ss_entryTitle a span {
-	background-color: #FFFFAA;
-}
-
 div.ss_completedContainer {
 	border: 1px solid #afc8e3;
 	background-color: #e8eff7;
