@@ -54,7 +54,7 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 				scheduler.addJob(jobDetail, true);
 			}
 			int milliSeconds = 24*60*60*1000;
-//DEBUG		 milliSeconds = 2*60*1000;
+
 			Calendar cal = GregorianCalendar.getInstance();
 			cal.set(Calendar.HOUR_OF_DAY, hour);
 			cal.set(Calendar.MINUTE, 0);
@@ -62,7 +62,13 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
 			
+			/* DEBUG
+			 * Uncomment the next line (which has two statements) to change the schedule
+			 *  to every 2 minutes, starting immediately
+			 */
+			// milliSeconds = 2*60*1000; cal = GregorianCalendar().getInstance();
 			
+
 			SimpleTrigger trigger =
 				new SimpleTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP, zoneId.toString(), LICENSE_MONITOR_GROUP, cal.getTime(), null, 
 						SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
