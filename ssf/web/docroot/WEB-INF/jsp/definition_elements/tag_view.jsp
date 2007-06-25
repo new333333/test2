@@ -10,6 +10,7 @@
  *
  */
 %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${ssConfigJspStyle != 'template'}">
 <c:if test="${empty ss_tagDivNumber}">
@@ -90,11 +91,8 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 	ss_showTags<portlet:namespace/>(obj.getData("divNumber"), obj.getData("entityType"), obj.getData("entityId"));
 }
 </script>
-
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:set var="ssEntry" value="${ssDefinitionEntry}" scope="request"/>
-
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
