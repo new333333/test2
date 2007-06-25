@@ -14,10 +14,8 @@
 <tr>
   <td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
   <td valign="top">
-	<span class="ss_bold">
 	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" 
 				      type="both" dateStyle="medium" timeStyle="short" />
-	</span>
   </td>
 </tr>
