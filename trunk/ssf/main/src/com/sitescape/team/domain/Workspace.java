@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.sitescape.team.NotSupportedException;
-import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="workspace" dynamic-update="true"

@@ -58,9 +58,11 @@ public class Folder extends Binder {
      * Top folder always returns false.  Overloaded method
      */
     public boolean isDefinitionInheritanceSupported() {
-    	if (topFolder != null) return true;
-    	return false;
+    	if (isTop()) return false;
+    	return true;
     }
+ 
+    
    /** 
      * @hibernate.property 
      * @return

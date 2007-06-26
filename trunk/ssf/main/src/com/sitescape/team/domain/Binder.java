@@ -50,7 +50,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected List definitions;	//initialized by hiberate access=field
     protected List binders;//initialized by hibernate access="field"
     protected Map workflowAssociations;//initialized by hibernate access="field"
-    protected boolean definitionsInherited=true;
+    protected boolean definitionsInherited=false;
     protected boolean functionMembershipInherited = true;
     protected boolean teamMembershipInherited = true;
     //uuid to identify a reserved binder
@@ -402,11 +402,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	this.definitionsInherited = definitionsInherited;
     }
     public boolean isDefinitionInheritanceSupported() {
-    	if (isRoot()) return false;
-    	return true;
+    	return false;
     }
     protected List getDefs(int type) {
-       	if (definitionsInherited && !isRoot())
+       	if (isDefinitionInheritanceSupported() && isDefinitionsInherited())
     		return new ArrayList(getParentBinder().getDefs(type));
       	Definition def;
     	List result = new ArrayList(); 
@@ -422,7 +421,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 
     // Setup by hibernate
     public List getDefinitions() {
-    	if (definitionsInherited && !isRoot())
+    	if (isDefinitionsInherited() && !isRoot())
     		return new ArrayList(getParentBinder().getDefinitions());
      	if (definitions == null) definitions = new ArrayList();
      	return definitions;
@@ -463,7 +462,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      }
        // Setup by hibernate
      public Map getWorkflowAssociations() {
-     	if (definitionsInherited && !isRoot())
+     	if (isDefinitionsInherited() && !isRoot())
     		return new HashMap(getParentBinder().getWorkflowAssociations());
     	if (workflowAssociations == null) workflowAssociations = new HashMap();
     	return workflowAssociations;
