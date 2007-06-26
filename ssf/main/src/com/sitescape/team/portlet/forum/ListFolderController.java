@@ -1559,11 +1559,14 @@ public static final String[] monthNamesShort = {
 			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
 		}
 		//WebDav folder view
-		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
-		qualifiers = new HashMap();
-		qualifiers.put("webdavUrl", webdavUrl);
-		qualifiers.put("folder", webdavUrl);
-		entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
+		String webdavUrl = "";
+		if (folder.isLibrary()) {
+			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+			qualifiers = new HashMap();
+			qualifiers.put("webdavUrl", webdavUrl);
+			qualifiers.put("folder", webdavUrl);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
+		}
 		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
@@ -1699,10 +1702,12 @@ public static final String[] monthNamesShort = {
 		}
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		
-		qualifiers = new HashMap();
-		qualifiers.put("webdavUrl", webdavUrl);
-		qualifiers.put("folder", webdavUrl);
-		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
+		if (folder.isLibrary() && !webdavUrl.equals("")) {
+			qualifiers = new HashMap();
+			qualifiers.put("webdavUrl", webdavUrl);
+			qualifiers.put("folder", webdavUrl);
+			footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
+		}
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
         
