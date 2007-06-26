@@ -237,7 +237,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td valign="top">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span>
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/access_control"/>
 <br/>
 <br/>
 <c:if test="${ssBinder.entityType == 'folder'}">
