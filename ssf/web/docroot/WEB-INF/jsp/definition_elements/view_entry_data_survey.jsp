@@ -51,6 +51,9 @@
 				</li>
 			</c:forEach>
 			</ol>
+			<c:if test="${question.type == 'multiple'}">
+				<p class="ss_legend"><ssf:nlt tag="survey.vote.multiple.legend"/></p>
+			</c:if>
 		</c:if>
 		<c:if test="${!overdue && !question.alreadyVoted}">
 			<c:if test="${question.type == 'multiple'}">

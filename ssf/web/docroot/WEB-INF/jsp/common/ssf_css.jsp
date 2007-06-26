@@ -4191,6 +4191,11 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 .ss_savedQueriesListPane h1 {
 	font-size: 12px;
 }
+p.ss_legend {
+	margin:6px 0px 3px 0px;
+	color:#666666;
+	font-size:${ss_style_font_smallprint};
+}
 
 /*
 	Search & survey styles / end
