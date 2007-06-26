@@ -4020,7 +4020,11 @@ div.ss_thumbnail {float: left; width:62px; text-align:center;}
 div.ss_thumbnail img {width:50px;height:50px;padding:0px; margin:0px;}
 div.ss_entry {
 	float: left;
-	width: 400px;
+	width: 340px;
+}
+div.ss_entry p {
+	margin-top:    2px;
+	margin-bottom: 6px;
 }
 div.ss_entry_folderListView {
 	float: left;
@@ -4035,7 +4039,10 @@ h3.ss_entryTitle a:link, h3.ss_entryTitle a:hover, h3.ss_entryTitle a:visited, h
 }
 div.ss_more {text-align:right;}
 div.ss_entryDetails {  padding:6px;}
-div.ss_entryDetails p {margin:0px 0px 6px 0px;}
+div.ss_entryDetails p {
+	margin:0px 0px 1px 0px;
+	font-size: ${ss_style_font_smallprint};
+}
 img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
 
