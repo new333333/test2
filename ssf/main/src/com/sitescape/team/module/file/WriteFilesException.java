@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.module.file;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 public class WriteFilesException extends Exception {
 	
 	private FilesErrors errors;
@@ -25,4 +28,15 @@ public class WriteFilesException extends Exception {
 	public String getMessage() {
 		return getErrors().toString();
 	}
+	
+    //overload to remove stack trace filling log files
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintStream s) {
+    	
+    }
+    //overload to remove stack trace filling log files
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintWriter s) {
+    	
+    }
 }
