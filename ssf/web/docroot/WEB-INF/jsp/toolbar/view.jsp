@@ -81,6 +81,8 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
   offsetX="-13" offsetY="10">
 <div style="padding-top:10px; background: url(<html:imagesPath/>icons/toolbar_teaming.gif) no-repeat bottom right;
 ">
+<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+<td valign="top">
 <c:choose>
 <c:when test="${renderRequest.windowState == 'normal'}">
 	<ssf:tree treeName="<%= wsTreeName %>" 
@@ -99,6 +101,8 @@ function ss_showMyTeamsCallback<portlet:namespace/>(s) {
 	  />
 </c:when>
 </c:choose>			
+</td><td><img src="<html:imagesPath/>pics/1pix.gif" style="height: 80px;"/></td>
+</tr></tbody></table>
 </div>
 </ssHelpSpot>
 </div>
