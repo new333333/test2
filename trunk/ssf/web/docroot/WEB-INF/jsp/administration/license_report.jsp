@@ -55,6 +55,7 @@
     <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
    </div>
 </form>
+<c:if test="${not empty ssLicenseData}">
 <hr>
 <p class="ss_bold">
 ICEcore Enterprise Version 1.0<br/>
@@ -103,6 +104,6 @@ Report checksum: 41fec13e30afd9cffe48a20ba5ce55982f95c0cf
 <p>
 Please send the audit report to: BETA
 </p>   
-
+</c:if>
 </td></tr></table>
 
