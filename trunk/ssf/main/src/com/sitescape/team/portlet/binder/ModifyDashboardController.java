@@ -102,6 +102,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.INLINE_NO_IMAGE, "true");
 		
 		String dashboardList = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
