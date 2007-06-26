@@ -544,6 +544,7 @@ public class WebKeys {
     public static final String HELP_CPANEL_SHOW="help_cpanel_show";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String INHERIT_FROM_PARENT="ssInheritFromParent";
+    public static final String INLINE_NO_IMAGE="ssInlineNoImage";
     public static final String IS_ACCESSIBLE="ss_isAccessible";
     public static final String IS_REFRESH="ssRefresh";
     public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
