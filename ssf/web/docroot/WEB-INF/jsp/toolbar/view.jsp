@@ -39,39 +39,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	return false;
 }
 
-function ss_showMyTeams<portlet:namespace/>() {
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="show_my_teams" />
-		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
-    	</ssf:url>"
-	url += "\&rn=" + ss_random++;
-	
-	if (ss_userDisplayStyle == "accessible") {
-		ss_fetchUrlInIframe(url, "<portlet:namespace/>ss_myTeams", 300, 400)
-		return
-	}
-	
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_myTeams')
-	if (targetDiv != null) {
-		if (targetDiv.style.visibility == 'visible') {
-			targetDiv.style.visibility = 'hidden'
-			targetDiv.style.display = 'none'
-		} else {
-			targetDiv.innerHTML = "<ssf:nlt tag="Loading"/><br/>";
-			targetDiv.style.visibility = 'visible';
-			targetDiv.style.display = 'block';
-			ss_fetch_url(url, ss_showMyTeamsCallback<portlet:namespace/>);
-		}
-	}
-}
-function ss_showMyTeamsCallback<portlet:namespace/>(s) {
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_myTeams')
-	if (targetDiv != null) targetDiv.innerHTML = s;
-}
 
 </script>
 

@@ -71,6 +71,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	<!-- My workspace -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace" 
+	  title="<ssf:nlt tag="navigation.myWorkspace"/>"
       onClick="self.location.href='<portlet:renderURL 
       	windowState="maximized"><portlet:param 
       	name="action" value="view_ws_listing"/><portlet:param 
@@ -78,12 +79,9 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
       	name="entryId" value="${ssUser.id}"/><portlet:param 
       	name="newTab" value="1"/></portlet:renderURL>';"
      onMouseOver="this.style.cursor = 'pointer';"
-    >
-	  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="13" offsetX="15" 
+    ><ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="13" offsetX="15" 
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-	    <div id="ss_navbarMyWorkspaceButton">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
-	    </div>
+	    <div id="ss_navbarMyWorkspaceButton"><img src="<html:imagesPath/>pics/1pix.gif"/></div>
 	  </ssHelpSpot>
 	</div>
 </ssf:ifnotaccessible>
@@ -109,18 +107,20 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 <!-- Favorites -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
+	  title="<ssf:nlt tag="navigation.favorites"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
       <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
+	      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
 	    </div>
-	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" 
-	      style="visibility:hidden;margin:0px;padding:0px;clear:both;"
-	    ></div>
 	  </ssHelpSpot>
 	</div>
+    <div id="ss_navbar_favorites<portlet:namespace/>" 
+      style="visibility:hidden;margin:0px;padding:0px;"
+    ></div>
+
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
@@ -135,6 +135,35 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" 
 	      style="visibility:hidden;margin:0px;padding:0px;clear:both;"
 	    ></div>
+	</div>
+</ssf:ifaccessible>
+</td>
+<td>
+<!-- My Teams -->
+<ssf:ifnotaccessible>
+	<div class="ss_global_toolbar_myteams" onClick="ss_placeOnScreen('<portlet:namespace/>ss_myTeams', 'ss_navbarMyTeamsButton<portlet:namespace/>', 26, 26); ss_showMyTeams('<portlet:namespace/>','<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="show_my_teams" />
+		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
+    	</ssf:url>', '<ssf:nlt tag="Loading"/>');return false;"
+	  title="<ssf:nlt tag="navigation.myTeams"/>"
+      onMouseOver="this.style.cursor = 'pointer';"
+    >
+      <ssHelpSpot helpId="navigation_bar/myteams_button" offsetX="3" offsetY="13"  
+          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
+	    <div id="ss_navbarMyTeamsButton<portlet:namespace/>">
+	      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
+	    </div>
+	  </ssHelpSpot>
+	</div>
+	<div class="ss_navbarPopupPane" id="<portlet:namespace/>ss_myTeams"></div>
+
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible">
 	</div>
 </ssf:ifaccessible>
 </td>
@@ -183,9 +212,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  </ssHelpSpot>
 				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
-				  onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img 
+				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<portlet:namespace/>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
-				<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
+				<div id="ss_navbarPopupPane<portlet:namespace/>" class="ss_navbarPopupPane"></div>
 			</form>
      	</div>
 	</div>
@@ -507,8 +536,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		  </ssHelpSpot>
 		</form>
 		
-		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_savedQueriesListPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
-		<div id="ss_savedQueriesListPane<portlet:namespace/>" class="ss_savedQueriesListPane"></div>
+		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<portlet:namespace/>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+		<div id="ss_navbarPopupPane<portlet:namespace/>" class="ss_navbarPopupPane"></div>
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
@@ -682,7 +711,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
   title="<ssf:nlt tag="helpSpot.myTeams"/>"
   offsetX="-22" offsetY="8" xAlignment="center">
 <div style="padding-top:5px; padding-bottom: 5px;">
-<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeams<portlet:namespace/>();return false;">
+<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeams('<portlet:namespace/>','<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="operation" value="show_my_teams" />
+		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
+    	</ssf:url>', '<ssf:nlt tag="Loading"/>');return false;">
   <ssf:nlt tag="navigation.myTeams"/> <img src="<html:imagesPath/>pics/menudown.gif"/>
 </a>
 <div id="<portlet:namespace/>ss_myTeams"></div>

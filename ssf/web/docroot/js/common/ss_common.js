@@ -5146,11 +5146,9 @@ function ss_showSavedQueriesList(relObj, divId) {
 				txt += "</ul>";
 				divObj.innerHTML = txt;
 
-				var box = dojo.html.abs(relObj);
-				ss_moveDivToBody(divId);
+				ss_placeOnScreen(divId, relObj, 9, 9);
 				dojo.html.setDisplay(divId, "block");
 	            dojo.html.setOpacity(divId,0);
-                dojo.html.placeOnScreen(divId, box.left + 9, box.top + 9, 0, false, "TL");
 	            dojo.lfx.html.fadeIn(divId, 200).play();
 			} catch (e) {alert(e)}
 		},
@@ -5160,6 +5158,13 @@ function ss_showSavedQueriesList(relObj, divId) {
 	};   
 	dojo.io.bind(bindArgs);	
 }
+
+function ss_placeOnScreen(div, rel, offsetTop, offsetLeft) {
+	var box = dojo.html.abs(rel);
+	ss_moveDivToBody(div);
+	dojo.html.placeOnScreen(div, box.left + offsetLeft, box.top + offsetTop, 0, false, "TL");
+}
+
 
 function ss_submitFormViaAjax(formName, doneRoutine) {
 	ss_setupStatusMessageDiv()
@@ -5230,4 +5235,31 @@ function ss_changeUIThemeRequest(themeId) {
 function ss_cancelUITheme() {
 	ss_hideLightbox();
 	ss_hideDiv('ss_uiThemeSelector');
+}
+
+
+function ss_showMyTeams(namespace, url, loading) {
+	url += "\&rn=" + ss_random++;
+	
+	if (ss_userDisplayStyle == "accessible") {
+		ss_fetchUrlInIframe(url, namespace + "ss_myTeams", 300, 400)
+		return
+	}
+	
+	var targetDiv = document.getElementById(namespace+'ss_myTeams')
+	if (targetDiv != null) {
+		if (targetDiv.style.visibility == 'visible') {
+			targetDiv.style.visibility = 'hidden'
+			targetDiv.style.display = 'none'
+		} else {
+			targetDiv.innerHTML = loading + "<br/>";
+			targetDiv.style.visibility = 'visible';
+			targetDiv.style.display = 'block';
+			ss_fetch_url(url, ss_showMyTeamsCallback, namespace);
+		}
+	}
+}
+function ss_showMyTeamsCallback(s, namespace) {
+	var targetDiv = document.getElementById(namespace + 'ss_myTeams')
+	if (targetDiv != null) targetDiv.innerHTML = s;
 }
