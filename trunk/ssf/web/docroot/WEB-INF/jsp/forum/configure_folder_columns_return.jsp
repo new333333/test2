@@ -69,7 +69,8 @@
 		<c:set var="colName" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
 		<c:if test="${!empty folderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
          <input type="checkbox" name="customCol_${colName}" ${checked}> 
-         ${ssEntryDefinitionMap[def.key].title} / ${element.value.caption}<br/>
+         <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
+         <ssf:nlt tag="${element.value.caption}" checkIfTag="true"/><br/>
        </c:if>
   	</c:forEach>
   </c:forEach>
