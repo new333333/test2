@@ -14,7 +14,9 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles" /></p>
+<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.def"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+
+<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.serverFile" /></p>
 
 <p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
 <a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
