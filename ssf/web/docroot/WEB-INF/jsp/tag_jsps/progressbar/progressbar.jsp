@@ -26,7 +26,7 @@
 <c:set var="namespace" value="<%= namespace %>" />
 <c:set var="entryId" value="<%= entryId %>" />
 
-<div class="ss_completedContainer" id="ss_completedContainer_${namespace}_${entryId}" onmouseout="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, this, document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), 'c${currentValueInt}');">
+<div class="ss_completedContainer" id="ss_completedContainer_${namespace}_${entryId}" onmouseout="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, this, document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${currentValue}');">
 	<c:forEach var="cv" items="<%= valuesInt %>">
 		<c:set var="fullValue" value="c${cv}" />
 		<div title="${valuesMap[fullValue]}" 
@@ -38,8 +38,8 @@
 					class="ss_bar_off"
 				</c:otherwise> 
 			</c:choose>
-			onclick="myTasks_${namespace}.ss_saveValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), 'c${cv}')"
-			onmouseover="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), 'c${cv}');"
+			onclick="myTasks_${namespace}.ss_saveValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}')"
+			onmouseover="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}');"
 			></div>
 	</c:forEach>
 </div>

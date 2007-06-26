@@ -38,31 +38,31 @@
       <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="23">
         <item name="selectboxSelection" caption="__selection" id="24">
           <properties>
-            <property name="name" value="critical"/>
+            <property name="name" value="p1"/>
             <property name="caption" value="__task_priority_critical"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="25">
           <properties>
-            <property name="name" value="high"/>
+            <property name="name" value="p2"/>
             <property name="caption" value="__task_priority_high"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="26">
           <properties>
-            <property name="name" value="medium"/>
+            <property name="name" value="p3"/>
             <property name="caption" value="__task_priority_medium"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="27">
           <properties>
-            <property name="name" value="low"/>
+            <property name="name" value="p4"/>
             <property name="caption" value="__task_priority_low"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="27">
           <properties>
-            <property name="name" value="least"/>
+            <property name="name" value="p5"/>
             <property name="caption" value="__task_priority_least"/>
           </properties>
         </item>
@@ -103,25 +103,25 @@
         </properties>
         <item name="selectboxSelection" caption="__selection" id="31">
           <properties>
-            <property name="name" value="needsAction"/>
+            <property name="name" value="s1"/>
             <property name="caption" value="__task_status_needs_action"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="33">
           <properties>
-            <property name="name" value="inProcess"/>
+            <property name="name" value="s2"/>
             <property name="caption" value="__task_status_in_process"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="34">
           <properties>
-            <property name="name" value="completed"/>
+            <property name="name" value="s3"/>
             <property name="caption" value="__task_status_completed"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="35">
           <properties>
-            <property name="name" value="cancelled"/>
+            <property name="name" value="s4"/>
             <property name="caption" value="__task_status_cancelled"/>
           </properties>
         </item>
@@ -137,61 +137,61 @@
         </properties>
         <item name="selectboxSelection" caption="__selection" id="37">
           <properties>
-            <property name="name" value="c0"/>
+            <property name="name" value="c000"/>
             <property name="caption" value="__task_completed_0"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="38">
           <properties>
-            <property name="name" value="c10"/>
+            <property name="name" value="c010"/>
             <property name="caption" value="__task_completed_10"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="39">
           <properties>
-            <property name="name" value="c20"/>
+            <property name="name" value="c020"/>
             <property name="caption" value="__task_completed_20"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="40">
           <properties>
-            <property name="name" value="c30"/>
+            <property name="name" value="c030"/>
             <property name="caption" value="__task_completed_30"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="41">
           <properties>
-            <property name="name" value="c40"/>
+            <property name="name" value="c040"/>
             <property name="caption" value="__task_completed_40"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="42">
           <properties>
-            <property name="name" value="c50"/>
+            <property name="name" value="c050"/>
             <property name="caption" value="__task_completed_50"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="43">
           <properties>
-            <property name="name" value="c60"/>
+            <property name="name" value="c060"/>
             <property name="caption" value="__task_completed_60"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="44">
           <properties>
-            <property name="name" value="c70"/>
+            <property name="name" value="c070"/>
             <property name="caption" value="__task_completed_70"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="45">
           <properties>
-            <property name="name" value="c80"/>
+            <property name="name" value="c080"/>
             <property name="caption" value="__task_completed_80"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="46">
           <properties>
-            <property name="name" value="c90"/>
+            <property name="name" value="c090"/>
             <property name="caption" value="__task_completed_90"/>
           </properties>
         </item>

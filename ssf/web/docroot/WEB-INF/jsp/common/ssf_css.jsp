@@ -4441,23 +4441,23 @@ a.ss_taskStatus img, img.ss_taskStatus {
 }
 
 
-a.ss_taskStatus_inProcess_u img, a.ss_taskStatus_inProcess_u:link img , a.ss_taskStatus_inProcess_u:focus img, a.ss_taskStatus_inProcess_u:visited img, img.ss_taskStatus_inProcess_u { 
-	background: transparent url(<html:imagesPath/>icons/status_inProcess_u.gif) no-repeat top left; 
+a.ss_taskStatus_s2_u img, a.ss_taskStatus_s2_u:link img , a.ss_taskStatus_s2_u:focus img, a.ss_taskStatus_s2_u:visited img, img.ss_taskStatus_s2_u { 
+	background: transparent url(<html:imagesPath/>icons/status_s2_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_needsAction_u img, a.ss_taskStatus_needsAction_u:link img , a.ss_taskStatus_needsAction_u:focus img, a.ss_taskStatus_needsAction_u:visited img, img.ss_taskStatus_needsAction_u { 
-	background: transparent url(<html:imagesPath/>icons/status_needsAction_u.gif) no-repeat top left; 
+a.ss_taskStatus_s1_u img, a.ss_taskStatus_s1_u:link img , a.ss_taskStatus_s1_u:focus img, a.ss_taskStatus_s1_u:visited img, img.ss_taskStatus_s1_u { 
+	background: transparent url(<html:imagesPath/>icons/status_s1_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_cancelled_u img, a.ss_taskStatus_cancelled_u:link img , a.ss_taskStatus_cancelled_u:focus img, a.ss_taskStatus_cancelled_u:visited img, img.ss_taskStatus_cancelled_u { 
-	background: transparent url(<html:imagesPath/>icons/status_cancelled_u.gif) no-repeat top left; 
+a.ss_taskStatus_s4_u img, a.ss_taskStatus_s4_u:link img , a.ss_taskStatus_s4_u:focus img, a.ss_taskStatus_s4_u:visited img, img.ss_taskStatus_s4_u { 
+	background: transparent url(<html:imagesPath/>icons/status_s4_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_completed_u img, a.ss_taskStatus_completed_u:link img , a.ss_taskStatus_completed_u:focus img, a.ss_taskStatus_completed_u:visited img, img.ss_taskStatus_completed_u { 
-	background: transparent url(<html:imagesPath/>icons/status_completed_u.gif) no-repeat top left; 
+a.ss_taskStatus_s3_u img, a.ss_taskStatus_s3_u:link img , a.ss_taskStatus_s3_u:focus img, a.ss_taskStatus_s3_u:visited img, img.ss_taskStatus_s3_u { 
+	background: transparent url(<html:imagesPath/>icons/status_s3_u.gif) no-repeat top left; 
 }
 
-a.ss_taskStatus_inProcess_u:hover img, a.ss_taskStatus_needsAction_u:hover img, a.ss_taskStatus_cancelled_u:hover img, a.ss_taskStatus_completed_u:hover img {
+a.ss_taskStatus_s2_u:hover img, a.ss_taskStatus_s1_u:hover img, a.ss_taskStatus_s4_u:hover img, a.ss_taskStatus_s3_u:hover img {
 	background-position: left -22px; 
 }
 
@@ -4472,27 +4472,27 @@ a.ss_taskPriority img, img.ss_taskPriority {
 
 
 
-a.ss_taskPriority_least_u img, a.ss_taskPriority_least_u:link img , a.ss_taskPriority_least_u:focus img, a.ss_taskPriority_least_u:visited img, img.ss_taskPriority_least_u { 
-	background: transparent url(<html:imagesPath/>icons/prio_least_u.gif) no-repeat top left; 
+a.ss_taskPriority_p5_u img, a.ss_taskPriority_p5_u:link img , a.ss_taskPriority_p5_u:focus img, a.ss_taskPriority_p5_u:visited img, img.ss_taskPriority_p5_u { 
+	background: transparent url(<html:imagesPath/>icons/prio_p5_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_low_u img, a.ss_taskPriority_low_u:link img , a.ss_taskPriority_low_u:focus img, a.ss_taskPriority_low_u:visited img, img.ss_taskPriority_low_u { 
-	background: transparent url(<html:imagesPath/>icons/prio_low_u.gif) no-repeat top left; 
+a.ss_taskPriority_p4_u img, a.ss_taskPriority_p4_u:link img , a.ss_taskPriority_p4_u:focus img, a.ss_taskPriority_p4_u:visited img, img.ss_taskPriority_p4_u { 
+	background: transparent url(<html:imagesPath/>icons/prio_p4_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_medium_u img, a.ss_taskPriority_medium_u:link img , a.ss_taskPriority_medium_u:focus img, a.ss_taskPriority_medium_u:visited img, img.ss_taskPriority_medium_u { 
-	background: transparent url(<html:imagesPath/>icons/prio_medium_u.gif) no-repeat top left; 
+a.ss_taskPriority_p3_u img, a.ss_taskPriority_p3_u:link img , a.ss_taskPriority_p3_u:focus img, a.ss_taskPriority_p3_u:visited img, img.ss_taskPriority_p3_u { 
+	background: transparent url(<html:imagesPath/>icons/prio_p3_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_high_u img, a.ss_taskPriority_high_u:link img , a.ss_taskPriority_high_u:focus img, a.ss_taskPriority_high_u:visited img, img.ss_taskPriority_high_u { 
-	background: transparent url(<html:imagesPath/>icons/prio_high_u.gif) no-repeat top left; 
+a.ss_taskPriority_p2_u img, a.ss_taskPriority_p2_u:link img , a.ss_taskPriority_p2_u:focus img, a.ss_taskPriority_p2_u:visited img, img.ss_taskPriority_p2_u { 
+	background: transparent url(<html:imagesPath/>icons/prio_p2_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_critical_u img, a.ss_taskPriority_critical_u:link img , a.ss_taskPriority_critical_u:focus img, a.ss_taskPriority_critical_u:visited img, img.ss_taskPriority_critical_u { 
-	background: transparent url(<html:imagesPath/>icons/prio_critical_u.gif) no-repeat top left; 
+a.ss_taskPriority_p1_u img, a.ss_taskPriority_p1_u:link img , a.ss_taskPriority_p1_u:focus img, a.ss_taskPriority_p1_u:visited img, img.ss_taskPriority_p1_u { 
+	background: transparent url(<html:imagesPath/>icons/prio_p1_u.gif) no-repeat top left; 
 }
 
-a.ss_taskPriority_least_u:hover img, a.ss_taskPriority_low_u:hover img, a.ss_taskPriority_medium_u:hover img, a.ss_taskPriority_high_u:hover img, a.ss_taskPriority_critical_u:hover img {
+a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPriority_p3_u:hover img, a.ss_taskPriority_p2_u:hover img, a.ss_taskPriority_p1_u:hover img {
 	background-position: left -21px; 
 }
 

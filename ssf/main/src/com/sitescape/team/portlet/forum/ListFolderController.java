@@ -820,7 +820,7 @@ public static final String[] monthNamesShort = {
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				// do it with ajax
 			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
-				folderEntries = findTaskEntries(req, response, model);
+				folderEntries = findTaskEntries(req, response, model, options);
 			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				folderEntries = findCalendarEvents(req, response, model);
 			}
@@ -1825,7 +1825,7 @@ public static final String[] monthNamesShort = {
 		}
 	}
 
-	private Map findTaskEntries(RenderRequest request, RenderResponse response, Map model) throws PortletRequestBindingException {
+	private Map findTaskEntries(RenderRequest request, RenderResponse response, Map model, Map options) throws PortletRequestBindingException {
 		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -1833,13 +1833,13 @@ public static final String[] monthNamesShort = {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 
 		Map folderEntries = new HashMap();
-		Map options = new HashMap();
+//		Map options = new HashMap();
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
 		
-		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+		options.put(ObjectKeys.SEARCH_MAX_HITS, 1000);
 		
 		
 		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
