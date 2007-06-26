@@ -4175,8 +4175,7 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 }
 
 .ss_savedQueriesListPane {
-	display: block;
-	visibility: hidden;
+	display: none;
 	position: absolute;
 	z-index: 500;
 	background-color: ${ss_form_background_color};
