@@ -2396,8 +2396,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		Map formData = new HashMap(); 
 		formData.put(attributeName, surveyAttrValue.toString());
-		getFolderModule().modifyEntry(binderId, entryId, 
-				new MapInputData(formData), new HashMap(), new HashSet(), null);
+		getFolderModule().addVote(binderId, entryId, new MapInputData(formData));
 	}
 	
 	private ModelAndView ajaxVoteSurveyStatus(RenderRequest request, RenderResponse response) {
