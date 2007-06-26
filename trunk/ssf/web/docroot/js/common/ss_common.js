@@ -4734,7 +4734,12 @@ var ss_muster = new ss_Clipboard();
 	Starts a Zon meeting with given id;
 */
 function ss_launchMeeting(id) {
-	self.location.href = 'iic:meetmany?meetingtoken=' + id;
+	try {
+		self.location.href = 'iic:meetmany?meetingtoken=' + id;
+	} catch (e) {
+		alert(ss_rtc_not_configured);
+		// iic protocol unknown
+	}
 	return false;
 }
 
@@ -4761,6 +4766,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 			} else {
 				ss_launchMeeting(data.meetingToken);
 			}
+			
 		},
 		formNode: $(formId),
 		mimetype: "text/json",

@@ -56,6 +56,7 @@ var ss_forumColorsCssUrl;
 var ss_helpSystemUrl;
 var ss_addTabUrl;
 var ss_not_logged_in;
+var ss_rtc_not_configured;
 var ss_nlt_navigation_normal;
 var ss_nlt_navigation_maximize;
 var ss_confirmDeleteFolderText;
@@ -171,6 +172,9 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+	
+	// RTC client not installed
+	ss_rtc_not_configured = "<ssf:nlt tag="rtc.client.not.configured"/>";
 	
 	//Global toolbar text
 	ss_nlt_navigation_normal = "<ssf:nlt tag="navigation.normal"/>";

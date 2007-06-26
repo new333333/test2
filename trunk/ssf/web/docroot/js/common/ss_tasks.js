@@ -230,7 +230,7 @@
 			var newCompletedTD = createCompletedTD(task);
 			oldCompletedTD.parentNode.replaceChild(newCompletedTD, oldCompletedTD);	
 			
-			if (task.status == "completed" || task.status == "cancelled") {
+			if (task.status == "s3" || task.status == "s4") {
 				dojo.html.addClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			}
 		}
@@ -260,12 +260,13 @@
 			for (var i=0; i<=10; i++) {
 				completedStatusDivs[task.id][i] = document.createElement('div');
 				var tempValue = i*10;
+				var realValue = "c" + (tempValue==0?"000":(tempValue==100?"100":"0"+tempValue));
 				ss_setStyle(completedStatusDivs[task.id][i], tempValue, value);
-	
-				completedStatusDivs[task.id][i].title = completed["c" + tempValue];
+	var title = completed[realValue];
+				completedStatusDivs[task.id][i].title = completed[realValue];
 				
-				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], "c" + tempValue));
-				dojo.event.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], "c" + tempValue));
+				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], realValue));
+				dojo.event.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], realValue));
 		
 				container.appendChild(completedStatusDivs[task.id][i]);
 			}
@@ -275,7 +276,7 @@
 		}
 		
 		function ss_setStyle(obj, tempValue, borderValue) {
-			borderValueT = borderValue.replace("c", "");
+			var borderValueT = borderValue.replace("c", "") * 1;
 			if (tempValue <= borderValueT && borderValueT != 0 ) {
 				dojo.html.setClass(obj, "ss_bar_on");
 			} else {
@@ -419,7 +420,7 @@
 		
 		function createDueDateTD(task) {
 			var tdObj = document.createElement('td');
-			if (task.status == "completed" || task.status == "cancelled") {
+			if (task.status == "s3" || task.status == "s4") {
 				dojo.html.setClass(tdObj, "ss_task_completed");
 			}
 			
@@ -429,7 +430,7 @@
 		
 		function createTitleTD(task) {
 			var tdObj = document.createElement('td');
-			if (task.status == "completed" || task.status == "cancelled") {
+			if (task.status == "s3" || task.status == "s4") {
 				dojo.html.setClass(tdObj, "ss_task_completed");
 			}
 			
@@ -492,38 +493,38 @@
 		
 		// status completed => completed 100%
 		if (changed == "status") {
-			if (statusObj.options[statusObj.selectedIndex].value == "completed") {
+			if (statusObj.options[statusObj.selectedIndex].value == "s3") {
 				completedObj.selectedIndex = 10;
 			}
 		}
 		
 		// new status needs action or in process and current completed 100% => completed 90%
 		if (changed == "status") {
-			if ((statusObj.options[statusObj.selectedIndex].value == "needsAction" || statusObj.options[statusObj.selectedIndex].value == "inProcess") &&
+			if ((statusObj.options[statusObj.selectedIndex].value == "s1" || statusObj.options[statusObj.selectedIndex].value == "s2") &&
 					completedObj.options[completedObj.selectedIndex].value == "c100") {
 				completedObj.selectedIndex = 9;
 			}
 		}		
 		
 		// completed 0% => status needs action
-		if (changed == "completed") {
-			if (completedObj.options[completedObj.selectedIndex].value == "c0") {
+		if (changed == "s3") {
+			if (completedObj.options[completedObj.selectedIndex].value == "c000") {
 				statusObj.selectedIndex = 0;
 			}
 		}		
 		
 		// completed 10% - 90% => status in process
-		if (changed == "completed") {
+		if (changed == "s3") {
 			var completedValue = completedObj.options[completedObj.selectedIndex].value;
-			if (completedValue == "c10" || completedValue == "c20" || completedValue == "c30" || 
-					completedValue == "c40" || completedValue == "c50" || completedValue == "c60" || 
-					completedValue == "c70" || completedValue == "c80" || completedValue == "c90") {
+			if (completedValue == "c010" || completedValue == "c020" || completedValue == "c030" || 
+					completedValue == "c040" || completedValue == "c050" || completedValue == "c060" || 
+					completedValue == "c070" || completedValue == "c080" || completedValue == "c090") {
 				statusObj.selectedIndex = 1;
 			}
 		}
 		
 		// completed 100% => status completed
-		if (changed == "completed") {
+		if (changed == "s3") {
 			var completedValue = completedObj.options[completedObj.selectedIndex].value;
 			if (completedValue == "c100") {
 				statusObj.selectedIndex = 2;

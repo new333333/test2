@@ -147,9 +147,9 @@ public class TaskHelper {
 		SearchFilter searchFilter = new SearchFilter(true);
 		
 		if (filterType.equals(FilterType.CLOSED)) {
-			searchFilter.addTaskStatuses(new String[] {"completed", "cancelled"});
+			searchFilter.addTaskStatuses(new String[] {"s3", "s4"});
 		} else if (filterType.equals(FilterType.ACTIVE)) {
-			searchFilter.addTaskStatuses(new String[] {"needsAction", "inProcess"});
+			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		}
 		
 		DateTimeZone userTimeZone = DateTimeZone.forTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
@@ -214,7 +214,7 @@ public class TaskHelper {
 		
 		if (!newStatus.equals("")) {
 			formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
-			if (newStatus.equals("completed")) {
+			if (newStatus.equals("s3")) {
 				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
 			}
 			
@@ -222,9 +222,9 @@ public class TaskHelper {
 				String statusCurrent = TaskHelper.getTaskStatusValue(entry);
 				String completedCurrent = TaskHelper.getTaskCompletedValue(entry);
 				
-				if ((newStatus.equals("needsAction") || newStatus.equals("inProcess")) && "completed".equals(statusCurrent) &&
+				if ((newStatus.equals("s1") || newStatus.equals("s2")) && "s3".equals(statusCurrent) &&
 						"c100".equals(completedCurrent)) {
-					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c90"});
+					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
 				}
 			}
 		}
@@ -233,20 +233,20 @@ public class TaskHelper {
 			formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});
 			
 			
-			if (newCompleted.equals("c0")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"needsAction"});
+			if (newCompleted.equals("c000")) {
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s1"});
 			}
 			
-			if (newCompleted.equals("c10") || newCompleted.equals("c20") ||
-					newCompleted.equals("c30") || newCompleted.equals("c40") ||
-					newCompleted.equals("c50") || newCompleted.equals("c60") ||
-					newCompleted.equals("c70") || newCompleted.equals("c80") ||
-					newCompleted.equals("c90")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"inProcess"});
+			if (newCompleted.equals("c010") || newCompleted.equals("c020") ||
+					newCompleted.equals("c030") || newCompleted.equals("c040") ||
+					newCompleted.equals("c050") || newCompleted.equals("c060") ||
+					newCompleted.equals("c070") || newCompleted.equals("c080") ||
+					newCompleted.equals("c090")) {
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
 			}
 			
 			if (newCompleted.equals("c100")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"completed"});
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
 			}		
 
 		}

@@ -21,12 +21,207 @@
 <table class="ss_tasks_list" id="ss_tasks_list_<portlet:namespace/>">
 	<thead>
 		<tr>
-			<th><ssf:nlt tag="task.title"/></th>
-			<th><ssf:nlt tag="task.priority"/></th>
-			<th><ssf:nlt tag="task.dueDate"/></th>
-			<th><ssf:nlt tag="task.status"/></th>
+			<th>
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.title") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.title") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+			      <div class="ss_title_menu"><ssf:nlt tag="task.title"/> </div>
+			    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+			    <a/>
+			</th>
+			<th>
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="priority"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.priority") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.priority") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+			      <div class="ss_title_menu"><ssf:nlt tag="task.priority"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+			    <a/>
+			</th>
+			<th>
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="start_end#EndDate"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.dueDate") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.dueDate") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+			      <div class="ss_title_menu"><ssf:nlt tag="task.dueDate"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+			    <a/>
+			</th>
+			<th>
+				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="status"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.status") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.status") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+			      <div class="ss_title_menu"><ssf:nlt tag="task.status"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+			    <a/>
+			</th>
 			<th><ssf:nlt tag="task.assigned"/></th>
-			<th><ssf:nlt tag="task.done"/></th>
+			<th>
+				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="completed"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.done") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("task.done") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+			      <div class="ss_title_menu"><ssf:nlt tag="task.done"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+			    <a/>
+			</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -74,17 +269,10 @@
 				</td>
 				<td id="ss_tasks_<portlet:namespace/>_${entry._docId}_completed">
 					<c:if test="${! empty entry.completed}">
-						<c:forEach var="done" items="${entry.ssEntryDefinitionElementData.completed.values}">
-							<c:if test="${entry.completed == done.key}">
-								<% // ${done.value} %>
-							</c:if>
-						</c:forEach>
-						
 						<ssf:progressBar currentValue="${entry.completed}" 
 							valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
 							namespace="${renderResponse.namespace}" 
 							entryId="${entry._docId}}" />
-						
 					</c:if>			
 				</td>		
 			</tr>

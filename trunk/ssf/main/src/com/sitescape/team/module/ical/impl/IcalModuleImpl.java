@@ -553,25 +553,25 @@ public class IcalModuleImpl implements IcalModule {
 
 		int completed = 0;
 
-		if (value.contains("c0")) {
+		if (value.contains("c000")) {
 			completed = 0;
-		} else if (value.contains("c10")) {
+		} else if (value.contains("c010")) {
 			completed = 10;
-		} else if (value.contains("c20")) {
+		} else if (value.contains("c020")) {
 			completed = 20;
-		} else if (value.contains("c30")) {
+		} else if (value.contains("c030")) {
 			completed = 30;
-		} else if (value.contains("c40")) {
+		} else if (value.contains("c040")) {
 			completed = 40;
-		} else if (value.contains("c50")) {
+		} else if (value.contains("c050")) {
 			completed = 50;
-		} else if (value.contains("c60")) {
+		} else if (value.contains("c060")) {
 			completed = 60;
-		} else if (value.contains("c70")) {
+		} else if (value.contains("c070")) {
 			completed = 70;
-		} else if (value.contains("c80")) {
+		} else if (value.contains("c080")) {
 			completed = 80;
-		} else if (value.contains("c90")) {
+		} else if (value.contains("c090")) {
 			completed = 90;
 		} else if (value.contains("c100")) {
 			completed = 100;
@@ -599,13 +599,13 @@ public class IcalModuleImpl implements IcalModule {
 
 		String status = null;
 
-		if (value.contains("needsAction")) {
+		if (value.contains("s1")) {
 			status = "NEEDS-ACTION";
-		} else if (value.contains("inProcess")) {
+		} else if (value.contains("s2")) {
 			status = "IN-PROCESS";
-		} else if (value.contains("completed")) {
+		} else if (value.contains("s3")) {
 			status = "COMPLETED";
-		} else if (value.contains("cancelled")) {
+		} else if (value.contains("s4")) {
 			status = "CANCELLED";
 		} else {
 			logger.error("The task status has wrong value [" + value + "].");
@@ -633,15 +633,15 @@ public class IcalModuleImpl implements IcalModule {
 
 		int priority = 0;
 		if (value != null) {
-			if (value.contains("least")) {
+			if (value.contains("p5")) {
 				priority = 9;
-			} else if (value.contains("low")) {
+			} else if (value.contains("p4")) {
 				priority = 8;
-			} else if (value.contains("medium")) {
+			} else if (value.contains("p3")) {
 				priority = 5;
-			} else if (value.contains("high")) {
+			} else if (value.contains("p2")) {
 				priority = 2;
-			} else if (value.contains("critical")) {
+			} else if (value.contains("p1")) {
 				priority = 1;
 			}
 		}
