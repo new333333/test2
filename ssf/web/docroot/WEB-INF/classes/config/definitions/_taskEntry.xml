@@ -22,16 +22,6 @@
           <property name="required" value=""/>
         </properties>
       </item>
-      <item name="attachFiles" caption="__attach_files" type="data" id="5">
-        <properties>
-          <property name="name" value="ss_attachFile"/>
-          <property name="caption" value="__attach_files"/>
-          <property name="width" value="60"/>
-          <property name="number" value=""/>
-          <property name="storage" value=""/>
-          <property name="hide" value=""/>
-        </properties>
-      </item>
       <properties>
         <property name="name" value="form1"/>
         <property name="type" value="task"/>
@@ -211,6 +201,16 @@
             <property name="caption" value="__task_completed_100"/>
           </properties>
         </item>
+      </item>
+      <item name="attachFiles" caption="__attach_files" type="data" id="5">
+        <properties>
+          <property name="name" value="ss_attachFile"/>
+          <property name="caption" value="__attach_files"/>
+          <property name="width" value="60"/>
+          <property name="number" value=""/>
+          <property name="storage" value=""/>
+          <property name="hide" value=""/>
+        </properties>
       </item>
       <item name="sendMail" caption="__sendMail" category="entryData" id="57">
         <properties>
