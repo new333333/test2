@@ -3969,7 +3969,7 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	margin:0px 0px 0px 0px;
 }
 
-#ss_searchResult {
+#ss_searchResult, .ss_searchResult {
 	margin: 0px;
 	padding:0px;
 <c:if test="<%= isIE %>">	
@@ -3977,7 +3977,7 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	/* width: 502px;*/
 </c:if>
 }
-#ss_searchResult li {
+#ss_searchResult li,  .ss_searchResult li {
 	border-bottom: 1px solid #cccccc;
 	display:block;
 	margin:12px 12px 12px 12px;	
@@ -3989,7 +3989,6 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	padding: 3px 24px 3px 12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
-/*	width: 502px; */
 </c:if>
 }
 .ss_searchResult_numbers {
@@ -4176,28 +4175,20 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 
 .ss_savedQueriesListPane {
 	display: none;
-	position: absolute;
-	z-index: 500;
-	background-color: ${ss_form_background_color};
-	border: 1px solid ${ss_form_border_color};
+	background-color: #FFFFFF;
+	border: 1px solid #CCCCCC;
 	margin: 0;
 	padding: 6px;
-	text-align: left;
-	font-size: ${ss_style_font_smallprint};
-	font-family: ${ss_style_title_font_family};
-	color: ${ss_form_element_text_color}
+	width: 140px;
 }
 
 .ss_savedQueriesListPane ul, .ss_savedQueriesListPane li {
 	margin: 0;
 	padding: 0;
-	
 }
 
 .ss_savedQueriesListPane h1 {
-	font-size: ${ss_style_font_normalprint};
-	margin-top: 0px;
-	margin-bottom: 4px;
+	font-size: 12px;
 }
 p.ss_legend {
 	margin:6px 0px 3px 0px;
@@ -4284,12 +4275,17 @@ table.ss_statisticTable td {vertical-align:top;}
 
 div.statistic0 {background-color:#EF5612;}
 div.statistic1 {background-color:#EC9112;}
-div.statistic2 {background-color:#B5CB38;}
+div.statistic2 {background-color:#617F9F;}
 div.statistic3 {background-color:#995DB2;}
-div.statistic4 {background-color:#6B0B20;}
+div.statistic4 {background-color:#70AE55;}
 div.statistic5 {background-color:#72AF58;}
 div.statistic6 {background-color:#617F9F;}
 div.statistic7 {background-color:#547AA5;}
+
+div.ss_statusBar div.statistic0 {background-color:#EC9112;}
+div.ss_statusBar div.statistic1 {background-color:#617F9F;}
+div.ss_statusBar div.statistic2 {background-color:#70AE55;}
+div.ss_statusBar div.statistic3 {background-color:#995DB2;}
 
 div.ss_statisticBar {
 	float: left;
