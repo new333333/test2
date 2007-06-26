@@ -188,7 +188,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<portlet:namespace/>(this))">
 			<td>
 				&nbsp;&nbsp;
-			<c:if test="${ssPageCount != '1.0'}">
+			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
 			    	<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 			    </ssf:ifnotaccessible>
@@ -242,7 +242,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				<jsp:useBean id="entryPage" type="java.util.HashMap" />
 					<c:if test="${!empty entryPage.ssPageIsCurrent && entryPage.ssPageIsCurrent == 'true'}">
 						<span class="ssCurrentPage">
-							<c:if test="${ssPageCount != '1.0'}">
+							<c:if test="${ssPageCount > '1.0'}">
 							<c:out value="${entryPage.ssPageDisplayValue}"/>
 							</c:if>
 						</span>
