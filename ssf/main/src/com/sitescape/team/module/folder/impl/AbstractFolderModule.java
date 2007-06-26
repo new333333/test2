@@ -339,6 +339,27 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return reply.getId();
     }
     //no transaction    
+	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException {
+	   	meCount.incrementAndGet();
+   	
+        Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor = loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        checkAccess(entry, FolderOperation.addReply);
+        User user = RequestContextHolder.getRequestContext().getUser();
+        HistoryStamp reservation = entry.getReservation();
+        if(reservation != null && !reservation.getPrincipal().equals(user))
+        	throw new ReservedByAnotherUserException(entry);
+ 
+    	Date stamp = entry.getModification().getDate();
+		try {
+			processor.modifyEntry(folder, entry, inputData, null, null, null);
+      		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);    		
+    	} catch (WriteFilesException ex) {
+    	    //should never happen   
+    	}
+	}
+    //no transaction    
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
@@ -349,23 +370,23 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.modifyEntry);
-        
         User user = RequestContextHolder.getRequestContext().getUser();
         HistoryStamp reservation = entry.getReservation();
         if(reservation != null && !reservation.getPrincipal().equals(user))
         	throw new ReservedByAnotherUserException(entry);
         
-    	List<Attachment> atts = new ArrayList<Attachment>();
+    	List<Attachment> delAtts = new ArrayList<Attachment>();
     	if (deleteAttachments != null) {
     		for (String id: deleteAttachments) {
    				Attachment a = entry.getAttachment(id);
-   				if (a != null) atts.add(a);
+   				if (a != null) delAtts.add(a);
     		}
     	}
     	Date stamp = entry.getModification().getDate();
     	
     	try {
-    		processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo);
+    		processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo);
+       		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
     		
     	} catch (WriteFilesException ex) {
     		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);

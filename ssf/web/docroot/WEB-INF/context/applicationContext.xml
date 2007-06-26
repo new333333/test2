@@ -476,7 +476,7 @@
 
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
 		<property name="target"><ref bean="folderModuleTarget"/></property>
-		<!-- addEntry, addReply, modifyEntry provide transaction semantics at a finer
+		<!-- addEntry, addReply,addVote, modifyEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
