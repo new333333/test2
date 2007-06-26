@@ -105,6 +105,8 @@ public class EntityIndexUtils {
     public static final String BINDER_ID_FIELD = "_binderId"; // used on binder contents (not sub-binders)
     public static final String BINDERS_PARENT_ID_FIELD = "_binderParentId";  //used only on binders
     public static final String ENTRY_PARENT_ID_FIELD = "_entryParentId";
+    public static final String ENTRY_TOP_ENTRY_ID_FIELD = "_entryTopEntryId";
+    public static final String ENTRY_TOP_ENTRY_TITLE_FIELD = "_entryTopEntryTitle";
     public static final String FILENAME_FIELD = "_fileName";
     public static final String FILE_EXT_FIELD = "_fileExt";
     public static final String FILE_TYPE_FIELD = "_fileType";
@@ -123,6 +125,7 @@ public class EntityIndexUtils {
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
+    public static final String DEFAULT_NOTITLE_TITLE = "---";
         
     public static void addTitle(Document doc, DefinableEntity entry) {
         // Add the title field
@@ -206,6 +209,12 @@ public class EntityIndexUtils {
 	        	FolderEntry folderEntry = (FolderEntry)entry;
 	        	Field entryParentEntryId = new Field(EntityIndexUtils.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryParentEntryId);
+	        	Field entryTopEntryId = new Field(EntityIndexUtils.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	doc.add(entryTopEntryId);
+	        	String topEntryTitle = folderEntry.getTopEntry().getTitle().toString();
+	        	if (topEntryTitle.trim().equals("")) topEntryTitle = EntityIndexUtils.DEFAULT_NOTITLE_TITLE;
+	        	Field entryTopEntryTitle = new Field(EntityIndexUtils.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	doc.add(entryTopEntryTitle);
 	        }
     	} else if (entry instanceof User) {
         	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.UN_TOKENIZED);

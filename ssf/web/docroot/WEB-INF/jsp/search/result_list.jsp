@@ -87,6 +87,27 @@
 								<c:if test="${!empty entry._workflowStateCaption}">
 									<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> <c:out value="${entry._workflowStateCaption}" /></p>
 								</c:if>
+								<c:if test="${entry._entryType == 'reply' && !empty entry._entryTopEntryId}">
+									<p>
+									<ssf:nlt tag="searchResult.label.entry" />: <a 
+									<c:if test="${isDashboard == 'yes'}">
+										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+										    binderId="${entry._binderId}" entryId="${entry._entryTopEntryId}">
+											<ssf:param name="entityType" value="folderEntry"/><ssf:param name="newTab" value="1"/></ssf:url>"
+										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
+									</c:if>
+									<c:if test="${empty isDashboard || isDashboard == 'no'}">
+								     href="<ssf:url adapter="false" portletName="ss_forum" entryId="${entry._entryTopEntryId}" 
+								        action="view_folder_entry" actionUrl="false" >
+						    			<ssf:param name="binderId" value="${entry._binderId}"/>
+	    	  							<ssf:param name="newTab" value="1"/>
+	    	  							</ssf:url>" 
+	    	  						</c:if>
+									class="ss_parentPointer">
+									${entry._entryTopEntryTitle}
+									</a>
+									</p>
+								</c:if>
 								<c:if test="${!empty entry.binderTitle}">
 									<ssf:nlt tag="searchResult.label.binder" />: <a 
 									<c:if test="${isDashboard == 'yes'}">
@@ -147,7 +168,8 @@
 											onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}', 'yes');"
 										</c:if>
 										<c:if test="${empty isDashboard || isDashboard == 'no'}">
-									     <a href="<ssf:url adapter="false" portletName="ss_forum" entryId="${entry._docId}" action="view_folder_entry" actionUrl="false" >
+									     <a href="<ssf:url adapter="false" portletName="ss_forum" entryId="${entry._docId}" 
+									        action="view_folder_entry" actionUrl="false" >
 							    			<ssf:param name="binderId" value="${entry._binderId}"/>
 		    	  							<ssf:param name="newTab" value="1"/>
 		    	  							</ssf:url>" 
