@@ -67,6 +67,16 @@
   				</ssf:url>">
 				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewAllActive"/>
 			</a>
+			
+			<a class="ss_calMonthSelectButton" href="<ssf:url 
+  				folderId="${ssBinder.id}" 
+  				action="view_folder_listing">
+	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
+	  				<ssf:param name="tabId" value="${tab.tabId}"/>
+	  				<ssf:param name="ssTaskFilterType" value="ALL"/>
+  				</ssf:url>">
+				<input type="radio" name="ss_task_current_filter_<portlet:namespace/>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewAll"/>
+			</a>			
 		</li>
 		<li class="ss_calendarNaviBarOption" />
 	</ul>

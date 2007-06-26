@@ -44,7 +44,7 @@ public class TaskHelper {
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME = "start_end";
 	
 	public enum FilterType {
-		CLOSED, DAY, WEEK, MONTH, ACTIVE;
+		CLOSED, DAY, WEEK, MONTH, ACTIVE, ALL;
 	}
 	
 	
