@@ -401,9 +401,9 @@ public class IcalModuleImpl implements IcalModule {
 		
 		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
 
-		if (family.equals(ObjectKeys.FAMILY_TASK)) {
+		if (family != null && family.equals(ObjectKeys.FAMILY_TASK)) {
 			return ComponentType.Task;
-		} else if (family.equals(ObjectKeys.FAMILY_CALENDAR)) {
+		} else if (family != null && family.equals(ObjectKeys.FAMILY_CALENDAR)) {
 			return ComponentType.Calendar;
 		}
 		return ComponentType.Calendar;
