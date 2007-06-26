@@ -5116,6 +5116,12 @@ function ss_showSavedQueriesList(relObj, divId) {
 	var url = ss_AjaxBaseUrl;
 	url += "&operation=list_saved_queries";
 	url += "&randomNumber="+ss_random++;
+	if (dojo.html.isVisible(divId)) {
+		dojo.html.hide(divId);
+		dojo.html.setVisibility(divId, "hidden");
+		return false;
+	}
+
 	
 	var bindArgs = {
     	url: url,
@@ -5134,7 +5140,14 @@ function ss_showSavedQueriesList(relObj, divId) {
 				txt += "</ul>";
 				divObj.innerHTML = txt;
 
-				ss_toggleDivWipe(divId);
+				var box = dojo.html.abs(relObj);
+				ss_moveDivToBody(divId);
+				dojo.html.setVisibility(divId, "visible");
+				dojo.html.show(divId);
+	            dojo.html.setOpacity(divId,0);
+                dojo.html.placeOnScreen(divId, box.left + 9, box.top + 9, 0, false, "TL");
+	            dojo.html.show(divId);
+	            dojo.lfx.html.fadeIn(divId, 200).play();
 			} catch (e) {alert(e)}
 		},
 		preventCache: true,
