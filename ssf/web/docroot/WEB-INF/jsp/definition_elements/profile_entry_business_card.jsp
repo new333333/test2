@@ -22,7 +22,7 @@
 <span class="ss_largestprint ss_bold"><c:out value="${ssDefinitionEntry.name}"/></span>
 </c:if>
 <c:if test="${!empty ssDefinitionEntry.title}">
-<span class="ss_largestprint ss_bold"><c:out value="${ssDefinitionEntry.title}"/></span> 
+<span class="ss_largeprint ss_bold"><c:out value="${ssDefinitionEntry.title}"/></span> 
 <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
 </c:if>
 </div>
