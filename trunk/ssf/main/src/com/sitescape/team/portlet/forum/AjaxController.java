@@ -916,10 +916,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.BINDER, binder);
 		} else {
 			FolderEntry entry = getFolderModule().getEntry(binderId, entityId);
+			Binder binder = getBinderModule().getBinder(binderId);
 			Map tagResults = TagUtil.uniqueTags(getFolderModule().getTags(entry));
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.BINDER, binder);
 		}
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.TAG_DIV_NUMBER, tagDivNumber);
