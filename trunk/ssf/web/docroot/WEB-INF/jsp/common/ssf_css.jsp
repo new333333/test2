@@ -1813,6 +1813,7 @@ div.ss_global_toolbar_maximized {
 }
 
 div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global_toolbar_maximized div.ss_global_toolbar_favs,
+div.ss_global_toolbar_maximized div.ss_global_toolbar_myteams, 
  div.ss_global_toolbar_maximized div.ss_global_toolbar_divider, div.ss_global_toolbar_maximized div.ss_global_toolbar_quick,
  div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help,
  div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
@@ -1893,18 +1894,31 @@ div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 
 
 
-.ss_global_toolbar_myworkspace div, .ss_global_toolbar_favs div {
-	padding: 25px 5px 0px 5px;
+.ss_global_toolbar_myworkspace div, .ss_global_toolbar_favs div,
+.ss_global_toolbar_myteams div  {
+	padding: 0px 5px 0px 5px;
 	vertical-align: middle;
 }
 
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
 	position: relative;
+	width: 26px;
+	height: 26px;	
 }
+
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
 	position: relative;
+	width: 26px;
+	height: 26px;	
+}
+
+.ss_global_toolbar_myteams div {
+	background:url(<html:imagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
+	position: relative;
+	width: 26px;
+	height: 26px;	
 }
 
 .ss_global_toolbar_favs_big div {
@@ -4180,23 +4194,32 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 	font-weight: bold;
 }
 
-.ss_savedQueriesListPane {
+.ss_navbarPopupPane {
 	display: none;
-	background-color: #FFFFFF;
-	border: 1px solid #CCCCCC;
+	position: absolute;
+	z-index: 500;
+	background-color: ${ss_form_background_color};
+	border: 1px solid ${ss_form_border_color};
 	margin: 0;
 	padding: 6px;
-	width: 140px;
+	text-align: left;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	color: ${ss_form_element_text_color}
 }
 
-.ss_savedQueriesListPane ul, .ss_savedQueriesListPane li {
+.ss_navbarPopupPane ul, .ss_navbarPopupPane li {
 	margin: 0;
 	padding: 0;
+	
 }
 
-.ss_savedQueriesListPane h1 {
-	font-size: 12px;
+.ss_navbarPopupPane h1 {
+	font-size: ${ss_style_font_normalprint};
+	margin-top: 0px;
+	margin-bottom: 4px;
 }
+
 p.ss_legend {
 	margin:6px 0px 3px 0px;
 	color:#666666;
