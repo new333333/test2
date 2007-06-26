@@ -388,7 +388,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		team.setPathName(top.getPathName() + "/" + team.getTitle());
 		team.setZoneId(top.getId());
 		team.setInternalId(ObjectKeys.TEAM_ROOT_INTERNALID);
-		team.setIconName("icons/team_workspace.gif");
+		team.setIconName("/icons/team_workspace.gif");
 		List<Definition> defs = getCoreDao().loadDefinitions(top.getId(), Definition.WORKSPACE_VIEW);
 		//find the definition for a root team space
 		Definition teamDef=null;
@@ -420,7 +420,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		global.setPathName(top.getPathName() + "/" + global.getTitle());
 		global.setZoneId(top.getId());
 		global.setInternalId(ObjectKeys.GLOBAL_ROOT_INTERNALID);
-		global.setIconName("icons/workspace.gif");
+		global.setIconName("/icons/workspace.gif");
 		getDefinitionModule().setDefaultBinderDefinition(global);
 		top.addBinder(global);
 		global.setDefinitionsInherited(false);
@@ -439,7 +439,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
 		profiles.setZoneId(top.getId());
 		profiles.setInternalId(ObjectKeys.PROFILE_ROOT_INTERNALID);
-		profiles.setIconName("icons/workspace_personal.gif");
+		profiles.setIconName("/icons/workspace_personal.gif");
 		top.addBinder(profiles);
 		profiles.setDefinitionsInherited(false);
 		//generate id for top and profiles
