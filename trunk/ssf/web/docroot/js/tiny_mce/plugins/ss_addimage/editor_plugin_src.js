@@ -24,7 +24,7 @@ var TinyMCE_ssAddImagePlugin = {
 	getControlHTML : function(cn) {
 		switch (cn) {
 			case "image":
-				return tinyMCE.getButtonHTML(cn, 'lang_image_desc', '{$themeurl}/images/image.gif', 'mce_ssAddImage');
+				return tinyMCE.getButtonHTML(cn, 'lang_image_desc', '{$themeurl}/images/ss_image.gif', 'mce_ssAddImage');
 		}
 
 		return "";
