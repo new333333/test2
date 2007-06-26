@@ -5116,9 +5116,9 @@ function ss_showSavedQueriesList(relObj, divId) {
 	var url = ss_AjaxBaseUrl;
 	url += "&operation=list_saved_queries";
 	url += "&randomNumber="+ss_random++;
-	if (dojo.html.isVisible(divId)) {
-		dojo.html.hide(divId);
-		dojo.html.setVisibility(divId, "hidden");
+	if (dojo.html.isDisplayed(divId)) {
+		dojo.lfx.html.fadeHide(divId, 100).play();
+		//dojo.html.hide(divId);
 		return false;
 	}
 
@@ -5142,11 +5142,9 @@ function ss_showSavedQueriesList(relObj, divId) {
 
 				var box = dojo.html.abs(relObj);
 				ss_moveDivToBody(divId);
-				dojo.html.setVisibility(divId, "visible");
-				dojo.html.show(divId);
+				dojo.html.setDisplay(divId, "block");
 	            dojo.html.setOpacity(divId,0);
                 dojo.html.placeOnScreen(divId, box.left + 9, box.top + 9, 0, false, "TL");
-	            dojo.html.show(divId);
 	            dojo.lfx.html.fadeIn(divId, 200).play();
 			} catch (e) {alert(e)}
 		},
