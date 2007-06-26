@@ -28,12 +28,16 @@ tinyMCE.init(
   accessibility_focus: true,
 </ssf:ifaccessible>
   remove_script_host: false,
-  plugins: "table,ss_addimage,preview,contextmenu,paste,ss_wikilink", 
+  plugins: "table,<%--
+  --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
+  --%>preview,contextmenu,paste,ss_wikilink", 
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 
   theme_advanced_styles: "Large=ss_largerprint;Fine=ss_fineprint",
-  theme_advanced_buttons2_add: "pastetext,pasteword,ss_addimage,ss_wikilink,spellchecker",
+  theme_advanced_buttons2_add: "pastetext,pasteword,<%--
+  --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
+  --%>ss_wikilink,spellchecker",
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
 
