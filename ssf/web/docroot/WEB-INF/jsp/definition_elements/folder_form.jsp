@@ -69,7 +69,7 @@
 </c:if>
 <c:set var="resourceDrivers" value="<%= com.sitescape.team.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
 <div style="display:block">
-<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span></input>
+<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/mirrored_folders" /></input>
 </div>
 <input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
 <br/>
