@@ -78,7 +78,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span>
 
 <input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"> 
-<ssf:inlineHelp tag="ihelp.email.from"/><c:if test="${!ssScheduleInfo2.enabled}"><br/><ssf:nlt tag="incoming.disabled"/></c:if>
+<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" /><c:if test="${!ssScheduleInfo2.enabled}"><br/><ssf:nlt tag="incoming.disabled"/></c:if>
 
 </td>
 <td class="ss_buttonBarRight">
@@ -98,7 +98,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <tr>
 <td valign="top">
 <input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if> />
-<span class="ss_labelLeft"><ssf:nlt tag="notify.schedule.enable"/></span>
+<span class="ss_labelLeft"><ssf:nlt tag="notify.schedule.enable"/> <ssf:inlineHelp tag="ihelp.email.enableCheckBox"/></span>
 <br/>
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
