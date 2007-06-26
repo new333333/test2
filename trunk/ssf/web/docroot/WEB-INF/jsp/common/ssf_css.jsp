@@ -4175,21 +4175,30 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 }
 
 .ss_savedQueriesListPane {
-	display: none;
-	background-color: #FFFFFF;
-	border: 1px solid #CCCCCC;
+	display: block;
+	visibility: hidden;
+	position: absolute;
+	z-index: 500;
+	background-color: ${ss_form_background_color};
+	border: 1px solid ${ss_form_border_color};
 	margin: 0;
 	padding: 6px;
-	width: 140px;
+	text-align: left;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	color: ${ss_form_element_text_color}
 }
 
 .ss_savedQueriesListPane ul, .ss_savedQueriesListPane li {
 	margin: 0;
 	padding: 0;
+	
 }
 
 .ss_savedQueriesListPane h1 {
-	font-size: 12px;
+	font-size: ${ss_style_font_normalprint};
+	margin-top: 0px;
+	margin-bottom: 4px;
 }
 p.ss_legend {
 	margin:6px 0px 3px 0px;
