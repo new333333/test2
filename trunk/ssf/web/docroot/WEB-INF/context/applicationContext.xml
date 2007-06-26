@@ -251,6 +251,7 @@
 			<props>
 				<prop key="com.sitescape.team.exception.CheckedCodedException">common/defCodedError</prop>
 				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/defCodedError</prop>
+				<prop key="com.sitescape.team.module.file.WriteFilesException">common/defCodedError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
 			</props>
