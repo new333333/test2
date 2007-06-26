@@ -157,6 +157,7 @@ function setminOpener(min, id, formName, sequenceNumber) {
 function getTimeMilliseconds(formName, id) {
   var dt = new Date();
   dt.setTime(0);
+  dt.setDate(1);  // setTime(0) might be Dec 31 in your timezone.  Make it Dec 1 so setMonth doesn't roll.
   var datePrefix = id + "_"; 
   var timePrefix = id + "_" + "0_";
   var yr;
