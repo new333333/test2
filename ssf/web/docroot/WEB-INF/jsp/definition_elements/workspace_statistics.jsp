@@ -35,7 +35,7 @@
 			  					<c:forEach var="attribute" items="${definition.value}">
 			  						<c:if test="${!empty attribute.key && !empty attribute.value}">
 				  						<c:if test="${attribute.key == 'status'}">
-				  							<ssf:drawStatistic statistic="${attribute.value}" style="coloredBar" showLabel="true" showLegend="true"/>
+				  							<ssf:drawStatistic statistic="${attribute.value}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true"/>
 				  						</c:if>
 			  						</c:if>
 			  					</c:forEach>

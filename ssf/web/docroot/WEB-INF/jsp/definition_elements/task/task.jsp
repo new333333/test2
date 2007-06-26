@@ -40,7 +40,7 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 			</c:if>
 
 			<c:if test="${!empty definition.value.status}">
-				<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar" showLabel="true" showLegend="true"/></td>
+				<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true"/></td>
 			</c:if>
 		</c:if>
 	</c:forEach>
