@@ -217,7 +217,7 @@
           <property name="name" value="_sendMail"/>
           <property name="caption" value="__sendMail"/>
         </properties>
-      </item>	
+      </item>
       <item name="entryFormButtons" caption="__form_buttons" id="6">
         <properties>
           <property name="alignment" value=""/>
@@ -261,16 +261,6 @@
         <property name="caption" value="__entry_workflow"/>
       </properties>
     </item>
-    <item name="entryAttachments" caption="__entry_attachments" id="14">
-      <properties>
-        <property name="caption" value="__entry_attachments"/>
-      </properties>
-    </item>
-    <item name="entryReplies" caption="__entry_replies" id="15">
-      <properties>
-        <property name="caption" value="__entry_replies"/>
-      </properties>
-    </item>
     <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="48" formItem="selectbox">
       <properties>
         <property name="name" value="completed"/>
@@ -307,6 +297,16 @@
         <property name="caption" value="__task_time_period"/>
       </properties>
     </item>
+    <item name="entryAttachments" caption="__entry_attachments" id="14">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryReplies" caption="__entry_replies" id="15">
+      <properties>
+        <property name="caption" value="__entry_replies"/>
+      </properties>
+    </item>
   </item>
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
     <properties>
@@ -327,16 +327,6 @@
         <property name="caption" value="__entry_workflow"/>
       </properties>
     </item>
-    <item name="entryBlogAttachments" caption="__entry_attachments" id="20">
-      <properties>
-        <property name="caption" value="__entry_attachments"/>
-      </properties>
-    </item>
-    <item name="entryBlogReplies" caption="__entry_replies" id="21">
-      <properties>
-        <property name="caption" value="__entry_replies"/>
-      </properties>
-    </item>
     <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="54" formItem="user_list">
       <properties>
         <property name="name" value="assignment"/>
@@ -355,11 +345,21 @@
         <property name="caption" value="__task_status"/>
       </properties>
     </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" id="20">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryBlogReplies" caption="__entry_replies" id="21">
+      <properties>
+        <property name="caption" value="__entry_replies"/>
+      </properties>
+    </item>
   </item>
   <properties>
     <property name="name" value="_taskEntry"/>
     <property name="caption" value="__definition_default_task_entry"/>
-	<property name="family" value="task"/>
+    <property name="family" value="task"/>
     <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
   </properties>
 </definition>
