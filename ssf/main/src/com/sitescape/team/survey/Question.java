@@ -83,6 +83,16 @@ public class Question {
 		return type.name();
 	}
 	
+	public boolean isAlreadyVotedCurrentUser() {
+		Iterator<Answer> it = answers.iterator();
+		while (it.hasNext()) {
+			if (it.next().isAlreadyVotedCurrentUser()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean isAlreadyVoted() {
 		Iterator<Answer> it = answers.iterator();
 		while (it.hasNext()) {
@@ -124,7 +134,7 @@ public class Question {
 
 	public List<Answer> vote(String[] value) {
 		List<Answer> answers = new ArrayList();
-		if (isAlreadyVoted()) {
+		if (isAlreadyVotedCurrentUser()) {
 			return answers;
 		}
 		if (value == null || value.length == 0) {

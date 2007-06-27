@@ -28,6 +28,7 @@
 	var ss_nlt_surveyMoreAnswers = "<ssf:nlt tag='survey.answer.more'/>";
 	var ss_nlt_surveyQuestionHeader = "<ssf:nlt tag='survey.question.header'/>";
 	var ss_nlt_surveyConfirmRemove = "<ssf:nlt tag='survey.question.confirmRemove'/>";
+	var ss_nlt_surveyModifyNotAllowed_alreadyVoted = "<ssf:nlt tag="survey.modify.not.allowed.already.voted"/>";
 	
 	var ss_survey_${ss_namespace}_${property_name} = new ssSurvey("survey_${ss_namespace}_${property_name}", "ss_surveyForm_questions_${ss_namespace}_${property_name}");
 	dojo.addOnLoad(function () {

@@ -78,9 +78,14 @@ public class Answer {
 		this.jsonObj.put("votedBy", this.votedUserIds);
 	}
 	
-	public boolean isAlreadyVoted() {
+	public boolean isAlreadyVotedCurrentUser() {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		return this.votedUserIds != null && this.votedUserIds.contains(currentUser.getId().toString());
+	}
+	
+	public boolean isAlreadyVoted() {
+		return this.votedUserIds != null && 
+			!this.votedUserIds.isEmpty();
 	}
 	
 }

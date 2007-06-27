@@ -2363,7 +2363,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return;
 		}
 		
-		StringBuilder surveyVoteDescription = new StringBuilder();
 		Iterator formDataIt = request.getParameterMap().entrySet().iterator();
 		while (formDataIt.hasNext()) {
 			Map.Entry mapEntry = (Map.Entry)formDataIt.next();
@@ -2375,24 +2374,21 @@ public class AjaxController  extends SAbstractControllerRetry {
 					int questionIndex = -1;
 					try {
 						questionIndex = Integer.parseInt(temp[1]);
-					} catch (NumberFormatException e) {}
+					} catch (NumberFormatException e) {
+						logger.warn(e);
+					}
 					
 					if (questionIndex != -1) {
 						Question question = survey.getQuestionByIndex(questionIndex);
 						if (question != null) {
-							Iterator<Answer> answers = question.vote(value).iterator();
-							surveyVoteDescription.append(question.getQuestion()).append(": ");
-							while (answers.hasNext()) {
-								surveyVoteDescription.append(answers.next().getText());
-								if (answers.hasNext()) {
-									surveyVoteDescription.append(", ");
-								}
-							}
+							question.vote(value);
 						}
 					}
 				}
 			}
 		}
+
+		survey.setVoteRequest();
 		
 		Map formData = new HashMap(); 
 		formData.put(attributeName, surveyAttrValue.toString());
