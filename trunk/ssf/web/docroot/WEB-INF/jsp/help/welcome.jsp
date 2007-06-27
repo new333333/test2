@@ -13,39 +13,14 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <script type="text/javascript" src="<html:rootPath/>js/common/common.js"></script>
 <div class="ss_portlet_style ss_portlet">
-<div class="ss_style" style="padding:4px;">
-<h1><ssf:nlt tag="welcome.header"/></h1>
-
-
-<p><a href="javascript:;" 
-    onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');"><ssf:nlt tag="help.viewBooks.title"/></a></p>
-
-<p><a href="<html:rootPath/>help/${ssUser.locale.language}/welcome.html" 
-  onClick="javascript:return ss_openUrlInWindow(this,'help')"><ssf:nlt tag="help.welcomePortlet.clickHere"/></a></p>
-
-
-
-<!-- Peter's original code... -->
-<!--<ul style="list-style: outside;">
-  <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Quick Start Guide.pdf"
-      onClick="javascript:return ss_openUrlInWindow(this,'help')">
-      <span><ssf:nlt tag="welcome.quickTipsOnUsage"/></span></a>
-  </li>
-  <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore User Guide.pdf"
-      onClick="javascript:return ss_openUrlInWindow(this,'help')">
-      <span><ssf:nlt tag="welcome.quickStartUserGuide"/></span></a>
-  </li>
-<c:if test="${ss_showInstallationGuide}">
-  <li style="list-style-type: disc;">
-    <a href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf"
-      onClick="javascript:return ss_openUrlInWindow(this,'help')">
-      <span><ssf:nlt tag="welcome.installationGuide"/></span></a>
-  </li>
-</c:if>
-</ul>-->
-
+<div class="ss_style" style="padding:4px;" align="center">
+<img src="<html:imagesPath/>pics/getting_started.gif">
+<p>
+  <a href="javascript:;" 
+       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');">
+     <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
+   </a>
+</p>
 
 </div>
 </div>
