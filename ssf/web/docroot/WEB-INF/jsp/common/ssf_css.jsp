@@ -842,7 +842,7 @@ DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
 	text-align: center;
 	font: ${ss_style_font_largeprint};
 	text-decoration: underline;
-	color: ${ss_logo_text}
+	color: ${ss_logo_text};
 }
 
 
