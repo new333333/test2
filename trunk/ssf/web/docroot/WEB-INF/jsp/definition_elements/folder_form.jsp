@@ -62,6 +62,7 @@
 <input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
 
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.folder.MirroredFolder">
 <c:if test="${ssDefinitionEntry.mirroredAllowed}">
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.mirrored}" >
@@ -99,6 +100,7 @@
 </c:if>
 <br/>
 </c:if>
+</ssf:ifAuthorizedByLicense>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 
