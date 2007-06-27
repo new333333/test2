@@ -176,6 +176,11 @@
 --%><c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/><%-- 	
 --%><%--
   --
+  -- LOGO ICECORE COLORS
+  --
+--%><c:set var="ss_logo_text" value="#BE9E83" scope="request"/><%--
+--%><%--
+  --
   -- METADATA COLORS
   --
 --%><c:set var="ss_style_metadata_color" value="#666666" scope="request"/><%--   
