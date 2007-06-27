@@ -61,6 +61,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.folder.index.IndexUtils;
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
@@ -1354,18 +1355,20 @@ public static final String[] monthNamesShort = {
 					adapterUrl.toString(), qualifiers);		
 		}
 	
-		//Synchronize mirrored folder
-		if(folder.isMirrored() &&
-				getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
-			adminMenuCreated=true;
-			qualifiers = new HashMap();
-			qualifiers.put("showSpinner", new Boolean(true));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url, qualifiers);
+		if(LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.folder.MirroredFolder")) {
+			//Synchronize mirrored folder
+			if(folder.isMirrored() &&
+					getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
+				adminMenuCreated=true;
+				qualifiers = new HashMap();
+				qualifiers.put("showSpinner", new Boolean(true));
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url, qualifiers);
+			}
 		}
 
 		//set email
