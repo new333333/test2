@@ -122,11 +122,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	        </c:when>
 	        <c:otherwise>
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	        </c:otherwise>
           </c:choose>
       </c:forEach>
@@ -147,11 +147,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
- 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+ 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
  	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	      <c:set var="folderViewCount" value="1"/>
 	    </c:otherwise>
       </c:choose>
@@ -172,11 +172,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	        </c:when>
 	        <c:otherwise>
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	        </c:otherwise>
           </c:choose>
         </c:if>
@@ -196,11 +196,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:otherwise>
 	  </c:choose>
     </c:forEach>
@@ -251,11 +251,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 	  <c:choose>
 	    <c:when test="${empty ssWorkflowDefinitionMap[item.key]}">
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:otherwise>
 	  </c:choose>
     </c:forEach>
@@ -277,11 +277,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
- 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+ 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
  	    </c:when>
 	    <c:otherwise>
 	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:otherwise>
       </c:choose>
     </c:forEach>
@@ -299,11 +299,11 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:when>
 	    <c:otherwise>
 	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/>(${item.value.name})<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
 	    </c:otherwise>
 	  </c:choose>
     </c:forEach>

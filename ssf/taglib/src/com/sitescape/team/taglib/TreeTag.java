@@ -955,7 +955,7 @@ public class TreeTag extends TagSupport {
 		if (m.find()) {
 			result = m.group(1);
 		}
-		return "<span onMouseOver=\"ss_showBucketText(this, '" + text + "');\" >" + result + "</span>";
+		return "<span onMouseOver=\"ss_showBucketText(this, '" + text + "');\" onMouseOut=\"ss_hideBucketText();\" >" + result + "</span>";
 	}
 
    private static String join(Collection s, String delimiter) {
