@@ -263,8 +263,10 @@ function dodiff()
 </tr>
 </c:forEach>
 <tr>
-<td valign="top">
+<td valign="top" nowrap>
   <input type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
+  &nbsp;&nbsp;&nbsp;
+  <input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 </td>
 <td></td>
 </tr>

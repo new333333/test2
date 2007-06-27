@@ -587,7 +587,7 @@
 		</properties>
 		
 		<options>
-			<option name="profileForm" caption="__profile_view" initial="true" multipleAllowed="false" />
+			<option name="profileForm" caption="__profile_form" initial="true" multipleAllowed="false" />
 			<option name="profileView" caption="__profile_view" initial="true" multipleAllowed="false" />
 		</options>
 	</item>
@@ -602,6 +602,7 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
+			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -643,6 +644,7 @@
 			<exclude name="title"/>
 			<exclude name="description"/>
 			<exclude name="attachFiles"/>
+			<exclude name="workspaceIcon" />
 		</option_entry_data>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
@@ -1123,8 +1125,7 @@
 	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false" category="workspaceData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
-			  readonly="true" unique="//item[@type='data']">
-			</property>
+			  readonly="true" unique="//item[@type='data']"/>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 		</properties>
 		<jsps>
