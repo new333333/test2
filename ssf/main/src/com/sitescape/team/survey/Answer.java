@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -44,7 +45,7 @@ public class Answer {
 		} catch (JSONException e) {}
 		
 		try {
-			this.votedUserIds = Arrays.asList(jsonObj.getJSONArray("votedBy").toArray());
+			this.votedUserIds = JSONArray.toList(jsonObj.getJSONArray("votedBy"));
 		} catch (JSONException e) {}
 	}
 		
@@ -66,10 +67,9 @@ public class Answer {
 		this.votesCount++;
 		if (this.votedUserIds == null) {
 			this.votedUserIds = new ArrayList();
-			
-			User currentUser = RequestContextHolder.getRequestContext().getUser();
-			this.votedUserIds.add(currentUser.getId().toString());
 		}
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		this.votedUserIds.add(currentUser.getId().toString());
 		
 		this.jsonObj.remove("votesCount");
 		this.jsonObj.put("votesCount", this.votesCount);
