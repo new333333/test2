@@ -834,6 +834,17 @@ DIV.ss_style .clickable_item, .new_term {
 DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
     font-weight: bold;
 }
+/*Getting Started Portal*/
+
+
+.ss_getting_started {
+	font-weight: bold;
+	text-align: center;
+	font: ${ss_style_font_largeprint};
+	text-decoration: underline;
+	color: ${ss_logo_text}
+}
+
 
 /* Blogs */
 .ss_blog {
@@ -4459,7 +4470,7 @@ div.ss_bar_status {
 
 a.ss_taskStatus img, img.ss_taskStatus {
 	width: 21px;
-	height: 22px;
+	height: 21px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -4484,7 +4495,7 @@ a.ss_taskStatus_s3_u img, a.ss_taskStatus_s3_u:link img , a.ss_taskStatus_s3_u:f
 }
 
 a.ss_taskStatus_s2_u:hover img, a.ss_taskStatus_s1_u:hover img, a.ss_taskStatus_s4_u:hover img, a.ss_taskStatus_s3_u:hover img {
-	background-position: left -22px; 
+	background-position: left -21px; 
 }
 
 a.ss_taskPriority img, img.ss_taskPriority {
@@ -4588,6 +4599,7 @@ div.ssPageNavi {
 
 #ss_operation_status {
 	width: 300px;
+	
 	text-align: center;
 }
 
