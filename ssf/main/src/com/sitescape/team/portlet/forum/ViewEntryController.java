@@ -120,6 +120,9 @@ public class ViewEntryController extends  SAbstractController {
 				//Check the access rights of the user
 				if (getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
 					getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, entryId.toString());
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
 			} 
 		}
