@@ -26,10 +26,11 @@ var ss_checkTitleUrl = "<ssf:url
 	</ssf:url>";
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
-function ss_enableDisableFolderOptions(id) {
+function ss_enableDisableFolderOptions(bindersCount) {
 	var formObj = self.document.getElementById('<portlet:namespace/>fm');
 	if (document.getElementById('folderConfigIdTitle') == null) return;
-	if (id == '${ss_workspaceId}') {
+	//If there are sub-binders to be added, turn off the folder selection list
+	if (bindersCount == 0) {
 	    document.getElementById('folderConfigIdTitle').className = "ss_bold"
 	    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
 	      formObj['folderConfigId_${config.id}'].checked = false;
@@ -95,7 +96,7 @@ function ss_enableDisableFolderOptions(id) {
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
       <input type="radio" name="binderConfigId" value="${config.id}" 
       <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
-      onChange="ss_enableDisableFolderOptions('${config.internalId}')"
+      onChange="ss_enableDisableFolderOptions('${config.binderCount}')"
       ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 <br/>  
