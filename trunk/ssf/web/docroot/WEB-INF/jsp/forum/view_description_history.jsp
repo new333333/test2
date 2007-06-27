@@ -213,8 +213,12 @@ function ss_setTwo(id)
 function dodiff()
 {
 	if(ss_diffOne && ss_diffTwo) {
-		var h = document.getElementById("diff-header");
-		h.innerHTML = h.innerHTML.replace("xyzzy", ss_diffOne).replace("yxzzx", ss_diffTwo);
+		//var h = document.getElementById("diff-header");
+		//h.innerHTML = h.innerHTML.replace("xyzzy", ss_diffOne).replace("yxzzx", ss_diffTwo);
+		var vnA = document.getElementById("versionNumberA");
+		vnA.innerHTML = ss_diffOne;
+		var vnB = document.getElementById("versionNumberB");
+		vnB.innerHTML = ss_diffTwo;
 		document.getElementById("diff-title").innerHTML = diffString(document.getElementById("title"+ss_diffOne).innerHTML, document.getElementById("title"+ss_diffTwo).innerHTML);
 		document.getElementById("diff-desc").innerHTML = diffString(document.getElementById("desc"+ss_diffOne).innerHTML, document.getElementById("desc"+ss_diffTwo).innerHTML);
 		document.getElementById("diff").style.display='block';
@@ -280,8 +284,8 @@ function dodiff()
 
 <div id ="diff" style="display:none">
 <h3 id="diff-header"><ssf:nlt tag="entry.comparison">
-  <ssf:param name="value" value="xyzzy"/>
-  <ssf:param name="value" value="yxzzx"/>
+  <ssf:param name="value" value="<span id='versionNumberA'></span>"/>
+  <ssf:param name="value" value="<span id='versionNumberB'></span>"/>
   </ssf:nlt>
 </h3>
 <h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
