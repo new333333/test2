@@ -215,8 +215,20 @@ var ss_cal_CalData = {
 				Date.monthNamesShort = data.monthNamesShort;
 				Date.monthNames = data.monthNames;
 				
-				ss_cal_Grid.gridSize = data.gridSize;
-				
+				ss_cal_Grid.gridSize = data.gridSize; 
+				// TODO: move this to new method (e.g. setGridSize)
+				if (data.gridSize == 1) {
+					ss_cal_Grid.gridIncr = 1;
+				} else if (data.gridSize == 3) {
+					ss_cal_Grid.gridIncr = 3;
+				} else if (data.gridSize == 7) {
+					ss_cal_Grid.gridIncr = 7;
+				} else if (data.gridSize == 14) {
+					ss_cal_Grid.gridIncr = 14;
+				} else if (data.gridSize == 5) {
+					ss_cal_Grid.gridIncr = 7;
+				}
+
 				ss_cal_CalData.setToday(data.today);
 				ss_cal_Grid.setCurrentDate(data.currentDate);
 			
