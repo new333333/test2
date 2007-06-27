@@ -223,6 +223,20 @@ line-height: 200%; text-decoration:
 		<xsl:when test="@type = 'event'">
 			<xsl:value-of select="startDate"/>-<xsl:value-of select="endDate"/><br/>
 		</xsl:when>
+		<xsl:when test="@type = 'survey'">
+			<ul>
+			<xsl:for-each select="question">
+				<li>			
+					<xsl:value-of select="text"/>:
+					<ol>
+						<xsl:for-each select="answer">
+							<li><xsl:value-of select="text"/> (<xsl:value-of select="votesCount"/>)</li>
+						</xsl:for-each>
+					</ol>
+				</li>
+			</xsl:for-each>
+			</ul>
+		</xsl:when>
 		<xsl:otherwise>
 		<xsl:value-of select="."/><br/>
 		</xsl:otherwise>

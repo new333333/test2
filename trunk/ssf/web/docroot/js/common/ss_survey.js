@@ -14,15 +14,41 @@ if (!window.ssSurvey) {
 	
 		var that = this;
 		
+		var currentSurvey;
+		
 		this.initialize = function(currentSurveyAsJSONString) {
 			if (currentSurveyAsJSONString) {
-				var currentSurvey = dojo.json.evalJson(currentSurveyAsJSONString);
-				ss_initSurveyQuestions(currentSurvey.questions);
+				currentSurvey = dojo.json.evalJson(currentSurveyAsJSONString);
+				if (!alreadyVoted()) {
+					ss_initSurveyQuestions(currentSurvey.questions);
+				} else {
+					dojo.byId(surveyContainerId).innerHTML = "<strong>" + ss_nlt_surveyModifyNotAllowed_alreadyVoted + "</strong>";
+				}
 			}
 		}
 		
 		this.ss_newSurveyQuestion = function(type, questionText, questionIndex, withDefaultAnswers) {
-			ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers);
+			if (!alreadyVoted ()) {
+				ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers);
+			} else {
+				alert(ss_nlt_surveyModifyNotAllowed_alreadyVoted);				
+			}
+		}
+		
+		function alreadyVoted () {
+			if (currentSurvey && currentSurvey.questions) {
+				for (var i = 0; i < currentSurvey.questions.length; i++) {
+					if (currentSurvey.questions[i].answers) {
+						for (var j = 0; j < currentSurvey.questions[i].answers.length; j++) {
+							if (currentSurvey.questions[i].answers[j].votedBy &&
+									currentSurvey.questions[i].answers[j].votedBy.length > 0) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			return false;
 		}
 
 		function ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers) {
@@ -166,8 +192,8 @@ if (!window.ssSurvey) {
 								ss_toSend[ind].answers[aCounter] = {
 									'text' : dojo.byId("question"+i+"answer"+j).value
 								};
-								if (dojo.byId("question"+i+"answer"+j+"_index")) {
-									ss_toSend[ind].answers[aCounter].index = dojo.byId("question"+i+"answer"+j+"_index").value;
+								if (answerIndexInput) {
+									ss_toSend[ind].answers[aCounter].index = answerIndexInput.value;
 								}
 								aCounter++;
 							}
@@ -219,20 +245,24 @@ if (!window.ssSurvey) {
 			newOption.name = "question"+index+"answer"+lastAnswerNo;
 			newOption.id = "question"+index+"answer"+lastAnswerNo;
 			
-			var newOptionIndex = document.createElement('input');
-			newOptionIndex.setAttribute("type", "hidden");
-			newOptionIndex.id = "question"+index+"answer"+lastAnswerNo+"_index";
-			
 			if (value) {
 				newOption.value = value.text;
-				newOptionIndex.value = value.index;
 			}
+			
+			
+			
+			answer.appendChild(newOption);
+			if (value && value.index) {
+				var newOptionIndex = document.createElement('input');
+				newOptionIndex.setAttribute("type", "hidden");
+				newOptionIndex.id = "question"+index+"answer"+lastAnswerNo+"_index";
+				newOptionIndex.value = value.index;
+				answer.appendChild(newOptionIndex);
+			}
+			dojo.byId('answers'+index).appendChild(answer);
 			
 			lastAnswerNo++;
 			ss_questionsArray[index].answersNo = lastAnswerNo;
-			answer.appendChild(newOption);
-			answer.appendChild(newOptionIndex);
-			dojo.byId('answers'+index).appendChild(answer);
 		}
 	}
 	

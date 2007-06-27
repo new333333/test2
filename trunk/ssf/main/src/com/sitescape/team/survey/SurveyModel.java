@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -32,17 +33,33 @@ public class SurveyModel {
 		return this.questions;
 	}
 	
+	public boolean isAlreadyVoted() {
+		if (this.questions == null) {
+			return false;
+		}
+		
+		Iterator it = this.questions.iterator();
+		while (it.hasNext()) {
+			Question question = (Question)it.next();
+			if (question.isAlreadyVoted()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("questions", questions)
 				.toString();
 	}
 
-	public int getNextIndex() {
+	protected int getNextIndex() {
 		return ++maxLastIndex;
 	}
 	
-	public void reportIndexInUse(int index) {
+	protected void reportIndexInUse(int index) {
 		if (index > maxLastIndex) {
 			maxLastIndex = index;
 		}
@@ -57,5 +74,34 @@ public class SurveyModel {
 			}
 		}
 		return null;
+	}
+	
+	public void setVoteRequest() {
+		if (survey != null) {
+			survey.put("voteRequest", true);
+		}
+	}
+	
+	public void removeVoteRequest() {
+		if (survey == null) {
+			return;
+		}
+		
+		try {
+			survey.remove("voteRequest");
+		} catch (JSONException e) {
+		}
+	}
+	
+	public boolean isVoteRequest() {
+		if (survey == null) {
+			return false;
+		}
+		
+		try {
+			return survey.getBoolean("voteRequest");
+		} catch (JSONException e) {}
+		
+		return false;
 	}
 }

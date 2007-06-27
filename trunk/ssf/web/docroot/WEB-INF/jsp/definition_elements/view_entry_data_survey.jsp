@@ -31,7 +31,7 @@
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 
 
-<c:set var="alreadyVoted" value="false"/>
+<c:set var="alreadyVotedCurrentUser" value="false"/>
 <form id="ssSurveyForm_${property_name}" method="post">
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="false" />
@@ -39,7 +39,7 @@
 	<c:set var="hasAnyQuestion" value="true" />
 	<div class="ss_questionContainer">
 		<p><c:out value="${question.question}" escapeXml="false"/></p>
-		<c:if test="${overdue || question.alreadyVoted}">
+		<c:if test="${overdue || question.alreadyVotedCurrentUser}">
 			<ol>
 			<c:forEach var="answer" items="${question.answers}">
 				<li>
@@ -55,7 +55,7 @@
 				<p class="ss_legend"><ssf:nlt tag="survey.vote.multiple.legend"/></p>
 			</c:if>
 		</c:if>
-		<c:if test="${!overdue && !question.alreadyVoted}">
+		<c:if test="${!overdue && !question.alreadyVotedCurrentUser}">
 			<c:if test="${question.type == 'multiple'}">
 				<ol>
 				<c:forEach var="answer" items="${question.answers}">
@@ -81,7 +81,7 @@
 			</c:if>
 		</c:if>
 	</div>
-		<c:set var="alreadyVoted" value="${question.alreadyVoted}"/>
+		<c:set var="alreadyVotedCurrentUser" value="${question.alreadyVotedCurrentUser}"/>
 	</c:forEach>
 	
 	<c:choose>
@@ -90,7 +90,7 @@
 		</c:when>
 		<c:otherwise>
 			<c:choose>
-				<c:when test="${alreadyVoted}">
+				<c:when test="${alreadyVotedCurrentUser}">
 					<ssf:nlt tag="survey.vote.notAllowed.alreadyVoted"/>
 				</c:when>
 				<c:otherwise>
