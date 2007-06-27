@@ -84,7 +84,14 @@ events : [<%--
 			  	hour: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="HH"/>",
 			  	minutes: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="mm"/>"
 		  	},
-		  	text: "<ssf:escapeJavaScript value="${evim.cal_endtimestring}"/> // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm z"/> ",
+		  	<c:choose>
+			  	<c:when test="${evim.cal_starttimestring != evim.cal_endtimestring}">
+			  		text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm"/> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="HH:mm"/>",
+			  	</c:when>
+			  	<c:otherwise>
+			  		text: "",
+			  	</c:otherwise>
+			</c:choose>
 		  	dur: ${evim.cal_duration},
 		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
