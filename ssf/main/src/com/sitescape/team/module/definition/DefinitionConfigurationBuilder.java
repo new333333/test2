@@ -48,7 +48,7 @@ public class DefinitionConfigurationBuilder extends
 			String nameValue = nextItem.attributeValue("name");
 			if (nameValue == null)
 				continue;
-			String licenseValue = nextItem.attributeValue("license");
+			String licenseValue = nextItem.attributeValue("feature");
 			if (licenseValue != null && !LicenseChecker.isAuthorizedByLicense(licenseValue)) continue;
 			itemCache.put(nameValue, nextItem);
 			Iterator itJsps = nextItem.selectNodes("jsps/jsp").listIterator();
@@ -68,7 +68,9 @@ public class DefinitionConfigurationBuilder extends
       	    	
        		Map jspsObj = jspCache.get(name);
        		if (jspsObj != null) {
-       			return (String)jspsObj.get(style);
+       			String jsp = (String)jspsObj.get(style);
+       			if (jsp != null) return jsp;
+       			return (String)jspsObj.get("default");
        		}
     	
        		return null;
