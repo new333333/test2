@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.lucene.document.DateTools;
+import org.apache.lucene.document.DateTools.Resolution;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -130,7 +131,11 @@ public class SearchFilterToSearchBooleanConverter {
 	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
 	    			addEventField(block, filterTerm);    	    			
 		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
-		    		addDateRange(block, filterTerm.attributeValue(SearchFilterKeys.FilterElementName, ""), filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
+		    		String fieldName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
+		    		if (fieldName.equalsIgnoreCase(EntityIndexUtils.CREATION_DAY_FIELD) || fieldName.equalsIgnoreCase(EntityIndexUtils.MODIFICATION_DAY_FIELD)) 
+		    			addDayRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
+		    		else
+		    			addDateRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
 		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
 	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
 	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
@@ -187,7 +192,7 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 	}
    	
-	private static String formatStartDate(String dateAsString) {
+	private static String formatStartDate(String dateAsString, Resolution timeResolution) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Date d = null;
 		try {
@@ -210,10 +215,10 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 		
 		
-		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
+		return DateTools.dateToString(d, timeResolution);
 	}
 	
-	private static String formatEndDate(String dateAsString) {
+	private static String formatEndDate(String dateAsString, Resolution timeResolution) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Date d = null;
 		try {
@@ -236,20 +241,42 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 		
 		
-		return DateTools.dateToString(d, DateTools.Resolution.SECOND);
+		return DateTools.dateToString(d, timeResolution);
 	}
 		
    	private static void addDateRange(Element block, String fieldName, String startDate, String endDate) {
    		
    		Element range = block.addElement(QueryBuilder.RANGE_ELEMENT);
    		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
+   		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
    		String formattedStartDate = SearchFilterKeys.MinimumSystemDate;
    		if (startDate != null && !startDate.equals("")) {
-   			formattedStartDate = formatStartDate(startDate);
+   			formattedStartDate = formatStartDate(startDate, DateTools.Resolution.SECOND);
    		}
    		String formattedEndDate = SearchFilterKeys.MaximumSystemDate;
    		if (endDate != null && !endDate.equals("")) {
-   			formattedEndDate = formatEndDate(endDate);
+   			formattedEndDate = formatEndDate(endDate, DateTools.Resolution.SECOND);
+   		}
+   		
+		Element start = range.addElement(QueryBuilder.RANGE_START);
+		start.setText(formattedStartDate);
+   		
+		Element end = range.addElement(QueryBuilder.RANGE_FINISH);
+		end.setText(formattedEndDate);
+	}
+   	
+   	private static void addDayRange(Element block, String fieldName, String startDate, String endDate) {
+   		
+   		Element range = block.addElement(QueryBuilder.RANGE_ELEMENT);
+   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
+   		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
+   		String formattedStartDate = SearchFilterKeys.MinimumSystemDay;
+   		if (startDate != null && !startDate.equals("")) {
+   			formattedStartDate = formatStartDate(startDate, DateTools.Resolution.DAY);
+   		}
+   		String formattedEndDate = SearchFilterKeys.MaximumSystemDay;
+   		if (endDate != null && !endDate.equals("")) {
+   			formattedEndDate = formatEndDate(endDate, DateTools.Resolution.DAY);
    		}
    		
 		Element start = range.addElement(QueryBuilder.RANGE_START);
