@@ -10,8 +10,12 @@
  */
 package com.sitescape.team.module.license;
 
+import com.sitescape.team.util.SPropsUtil;
+
 public class LicenseChecker {
 
+	private static String releaseType;
+	
 	/**
 	 * Check if the license permits the specified feature to be executed within
 	 * the current runtime environment.
@@ -24,7 +28,26 @@ public class LicenseChecker {
 	 * @return
 	 */
 	public static boolean isAuthorizedByLicense(String featureName) {
-		// TODO To be rewritten to use License Manager.
-		return false; // brain-dead for now
+		// TODO This is a 100% fake implementation and must be completely 
+		// re-written to use the real License Manager.
+		
+		init();
+		
+		if(featureName.equals("com.sitescape.team.module.folder.MirroredFolder")) {
+			return authorizedUnlessOpen();
+		}
+		else {
+			return false; // brain dead and stubborn
+		}
+	}
+	
+	private static void init() {
+		if(releaseType == null) {
+			releaseType = SPropsUtil.getString("release.type", "open");
+		}
+	}
+	
+	private static boolean authorizedUnlessOpen() {
+		return !releaseType.equals("open");
 	}
 }
