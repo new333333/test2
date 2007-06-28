@@ -412,7 +412,9 @@ public class LocalLuceneSession implements LuceneSession {
 		ArrayList<String> resultTags = new ArrayList<String>();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		long startTime = System.currentTimeMillis();
+		int prefixLength = 0;
 
+		tag = tag.toLowerCase();
 		// block until updateDocs is completed
 		try {
 			synchronized (LocalLuceneSession.class) {
@@ -436,25 +438,26 @@ public class LocalLuceneSession implements LuceneSession {
 					} else {
 						userDocIds.set(0, userDocIds.size());
 					}
+					LuceneHelper.closeSearcher();
 					String[] fields = null;
 					if (type != null
 							&& type
 									.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
 						fields = new String[1];
-						fields[0] = BasicIndexUtils.ACL_TAG_FIELD;
+						fields[0] = BasicIndexUtils.ACL_TAG_FIELD_TTF;
 					} else if (type != null
 							&& type
 									.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
 						fields = new String[1];
-						fields[0] = BasicIndexUtils.TAG_FIELD;
+						fields[0] = BasicIndexUtils.TAG_FIELD_TTF;
 					} else {
 						fields = new String[2];
-						fields[0] = BasicIndexUtils.TAG_FIELD;
-						fields[1] = BasicIndexUtils.ACL_TAG_FIELD;
+						fields[0] = BasicIndexUtils.TAG_FIELD_TTF;
+						fields[1] = BasicIndexUtils.ACL_TAG_FIELD_TTF;
 					}
 					int preTagLength = 0;
 					for (int i = 0; i < fields.length; i++) {
-						if (fields[i].equalsIgnoreCase("_aclTagField")) {
+						if (fields[i].equalsIgnoreCase(BasicIndexUtils.ACL_TAG_FIELD_TTF)) {
 							String preTag = BasicIndexUtils.TAG_ACL_PRE
 									+ RequestContextHolder.getRequestContext()
 											.getUserId().toString()
@@ -485,7 +488,8 @@ public class LocalLuceneSession implements LuceneSession {
 							while (termDocs.next()) {
 								if (userDocIds.get((termDocs.doc()))) {
 									// Add term.text to results
-									results.add(term.text().substring(preTagLength));
+									prefixLength = preTagLength + term.text().indexOf(":") + 1;
+									results.add(term.text().substring(prefixLength));
 									break;
 								}
 							}
@@ -727,7 +731,7 @@ public class LocalLuceneSession implements LuceneSession {
 							userDocIds.set(doc);
 						}
 					});
-					
+					LuceneHelper.closeSearcher();
 					String field = EntityIndexUtils.NORM_TITLE;
 						TermEnum enumerator = indexReader.terms(new Term(
 								field, start));
