@@ -8,11 +8,11 @@
 <book revision="01/01/03" conformance="none,doc,no,,80" lang="en" id="icecoreinstallationguide">
 
 <bookinfo id="bookinfo" xml:base="front.xml">
- <title>ICEcore Installation &amp; Configuration Guide</title>
- <productname>&product;</productname>
+ <title>ICEcore Installation and Configuration Guide</title>
+ <productname>Teaming + Conferencing</productname>
  <productnumber>1.1</productnumber>
- <date>May, 2007</date>
- <titleabbrev>Installation &amp; Configuration Guide</titleabbrev>
+ <date>June, 2007</date>
+ <titleabbrev>Installation and Configuration Guide</titleabbrev>
  <legalnotice id="legalnotices">
   <title>Legal Notices</title>
   <para>Novell, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</para>
@@ -36,6 +36,7 @@
     <emphasis>Online Documentation:</emphasis> To access the latest online documentation for this and other Novell products, see the 
     <ulink url="http://www.novell.com/documentation">Novell Documentation Web page</ulink>.
    </member>
+   <member/>
   </simplelist>
  </legalnotice>
  <legalnotice id="trademarks">
@@ -54,42 +55,135 @@
 
 <preface id="preface" xml:base="preface.xml">
  <title>About This Guide</title>
- <para>The standard title for a Preface is &ldquo;About This Guide.&rdquo; If you are using Frame, the wording in the Preface is created by the authoring tool. For other authoring tools, copy the wording as given here. </para>
- <remark>The Preface is primarily intended to describe the manual rather than the product. In this introductory paragraph, include a brief description of the purpose of the manual, then add a list of links to the main sections (chapters&sol;appendixes) in the manual. If the manual is divided into parts, link to the parts rather than to the individual chapters. Most chapter titles are self-documenting, so you shouldn&rsquo;t need to include a description of what&rsquo;s included in the chapter.</remark>
+ <para>This guide covers the installation and initial configuration of 
+  <productname>&product;</productname>.
+ </para>
+ <bridgehead id="audience">Audience</bridgehead>
+ <para>This guide is intended for 
+  <productname>&product;</productname> administrators.
+ </para>
+ <para/>
+ <bridgehead id="b9yxnfu">Contents of this Manual</bridgehead>
+ <para>This manual provides information about the following:</para>
  <itemizedlist mark="bullet" spacing="normal">
   <listitem>
-   <para/>
+   <para>Installing 
+    <productname>&product;</productname>
+   </para>
   </listitem>
   <listitem>
-   <para/>
+   <para>Configuring 
+    <productname>&product;</productname>
+   </para>
+  </listitem>
+  <listitem>
+   <para>Controlling Access</para>
   </listitem>
  </itemizedlist>
- <bridgehead id="audience">Audience</bridgehead>
- <para>
-  <remark>Use this section to describe the intended audience. For a complex product, you might include a list of qualifications; for a user guide, you could use a single sentence like the one below.</remark> This guide is intended for GroupWise users.
- </para>
- <bridgehead id="usercomments">Feedback</bridgehead>
- <para>
-  <remark>Required for documentation posted on the Novell Documentation Web site in HTML format.</remark> We want to hear your comments and suggestions about this manual and the other documentation included with this product. Please use the User Comments feature at the bottom of each page of the online documentation, or go to www.novell.com&sol;documentation&sol;feedback.html and enter your comments there.
- </para>
- <bridgehead id="docupdates">Documentation Updates</bridgehead>
- <para>
-  <remark>Required for any documentation that could be updated between major product releases. Use it to direct users to updates for this particular book.</remark> For the most recent version of the 
-  <citetitle>XYZ Guide</citetitle>, visit the 
-  <ulink url="http://www.novell.com/documentation/gw65">XYZ Web site</ulink>.
- </para>
- <bridgehead id="additionaldoc">Additional Documentation</bridgehead>
- <para>
-  <remark>Include this section when there is more than one book for a product or technology. Use cross-references to the other books, or use a ULink to the product documentation Web site. This section isn&rsquo;t intended for links to other information sources such as deployment guides, white papers, AppNotes articles, or third-party Web sites. You should place those types of links in the body of the manual where they will be most helpful to the user.</remark> For documentation on other DirXML drivers, see the 
-  <ulink url="http://www.novell.com/documentation/lg/dirxmldrivers/index.html">Identity Manager Documentation Web site </ulink>.
- </para>
- <remark/>
- <bridgehead id="docconventions">Documentation Conventions</bridgehead>
- <para>
-  <remark>Required. In documentation that is for one platform only, the third paragraph can be deleted.</remark> In Novell documentation, a greater-than symbol (>) is used to separate actions within a step and items in a cross-reference path.
- </para>
+ <para/>
+ <bridgehead id="b9yxnfv">Conventions</bridgehead>
+ <para>This manual uses the following conventions:</para>
+ <para>A greater-than symbol (>) is used to separate actions within a step and items in a cross-reference path.</para>
  <para>A trademark symbol (&reg;, &trade;, etc.) denotes a Novell trademark. An asterisk (&ast;) denotes a third-party trademark.</para>
  <para>When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</para>
+ <informaltable frame="topbot" rowsep="1" pgwide="0">
+  <tgroup cols="2"><colspec colnum="1" colname="1" colwidth="50*"/><colspec colnum="2" colname="2" colwidth="50*"/>
+   <thead>
+    <row rowsep="1" id="b9yxhs9">
+     <entry colname="1">
+      <para>What you see</para>
+     </entry>
+     <entry colname="2">
+      <para>What it means</para>
+     </entry>
+    </row>
+   </thead>
+   <tbody>
+    <row rowsep="1" id="b9yxhsa">
+     <entry colname="1">
+      <para>Click the 
+       <guimenu>Add toolbar</guimenu> item.
+      </para>
+      <para>Click the 
+       <guimenu>Getting Started</guimenu> link.
+      </para>
+      <para>Click the 
+       <guimenu>Add Document</guimenu> menu item.
+      </para>
+      <para>Click 
+       <guimenu>Close</guimenu>.
+      </para>
+     </entry>
+     <entry colname="2">
+      <para>References to toolbar items, links, menu items, and buttons are presented in 
+       <guimenu>italic</guimenu> font.
+      </para>
+     </entry>
+    </row>
+    <row rowsep="0" id="b9yxhsb">
+     <entry colname="1">
+      <para>Type 
+       <literal>status</literal>, then press Enter.
+      </para>
+      <para>Open the 
+       <literal>ManagerGuide.pdf</literal> file.
+      </para>
+     </entry>
+     <entry colname="2">
+      <para>Text that you must type and file names are presented in 
+       <filename>Courier</filename> font.
+      </para>
+     </entry>
+    </row>
+   </tbody>
+  </tgroup>
+ </informaltable>
+ <bridgehead id="usercomments">Feedback</bridgehead>
+ <para>We want to hear your comments and suggestions about this manual and the other documentation included with this product. Please use the User Comments feature at the bottom of each page of the online documentation, or go to www.novell.com&sol;documentation&sol;feedback.html and enter your comments there.</para>
+ <para/>
+ <bridgehead id="docupdates">Documentation Updates</bridgehead>
+ <para>For the most recent version of the 
+  <productname>&product;</productname> Installation and Configuration Guide, visit the 
+  <ulink url="http://www.novell.com/documentation/">Novell Web site</ulink>.
+ </para>
+ <para/>
+ <bridgehead id="ban8e22">Additional Documentation</bridgehead>
+ <para>You may find more information in the 
+  <productname>&product;</productname> documentation, which is accessible from links within 
+  <productname>&product;</productname>: 
+ </para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>
+    <productname>&product;</productname> Help system
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>&product;</productname> Quick Start Guide
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>&product;</productname> User Guide
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>&product;</productname> Installation and Configuration Guide
+   </para>
+  </listitem>
+ </itemizedlist>
+ <para>The 
+  <productname>&product;</productname> online documents may be found from within the 
+  <productname>&product;</productname> Help system. To access the 
+  <productname>&product;</productname> Help system, after logging in (described later in this manual), click the 
+  <guimenu>Help</guimenu> link.
+ </para>
+ <para>In the 
+  <productname>&product;</productname> Help system, click the 
+  <guimenu>Getting Started Manuals</guimenu> link to access copies of the online documents listed above.
+ </para>
 </preface>
 
 <chapter id="b9vcafr" lang="en" xml:base="01_installingicecore.xml">
@@ -139,7 +233,9 @@
  </orderedlist>
  <sect1 id="b9vchn5">
   <title>Prerequisites</title>
-  <para>You need a few things before you install Aspen: </para>
+  <para>You need a few things before you install 
+   <productname>&product;</productname>: 
+  </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>A good, solid computer with lots of memory.</para>
@@ -175,9 +271,13 @@
   <para>The software takes about 250 MB.</para>
  </sect1>
  <sect1 id="b9vchn6">
-  <title>Steps for Installing Aspen</title>
+  <title>Steps for Installing 
+   <productname>&product;</productname>
+  </title>
   <procedure id="b9ptkcb">
-   <para>The following sequence shows the steps you want to follow to install Aspen:</para>
+   <para>The following sequence shows the steps you want to follow to install 
+    <productname>&product;</productname>:
+   </para>
    <step id="b9ptkcc" performance="required">
     <para>Install JDK</para>
    </step>
@@ -185,7 +285,9 @@
     <para>Install and Configure the Database</para>
    </step>
    <step id="b9ptld7" performance="required">
-    <para>Download the appropriate Aspen kit</para>
+    <para>Download the appropriate 
+     <productname>&product;</productname> kit
+    </para>
    </step>
    <step id="b9ptlge" performance="required">
     <para>Edit the installer.xml file (see <xref linkend="b9vchn9" xrefstyle="RefNoPage"/>)</para>
@@ -196,7 +298,9 @@
     </para>
    </step>
    <step id="b9ptlgm" performance="required">
-    <para>Starting and Stopping Aspen</para>
+    <para>Starting and Stopping 
+     <productname>&product;</productname>
+    </para>
    </step>
    <step id="b9ptnu8" performance="required">
     <para>Initial Login</para>
@@ -208,11 +312,20 @@
  </sect1>
  <sect1 id="b9vchn7">
   <title>Database Planning</title>
-  <para>Aspen (and LifeRay) uses a separate, dedicated, database within your database server.</para>
+  <para>
+   <productname>&product;</productname> (and LifeRay) uses a separate, dedicated, database within your database server.
+  </para>
   <para>A set of SQL configuration scripts are used to initialize the database (creating the necessary tables, etc.).</para>
-  <para>Aspen's default database is MySQL. It also supports SQLserver on Windows. (It will support Oracle.)</para>
-  <para>Aspen's database requirements are relatively modest. The bulk of the data uploaded to Aspen is stored in a file repository (see <xref linkend="b9vchn8" xrefstyle="RefNoPage"/> - the database is primarily used for storing metadata and descriptive text.</para>
-  <para>Because the amount of data stored in the database is highly sensitive to the usage patterns of Aspen (which are highly variable) there is no reliable formula for determining disk space usage, but the following can be used as a guideline:</para>
+  <para>
+   <productname>&product;</productname>'s default database is MySQL. It also supports SQLserver on Windows. (It will support Oracle.)
+  </para>
+  <para>
+   <productname>&product;</productname>'s database requirements are relatively modest. The bulk of the data uploaded to 
+   <productname>&product;</productname> is stored in a file repository (see <xref linkend="b9vchn8" xrefstyle="RefNoPage"/> - the database is primarily used for storing metadata and descriptive text.
+  </para>
+  <para>Because the amount of data stored in the database is highly sensitive to the usage patterns of 
+   <productname>&product;</productname> (which are highly variable) there is no reliable formula for determining disk space usage, but the following can be used as a guideline:
+  </para>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
     <para> numberAttachments x averageAttachmentSize = totalAttachmentSpace</para>
@@ -234,7 +347,8 @@
    </listitem>
    <listitem>
     <para>Specify 
-     <filename>root</filename> for the administrator password (or make commensurate changes in the Aspen 
+     <filename>root</filename> for the administrator password (or make commensurate changes in the 
+     <productname>&product;</productname>
      <filename>installer.xml </filename>file) 
     </para>
    </listitem>
@@ -257,7 +371,8 @@
    </listitem>
    <listitem>
     <para>Set the administrator password to “
-     <literal>sa</literal>” (or make commensurate changes in the Aspen 
+     <literal>sa</literal>” (or make commensurate changes in the 
+     <productname>&product;</productname>
      <literal>installer.xml </literal>file)
     </para>
    </listitem>
@@ -265,13 +380,18 @@
  </sect1>
  <sect1 id="b9vchn8">
   <title>File System Planning</title>
-  <para>Aspen software and configuration files are stored in a tree shared with LifeRay, Tomcat, etc. There are some temporary files also located here, but mainly locks, etc.</para>
-  <para>Aspen data is stored in the database (see <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>) and on the file system. The file system usage is divided up into several functional areas:</para>
+  <para>
+   <productname>&product;</productname> software and configuration files are stored in a tree shared with LifeRay, Tomcat, etc. There are some temporary files also located here, but mainly locks, etc.
+  </para>
+  <para>
+   <productname>&product;</productname> data is stored in the database (see <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>) and on the file system. The file system usage is divided up into several functional areas:
+  </para>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
     <para>
      <filename> filerepository</filename> - This is where all attachment files are located, so it tends to be a large consumer of disk space. The tree is roughly organized by zone, binder (folder/workspace), and entry. 
-     <filename>archiveStore</filename> - Only activated in the Enterprise version of Aspen, this is where previous versions of files are stored. The files are stored here to meet compliance and archival goals. 
+     <filename>archiveStore</filename> - Only activated in the Enterprise version of 
+     <productname>&product;</productname>, this is where previous versions of files are stored. The files are stored here to meet compliance and archival goals. 
      <filename>cachefilestore</filename> - This tree holds information derived from the attachments, such as thumbnails, scaled images, text, and HTML renderings. Depending on the nature of the attachments this tree consumes somewhat less space than the file repository (but it can, conceivably, store more).
     </para>
    </listitem>
@@ -307,7 +427,8 @@
  <sect1 id="b9vchn9">
   <title>Editing the Installer (.xml) File</title>
   <para>The 
-   <filename>installer.xml </filename>file provides the Aspen installer with detailed configuration information regarding network, memory, database, file system, e-mail, presence, and other settings. Edit this file with your specific data. An example 
+   <filename>installer.xml </filename>file provides the 
+   <productname>&product;</productname> installer with detailed configuration information regarding network, memory, database, file system, e-mail, presence, and other settings. Edit this file with your specific data. An example 
    <filename>installer.xml </filename>file is shown below:
   </para>
 
@@ -1305,9 +1426,13 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
 
  </sect1>
  <sect1 id="b9vchnb">
-  <title>Starting and Stopping Aspen</title>
+  <title>Starting and Stopping 
+   <productname>&product;</productname>
+  </title>
   <formalpara id="b9q35wr">
-   <title>Starting Aspen</title>
+   <title>Starting 
+    <productname>&product;</productname>
+   </title>
    <para/>
   </formalpara>
   <para>On Windows:</para>
@@ -1319,7 +1444,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.sh </literal>
   </para>
   <note>
-   <para>While this is dependent on your system configuration, it can take upwards of 60 seconds before Aspen/Liferay starts accepting web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software as the JSPs are recompiled as they are referenced. </para>
+   <para>While this is dependent on your system configuration, it can take upwards of 60 seconds before 
+    <productname>&product;</productname>/Liferay starts accepting web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software as the JSPs are recompiled as they are referenced. 
+   </para>
   </note>
   <formalpara id="b9q35ws">
    <title>Log Files / Monitoring</title>
@@ -1333,7 +1460,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    <literal> tail -f /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/logs/catalina.out</literal>
   </para>
   <formalpara id="b9q35wt">
-   <title>Stopping Aspen</title>
+   <title>Stopping 
+    <productname>&product;</productname>
+   </title>
    <para/>
   </formalpara>
   <para>On Windows:</para>
@@ -1347,7 +1476,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
  </sect1>
  <sect1 id="b9vchnc">
   <title>Initial Logon</title>
-  <para>After installing Aspen/Liferay you need to log in. Liferay predefines a number of accounts, including a system administrator account.</para>
+  <para>After installing 
+   <productname>&product;</productname>/Liferay you need to log in. Liferay predefines a number of accounts, including a system administrator account.
+  </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>Access your installation via the following URL: 
@@ -1363,22 +1494,30 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para>Enter the following Password: 
      <literal>test</literal>
     </para>
-    <para>This brings up the initial LifeRay portal window. There are no Aspen portlets predefined for the system administrator account.</para>
+    <para>This brings up the initial LifeRay portal window. There are no 
+     <productname>&product;</productname> portlets predefined for the system administrator account.
+    </para>
    </listitem>
    <listitem>
     <para>Click on the “
      <guimenu>Add Content</guimenu>” link in the upper-right-hand corner. This brings up a panel of portlets along the left-hand margin. Expand the “
-     <guimenu>ICEcorps</guimenu>” section and add the following portlets:
+     <productname>&product;</productname>” section and add the following portlets:
     </para>
     <itemizedlist mark="bullet" spacing="normal">
      <listitem>
-      <para> ICEcorps Administration</para>
+      <para>
+       <productname>&product;</productname> Administration
+      </para>
      </listitem>
      <listitem>
-      <para>ICEcorps Navigator</para>
+      <para>
+       <productname>&product;</productname> Navigator
+      </para>
      </listitem>
     </itemizedlist>
-    <para>The portlets are placed in the narrow column on the left side. For each of the two Aspen portlets mouse down on the title and drag them over the right-hand column above the other portlets. They move to fill the column. Click on the links to initialize the portlets.</para>
+    <para>The portlets are placed in the narrow column on the left side. For each of the two 
+     <productname>&product;</productname> portlets mouse down on the title and drag them over the right-hand column above the other portlets. They move to fill the column. Click on the links to initialize the portlets.
+    </para>
    </listitem>
   </orderedlist>
  </sect1>
@@ -1394,7 +1533,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para>LDAP/eDirectory - synchronize user account management to a corporate directory</para>
    </listitem>
   </orderedlist>
-  <para>Regardless of which method you choose it is important to realize that because Aspen is embedded within a portal, a portion of user management is delegated to the portal. For example, the portal is responsible for all user authentications. </para>
+  <para>Regardless of which method you choose it is important to realize that because 
+   <productname>&product;</productname> is embedded within a portal, a portion of user management is delegated to the portal. For example, the portal is responsible for all user authentications. 
+  </para>
   <formalpara id="b9q4fl9">
    <title>Basic User Management</title>
    <para/>
@@ -1428,7 +1569,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para>Liferay shows an extended form.</para>
    </listitem>
    <listitem>
-    <para>In the second section you can set the timezone and portal window size. While Aspen can operate in an 800x600 pixel window, we recommend the 1024x768 or Full Screen option.</para>
+    <para>In the second section you can set the timezone and portal window size. While 
+     <productname>&product;</productname> can operate in an 800x600 pixel window, we recommend the 1024x768 or Full Screen option.
+    </para>
    </listitem>
    <listitem>
     <para>Click 
@@ -1449,12 +1592,18 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     </para>
    </listitem>
   </orderedlist>
-  <para>The account is now created and ready for use. The user appears in Aspen when they log in. The first time the user logs in, Aspen creates their user workspace, including a blog, calendar, and file area.</para>
+  <para>The account is now created and ready for use. The user appears in 
+   <productname>&product;</productname> when they first log in and 
+   <productname>&product;</productname> creates their user workspace, including a blog, calendar, and file area.
+  </para>
   <formalpara id="b9q4i4m">
    <title>User Management with LDAP/eDirectory </title>
    <para/>
   </formalpara>
-  <para>If you want to use a corporate directory as the master reference for user accounts you need to configure both Liferay and Aspen in a similar manner. Aspen's LDAP configuration pages are designed to look and work in a similar fashion to Liferay, easing this task significantly. You can refer to the Liferay documentation for more detailed information, but the basic steps needed are:</para>
+  <para>If you want to use a corporate directory as the master reference for user accounts you need to configure both Liferay and 
+   <productname>&product;</productname> in a similar manner. 
+   <productname>&product;</productname>'s LDAP configuration pages are designed to look and work in a similar fashion to Liferay, easing this task significantly. You can refer to the Liferay documentation for more detailed information, but the basic steps needed are:
+  </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>Using the Liferay “
@@ -1485,7 +1634,8 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    </listitem>
    <listitem>
     <para>Using the 
-     <guimenu>ICEcorps Administration</guimenu> portlet, click on “
+     <productname>&product;</productname>
+     <guimenu>Administration</guimenu> portlet, click on “
      <guimenu>Configure LDAP</guimenu>.”
     </para>
    </listitem>
@@ -1499,7 +1649,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    </listitem>
   </orderedlist>
   <formalpara id="b9q4k6g">
-   <title>The Aspen LDAP Configuration Form</title>
+   <title>The 
+    <productname>&product;</productname> LDAP Configuration Form
+   </title>
    <para/>
   </formalpara>
   <para>This form is similar to the Liferay form but includes additional information on scheduling synchronization of all users and, optionally, groups. </para>
@@ -1550,7 +1702,8 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     </itemizedlist>
    </listitem>
    <listitem>
-    <para>Attribute mapping - This is how you map the LDAP attribute names of the user record to the Aspen internal identifiers. Syntax is: 
+    <para>Attribute mapping - This is how you map the LDAP attribute names of the user record to the 
+     <productname>&product;</productname> internal identifiers. Syntax is: 
      <literal>aspenId=ldapAttName</literal>
     </para>
    </listitem>
@@ -1599,33 +1752,49 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
  </sect1>
  <sect1 id="b9vchne">
   <title>Mail Setup</title>
-  <para>Aspen e-mail integration is divided into two primary functions:</para>
+  <para>
+   <productname>&product;</productname> e-mail integration is divided into two primary functions:
+  </para>
   <orderedlist spacing="normal">
    <listitem>
-    <para>Notification - e-mail messages generated by Aspen to inform people of events (e.g., new entries, changes) occurring within Aspen.</para>
+    <para>Notification - e-mail messages generated by 
+     <productname>&product;</productname> to inform people of events (e.g., new entries, changes) occurring within 
+     <productname>&product;</productname>.
+    </para>
    </listitem>
    <listitem>
-    <para>Posting - the processing of e-mail messages sent to Aspen with the intent of having the e-mail content added to a particular folder (as a new entry or reply).</para>
+    <para>Posting - the processing of e-mail messages sent to 
+     <productname>&product;</productname> with the intent of having the e-mail content added to a particular folder (as a new entry or reply).
+    </para>
    </listitem>
   </orderedlist>
   <formalpara id="b9q40iw">
    <title>System Configuration</title>
    <para/>
   </formalpara>
-  <para>As part of installing and configuring Aspen, the system administrator must supply information related to the address and access to the mail system. E-mail integration is not required and the level of integration is configurable. </para>
+  <para>As part of installing and configuring 
+   <productname>&product;</productname>, the system administrator must supply information related to the address and access to the mail system. E-mail integration is not required and the level of integration is configurable. 
+  </para>
   <para>The
    <filename> installer.xml </filename>file contains sections on e-mail configuration for both notification (Outbound) and posting (Inbound).
   </para>
   <para>Outbound configuration requires the basic information for generating SMTP mail messages: server, port, and optional authentication information.</para>
-  <para>Aspen posting works by the system accessing a single e-mail account (sometimes referred to as the “posting account”). Using your e-mail system, multiple e-mail addresses (aliases) can be mapped to this account. Aspen periodically reads e-mail sent to this account and apply the messages to individual folders (more on this below).</para>
-  <para>Create the account using your normal e-mail system management tools. You can configure the posting account to use either POP3 or IMAP. Aspen needs a host, port, e-mail account id and password for the posting feature to work.</para>
+  <para>
+   <productname>&product;</productname> posting works by the system accessing a single e-mail account (sometimes referred to as the “posting account”). Using your e-mail system, multiple e-mail addresses (aliases) can be mapped to this account. 
+   <productname>&product;</productname> periodically reads e-mail sent to this account and apply the messages to individual folders (more on this below).
+  </para>
+  <para>Create the account using your normal e-mail system management tools. You can configure the posting account to use either POP3 or IMAP. 
+   <productname>&product;</productname> needs a host, port, e-mail account id and password for the posting feature to work.
+  </para>
   <formalpara id="b9q41n4">
    <title>Setting up Incoming Mail schedule</title>
    <para/>
   </formalpara>
   <para>In the 
-   <guimenu>ICEcorps Administration</guimenu> portlet, click on the “
-   <guimenu>Configure site incoming email schedule</guimenu>” link. This brings up a form that instructs Aspen how when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
+   <productname>&product;</productname>
+   <guimenu> Administration</guimenu> portlet, click on the “
+   <guimenu>Configure site incoming email schedule</guimenu>” link. This brings up a form that instructs 
+   <productname>&product;</productname> how when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
   </para>
   <para>The right-hand side of the setup page lists any aliases and the folder that is using that alias. You set up the alias address to folder mapping within the folders themselves (see next section).</para>
   <formalpara id="b9q42lb">
@@ -1679,7 +1848,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
   </para>
   <para>Virtual memory configurations in excess of 2GB for large production environments are common, therefore 64-bit server systems are recommended.</para>
   <para>LifeRay has its own (non-trivial) memory pools that needs to be factored in when determining overall memory demands. These are not accounted for in great detail here.</para>
-  <para>Aspen memory usage factors:</para>
+  <para>
+   <productname>&product;</productname> memory usage factors:
+  </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>Number of sessions (users logged in)</para>
@@ -1699,7 +1870,8 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    <title>Hibernate Cache</title>
    <para/>
   </formalpara>
-  <para>Hibernate is a software framework that manages the mapping between Java objects and relational databases. Consequently, it has a sophisticated cache system that works on top of any database caching mechanisms.By default Aspen uses the 
+  <para>Hibernate is a software framework that manages the mapping between Java objects and relational databases. Consequently, it has a sophisticated cache system that works on top of any database caching mechanisms.By default 
+   <productname>&product;</productname> uses the 
    <filename>ehcache </filename>plug-in, which is a non-clustering cache manager. Fine tuning of the Hibernate cache is done through 
    <filename>ehcache.xml</filename>.
   </para>
@@ -1711,7 +1883,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
  </sect1>
  <sect1 id="b9vchng">
   <title>Document Support</title>
-  <para>When a file is uploaded into Aspen it is processed in a number of ways:</para>
+  <para>When a file is uploaded into 
+   <productname>&product;</productname> it is processed in a number of ways:
+  </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>Textual content is extracted and sent to the search engine. For some file types (e.g., word processing documents) the textual content is obvious. For others, such as graphics files, there may be little or no textual content beyond basic metadata.</para>
@@ -1723,24 +1897,34 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para>If possible, an browser-only renderable (HTML) version of the file is created. This allows people who do not have the ability to open the file with its native application to get an idea of what is in the file. The rendering is on a “best effort” basis and the level of detail and fidelity of the rendering varies greatly.</para>
    </listitem>
   </orderedlist>
-  <para>The Open and Enterprise versions of Aspen vary greatly in their ability to perform the above tasks.</para>
+  <para>The Open and Enterprise versions of 
+   <productname>&product;</productname> vary greatly in their ability to perform the above tasks.
+  </para>
   <para>The Open version uses OpenOffice to provide access to common Microsoft and OpenOffice document formats, and that is about it.</para>
   <para>The Enterprise version uses a licensed technology from the Stellent* company (now part of Oracle*) which provides processing capabilities to a wide spectrum of file types (over 200).</para>
   <formalpara id="b9q4c7t">
    <title>Editing Support</title>
    <para/>
   </formalpara>
-  <para>There are two ways of editing files stored in Aspen:</para>
+  <para>There are two ways of editing files stored in 
+   <productname>&product;</productname>:
+  </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>Download the file to your desktop. Edit the file. Upload the file to the entry (as an attachment). A new version of the attachment is created reflecting your changes. It is possible to manually “lock” the entry if you want to prevent other people from modifying any of the attached files.</para>
    </listitem>
    <listitem>
-    <para> Certain file types provide an [Edit] button which allows for “edit in place”. When available, clicking on the [Edit] button will launch a small Java applet which, in turn, launches the associated edit program for the file. The program accesses the file stored in Aspen through WebDAV and is subject to the individual file locking protocols that WebDAV provides. Saving the file (or exiting the application) creates a new version of the attachment - no interaction with the browser is needed.</para>
+    <para> Certain file types provide an [Edit] button which allows for “edit in place”. When available, clicking on the [Edit] button will launch a small Java applet which, in turn, launches the associated edit program for the file. The program accesses the file stored in 
+     <productname>&product;</productname> through WebDAV and is subject to the individual file locking protocols that WebDAV provides. Saving the file (or exiting the application) creates a new version of the attachment - no interaction with the browser is needed.
+    </para>
    </listitem>
   </orderedlist>
-  <para>Because the “edit in place” option requires the WebDAV URL support by the application, which is not universally supported by the operating systems, Aspen must be configured to know which applications are “WebDAV-aware”.</para>
-  <para>The following table (still very much a work in progress) shows the planned default configuration of file/document support in Aspen.</para>
+  <para>Because the “edit in place” option requires the WebDAV URL support by the application, which is not universally supported by the operating systems, 
+   <productname>&product;</productname> must be configured to know which applications are “WebDAV-aware”.
+  </para>
+  <para>The following table (still very much a work in progress) shows the planned default configuration of file/document support in 
+   <productname>&product;</productname>.
+  </para>
   <para/>
   <informalfigure pgwide="0">
    <mediaobject>
@@ -1762,7 +1946,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
  <orderedlist spacing="normal">
   <listitem>
    <para><xref linkend="b9vde7e" xrefstyle="SectTitleOnPage"/></para>
-   <para>After you log in to the zone-management account, you can perform all of the management tasks for the zone and the current workspace.</para>
+   <para>After you log in to the management account, you can perform all of the management tasks for 
+    <productname>&product;</productname> and the current workspace.
+   </para>
   </listitem>
   <listitem>
    <para><xref linkend="b9vdczx" xrefstyle="SectTitleOnPage"/></para>
