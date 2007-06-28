@@ -55,7 +55,7 @@ function insertLink() {
 	var target = document.forms[0].target.options[document.forms[0].target.selectedIndex].value;
 	var title = document.forms[0].linktitle.value;
 	var style_class = document.forms[0].styleSelect ? document.forms[0].styleSelect.value : "";
-	var dummy;
+	var dummy = "return ss_checkTypeOfLink(this);";
 
 	// Make anchors absolute
 	if (href.charAt(0) == '#')

@@ -5263,3 +5263,19 @@ function ss_showMyTeamsCallback(s, namespace) {
 	var targetDiv = document.getElementById(namespace + 'ss_myTeams')
 	if (targetDiv != null) targetDiv.innerHTML = s;
 }
+//Hemanth: This method will be called by the links that get created in tiny MCE
+//Refer to link.js insertLink() method.
+function ss_checkTypeOfLink(linkObj) {
+	var targetValue = linkObj.target;
+	var url = linkObj.href;
+	
+	if (targetValue == '_blank') return true;
+	else {
+		if (self.window != self.top) {
+			parent.location.href = url;
+		} else {
+			return true;
+		}
+	}
+	return false;
+}
