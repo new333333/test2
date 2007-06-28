@@ -70,6 +70,20 @@ public class PropsUtil {
 			return Integer.parseInt(val);		
 	}
 	
+	public static long getLong(String key) throws PropertyNotFoundException {
+		String val = getRequired(key);
+		
+		return Long.parseLong(val);
+	}
+	
+	public static long getLong(String key, long defValue) {
+		String val = get(key);
+		if(val == null)
+			return defValue;
+		else
+			return Long.parseLong(val);		
+	}
+	
 	public static String getDirPath(String key) throws PropertyNotFoundException, IOException {
 		String dirPath = new File(getString(key)).getAbsolutePath();
 		if(!dirPath.endsWith(File.separator))
