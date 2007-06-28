@@ -1,12 +1,106 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "ICEcore User Guide"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 21
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 13
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         411    bookinfo   ICEcore User Guide
+         361    preface    About This Manual
+        2079    chapter    Understanding    ICEcore 
+        1292    chapter    Getting Started
+         128    glossary      ICEcore Glossary 
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        4271    book       ICEcore User Guide
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       tasks_click_blog.png
+           2       intro_help_info_icons_a.png
+           2       tasks_blog_new_entry.png
+           2       tasks_mod_pers_workspace.png
+           2       intro_pers_workspace_a.png
+           2       tasks_advanced_search_link.png
+           2       intro_help_view_manuals_a.png
+           2       intro_help_panel_small_a.png
+           2       tasks_add_team_members.png
+           2       iconbuddylistoffline_n.png
+           2       iconbuddylistaway_n.png
+           2       tasks_pictures.png
+           2       intro_open_teams_tree_a.png
+           2       intro_help_more_page_numbers_a.png
+           2       intro_add_content_a.png
+           2       tasks_advanced_search_restricted.png
+           2       iconbuddylistunknown_n.png
+           2       intro_entry_overlay_a.png
+           2       intro_portlets_a.png
+           2       intro_return_portal_page_a.png
+           2       intro_link_personal_workspace_a.png
+           2       tasks_mod_profile.png
+           2       intro_navigation_portlet_a.png
+           2       intro_portal_page_a.png
+           2       intro_help_click_icon_a.png
+           2       intro_help_icon_a.png
+           2       intro_folder_navbar_a.png
+           2       intro_help_minimize_control_panel_a.png
+           2       iconbuddylistonline_n.png
+           2       intro_folder_tab_breadcrumbs_a.png
+           2       intro_entry_click_title_a.png
+           2       intro_folder_page_a.png
+           2       intro_open_team_subworkspace_a.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           8       xref
+           1       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           5       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/documentation
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+       http://www.novell.com/company/legal/patents/
+       http://www.novell.com/info/exports/
+       http://www.novell.com/documentation/
+
+========================================================================-->
+
 <book revision="01/01/03" conformance="none,doc,no,,80" lang="en" id="icecoreuserguide">
 
 <bookinfo id="bookinfo" xml:base="front.xml">
- <title>ICEcorps User Guide</title>
+ <title>ICEcore User Guide</title>
  <productname>ICEcore</productname>
  <productnumber>1.1</productnumber>
- <date>May, 2007</date>
+ <date>June, 2007</date>
  <titleabbrev>User guide</titleabbrev>
  <legalnotice id="legalnotices">
   <title>Legal Notices</title>
@@ -51,1125 +145,963 @@
 </bookinfo>
 
 <preface id="preface" xml:base="preface.xml">
- <title>About This Guide</title>
- <para>The standard title for a Preface is “About This Guide.” If you are using Frame, the wording in the Preface is created by the authoring tool. For other authoring tools, copy the wording as given here. </para>
- <remark>The Preface is primarily intended to describe the manual rather than the product. In this introductory paragraph, include a brief description of the purpose of the manual, then add a list of links to the main sections (chapters/appendixes) in the manual. If the manual is divided into parts, link to the parts rather than to the individual chapters. Most chapter titles are self-documenting, so you shouldn’t need to include a description of what’s included in the chapter.</remark>
+ <title>About This Manual</title>
+ <para>This manual provides getting-started information for new users of 
+  <productname>ICEcore</productname>. It provides a more detailed version (more pictures and explanatory text) of the information provided in the 
+  <productname>ICEcore</productname> Quick Tips.
+ </para>
+ <bridgehead id="audience">Audience</bridgehead>
+ <para>This guide is intended for all 
+  <productname>ICEcore</productname> users.
+ </para>
+ <bridgehead id="b9yxnfu">Contents of this Manual</bridgehead>
+ <para>This manual provides information about the following:</para>
  <itemizedlist mark="bullet" spacing="normal">
   <listitem>
-   <para/>
+   <para>
+    <productname>ICEcore</productname> concepts and definitions
+   </para>
   </listitem>
   <listitem>
-   <para/>
+   <para>Navigation</para>
+  </listitem>
+  <listitem>
+   <para>Getting-started procedures</para>
+  </listitem>
+  <listitem>
+   <para>Glossary</para>
   </listitem>
  </itemizedlist>
- <bridgehead id="audience">Audience</bridgehead>
- <para>
-  <remark>Use this section to describe the intended audience. For a complex product, you might include a list of qualifications; for a user guide, you could use a single sentence like the one below.</remark> This guide is intended for GroupWise users.
- </para>
- <bridgehead id="usercomments">Feedback</bridgehead>
- <para>
-  <remark>Required for documentation posted on the Novell Documentation Web site in HTML format.</remark> We want to hear your comments and suggestions about this manual and the other documentation included with this product. Please use the User Comments feature at the bottom of each page of the online documentation, or go to www.novell.com/documentation/feedback.html and enter your comments there.
- </para>
- <bridgehead id="docupdates">Documentation Updates</bridgehead>
- <para>
-  <remark>Required for any documentation that could be updated between major product releases. Use it to direct users to updates for this particular book.</remark> For the most recent version of the 
-  <citetitle>XYZ Guide</citetitle>, visit the 
-  <ulink url="http://www.novell.com/documentation/gw65">XYZ Web site</ulink>.
- </para>
- <bridgehead id="additionaldoc">Additional Documentation</bridgehead>
- <para>
-  <remark>Include this section when there is more than one book for a product or technology. Use cross-references to the other books, or use a ULink to the product documentation Web site. This section isn’t intended for links to other information sources such as deployment guides, white papers, AppNotes articles, or third-party Web sites. You should place those types of links in the body of the manual where they will be most helpful to the user.</remark> For documentation on other DirXML drivers, see the 
-  <ulink url="http://www.novell.com/documentation/lg/dirxmldrivers/index.html">Identity Manager Documentation Web site </ulink>.
- </para>
- <remark/>
- <bridgehead id="docconventions">Documentation Conventions</bridgehead>
- <para>
-  <remark>Required. In documentation that is for one platform only, the third paragraph can be deleted.</remark> In Novell documentation, a greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.
- </para>
+ <bridgehead id="b9yxnfv">Conventions</bridgehead>
+ <para>This manual uses the following conventions:</para>
+ <para>A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</para>
  <para>A trademark symbol (®, ™, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark.</para>
  <para>When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</para>
-</preface>
-
-<chapter id="b9rpufv" lang="en" xml:base="icecorequickstart.xml">
- <title> Getting Started</title>
- <para>ICEcore is a collaborative software suite that runs in a web portal. It provides a rich set of tools that facilitate working in groups:</para>
- <itemizedlist mark="bullet" spacing="normal">
-  <listitem>
-   <para> Shared and private workspaces, with built-in versioning</para>
-  </listitem>
-  <listitem>
-   <para>Real-time instant messaging and conferencing</para>
-  </listitem>
-  <listitem>
-   <para>Collaborative authoring tools (wikis, blogs, and threaded discussions) with logging</para>
-  </listitem>
-  <listitem>
-   <para>RSS and email subscriptions so users can be notified of updates</para>
-  </listitem>
-  <listitem>
-   <para>Social networking features (tags, content ratings)</para>
-  </listitem>
- </itemizedlist>
+ <informaltable frame="topbot" rowsep="1" pgwide="0">
+  <tgroup cols="2"><colspec colnum="1" colname="1" colwidth="50*"/><colspec colnum="2" colname="2" colwidth="50*"/>
+   <thead>
+    <row rowsep="1" id="b9yxhs9">
+     <entry colname="1">
+      <para>What you see</para>
+     </entry>
+     <entry colname="2">
+      <para>What it means</para>
+     </entry>
+    </row>
+   </thead>
+   <tbody>
+    <row rowsep="1" id="b9yxhsa">
+     <entry colname="1">
+      <para>Click the 
+       <guimenu>Add toolbar</guimenu> item.
+      </para>
+      <para>Click the 
+       <guimenu>Getting Started</guimenu> link.
+      </para>
+      <para>Click the 
+       <guimenu>Add Document</guimenu> menu item.
+      </para>
+      <para>Click 
+       <guimenu>Close</guimenu>.
+      </para>
+     </entry>
+     <entry colname="2">
+      <para>References to toolbar items, links, menu items, and buttons are presented in 
+       <guimenu>italic</guimenu> font.
+      </para>
+     </entry>
+    </row>
+    <row rowsep="0" id="b9yxhsb">
+     <entry colname="1">
+      <para>Type 
+       <literal>status</literal>, then press Enter.
+      </para>
+      <para>Open the 
+       <literal>ManagerGuide.pdf</literal> file.
+      </para>
+     </entry>
+     <entry colname="2">
+      <para>Text that you must type and file names are presented in 
+       <filename>Courier</filename> font.
+      </para>
+     </entry>
+    </row>
+   </tbody>
+  </tgroup>
+ </informaltable>
+ <bridgehead id="usercomments">Feedback</bridgehead>
+ <para>We want to hear your comments and suggestions about this manual and the other documentation included with this product. Please use the User Comments feature at the bottom of each page of the online documentation, or go to www.novell.com/documentation/feedback.html and enter your comments there.</para>
  <para/>
- <para>The following main sections contain the basic information you need to start using 
-  <productname>ICEcore</productname>:
+ <bridgehead id="docupdates">Documentation Updates</bridgehead>
+ <para>For the most recent version of the 
+  <productname>ICEcore</productname> Installation and Configuration Guide, visit the 
+  <ulink url="http://www.novell.com/documentation/">Novell Web site</ulink>.
+ </para>
+ <para/>
+ <bridgehead id="ban8e22">Additional Documentation</bridgehead>
+ <para>You may find more information in the 
+  <productname>ICEcore</productname> documentation, which is accessible from links within 
+  <productname>ICEcore</productname>: 
  </para>
  <itemizedlist mark="bullet" spacing="normal">
   <listitem>
-   <para><xref linkend="b9rsake" xrefstyle="SectTitleOnPage"/></para>
+   <para>
+    <productname>ICEcore</productname> Help system
+   </para>
   </listitem>
   <listitem>
-   <para><xref linkend="b9rsg6v" xrefstyle="SectTitleOnPage"/></para>
+   <para>
+    <productname>ICEcore</productname> Quick Start Guide
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>ICEcore</productname> Installation and Configuration Guide
+   </para>
   </listitem>
  </itemizedlist>
- <sect1 id="b9rsake">
-  <title>Getting Started</title>
-  <para>When you first start using ICEcore, you will see four portlets: 
-   <guimenu>ICEcore Navigator</guimenu>, the 
-   <guimenu>ICEcore Welcome</guimenu> portlet, an empty 
-   <guimenu>Buddy</guimenu> list portlet, and an empty 
-   <guimenu>Bookmarks</guimenu> portlet.
+ <para>The 
+  <productname>ICEcore</productname> online documents may be found from within the 
+  <productname>ICEcore</productname> Help system. To access the 
+  <productname>ICEcore</productname> Help system, after logging in (described later in this manual), click the 
+  <guimenu>Help</guimenu> icon.
+ </para>
+ <para>In the 
+  <productname>ICEcore</productname> Help system, click the 
+  <guimenu>Getting Started Manuals</guimenu> link to access copies of the online documents listed above.
+ </para>
+</preface>
+
+<chapter id="bamndbk" lang="en" xml:base="icecoreunderstanding.xml">
+ <title>Understanding 
+  <productname>ICEcore</productname>
+ </title>
+ <para>
+  <productname>ICEcore</productname> is collaboration software that bridges the gap between teammates working alone at their computers and working together during meetings. It provides spaces and tools for online teaming and conferencing.
+ </para>
+ <para>This chapter provides overview information about the product and about navigating its pages. If you prefer to “learn by doing,” you may want to begin by reading 
+  <link linkend="b9rpufv">the next chapter</link>. 
+ </para>
+ <para>This chapter includes:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="bamol4i" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bamolyw" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bamomb3" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <sect1 id="bamol4i">
+  <title>
+   <productname>ICEcore</productname> is Collaboration Software
+  </title>
+  <para>Collaboration using 
+   <productname>ICEcore</productname> facilitates online work, creating a “virtual meeting space.”
   </para>
-  <para>The following topics show you howe to get started using 
+  <para>Here are examples of the increase in team synergy you experience when using 
    <productname>ICEcore</productname>:
   </para>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
-    <para><xref linkend="b9rsga2" xrefstyle="SectTitleOnPage"/></para>
+    <para>You and your teammates can work together without having to be in the same room or working at your computers at the same time. Someone can post a note or document to a folder, and, at their convenience, teammates can comment on the work, review and edit files, and further develop the idea. With 
+     <productname>ICEcore</productname>, teamwork is ongoing and potentially never ending.
+    </para>
    </listitem>
    <listitem>
-    <para><xref linkend="b9rsga3" xrefstyle="SectTitleOnPage"/></para>
+    <para>When you are working online at the same time, the presence feature of 
+     <productname>ICEcore</productname> allows you to see which teammates are currently online, and allows you to start a Zon chat session, create an online meeting, make a Skype phone call, and so on.
+    </para>
    </listitem>
    <listitem>
-    <para><xref linkend="b9rsga4" xrefstyle="SectTitleOnPage"/></para>
+    <para>Ideas are formed together, interactively, with your teammates. By the time you hold that meeting in the conference room, the team has already been a part of the formation of the idea, and teammates are more likely to understand it, buy into it, and assist with its implementation. 
+     <productname>ICEcore</productname> becomes a "pre-meeting" meeting. 
+    </para>
+   </listitem>
+   <listitem>
+    <para>Documents are reviewed earlier in the process, allowing easier modifications and adjustments. 
+     <productname>ICEcore</productname> also makes it easier for more than one person to write a document, because of workflow processes that automate drafting and review, and because of 
+     <productname>ICEcore</productname> access control.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Your collaborative process is preserved and publicly accessible in 
+     <productname>ICEcore</productname>. No more searching through email folders in a frantic effort to "catch someone up" on a lengthy email discussion. To review past discussions and decisions, or to review a previous version of a document, use the powerful search capability of 
+     <productname>ICEcore</productname> to locate historical information quickly and easily. 
+    </para>
+   </listitem>
+   <listitem>
+    <para>Use various 
+     <productname>ICEcore</productname> tools in combination - a milestones folder, tasks, workflow, discussions, chat, online meetings - to track progress against goals for multiple teams working on a large project.
+    </para>
    </listitem>
   </itemizedlist>
-  <sect2 id="b9rsga2">
-   <title>Find your way around with the Navigator</title>
-   <para>The 
-    <guimenu>ICEcore Navigator</guimenu> is your navigation center. 
+  <sect2 id="bamp261">
+   <title>
+    <productname>ICEcore</productname> is Knowledge Management Software
+   </title>
+   <para>The out-of-the-box 
+    <productname>ICEcore</productname> tools alone provide powerful enhancements to online collaboration. In addition, enhanced design and use of the workspaces and tools within the product provide additional power that falls under the category of knowledge management. This power involves the intelligent development, management, access, and distribution of organizational knowledge. 
    </para>
-   <informalfigure pgwide="0">
-    <mediaobject>
-     <textobject role="description">
-      <phrase>ICEcorps Navigator</phrase>
-     </textobject>
-     <imageobject role="fo"><imagedata fileref="icecorpsnavigator_a.png" width="100%" format="PNG"/></imageobject>
-     <imageobject role="html"><imagedata fileref="icecorpsnavigator_a.png" width="100%" format="png"/></imageobject>
-    </mediaobject>
-   </informalfigure>
-   <para>Using the tools here, you can navigate to anyplace that you need to go:</para>
+   <para>Consider the following examples:</para>
    <itemizedlist mark="bullet" spacing="normal">
     <listitem>
-     <para>
-      <inlinemediaobject>
-       <textobject role="description">
-        <phrase>My workspace icon</phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="iconmyworkspace_n.png" width="15.36pt" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconmyworkspace_n.png" width="15.36pt" format="png"/></imageobject>
-      </inlinemediaobject>
-      <guimenu>My workspace</guimenu> - Click to open your personal workspace, which contains your folders, your profile, your 
-      <guimenu>Guestbook</guimenu>, and your 
-      <guimenu>Dashboard</guimenu>.
+     <para>When people use their personal workspaces to provide detailed information about themselves, the purpose of the workspace moves beyond merely contact data (phone number, email address, Zon username). It enables searches for various subject-matter experts. Also, 
+      <productname>ICEcore</productname> breaks down search results, telling you which people and folders are most relevant to the items matching your search criteria. It is easy to see pockets of expertise associated with your area of interest.
+     </para>
+    </listitem>
+    <listitem>
+     <para>Experts can rate entries in 
+      <productname>ICEcore</productname> using a five-star rating system (one star indicating the least impressive, and five stars being the most impressive).
      </para>
     </listitem>
     <listitem>
      <para>
-      <inlinemediaobject>
-       <textobject role="description">
-        <phrase>Favorites icon</phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="iconfavorite_n.png" width="17.76pt" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconfavorite_n.png" width="17.76pt" format="png"/></imageobject>
-      </inlinemediaobject>
-      <guimenu>Favorites</guimenu> - Click to open the Favorites menu, where you can add links to folders that you access frequently . From this menu, you can bookmark the current folder or workspace, navigate to any of the places that you bookmarked previously, and edit your bookmark list. (See Use Favorites for places you visit often on page 12.)
+      <productname>ICEcore</productname> provides tools - wikis (information coauthored by all participants), blogs (chronological journal entries allowing for comments from readers), workflow (an online representation of a business process), and tags (categorical labels applied to items) - which people can use to create and organize information organically, over time, in ways that map best to the team’s natural work style.
      </para>
     </listitem>
     <listitem>
      <para>
-      <guimenu>Quick Search</guimenu> - Enter any type of search term in the Quick search box and click to display a Quick search folder with the search results.
-     </para>
-     <informalfigure pgwide="0">
-      <mediaobject>
-       <textobject role="screencappath">
-        <phrase/>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="icecorebuddylist_a.png" width="95%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="icecorebuddylist_a.png" width="95%" format="png"/></imageobject>
-      </mediaobject>
-     </informalfigure>
-     <note>
-      <para>For more search options, click 
-       <guimenu>Advanced</guimenu>.
-      </para>
-     </note>
-    </listitem>
-    <listitem>
-     <para>
-      <guimenu>Find people, Find Places, Find tags -</guimenu> Use these boxes to search for a user's personal workspace, for a workspaces and folders, or for 
-      <inlinemediaobject>
-       <textobject role="description">
-        <phrase>snhfefjkwenfkjwnegkjwekjgnhkjwereg </phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="blogratingstars_a.png" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="blogratingstars_a.png" format="png"/></imageobject>
-      </inlinemediaobject> items with tags. (See Glossary.)
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      <guimenu>Workspace Tree</guimenu> - Click the plus sign to the left of the workspace tree icon 
-      <inlinemediaobject>
-       <textobject role="description">
-        <phrase>Workspace tree icon</phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="iconworkspacetree_n.png" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconworkspacetree_n.png" format="png"/></imageobject>
-      </inlinemediaobject> to expand the workspace tree:
-     </para>
-     <informalfigure pgwide="0">
-      <mediaobject>
-       <textobject role="description">
-        <phrase>Workspace tree</phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="workspacetree_a.png" width="20%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="workspacetree_a.png" width="20%" format="png"/></imageobject>
-      </mediaobject>
-     </informalfigure>
-     <para>The tree has three main branches: 
-      <guimenu>Global</guimenu>, 
-      <guimenu>Personal</guimenu> and 
-      <guimenu>Teams</guimenu>. Expand one of these categories and "drill down" until you get to the workspace you need. To collapse a branch, click the minus sign to the left of the branch: 
-      <inlinemediaobject>
-       <textobject role="description">
-        <phrase>Workspace tree icon expanded</phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="iconworkspacetreeexpanded_n.png" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconworkspacetreeexpanded_n.png" format="png"/></imageobject>
-      </inlinemediaobject>
-     </para>
-    </listitem>
-    <listitem>
-     <para>
-      <inlinemediaobject>
-       <imageobject role="fo"><imagedata fileref="iconhelp_n.png" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconhelp_n.png" format="png"/></imageobject>
-      </inlinemediaobject>
-      <guimenu>Help</guimenu> - Click to enter 
-      <guimenu>Help mode</guimenu>, then click on one of the help icons 
-      <inlinemediaobject>
-       <imageobject role="fo"><imagedata fileref="iconhelp_n.png" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconhelp_n.png" format="png"/></imageobject>
-      </inlinemediaobject> that appear to access context-sensitive help. To exit 
-      <guimenu>Help</guimenu> mode, click 
-      <guimenu>Exit Help mode</guimenu>, or click anywhere except on another help icon.
+      <productname>ICEcore</productname> provides work-area snapshots, called accessories, that provide a summary snapshot into a potentially large amount of information, highlighting the most relevant information. For example, the accessory can present entries submitted by an expert on a given subject matter, or it can summarize task-completion information by providing a milestones overview.
      </para>
     </listitem>
    </itemizedlist>
   </sect2>
-  <sect2 id="b9rsga3">
-   <title>Explore the Welcome Portlet</title>
-   <para>The 
-    <guimenu>Welcome</guimenu> portlet provides links to 
-    <productname>ICEcore</productname> help topics and the ICEcore user guides in PDF format.
-   </para>
-   <informalfigure pgwide="0">
-    <mediaobject>
-     <textobject role="description">
-      <phrase>ICEcorps Welcome portlet</phrase>
-     </textobject>
-     <imageobject role="fo"><imagedata fileref="welcomeportlet_a.png" width="100%" format="PNG"/></imageobject>
-     <imageobject role="html"><imagedata fileref="welcomeportlet_a.png" width="100%" format="png"/></imageobject>
-    </mediaobject>
-   </informalfigure>
-   <para>If you remove this portlet, you can get it back by clicking 
-    <guimenu>Add Content</guimenu> at the top of your screen and selecting 
-    <guimenu>Welcome</guimenu> from the 
-    <productname>ICEcore</productname> menu.
-   </para>
-  </sect2>
-  <sect2 id="b9rsga4">
-   <title>Buddy List</title>
-   <para>Your 
-    <guimenu>Buddy List </guimenu>helps you keep track of people that you'll need to contact frequently. Add people to your buddy list right away to make it easy to get in touch with them.
-   </para>
-   <procedure id="b9rrt57">
-    <step id="b9rrt58" performance="required">
-     <para>Click 
-      <guimenu>Add buddies</guimenu>.
-     </para>
-    </step>
-    <step id="b9rrt7g" performance="required">
-     <para>Start typing a name in either the 
-      <guimenu>Users</guimenu> or the 
-      <guimenu>Groups</guimenu> box. A dropdown list displays matching names. Select a name and click 
-      <guimenu>Apply</guimenu> to add the name to your list.
-     </para>
-    </step>
-    <step id="b9rrt7j" performance="required">
-     <para>Add as many names as you want, clicking 
-      <guimenu>Apply</guimenu> after each one.
-     </para>
-    </step>
-    <step id="b9rrt7l" performance="required">
-     <para>To remove a name, click the 
-      <guimenu>x</guimenu> icon after the name; then click 
-      <guimenu>Apply</guimenu>.
-     </para>
-    </step>
-    <step id="b9rrt7o" performance="required">
-     <para>When you finish, click 
-      <guimenu>Close</guimenu>.
-     </para>
-    </step>
-   </procedure>
-   <informalfigure pgwide="0">
-    <mediaobject>
-     <imageobject role="fo"><imagedata fileref="icecorebuddylist_a.png" width="100%" format="PNG"/></imageobject>
-     <imageobject role="html"><imagedata fileref="icecorebuddylist_a.png" width="100%" format="png"/></imageobject>
-    </mediaobject>
-   </informalfigure>
-   <sect3 id="b9rs9ms">
-    <title>Tips for using your buddy list</title>
-    <itemizedlist mark="bullet" spacing="normal">
-     <listitem>
-      <para> The icon to the left of a buddy name indicates presence.</para>
-      <itemizedlist mark="bullet" spacing="normal">
-       <listitem>
-        <para>
-         <inlinemediaobject>
-          <imageobject role="fo"><imagedata fileref="iconbuddylistonline_n.png" format="PNG"/></imageobject>
-          <imageobject role="html"><imagedata fileref="iconbuddylistonline_n.png" format="png"/></imageobject>
-         </inlinemediaobject> Online
-        </para>
-       </listitem>
-       <listitem>
-        <para>
-         <inlinemediaobject>
-          <imageobject role="fo"><imagedata fileref="iconbuddylistaway_n.png" format="PNG"/></imageobject>
-          <imageobject role="html"><imagedata fileref="iconbuddylistaway_n.png" format="png"/></imageobject>
-         </inlinemediaobject> Away
-        </para>
-       </listitem>
-       <listitem>
-        <para>
-         <inlinemediaobject>
-          <imageobject role="fo"><imagedata fileref="iconbuddylistoffline_n.png" format="PNG"/></imageobject>
-          <imageobject role="html"><imagedata fileref="iconbuddylistoffline_n.png" format="png"/></imageobject>
-         </inlinemediaobject> Offline
-        </para>
-       </listitem>
-       <listitem>
-        <para>
-         <inlinemediaobject>
-          <imageobject role="fo"><imagedata fileref="iconbuddylistunknown_n.png" format="PNG"/></imageobject>
-          <imageobject role="html"><imagedata fileref="iconbuddylistunknown_n.png" format="png"/></imageobject>
-         </inlinemediaobject> Unknown status
-        </para>
-       </listitem>
-      </itemizedlist>
-     </listitem>
-     <listitem>
-      <para>To communicate with a buddy, click his or her presence icon and select an option from the menu that appears.</para>
-     </listitem>
-     <listitem>
-      <para>To update presence information, click Refresh.</para>
-     </listitem>
-     <listitem>
-      <para>To view a buddy's contact information or to navigate to his or her workspace, click the buddy's name.</para>
-     </listitem>
-    </itemizedlist>
-   </sect3>
-   <sect3 id="b9rsf64">
-    <title>Folder Bookmarks Portlet</title>
-    <para>The Folder bookmarks portlet is a tool to help you keep track of updates to important folders. You can select which folders you want to watch, and you can display the number of unread entries in each. This tool is displayed on the sign-in page, so you can attend to any issues in the displayed folders immediately. If there are unread entries, you can open the folder to read them by clicking the folder name:</para>
-    <informalfigure pgwide="0">
-     <mediaobject>
-      <imageobject role="fo"><imagedata fileref="folderbookmarksfolder_n.png" width="100%" format="PNG"/></imageobject>
-      <imageobject role="html"><imagedata fileref="folderbookmarksfolder_n.png" width="100%" format="png"/></imageobject>
-     </mediaobject>
-    </informalfigure>
-   </sect3>
-  </sect2>
  </sect1>
- <sect1 id="b9rsg6v">
-  <title>Configuring Your Workspace</title>
-  <para>The following procedures show you how to configure your 
-   <productname>ICEcore</productname> workspace:
+ <sect1 id="bamolyw">
+  <title>Navigating 
+   <productname>ICEcore</productname>
+  </title>
+  <para>Your administrator provides you with the web address (URL) used to access 
+   <productname>ICEcore</productname>, and your 
+   <productname>ICEcore</productname> username and password. 
   </para>
-  <itemizedlist mark="bullet" spacing="normal">
-   <listitem>
-    <para><xref linkend="b9rska6" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rssgt" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-  </itemizedlist>
-  <sect2 id="b9rska6">
-   <title>Add info and a photo to your profile</title>
-   <procedure id="b9rsl44">
-    <step id="b9rsl45" performance="required">
-     <para>In the Navigator, click 
-      <inlinemediaobject>
-       <textobject role="description">
-        <phrase>My workspace icon</phrase>
-       </textobject>
-       <imageobject role="fo"><imagedata fileref="iconmyworkspace_n.png" width="15.36pt" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconmyworkspace_n.png" width="15.36pt" format="png"/></imageobject>
-      </inlinemediaobject>
-      <guimenu>My workspace</guimenu> to go to your personal workspace.
-     </para>
-    </step>
-    <step id="b9rsl83" performance="required">
-     <para>On the menu bar for your workspace, click 
-      <guimenu>Modify profile</guimenu>.
-     </para>
-    </step>
-    <step id="b9rsl84" performance="required">
-     <para>Fill in any missing information. This information is visible to others and is also used by 
-      <productname>ICEcore</productname> and Zon to contact you by phone, email, or instant messaging.
-     </para>
-    </step>
-    <step id="b9rsl86" performance="required">
-     <para>Add a picture. Click 
-      <guimenu>Browse</guimenu>… to look for a graphics file on your computer.
-     </para>
-    </step>
-    <step id="b9rsl88" performance="required">
-     <para>Click 
-      <guimenu>OK</guimenu> to close the form. 
-     </para>
-     <para>The information is updated, and the picture is displayed in the 
-      <guimenu>Photo box</guimenu> of your profile.
-     </para>
-     <informalfigure pgwide="0">
-      <mediaobject>
-       <imageobject role="fo"><imagedata fileref="profilephotobox_a.png" width="95%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="profilephotobox_a.png" width="95%" format="png"/></imageobject>
-      </mediaobject>
-     </informalfigure>
-    </step>
-   </procedure>
-  </sect2>
-  <sect2 id="b9rssgt">
-   <title>Remove an image from your profile</title>
-   <procedure id="b9rssm0">
-    <step id="b9rssm1" performance="required">
-     <para>To remove an image from your profile, click 
-      <guimenu>Modify profile</guimenu>. 
-     </para>
-    </step>
-    <step id="b9rsssq" performance="required">
-     <para> Select the check box next to each image you want to delete.</para>
-     <informalfigure pgwide="0">
-      <mediaobject>
-       <imageobject role="fo"><imagedata fileref="profileimageremovalscreen_a.png" width="78%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="profileimageremovalscreen_a.png" width="78%" format="png"/></imageobject>
-      </mediaobject>
-     </informalfigure>
-    </step>
-    <step id="b9rssst" performance="required">
-     <para>Click OK. The images are removed.</para>
-    </step>
-   </procedure>
-   <sect3 id="b9rsuzs">
-    <title>Tips for adding photos to your profile</title>
-    <itemizedlist mark="bullet" spacing="normal">
-     <listitem>
-      <para> You can add as many images as you like, but you must add them one-by-one.</para>
-     </listitem>
-     <listitem>
-      <para>Thumbnails of all of your images are displayed beneath your contact information. As you move the mouse over a thumbnail, the image is displayed in the 
-       <guimenu>Photo box</guimenu>. To replace the original image in the 
-       <guimenu>Photo box</guimenu> with one of your other images, click on the image thumbnail.
+  <para>After you sign in, you see a portal page, as shown on the following page.</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_portal_page_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_portal_page_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>A portal page is a web page that presents different applications in subsections within the page. On the Internet, you may have seen pages (for example, Google and Yahoo) that have subsections presenting a weather report that is local to your area, stock quotes that are of interest to you, the local time, and more. </para>
+  <para>Within the portal page, separate applications can run within sections called portlets. The following picture shows two highlighted portlets on the page:</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_portlets_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_portlets_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <sect2 id="banmcg1">
+   <title>The Default 
+    <productname>ICEcore</productname> Portlets
+   </title>
+   <para>By default, when you sign in for the first time, 
+    <productname>ICEcore</productname> presents four portlets:
+   </para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <formalpara id="banmk7p">
+      <title>The welcome portlet</title>
+      <para>- Provides quick access to getting-started PDF manuals or to a getting-started web page.</para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwqz">
+      <title>The navigation portlet</title>
+      <para>- Gives you quick access to any workspace or folder you want to view in 
+       <productname>ICEcore</productname>, to your personal workspace or to your favorite places, to items that match search criteria, or to get Help for the current page.
       </para>
-     </listitem>
-     <listitem>
-      <para>To add a picture from the Internet, first save it to your computer.</para>
-     </listitem>
-    </itemizedlist>
-   </sect3>
-  </sect2>
- </sect1>
- <sect1 id="b9rsvrp">
-  <title>Creating Content</title>
-  <para>The following topics show you how create content in 
-   <productname>ICEcore</productname>:
-  </para>
-  <itemizedlist mark="bullet" spacing="normal">
-   <listitem>
-    <para><xref linkend="b9rsw6j" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt5vj" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt5vk" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt5vl" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt5vm" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt47b" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt559" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt5gd" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-   <listitem>
-    <para><xref linkend="b9rt5rq" xrefstyle="SectTitleOnPage"/></para>
-   </listitem>
-  </itemizedlist>
-  <sect2 id="b9rsw6j">
-   <title>Folder types</title>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr0">
+      <title>The buddy-list portlet</title>
+      <para>- Displays the presence of people you designate as your buddies, and provides tools you can use to contact your buddies.</para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr1">
+      <title>The bookmark portlet</title>
+      <para>- Provides links to important workspaces and folders, and can provide a count of new or changed entries in folders.</para>
+     </formalpara>
+    </listitem>
+   </itemizedlist>
    <para>
-    <productname>ICEcore</productname> workspaces can contain a wide range of content. A unique feature of ICEcore is that it provides a variety of folder types, each designed for a particular type of content. For example, ICEcore has specially designed folders for wikis, blogs, discussion forums, file folders, and calendars, to name just a few.
+    <productname>ICEcore</productname> provides additional portlets that you can add to your portal page. To add another portlet, click the 
+    <guimenu>Add Content</guimenu> link, as follows:
    </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_add_content_a.png" width="85%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_add_content_a.png" width="85%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>The portal software displays a list of all available portlets. Click the
+    <guimenu>ICEcore</guimenu> link to see a list, which includes the non-default 
+    <productname>ICEcore portlets, as follows:</productname>
+   </para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <formalpara id="banms4r">
+      <title>Blog summary</title>
+      <para>- Provides a snapshot of journal entries from a blog of your choice within the 
+       <productname>ICEcore installation.</productname>
+      </para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr2">
+      <title>Guestbook summary</title>
+      <para>- Provides a snapshot of entries from your choice of 
+       <productname>ICEcore</productname> guest book.
+      </para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr3">
+      <title>
+       <productname>ICEcore</productname> administration
+      </title>
+      <para>- Displays tools for 
+       <productname>ICEcore</productname> administrators.
+      </para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr4">
+      <title>Photo gallery</title>
+      <para>- Presents pictures from a your choice of 
+       <productname>ICEcore</productname> photo gallery.
+      </para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr5">
+      <title>Search</title>
+      <para>- Presents items, potentially anywhere within 
+       <productname>ICEcore</productname>, that match search criteria.
+      </para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr6">
+      <title>Wiki home page</title>
+      <para>- Displays a summary of the home page of an 
+       <productname>ICEcore</productname> wiki forum.
+      </para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banmwr7">
+      <title>Workspace tree</title>
+      <para>- Allows you to go to any place you want within 
+       <productname>ICEcore</productname>. (The navigation portlet also contains a workspace tree.)
+      </para>
+     </formalpara>
+    </listitem>
+   </itemizedlist>
   </sect2>
-  <sect2 id="b9rt5vj">
-   <title>Blogs</title>
-   <para>A blog is an online journal in whose entries are displayed in reverse chronological order (newest on top). It differs from wikis and discussion forums in that it generally written by a single author, with comments by members of his or her reading audience.</para>
-   <sect3 id="b9rswgt">
-    <title>Start a blog in your workspace</title>
-    <procedure id="b9rt88y">
-     <step id="b9rt88z" performance="required">
-      <para>Click 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>My workspace icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="iconmyworkspace_n.png" width="15.36pt" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="iconmyworkspace_n.png" width="15.36pt" format="png"/></imageobject>
-       </inlinemediaobject>
-       <guimenu>My workspace</guimenu> to display your personal workspace.
+  <sect2 id="banmwr8">
+   <title>The Navigation Portlet</title>
+   <para>Here is a picture of the navigation portlet:</para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_navigation_portlet_a.png" width="100%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_navigation_portlet_a.png" width="100%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>The navigation portlet provides the following tools:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <formalpara id="banmy1d">
+      <title>My-workspace icon</title>
+      <para>- Displays your personal workspace, which contains your contact information, pictures, a personal blog, and much more.</para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banp6j7">
+      <title>Favorites icon</title>
+      <para>- Displays a tool you can use to list links to your favorite workspaces and folders, and to access them quickly.</para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banp6j8">
+      <title>Search</title>
+      <para>- Allows you to perform different types of searches, either for any times or for specific items (people, places, and 
+       <guimenu>tags</guimenu>, which are categories that you and your administrators apply to items in 
+       <productname>ICEcore</productname>).
       </para>
-     </step>
-     <step id="b9rt8db" performance="required">
-      <para>On the workspace menu bar, click 
-       <guimenu>Manage this workspace</guimenu>.
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banp6j9">
+      <title>Help</title>
+      <para>- Provides access to the getting-started PDF books, and provides Help on various sections of the portal page.</para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banp6ja">
+      <title>My-teams drop-down list</title>
+      <para>- Lists links to all of the workspaces and folders in which you are designated as being a team member.</para>
+     </formalpara>
+    </listitem>
+    <listitem>
+     <formalpara id="banp6jb">
+      <title>Workspace tree</title>
+      <para>- Allows you to go to any workspace or folder within the 
+       <productname>ICEcore</productname> installation. Clicking a plus sign (
+       <guimenu>+</guimenu>) expands a portion of the tree, and clicking a minus sign (
+       <guimenu>-</guimenu>) hides that portion of the hierarchy.
       </para>
-     </step>
-     <step id="b9rt8de" performance="required">
-      <para>Select 
-       <guimenu>Add new folder</guimenu>. A form for adding a folder appears.
-      </para>
-     </step>
-     <step id="b9rt8dg" performance="required">
-      <para>In the 
-       <guimenu>Title</guimenu> field, enter a title for your blog.
-      </para>
-     </step>
-     <step id="b9rt8di" performance="required">
-      <para>Under 
-       <guimenu>Select a template</guimenu>, choose 
-       <guimenu>Blog folder</guimenu>.
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="workspaceaddblog_a.png" width="95%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="workspaceaddblog_a.png" width="95%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9rt8dl" performance="required">
-      <para>Click 
-       <guimenu>OK</guimenu> to create the blog.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
+     </formalpara>
+    </listitem>
+   </itemizedlist>
+   <para>Notice the items in the workspace tree. By default, there are four workspaces in the tree. 
+    <guimenu>Workspaces</guimenu> are starting places for individuals and teams who want to do a certain type of work. By default, there are four organizational workspaces in the workspace tree: the Workspaces page, and subworkspaces entitled “Global workspaces,” “Personal workspaces,” and “Team workspaces.”
+   </para>
+   <para>Global workspaces are containers for information available to anyone in your organization. Personal workspaces are pages that of personal information (such as contact information, a personal blog, a personal calendar, and more) for everyone in your organizaiton. Team workspaces are work areas specific to teams within your organization.</para>
   </sect2>
-  <sect2 id="b9rt5vk">
-   <title>Add your first blog entry</title>
-   <procedure id="b9rta04">
-    <step id="b9rta05" performance="required">
-     <para>On the menu bar above the blog calendar, click 
-      <guimenu>New</guimenu> and select 
+  <sect2 id="banmwr9">
+   <title>Viewing a Workspace or Folder</title>
+   <para>There are numerous ways to view a workspace or folder in 
+    <productname>ICEcore</productname>. When getting started, the two most common methods are using the workspace tree or the search tools, both of which are located in the navigation portlet.
+   </para>
+   <para>For example, you can click on plus sign (
+    <guimenu>+</guimenu>) next to the 
+    <guimenu>Team workspaces </guimenu>link in the workspace tree to see available team workspaces. Using our sample installation, clicking on the plus sign next to the 
+    <guimenu>Team workspaces</guimenu> link causes the workspace tree to appear as follows:
+   </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_open_teams_tree_a.png" width="88%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_open_teams_tree_a.png" width="88%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>The “Team workspaces” workspace contains a single subworkspace, whose title is “
+    <productname>ICEcore</productname> Admin Issues.” Again, using our example installation, clicking on the plus sign next to “
+    <productname>ICEcore</productname>
+    <productname/> Admin Issues” workspace title displays the contents of that workspace, as follows:
+   </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_open_team_subworkspace_a.png" width="68%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_open_team_subworkspace_a.png" width="68%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>The “
+    <productname>ICEcore</productname> Admin Issues” workspace contains three folders. Folders can, in turn, contain subfolders, which further organize information. None of the folders in the previous picture contain subfolders.
+   </para>
+   <para>To view a folder, click its linked title. In the last picture, if you click on the 
+    <guimenu>Discussion</guimenu> link in the “
+    <productname>ICEcore</productname> Admin Issues” workspace, 
+    <productname/>ICEcore leaves the portal page and displays the Discussion folder in its own page in your browser window, as shown on the following page.
+   </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_folder_page_a.png" width="100%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_folder_page_a.png" width="100%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>Notice that ICEcore displays most of the navigation-portlet tools at the top of the workspace or folder page:</para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_folder_navbar_a.png" width="85%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_folder_navbar_a.png" width="85%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>By default, a folder lists only a summary of the discussion entries. To view the entire entry, click the title of the entry, as shown on the following page.</para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_entry_click_title_a.png" width="75%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_entry_click_title_a.png" width="75%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>By default, ICEcore displays the discussion entry as an overlay, on top of the current page, as follows:</para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_entry_overlay_a.png" width="100%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_entry_overlay_a.png" width="100%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+  </sect2>
+  <sect2 id="banmwra">
+   <title>Using Tabs</title>
+   <para>When displaying workspace and folder pages, 
+    <productname>ICEcore</productname> uses tabs to organize your work. Also, 
+    <productname>ICEcore</productname> also provides quick access from anywhere in the product to any other place. This picture shows the folder tab and the workspace tree:
+   </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_folder_tab_breadcrumbs_a.png" width="96%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_folder_tab_breadcrumbs_a.png" width="96%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>
+    <productname>ICEcore</productname> creates a tab that is named using the title of the currently displayed folder (“Discussion”). If you click on items in the workspace tree, 
+    <productname>ICEcore</productname> opens the new place in a separate tab. So, for example, if you click this link:
+   </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_link_personal_workspace_a.png" width="66%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_link_personal_workspace_a.png" width="66%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <para>
+    <productname/>ICEcore displays the personal workspace page in a new tab, as shown in the picture on the next page. To delete a tab, click the Close icon (
+    <guimenu>X</guimenu>) in the upper-right corner of the tab.
+   </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_pers_workspace_a.png" width="86%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_pers_workspace_a.png" width="86%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+  </sect2>
+  <sect2 id="banmwrb">
+   <title>Returning to the Portal Page</title>
+   <para>To return to the portal page you saw when you first signed in, click either the portal-page home link or the left-arrow icon on the workspace or folder page. In the example, the portal-page home link is “Home,” but your administrator may rename it. Consider the following:</para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="intro_return_portal_page_a.png" width="100%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="intro_return_portal_page_a.png" width="100%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+  </sect2>
+ </sect1>
+ <sect1 id="bamomb3">
+  <title>Using 
+   <productname>ICEcore</productname> Help
+  </title>
+  <para>
+   <productname>ICEcore</productname> has a fun and unique way of helping you to learn about product pages and tools. The portal page and all pages that include the navigation bar include a Help icon, as follows:
+  </para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_icon_a.png" width="86%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_icon_a.png" width="86%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>When you click this icon, 
+   <productname>ICEcore</productname> dims the page and presents information icons (
+   <guimenu>i</guimenu>) next to each section of that page for which there exists Help information, as follows:
+  </para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_info_icons_a.png" width="80%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_info_icons_a.png" width="80%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>Click the information icon over the portion of the page about which you want more information. When you do, ICEcore displays a panel of information. When you are finished reading the panel, click the Close icon (
+   <guimenu>X</guimenu>) in the upper-right corner of the panel to close it. The picture on the following page shows a panel of Help information and its Close icon.
+  </para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_click_icon_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_click_icon_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>Some Help topics have more than one page of information. To move to and from pages in a Help topic, you can use the linked numbers and arrows at the bottom of the page, as follows:</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_more_page_numbers_a.png" width="97%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_more_page_numbers_a.png" width="97%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>The Help topic in the previous picture has three pages. Either click the number of the page you want to view, or click the double-right arrow to move forward, and the double-left arrow to move backward through the topic.</para>
+  <para>You might find that you want more room on the page to click information icons. If you choose, you can minimize the Help-mode control panel. To do so, click the right-arrow icon, as shown on the following page.</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_minimize_control_panel_a.png" width="76%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_minimize_control_panel_a.png" width="76%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>After you minimize the control panel, it appears as follows:</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_panel_small_a.png" width="63%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_panel_small_a.png" width="63%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>To view getting-started PDF manuals, click 
+   <guimenu>View manuals</guimenu> in the control panel. To exit Help mode, either click the Close icon (
+   <guimenu>X</guimenu>) in the control panel, or click anywhere on the page other than the control panel or a Help panel. Consider the following:
+  </para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="intro_help_view_manuals_a.png" width="75%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="intro_help_view_manuals_a.png" width="75%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+ </sect1>
+</chapter>
+
+<chapter id="b9rpufv" lang="en" xml:base="icecorequickstart.xml">
+ <title> Getting Started</title>
+ <para>This chapter provides procedures for new users who are learning how to use 
+  <productname>ICEcore</productname>.
+ </para>
+ <para>This chapter contains the following information:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="banp85h" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="banqhqb" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="banqhqf" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="banqhql" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="banqhqm" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <sect1 id="banp85h">
+  <title>Set Up Your Buddy List</title>
+  <para>One of the most powerful tools in ICEcore is the presence icon. This icon tells you whether a person is online or not, and enables quick communication with that person (sending an instant message using Zon, initiating an instant meeting using Zon, sending email, placing a call using Skype, and so on).</para>
+  <para>To take advantage of the presence indicator, you can set up the buddy-list portlet, so that you see presence indicators for your buddies as soon as you sign in.</para>
+  <para>To set up your buddy list, do the following:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Sign in with your username and password.</para>
+   </listitem>
+   <listitem>
+    <para>Locate the ICEcore Buddy List portlet.</para>
+    <para>If you do not see the portlet, click 
+     <guimenu>Add Content </guimenu>in the upper-right corner of the portal page, click 
+     <guimenu>ICEcore</guimenu>, click 
+     <guimenu>ICEcore Buddy List</guimenu>, and click 
+     <guimenu>Finished</guimenu>. ICEcore adds the buddy-list portlet to the portal page. If you require more assistance, see your ICEcore administrator.
+    </para>
+   </listitem>
+   <listitem>
+    <para>In the portlet, click 
+     <guimenu>Add buddies</guimenu>.
+    </para>
+    <para>ICEcore displays the “Configure buddy list” page.</para>
+   </listitem>
+   <listitem>
+    <para>Begin typing the first few letters of either the first or last name of a buddy, and then click their linked name in the drop-down list.</para>
+    <para>ICEcore includes the “type to find” feature. As you type characters in some of the text boxes in the product, ICEcore displays a list of items (in this case, people) that match what you have typed so far. As you type, ICEcore adjusts the list to continue matching as you type.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Apply</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Repeat Step 4 as often as necessary to add all of your buddies.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Closed</guimenu>.
+    </para>
+   </listitem>
+  </orderedlist>
+  <para>ICEcore displays your buddies in the buddy-list portlet, with a presence icon next to each name. To remove a buddy from the portlet, follow the same steps, view the “Configure buddy list” page, and click the Delete icon (
+   <guimenu>X</guimenu>) next to the buddy whose name you want to remove from the portlet.
+  </para>
+  <para>To ensure that the buddy-list portlet is showing you the most up-to-date presence information for your buddies, click 
+   <guimenu>Refresh</guimenu> in the portlet.
+  </para>
+  <para/>
+  <para/>
+  <para/>
+  <bridgehead id="banpue8">Tips for using buddy lists</bridgehead>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Here are the descriptions of the presence icons:</para>
+    <para>
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="iconbuddylistonline_n.png" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="iconbuddylistonline_n.png" format="png"/></imageobject>
+     </inlinemediaobject> Online
+    </para>
+    <para>
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="iconbuddylistaway_n.png" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="iconbuddylistaway_n.png" format="png"/></imageobject>
+     </inlinemediaobject> Away (recently online)
+    </para>
+    <para>
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="iconbuddylistoffline_n.png" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="iconbuddylistoffline_n.png" format="png"/></imageobject>
+     </inlinemediaobject> Offline
+    </para>
+    <para>
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="iconbuddylistunknown_n.png" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="iconbuddylistunknown_n.png" format="png"/></imageobject>
+     </inlinemediaobject> Status unknown 
+    </para>
+   </listitem>
+   <listitem>
+    <para>To communicate with a buddy, click the presence icon and select a communication method.</para>
+   </listitem>
+   <listitem>
+    <para>To view a buddy’s personal workspace (which includes contact information), clicked the linked name of your buddy.</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="banqhqb">
+  <title>Modify Your Personal Workspace</title>
+  <para>As your next step, create a fun personal “home” page within ICEcore.</para>
+  <sect2 id="banpibc">
+   <title>Add Basic Information</title>
+   <para>To edit and add contact information and other basic information, do the following:</para>
+   <orderedlist spacing="normal">
+    <listitem>
+     <para>On the portal page, click the “My workspace” icon in the navigation portlet.</para>
+    </listitem>
+    <listitem>
+     <para>Click 
+      <guimenu>Manage this workspace</guimenu> &gt; 
+      <guimenu>Modify this workspace</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="tasks_mod_pers_workspace.png" width="81%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="tasks_mod_pers_workspace.png" width="81%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <para>ICEcore displays a form that allows you to add a personal description to your personal workspace. Consider composing a welcome message for those visiting your page. You can also select a different icon for display in the workspace tree next to the link for your personal workspace tree.</para>
+    </listitem>
+    <listitem>
+     <para>Click 
+      <guimenu>OK</guimenu>.
+     </para>
+    </listitem>
+   </orderedlist>
+  </sect2>
+  <sect2 id="banqhqc">
+   <title>Edit Contact Information and Add Pictures</title>
+   <para>Do the following:</para>
+   <orderedlist spacing="normal">
+    <listitem>
+     <para>Click the 
+      <guimenu>Modify profile</guimenu> button, as shown on the next page.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="tasks_mod_profile.png" width="85%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="tasks_mod_profile.png" width="85%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <para>ICEcore displays a form that allows you to alter contact information and upload pictures.</para>
+    </listitem>
+    <listitem>
+     <para>Alter any contact information that is missing or incorrect.</para>
+    </listitem>
+    <listitem>
+     <para>Click the 
+      <guimenu>Browse</guimenu> button to upload a picture.
+     </para>
+     <para>ICEcore places the filename of the picture in the “Current pictures” section of the page. Repeat this step until you have uploaded all the pictures you want into your personal workspace.</para>
+    </listitem>
+   </orderedlist>
+   <para>ICEcore displays the first picture in your list as the main picture in your personal workspace, and displays all other pictures as thumbnails (smaller versions) in a bar below the contact information, as follows:</para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="tasks_pictures.png" width="46%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="tasks_pictures.png" width="46%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
+   <bridgehead id="banq7qc">Tips for uploading images</bridgehead>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>You may add as many pictures as you like, but you must add them one by one.</para>
+    </listitem>
+    <listitem>
+     <para>On the form used to upload pictures, click the up-arrow and down-arrow icons to move the picture up or down in the list.</para>
+    </listitem>
+    <listitem>
+     <para>When viewing any personal workspace, move your cursor over the thumbnail pictures in the bar below the contact information, and ICEcore displays that picture as the main picture in the contact-information section.</para>
+    </listitem>
+    <listitem>
+     <para>Click any of the pictures in the personal workspace, and ICEcore displays a full-size version of that picture.</para>
+    </listitem>
+    <listitem>
+     <para>To delete a picture, view the form used to upload pictures, check the box next to the picture or pictures you want to delete, and click 
+      <guimenu>OK</guimenu>.
+     </para>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+  <sect2 id="banqhqd">
+   <title>Add a Blog Entry</title>
+   <orderedlist spacing="normal">
+    <listitem>
+     <para>View your personal workspace page.</para>
+    </listitem>
+    <listitem>
+     <para>In the workspace tree on your personal-workspace page, click the plus sign (
+      <guimenu>+</guimenu>) next to your name.
+     </para>
+    </listitem>
+    <listitem>
+     <para>Click 
+      <guimenu>Blog</guimenu>, as shown in the picture on the following page.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="tasks_click_blog.png" width="63%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="tasks_click_blog.png" width="63%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </listitem>
+    <listitem>
+     <para>Click 
+      <guimenu>New</guimenu> &gt; 
       <guimenu>Blog entry</guimenu>.
      </para>
      <informalfigure pgwide="0">
       <mediaobject>
-       <imageobject role="fo"><imagedata fileref="workspaceblognewentry_a.png" width="95%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="workspaceblognewentry_a.png" width="95%" format="png"/></imageobject>
+       <imageobject role="fo"><imagedata fileref="tasks_blog_new_entry.png" width="60%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="tasks_blog_new_entry.png" width="60%" format="png"/></imageobject>
       </mediaobject>
      </informalfigure>
-    </step>
-    <step id="b9rta1o" performance="required">
-     <para>In the entry form that appears, enter the title of your blog entry in the 
-      <guimenu>Title</guimenu> box.
+    </listitem>
+    <listitem>
+     <para>Provide a title, and type your journal entry in the Description section.</para>
+    </listitem>
+    <listitem>
+     <para>If you choose, you can click 
+      <guimenu>Browse</guimenu> to upload a picture in the Attachments section of the form.
      </para>
-    </step>
-    <step id="b9rta1q" performance="required">
-     <para>In the 
-      <guimenu>Description</guimenu> box, enter the content of your blog entry, using the rich formatting tools in the editor.
-     </para>
-     <informalfigure pgwide="0">
-      <mediaobject>
-       <imageobject role="fo"><imagedata fileref="workspaceblogentryeditor_a.png" width="95%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="workspaceblogentryeditor_a.png" width="95%" format="png"/></imageobject>
-      </mediaobject>
-     </informalfigure>
-    </step>
-    <step id="b9rta1s" performance="required">
+    </listitem>
+    <listitem>
      <para>Click 
-      <guimenu>OK</guimenu> to add the entry to your blog.
+      <guimenu>OK</guimenu>.
      </para>
-    </step>
-   </procedure>
+    </listitem>
+   </orderedlist>
   </sect2>
-  <sect2 id="b9rt5vl">
-   <title>Add a comment to a blog entry</title>
-   <para>Comments are a way to give feedback to a blog author.</para>
-   <procedure id="b9rtby3">
-    <step id="b9rtby4" performance="required">
+ </sect1>
+ <sect1 id="banqhqf">
+  <title>Create a Team Workspace</title>
+  <para>The sections that follow provide instructions for creating a team workspace.</para>
+  <sect2 id="banqhqg">
+   <title>Ask Your Administrator for a Group Name</title>
+   <para>Although it is possible to create your team workspace by specifying the names of all team members individually, ask your administrator to create a group name for your team. This facilitates the team-creation process.</para>
+  </sect2>
+  <sect2 id="banqhqh">
+   <title>Create the Workspace</title>
+   <orderedlist spacing="normal">
+    <listitem>
+     <para>From the portal page, in the workspace tree, click 
+      <guimenu>Team workspaces</guimenu>.
+     </para>
+    </listitem>
+    <listitem>
      <para>Click the 
-      <inlinemediaobject>
-       <imageobject role="fo"><imagedata fileref="iconblogaddcomment_a.png" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="iconblogaddcomment_a.png" format="png"/></imageobject>
-      </inlinemediaobject> icon beneath the blog entry.
+      <guimenu>Add a team workspace</guimenu> button.
      </para>
-    </step>
-    <step id="b9rtc1f" performance="required">
-     <para>In the form that appears, enter the title of your blog comment in the 
-      <guimenu>Title</guimenu> box.
-     </para>
-    </step>
-    <step id="b9rtc1h" performance="required">
-     <para>Enter your comment in the 
-      <guimenu>Description</guimenu> box.
-     </para>
-    </step>
-    <step id="b9rtc1j" performance="required">
+    </listitem>
+    <listitem>
+     <para>Provide a title for your team workspace.</para>
+    </listitem>
+    <listitem>
+     <para>In the “Team members” section, click the “Find groups” text box, type the first few characters of the group name that your administrator created for you, and click the linked group name.</para>
+    </listitem>
+    <listitem>
+     <para>In the “Workspace folders” section, click the check box next to the folders you want to have present when ICEcore creates the team. (As the owner of this team workspace, you are able to add more folders after workspace creation as well.)</para>
+    </listitem>
+    <listitem>
+     <para>If you choose, you can provide an announcement to be sent to your team members.</para>
+    </listitem>
+    <listitem>
      <para>Click 
-      <guimenu>OK</guimenu>. Your comment appears below the blog entry.
+      <guimenu>OK</guimenu>.
      </para>
-    </step>
-   </procedure>
+    </listitem>
+   </orderedlist>
   </sect2>
-  <sect2 id="b9rt5vm">
-   <title>Rate an entry in a blog, wiki, or discussion</title>
-   <para>Another way that readers can provide feedback to authors is to rate entries on a scale of 1 to 5. By rating entries, you are making it easier for other users to focus on the most useful content.</para>
-   <procedure id="b9rtdg0">
-    <step id="b9rtdg1" performance="required">
-     <para>View an entry in a blog, wiki, or discussion folder</para>
-    </step>
-    <step id="b9rtdlp" performance="required">
-     <para>Drag the mouse over the rating stars above the entry to highlight the desired number of stars (1 to 5).</para>
-    </step>
-    <step id="b9rtdlr" performance="required">
-     <para>Click to register your rating. The average rating and the number of ratings are updated immediately.</para>
+  <sect2 id="banqhqi">
+   <title>Create the Team</title>
+   <orderedlist spacing="normal">
+    <listitem>
+     <para>View your team-workspace page.</para>
+    </listitem>
+    <listitem>
+     <para>
+      <guimenu>Click Team</guimenu> &gt; 
+      <guimenu>Add or delete team members</guimenu>.
+     </para>
      <informalfigure pgwide="0">
       <mediaobject>
-       <imageobject role="fo"><imagedata fileref="blogratingstars_a.png" width="52%" format="PNG"/></imageobject>
-       <imageobject role="html"><imagedata fileref="blogratingstars_a.png" width="52%" format="png"/></imageobject>
+       <imageobject role="fo"><imagedata fileref="tasks_add_team_members.png" width="81%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="tasks_add_team_members.png" width="81%" format="png"/></imageobject>
       </mediaobject>
      </informalfigure>
-    </step>
-   </procedure>
+    </listitem>
+    <listitem>
+     <para>In the “Find groups” text box, type the first few characters of your team’s group name, and click the linked name.</para>
+    </listitem>
+    <listitem>
+     <para>Click 
+      <guimenu>OK</guimenu>.
+     </para>
+    </listitem>
+   </orderedlist>
   </sect2>
-  <sect2 id="b9rt47b">
-   <title>Work with teams</title>
-   <para>
-    <productname>ICEcore</productname> was designed to facilitate teamwork. Create a team workspace; then add folders and a team to the workspace. Once your team is set up, you can communicate easily with your team members.
-   </para>
-   <sect3 id="b9rt4mr">
-    <title>Create a team workspace:</title>
-    <procedure id="b9rtflb">
-     <step id="b9rtflc" performance="required">
-      <para>In the 
-       <guimenu>Navigator</guimenu>, click on the workspace tree to expand it.
-      </para>
-     </step>
-     <step id="b9rtfpx" performance="required">
-      <para>Click on the 
-       <guimenu>Teams</guimenu> branch of the workspace tree.
-      </para>
-     </step>
-     <step id="b9rtfpz" performance="required">
-      <para>On the 
-       <guimenu>Teams</guimenu> tab that appears, click 
-       <guimenu>Manage this workspace</guimenu>.
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="navigatorteams_a.png" width="95%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="navigatorteams_a.png" width="95%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9rtfq0" performance="required">
-      <para>Select 
-       <guimenu>Add new workspace</guimenu>.
-      </para>
-     </step>
-     <step id="b9rtfq2" performance="required">
-      <para> In the 
-       <guimenu>Title</guimenu> field, enter the name for your new workspace.
-      </para>
-     </step>
-     <step id="b9rtfq3" performance="required">
-      <para>Click 
-       <guimenu>OK</guimenu>. The new workspace is added to 
-       <guimenu>Teams</guimenu>.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vn">
-    <title>Add folders to the team workspace</title>
-    <para>For each folder that you want to add:</para>
-    <procedure id="b9rtkne">
-     <step id="b9rtknf" performance="required">
-      <para>Click on 
-       <guimenu>Manage this workspace.</guimenu>
-      </para>
-     </step>
-     <step id="b9rtksm" performance="required">
-      <para>Click 
-       <guimenu>Add new folder</guimenu>.
-      </para>
-     </step>
-     <step id="b9rtksn" performance="required">
-      <para>In the form that appears, enter a name in the 
-       <guimenu>Title</guimenu> field and select the template for the folder that you want to add (
-       <guimenu>Discussion, Blog folder, Calendar folder</guimenu>, etc.)
-      </para>
-     </step>
-     <step id="b9rtksp" performance="required">
-      <para>Click 
-       <guimenu>OK</guimenu>. The folder is added to the workspace.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vo">
-    <title>Add a team to a workspace or folder:</title>
-    <procedure id="b9rtlgk">
-     <step id="b9rtlgl" performance="required">
-      <para>On the tab for the folder or workspace, click 
-       <guimenu>Access control</guimenu>.
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="workspaceconfigureaccesscontroladdteam_a.png" width="95%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="workspaceconfigureaccesscontroladdteam_a.png" width="95%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9rtv77" performance="required">
-      <para>Change the setting for 
-       <guimenu>Inherit</guimenu> role membership from the parent folder or workspace to
-       <guimenu> No </guimenu>and click 
-       <guimenu>Apply</guimenu>.
-      </para>
-     </step>
-     <step id="b9rtv79" performance="required">
-      <para> In the 
-       <guimenu>Roles</guimenu> table, select 
-       <guimenu>Team Member</guimenu> for every user (or group of users) that you want to add to the team.
-      </para>
-     </step>
-     <step id="b9rtv7b" performance="required">
-      <para>If a user is not shown in the 
-       <guimenu>Roles</guimenu> table, click 
-       <guimenu>Add a user</guimenu>. Begin typing the user name and select the name from the dropdown list. Then click 
-       <guimenu>Team Member</guimenu> for that user.
-      </para>
-     </step>
-     <step id="b9rtv7c" performance="required">
-      <para>When you have finished adding members, click 
-       <guimenu>Save changes</guimenu>, then 
-       <guimenu>Close</guimenu>.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vp">
-    <title>View team members:</title>
-    <procedure id="b9rtwmx">
-     <step id="b9rtwmy" performance="required">
-      <para>Select the workspace or folder with which the team is associated.</para>
-     </step>
-     <step id="b9rtwy0" performance="required">
-      <para>On the menu bar, click Team.</para>
-     </step>
-     <step id="b9rtwy2" performance="required">
-      <para>Click View members.</para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="workspaceviewmembers_a.png" width="95%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="workspaceviewmembers_a.png" width="95%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-      <note>
-       <para>Notice that, as in your buddy list, presence icons are using to indicate the online and availability status of your team members.</para>
-      </note>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vq">
-    <title>Creating a team meeting:</title>
-    <procedure id="b9ru006">
-     <step id="b9ru007" performance="required">
-      <para>On the menu bar, click 
-       <guimenu>Team</guimenu>.
-      </para>
-     </step>
-     <step id="b9ru04a" performance="required">
-      <para> Click 
-       <guimenu>Create a meeting</guimenu>. The 
-       <guimenu>Add meeting</guimenu> form appears.
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="workspaceaddteammeeting_a.png" width="95%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="workspaceaddteammeeting_a.png" width="95%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9ru04c" performance="required">
-      <para>Click 
-       <guimenu>Select all</guimenu> to create a meeting with all team members, or select the individual members to invite.
-      </para>
-     </step>
-     <step id="b9ru04e" performance="required">
-      <para>Click 
-       <guimenu>Start meeting</guimenu> to start a meeting immediately, or click 
-       <guimenu>Schedule</guimenu> to arrange a meeting in the future.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vr">
-    <title>Sending mail to your team:</title>
-    <procedure id="b9ru1fb">
-     <step id="b9ru1fc" performance="required">
-      <para>5. On the menu bar, click 
-       <guimenu>Team</guimenu>.
-      </para>
-     </step>
-     <step id="b9ru1hy" performance="required">
-      <para>Click 
-       <guimenu>Send mail to members</guimenu>. The 
-       <guimenu>Send email</guimenu> form appears:
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="workspaceteamsendemail_a.png" width="95%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="workspaceteamsendemail_a.png" width="95%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9ru1i0" performance="required">
-      <para>To send mail to all team members, click 
-       <guimenu>Select all</guimenu>.
-      </para>
-     </step>
-     <step id="b9ru1i2" performance="required">
-      <para>Fill in the 
-       <guimenu>Subject</guimenu> and 
-       <guimenu>Message</guimenu>.
-      </para>
-     </step>
-     <step id="b9ru1i3" performance="required">
-      <para>Click 
-       <guimenu>OK</guimenu> to send the message. The message contains a link back to your workspace.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vs">
-    <title>Tips for working with teams</title>
-    <para>When setting up teams, begin at the top-most workspace or folder. Then allow workspaces and folders below that to inherit role membership.</para>
-   </sect3>
+  <sect2 id="banqhqj">
+   <title>View Team Members</title>
+   <para>By default, ICEcore includes a team-membership accessory at the top of your workspace page, which shows you the current team membership. If this accessory is not present, do the following to view the team membership:</para>
+   <orderedlist spacing="normal">
+    <listitem>
+     <para>View your team workspace.</para>
+    </listitem>
+    <listitem>
+     <para>Click 
+      <guimenu>Team</guimenu> &gt; 
+      <guimenu>Show team membership</guimenu>.
+     </para>
+    </listitem>
+   </orderedlist>
   </sect2>
-  <sect2 id="b9rt559">
-   <title>Use Favorites for places you visit often</title>
-   <para>The following procedures show you how to start using favorites in ICEcorps.</para>
-   <sect3 id="b9rt5bv">
-    <title>To add a place to Favorites:</title>
-    <procedure id="b9ru4cc">
-     <step id="b9ru4cd" performance="required">
-      <para>Navigate to the workspace or folder that you want to add to your 
-       <guimenu>Favorites</guimenu> list.
-      </para>
-     </step>
-     <step id="b9ru4ds" performance="required">
-      <para>Click 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Favorites icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="iconfavorite_n.png" width="17.76pt" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="iconfavorite_n.png" width="17.76pt" format="png"/></imageobject>
-       </inlinemediaobject> to open the 
-       <guimenu>Favorites</guimenu> menu.
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="menufavorites_a.png" width="39%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="menufavorites_a.png" width="39%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9ru4dv" performance="required">
-      <para>Click 
-       <guimenu>Bookmark this place</guimenu>. The workspace or folder is added at the end of the 
-       <guimenu>Favorites</guimenu> list.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vt">
-    <title>To return to one of your Favorites:</title>
-    <procedure id="b9ru8xe">
-     <step id="b9ru8xf" performance="required">
-      <para> Click 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Favorites icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="iconfavorite_n.png" width="17.76pt" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="iconfavorite_n.png" width="17.76pt" format="png"/></imageobject>
-       </inlinemediaobject> to open the 
-       <guimenu>Favorites</guimenu> menu.
-      </para>
-     </step>
-     <step id="b9ru90m" performance="required">
-      <para>Click on the name of a place that you previously added to the 
-       <guimenu>Favorites</guimenu> list.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vu">
-    <title>To delete one or more Favorites from your list:</title>
-    <procedure id="b9ru9jr">
-     <step id="b9ru9js" performance="required">
-      <para>From the 
-       <guimenu>Favorites</guimenu> menu, click 
-       <guimenu>Edit Favorites</guimenu>. 
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="menufavorites_a.png" width="39%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="menufavorites_a.png" width="39%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </step>
-     <step id="b9ru9l9" performance="required">
-      <para>Select each of the places to delete.</para>
-     </step>
-     <step id="b9ru9lb" performance="required">
-      <para>Click 
-       <guimenu>Delete</guimenu>, then 
-       <guimenu>OK</guimenu>. The places are removed from your 
-       <guimenu>Favorites</guimenu> list.
-      </para>
-     </step>
-     <step id="b9ru9ld" performance="required">
-      <para>Close the 
-       <guimenu>Favorites</guimenu> menu.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vv">
-    <title>To change the order of the items in your Favorites list:</title>
-    <procedure id="b9ruai7">
-     <step id="b9ruai8" performance="required">
-      <para>From the 
-       <guimenu>Favorites</guimenu> menu, click 
-       <guimenu>Edit Favorites</guimenu>. 
-      </para>
-     </step>
-     <step id="b9ruakf" performance="required">
-      <para>Select one or more items in the list.</para>
-     </step>
-     <step id="b9ruakh" performance="required">
-      <para>Click 
-       <guimenu>Down</guimenu> or 
-       <guimenu>Up</guimenu> to move the selected items down or up.
-      </para>
-     </step>
-     <step id="b9ruakj" performance="required">
-      <para>When you finish, click 
-       <guimenu>OK</guimenu>.
-      </para>
-     </step>
-     <step id="b9ruakl" performance="required">
-      <para>Close the 
-       <guimenu>Favorites</guimenu> menu.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-  </sect2>
-  <sect2 id="b9rt5gd">
-   <title>Tagging</title>
-   <para>Tagging is a powerful way to discover, evaluate, and retrieve information. Users assign keywords, called tags, to workspaces, folders, and entries. Tags are designated as either community (shared) or personal (private). You can then use tags in searches. The search engine also uses tags to rank search results by relevance.</para>
-   <sect3 id="b9rt5kg">
-    <title>To add tags to a workspace, folder, or entry:</title>
-    <procedure id="b9rubl2">
-     <step id="b9rubl3" performance="required">
-      <para>Start in the place that you want to tag. Any tags already assigned to this place are displayed below the 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Tags icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="icontags_a.png" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="icontags_a.png" format="png"/></imageobject>
-       </inlinemediaobject> icon.
-      </para>
-     </step>
-     <step id="b9rubmt" performance="required">
-      <para> Click 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Tags icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="icontags_a.png" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="icontags_a.png" format="png"/></imageobject>
-       </inlinemediaobject> to open the 
-       <guimenu>Add/Delete Tags</guimenu> form. Any previously assigned tags are also listed here.
-      </para>
-     </step>
-     <step id="b9rubmv" performance="required">
-      <para> In either the 
-       <guimenu>Personal</guimenu> tags or 
-       <guimenu>Shared</guimenu> tags text box, type the new tag and click 
-       <guimenu>Add</guimenu>. As you type, a dropdown list displays existing tags that match the letters in the box. When you click 
-       <guimenu>Add</guimenu>, the tag is added to the list of tags assigned to this place.
-      </para>
-     </step>
-     <step id="b9rubmx" performance="required">
-      <para>When you finish adding tags, close the 
-       <guimenu>Add/Delete Tags </guimenu>form by clicking the 
-       <guimenu>x </guimenu>in the upper right corner of the form. You will now see the new tags below the 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Tags icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="icontags_a.png" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="icontags_a.png" format="png"/></imageobject>
-       </inlinemediaobject> icon.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vw">
-    <title>To remove tags from a place:</title>
-    <procedure id="b9rudfi">
-     <step id="b9rudfj" performance="required">
-      <para> Click 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Tags icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="icontags_a.png" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="icontags_a.png" format="png"/></imageobject>
-       </inlinemediaobject> to open the 
-       <guimenu>Add/Delete Tags</guimenu> form.
-      </para>
-     </step>
-     <step id="b9rudi6" performance="required">
-      <para>Click 
-       <guimenu>Delete</guimenu> for every tag that you want to delete.
-      </para>
-     </step>
-     <step id="b9rudi7" performance="required">
-      <para>When you finish deleting tags, close the 
-       <guimenu>Add/Delete Tags </guimenu>form by clicking the 
-       <guimenu>x </guimenu>in the upper right corner of the form. The tags that you deleted are removed from the list of tags beneath the 
-       <inlinemediaobject>
-        <textobject role="description">
-         <phrase>Tags icon</phrase>
-        </textobject>
-        <imageobject role="fo"><imagedata fileref="icontags_a.png" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="icontags_a.png" format="png"/></imageobject>
-       </inlinemediaobject> icon.
-      </para>
-     </step>
-    </procedure>
-   </sect3>
-   <sect3 id="b9rt5vx">
-    <title>To use tags in a search:</title>
-    <procedure id="b9rudzz">
-     <step id="b9rue00" performance="required">
-      <para>In the Find tags box in the Navigator, start typing the personal or shared tag that you want to search for. As you type, a dropdown list displays tags that match the letters that you've typed.</para>
-     </step>
-     <step id="b9rue24" performance="required">
-      <para>Finish typing the tag (or select it from the list) and press 
-       <guimenu>Enter</guimenu>. 
-      </para>
-      <para>A new tab appears, containing a summary of every item to which the tag was assigned. You can skim the results, and open any items that look interesting.</para>
-     </step>
-    </procedure>
-   </sect3>
-  </sect2>
-  <sect2 id="b9rt5rq">
-   <title>Relevance Rankings</title>
-   <para>When you perform a 
-    <guimenu>Quick</guimenu> or 
-    <guimenu>Advanced</guimenu> search, the top-ranked places (folders) and people (authors) are displayed in descending order of popularity on the left side of the search results page. The brightness of the star to the left of an item in the list indicates the relative ranking of the place or author.
-   </para>
-   <informalfigure pgwide="0">
-    <mediaobject>
-     <imageobject role="fo"><imagedata fileref="searchresultspage_a.png" width="100%" format="PNG"/></imageobject>
-     <imageobject role="html"><imagedata fileref="searchresultspage_a.png" width="100%" format="png"/></imageobject>
-    </mediaobject>
-   </informalfigure>
-   <sect3 id="b9rt5uk">
-    <title>Tips for working with tags:</title>
-    <itemizedlist mark="bullet" spacing="normal">
-     <listitem>
-      <para> Tags are case-sensitive. This means that Internet, internet, and INTERNET are all separate tags.</para>
-     </listitem>
-     <listitem>
-      <para> Tags are single words that cannot contain punctuation marks, underscores, hyphens, or spaces.</para>
-     </listitem>
-     <listitem>
-      <para> Avoid adding personal tags that are identical to shared tags. When you use 
-       <guimenu>Find</guimenu> tags to search for a personal tag that is the same as a shared tag, the search results return both sets of items, which may be confusing.
-      </para>
-     </listitem>
-     <listitem>
-      <para>Use 
-       <guimenu>Advanced Search</guimenu> to:
-      </para>
-      <itemizedlist mark="bullet" spacing="normal">
-       <listitem>
-        <para>search for multiple tags</para>
-       </listitem>
-       <listitem>
-        <para>use mixed search criteria (for example, to search by Author and by Tags in the same search)</para>
-       </listitem>
-       <listitem>
-        <para>search only for shared tags or only for personal tags.</para>
-       </listitem>
-      </itemizedlist>
-     </listitem>
-     <listitem>
-      <para>The tag cloud (weighted list of tags) displayed in the 
-       <guimenu>Quick Search</guimenu> and 
-       <guimenu>Advanced Search</guimenu> results shows tags associated with the first 200 items returned by the search. The type size of the tags indicates their relative frequency of use.
-      </para>
-      <informalfigure pgwide="0">
-       <mediaobject>
-        <imageobject role="fo"><imagedata fileref="menutagcloud_n.png" width="35%" format="PNG"/></imageobject>
-        <imageobject role="html"><imagedata fileref="menutagcloud_n.png" width="35%" format="png"/></imageobject>
-       </mediaobject>
-      </informalfigure>
-     </listitem>
-    </itemizedlist>
-   </sect3>
-  </sect2>
+ </sect1>
+ <sect1 id="banqhql">
+  <title>Use Advanced Search to Explore</title>
+  <para>When you perform a quick search, ICEcore searches all workspaces and folders. Use the “Advanced search”feature to perform more complex or finely tuned searches. Here is an example of using Advanced search to restrict the scope of the search:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>From either the navigation portlet or the navigation bar, in the search section, click 
+     <guimenu>Advanced</guimenu>.
+    </para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <imageobject role="fo"><imagedata fileref="tasks_advanced_search_link.png" width="80%" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="tasks_advanced_search_link.png" width="80%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </listitem>
+   <listitem>
+    <para>Type text that an item must contain, and check the box of one or more workspaces or folders in which to restrict the search. Consider the example in the picture on the next page.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Search</guimenu>.
+    </para>
+   </listitem>
+  </orderedlist>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="tasks_advanced_search_restricted.png" width="78%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="tasks_advanced_search_restricted.png" width="78%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>This advanced search returns links to only those items in the Discussion folder (located in the “
+   <productname>ICEcore</productname> Admin Issues” team workspace) that contain the string “legal”. Summaries of items that match the search criteria appear just below the section shown in the previous picture.
+  </para>
+ </sect1>
+ <sect1 id="banqhqm">
+  <title>Use the Workspace Tree to Explore</title>
+  <para>In addition to using search to explore workspaces and folders in ICEcore, you can open the workspace tree in either the navigation portlet or a navigation bar, and you can visit all the places in which you are allowed to visit or participate.</para>
  </sect1>
 </chapter>
 
