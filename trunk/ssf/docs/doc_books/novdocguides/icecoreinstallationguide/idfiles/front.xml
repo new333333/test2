@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="bookinfo" pid="bookinfo" name="BookInfo" level="0"> <text>ICEcore Installation &#38; Configuration Guide</text> </target>
+ <target id="bookinfo" pid="bookinfo" name="BookInfo" level="0"> <text>ICEcore Installation and Configuration Guide</text> </target>
 
  <target id="legalnotices" pid="bookinfo" name="LegalNotice" level="1"> <text>Legal Notices</text> </target>
 
