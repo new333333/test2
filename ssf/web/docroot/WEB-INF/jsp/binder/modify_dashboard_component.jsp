@@ -99,7 +99,7 @@
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-	<input type="submit" class="ss_submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>" />
+	<input type="submit" class="ss_submit" name="_saveConfigData" value="<ssf:nlt tag="button.apply"/>" />
 	&nbsp;&nbsp;
 	<input type="submit" class="ss_submit" name="closeBtn"   value="<ssf:nlt tag="button.close" text="Close"/>"/>
 	&nbsp;&nbsp;
