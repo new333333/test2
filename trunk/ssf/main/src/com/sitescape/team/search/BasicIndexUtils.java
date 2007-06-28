@@ -54,6 +54,9 @@ public class BasicIndexUtils {
 //    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
     public static final String TAG_FIELD = "_tagField";
     public static final String ACL_TAG_FIELD = "_aclTagField";
+    //TTF fields are used by type to find ajax searches only
+    public static final String TAG_FIELD_TTF = "_tagField_ttf";
+    public static final String ACL_TAG_FIELD_TTF = "_aclTagField_ttf";
     
     
     // Defines field values

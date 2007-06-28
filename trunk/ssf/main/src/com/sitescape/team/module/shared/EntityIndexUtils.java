@@ -568,20 +568,43 @@ public class EntityIndexUtils {
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
     	String indexableTags = "";
     	String aclTags = "";
+    	String tag = "";
+    	String aclTag = "";
+    	String lowerAclTag = "";
     	   	
     	Map<String, SortedSet<Tag>> uniqueTags = TagUtil.uniqueTags(allTags);
     	SortedSet<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
     	SortedSet<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
-    	
+    	Field ttfTagField = new Field(BasicIndexUtils.TAG_FIELD_TTF, "", Field.Store.NO, Field.Index.UN_TOKENIZED);
     	// index all the public tags (allTags field and tag_acl field)
 		for (Tag thisTag: pubTags) {
-			indexableTags += " " + thisTag.getName();
-			aclTags += " " + BasicIndexUtils.buildAclTag(thisTag.getName(), BasicIndexUtils.READ_ACL_ALL);
+			tag = thisTag.getName();
+			indexableTags += " " + tag;
+			// Add the ttf fields.  The ttf fields are case insensitive before the ":",
+			// so users can search and find tags regardless of case. The strategy is to use
+			// this field for the type to find searches, but keep the original fields for 
+			// display.
+			tag = tag.toLowerCase() + ":" + tag; 
+			ttfTagField = new Field(BasicIndexUtils.TAG_FIELD_TTF, tag, Field.Store.NO, Field.Index.UN_TOKENIZED);
+			doc.add(ttfTagField);
+			aclTag = BasicIndexUtils.buildAclTag(thisTag.getName(), BasicIndexUtils.READ_ACL_ALL);
+			aclTags += " " + aclTag;
+			lowerAclTag = BasicIndexUtils.buildAclTag(thisTag.getName().toLowerCase(), BasicIndexUtils.READ_ACL_ALL);
+			aclTag = lowerAclTag + ":" + aclTag;
+			ttfTagField = new Field(BasicIndexUtils.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.UN_TOKENIZED);
+			doc.add(ttfTagField);
 		}
 	
 		// now index the private tags (just the tag_acl field)
 		for (Tag thisTag: privTags) {
-			aclTags += " " + BasicIndexUtils.buildAclTag(thisTag.getName(), thisTag.getOwnerIdentifier().getEntityId().toString());
+			tag = thisTag.getName();
+			aclTag = BasicIndexUtils.buildAclTag(tag, thisTag.getOwnerIdentifier().getEntityId().toString());
+			aclTags += " " + aclTag;
+			// type to find fields.
+			lowerAclTag = BasicIndexUtils.buildAclTag(tag.toLowerCase(), thisTag.getOwnerIdentifier().getEntityId().toString());
+			aclTag = lowerAclTag + ":" + aclTag;
+			ttfTagField = new Field(BasicIndexUtils.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.UN_TOKENIZED);
+			doc.add(ttfTagField);
 		}
     
     	Field tagField = new Field(BasicIndexUtils.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.TOKENIZED);
