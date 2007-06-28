@@ -382,7 +382,7 @@ public class ViewEntryController extends  SAbstractController {
 							adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 							adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
 							adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-							toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), 
+							toolbar.addToolbarMenuItem("1_reply", "replies", NLT.getDef(replyDef.getTitle()), 
 									adapterUrl.toString(), qualifiers);
 						} catch (NoDefinitionByTheIdException e) {
 							continue;
