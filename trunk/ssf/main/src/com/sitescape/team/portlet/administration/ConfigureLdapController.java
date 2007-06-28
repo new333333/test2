@@ -17,6 +17,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import javax.naming.NamingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.module.ldap.LdapConfig;
@@ -66,6 +67,12 @@ public class ConfigureLdapController extends  SAbstractController {
 					getLdapModule().setLdapConfig(config);
 					try {
 						getLdapModule().syncAll();
+					} catch (NamingException ne) {
+						if (ne.getCause() != null)
+							response.setRenderParameter(WebKeys.EXCEPTION, ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage());
+						else 
+							response.setRenderParameter(WebKeys.EXCEPTION, ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage());
+						response.setRenderParameter("runnow", Boolean.TRUE.toString());
 					} finally {
 						//set it back
 						if (enabled) {
@@ -78,7 +85,6 @@ public class ConfigureLdapController extends  SAbstractController {
 					
 				}
 			}
-			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else
@@ -92,8 +98,11 @@ public class ConfigureLdapController extends  SAbstractController {
 		if (!Validator.isNull(request.getParameter("redirect"))) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
-
-		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, WebKeys.LDAP_CONFIG, getLdapModule().getLdapConfig());
+		Map model = new HashMap();
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
+		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapConfig());
+		model.put("runnow", request.getParameter("runnow"));
+		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		
 	}
 }

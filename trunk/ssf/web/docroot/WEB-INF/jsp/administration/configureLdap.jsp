@@ -15,6 +15,9 @@
 
 <div class="ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>
+<c:if test="${!empty ssException}">
+<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+</c:if>
 
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" 
   action="<portlet:actionURL><portlet:param 
@@ -30,7 +33,7 @@
 <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.enable"/></span><br/>
 </td></tr>
 <tr><td>
-<input type="checkbox" id="runnow" name="runnow"/>
+<input type="checkbox" id="runnow" name="runnow" <c:if test="${runnow}"> checked="checked" </c:if>/>
 <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.now"/></span><br/>
 </td></tr></table>
 
