@@ -26,11 +26,13 @@
 
 <!-- please change product to anything that makes sense in your current release -->
 <!ENTITY product       "ICEcore">
-<!ENTITY zon       "Zon">
+<!ENTITY zon       "Novell Conferencing">
 
 
 <!-- oddities -->
 <!ENTITY thrdmrk "*">
+<!ENTITY mdash "&mdash;">
+
 
 
 <!-- ============================================================= -->
