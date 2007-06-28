@@ -30,7 +30,7 @@
 
 <!-- oddities -->
 <!ENTITY thrdmrk "*">
-<!ENTITY mdash "&mdash;">
+<!ENTITY mdash "-">
 <!ENTITY conf_prod_name "Zon">
 
 <!-- ============================================================= -->
