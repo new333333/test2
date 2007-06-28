@@ -1,101 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
-
-<!--========================================================================
- "ICEcorps User Guide"
-
- Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
- may be reproduced, photocopied, stored on a retrieval system, or transmitted
- without the express written consent of the publisher.
-
- Novell, Inc.
- 404 Wyman Street, Suite 500
- Waltham, MA 02451
- U.S.A.
- www.novell.com
-
-
- ESTIMATED PAGE COUNT (based on 200 words per page): 17
- ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 7
-
-
- WORD COUNT
-
-       Count    Doctype    Title
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         411    bookinfo   ICEcorps User Guide
-         450    preface    About This Guide
-        2506    chapter       ICEcorps Quick Start 
-         128    glossary      ICEcorps Glossary 
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        3495    book       ICEcorps User Guide
-
-
- GRAPHICS REFERENCED IN BOOK
-
-       Count       Filename
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-           2       workspaceaddblog_a.png
-           2       workspacetree_a.png
-           2       icecorpsnavigator_a.png
-           2       workspaceteamsendemail_a.png
-           2       iconworkspacetree_n.png
-           2       workspaceblogentryeditor_a.png
-           2       iconbuddylistoffline_n.png
-           2       iconbuddylistaway_n.png
-           2       workspaceviewmembers_a.png
-           2       welcomeportlet_a.png
-           4       iconhelp_n.png
-           4       icecorebuddylist_a.png
-           4       menufavorites_a.png
-           2       iconblogaddcomment_a.png
-           2       workspaceblognewentry_a.png
-           2       profileimageremovalscreen_a.png
-           2       iconbuddylistunknown_n.png
-           2       workspaceconfigureaccesscontroladdteam_a.png
-           2       navigatorteams_a.png
-           2       profilephotobox_a.png
-           2       folderbookmarksfolder_n.png
-           6       iconmyworkspace_n.png
-           4       blogratingstars_a.png
-           6       iconfavorite_n.png
-           2       iconworkspacetreeexpanded_n.png
-           2       menutagcloud_n.png
-          10       icontags_a.png
-           2       workspaceaddteammeeting_a.png
-           2       iconbuddylistonline_n.png
-           2       searchresultspage_a.png
-
-
- CROSS-REFERENCES
-
-       Count       Type
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          16       xref
-           0       link
-           0       ulink-xrefext
-           0       ulink-xrefexttext
-           6       ulink
-
-
- URLS REFERENCED IN ULINKS
-
-       URL
-      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       http://www.novell.com/documentation/gw65
-       http://www.novell.com/documentation
-       http://www.novell.com/company/legal/trademarks/tmlist.html
-       http://www.novell.com/company/legal/patents/
-       http://www.novell.com/info/exports/
-       http://www.novell.com/documentation/lg/dirxmldrivers/index.html
-
-========================================================================-->
-
 <book revision="01/01/03" conformance="none,doc,no,,80" lang="en" id="icecoreuserguide">
 
 <bookinfo id="bookinfo" xml:base="front.xml">
  <title>ICEcorps User Guide</title>
- <productname>ICEcorps</productname>
+ <productname>ICEcore</productname>
  <productnumber>1.1</productnumber>
  <date>May, 2007</date>
  <titleabbrev>User guide</titleabbrev>
@@ -182,10 +91,8 @@
 </preface>
 
 <chapter id="b9rpufv" lang="en" xml:base="icecorequickstart.xml">
- <title>
-  <productname>ICEcorps</productname> Quick Start
- </title>
- <para>ICEcorps is a collaborative software suite that runs in a web portal. It provides a rich set of tools that facilitate working in groups:</para>
+ <title> Getting Started</title>
+ <para>ICEcore is a collaborative software suite that runs in a web portal. It provides a rich set of tools that facilitate working in groups:</para>
  <itemizedlist mark="bullet" spacing="normal">
   <listitem>
    <para> Shared and private workspaces, with built-in versioning</para>
@@ -205,7 +112,7 @@
  </itemizedlist>
  <para/>
  <para>The following main sections contain the basic information you need to start using 
-  <productname>ICEcorps</productname>:
+  <productname>ICEcore</productname>:
  </para>
  <itemizedlist mark="bullet" spacing="normal">
   <listitem>
@@ -217,14 +124,14 @@
  </itemizedlist>
  <sect1 id="b9rsake">
   <title>Getting Started</title>
-  <para>When you first start using ICEcorps, you will see four portlets: 
-   <guimenu>ICEcorps Navigator</guimenu>, the 
-   <guimenu>ICEcorps Welcome</guimenu> portlet, an empty 
+  <para>When you first start using ICEcore, you will see four portlets: 
+   <guimenu>ICEcore Navigator</guimenu>, the 
+   <guimenu>ICEcore Welcome</guimenu> portlet, an empty 
    <guimenu>Buddy</guimenu> list portlet, and an empty 
    <guimenu>Bookmarks</guimenu> portlet.
   </para>
   <para>The following topics show you howe to get started using 
-   <productname>ICEcorps</productname>:
+   <productname>ICEcore</productname>:
   </para>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
@@ -240,7 +147,7 @@
   <sect2 id="b9rsga2">
    <title>Find your way around with the Navigator</title>
    <para>The 
-    <guimenu>ICEcorps Navigator</guimenu> is your navigation center. 
+    <guimenu>ICEcore Navigator</guimenu> is your navigation center. 
    </para>
    <informalfigure pgwide="0">
     <mediaobject>
@@ -365,7 +272,7 @@
    <title>Explore the Welcome Portlet</title>
    <para>The 
     <guimenu>Welcome</guimenu> portlet provides links to 
-    <productname>ICEcorps</productname> help topics and the ICEcorps user guides in PDF format.
+    <productname>ICEcore</productname> help topics and the ICEcore user guides in PDF format.
    </para>
    <informalfigure pgwide="0">
     <mediaobject>
@@ -379,7 +286,7 @@
    <para>If you remove this portlet, you can get it back by clicking 
     <guimenu>Add Content</guimenu> at the top of your screen and selecting 
     <guimenu>Welcome</guimenu> from the 
-    <productname>ICEcorps</productname> menu.
+    <productname>ICEcore</productname> menu.
    </para>
   </sect2>
   <sect2 id="b9rsga4">
@@ -489,7 +396,7 @@
  <sect1 id="b9rsg6v">
   <title>Configuring Your Workspace</title>
   <para>The following procedures show you how to configure your 
-   <productname>ICEcorps</productname> workspace:
+   <productname>ICEcore</productname> workspace:
   </para>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
@@ -521,7 +428,7 @@
     </step>
     <step id="b9rsl84" performance="required">
      <para>Fill in any missing information. This information is visible to others and is also used by 
-      <productname>ICEcorps</productname> and Zon to contact you by phone, email, or instant messaging.
+      <productname>ICEcore</productname> and Zon to contact you by phone, email, or instant messaging.
      </para>
     </step>
     <step id="b9rsl86" performance="required">
@@ -588,7 +495,7 @@
  <sect1 id="b9rsvrp">
   <title>Creating Content</title>
   <para>The following topics show you how create content in 
-   <productname>ICEcorps</productname>:
+   <productname>ICEcore</productname>:
   </para>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
@@ -622,7 +529,7 @@
   <sect2 id="b9rsw6j">
    <title>Folder types</title>
    <para>
-    <productname>ICEcorps</productname> workspaces can contain a wide range of content. A unique feature of ICEcorps is that it provides a variety of folder types, each designed for a particular type of content. For example, ICEcorps has specially designed folders for wikis, blogs, discussion forums, file folders, and calendars, to name just a few.
+    <productname>ICEcore</productname> workspaces can contain a wide range of content. A unique feature of ICEcore is that it provides a variety of folder types, each designed for a particular type of content. For example, ICEcore has specially designed folders for wikis, blogs, discussion forums, file folders, and calendars, to name just a few.
    </para>
   </sect2>
   <sect2 id="b9rt5vj">
@@ -769,7 +676,7 @@
   <sect2 id="b9rt47b">
    <title>Work with teams</title>
    <para>
-    <productname>ICEcorps</productname> was designed to facilitate teamwork. Create a team workspace; then add folders and a team to the workspace. Once your team is set up, you can communicate easily with your team members.
+    <productname>ICEcore</productname> was designed to facilitate teamwork. Create a team workspace; then add folders and a team to the workspace. Once your team is set up, you can communicate easily with your team members.
    </para>
    <sect3 id="b9rt4mr">
     <title>Create a team workspace:</title>
@@ -1268,7 +1175,7 @@
 
 <glossary id="b9rtisc" xml:base="glossary.xml">
  <title>
-  <productname>ICEcorps</productname> Glossary
+  <productname>ICEcore</productname> Glossary
  </title>
  <glossentry id="b9rth09">
   <glossterm>buddy list</glossterm>

@@ -96,9 +96,7 @@
 </preface>
 
 <chapter id="b9rpufv" lang="en" xml:base="icecorequickstart.xml">
- <title>
-  <productname>&product;</productname> Quick Start
- </title>
+ <title> Getting Started</title>
  <para>&product; is a collaborative software suite that runs in a web portal. It provides a rich set of tools that facilitate working in groups:</para>
  <itemizedlist mark="bullet" spacing="normal">
   <listitem>
