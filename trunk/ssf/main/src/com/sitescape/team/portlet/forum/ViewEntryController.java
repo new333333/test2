@@ -538,16 +538,18 @@ public class ViewEntryController extends  SAbstractController {
 
 
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-			Map qualifiers = new HashMap();
-			qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
-			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
-			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-			toolbar.addToolbarMenu("7_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+			if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+				toolbar.addToolbarMenu("7_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+			}
 		}		
 
 		//The "Footer" menu
