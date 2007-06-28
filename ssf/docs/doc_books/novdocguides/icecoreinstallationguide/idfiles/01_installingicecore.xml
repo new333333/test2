@@ -6,17 +6,15 @@
 
  <target id="b9vchn5" pid="b9vchn5" name="Sect1" level="1" number="1.1"> <text>Prerequisites</text> </target>
 
- <target id="b9ptalp" pid="b9vchn5" name="FormalPara" level="2"> <text>Required RAM:</text> </target>
-
- <target id="b9pt3i1" pid="b9vchn5" name="FormalPara" level="2"> <text>How much disk do you need?</text> </target>
+ <target id="bannybx" pid="b9vchn5" name="BridgeHead" level="2"> <text>How much disk do you need?</text> </target>
 
  <target id="b9vchn6" pid="b9vchn6" name="Sect1" level="1" number="1.2"> <text>Steps for Installing ICEcore</text> </target>
 
  <target id="b9ptkcb" pid="b9vchn6" name="Procedure" level="2"> <text>The following sequence shows the steps you want to follow to install ICEcore:</text> </target>
 
- <target id="b9ptkcc" pid="b9vchn6" name="Step" level="3" number="1"> <text>Install JDK</text> </target>
+ <target id="b9ptkcc" pid="b9vchn6" name="Step" level="3" number="1"> <text>Install JDK and Set Path</text> </target>
 
- <target id="b9ptl7r" pid="b9vchn6" name="Step" level="3" number="2"> <text>Install and Configure the Database</text> </target>
+ <target id="b9ptl7r" pid="b9vchn6" name="Step" level="3" number="2"> <text>Install and Configure the Database Server</text> </target>
 
  <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="3"> <text>Download the appropriate ICEcore kit</text> </target>
 
@@ -24,60 +22,96 @@
 
  <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="5"> <text>Run the installer (on Linux, do a chmod +x installer.linux to make the installer executable)</text> </target>
 
- <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="6"> <text>Starting and Stopping ICEcore</text> </target>
+ <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="6"> <text>Start and Stop ICEcore</text> </target>
 
- <target id="b9ptnu8" pid="b9vchn6" name="Step" level="3" number="7"> <text>Initial Login</text> </target>
+ <target id="b9ptnu8" pid="b9vchn6" name="Step" level="3" number="7"> <text>Login</text> </target>
 
- <target id="b9ptnua" pid="b9vchn6" name="Step" level="3" number="8"> <text>Adding Users</text> </target>
+ <target id="b9ptnua" pid="b9vchn6" name="Step" level="3" number="8"> <text>Add Users</text> </target>
 
  <target id="b9vchn7" pid="b9vchn7" name="Sect1" level="1" number="1.3"> <text>Database Planning</text> </target>
 
- <target id="b9q3njd" pid="b9vchn7" name="FormalPara" level="2"> <text>MySQL</text> </target>
+ <target id="bannyhr" pid="b9vchn7" name="BridgeHead" level="2"> <text>MySQL</text> </target>
 
- <target id="b9q3owh" pid="b9vchn7" name="FormalPara" level="2"> <text>Microsoft SQLserver </text> </target>
+ <target id="bannylt" pid="b9vchn7" name="BridgeHead" level="2"> <text>Microsoft SQL Server </text> </target>
 
  <target id="b9vchn8" pid="b9vchn8" name="Sect1" level="1" number="1.4"> <text>File System Planning</text> </target>
 
  <target id="b9vchn9" pid="b9vchn9" name="Sect1" level="1" number="1.5"> <text>Editing the Installer (.xml) File</text> </target>
 
+ <target id="banqre4" pid="b9vchn9" name="BridgeHead" level="2"> <text>For a quick installation edit the following sections:</text> </target>
+
+ <target id="banqre5" pid="b9vchn9" name="Procedure" level="2" number="1"> <text>Change the Host name in the Network section.  Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
+
+ <target id="banqre6" pid="b9vchn9" name="Step" level="3" number="1"> <text>Change the Host name in the Network section.  Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
+
+ <target id="banqre7" pid="b9vchn9" name="Step" level="3" number="2"> <text>Consider changing the JavaVirtualMachine setting in the Memory section if you have a large installation.</text> </target>
+
+ <target id="banqre8" pid="b9vchn9" name="Step" level="3" number="3"> <text>Use the default file system configuration.  This stores the files in /home/icecoredata</text> </target>
+
+ <target id="banqre9" pid="b9vchn9" name="Step" level="3" number="4"> <text>The default database configuration is MySQL, with the default MySQL passwords.</text> </target>
+
+ <target id="banqrea" pid="b9vchn9" name="Step" level="3" number="5"> <text>Use the default Lucene configuration.</text> </target>
+
+ <target id="banqreb" pid="b9vchn9" name="Step" level="3" number="6"> <text>Modify the Email section with your SMTP and POP/IMAP servers.</text> </target>
+
+ <target id="banqrec" pid="b9vchn9" name="Step" level="3" number="7"> <text>This initial beta release does not come with the Novell Conferencing software, so use the default Presence configuration.</text> </target>
+
+ <target id="banqred" pid="b9vchn9" name="BridgeHead" level="2"> <text>An example installer.xml file is shown below:</text> </target>
+
  <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.6"> <text>Run the Installer: Sample Installer Sequence</text> </target>
 
  <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.7"> <text>Starting and Stopping ICEcore</text> </target>
 
- <target id="b9q35wr" pid="b9vchnb" name="FormalPara" level="2"> <text>Starting ICEcore</text> </target>
+ <target id="bannxe9" pid="b9vchnb" name="BridgeHead" level="2"> <text>Starting ICEcore</text> </target>
 
- <target id="b9q35ws" pid="b9vchnb" name="FormalPara" level="2"> <text>Log Files / Monitoring</text> </target>
+ <target id="bannyv1" pid="b9vchnb" name="BridgeHead" level="2"> <text>Log Files/Monitoring</text> </target>
 
- <target id="b9q35wt" pid="b9vchnb" name="FormalPara" level="2"> <text>Stopping ICEcore</text> </target>
+ <target id="bannz0o" pid="b9vchnb" name="BridgeHead" level="2"> <text>Stopping ICEcore</text> </target>
 
  <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="1.8"> <text>Initial Logon</text> </target>
 
  <target id="b9vchnd" pid="b9vchnd" name="Sect1" level="1" number="1.9"> <text>Adding Users</text> </target>
 
- <target id="b9q4fl9" pid="b9vchnd" name="FormalPara" level="2"> <text>Basic User Management</text> </target>
+ <target id="bannx5y" pid="b9vchnd" name="BridgeHead" level="2"> <text>Basic User Management</text> </target>
 
- <target id="b9q4i4m" pid="b9vchnd" name="FormalPara" level="2"> <text>User Management with LDAP/eDirectory </text> </target>
+ <target id="bano067" pid="b9vchnd" name="BridgeHead" level="2"> <text>User Management with LDAP/eDirectory </text> </target>
 
- <target id="b9q4k6g" pid="b9vchnd" name="FormalPara" level="2"> <text>The ICEcore LDAP Configuration Form</text> </target>
+ <target id="bano0cl" pid="b9vchnd" name="BridgeHead" level="2"> <text>The ICEcore LDAP Configuration Form</text> </target>
+
+ <target id="banqree" pid="b9vchnd" name="BridgeHead" level="2"> <text>Secure LDAP/eDirectory Setup</text> </target>
+
+ <target id="banqref" pid="b9vchnd" name="Procedure" level="2" number="1"> <text>Make sure you have openssl available.</text> </target>
+
+ <target id="banqreg" pid="b9vchnd" name="Step" level="3" number="1"> <text>Make sure you have openssl available.</text> </target>
+
+ <target id="banqreh" pid="b9vchnd" name="Step" level="3" number="2"> <text>Type: openssl s_client -connect ldap.company.com:636</text> </target>
+
+ <target id="banqrei" pid="b9vchnd" name="Step" level="3" number="3"> <text>Copy everything from the '----BEGIN CERTIFICATE----' to the '----END CERTIFICATE----' lines (inclusive) into a file, say cert.ldap (the name does not matter).</text> </target>
+
+ <target id="banqrej" pid="b9vchnd" name="Step" level="3" number="4"> <text>Type: </text> </target>
+
+ <target id="banqrek" pid="b9vchnd" name="Step" level="3" number="5"> <text>Restart Tomcat.</text> </target>
+
+ <target id="banqrel" pid="b9vchnd" name="Step" level="3" number="6"> <text>Make sure you use ldaps://ldap.company.com:636 as the LDAP URL, rather than the default ldap://ldap.company.com:389 (note protocol and port number changes).</text> </target>
 
  <target id="b9vchne" pid="b9vchne" name="Sect1" level="1" number="1.10"> <text>Mail Setup</text> </target>
 
- <target id="b9q40iw" pid="b9vchne" name="FormalPara" level="2"> <text>System Configuration</text> </target>
+ <target id="bano0iu" pid="b9vchne" name="BridgeHead" level="2"> <text>System Configuration</text> </target>
 
- <target id="b9q41n4" pid="b9vchne" name="FormalPara" level="2"> <text>Setting up Incoming Mail schedule</text> </target>
+ <target id="bano0o8" pid="b9vchne" name="BridgeHead" level="2"> <text>Setting up Incoming Mail schedule</text> </target>
 
- <target id="b9q42lb" pid="b9vchne" name="FormalPara" level="2"> <text>Associating an E-mail Address with a Folder</text> </target>
+ <target id="bano0rs" pid="b9vchne" name="BridgeHead" level="2"> <text>Associating an E-mail Address with a Folder</text> </target>
 
- <target id="b9q43u0" pid="b9vchne" name="FormalPara" level="2"> <text>Establishing a Notification Schedule for a Folder</text> </target>
+ <target id="bano0w9" pid="b9vchne" name="BridgeHead" level="2"> <text>Establishing a Notification Schedule for a Folder</text> </target>
 
  <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.11"> <text>Memory Guidelines</text> </target>
 
- <target id="b9q46ot" pid="b9vchnf" name="FormalPara" level="2"> <text>Hibernate Cache</text> </target>
+ <target id="bano10m" pid="b9vchnf" name="BridgeHead" level="2"> <text>Hibernate Cache</text> </target>
 
- <target id="b9q4775" pid="b9vchnf" name="FormalPara" level="2"> <text>Lucene Cache</text> </target>
+ <target id="bano14w" pid="b9vchnf" name="BridgeHead" level="2"> <text>Lucene Cache</text> </target>
 
  <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="1.12"> <text>Document Support</text> </target>
 
- <target id="b9q4c7t" pid="b9vchng" name="FormalPara" level="2"> <text>Editing Support</text> </target>
+ <target id="bano1bk" pid="b9vchng" name="BridgeHead" level="2"> <text>Editing Support</text> </target>
 
 </targets>

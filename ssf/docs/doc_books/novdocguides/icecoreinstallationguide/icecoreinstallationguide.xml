@@ -186,14 +186,14 @@
  </para>
 </preface>
 
-<chapter id="b9vcafr" lang="en" xml:base="01_installingicecore.xml">
+<chapter conformance="none,doc,no,,80" id="b9vcafr" revision="01/01/03" lang="en" xml:base="01_installingicecore.xml">
  <title>Installing 
   <productname>&product;</productname>
  </title>
  <para>This chapter describes how to initially install and configure 
   <productname>&product;</productname>:
  </para>
- <orderedlist spacing="normal">
+ <itemizedlist mark="bullet" spacing="normal">
   <listitem>
    <para><xref linkend="b9vchn5" xrefstyle="SectTitleOnPage"/></para>
   </listitem>
@@ -230,7 +230,7 @@
   <listitem>
    <para><xref linkend="b9vchng" xrefstyle="SectTitleOnPage"/></para>
   </listitem>
- </orderedlist>
+ </itemizedlist>
  <sect1 id="b9vchn5">
   <title>Prerequisites</title>
   <para>You need a few things before you install 
@@ -238,35 +238,42 @@
   </para>
   <orderedlist spacing="normal">
    <listitem>
-    <para>A good, solid computer with lots of memory.</para>
-   </listitem>
-   <listitem>
-    <para>JDK 1.5 installed. (Preferably a relatively recent vintage)</para>
-   </listitem>
-   <listitem>
-    <para>A database:</para>
+    <para>Computer:
+     <remark>----- Need specs!</remark>
+    </para>
     <itemizedlist mark="bullet" spacing="normal">
      <listitem>
-      <para>MySQL 5 for Linux or Windows</para>
+      <para>Minimum 2Ghz processor</para>
      </listitem>
      <listitem>
-      <para>SQLserver for Windows</para>
+      <para>Multi-CPU systems preferred</para>
+     </listitem>
+     <listitem>
+      <para>Minimum 2GB RAM</para>
+      <note>
+       <para>You may potentially run with less RAM for specific development and testing configurations without simultaneous users, lots of database traffic, etc.</para>
+      </note>
      </listitem>
     </itemizedlist>
+    <para>See <xref linkend="b9vchnf" xrefstyle="HeadingOnPage"/> for details.</para>
+   </listitem>
+   <listitem>
+    <para>JDK 1.5.x installed (do not use 1.6).</para>
+   </listitem>
+   <listitem>
+    <para>A Database Server:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>MySQL 5.0.37 for Linux or MySQL 5.0.36 Windows</para>
+     </listitem>
+     <listitem>
+      <para>SQL Server for Windows (2000 or 2005)</para>
+     </listitem>
+    </itemizedlist>
+    <para>See <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/> for details.</para>
    </listitem>
   </orderedlist>
-  <formalpara id="b9ptalp">
-   <title>Required RAM:</title>
-   <para/>
-  </formalpara>
-  <para>2 GB minimum.</para>
-  <note>
-   <para>You may potentially run with less RAM for specific development and testing configurations without simultaneous users, lots of database traffic, etc.</para>
-  </note>
-  <formalpara id="b9pt3i1">
-   <title>How much disk do you need?</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bannybx">How much disk do you need?</bridgehead>
   <para>This depends on how much data you plan to put into the system. </para>
   <para>The software takes about 250 MB.</para>
  </sect1>
@@ -279,10 +286,10 @@
     <productname>&product;</productname>:
    </para>
    <step id="b9ptkcc" performance="required">
-    <para>Install JDK</para>
+    <para>Install JDK and Set Path</para>
    </step>
    <step id="b9ptl7r" performance="required">
-    <para>Install and Configure the Database</para>
+    <para>Install and Configure the Database Server</para>
    </step>
    <step id="b9ptld7" performance="required">
     <para>Download the appropriate 
@@ -298,26 +305,27 @@
     </para>
    </step>
    <step id="b9ptlgm" performance="required">
-    <para>Starting and Stopping 
+    <para>Start and Stop 
      <productname>&product;</productname>
     </para>
    </step>
    <step id="b9ptnu8" performance="required">
-    <para>Initial Login</para>
+    <para>Login</para>
    </step>
    <step id="b9ptnua" performance="required">
-    <para>Adding Users</para>
+    <para>Add Users</para>
    </step>
   </procedure>
  </sect1>
  <sect1 id="b9vchn7">
   <title>Database Planning</title>
   <para>
-   <productname>&product;</productname> (and LifeRay) uses a separate, dedicated, database within your database server.
+   <productname>&product;</productname> and LifeRay use separate dedicated databases within your database server.
   </para>
-  <para>A set of SQL configuration scripts are used to initialize the database (creating the necessary tables, etc.).</para>
+  <para>A set of SQL configuration scripts are used to initialize the databases (creating the necessary tables, etc.).</para>
   <para>
-   <productname>&product;</productname>'s default database is MySQL. It also supports SQLserver on Windows. (It will support Oracle.)
+   <productname>&product;</productname>'s default database is MySQL. It also supports SQL Server on Windows 
+   <remark>and Oracle.</remark>
   </para>
   <para>
    <productname>&product;</productname>'s database requirements are relatively modest. The bulk of the data uploaded to 
@@ -337,10 +345,7 @@
     <para> sqlDataSpace x 5 = sqlStorageSapce</para>
    </listitem>
   </itemizedlist>
-  <formalpara id="b9q3njd">
-   <title>MySQL</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bannyhr">MySQL</bridgehead>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
     <para> MySQL 5 is required</para>
@@ -358,13 +363,10 @@
     </para>
    </listitem>
   </itemizedlist>
-  <formalpara id="b9q3owh">
-   <title>Microsoft SQLserver </title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bannylt">Microsoft SQL Server </bridgehead>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
-    <para> You can use SQLserver 2000 or SQLserver 2005</para>
+    <para> You can use SQL Server 2000 or SQL Server 2005</para>
    </listitem>
    <listitem>
     <para>Make sure to select SQL Server and Windows for authentication (the default is Windows only)</para>
@@ -389,9 +391,17 @@
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
     <para>
-     <filename> filerepository</filename> - This is where all attachment files are located, so it tends to be a large consumer of disk space. The tree is roughly organized by zone, binder (folder/workspace), and entry. 
+     <filename> filerepository</filename> - This is where all attachment files are located, so it tends to be a large consumer of disk space. The tree is roughly organized by zone, binder (folder/workspace), and entry.
+    </para>
+   </listitem>
+   <listitem>
+    <para>
      <filename>archiveStore</filename> - Only activated in the Enterprise version of 
-     <productname>&product;</productname>, this is where previous versions of files are stored. The files are stored here to meet compliance and archival goals. 
+     <productname>&product;</productname>, this is where previous versions of files are stored. The files are stored here to meet compliance and archival goals.
+    </para>
+   </listitem>
+   <listitem>
+    <para>
      <filename>cachefilestore</filename> - This tree holds information derived from the attachments, such as thumbnails, scaled images, text, and HTML renderings. Depending on the nature of the attachments this tree consumes somewhat less space than the file repository (but it can, conceivably, store more).
     </para>
    </listitem>
@@ -401,7 +411,7 @@
     </para>
    </listitem>
    <listitem>
-    <para>Other trees - These are other trees that are not configurable and typically consume a small amount of space (relatively speaking).</para>
+    <para>Other trees - These are other trees that you cannot configure which typically consume a small amount of space (relatively speaking).</para>
    </listitem>
    <listitem>
     <itemizedlist mark="bullet" spacing="normal">
@@ -428,9 +438,37 @@
   <title>Editing the Installer (.xml) File</title>
   <para>The 
    <filename>installer.xml </filename>file provides the 
-   <productname>&product;</productname> installer with detailed configuration information regarding network, memory, database, file system, e-mail, presence, and other settings. Edit this file with your specific data. An example 
-   <filename>installer.xml </filename>file is shown below:
+   <productname>&product;</productname> installer with detailed configuration information regarding network, memory, database, file system, e-mail, presence, and other settings. Edit this file with your specific data. 
   </para>
+  <bridgehead id="banqre4">For a quick installation edit the following sections:</bridgehead>
+  <procedure id="banqre5">
+   <step id="banqre6" performance="required">
+    <para>Change the Host name in the Network section. Change the port number to 80 and the securePort to 443 if this is a dedicated server.</para>
+   </step>
+   <step id="banqre7" performance="required">
+    <para>Consider changing the JavaVirtualMachine setting in the Memory section if you have a large installation.</para>
+   </step>
+   <step id="banqre8" performance="required">
+    <para>Use the default file system configuration. This stores the files in
+     <literal> /home/icecoredata</literal>
+    </para>
+   </step>
+   <step id="banqre9" performance="required">
+    <para>The default database configuration is MySQL, with the default MySQL passwords.</para>
+   </step>
+   <step id="banqrea" performance="required">
+    <para>Use the default Lucene configuration.</para>
+   </step>
+   <step id="banqreb" performance="required">
+    <para>Modify the Email section with your SMTP and POP/IMAP servers.</para>
+   </step>
+   <step id="banqrec" performance="required">
+    <para>This initial beta release does not come with the Novell Conferencing software, so use the default Presence configuration.</para>
+   </step>
+  </procedure>
+  <bridgehead id="banqred">An example 
+   <filename>installer.xml </filename>file is shown below:
+  </bridgehead>
 
 <screen>
 &lt;!--                                                           -->
@@ -438,7 +476,7 @@
 
 
 <screen>
-&lt;!--           Aspen Installation Configuration File           -->
+&lt;!--           ICEcore Installation Configuration File         -->
 </screen>
 
 
@@ -448,7 +486,17 @@
 
 
 <screen>
-&lt;AspenConfig>
+
+</screen>
+
+
+<screen>
+&lt;ICEcoreConfig>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -468,17 +516,17 @@
 
 
 <screen>
-    &lt;!--  The host name or IP address of the server must be      -->
+    &lt;!--  The host name or IP address of the server must be        -->
 </screen>
 
 
 <screen>
-    &lt;!--  specified here.  The default, localhost, is only       -->
+    &lt;!--  specified here.  The default, localhost, is only         -->
 </screen>
 
 
 <screen>
-    &lt;!--  appropriate for test configurations with no remote     -->
+    &lt;!--  appropriate for test configurations with no remote       -->
 </screen>
 
 
@@ -493,22 +541,52 @@
 
 
 <screen>
+    &lt;!--  If you have a dedicated server, setting the port         -->
+</screen>
+
+
+<screen>
+    &lt;!--  to "80" and/or securePort to "443" will avoid having     -->
+</screen>
+
+
+<screen>
+    &lt;!--  to specify a port number in broswer URLs.                -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
     &lt;Network>
 </screen>
 
 
 <screen>
-        &lt;Host name="myhost" port="8080" />
+        &lt;Host name="localhost" port="8080" securePort="8443" />
 </screen>
 
 
 <screen>
-        &lt;WebServices endpoint="http://myhost:8080" />
+        &lt;WebServices endpoint="http://localhost:8080" />
 </screen>
 
 
 <screen>
     &lt;/Network>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -528,12 +606,12 @@
 
 
 <screen>
-    &lt;!--  Aspen requires a minimum of 512m to operate.            -->
+    &lt;!--  ICEcore requires a minimum of 512m to operate.           -->
 </screen>
 
 
 <screen>
-    &lt;!--  1g is recommended for basic production.                 -->
+    &lt;!--  1g is recommended for basic production.                  -->
 </screen>
 
 
@@ -544,6 +622,11 @@
 
 <screen>
     &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -563,6 +646,11 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
     &lt;!--                                                           -->
 </screen>
 
@@ -578,7 +666,57 @@
 
 
 <screen>
+    &lt;!-- Modify the configName to your desired configuration       -->
+</screen>
+
+
+<screen>
+    &lt;!-- in the FileSystem element below.  You must set the        -->
+</screen>
+
+
+<screen>
+    &lt;!-- configName to the exact configuration in the file:        -->
+</screen>
+
+
+<screen>
+    &lt;!--     basic      - Simple one-directory setup               -->
+</screen>
+
+
+<screen>
+    &lt;!--     advanced   - Advanced multiple-directory setup        -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+    &lt;!-- NOTE: Only basic is supported for alpha test.             -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
     &lt;FileSystem configName="basic">
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -598,17 +736,27 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
       &lt;Config id="basic">
 </screen>
 
 
 <screen>
-        &lt;RootDirectory path="/home/aspendata"  />
+        &lt;RootDirectory path="/home/icecoredata"  />
 </screen>
 
 
 <screen>
       &lt;/Config>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -623,12 +771,17 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
       &lt;Config id="advanced">
 </screen>
 
 
 <screen>
-        &lt;RootDirectory path="/home/aspendata"  />
+        &lt;RootDirectory path="/home/icecoredata"  />
 </screen>
 
 
@@ -663,7 +816,17 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
     &lt;/FileSystem>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -683,22 +846,87 @@
 
 
 <screen>
-    &lt;!-- Modify the configName to your desired configuration.    -->
+    &lt;!-- Modify the configName to your desired configuration       -->
 </screen>
 
 
 <screen>
-    &lt;!-- Change the Resources for the configuration if needed    -->
+    &lt;!-- in the Datatabase element below.  You must set the        -->
 </screen>
 
 
 <screen>
-    &lt;!-- (the defaults are pretty good)                            -->
+    &lt;!-- configName to the exact configuration in the file:        -->
 </screen>
 
 
 <screen>
-    &lt;Database  configName="MySQL_Default">
+    &lt;!--     MySQL_Default      - For MySQL                        -->
+</screen>
+
+
+<screen>
+    &lt;!--     SQLServer_Default  - For Microsoft SQL Server         -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+    &lt;!-- Change the Resources for the configuration you chose      -->
+</screen>
+
+
+<screen>
+    &lt;!-- (the defaults are pretty good for a simple configuration  -->
+</screen>
+
+
+<screen>
+    &lt;!-- with the database running locally, but you'll probably    -->
+</screen>
+
+
+<screen>
+    &lt;!-- have different passwords!).                               -->
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Database configName="MySQL_Default">
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;!--                                                       -->
+</screen>
+
+
+<screen>
+        &lt;!--                  MySQL_Default                        -->
+</screen>
+
+
+<screen>
+        &lt;!--                                                       -->
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -738,7 +966,7 @@
 
 
 <screen>
-            &lt;Resource for="aspen"
+            &lt;Resource for="icecore"
 </screen>
 
 
@@ -773,7 +1001,32 @@
 
 
 <screen>
-        &lt;Config id="SQLServer_Default" type="SQLserver">
+
+</screen>
+
+
+<screen>
+        &lt;!--                                                       -->
+</screen>
+
+
+<screen>
+        &lt;!--                 SQLServer_Default                     -->
+</screen>
+
+
+<screen>
+        &lt;!--                                                       -->
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;Config id="SQLServer_Default" type="SQLServer">
 </screen>
 
 
@@ -803,12 +1056,12 @@
 
 
 <screen>
-             /> 
+             />
 </screen>
 
 
 <screen>
-            &lt;Resource for="aspen"
+            &lt;Resource for="icecore"
 </screen>
 
 
@@ -833,7 +1086,7 @@
 
 
 <screen>
-             /> 
+             />
 </screen>
 
 
@@ -843,7 +1096,122 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
     &lt;/Database>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+    &lt;!--              Lucene Configuration Settings                -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+    &lt;!--     The Lucene index can be run "local" (within           -->
+</screen>
+
+
+<screen>
+    &lt;!--     the context of this application) or "server"          -->
+</screen>
+
+
+<screen>
+    &lt;!--     (run as it's own server).  Additionally it            -->
+</screen>
+
+
+<screen>
+    &lt;!--     can be run as it's own server on this system          -->
+</screen>
+
+
+<screen>
+    &lt;!--     or on a remote system.                                -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Lucene luceneLocation="local">
+</screen>
+
+
+<screen>
+        &lt;Resource
+</screen>
+
+
+<screen>
+            lucene.index.hostname="localhost"
+</screen>
+
+
+<screen>
+            lucene.flush.threshhold="100"
+</screen>
+
+
+<screen>
+            lucene.max.booleans="10000"
+</screen>
+
+
+<screen>
+            lucene.max.merge.docs="1000"
+</screen>
+
+
+<screen>
+            lucene.merge.factor="10"
+</screen>
+
+
+<screen>
+        />
+</screen>
+
+
+<screen>
+    &lt;/Lucene>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -863,7 +1231,7 @@
 
 
 <screen>
-    &lt;!--  Edit the Outbound and Inbound settings as required.    -->
+    &lt;!--  Edit the Outbound and Inbound settings as required.      -->
 </screen>
 
 
@@ -878,27 +1246,52 @@
 
 
 <screen>
-    &lt;!--  For inbound mail (postings) you need to specify either -->
+    &lt;!--  For inbound mail (postings) you need to specify either   -->
 </screen>
 
 
 <screen>
-    &lt;!--  pop3 or imap, and fill out the settings for which one  -->
+    &lt;!--  pop3 or imap, and fill out the settings for which one    -->
 </screen>
 
 
 <screen>
-    &lt;!--  you choose.                                              -->
+    &lt;!--  you choose.  These settings are not used until you       -->
+</screen>
+
+
+<screen>
+    &lt;!--  enable incoming email within the product.  If you do     -->
+</screen>
+
+
+<screen>
+    &lt;!--  not plan on using inbound email, you can ignore these    -->
+</screen>
+
+
+<screen>
+    &lt;!--  settings.                                                -->
 </screen>
 
 
 <screen>
     &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+
 </screen>
 
 
 <screen>
     &lt;EmailSettings>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -918,7 +1311,7 @@
 
 
 <screen>
-                mail.smtp.user="aspen@yourcompany.com."
+                mail.smtp.user="icecore@yourcompany.com."
 </screen>
 
 
@@ -948,22 +1341,32 @@
 
 
 <screen>
-        &lt;Inbound>
+
 </screen>
 
 
 <screen>
-            &lt;Resource 
+         &lt;Inbound>
 </screen>
 
 
 <screen>
-                mail.store.protocol="pop3"                     
+             &lt;Resource
 </screen>
 
 
 <screen>
-                mail.pop3.host="localhost"
+                 mail.store.protocol="pop3"
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+                 mail.pop3.host="localhost"
 </screen>
 
 
@@ -973,22 +1376,17 @@
 
 
 <screen>
-                mail.pop3.user="popEmailUserId"
+                 mail.pop3.user="popEmailUserId"
 </screen>
 
 
 <screen>
-                mail.pop3.password="passwordHere"
+                 mail.pop3.password="passwordHere"
 </screen>
 
 
 <screen>
-                mail.pop3.port="110"
-</screen>
-
-
-<screen>
-
+                 mail.pop3.port="110"
 </screen>
 
 
@@ -998,62 +1396,72 @@
 
 
 <screen>
-                mail.imap.host="localhost"
+                 mail.imap.host="localhost"
 </screen>
 
 
 <screen>
-                mail.imap.auth="true"
+                 mail.imap.auth="true"
 </screen>
 
 
 <screen>
-                mail.imap.user="imapEmailUserId"
+                 mail.imap.user="imapEmailUserId"
 </screen>
 
 
 <screen>
-                mail.imap.password="passwordHere"
+                 mail.imap.password="passwordHere"
 </screen>
 
 
 <screen>
-                mail.imap.port="143"
+                 mail.imap.port="143"
 </screen>
 
 
 <screen>
-                mail.smtp.user="aspen@sitescape.com"
+
 </screen>
 
 
 <screen>
-                mail.transport.protocol="smtp"
+                 mail.smtp.user="icecore@sitescape.com"
 </screen>
 
 
 <screen>
-                mail.smtp.host="localhost"
+                 mail.transport.protocol="smtp"
 </screen>
 
 
 <screen>
-                mail.smtp.port="25"
+                 mail.smtp.host="localhost"
 </screen>
 
 
 <screen>
-            />
+                 mail.smtp.port="25"
 </screen>
 
 
 <screen>
-        &lt;/Inbound>
+             />
 </screen>
 
 
 <screen>
-    &lt;/EmailSettings>
+         &lt;/Inbound>
+</screen>
+
+
+<screen>
+     &lt;/EmailSettings>
+</screen>
+
+
+<screen>
+
 </screen>
 
 
@@ -1073,12 +1481,17 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
     &lt;Presence>
 </screen>
 
 
 <screen>
-        &lt;Resource 
+        &lt;Resource
 </screen>
 
 
@@ -1113,12 +1526,177 @@
 
 
 <screen>
-            presence.broker.zon.url="http://zon-server.yourcompany.com:8000/imidio_api/"        />
+            presence.broker.zon.url="http://zon-server.yourcompany.com:8000/imidio_api/"
 </screen>
 
 
 <screen>
-    &lt;/Presence>    
+        />
+</screen>
+
+
+<screen>
+    &lt;/Presence>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+    &lt;!--         Mirrored Folders Configuration Settings           -->
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;MirroredFolders>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;MirroredFolder enabled="false" type="file"
+</screen>
+
+
+<screen>
+                        id="fs1" title="Shared Files 1"
+</screen>
+
+
+<screen>
+                        rootPath="k:/somedir">
+</screen>
+
+
+<screen>
+            &lt;AllowedUsers idList="administrator,u1,u2,u3" />
+</screen>
+
+
+<screen>
+            &lt;AllowedGroups idList="g1,g2,g3" />
+</screen>
+
+
+<screen>
+        &lt;/MirroredFolder>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;MirroredFolder enabled="false" type="file"
+</screen>
+
+
+<screen>
+                        id="fs2" title="Shared Files 2"
+</screen>
+
+
+<screen>
+                        rootPath="/sharedFiles/someDirectory">
+</screen>
+
+
+<screen>
+            &lt;AllowedUsers idList="administrator,u1,u2,u3" />
+</screen>
+
+
+<screen>
+            &lt;AllowedGroups idList="g1,g2,g3" />
+</screen>
+
+
+<screen>
+        &lt;/MirroredFolder>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;MirroredFolder enabled="false" type="sharepoint"
+</screen>
+
+
+<screen>
+                        id="sp1" title="Sharepoint 1"
+</screen>
+
+
+<screen>
+                        rootPath="/Shared Documents/cool-dir">
+</screen>
+
+
+<screen>
+            &lt;WebDAVContext hostUrl="http://hostname" user="accessId" password="pass" />
+</screen>
+
+
+<screen>
+            &lt;AllowedUsers idList="administrator,u1,u2,u3" />
+</screen>
+
+
+<screen>
+            &lt;AllowedGroups idList="g1,g2,g3" />
+</screen>
+
+
+<screen>
+        &lt;/MirroredFolder>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;/MirroredFolders>
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           -->
 </screen>
 
 
@@ -1133,7 +1711,7 @@
 
 
 <screen>
-    &lt;!--  Custom properties set here will be placed in the       -->
+    &lt;!--  Custom properties set here will be placed in the         -->
 </screen>
 
 
@@ -1148,12 +1726,17 @@
 
 
 <screen>
+
+</screen>
+
+
+<screen>
     &lt;CustomProperties>
 </screen>
 
 
 <screen>
-        &lt;Resource 
+        &lt;Resource
 </screen>
 
 
@@ -1168,7 +1751,7 @@
 
 
 <screen>
-&lt;/AspenConfig> 
+&lt;/ICEcoreConfig>
 </screen>
 
  </sect1>
@@ -1176,252 +1759,7 @@
   <title>Run the Installer: Sample Installer Sequence</title>
 
 <screen>
-Aspen Installer 0.l.0
-</screen>
-
-
-<screen>
-Installing this software requires agreement to the terms and conditions set forth in the:
-</screen>
-
-
-<screen>
-SiteScape End User License Agreement for Beta Software
-</screen>
-
-
-<screen>
-You can review this agreement again at the download site.
-</screen>
-
-
-<screen>
-Note: You must answer “YES” to install the software.
-</screen>
-
-
-<screen>
-Have you read and agree with the license? : yes
-</screen>
-
-
-<screen>
-JAVA_HOME is set to: C:\Program Files\Java\jdk1.5.0_11
-</screen>
-
-
-<screen>
-Creating installer working directory: C:/aspen/temp-installer
-</screen>
-
-
-<screen>
-Enter the type of installation:
-</screen>
-
-
-<screen>
-  1. Aspen Enterprise 0.1.0 with Liferay/Tomcat - FULL INSTALL
-</screen>
-
-
-<screen>
-  2. Aspen Enterprise 0.1.0 with Liferay/Tomcat - UPDATE
-</screen>
-
-
-<screen>
-  3. Aspen Lucene Server  (Not Available)
-</screen>
-
-
-<screen>
-  4. Apply settings only  (Use with care)
-</screen>
-
-
-<screen>
-Installation type [1]: 1
-</screen>
-
-
-<screen>
-We have to install the software into a dedicated directory
-</screen>
-
-
-<screen>
-Install directory: [C:/aspen-team-0.1.0]:
-</screen>
-
-
-<screen>
-   Directory C:/aspen-team-0.1.0 does not exist.  Creating...
-</screen>
-
-
-<screen>
-Copying deployment kits to work directory...
-</screen>
-
-
-<screen>
-   (this takes about a minute)
-</screen>
-
-
-<screen>
-   ... done
-</screen>
-
-
-<screen>
-Ready to apply kits to the installation directory
-</screen>
-
-
-<screen>
-Enter Y to install, enter N to cancel installation [Y]:
-</screen>
-
-
-<screen>
-Installing Aspen (LifeRay/Tomcat) ... (this will take a minute or so)
-</screen>
-
-
-<screen>
-Installing Aspen converters ...
-</screen>
-
-
-<screen>
-   ... done
-</screen>
-
-
-<screen>
-Applying installation settings...
-</screen>
-
-
-<screen>
-   Loading installer.xml...
-</screen>
-
-
-<screen>
-   Loading current configuration files...
-</screen>
-
-
-<screen>
-   Database settings...
-</screen>
-
-
-<screen>
-      using database configuration: SQLServer_Default
-</screen>
-
-
-<screen>
-      Database type is: SQLServer
-</screen>
-
-
-<screen>
-   File system settings...
-</screen>
-
-
-<screen>
-      using configuration: basic
-</screen>
-
-
-<screen>
-   File system root path: C:/aspendata
-</screen>
-
-
-<screen>
-   Email settings...
-</screen>
-
-
-<screen>
-   Network settings...
-</screen>
-
-
-<screen>
-   Custom settings...
-</screen>
-
-
-<screen>
-   Startup files...
-</screen>
-
-
-<screen>
-   Writing all settings...
-</screen>
-
-
-<screen>
-   Settings applied.
-</screen>
-
-
-<screen>
-New installation selected.  Getting database creation scripts....
-</screen>
-
-
-<screen>
-   Creating Liferay database for SQLServer ...
-</screen>
-
-
-<screen>
-osql -U sa -P Born2test -i C:/aspen/temp-installer/liferay/create/create-sql-server.sql
-</screen>
-
-
-<screen>
-   Creating Aspen database for SQLServer ...
-</screen>
-
-
-<screen>
-osql -U sa -P Born2test -i C:/aspen/temp-installer/aspen/create/create-database-sqlserver.sql
-</screen>
-
-
-<screen>
-   Databases created.
-</screen>
-
-
-<screen>
-Installation completed.
-</screen>
-
-
-<screen>
-You can startup Aspen/Liferay by running the startup script
-</screen>
-
-
-<screen>
-in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
-</screen>
-
-
-<screen>
-
+LED-SLES10:~ # ./installer.linuxNovell Teaming and Conferencing Enterprise Installer 0.l.2Checking license key...License Summary  Product:   Novell Teaming and Conferencing Enterprise  Version:   1.0  UID:       1  Effective: 2007-04-01  Expires:   2007-04-01  Users:     1000Installing this software requires agreement to theterms and conditions set forth in the:  Novell EULA and Export Compliance NoticeYou can review this agreement again at the download site ortype "REVIEW" below.Note: You must answer "YES" to install the software.Have you read and agree with the license? : yesStarting installation...JAVA_HOME is set to: /usr/java/jdk1.5.0_11   Loading installer.xml...Creating installer working directory: /root/temp-installerEnter the type of installation:  1. Novell Teaming and Conferencing Enterprise with Liferay/Tomcat - FULL INSTALL  2. Novell Teaming and Conferencing Enterprise with Liferay/Tomcat - UPDATE  3. Novell Teaming and Conferencing Enterprise Lucene Server    (Not Available)  4. Apply settings only    (Use with care)Installation type [1]:We have to install the software into a dedicated directoryInstall directory: [/usr/local/icecore-team-0.1.0]:   Directory /usr/local/icecore-team-0.1.0 does not exist.  Creating...   Checking database settings...   Database type is: MySql   Checking MySql version and access for LifeRay      mysql --user=root --password=root --port=3306--------------mysql  Ver 14.12 Distrib 5.0.37, for pc-linux-gnu (i686) using readline 5.0Connection id:          1Current database:Current user:           root@localhostSSL:                    Not in useCurrent pager:          stdoutUsing outfile:          ''Using delimiter:        ;Server version:         5.0.37-community MySQL Community Edition (GPL)Protocol version:       10Connection:             Localhost via UNIX socketServer characterset:    latin1Db     characterset:    latin1Client characterset:    latin1Conn.  characterset:    latin1UNIX socket:            /var/lib/mysql/mysql.sockUptime:                 12 min 16 secThreads: 1  Questions: 4  Slow queries: 0  Opens: 12  Flush tables: 1  Open tables: 6  Queries per second avg: 0.005--------------   Checking MySql version and access for Novell Teaming and Conferencing Enterprise      mysql --user=root --password=root --port=3306--------------mysql  Ver 14.12 Distrib 5.0.37, for pc-linux-gnu (i686) using readline 5.0Connection id:          2Current database:Current user:           root@localhostSSL:                    Not in useCurrent pager:          stdoutUsing outfile:          ''Using delimiter:        ;Server version:         5.0.37-community MySQL Community Edition (GPL)Protocol version:       10Connection:             Localhost via UNIX socketServer characterset:    latin1Db     characterset:    latin1Client characterset:    latin1Conn.  characterset:    latin1UNIX socket:            /var/lib/mysql/mysql.sockUptime:                 12 min 16 secThreads: 1  Questions: 8  Slow queries: 0  Opens: 12  Flush tables: 1  Open tables: 6  Queries per second avg: 0.011--------------  NOTE: Minimum database requirement is 5.0.37  We see Server version: 5.0.37Please review above notes.Enter Y to continue, enter N to cancel installation [Y]:Copying deployment kits to work directory...   (this takes about a minute)   ... doneReady to apply kits to the installation directoryEnter Y to install, enter N to cancel installation [Y]:Installing Novell Teaming and Conferencing Enterprise (LifeRay/Tomcat)    ... this will take a minute or so ...Installing Novell Teaming and Conferencing Enterprise converters ...   ... doneApplying installation settings...   Loading current configuration files...   Database settings...      using database configuration: MySQL_Default      Database type is: MySql   File system settings...      using configuration: basic   File system root path: /home/aspendata   Email settings...   Network settings...   Lucene...   Custom settings...   Startup files...   Writing all settings...   Settings applied.New installation selected.  Getting database creation scripts....   Creating Liferay database for MySql ...mysql --user=root --password=root --port=3306 &lt; /root/temp-installer/liferay/create/create-mysql.sql   Creating Novell Teaming and Conferencing Enterprise database for MySql ...mysql --user=root --password=root --port=3306  &lt; /root/temp-installer/aspen/create/create-database-mysql.sql   Databases created.   Customizing Liferay database for MySql ...mysql --user=root --password=root --port=3306 --database=lportal &lt; /root/temp-installer/changeAdministrator-lportal.sql   Customizing Novell Teaming and Conferencing Enterprise database for MySql ...mysql --user=root --password=root --port=3306 --database=sitescape  &lt; /root/temp-installer/changeAdministrator-sitescape.sql   Databases have been customized for this product installation.Installation completed.You can start Novell Teaming and Conferencing Enterprise/Liferay by running the startup scriptin: /usr/local/icecore-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
 </screen>
 
  </sect1>
@@ -1429,12 +1767,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
   <title>Starting and Stopping 
    <productname>&product;</productname>
   </title>
-  <formalpara id="b9q35wr">
-   <title>Starting 
-    <productname>&product;</productname>
-   </title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bannxe9">Starting 
+   <productname>&product;</productname>
+  </bridgehead>
   <para>On Windows:</para>
   <para>
    <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.bat </literal>
@@ -1445,79 +1780,83 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
   </para>
   <note>
    <para>While this is dependent on your system configuration, it can take upwards of 60 seconds before 
-    <productname>&product;</productname>/Liferay starts accepting web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software as the JSPs are recompiled as they are referenced. 
+    <productname>&product;</productname>/Liferay starts accepting web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software as the JSPs are recompiled as they are referenced. In Windows, startup is complete when the Tomcat window displays: 
+    <literal>INFO:Server Startup in ##### ms</literal>
    </para>
   </note>
-  <formalpara id="b9q35ws">
-   <title>Log Files / Monitoring</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bannyv1">Log Files/Monitoring</bridgehead>
   <para>On Windows:</para>
   <para>A Tomcat window appears when you issue the startup.bat command. Messages (good and bad) appear here.</para>
   <para>On Linux: </para>
   <para>Unlike Windows, the Tomcat process starts as a background process and no window appears. To monitor the messages in real time:</para>
-  <para>
-   <literal> tail -f /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/logs/catalina.out</literal>
-  </para>
-  <formalpara id="b9q35wt">
-   <title>Stopping 
-    <productname>&product;</productname>
-   </title>
-   <para/>
-  </formalpara>
+
+<screen>
+tail -f /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/logs/catalina.out
+</screen>
+
+  <bridgehead id="bannz0o">Stopping 
+   <productname>&product;</productname>
+  </bridgehead>
   <para>On Windows:</para>
-  <para>
-   <literal>/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.bat </literal>
-  </para>
+
+<screen>
+/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.bat
+</screen>
+
   <para>On Linux:</para>
-  <para>
-   <literal>/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.sh </literal>
-  </para>
+
+<screen>
+/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.sh
+</screen>
+
  </sect1>
  <sect1 id="b9vchnc">
   <title>Initial Logon</title>
   <para>After installing 
-   <productname>&product;</productname>/Liferay you need to log in. Liferay predefines a number of accounts, including a system administrator account.
+   <productname>&product;</productname>/Liferay you need to log in. 
+   <productname>&product;</productname> installation creates one system administrator account and a default format for users.
   </para>
   <orderedlist spacing="normal">
    <listitem>
-    <para>Access your installation via the following URL: 
-     <literal>http://yourhost.name.here:8080</literal>
-    </para>
+    <para>Access your installation with a browser via the following URL: </para>
+
+<screen>
+http://yourhost.name.here:8080 
+</screen>
+
    </listitem>
    <listitem>
     <para>At the login screen enter: 
-     <literal> liferay.com.1</literal>
+     <literal> administrator</literal>
     </para>
    </listitem>
    <listitem>
     <para>Enter the following Password: 
      <literal>test</literal>
     </para>
-    <para>This brings up the initial LifeRay portal window. There are no 
-     <productname>&product;</productname> portlets predefined for the system administrator account.
-    </para>
+    <para>This brings up the initial LifeRay portal window.</para>
    </listitem>
    <listitem>
-    <para>Click on the “
-     <guimenu>Add Content</guimenu>” link in the upper-right-hand corner. This brings up a panel of portlets along the left-hand margin. Expand the “
-     <productname>&product;</productname>” section and add the following portlets:
+    <para>To add more portlets, click on the “
+     <guimenu>Add Content</guimenu>” link in the upper-right-hand corner. This brings up a panel of portlets along the left-hand margin:
     </para>
     <itemizedlist mark="bullet" spacing="normal">
      <listitem>
-      <para>
-       <productname>&product;</productname> Administration
+      <para>Expand the “
+       <productname>&product;</productname>” section to add more 
+       <productname>&product;</productname> features, such as the 
+       <guimenu>Administration</guimenu> portlet.
       </para>
      </listitem>
      <listitem>
-      <para>
-       <productname>&product;</productname> Navigator
+      <para>Expand the “
+       <guimenu>Admin</guimenu>” section to add useful LifeRay features such as the 
+       <guimenu>Admin</guimenu> and 
+       <guimenu>Enterprise Admin</guimenu> portlets.
       </para>
      </listitem>
     </itemizedlist>
-    <para>The portlets are placed in the narrow column on the left side. For each of the two 
-     <productname>&product;</productname> portlets mouse down on the title and drag them over the right-hand column above the other portlets. They move to fill the column. Click on the links to initialize the portlets.
-    </para>
+    <para>The portlets are placed in the narrow column on the left side. To move a portlet to the wider right column, mouse down on the title and drag it over the right-hand column and release when you see a blue bar with arrows on each side appear.</para>
    </listitem>
   </orderedlist>
  </sect1>
@@ -1534,12 +1873,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    </listitem>
   </orderedlist>
   <para>Regardless of which method you choose it is important to realize that because 
-   <productname>&product;</productname> is embedded within a portal, a portion of user management is delegated to the portal. For example, the portal is responsible for all user authentications. 
+   <productname>&product;</productname> is embedded within LifeRay, a portion of user management is delegated to the LifeRay. For example, LifeRay is responsible for all user authentications. 
   </para>
-  <formalpara id="b9q4fl9">
-   <title>Basic User Management</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bannx5y">Basic User Management</bridgehead>
   <para>This capability comes “out of the box” with the product - no additional setup is required.Using the Liferay “
    <guimenu>Enterprise Admin</guimenu>” portlet, click on the 
    <guimenu>Users</guimenu> tab. (Note: Liferay has two portlets, “
@@ -1557,11 +1893,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para> Fill in the 
      <guimenu>First</guimenu>, 
      <guimenu>Last Name</guimenu>, assign a 
-     <guimenu>User ID</guimenu>, and specify the e-mail address.
-    </para>
-   </listitem>
-   <listitem>
-    <para>Click 
+     <guimenu>User ID</guimenu>, specify the e-mail address, and then click 
      <guimenu>Save</guimenu>.
     </para>
    </listitem>
@@ -1569,7 +1901,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para>Liferay shows an extended form.</para>
    </listitem>
    <listitem>
-    <para>In the second section you can set the timezone and portal window size. While 
+    <para>In the second section set the timezone and portal window size. While 
      <productname>&product;</productname> can operate in an 800x600 pixel window, we recommend the 1024x768 or Full Screen option.
     </para>
    </listitem>
@@ -1580,39 +1912,32 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    </listitem>
    <listitem>
     <para>Click on the 
-     <guimenu>Password</guimenu> tab.
-    </para>
-   </listitem>
-   <listitem>
-    <para> Type in the password.</para>
-   </listitem>
-   <listitem>
-    <para>Click 
+     <guimenu>Password</guimenu> tab, type in the password, and then click 
      <guimenu>Save</guimenu>.
     </para>
    </listitem>
   </orderedlist>
-  <para>The account is now created and ready for use. The user appears in 
-   <productname>&product;</productname> when they first log in and 
+  <para>The account is now ready for use, but not fully created. The administrator and other users cannot see the new user until after the user logs in for the first time. Once the new user logs in, 
    <productname>&product;</productname> creates their user workspace, including a blog, calendar, and file area.
   </para>
-  <formalpara id="b9q4i4m">
-   <title>User Management with LDAP/eDirectory </title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano067">User Management with LDAP/eDirectory </bridgehead>
   <para>If you want to use a corporate directory as the master reference for user accounts you need to configure both Liferay and 
    <productname>&product;</productname> in a similar manner. 
-   <productname>&product;</productname>'s LDAP configuration pages are designed to look and work in a similar fashion to Liferay, easing this task significantly. You can refer to the Liferay documentation for more detailed information, but the basic steps needed are:
+   <productname>&product;</productname>’s LDAP configuration pages are designed to look and work in a similar fashion to Liferay, easing this task significantly. You can refer to the Liferay documentation for more detailed information, but the basic steps needed are:
   </para>
   <orderedlist spacing="normal">
    <listitem>
     <para>Using the Liferay “
      <guimenu>Admin</guimenu>” portlet, click on the 
-     <guimenu>Users</guimenu> tab. (Note: Liferay has two portlets, “
-     <guimenu>Enterprise Admin</guimenu>” and “
-     <guimenu>Admin</guimenu>”. Both have “
-     <guimenu>Users</guimenu>” tabs, but they do very different things. Make sure you are using the correct portlet.)
+     <guimenu>Users</guimenu> tab.
     </para>
+    <note>
+     <para>The Liferay “
+      <guimenu>Enterprise Admin</guimenu>” and “
+      <guimenu>Admin</guimenu>” portlets both have “
+      <guimenu>Users</guimenu>” tabs, but they do very different things. Make sure you are using the correct portlet.
+     </para>
+    </note>
    </listitem>
    <listitem>
     <para>Click on the 
@@ -1648,12 +1973,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     </para>
    </listitem>
   </orderedlist>
-  <formalpara id="b9q4k6g">
-   <title>The 
-    <productname>&product;</productname> LDAP Configuration Form
-   </title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano0cl">The 
+   <productname>&product;</productname> LDAP Configuration Form
+  </bridgehead>
   <para>This form is similar to the Liferay form but includes additional information on scheduling synchronization of all users and, optionally, groups. </para>
   <para>Connection settings:</para>
   <itemizedlist mark="bullet" spacing="normal">
@@ -1749,6 +2071,54 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     <para>Synchronize group membership (recommended)</para>
    </listitem>
   </itemizedlist>
+  <bridgehead id="banqree">Secure LDAP/eDirectory Setup</bridgehead>
+  <para>To connect to a secure LDAP server, you need to import the server's certificate into 
+   <productname>&product;</productname>'s keystore. If the LDAP server is ldap.company.com, and it's running on the usual ldaps port (636), then you can follow these steps:
+  </para>
+  <procedure id="banqref">
+   <step id="banqreg" performance="required">
+    <para>Make sure you have 
+     <literal>openssl</literal> available.
+    </para>
+   </step>
+   <step id="banqreh" performance="required">
+    <para>Type: 
+     <literal>openssl s_client -connect ldap.company.com:636</literal>
+    </para>
+   </step>
+   <step id="banqrei" performance="required">
+    <para>Copy everything from the '
+     <literal>----BEGIN CERTIFICATE----</literal>' to the '
+     <literal>----END CERTIFICATE----</literal>' lines (inclusive) into a file, say 
+     <literal>cert.ldap</literal> (the name does not matter).
+    </para>
+   </step>
+   <step id="banqrej" performance="required">
+    <para>Type: </para>
+
+<screen>
+keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/conf/.keystore -file cert.ldap 
+</screen>
+
+    <para>The path to the keystore depends on your install path.</para>
+   </step>
+   <step id="banqrek" performance="required">
+    <para>Restart Tomcat.</para>
+    <note>
+     <para>This technique only works for real certificates. If the LDAP server is using a self-signed certificate, you also need to get the certificate for the "fake" CA and add it to the 
+      <literal>cacerts</literal> file on the 
+      <productname>&product;</productname> machine. The code at 
+      <literal> http://blogs.sun.com/andreas/entry/no_more_unable_to_find</literal> to get the other certificate appears to be a good example.
+     </para>
+    </note>
+   </step>
+   <step id="banqrel" performance="required">
+    <para>Make sure you use 
+     <literal>ldaps://ldap.company.com:636 </literal>as the LDAP URL, rather than the default 
+     <literal>ldap://ldap.company.com:389 </literal>(note protocol and port number changes).
+    </para>
+   </step>
+  </procedure>
  </sect1>
  <sect1 id="b9vchne">
   <title>Mail Setup</title>
@@ -1768,12 +2138,9 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
     </para>
    </listitem>
   </orderedlist>
-  <formalpara id="b9q40iw">
-   <title>System Configuration</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano0iu">System Configuration</bridgehead>
   <para>As part of installing and configuring 
-   <productname>&product;</productname>, the system administrator must supply information related to the address and access to the mail system. E-mail integration is not required and the level of integration is configurable. 
+   <productname>&product;</productname>, the system administrator must supply information related to the address and access to the mail system. E-mail integration is not required and you can configure the level of integration. 
   </para>
   <para>The
    <filename> installer.xml </filename>file contains sections on e-mail configuration for both notification (Outbound) and posting (Inbound).
@@ -1781,15 +2148,12 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
   <para>Outbound configuration requires the basic information for generating SMTP mail messages: server, port, and optional authentication information.</para>
   <para>
    <productname>&product;</productname> posting works by the system accessing a single e-mail account (sometimes referred to as the “posting account”). Using your e-mail system, multiple e-mail addresses (aliases) can be mapped to this account. 
-   <productname>&product;</productname> periodically reads e-mail sent to this account and apply the messages to individual folders (more on this below).
+   <productname>&product;</productname> periodically reads e-mail sent to this account and forwards the messages to individual folders (more on this below).
   </para>
   <para>Create the account using your normal e-mail system management tools. You can configure the posting account to use either POP3 or IMAP. 
-   <productname>&product;</productname> needs a host, port, e-mail account id and password for the posting feature to work.
+   <productname>&product;</productname> needs a host, port, e-mail account id, and password for the posting feature to work.
   </para>
-  <formalpara id="b9q41n4">
-   <title>Setting up Incoming Mail schedule</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano0o8">Setting up Incoming Mail schedule</bridgehead>
   <para>In the 
    <productname>&product;</productname>
    <guimenu> Administration</guimenu> portlet, click on the “
@@ -1797,10 +2161,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    <productname>&product;</productname> how when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
   </para>
   <para>The right-hand side of the setup page lists any aliases and the folder that is using that alias. You set up the alias address to folder mapping within the folders themselves (see next section).</para>
-  <formalpara id="b9q42lb">
-   <title>Associating an E-mail Address with a Folder</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano0rs">Associating an E-mail Address with a Folder</bridgehead>
   <para>If you enable incoming e-mail the final step that you need to take is to associate a particular e-mail alias address with a folder. When this is done, e-mail sent to that address is “read” by the folder and turned into entries (or replies).</para>
   <orderedlist spacing="normal">
    <listitem>
@@ -1816,10 +2177,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    </listitem>
   </orderedlist>
   <para>You can optionally set up the notification schedule for this folder at the same time (see next section). </para>
-  <formalpara id="b9q43u0">
-   <title>Establishing a Notification Schedule for a Folder</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano0w9">Establishing a Notification Schedule for a Folder</bridgehead>
   <para>You can configure each folder to send out e-mail messages highlighting activity within the folder.</para>
   <orderedlist spacing="normal">
    <listitem>
@@ -1840,7 +2198,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
  </sect1>
  <sect1 id="b9vchnf">
   <title>Memory Guidelines</title>
-  <para>Java virtual machine uses a memory pool that is configurable at startup time. (You can see 
+  <para>Java virtual machine uses a memory pool that you can configure at startup time. (You can see 
    <filename>catalina.bat/.sh</filename> for all of Tomcat's startup options).
   </para>
   <para>Memory settings are defined in the 
@@ -1866,19 +2224,13 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
    </listitem>
   </orderedlist>
   <para>The largest and most important of these are the Hibernate and Lucene caches.</para>
-  <formalpara id="b9q46ot">
-   <title>Hibernate Cache</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano10m">Hibernate Cache</bridgehead>
   <para>Hibernate is a software framework that manages the mapping between Java objects and relational databases. Consequently, it has a sophisticated cache system that works on top of any database caching mechanisms.By default 
    <productname>&product;</productname> uses the 
    <filename>ehcache </filename>plug-in, which is a non-clustering cache manager. Fine tuning of the Hibernate cache is done through 
    <filename>ehcache.xml</filename>.
   </para>
-  <formalpara id="b9q4775">
-   <title>Lucene Cache</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano14w">Lucene Cache</bridgehead>
   <para>Lucene has a number of tuning parameters. At this time, we have not done any work with them.</para>
  </sect1>
  <sect1 id="b9vchng">
@@ -1902,10 +2254,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
   </para>
   <para>The Open version uses OpenOffice to provide access to common Microsoft and OpenOffice document formats, and that is about it.</para>
   <para>The Enterprise version uses a licensed technology from the Stellent* company (now part of Oracle*) which provides processing capabilities to a wide spectrum of file types (over 200).</para>
-  <formalpara id="b9q4c7t">
-   <title>Editing Support</title>
-   <para/>
-  </formalpara>
+  <bridgehead id="bano1bk">Editing Support</bridgehead>
   <para>There are two ways of editing files stored in 
    <productname>&product;</productname>:
   </para>
@@ -1922,7 +2271,7 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
   <para>Because the “edit in place” option requires the WebDAV URL support by the application, which is not universally supported by the operating systems, 
    <productname>&product;</productname> must be configured to know which applications are “WebDAV-aware”.
   </para>
-  <para>The following table (still very much a work in progress) shows the planned default configuration of file/document support in 
+  <para>The following table shows the planned default configuration of file/document support in 
    <productname>&product;</productname>.
   </para>
   <para/>
@@ -1977,50 +2326,76 @@ in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
  </orderedlist>
  <sect1 id="b9vde7e">
   <title>Log in as a Manager</title>
-  <para>You need to log in using a zone-management account in order to set up Forum for your users.</para>
+  <para>You need to log in using an administrator account in order to set up 
+   <productname>&product;</productname> for your users.
+  </para>
   <sect2 id="b9vdfym">
-   <title>To log in using the default zone-management account:</title>
+   <title>To Log In Using the Administrator Account:</title>
    <procedure id="b9vdg1s">
     <step id="b9vdg1t" performance="required">
-     <para>Type the following URL in the browser window:</para>
+     <para>Type the 
+      <productname>&product;</productname> URL for your company into the browser window:
+     </para>
 
 <screen>
-http://&lt;yourCompany.com>/&lt;ssf>/&lt;zone1>/dispatch.cgi
+http://&lt;yourCompany.com/ICEcore-site>
 </screen>
 
-     <note>
-      <para>Replace the variables above with values specified during installation.</para>
-     </note>
-     <para>The login box appears.</para>
+     <para>The 
+      <guimenu>Sign In</guimenu> page appears.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="signin_a.png" width="95%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="signin_a.png" width="95%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
     </step>
     <step id="b9vdg74" performance="required">
-     <para>In the "Login name" box, type:</para>
+     <para>In the 
+      <guimenu>Login</guimenu> field, type:
+     </para>
 
 <screen>
-wf_admin
+administrator
 </screen>
 
     </step>
     <step id="b9vdg76" performance="required">
-     <para>In the Password box, enter the password specified upon Forum installation.</para>
+     <para>In the 
+      <guimenu>Password</guimenu> field, type:
+     </para>
+
+<screen>
+test
+</screen>
+
     </step>
     <step id="b9vdg79" performance="required">
      <para>Click the Login button.</para>
-     <para>The zone-workspace page appears. You are now logged in.</para>
+     <para>The 
+      <productname>&product;</productname> Home Page appears. You are now logged in as administrator.
+     </para>
     </step>
    </procedure>
-   <para>In the upper-left corner of the page, a SiteScape Forum Manager link appears. This is the name associated with the default management account (wf_admin). When the name appears in the upper-left corner, you are logged into the system. (You can change the name "SiteScape Forum Manager" by modifying the user profile for the wf_admin account.)</para>
-   <para>When you begin managing Forum, there are only two management levels: site managers (who manage the server machine) and zone managers. </para>
+   <para>The LifeRay portal management links are in the upper-right corner of the page below the 
+    <guimenu>Welcome Mary Admin! </guimenu>text. This is the name associated with the default administration account (
+    <guimenu>administrator</guimenu>). When the name appears in the upper-right corner, you are logged into the system. (You can change the name "Mary Admin" by modifying the user profile for the 
+    <guimenu>administration</guimenu> account.)
+   </para>
+   <para>When you begin managing 
+    <productname>&product;</productname>, there are only two management levels: site managers (who manage the server machine) and zone managers. 
+   </para>
    <para>By default, wf_admin is the only member of the Administrators group for the initial zone; if you create an additional zone, then the zone creator and wf_admin are both members of the Administrators group. Members of the Administrators group have the right to perform zone-management tasks. If you choose, you can add other members to this group, so that they can help manage the zone.</para>
   </sect2>
   <sect2 id="b9vdhwi">
    <title>Management Levels</title>
-   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and forums. At that point, it is helpful to delegate workspace management and the management of individual resources.</para>
-   <para>The Forum management levels and the default tasks that managers at those levels may perform are:</para>
+   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and folders. At that point, it is helpful to delegate workspace management and the management of individual resources.</para>
+   <para>The management levels and the default tasks that managers at those levels may perform are:</para>
    <itemizedlist mark="bullet" spacing="normal">
     <listitem>
      <para>Site Managers</para>
-     <para>Primarily responsible for working with the SiteScape Forum software so that Forum runs smoothly. Tasks include updating the installation on the server, troubleshooting the internal processes of Forum, enabling e-mail for the system, and so on.</para>
+     <para>Primarily responsible for working with the SiteScape software so that runs smoothly. Tasks include updating the installation on the server, troubleshooting the internal processes of , enabling e-mail for the system, and so on.</para>
      <para>Because site managers work directly with the server, there is no management menu specifically designed for them. Usually, site managers are also zone managers.</para>
     </listitem>
     <listitem>
@@ -2029,12 +2404,14 @@ wf_admin
     </listitem>
     <listitem>
      <para>Workspace Managers</para>
-     <para>Responsible for creating and deleting forums in a workspace, determining which forums appear in the workspace, viewing auditing information about the workspace, customizing the workspace using templates, and creating or deleting additional workspaces. </para>
+     <para>Responsible for creating and deleting folders in a workspace, determining which folders appear in the workspace, viewing auditing information about the workspace, customizing the workspace using templates, and creating or deleting additional workspaces. </para>
     </listitem>
     <listitem>
-     <para>Forum Managers</para>
-     <para>Responsible for managing a single forum. The responsibilities vary according to the type of forum being managed (discussion, calendar, tasks, and so on). Forum managers can modify access controls for the forum and allow or prevent viewing, participation, and other actions.</para>
-     <para>Managing a discussion forum requires more effort than managing other kinds of forums. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the forum using templates, running reports about content in the discussion forum, and managing the e-mail posting of forum entries.</para>
+     <para>
+      <productname>&product;</productname> Managers
+     </para>
+     <para>Responsible for managing a single folder. The responsibilities vary according to the type of forum being managed (discussion, calendar, tasks, and so on). Folder managers can modify access controls for the forum and allow or prevent viewing, participation, and other actions.</para>
+     <para>Managing a discussion folder requires more effort than managing other kinds of forums. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the forum using templates, running reports about content in the discussion forum, and managing the e-mail posting of forum entries.</para>
     </listitem>
    </itemizedlist>
    <para>Additional information about delegating management is available in the online Manager Help system, in the Workspace Organization section.</para>
@@ -2203,7 +2580,9 @@ localhost
      <para>Add some new usage tips to the User Tutorial forum, such as practical advice about using Forum to accomplish tasks specific to your organization.</para>
     </listitem>
     <listitem>
-     <para>If you are using the version of Forum that includes Zon support, you can create a discussion topic for those who wish to participate in an online meeting, post information to be read or discussed before the meeting, use the UI to start the meeting from From, and then post the meeting log and materials back into the topic when the meeting is complete.</para>
+     <para>If you are using the version of Forum that includes 
+      <productname>&zon;</productname> support, you can create a discussion topic for those who wish to participate in an online meeting, post information to be read or discussed before the meeting, use the UI to start the meeting from From, and then post the meeting log and materials back into the topic when the meeting is complete.
+     </para>
     </listitem>
    </itemizedlist>
   </sect2>
@@ -2409,62 +2788,51 @@ localhost
  </sect1>
 </chapter>
 
-<chapter id="b9veuno" lang="en" xml:base="04_nextsteps.xml">
- <title>Next Steps</title>
- <para>SiteScape recommends the following work as the next steps in your management of Forum:</para>
- <procedure id="b9vev1e">
-  <step id="b9vev1f" performance="required">
-   <para>Read the Making Teams Work manual</para>
-   <para>This manual covers issues that go beyond management and configuration, and that address how to optimize your teams' use of Forum. After deployment of Forum, the result should be an online space that your teams find intuitive, helpful in completing work effectively, and appropriately open to sharing information within the team and across the organization's matrix of teams. </para>
-  </step>
-  <step id="b9vev2q" performance="required">
-   <para>Read the Getting Started with Workflow tutorial </para>
-   <para>This tutorial teaches you how to automate your teams' common business processes, and how to use discussion forums to create powerful, dedicated applications.</para>
-  </step>
-  <step id="b9vev2t" performance="required">
-   <para>Skim the Manager online help system.</para>
-   <para>This table of contents may provide you with other ideas for ways in which to configure Forum for maximum, efficient use by your teams.</para>
-  </step>
-  <step id="b9vev2w" performance="required">
-   <para>Investigate template customizations. </para>
-   <para>This helps you take your customizations to the next level. You can create new commands using a form and a view template. Use the template-support routines to create form elements and to display the values provided by your users on the custom entry page. You can experiment with the added flexibility and power provided by templates, and make decisions about the most appropriate method for creating new commands for your teams.</para>
-   <para>For more information, review the first few topics of the templates Help system (you can access this system from the support forum and from the manager Help system).</para>
-  </step>
-  <step id="b9vev2z" performance="required">
-   <para>Investigate toolkit customizations.</para>
-   <para>In the same way that template customizations introduce a level of flexibility and power beyond the management-page method of creating new commands, Toolkit customizations provide a level of flexibility and power beyond template customizations. Also, there are some types of customizations that should be done using only Toolkit coding (altering the tabs and the application toolbars, for example).</para>
-   <para>For more information, review the first few topics of the Toolkit Help system (you can access this system from the support forum and from the manager Help system).</para>
-  </step>
- </procedure>
-</chapter>
-
-<appendix id="b9vewdf" xml:base="a1_webworkzone.xml">
- <title>Signing up for WebWorkZone</title>
- <para>When using the WebWorkZone hosted service, your first step is to sign up for a zone. </para>
- <bridgehead id="b9vewv1">To sign up for a zone:</bridgehead>
- <procedure id="b9vewxg">
-  <step id="b9vewxh" performance="required">
-   <para> Contact sales@sitescape.com to sign up for WebWorkZone.</para>
-   <para>You will receive a URL, username, and password. SiteScape recommends that you print this information for future reference.</para>
-  </step>
-  <step id="b9vex5f" performance="required">
-   <para>Enter the URL in the browser window. The URL follows this format:</para>
-
-<screen>
-http://webworkzone.com/&lt;zonename>
-</screen>
-
-   <note>
-    <para>Replace &lt;zonename> above with the value that you specified when you signed up for the zone.</para>
-   </note>
-   <para>The login box appears.</para>
-  </step>
-  <step id="b9vex5h" performance="required">
-   <para>Enter your username and password, then click Login. (You may want to bookmark the page so that you can access it quickly in the future.)</para>
-   <para>If you forget your password, leave the text boxes blank and click the I forgot my password link. WebWorkZone then sends a new password to the e-mail address that you provided when you signed up.</para>
-  </step>
- </procedure>
- <para>Although WebWorkZone is immediately usable, SiteScape recommends that you refer to the Chapter 1: Configuring SiteScape Software chapter in this manual (page 9) to make sure that your zone is optimally configured and ready for your users. For example, you may want to change the access controls to require that registered users be added to a group before they can participate (by default, anonymous users cannot participate). In addition, you might want to change the zone name, colors, and greetings.</para>
- <para>You can find more information about WebWorkZone at https://webworkzone.com.</para>
-</appendix>
+<glossary id="b9rtisc" xml:base="glossary.xml">
+ <title>
+  <productname>&product;</productname> Glossary
+ </title>
+ <glossentry id="b9rth09">
+  <glossterm>buddy list</glossterm>
+  <glossdef>
+   <para>A list of people that you contact frequently.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisd">
+  <glossterm>entry</glossterm>
+  <glossdef>
+   <para>An item, such as a wiki topic, file, or photo, that is contained in a folder.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtise">
+  <glossterm>folder</glossterm>
+  <glossdef>
+   <para>A container for entries and other folders. Each folder has a type, such as blog, wiki, or calendar, that determines its appearance and features.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisf">
+  <glossterm>presence</glossterm>
+  <glossdef>
+   <para>The state of being connected to a communications service and available for communication. Presence information is indicated by status icons.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisg">
+  <glossterm>tag</glossterm>
+  <glossdef>
+   <para>A keyword that anyone can add to a place to make it easier to find that and related places. Community tags are shared. Personal tags are private. </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtish">
+  <glossterm>tag cloud</glossterm>
+  <glossdef>
+   <para>A weighted list of tags in which frequently used tags are displayed in larger type.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisi">
+  <glossterm>workspace</glossterm>
+  <glossdef>
+   <para>A container for folders and other workspaces.</para>
+  </glossdef>
+ </glossentry>
+</glossary>
 </book>
