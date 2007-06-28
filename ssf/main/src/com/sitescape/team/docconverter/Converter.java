@@ -47,7 +47,16 @@ public abstract class Converter<T>
 		if (!convertedFile.exists()
 				|| convertedFile.lastModified() < fa.getModification().getDate().getTime())
 		{
-			createCachedFile(convertedFile, binder, entry, fa, filePath, relativeFilePath, parameters);
+			if(fa.getFileItem().getLength() > SPropsUtil.getLong("doc.conversion.size.threshold", 31457280L)) {
+				convertedFile.delete();
+				File parentDir = convertedFile.getParentFile();
+				if(!parentDir.exists())
+					parentDir.mkdirs();
+				convertedFile.createNewFile();
+			}
+			else {
+				createCachedFile(convertedFile, binder, entry, fa, filePath, relativeFilePath, parameters);
+			}
 		}
 
 		return new FileInputStream(convertedFile);
