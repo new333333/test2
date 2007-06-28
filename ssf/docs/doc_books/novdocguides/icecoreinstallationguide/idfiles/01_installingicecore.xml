@@ -10,21 +10,21 @@
 
  <target id="b9pt3i1" pid="b9vchn5" name="FormalPara" level="2"> <text>How much disk do you need?</text> </target>
 
- <target id="b9vchn6" pid="b9vchn6" name="Sect1" level="1" number="1.2"> <text>Steps for Installing Aspen</text> </target>
+ <target id="b9vchn6" pid="b9vchn6" name="Sect1" level="1" number="1.2"> <text>Steps for Installing ICEcore</text> </target>
 
- <target id="b9ptkcb" pid="b9vchn6" name="Procedure" level="2"> <text>The following sequence shows the steps you want to follow to install Aspen:</text> </target>
+ <target id="b9ptkcb" pid="b9vchn6" name="Procedure" level="2"> <text>The following sequence shows the steps you want to follow to install ICEcore:</text> </target>
 
  <target id="b9ptkcc" pid="b9vchn6" name="Step" level="3" number="1"> <text>Install JDK</text> </target>
 
  <target id="b9ptl7r" pid="b9vchn6" name="Step" level="3" number="2"> <text>Install and Configure the Database</text> </target>
 
- <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="3"> <text>Download the appropriate Aspen kit</text> </target>
+ <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="3"> <text>Download the appropriate ICEcore kit</text> </target>
 
  <target id="b9ptlge" pid="b9vchn6" name="Step" level="3" number="4"> <text>Edit the installer.xml file (see Editing the Installer (.xml) File)</text> </target>
 
  <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="5"> <text>Run the installer (on Linux, do a chmod +x installer.linux to make the installer executable)</text> </target>
 
- <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="6"> <text>Starting and Stopping Aspen</text> </target>
+ <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="6"> <text>Starting and Stopping ICEcore</text> </target>
 
  <target id="b9ptnu8" pid="b9vchn6" name="Step" level="3" number="7"> <text>Initial Login</text> </target>
 
@@ -42,13 +42,13 @@
 
  <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.6"> <text>Run the Installer: Sample Installer Sequence</text> </target>
 
- <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.7"> <text>Starting and Stopping Aspen</text> </target>
+ <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.7"> <text>Starting and Stopping ICEcore</text> </target>
 
- <target id="b9q35wr" pid="b9vchnb" name="FormalPara" level="2"> <text>Starting Aspen</text> </target>
+ <target id="b9q35wr" pid="b9vchnb" name="FormalPara" level="2"> <text>Starting ICEcore</text> </target>
 
  <target id="b9q35ws" pid="b9vchnb" name="FormalPara" level="2"> <text>Log Files / Monitoring</text> </target>
 
- <target id="b9q35wt" pid="b9vchnb" name="FormalPara" level="2"> <text>Stopping Aspen</text> </target>
+ <target id="b9q35wt" pid="b9vchnb" name="FormalPara" level="2"> <text>Stopping ICEcore</text> </target>
 
  <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="1.8"> <text>Initial Logon</text> </target>
 
@@ -58,7 +58,7 @@
 
  <target id="b9q4i4m" pid="b9vchnd" name="FormalPara" level="2"> <text>User Management with LDAP/eDirectory </text> </target>
 
- <target id="b9q4k6g" pid="b9vchnd" name="FormalPara" level="2"> <text>The Aspen LDAP Configuration Form</text> </target>
+ <target id="b9q4k6g" pid="b9vchnd" name="FormalPara" level="2"> <text>The ICEcore LDAP Configuration Form</text> </target>
 
  <target id="b9vchne" pid="b9vchne" name="Sect1" level="1" number="1.10"> <text>Mail Setup</text> </target>
 
