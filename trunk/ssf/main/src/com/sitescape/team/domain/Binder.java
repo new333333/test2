@@ -43,7 +43,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected Map properties;
     protected NotificationDef notificationDef;
     protected PostingDef posting;
-    protected Integer upgradeVersion=null; //initialzed by hiberaten access=field
+    protected Integer upgradeVersion=1; //initialzed by hiberaten access=field
     protected Long zoneId; 
     protected String type;
     protected String pathName;
