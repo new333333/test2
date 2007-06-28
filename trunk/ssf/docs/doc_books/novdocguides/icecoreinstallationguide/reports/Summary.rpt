@@ -2042,7 +2042,7 @@
    <String `Update Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/9/2007 2:39:16 PM'>
+   <String `6/27/2007 5:44:27 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2067,7 +2067,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc summary|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\reports\\graphics.rpt|0'>
+    <MText `message Novdoc summary|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\reports\\graphics.rpt|0'>
     <MCurrPage `1'>
    > # end of Marker
    <String `No graphic errors - click for report'>
@@ -2087,7 +2087,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc summary|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\reports\\crossref.rpt|0'>
+    <MText `message Novdoc summary|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\reports\\crossref.rpt|0'>
     <MCurrPage `1'>
    > # end of Marker
    <String `No cross-reference errors - click for report'>
@@ -2107,7 +2107,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc summary|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\reports\\entities.rpt|0'>
+    <MText `message Novdoc summary|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\reports\\entities.rpt|0'>
     <MCurrPage `1'>
    > # end of Marker
    <String `No entity errors - click for report'>
