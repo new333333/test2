@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/9/2007 2:39:16 PM'>
+   <String `6/27/2007 5:44:27 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2131,7 +2131,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\01_installingicecore.fm|1068485'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1068485'>
     <MCurrPage `1'>
    > # end of Marker
    <String `filesupporttable.png'>
@@ -2164,7 +2164,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\03_controllingaccess.fm|1036185'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\03_controllingaccess.fm|1036185'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managebyrols_a.png'>
@@ -2197,7 +2197,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\02_configuringicecore.fm|1037281'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1037281'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managementnavlinks_a.png'>
@@ -2230,7 +2230,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\help\\icecoresourcedoc\\icecoreinstallationguide\\02_configuringicecore.fm|1037008'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1037008'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managemenus_a.png'>
