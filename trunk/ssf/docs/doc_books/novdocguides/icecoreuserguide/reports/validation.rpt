@@ -2042,7 +2042,7 @@
    <String `Validation Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/9/2007 2:38:00 PM'>
+   <String `6/28/2007 5:22:24 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2067,6 +2067,12 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `preface.fm has no structural validation errors'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `icecoreunderstanding.fm has no structural validation errors'>
   > # end of ParaLine
  > # end of Para
  <Para 
