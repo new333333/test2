@@ -361,7 +361,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     	Principal principal = (Principal)session.get(Principal.class, prinId);
                         if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
                         //Get the real object, not a proxy to abstract class
-                        principal = (Principal)session.get(User.class, prinId);
+                        try {
+                        	principal = (Principal)session.get(User.class, prinId);
+                        } catch (Exception ex) {};  // group proxies will force an exception, didn't expect with session.get? 
                         if (principal==null) 
                             principal = (Principal)session.get(Group.class, prinId);
                         //make sure from correct zone
