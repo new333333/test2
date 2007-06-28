@@ -2042,7 +2042,7 @@
    <String `Entity Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `6/27/2007 5:44:27 PM'>
+   <String `6/28/2007 7:45:25 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2054,7 +2054,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String ` Valid Entities (1)'>
+   <String ` Valid Entities (2)'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2071,6 +2071,16 @@
   <PgfTag `CenterTab'>
   <ParaLine 
    <String `product'>
+   <Char Tab> 
+   <String `1'>
+   <Char Tab> 
+   <String `entity-decl.ent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `zon'>
    <Char Tab> 
    <String `1'>
    <Char Tab> 
@@ -2131,7 +2141,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039817'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041470'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2157,7 +2167,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1036591'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041537'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2183,7 +2193,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039751'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041604'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2209,7 +2219,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039866'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041671'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2235,7 +2245,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039923'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041738'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2261,7 +2271,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039970'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041805'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2287,7 +2297,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039977'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041872'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2313,7 +2323,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1039990'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1041939'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2339,7 +2349,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040003'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042006'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2365,7 +2375,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040016'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042073'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2391,7 +2401,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040029'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042140'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2417,7 +2427,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040041'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042207'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2443,7 +2453,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040047'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042274'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2469,7 +2479,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040054'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042341'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2495,7 +2505,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1040066'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\preface.fm|1042408'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2559,7 +2569,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1035615'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112362'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2585,7 +2595,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1068167'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112430'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2611,7 +2621,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093652'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112497'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2637,7 +2647,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092401'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112564'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2663,7 +2673,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092420'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112631'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2689,7 +2699,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093679'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112698'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2715,7 +2725,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093701'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112765'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2741,7 +2751,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092470'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112832'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2767,7 +2777,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092487'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112899'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2793,7 +2803,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092505'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1112966'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2819,7 +2829,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092525'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113033'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2845,7 +2855,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092545'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113100'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2871,7 +2881,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092563'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113167'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2897,7 +2907,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092578'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113234'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2923,7 +2933,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092595'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113301'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2949,7 +2959,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092613'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113368'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2975,7 +2985,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092631'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113435'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3001,7 +3011,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092651'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113502'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3027,7 +3037,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092676'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113569'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3053,7 +3063,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092698'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113636'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3079,7 +3089,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092715'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113703'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3105,7 +3115,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092734'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113770'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3131,7 +3141,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092759'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113837'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3157,7 +3167,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092804'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113904'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3183,7 +3193,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092822'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1113971'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3209,7 +3219,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092840'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114038'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3235,7 +3245,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092860'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114105'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3261,7 +3271,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092878'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114172'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3287,7 +3297,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092895'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114239'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3313,7 +3323,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092915'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114306'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3339,7 +3349,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092935'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114373'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3365,7 +3375,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092952'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114440'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3391,7 +3401,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092972'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114507'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3417,7 +3427,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1092991'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114574'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3443,7 +3453,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093009'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114641'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3469,7 +3479,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093028'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114708'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3495,7 +3505,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093046'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114775'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3521,7 +3531,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093067'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114842'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3547,7 +3557,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093089'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114909'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3573,7 +3583,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093104'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1114976'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3599,7 +3609,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093126'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115043'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3625,7 +3635,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093147'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115110'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3651,7 +3661,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093167'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115177'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3677,7 +3687,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093184'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115244'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3703,7 +3713,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093200'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115311'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3729,7 +3739,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093217'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115378'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3755,7 +3765,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093237'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115445'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3781,7 +3791,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093256'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115512'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3807,7 +3817,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093274'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115579'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3833,7 +3843,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093293'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115646'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3859,7 +3869,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093310'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115713'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3885,7 +3895,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093327'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115780'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3911,7 +3921,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093344'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115847'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3937,33 +3947,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093364'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1093381'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1115914'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3977,6 +3961,314 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String ` Valid Entities (2)'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Entity'>
+   <Char Tab> 
+   <String `References'>
+   <Char Tab> 
+   <String `Source'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `product'>
+   <Char Tab> 
+   <String `1'>
+   <Char Tab> 
+   <String `entity-decl.ent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `zon'>
+   <Char Tab> 
+   <String `1'>
+   <Char Tab> 
+   <String `entity-decl.ent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String ` References'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043318'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043385'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043452'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043519'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043586'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `zon'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043653'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043720'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043787'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043854'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043921'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `glossary.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4027,85 +4319,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1035606'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1035974'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1035981'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1041461'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\glossary.fm|1037357'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>

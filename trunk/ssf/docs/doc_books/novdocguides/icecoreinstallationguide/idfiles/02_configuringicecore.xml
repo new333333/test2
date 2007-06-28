@@ -6,15 +6,15 @@
 
  <target id="b9vde7e" pid="b9vde7e" name="Sect1" level="1" number="2.1"> <text>Log in as a Manager</text> </target>
 
- <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>To log in using the default zone-management account:</text> </target>
+ <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>To Log In Using the Administrator Account:</text> </target>
 
- <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the following URL in the browser window:</text> </target>
+ <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
 
- <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the following URL in the browser window:</text> </target>
+ <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
 
- <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the "Login name" box, type:</text> </target>
+ <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the Login field, type:</text> </target>
 
- <target id="b9vdg76" pid="b9vde7e" name="Step" level="4" number="3"> <text>In the Password box, enter the password specified upon Forum installation.</text> </target>
+ <target id="b9vdg76" pid="b9vde7e" name="Step" level="4" number="3"> <text>In the Password field, type:</text> </target>
 
  <target id="b9vdg79" pid="b9vde7e" name="Step" level="4" number="4"> <text>Click the Login button.</text> </target>
 

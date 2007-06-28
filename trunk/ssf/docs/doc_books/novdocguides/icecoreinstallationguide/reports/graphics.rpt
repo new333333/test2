@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `6/27/2007 5:44:27 PM'>
+   <String `6/28/2007 7:45:25 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2087,6 +2087,14 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `managemenus_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `signin_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2245,6 +2253,39 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `signin_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043009'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `signin_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 95%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow
