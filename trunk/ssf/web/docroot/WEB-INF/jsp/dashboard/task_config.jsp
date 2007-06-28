@@ -20,13 +20,13 @@
 
 	function ${treeName}_showId(forum, obj) {
 		var formObj = ss_getContainingForm(obj);
-		var r = formObj.ss_folder_id;
-	    for (var b = 0; b < r.length; b++) {
-	      if (r[b].value == forum) 	r[b].checked=true;
+		var r = formObj["ss_folder_id_" + forum];
+		if (r && r.checked) {
+			r.checked=false
+		} else {
+			r.checked=true
 		}
-		ss_clearSingleSelect('${treeName}');
-		
-		return false;
+		return false
 	}
 
 </script>
@@ -53,8 +53,27 @@
   			value="${summaryWordCount}"/></td>
 	</tr>
 </table>
-
 <br/>
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.forums"/></th></tr>
+<tr><td>&nbsp;</td></tr>
+<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<tr>
+  <td>
+    <input type="checkbox" name="del_${folder.id}"/>
+    <c:if test="${!empty folder.parentBinder}">
+    	${folder.parentBinder.title} // 
+    </c:if>
+    ${folder.title}
+  </td>
+</tr>
+</c:forEach>
+</table>
+  <span class="ss_fineprint" style="padding-left:4px;">[<ssf:nlt tag="portlet.forum.delete.select.forums"/>]</span>
+  <br/>
+</c:if>
+
 <br/>
 <table class="ss_style" width="100%">
 	<tr>
