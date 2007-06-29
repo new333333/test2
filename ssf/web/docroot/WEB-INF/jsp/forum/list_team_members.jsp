@@ -93,9 +93,13 @@
 						 </td>
 						<td>
 				<c:if test="${ssConfigJspStyle != 'template'}">
-							<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
-								value="${member.parentBinder.id}"/><ssf:param name="entryId" 
-								value="${member.id}"/></ssf:url>">${member.title}</a>
+						  <a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+									    binderId="${member.parentBinder.id}" ><ssf:param 
+									    name="entityType" value="user"/><ssf:param name="entryId" 
+										value="${member.id}"/><ssf:param 
+										name="newTab" value="1"/></ssf:url>"
+							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${portletNamespace}', 'yes');"
+							>${member.title}</a>
 				</c:if>
 				<c:if test="${ssConfigJspStyle == 'template'}">
 				${member.title}

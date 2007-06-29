@@ -1078,7 +1078,9 @@ public class BinderHelper {
 		} catch(Exception e) {}
 		
 		if(binder == null) {
-			tabs.setCurrentTab(tabId.intValue());
+			if (tabId != null) {
+				tabs.setCurrentTab(tabId.intValue());
+			}
 			return tabs;
 		}
 
