@@ -840,7 +840,7 @@ DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
 .ss_getting_started {
 	font-weight: bold;
 	text-align: center;
-	font: ${ss_style_font_largeprint};
+	font-size: ${ss_style_font_largeprint};
 	text-decoration: underline;
 	color: ${ss_logo_text};
 }

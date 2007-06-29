@@ -26,8 +26,8 @@
 		<c:forEach var="entry" items="${ssUsers}">  
 		  <c:set var="count" value="${count + 1}"/>
 		  <li id="<c:out value="ss_findUser_id_${entry._docId}"/>"><a 
-		    onClick="parent.ss_findUserSelectItem('${ss_namespace}', this.parentNode);" 
-		    href="#"><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
+		    onClick="parent.ss_findUserSelectItem('${ss_namespace}', this.parentNode);return false;" 
+		    href="javascript: ;"><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
 		</c:forEach>
       </ul>
       </td>
