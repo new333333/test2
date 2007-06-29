@@ -28,8 +28,8 @@
 			<c:forEach var="entry" items="${ssUsers}">
 			  <c:set var="count" value="${count + 1}"/>
 			  <li id="<c:out value="ss_findUser_id_${entry._docId}"/>"><a 
-			    onClick="ss_findUserSelectItem('${ss_namespace}', this.parentNode);" 
-			    href="javascript:;"><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
+			    onClick="ss_findUserSelectItem('${ss_namespace}', this.parentNode);return false;" 
+			    href="javascript: ;"><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
 			</c:forEach>
 	      </ul>
           <c:if test="${ss_searchTotalHits > ss_pageSize}">
@@ -41,7 +41,7 @@
              </c:if>
              </td><td width="80%"></td><td width="10%">
             <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-              <a href="javascript:;" onClick="ss_findUserNextPage('${ss_namespace}');return false;"
+              <a href="javascript: ;" onClick="ss_findUserNextPage('${ss_namespace}');return false;"
               ><img border="0" style="margin-left: 20px;" title="<ssf:nlt tag="general.Next"/>" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
             </c:if>
            </td></tr></tbody></table>

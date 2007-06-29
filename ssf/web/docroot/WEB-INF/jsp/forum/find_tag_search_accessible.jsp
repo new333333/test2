@@ -27,12 +27,12 @@
 		      <c:set var="count" value="${count + 1}"/>
 
 		      <li id="<c:out value="ss_findTag_id_${tag.ssTag}"/>"><a 
-		          href="#" onClick="
+		          href="javascript: ;" onClick="
 		          <c:if test="${ss_userGroupType == 'personalTags' || ss_userGroupType == 'communityTags' }">
-		      		parent.ss_putValueInto('ss_findTag_searchText_${ss_namespace}', '${tag.ssTag}');
+		      		parent.ss_putValueInto('ss_findTag_searchText_${ss_namespace}', '${tag.ssTag}');return false;
 		      	  </c:if>
   		          <c:if test="${ss_userGroupType != 'personalTags' && ss_userGroupType != 'communityTags' }">
-  		          	parent.ss_findTagSelectItem('${ss_namespace}', this.parentNode);
+  		          	parent.ss_findTagSelectItem('${ss_namespace}', this.parentNode);return false;
   		          </c:if>"><span style="white-space:nowrap;"><c:out value="${tag.ssTag}"/></span></a></li>
 		    </c:forEach>
 	      </ul>
