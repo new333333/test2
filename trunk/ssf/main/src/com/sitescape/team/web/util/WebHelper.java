@@ -713,29 +713,16 @@ public class WebHelper {
 	public static String getPortletUrl(RenderRequest req, RenderResponse res, 
 			HttpServletRequest httpReq, HttpServletResponse httpRes,
 			String action, boolean actionUrl, Map params) {
-		return getPortletUrl(req, res, httpReq, httpRes, action, actionUrl, params, false, "ss_forum");
+		return getPortletUrl(req, res, httpReq, httpRes, action, actionUrl, params, "ss_forum");
 	}
 	public static String getPortletUrl(RenderRequest req, RenderResponse res, 
 			HttpServletRequest httpReq, HttpServletResponse httpRes,
-			String action, boolean actionUrl, Map params, boolean forceAdapter, String portletName) {
-		if (forceAdapter) {
-			if (!Validator.isNull(action)) {
-				params.put("action", new String[] {action});
-			}
-			
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, portletName, actionUrl);
-			Iterator it = params.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry me = (Map.Entry) it.next();
-				adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
-			}
-			return adapterUrl.toString();
-			
-		} else if (req == null || res == null) {
+			String action, boolean actionUrl, Map params, String portletName) {
+		if (req == null || res == null) {
 			//This call must have come from a servlet (e.g., rss)
 			//  Build a permalink url
 			if (!Validator.isNull(action)) {
-				params.put("action", new String[] {action});
+				params.put("action", action);
 			}
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(httpReq, portletName, actionUrl);
 			Iterator it = params.entrySet().iterator();
