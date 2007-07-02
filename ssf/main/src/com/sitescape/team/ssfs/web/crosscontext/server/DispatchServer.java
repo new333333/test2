@@ -51,10 +51,13 @@ public class DispatchServer extends GenericServlet {
 			String zoneName = (String) req.getAttribute(CrossContextConstants.ZONE_NAME);
 			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
 			String password = (String) req.getAttribute(CrossContextConstants.PASSWORD);
+			Boolean ignorePassword = (Boolean) req.getAttribute(CrossContextConstants.IGNORE_PASSWORD);
+			if(ignorePassword == null)
+				ignorePassword = Boolean.FALSE;
 
 			// Authenticate the user against SSF user database.
 			try {
-				AuthenticationManagerUtil.authenticate(zoneName, userName, password, false, LoginInfo.AUTHENTICATOR_WEBDAV);
+				AuthenticationManagerUtil.authenticate(zoneName, userName, password, false, ignorePassword, LoginInfo.AUTHENTICATOR_WEBDAV);
 			}
 			catch(Exception e) {
 				// Instead of throwing ServletException to indicate an error, we pass

@@ -25,10 +25,10 @@ public class AuthenticationManagerUtil {
 	}
 	
 	public static User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, String authenticatorName)
+			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws UserDoesNotExistException, PasswordDoesNotMatchException {
 		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, username, password, passwordAutoSynch, authenticatorName);
+		return am.authenticate(zoneName, username, password, passwordAutoSynch, ignorePassword, authenticatorName);
 	}
 
 	public static User authenticate(String zoneName, Long userId, String passwordDigest, String authenticatorName)

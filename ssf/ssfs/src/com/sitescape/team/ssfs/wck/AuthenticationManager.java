@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.ssfs.wck;
 
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.slide.simple.authentication.SessionAuthenticationManager;
 
 import com.sitescape.team.ssfs.CrossContextConstants;
@@ -24,10 +27,9 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 		
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
-		req.setAttribute(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		req.setAttribute(CrossContextConstants.ZONE_NAME, id[0]);
-		req.setAttribute(CrossContextConstants.USER_NAME, id[1]);
-		req.setAttribute(CrossContextConstants.PASSWORD, password);
+
+		setAttributes(req, id[0], id[1], password);
+		
 		NullServletResponse res = new NullServletResponse();
 		
 		DispatchClient.doDispatch(req, res);
@@ -61,5 +63,11 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 	public void closeAuthenticationSession(Object session) throws Exception {
 	}
 
-	
+	protected void setAttributes(HttpServletRequest req, 
+			String zoneName, String userName, String password) {
+		req.setAttribute(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
+		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
+		req.setAttribute(CrossContextConstants.USER_NAME, userName);
+		req.setAttribute(CrossContextConstants.PASSWORD, password);
+	}
 }

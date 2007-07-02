@@ -60,6 +60,7 @@ public abstract class CrossContextConstants {
 	public static final String USER_NAME = "username";
 	public static final String PASSWORD = "password";
 	public static final String ZONE_NAME = "zonename";
+	public static final String IGNORE_PASSWORD = "ignorePassword";
 	
 	// Argument key for OPERATION_SET_RESOURCE operation.
 	public static final String INPUT_STREAM = "inputStream";

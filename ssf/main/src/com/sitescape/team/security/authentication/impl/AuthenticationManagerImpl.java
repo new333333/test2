@@ -88,7 +88,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
 		try {
-			user = authenticate(zoneName, userName, password, passwordAutoSynch, authenticatorName);
+			user = authenticate(zoneName, userName, password, passwordAutoSynch, false, authenticatorName);
 			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 			
 			if (updates != null && !updates.isEmpty()) {
@@ -115,7 +115,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	}
 
 	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, String authenticatorName)
+			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 
@@ -130,18 +130,20 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
 						+ zoneName + "," + username + "]", e);
     	}
-   		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
-   			// 	Passwords do not match
-   			if(passwordAutoSynch) {
-   				// 	Change the user's password to the value passed in. 
-   				Map updates = new HashMap();
-   				updates.put("password", password);
-   				getProfileModule().modifyUserFromPortal(user, updates);
-   			}
-   			else {
-   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
-   			}
-   		} 
+    	if(!ignorePassword) {
+	   		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
+	   			// 	Passwords do not match
+	   			if(passwordAutoSynch) {
+	   				// 	Change the user's password to the value passed in. 
+	   				Map updates = new HashMap();
+	   				updates.put("password", password);
+	   				getProfileModule().modifyUserFromPortal(user, updates);
+	   			}
+	   			else {
+	   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
+	   			}
+	   		} 
+    	}
 		return user;
 	}
 

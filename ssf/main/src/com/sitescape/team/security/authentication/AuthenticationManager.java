@@ -20,7 +20,7 @@ public interface AuthenticationManager {
 		throws PasswordDoesNotMatchException, UserDoesNotExistException;
 
 	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, String authenticatorName)
+			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 	throws PasswordDoesNotMatchException, UserDoesNotExistException;
 
 	public User authenticate(String zoneName, Long userId, String passwordDigest, 
