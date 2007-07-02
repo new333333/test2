@@ -12,37 +12,71 @@
  */
  //this is used by penlets and portlets
 %>
+
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-<c:if test="${!empty ssComponentId}">
-<c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+<c:if test="${!empty ssDashboard.beans[componentId].ssBinder}">
+<c:set var="folder" value="${ssDashboard.beans[componentId].ssBinder}"/>
+
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<tr>
+  <td>
+<c:if test="${ssConfigJspStyle != 'template'}">
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
+		>${folder.parentBinder.title}</a> // 
+    <a href="javascript: ;"
+		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"
+		><span class="ss_bold">${folder.title}</span></a>
 </c:if>
-<c:set var="portletNamespace" value=""/>
-<ssf:ifnotadapter>
-<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
-</ssf:ifnotadapter>
-
-<c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
-<c:set var="ss_pageNumber" value="0"/>
-
-<c:if test="${ssDashboard.scope == 'portlet'}">
-<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
-</c:if>
-<script type="text/javascript">	
-function ${ss_divId}_wikiurl(binderId, entryId, type) {
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
-}
-</script>
-
-
 <c:if test="${ssConfigJspStyle == 'template'}">
-<script type="text/javascript">
-function ${ss_divId}_wikiurl(binderId, entryId, type) {
-	return false;
-}
-</script>
+    ${folder.parentBinder.title} // <span class="ss_bold">${folder.title}</span>
 </c:if>
+</td></tr>
+</table>
+<br/>
+
+</c:if>
+
 
 <div id="${ss_divId}">
-<%@ include file="/WEB-INF/jsp/dashboard/wiki_view2.jsp" %>
+
+<c:set var="wikiEntry" value="${ssDashboard.beans[componentId].wikiHomepageEntry}" />
+<c:if test="${empty wikiEntry}">
+  <span class="ss_light">--<ssf:nlt tag="entry.noWikiHomepageSet"/>--</span>
+</c:if>
+
+<c:if test="${!empty wikiEntry}">
+<div>
+<span class="ss_entryTitle">
+  <a href="<ssf:url 
+    folderId="${wikiEntry.parentFolder.id}" 
+    action="view_folder_entry"
+    entryId="${wikiEntry.id}">
+	<ssf:param name="newTab" value="1"/>
+    </ssf:url>"
+   <c:if test="${ssConfigJspStyle != 'template'}">
+	onClick="return ss_gotoPermalink('${wikiEntry.parentFolder.id}','${wikiEntry.id}', '${wikiEntry.entityType}', '${ss_namespace}', 'yes'); ">
+	</c:if>
+	<c:if test="${ssConfigJspStyle == 'template'}"> 
+	onClick="return false;">
+	</c:if>
+
+<c:if test="${!empty wikiEntry.title}">
+<c:out value="${wikiEntry.title}"/>
+</c:if>
+<c:if test="${empty wikiEntry.title}">
+  <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
+</c:if>
+</a></span>
+</div>
+
+<c:if test="${!empty wikiEntry.description}">
+<div class="ss_entryContent ss_entryDescription">
+ <span><ssf:markup type="view" entity="${wikiEntry}"><c:out 
+   value="${wikiEntry.description.text}" escapeXml="false"/></ssf:markup></span>
+</div>
+</c:if> 
+
+</c:if> 
 </div>

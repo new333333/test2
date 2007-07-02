@@ -10,17 +10,18 @@
  *
  */
 %>
+<% // List team members %>
+<% // Template used also on dashboard %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<c:set var="hitCount" value="0"/>
+
 <ssf:ifnotadapter>
+<% //setup for templates and dashboard %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 </ssf:ifnotadapter>
 
-<% // List team members %>
-<% // Template used also on dashboard %>
-<c:set var="hitCount" value="0"/>
-<c:set var="componentId" value="${ssComponentId}"/>
-<c:if test="${empty ssComponentId}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
 
 <div class="ss_buddies">
@@ -78,7 +79,7 @@
 	</td>
 	</tr>
   </table>
-	
+<c:if test="${ssConfigJspStyle != 'template'}">	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
 	
 		<c:choose>
@@ -92,25 +93,20 @@
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
 						<td>
-				<c:if test="${ssConfigJspStyle != 'template'}">
 						  <a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
 									    binderId="${member.parentBinder.id}" ><ssf:param 
 									    name="entityType" value="user"/><ssf:param name="entryId" 
 										value="${member.id}"/><ssf:param 
 										name="newTab" value="1"/></ssf:url>"
-							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${portletNamespace}', 'yes');"
+							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${ss_namespace}', 'yes');"
 							>${member.title}</a>
-				</c:if>
-				<c:if test="${ssConfigJspStyle == 'template'}">
-				${member.title}
-				</c:if>
 						</td>
 						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>
 						<td>
-							<div id="ss_presenceOptions_${renderResponse.namespace}"></div>
+							<div id="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"></div>
 							<ssf:presenceInfo user="${member}" 
 							    showOptionsInline="false" 
-							    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
+							    optionsDivId="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"/>
 						</td>
 						<td><a href="mailto:<c:out value="${member.emailAddress}" 
 						/>"><c:out value="${member.emailAddress}" /></a></td>
@@ -148,13 +144,13 @@
 	<td align="right">
 	  <c:if test="${ss_pageNumber > 0}">
 	    <span>
-	      <a onClick="ss_moreTeamMembers('${ssBinder.id}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}'); return false;"
+	      <a onClick="ss_moreTeamMembers('${ssBinder.id}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}'); return false;"
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
 	  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssTeamMembersCount}">
 	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreTeamMembers('${ssBinder.id}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}'); return false;"
+	      <a onClick="ss_moreTeamMembers('${ssBinder.id}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>
@@ -162,6 +158,6 @@
    </tr>
   </table>
 </div>
-
+</c:if>
 </div>
 

@@ -11,16 +11,12 @@
  *
  */
 %>
+<%  //ss_namespace, ss_divId setup on input %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
-<c:set var="portletNamespace" value=""/>
-<ssf:ifnotadapter>
-<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
-</ssf:ifnotadapter>
-
 <table><tr><td>
 <c:choose>
 <c:when test="${ssDashboard.dashboard.components[componentId].data.galleryImageSize == 'small'}">
@@ -64,7 +60,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
+		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'user'}">
@@ -74,7 +70,7 @@
 			<ssf:param name="entityType" value="workspace" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
+		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'group'}">
@@ -89,7 +85,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-		onClick="return ss_gotoPermalink('${fileEntry._docId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}', 'yes');">
+		onClick="return ss_gotoPermalink('${fileEntry._docId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
 
     </c:when>
  	</c:choose>
@@ -128,13 +124,13 @@
 	</c:if>
 	  <c:if test="${ss_pageNumber > 0}">
 	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
 	  <c:if test="${(ss_pageNumber * ss_pageSize + resultCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>

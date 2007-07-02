@@ -160,7 +160,6 @@ if (!ss_onLoadRoutineLoaded) {
 function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
 
 	var url = ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab);
-	
 	if (url == "") return true;
 
 	self.location.href = url;
@@ -2788,11 +2787,12 @@ function ss_hideDashboardMenu(obj) {
 	ss_hideDiv(formObj.parentNode.id)
 }
 
-function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, divId, componentId, displayType) {
+function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, namespace, divId, componentId, displayType) {
 	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
 	url += "\&operation=search_more";
 	url += "\&operation2="+componentId;
 	url += "\&divId="+divId;
+	url += "\&namespace="+namespace;	
 	url += "\&pageNumber="+pageNumber;
 	url += "\&pageSize="+pageSize;
 	url += "\&displayType="+displayType;
@@ -2807,11 +2807,12 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_moreTeamMembers(binderId, pageNumber, pageSize, divId, componentId) {
+function ss_moreTeamMembers(binderId, pageNumber, pageSize, namespace, divId, componentId) {
 	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
 	url += "\&operation=team_more";
 	url += "\&operation2="+componentId;
 	url += "\&divId="+divId;
+	url += "\&namespace="+namespace;
 	url += "\&pageNumber="+pageNumber;
 	url += "\&pageSize="+pageSize;
 	url += "\&randomNumber="+ss_random++;

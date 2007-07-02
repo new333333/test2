@@ -127,6 +127,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				if ((Boolean)component.get(Dashboard.VISIBLE)) {
 					//Set up the bean for this component
 					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.ID), isConfig);
+				} else if (!isConfig) {
+					//the workspace needs to setup the tree even when not visible inorder to load the javascript
+					getInvisibleDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.ID), isConfig);
 				}
 			}
 		}
@@ -153,6 +156,35 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				doComponentSetup(ssDashboard, dashboard, binder, model, id);
 		}
     }
+	private static void getInvisibleDashboardBean(Binder binder, Map ssDashboard, Map model, String id, boolean isConfig) {
+		//workspace tree has setup even when invisible
+		String componentScope = "";
+		if (id.contains("_")) componentScope = id.split("_")[0];
+		if (!componentScope.equals("")) {
+			//Get the component from the appropriate scope
+			Map dashboard = new HashMap();
+			if (componentScope.equals(DashboardHelper.Local)) {
+				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP);
+			} else if (componentScope.equals(DashboardHelper.Global)) {
+				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP);
+			} else if (componentScope.equals(DashboardHelper.Binder)) {
+				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
+			}
+			if (dashboard.containsKey(Dashboard.COMPONENTS)) {
+				Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
+				if (components.containsKey(id)) {
+					Map component = (Map) components.get(id);
+					String componentName = (String)component.get(Dashboard.NAME);
+					 if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
+							//Set up the workspace tree bean
+								getInstance().getWorkspaceTreeBean(binder, 
+									ssDashboard, model, id, component, false);
+					 }
+				}
+			}
+		}
+		
+	}
     private static void doComponentSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
 		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
 			Map components = (Map) dashboard.get(Dashboard.COMPONENTS);

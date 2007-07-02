@@ -11,37 +11,16 @@
  *
  */
 %>
+
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-<c:if test="${!empty ssComponentId}">
-<c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
-</c:if>
-<c:set var="portletNamespace" value=""/>
-<ssf:ifnotadapter>
-<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
-</ssf:ifnotadapter>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
-<c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
-<c:if test="${ssDashboard.scope == 'portlet'}">
-<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
-</c:if>
-<script type="text/javascript">
-function ${ss_divId}_searchurl(binderId, entryId, type) {
-	//Build a url to go to
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
-}
-</script>
 
-<c:if test="${ssConfigJspStyle == 'template'}">
-<script type="text/javascript">
-function ${ss_divId}_searchurl(binderId, entryId, type) {
-	return false;
-}
-</script>
-</c:if>
 <!-- TITLE OR DESCRIPTION?  -->
 <p/>
+<c:if test="${ssConfigJspStyle != 'template'}">
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/search_view2.jsp" %>
 </div>
+</c:if>

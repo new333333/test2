@@ -22,8 +22,8 @@
 <div class="ss_decor-border5">
   <div class="ss_decor-border6">
     <div class="ss_content_window">
-
-<%@ include file="/WEB-INF/jsp/dashboard/search_view.jsp" %>
+    <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+	<%@ include file="/WEB-INF/jsp/dashboard/search_view.jsp" %>
 
 </div></div></div>
 </td></tr></table>

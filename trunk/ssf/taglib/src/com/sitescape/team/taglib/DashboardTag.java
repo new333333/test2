@@ -99,7 +99,6 @@ public class DashboardTag extends BodyTagSupport {
 							StringServletResponse res = new StringServletResponse(httpRes);
 				
 							rd.include(req, res);
-				
 							pageContext.getOut().print(res.getString());
 						}
 					}

@@ -11,6 +11,8 @@
 package com.sitescape.team.portlet.administration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Iterator;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -96,19 +98,19 @@ public class ViewController extends  SAbstractController {
 		rootElement.addAttribute("displayOnly", "true");
 		rootElement.addAttribute("id", String.valueOf(nextId++));
 
-		
+		Map elements = new TreeMap();
+		Map designers = new TreeMap();
 		//Definition builders
 		Element designerElement;
 		Element element;
-		designerElement = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		designerElement = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 		designerElement.addAttribute("title", NLT.get("administration.definition_builder_designers"));
 		designerElement.addAttribute("image", "bullet");
 		designerElement.addAttribute("displayOnly", "true");
 		designerElement.addAttribute("id", String.valueOf(nextId++));
-		boolean hasDefAccess=false;
 		//Definition builder - Entry form designer
 		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -118,12 +120,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
 				
 		//Definition builder - Folder view designer
 		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -133,12 +135,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
 				
 		//Definition builder - Workflow designer
 		if (getDefinitionModule().testAccess(Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -148,12 +150,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
 		
 		//Definition builder - Profile listing designer
 		if (getDefinitionModule().testAccess(Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -163,12 +165,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
 		
 		//Definition builder - Profile designer
 		if (getDefinitionModule().testAccess(Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -178,12 +180,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
 		
 		//Definition builder - Workspace designer
 		if (getDefinitionModule().testAccess(Definition.WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -193,12 +195,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
 		
 		//Definition builder - User workspace designer
 		if (getDefinitionModule().testAccess(Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
-			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_user_workspace_designer"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -208,14 +210,21 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			hasDefAccess=true;
+			designers.put(element.attributeValue("title"), element);
 		}
-		if (!hasDefAccess) rootElement.remove(designerElement);
+		if (!designers.isEmpty()) {
+			elements.put(designerElement.attributeValue("title"), designerElement);
+			for (Iterator iter=designers.entrySet().iterator(); iter.hasNext(); ) {
+				Map.Entry me = (Map.Entry)iter.next();
+				designerElement.add((Element)me.getValue());
+			}
+			
+		}
 
 		//Ldap configuration
 		if (getLdapModule().testAccess("getLdapConfig")) {
 			if (getLdapModule().getLdapConfig() != null) {
-				element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.configure_ldap"));
 				element.addAttribute("image", "bullet");
 				element.addAttribute("id", String.valueOf(nextId++));
@@ -224,12 +233,13 @@ public class ViewController extends  SAbstractController {
 				url.setWindowState(WindowState.MAXIMIZED);
 				url.setPortletMode(PortletMode.VIEW);
 				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
 			}
 		}
 		
 		//Roles configuration
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
-			element = rootElement.addElement("child");
+			element = DocumentHelper.createElement("child");
 			element.addAttribute("title", NLT.get("administration.configure_roles"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -238,11 +248,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 		
 		//Posting schedule
 		if (getAdminModule().testAccess(AdminOperation.managePosting)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_posting_job"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -251,11 +262,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 		
 		//Search index
 		if (getBinderModule().testAccess(top, BinderOperation.indexBinder)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_search_index"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -264,11 +276,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 
 		//Manage groups
 		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.manage.groups"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -277,11 +290,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 	
 		//Import profiles
 		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), ProfileOperation.addEntry)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.import.profiles"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -290,11 +304,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 	
 		//Definition import
 		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.import.definitions"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -303,11 +318,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 
 		//Definition export
 		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.export.definitions"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -316,11 +332,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 		
 		//templates
 		if (getAdminModule().testAccess(AdminOperation.manageTemplate)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_configurations"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -329,11 +346,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 
 		//Report
 		if (getAdminModule().testAccess(AdminOperation.report)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.report.title.login"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -342,8 +360,9 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.report.title.license"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -352,10 +371,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
 		
 		//Credits
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.credits"));
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
@@ -364,10 +384,11 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
+		elements.put(element.attributeValue("title"), element);
 		
 		//For debug - keep off everyones menus
 		if (logger.isDebugEnabled() && getAdminModule().testAccess(AdminOperation.managePosting)) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.view_change_log"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
@@ -376,8 +397,12 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
 		}
-		
+		for (Iterator iter=elements.entrySet().iterator(); iter.hasNext(); ) {
+			Map.Entry me = (Map.Entry)iter.next();
+			rootElement.add((Element)me.getValue());
+		}
 		model.put(WebKeys.ADMIN_TREE, adminTree);
 		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 		return new ModelAndView("administration/view", model);

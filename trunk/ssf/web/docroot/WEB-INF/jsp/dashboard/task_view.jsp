@@ -13,52 +13,23 @@
   //this is used by penlets and portlets
  
 %>
+
+<% // see task_view_init for setup  %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-<c:if test="${!empty ssComponentId}">
-	<c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
-</c:if>
-<c:set var="portletNamespace" value=""/>
-<ssf:ifnotadapter>
-	<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
-</ssf:ifnotadapter>
-
-<c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="ss_pageNumber" value="0"/>
-
-<c:set var="componentId" value="${ssComponentId}"/>
-<c:if test="${empty ssComponentId}">
-	<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
-</c:if>
-<c:if test="${ssDashboard.scope == 'portlet'}">
-<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
-</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
-<script type="text/javascript">    	
-function ${ss_divId}_taskurl(binderId, entryId, type) {
-	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}', 'yes');
-}
-</script>
-</c:if>
 
-<c:if test="${ssConfigJspStyle == 'template'}">
-<script type="text/javascript">
-function ${ss_divId}_taskurl(binderId, entryId, type) {
-	return false;
-}
-</script>
-</c:if>
-
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
 <table class="ss_style" cellspacing="0" cellpadding="0">
-<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
 <tr>
   <td>
     <a href="javascript: ;"
-		onClick="return ${ss_divId}_taskurl('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}');"
+		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
-		onClick="return ${ss_divId}_taskurl('${folder.id}', '${folder.id}', 'folder');"
+		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"
 		><span class="ss_bold">${folder.title}</span></a></td>
 </tr>
 </c:forEach>
@@ -70,3 +41,18 @@ function ${ss_divId}_taskurl(binderId, entryId, type) {
 <%@ include file="/WEB-INF/jsp/dashboard/task_view2.jsp" %>
 </div>
 
+</c:if>
+<c:if test="${ssConfigJspStyle == 'template'}">
+<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
+<tr>
+  <td>
+    ${folder.parentBinder.title} // <span class="ss_bold">${folder.title}</span>
+   </td>
+</tr>
+</c:forEach>
+</table>
+<br/>
+</c:if>
+</c:if>

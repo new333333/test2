@@ -1521,6 +1521,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
 		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
 		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
+		model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, ""));
+		model.put(WebKeys.DASHBOARD_COMPONENT_ID, op2);
 	
 		if (Validator.isNotNull(componentId)) {
 			String scope = PortletRequestUtils.getStringParameter(request, "_scope", null);
@@ -1566,6 +1568,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
 		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
 		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
+		model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, ""));
+		model.put(WebKeys.DASHBOARD_COMPONENT_ID, op2);
 	
 		if (Validator.isNotNull(componentId)) {
 			String scope = PortletRequestUtils.getStringParameter(request, "_scope", null);
@@ -1592,7 +1596,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				
 			}
 		}
-		String view = "dashboard/team_members_list_ajax";
+		String view = "dashboard/team_members_list_view";
 		return new ModelAndView(view, model);
 	}
 	
