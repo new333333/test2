@@ -139,7 +139,7 @@ self.window.resizeTo(width, height);
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="window.close();">
 </div>
 </form>
 
