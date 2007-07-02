@@ -15,8 +15,8 @@
  www.novell.com
 
 
- ESTIMATED PAGE COUNT (based on 200 words per page): 41
- ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 27
+ ESTIMATED PAGE COUNT (based on 200 words per page): 38
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 22
 
 
  WORD COUNT
@@ -25,30 +25,56 @@
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
          417    bookinfo   ICEcore Installation and Configuration Guide
          341    preface    About This Guide
-        4227    chapter    Installing    ICEcore 
-        2318    chapter    Configuring    ICEcore 
-         943    chapter    Controlling Access
+        4266    chapter    Installing    ICEcore 
+        2510    chapter    Configuring    ICEcore 
          128    glossary      ICEcore Glossary 
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        8374    book       ICEcore Installation and Configuration Guide
+        7662    book       ICEcore Installation and Configuration Guide
 
 
  GRAPHICS REFERENCED IN BOOK
 
        Count       Filename
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-           2       managementnavlinks_a.png
+           2       clickaddanewgroup_a.png
+           2       visitorroleoptions_a.png
+           2       winconfigureroles_a.png
+           2       selectemailsettings_a.png
+           2       admingrouproles_a.png
+           2       clickmanagegroups_a.png
+           2       clickicecoreportlets_a.png
            2       filesupporttable.png
+           2       clickaddateamws_a.png
+           2       clickaddgroup.png
            2       signin_a.png
-           2       managebyrols_a.png
-           2       managemenus_a.png
+           2       clickdiscussion_a.png
+           2       clickadmindropdown.png
+           2       wsemailsettings_a.png
+           2       selectworkspacefolders_a.png
+           2       clicksavechangeswsaccessrights.png
+           2       clickaccesscontrol_a.png
+           2       clickteamcreatorgroup.png
+           2       clickvisitor_a.png
+           2       switchworkspacecreatorright_a.png
+           2       selectteammembers.png
+           2       clickaddgroupaccessrightstable_a.png
+           4       clickteamws_a.png
+           2       addgrouppopup_a.png
+           2       clickaddcontent_a.png
+           2       clickaddagroupadmin_a.png
+           2       addusersgroup_a.png
+           2       righthandcorner_a.png
+           2       clickaccesscontroladmin.png
+           2       adminteamtitle_a.png
+           2       clickconfigureroles_a.png
+           2       icecoreadminportlet_a.png
 
 
  CROSS-REFERENCES
 
        Count       Type
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          26       xref
+          24       xref
            0       link
            0       ulink-xrefext
            0       ulink-xrefexttext
@@ -1834,7 +1860,7 @@ LED-SLES10:~ # ./installer.linuxNovell Teaming and Conferencing Enterprise Insta
   </bridgehead>
   <para>On Windows:</para>
   <para>
-   <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.bat </literal>
+   <literal> C:\yourinstall\liferay-portal-tomcat-jdk5-4.1.2\bin\startup.bat </literal>
   </para>
   <para>On Linux:</para>
   <para>
@@ -1846,9 +1872,43 @@ LED-SLES10:~ # ./installer.linuxNovell Teaming and Conferencing Enterprise Insta
     <literal>INFO:Server Startup in ##### ms</literal>
    </para>
   </note>
+  <bridgehead id="bant502">Setting up 
+   <productname>ICEcore</productname> to start on system startup
+  </bridgehead>
+  <para>On Windows:</para>
+  <procedure id="bant5c0">
+   <step id="bant5c1" performance="required">
+    <para>
+     <literal>C:\yourinstall\liferay-portal-tomcat-jdk5-4.1.2\bin\service.bat install icecore</literal>
+    </para>
+   </step>
+   <step id="bant6f3" performance="required">
+    <para>Use the Services Control Panel to configure the service to your needs.</para>
+   </step>
+  </procedure>
+  <para>On Linux, from the root account:</para>
+  <procedure id="bant6o3">
+   <step id="bant6o4" performance="required">
+    <para>
+     <literal>cd /etc/init.d</literal>
+    </para>
+   </step>
+   <step id="bant6vx" performance="required">
+    <para>
+     <literal>ln -s /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/icecore</literal>
+    </para>
+   </step>
+   <step id="bant6wo" performance="required">
+    <para>
+     <literal>chkconfig --add icecore </literal>
+    </para>
+   </step>
+  </procedure>
   <bridgehead id="bannyv1">Log Files/Monitoring</bridgehead>
   <para>On Windows:</para>
-  <para>A Tomcat window appears when you issue the startup.bat command. Messages (good and bad) appear here.</para>
+  <para>A Tomcat window appears when you issue the 
+   <literal>startup.bat </literal>command. Messages (good and bad) appear here.
+  </para>
   <para>On Linux: </para>
   <para>Unlike Windows, the Tomcat process starts as a background process and no window appears. To monitor the messages in real time:</para>
 
@@ -1862,7 +1922,7 @@ tail -f /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/logs/catalina.out
   <para>On Windows:</para>
 
 <screen>
-/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.bat
+C:\yourinstall\liferay-portal-tomcat-jdk5-4.1.2\bin\shutdown.bat
 </screen>
 
   <para>On Linux:</para>
@@ -1888,7 +1948,7 @@ http://yourhost.name.here:8080
 
    </listitem>
    <listitem>
-    <para>At the login screen enter: 
+    <para>At the login screen enter:
      <literal> administrator</literal>
     </para>
    </listitem>
@@ -2167,7 +2227,7 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
    <step id="banqrek" performance="required">
     <para>Restart Tomcat.</para>
     <note>
-     <para>This technique only works for real certificates. If the LDAP server is using a self-signed certificate, you also need to get the certificate for the "fake" CA and add it to the 
+     <para>This technique only works for real certificates. If the LDAP server is using a self-signed certificate, you also need to get the certificate for the “fake” CA and add it to the 
       <literal>cacerts</literal> file on the 
       <productname>ICEcore</productname> machine. The code at 
       <literal> http://blogs.sun.com/andreas/entry/no_more_unable_to_find</literal> to get the other certificate appears to be a good example.
@@ -2220,7 +2280,7 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
    <productname>ICEcore</productname>
    <guimenu> Administration</guimenu> portlet, click on the “
    <guimenu>Configure site incoming email schedule</guimenu>” link. This brings up a form that instructs 
-   <productname>ICEcore</productname> how when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
+   <productname>ICEcore</productname> when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
   </para>
   <para>The right-hand side of the setup page lists any aliases and the folder that is using that alias. You set up the alias address to folder mapping within the folders themselves (see next section).</para>
   <bridgehead id="bano0rs">Associating an E-mail Address with a Folder</bridgehead>
@@ -2243,7 +2303,7 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
   <para>You can configure each folder to send out e-mail messages highlighting activity within the folder.</para>
   <orderedlist spacing="normal">
    <listitem>
-    <para>Navigate to the folder you want to receive e-mail and click on the “
+    <para>Navigate to the folder you want to send e-mail for and click on the “
      <guimenu>Manage this folder</guimenu>” menu item, then select “
      <guimenu>Email settings</guimenu>”.
     </para>
@@ -2363,31 +2423,23 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
   </listitem>
   <listitem>
    <para><xref linkend="b9vdczx" xrefstyle="SectTitleOnPage"/></para>
-   <para>You need to decide who can view the zone workspace, which is the initial workspace in the zone's hierarchy.</para>
+   <para>One of your first tasks as a site manager is to set the access roles to control how different users can view and participate in the site workspaces according to what access role they are assigned.</para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bapqrpq" xrefstyle="SectTitleOnPage"/></para>
+   <para>One of your first tasks as a site manager is to set the access roles to control how different users can view and participate in the site workspaces according to what access role they are assigned.</para>
   </listitem>
   <listitem>
    <para><xref linkend="b9vde7f" xrefstyle="SectTitleOnPage"/></para>
    <para>You must specify an outgoing e-mail server to be able to invite users to the zone, and to use features such as "I forgot my password," e-mail notifications, and more.</para>
   </listitem>
   <listitem>
-   <para><xref linkend="b9vde7g" xrefstyle="SectTitleOnPage"/></para>
-   <para>There are various optional features that you can enable or disable to change the zone appearance and functionality to meet the needs of your organization's teams.</para>
-  </listitem>
-  <listitem>
-   <para><xref linkend="b9vde7h" xrefstyle="SectTitleOnPage"/></para>
-   <para>After you provide the e-mail addresses of your users, the software sends users a link to pages that guide them through the registration process.</para>
-  </listitem>
-  <listitem>
    <para><xref linkend="b9vde7i" xrefstyle="SectTitleOnPage"/></para>
    <para>Users cannot receive e-mail notification of new or modified entries in a discussion forum until you enable this feature.</para>
   </listitem>
-  <listitem>
-   <para><xref linkend="b9vde7j" xrefstyle="SectTitleOnPage"/></para>
-   <para>SiteScape provides additional configuration, information-design, and customization information that you can use to enhance your teams' experience of Forum.</para>
-  </listitem>
  </orderedlist>
  <sect1 id="b9vde7e">
-  <title>Log in as a Manager</title>
+  <title>Log in as Site Manager</title>
   <para>You need to log in using an administrator account in order to set up 
    <productname>ICEcore</productname> for your users.
   </para>
@@ -2445,408 +2497,688 @@ test
     <guimenu>administrator</guimenu>). When the name appears in the upper-right corner, you are logged into the system. (You can change the name "Mary Admin" by modifying the user profile for the 
     <guimenu>administration</guimenu> account.)
    </para>
+   <informalfigure pgwide="0">
+    <mediaobject>
+     <imageobject role="fo"><imagedata fileref="righthandcorner_a.png" width="27%" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="righthandcorner_a.png" width="27%" format="png"/></imageobject>
+    </mediaobject>
+   </informalfigure>
    <para>When you begin managing 
-    <productname>ICEcore</productname>, there are only two management levels: site managers (who manage the server machine) and zone managers. 
+    <productname>ICEcore</productname>, there are only two management levels: site managers (who manage the server machine) and portal managers. 
    </para>
-   <para>By default, wf_admin is the only member of the Administrators group for the initial zone; if you create an additional zone, then the zone creator and wf_admin are both members of the Administrators group. Members of the Administrators group have the right to perform zone-management tasks. If you choose, you can add other members to this group, so that they can help manage the zone.</para>
+   <para>By default, 
+    <guimenu>administrator</guimenu> is the only member of the Administrators group for the LifeRay portal Administrators group. Members of the Administrators group have the right to perform portal management tasks. If you choose, you can add other members to this group, so that they can help manage the portal.
+   </para>
   </sect2>
   <sect2 id="b9vdhwi">
    <title>Management Levels</title>
-   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and folders. At that point, it is helpful to delegate workspace management and the management of individual resources.</para>
+   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and folders. At some point, it is helpful to delegate workspace management and the management of individual resources.</para>
    <para>The management levels and the default tasks that managers at those levels may perform are:</para>
    <itemizedlist mark="bullet" spacing="normal">
     <listitem>
+     <para>
+      <productname>ICEcore</productname> Administration
+     </para>
+     <para>Primarily responsible for working with the 
+      <productname>ICEcore</productname> software so that everything runs smoothly. Tasks include updating the installation on the server, managing users and groups, managing the database server, enabling e-mail for the system, and other technical tasks that come up.
+     </para>
+    </listitem>
+    <listitem>
      <para>Site Managers</para>
-     <para>Primarily responsible for working with the SiteScape software so that runs smoothly. Tasks include updating the installation on the server, troubleshooting the internal processes of , enabling e-mail for the system, and so on.</para>
-     <para>Because site managers work directly with the server, there is no management menu specifically designed for them. Usually, site managers are also zone managers.</para>
+     <para>Primarily responsible for performing the initial setup of the site, managing users and groups, creating workspaces, delegating management, customizing the site using templates, and assisting the discussion folder managers with the creation of initial custom commands and workflow processes.</para>
     </listitem>
     <listitem>
-     <para>Zone Managers</para>
-     <para>Primarily responsible for performing the initial setup of the zone managing users and groups, creating workspaces, delegating management, customizing the zone using templates, and assisting the discussion-forum managers with the creation of initial custom commands and workflow processes.</para>
-    </listitem>
-    <listitem>
-     <para>Workspace Managers</para>
+     <para>Team Managers</para>
      <para>Responsible for creating and deleting folders in a workspace, determining which folders appear in the workspace, viewing auditing information about the workspace, customizing the workspace using templates, and creating or deleting additional workspaces. </para>
     </listitem>
     <listitem>
-     <para>
-      <productname>ICEcore</productname> Managers
-     </para>
-     <para>Responsible for managing a single folder. The responsibilities vary according to the type of forum being managed (discussion, calendar, tasks, and so on). Folder managers can modify access controls for the forum and allow or prevent viewing, participation, and other actions.</para>
-     <para>Managing a discussion folder requires more effort than managing other kinds of forums. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the forum using templates, running reports about content in the discussion forum, and managing the e-mail posting of forum entries.</para>
+     <para>Folder Managers</para>
+     <para>Responsible for managing a single folder. The responsibilities vary according to the type of folder being managed (discussion, calendar, tasks, and so on). Folder managers can modify access controls for the folder and allow or prevent viewing, participation, and other actions.</para>
+     <para>Managing a discussion folder requires more effort than managing other kinds of folders. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the folder using templates, running reports about content in the discussion folder, and managing the e-mail posting of folder entries.</para>
     </listitem>
    </itemizedlist>
-   <para>Additional information about delegating management is available in the online Manager Help system, in the Workspace Organization section.</para>
+   <para>Additional information about delegating management is available in the online Help system, in the 
+    <guimenu>Workspace Organization</guimenu> section.
+   </para>
   </sect2>
   <sect2 id="b9vdjua">
-   <title>Using the Forum Management Menus </title>
-   <para>The Forum management menus are designed to provide you with a maximum amount of flexibility when managing resources for your teams.</para>
-   <para>To access the management menus, click the Manage toolbar item: </para>
-   <informalfigure pgwide="0">
-    <mediaobject>
-     <imageobject role="fo"><imagedata fileref="managemenus_a.png" width="100%" format="PNG"/></imageobject>
-     <imageobject role="html"><imagedata fileref="managemenus_a.png" width="100%" format="png"/></imageobject>
-    </mediaobject>
-   </informalfigure>
-   <para>The Manage drop-down menu provides you with access to pages that allow you to manage:</para>
-   <itemizedlist mark="bullet" spacing="normal">
-    <listitem>
-     <para>The zone</para>
-    </listitem>
-    <listitem>
-     <para> The current workspace</para>
-    </listitem>
-    <listitem>
-     <para>Groups (available across the zone)</para>
-    </listitem>
-    <listitem>
-     <para> Users (available across the zone)</para>
-    </listitem>
-   </itemizedlist>
-   <para>SiteScape provides navigation links at the top of the management pages, which allow you to move quickly from one type of management to another: </para>
-   <informalfigure pgwide="0">
-    <mediaobject>
-     <imageobject role="fo"><imagedata fileref="managementnavlinks_a.png" width="72%" format="PNG"/></imageobject>
-     <imageobject role="html"><imagedata fileref="managementnavlinks_a.png" width="72%" format="png"/></imageobject>
-    </mediaobject>
-   </informalfigure>
-   <para>Use the links shown above to manage zones, workspaces, groups, or users. To return to the current workspace, click the linked title of the workspace located in the top left area of the page. </para>
+   <title>Using 
+    <productname>ICEcore</productname> Management Menus 
+   </title>
+   <para>The 
+    <productname>ICEcore</productname> management options are designed to provide you with a maximum amount of flexibility when managing resources for your teams.
+   </para>
+   <para>Access the 
+    <productname>ICEcore</productname> management options via the 
+    <productname>ICEcore</productname>
+    <guimenu>Administration</guimenu> portlet. 
+   </para>
+   <bridgehead id="banth8n">To Add the 
+    <productname>ICEcore</productname> Adminstration Portlet to Your Home Page:
+   </bridgehead>
+   <procedure id="bantho8">
+    <step id="bantho9" performance="required">
+     <para>Click 
+      <guimenu>Add Content</guimenu> in the upper-right corner.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaddcontent_a.png" width="28%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaddcontent_a.png" width="28%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bantifv" performance="required">
+     <para>In the portlet access frame that appears in the upper-left corner, click 
+      <productname>ICEcore</productname> to view the available 
+      <productname>ICEcore</productname> portlets that you can add.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickicecoreportlets_a.png" width="31%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickicecoreportlets_a.png" width="31%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bantjt4" performance="required">
+     <para>Click the 
+      <guimenu>Add</guimenu> button next to 
+      <productname>ICEcore</productname>
+      <guimenu>Administration</guimenu> to add this portlet to your Home Page.
+     </para>
+     <note>
+      <para>The portlet access frame closes automatically and the 
+       <productname>ICEcore</productname>
+       <guimenu>Administration</guimenu> portlet appears on your home page. When you add LifeRay portlets (any portlet not under 
+       <productname>ICEcore</productname>) the portlet access frame does not automatically close as it does when you add 
+       <productname>ICEcore</productname> portlets.
+      </para>
+     </note>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="icecoreadminportlet_a.png" width="88%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="icecoreadminportlet_a.png" width="88%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+   </procedure>
+   <para>The 
+    <productname>ICEcore</productname>
+    <guimenu>Administration</guimenu> options provides you with access to all the administration tasks controlled by the the 
+    <productname>ICEcore</productname> software.
+   </para>
+   <note>
+    <para>Because 
+     <productname>ICEcore</productname> is embedded within LifeRay, a portion of user management is delegated to the LifeRay. For example, LifeRay is responsible for all user authentications using the Enterprise Admin portlet.
+    </para>
+   </note>
   </sect2>
  </sect1>
  <sect1 id="b9vdczx">
-  <title>Set Access to the Zone Workspace</title>
-  <para>One of your first tasks as a zone manager is to decide who can view and participate in the zone workspace. For example, you may choose to prevent anonymous users from viewing any entries in the zone.</para>
-  <sect2 id="b9ve155">
-   <title>To change the default access to the zone workspace:</title>
-   <procedure id="b9ve19v">
-    <step id="b9ve19w" performance="required">
-     <para>From the zone-workspace page, click the 
-      <guimenu>Manage</guimenu> toolbar item and choose 
-      <guimenu>This workspace</guimenu>.
-     </para>
-     <para>The zone-management page appears.</para>
-    </step>
-    <step id="b9ve1f5" performance="required">
-     <para>In the "Manage access control" section of the page, click 
-      <guimenu>Set workspace access control</guimenu>.
-     </para>
-    </step>
-    <step id="b9ve1f7" performance="required">
-     <para>In the 
-      <guimenu>Visitors</guimenu> column, deselect the 
-      <guimenu>Anonymous users</guimenu> option to disable anonymous access.
-     </para>
-    </step>
-    <step id="b9ve1fa" performance="required">
-     <para>Click 
-      <guimenu>Remove</guimenu> selected groups from roles.
-     </para>
-     <para>The "
-      <guimenu>Role-based access control</guimenu>" page reappears. Anonymous users are no longer in the Visitors role, so they cannot view any pages in the zone.
-     </para>
-     <para>To return to the zone-workspace page, click the title at the top of the page.</para>
-    </step>
-   </procedure>
-  </sect2>
- </sect1>
- <sect1 id="b9vde7f">
-  <title>Specify the Outgoing E-Mail Server</title>
-  <para>You must specify information about the outgoing e-mail server to enable the following Forum features:</para>
+  <title>Adjust Access Control for the Site</title>
+  <para>One of your first tasks as a site manager is to set the access roles to control how different users can view and participate in the site workspaces according to what access role they are assigned. All Access Roles are assigned to users in individual workspaces or folders, except for the Site Administration access role, which grants access to the whole site. There are specific Role Definitions that you can edit to accomplish this. See the default Role Definitions below.</para>
+  <bridgehead id="baps7fz">Key Ideas to Keep in Mind:</bridgehead>
   <itemizedlist mark="bullet" spacing="normal">
    <listitem>
-    <para> I forgot my password (Forum e-mails you a new password)</para>
+    <para>Understand the default access control settings and the philosophy behind them (quick team formation, open communications, etc.) </para>
    </listitem>
    <listitem>
-    <para>Invite users to the zone</para>
+    <para>Determine the values and needs of your organization and adjust the access control settings accordingly</para>
    </listitem>
    <listitem>
-    <para>Send mail</para>
-   </listitem>
-   <listitem>
-    <para> E-mail notifications from discussion forums</para>
-   </listitem>
-   <listitem>
-    <para>E-mail notifications related to workflow processes</para>
-   </listitem>
-   <listitem>
-    <para> E-mail notifications related to tasks and reminders</para>
+    <para>The best way to delegate administrative tasks is to create groups and use the access-control tools to delegate folder and workspace administration accordingly </para>
    </listitem>
   </itemizedlist>
-  <sect2 id="b9ve5qm">
-   <title>To specify the outgoing e-mail server:</title>
-   <procedure id="b9ve68q">
-    <step id="b9ve68r" performance="required">
-     <para>From the zone-management page (
-      <guimenu>Manage &gt; This Workspace</guimenu>), select 
-      <guimenu>Manage outgoing e-mail settings</guimenu> in the 
-      <guimenu>Manage e-mail settings</guimenu> section.
+  <sect2 id="bapq6l0">
+   <title>Default Role Definitions</title>
+   <para>The following are the default Role Definitions, which should more than enough to configure your site, though your site administrator can add new Role Definitions if required.</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>
+      <guimenu>Workspace and Folder Administrator</guimenu>
+     </para>
+     <para>Assigns every access right, but 
+      <guimenu>Site Administration</guimenu>, to users for the specific workspaces and folders that the administer.
+     </para>
+    </listitem>
+    <listitem>
+     <para>
+      <guimenu>Participant</guimenu>
+     </para>
+     <para>Assigns the following default access rights to users for any workspaces or folders in which they are participants:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Add Comments</para>
+      </listitem>
+      <listitem>
+       <para>Create Entries</para>
+      </listitem>
+      <listitem>
+       <para>Delete His or Her Own Entries</para>
+      </listitem>
+      <listitem>
+       <para>Modify His or Her Own Entries</para>
+      </listitem>
+      <listitem>
+       <para>Read Entries</para>
+      </listitem>
+     </itemizedlist>
+    </listitem>
+    <listitem>
+     <para>
+      <guimenu>Site Administrator</guimenu>
+     </para>
+     <para>Has every access right selected by default. These rights apply to every workspace and folder.</para>
+    </listitem>
+    <listitem>
+     <para>
+      <guimenu>Team Member</guimenu>
+     </para>
+     <para>Assigns the following default access rights to users for any workspaces or folders in which they are team members:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Add Comments</para>
+      </listitem>
+      <listitem>
+       <para>Add Folders</para>
+      </listitem>
+      <listitem>
+       <para>Add Workspaces</para>
+      </listitem>
+      <listitem>
+       <para>Create Entries</para>
+      </listitem>
+      <listitem>
+       <para>Delete Entries</para>
+      </listitem>
+      <listitem>
+       <para>Delete His or Her Own Entries</para>
+      </listitem>
+      <listitem>
+       <para>Generate Reports</para>
+      </listitem>
+      <listitem>
+       <para>Manage Community Tags</para>
+      </listitem>
+      <listitem>
+       <para>Modify Enties</para>
+      </listitem>
+      <listitem>
+       <para>Modify His or Her Own Entries</para>
+      </listitem>
+      <listitem>
+       <para>Read Entries</para>
+      </listitem>
+     </itemizedlist>
+    </listitem>
+    <listitem>
+     <para>
+      <guimenu>Visitor</guimenu>
+     </para>
+     <para>Assigns the following default access rights to users for workspaces or folders to which they are only assigned as visitors:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Add Comments</para>
+      </listitem>
+      <listitem>
+       <para>Read Entries</para>
+      </listitem>
+     </itemizedlist>
+    </listitem>
+    <listitem>
+     <para>
+      <guimenu>Workspace Creator</guimenu>
+     </para>
+     <para>This Role Definition is a special definition assigned to All Users at the top Team Workspace to give every user the right to create a new Team Workspace. The Site Administrator can edit the Top Team Workspace access rights so that only specific users can add Team Workspaces, see <xref linkend="bapqyx7" xrefstyle="SectTitleOnPage"/>.</para>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+  <sect2 id="b9ve155">
+   <title>To Change a Default Role Definition:</title>
+   <para>For example, you may choose to prevent visitors from adding comments in the site.</para>
+   <procedure id="b9ve19v">
+    <step id="b9ve19w" performance="required">
+     <para>In the 
+      <productname>ICEcore</productname>
+      <guimenu>Administration</guimenu> portlet, click 
+      <guimenu>Configure Role Definitions</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickconfigureroles_a.png" width="47%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickconfigureroles_a.png" width="47%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <para>The Configure Roles page appears.</para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="winconfigureroles_a.png" width="82%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="winconfigureroles_a.png" width="82%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="b9ve1f5" performance="required">
+     <para>Click 
+      <guimenu>Visitor</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickvisitor_a.png" width="37%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickvisitor_a.png" width="37%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="b9ve1f7" performance="required">
+     <para>Under 
+      <guimenu>Visitor</guimenu>, deselect the 
+      <guimenu>Add Comments</guimenu> option, and then click 
+      <guimenu>Apply</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="visitorroleoptions_a.png" width="57%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="visitorroleoptions_a.png" width="57%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="b9ve1fa" performance="required">
+     <para>Click Close to return to your Home Page.</para>
+    </step>
+   </procedure>
+   <para>Visitors to your site can now view entries, but can no longer add comments.</para>
+  </sect2>
+  <sect2 id="bapqyx7">
+   <title>Edit Default Team Workspace Access Rights</title>
+   <para>Every workspace and folder has their own access rights. Access rights are the assignment of the Role Definitions to groups and individuals for a workspace or folder. When you create a new workspace, it starts off with the default access rights according to the type of workspace you created: Global, Personal, or Team.</para>
+   <note>
+    <para>A personal workspace is created when a user signs into 
+     <productname>ICEcore</productname> for the first time.
+    </para>
+   </note>
+   <para>The Site Adminitrator can edit these default settings, for example, you might want to edit the Top Team Workspace access rights so that only specific users or groups can add Team Workspaces. </para>
+   <para>First you want to create a 
+    <guimenu>Team Creator</guimenu> group to be in charge of Team Workspace creation, and then you want to remove the 
+    <guimenu>Workspace Creator</guimenu> Role Definition from 
+    <guimenu>All Users</guimenu> and assign it to the 
+    <guimenu>Team Creator</guimenu> group in the Top Team Workspace access rights. The site administrator can add new users to the 
+    <guimenu>Team Creator</guimenu> group at any time.
+   </para>
+   <bridgehead id="baprfmt">Create the Team Creator Group:</bridgehead>
+   <procedure id="baprgjf">
+    <step id="bapt97t" performance="required">
+     <para>In the 
+      <productname>ICEcore</productname>
+      <guimenu>Administration</guimenu> portlet, click 
+      <guimenu>Manage Groups</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickmanagegroups_a.png" width="65%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickmanagegroups_a.png" width="65%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="baprhy5" performance="required">
+     <para>In the 
+      <guimenu>Manage Groups</guimenu> window, click 
+      <guimenu>Add a New Group</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaddanewgroup_a.png" width="43%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaddanewgroup_a.png" width="43%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapric4" performance="required">
+     <para>Enter the new group’s name, title, description, and then click 
+      <guimenu>Add</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaddgroup.png" width="77%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaddgroup.png" width="77%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <para>The new group appears on the page.</para>
+    </step>
+    <step id="baprk2r" performance="required">
+     <para>Under 
+      <guimenu>Select a Group to Modify or Delete</guimenu>, click the 
+      <guimenu>Team Creator (Team Creator)</guimenu> group.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickteamcreatorgroup.png" width="31%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickteamcreatorgroup.png" width="31%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapru38" performance="required">
+     <para>Add users to the group and click 
+      <guimenu>Apply</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="addusersgroup_a.png" width="58%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="addusersgroup_a.png" width="58%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="baprt93" performance="required">
+     <para>Click 
+      <guimenu>Close</guimenu>.
+     </para>
+     <note>
+      <para>See the Online Help or 
+       <productname>ICEcore</productname> User Guide for details on adding users to groups.
+      </para>
+     </note>
+    </step>
+   </procedure>
+   <bridgehead id="baprgjh">Grant the Team Creator Group Sole Team Workspace Creation Rights:</bridgehead>
+   <procedure id="bapr576">
+    <step id="bapr577" performance="required">
+     <para>Click 
+      <guimenu>Team Workspace</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickteamws_a.png" width="31%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickteamws_a.png" width="31%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapr6pw" performance="required">
+     <para>Click 
+      <guimenu>Access Control</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaccesscontrol_a.png" width="51%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaccesscontrol_a.png" width="51%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <para>The 
+      <guimenu>Configure Access Control</guimenu> page appears. This page allows you to assign the Role Definitions to specific groups and users fro the workspaces and folders. The current page controls the access rights for the Top Team Workspace area.
      </para>
     </step>
-    <step id="b9ve7js" performance="required">
-     <para>Specify the name of the computer that runs the outgoing SMTP e-mail server software.</para>
-     <para>If you do not know the name, contact your system or network administrator. If the computer on which you installed Forum also runs an e-mail server, specify:</para>
-
-<screen>
-localhost
-</screen>
-
+    <step id="bapr7hy" performance="required">
+     <para>Click 
+      <guimenu>Add a Group</guimenu> in the 
+      <guimenu>Access Rights</guimenu> table.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaddgroupaccessrightstable_a.png" width="95%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaddgroupaccessrightstable_a.png" width="95%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
     </step>
-    <step id="b9ve7k6" performance="required">
-     <para>Change the default port number if necessary.</para>
-     <para>When you complete the form, Forum checks if the server and port information is valid. If it is not correct, contact your system or network administrator.</para>
+    <step id="baprmbu" performance="required">
+     <para>Start typing 
+      <literal>Team Creator </literal>in the 
+      <guimenu>Add a Group </guimenu>dialog that appears and select 
+      <guimenu>Team Creator</guimenu> from the drop-down list that appears.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="addgrouppopup_a.png" width="20%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="addgrouppopup_a.png" width="20%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <para>The Team Creator groups appears in the 
+      <guimenu>Access Rights</guimenu> table. 
+     </para>
     </step>
-    <step id="b9ve7d9" performance="required">
-     <para>Enter a default "from" e-mail address.</para>
-     <para>If the SMTP e-mail server determines that it cannot deliver an e-mail message, it returns the message to this address.</para>
-     <para>If Forum fails to contact the SMTP e-mail server after one day, an e-mail error log is created. (You can check the error logs from the zone-management page, using the View e-mail error logs link.)</para>
+    <step id="baprnxn" performance="required">
+     <para>Deselect the 
+      <guimenu>Workspace Creator</guimenu> option for the 
+      <guimenu>All Users</guimenu> group and select the same right for the 
+      <guimenu>Team Creator</guimenu> group.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="switchworkspacecreatorright_a.png" width="95%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="switchworkspacecreatorright_a.png" width="95%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
     </step>
-    <step id="b9ve7dd" performance="required">
+    <step id="baprqsh" performance="required">
+     <para>Click 
+      <guimenu>Save Changes</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clicksavechangeswsaccessrights.png" width="17%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clicksavechangeswsaccessrights.png" width="17%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="baprr9x" performance="required">
+     <para>Click 
+      <guimenu>Close</guimenu>.
+     </para>
+    </step>
+   </procedure>
+   <para>You have now created a specific group to control the creation of Team Workspaces. This is an example of how you use Role Definitions and access rights to configure your site. You want to map out the access issues for your site so you can edit the default Role Definitions and default access rights for your workspaces prior to granting all your users access to the site.</para>
+  </sect2>
+ </sect1>
+ <sect1 id="bapqrpq">
+  <title>Create Your Initial Workspaces</title>
+  <para>There are three types of workspaces in 
+   <productname>ICEcore</productname>: Global Workspaces, Personal Workspaces, and Team Workspaces. Once a new workspace is created, every sub-workspace and sub-folder inherits its access rights from the parent workspace by default. The workspace or folder administrator can de-select this option for any individual sub-workspace and sub-folder (on the Access Control page for the individual workspace or folder).
+  </para>
+  <para>Planning the initial content for your site is an important step in regards to how your users learn and use the site. Without some content, users are lost. However, too much content (especially empty containers and a complex structure) might cause users to have trouble mapping to the real work they have to do. So, before letting end users into the installation, the Global Workspace should have enough content to engage them, but not so much as to overwhelm them. Also, we have seen time and again that a workspace hierarchy and set of dedicated applications are best developed in parallel with users using the product and providing feedback about what best serves their needs.</para>
+  <para>The best approach is to plan out a tight minimal set of content in the Global Workspace to provide the end users with a functional site that they can quickly navigate and start using.</para>
+  <bridgehead id="bapsarz">Creating Teams</bridgehead>
+  <para>The team creation process can be simplified with some upfront planning:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Although, by default, anyone can create a team (unless you edit the default access rights, see <xref linkend="bapqyx7" xrefstyle="SectTitleOnPage"/>) the process is a lot easier if a site administrator creates group names for teams before team creation occurs.</para>
+   </listitem>
+   <listitem>
+    <para>Thinking through how you want to architect group names is a useful upfront task. </para>
+   </listitem>
+   <listitem>
+    <para>Access control is greatly simplified and enhanced by utilizing well-planned group names for your site.</para>
+   </listitem>
+  </itemizedlist>
+  <sect2 id="bapsept">
+   <title>Create an Administration Team Workspace</title>
+   <note>
+    <para>You should create an 
+     <guimenu>Administration</guimenu> group first to simplify the process for editing your administration access rights. You can then add this group to the administration team and set the access rights to this group. In the future, you can add or delete users from this administration group and not worry about editing the administration team’s access rights for individual members since they are assigned correctly to the group.
+    </para>
+   </note>
+   <procedure id="bapsonc">
+    <step id="bapsond" performance="required">
+     <para>From your Home Page, click 
+      <guimenu>Team Workspace</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickteamws_a.png" width="31%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickteamws_a.png" width="31%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapssn2" performance="required">
+     <para>Click 
+      <guimenu>Add a Team Workspace</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaddateamws_a.png" width="52%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaddateamws_a.png" width="52%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapsth2" performance="required">
+     <para>Type in a tile for the new workspace.</para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="adminteamtitle_a.png" width="62%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="adminteamtitle_a.png" width="62%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapsukt" performance="required">
+     <para>Select the team members.</para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="selectteammembers.png" width="71%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="selectteammembers.png" width="71%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+     <note>
+      <para>See the Online Help or the 
+       <productname>ICEcore</productname> User Guide for details on selecting users.
+      </para>
+     </note>
+    </step>
+    <step id="bapsv49" performance="required">
+     <para>Select all the initial 
+      <guimenu>Workspace Folders</guimenu> you want to create in this workspace.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="selectworkspacefolders_a.png" width="62%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="selectworkspacefolders_a.png" width="62%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapswei" performance="required">
      <para>Click 
       <guimenu>OK</guimenu>.
      </para>
     </step>
    </procedure>
   </sect2>
- </sect1>
- <sect1 id="b9vde7g">
-  <title>Optional Configuration Choices</title>
-  <para>There are additional, optional ways that you can configure your zone so that it reflects the values or working style of your organization. You may also want to add greetings or instructions to the pages, so that your zone is more inviting to users. Consider using these management pages:</para>
-  <formalpara id="b9veahx">
-   <title>Select features for this zone</title>
-   <para>(zone-management page)</para>
-  </formalpara>
-  <para>Allows you to prevent anonymous users from accessing the zone or registering, to prevent users from uploading files, to prevent the use of bookmarks, to disable the "To-do lists" tab, and more.</para>
-  <formalpara id="b9veb0p">
-   <title>Modify zone name, graphic, fonts, and colors</title>
-   <para>(zone-management page)</para>
-  </formalpara>
-  <para>Allows you to change the name of the zone, upload your company logo for display in the banner, set the color theme, and set the font size. </para>
-  <formalpara id="b9veb0q">
-   <title>Modify workspace appearance</title>
-   <para>(workspace-management page)</para>
-  </formalpara>
-  <para>Allows you to change the name of the current workspace, add different greetings for anonymous and registered users, and add text at the bottom of the workspace page.</para>
-  <para>You can use this page to provide text to orient your users to the zone-workspace page. For example, if you disable anonymous access to the zone, you may want to provide a greeting for anonymous users that includes the e-mail address of the person who can register a username and password for them.</para>
-  <formalpara id="b9veb0r">
-   <title>Set the message of the day</title>
-   <para>(workspace-management page)</para>
-  </formalpara>
-  <para>Allows you to set a brief message for your users that expires after a specified period of time.</para>
-  <sect2 id="b9veeo9">
-   <title>Making the Forum Inviting for New Users:</title>
-   <itemizedlist mark="bullet" spacing="normal">
-    <listitem>
-     <para> In the discussion forum, modify the folder abstract to include a welcome to users, a description of the purpose of the forum, and instructions for users about which links to click on. Then, add an introductory entry outlining the subjects to be discussed and perhaps some rules for the forum. Add another entry inviting users to "sign in" by adding replies to introduce themselves.</para>
-    </listitem>
-    <listitem>
-     <para>Add some new usage tips to the User Tutorial forum, such as practical advice about using Forum to accomplish tasks specific to your organization.</para>
-    </listitem>
-    <listitem>
-     <para>If you are using the version of Forum that includes 
-      <productname>Zon</productname> support, you can create a discussion topic for those who wish to participate in an online meeting, post information to be read or discussed before the meeting, use the UI to start the meeting from From, and then post the meeting log and materials back into the topic when the meeting is complete.
+  <sect2 id="bapsx9i">
+   <title>Set the Administration Team Access Rights</title>
+   <procedure id="bapsxoy">
+    <step id="bapsxoz" performance="required">
+     <para>From the 
+      <productname>ICEcore</productname> Administration Team workspace, click 
+      <guimenu>Access Control</guimenu>.
      </para>
-    </listitem>
-   </itemizedlist>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaccesscontroladmin.png" width="84%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaccesscontroladmin.png" width="84%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapsy74" performance="required">
+     <para>In the Access Rights table, click 
+      <guimenu>Add a Group</guimenu>.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickaddagroupadmin_a.png" width="77%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickaddagroupadmin_a.png" width="77%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapt02v" performance="required">
+     <para>Start typing in 
+      <literal>admin</literal>, and select 
+      <guimenu>admin</guimenu> from the drop-down list that appears.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="clickadmindropdown.png" width="19%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="clickadmindropdown.png" width="19%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapt0om" performance="required">
+     <para>For the 
+      <guimenu>admin</guimenu> group, select the 
+      <guimenu>Workspace and Folder Administrator</guimenu>, 
+      <guimenu>Participant</guimenu>, and 
+      <guimenu>Team Member</guimenu> roles.
+     </para>
+     <informalfigure pgwide="0">
+      <mediaobject>
+       <imageobject role="fo"><imagedata fileref="admingrouproles_a.png" width="95%" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="admingrouproles_a.png" width="95%" format="png"/></imageobject>
+      </mediaobject>
+     </informalfigure>
+    </step>
+    <step id="bapt28g" performance="required">
+     <para>Click 
+      <guimenu>Save Changes</guimenu>.
+     </para>
+    </step>
+    <step id="bapt2r3" performance="required">
+     <para>Click 
+      <guimenu>Close</guimenu>.
+     </para>
+    </step>
+   </procedure>
   </sect2>
  </sect1>
- <sect1 id="b9vde7h">
-  <title>Enable E-mail Notifications</title>
-  <para>One of the most effective ways for users to track new and changed entries in a discussion forum is to have Forum send them e-mail notifications. E-mail notifications provide a summary of recent activities in the forum, along with links to the new or changed entries.</para>
-  <para>To configure the discussion forum to send e-mail notifications:</para>
-  <procedure id="b9veezu">
-   <step id="b9veezv" performance="required">
-    <para>From the discussion forum, access the 
-     <guimenu>Tools</guimenu> toolbar option, and then click 
-     <guimenu>Administration</guimenu>.
+ <sect1 id="b9vde7f">
+  <title>Set Up E-mail for a Workspace</title>
+  <para>To set up notifications in a workspace, enable them on one of the top level folders in your workspace first. Once this is done, e-mail notifications are enabled on all sub-folders. For postings, you need to configure the workspace with a valid e-mail alias. See your e-mail administrator to get a valid e-mail alias address for your workspace.</para>
+  <procedure id="baptekl">
+   <step id="baptekm" performance="required">
+    <para>From your workspace, select the top level folder for which you want to enable e-mail.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <imageobject role="fo"><imagedata fileref="clickdiscussion_a.png" width="35%" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="clickdiscussion_a.png" width="35%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="baptkyb" performance="required">
+    <para>Click 
+     <guimenu>Manage This Folder</guimenu> and select the 
+     <guimenu>Email Settings</guimenu> menu item.
     </para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <imageobject role="fo"><imagedata fileref="selectemailsettings_a.png" width="19%" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="selectemailsettings_a.png" width="19%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
    </step>
-   <step id="b9veg7t" performance="required">
-    <para>In the 
-     <guimenu>E-mail operations </guimenu> section, click 
-     <guimenu>Set e-mail notification schedule</guimenu>.
+   <step id="baptlti" performance="required">
+    <para>Type in the e-mail alias you recieved from your e-mail administrator in the 
+     <guimenu>Reiceiving Email From</guimenu> field.
     </para>
+    <para>This enables the folder to receive e-mail posts.</para>
    </step>
-   <step id="b9veh0k" performance="required">
-    <para>In the "Set notification message content level" section, click the Send titles only or the Send titles and summaries radio button.</para>
-    <para>If you choose Send titles and summaries, the e-mail message includes a few lines from the entry. You must specify the number of lines to be included. SiteScape recommends that you specify not more than 10 lines so as not to overload the server.</para>
-   </step>
-   <step id="b9veh0o" performance="required">
-    <para> In the "Set the mail notification schedule" section, click the checkboxes of the days on which Forum is to send notifications.</para>
-   </step>
-   <step id="b9veh0r" performance="required">
-    <para>In the same section, specify the time Forum is to send notifications. The times that you specify apply to each day that you selected. Use 24-hour format, and separate the hour value from the minute value using a colon ( : ).</para>
-    <para>For example, this schedule sends notifications every hour and a half during an average working day, according to the time on the server:</para>
-
-<screen>
-09:00   10:30   12:00   13:30   15:00   16:30
-</screen>
-
-   </step>
-   <step id="b9vehr5" performance="required">
-    <para>You can add users to the distribution list. Users can also enable their own notifications from the discussion forum by choosing Set notification from the Tools menu as described in the user Help system.</para>
-   </step>
-   <step id="b9veh0u" performance="required">
-    <para>At the bottom of the form, click OK.</para>
-    <para>The e-mail notification schedule is set for this forum.</para>
+   <step id="bapto85" performance="required">
+    <para>Configure the e-mail 
+     <guimenu>Notification Schedule</guimenu> and add the users, groups, and any individual e-mail addresses you want to receive e-mail notifications, and then click 
+     <guimenu>Apply</guimenu>.
+    </para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <imageobject role="fo"><imagedata fileref="wsemailsettings_a.png" width="95%" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="wsemailsettings_a.png" width="95%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <note>
+     <para>See the Online Help and the 
+      <productname>ICEcore</productname> User Guide for more details.
+     </para>
+    </note>
    </step>
   </procedure>
  </sect1>
  <sect1 id="b9vde7i">
-  <title>Invite Users to the Zone</title>
-  <procedure id="b9veirv">
-   <step id="b9veirw" performance="required">
-    <para> If your user profile does not include an e-mail address, you must add one so that users can reply to your invitations if they have questions.</para>
-   </step>
-   <step id="b9veisb" performance="required">
-    <para>From the workspace page or the "My summary" page, click the Wizards toolbar item.</para>
-   </step>
-   <step id="b9veisd" performance="required">
-    <para>On the wizard menu, click the Invite users to join the zone link.</para>
-    <note>
-     <para>If this link does not appear on the Wizard menu and you are running Forum, you must specify your e-mail server.</para>
-    </note>
-   </step>
-   <step id="b9veise" performance="required">
-    <para>Optionally, you can change the default wording of the e-mail message.</para>
-   </step>
-   <step id="b9veisg" performance="required">
-    <para>Enter the e-mail addresses of the people you want to invite to the zone. Use one or both of the following methods:</para>
-    <itemizedlist mark="bullet" spacing="normal">
-     <listitem>
-      <para>Enter individual addresses in the "E-mail address" text boxes. To add boxes, click More e-mail addresses.</para>
-     </listitem>
-     <listitem>
-      <para>To add a list of e-mail addresses, copy and paste the list to the "You may also enter multiple e-mail addresses..." text box, then separate the addresses with commas.</para>
-     </listitem>
-    </itemizedlist>
-   </step>
-   <step id="b9veisi" performance="required">
-    <para>Click Next.</para>
-   </step>
-   <step id="b9veism" performance="required">
-    <para> Review the information on the Summary page, and then click Finish.</para>
-   </step>
-   <step id="b9veisp" performance="required">
-    <para>Click Close to exit the Congratulations page.</para>
-   </step>
-  </procedure>
-  <para>Your users receive an e-mail invitation with the text you specified and a link to the Forum registration wizard. They use this wizard to provide a username, password, and additional information. After users register, they are logged in to Forum.</para>
-  <para/>
- </sect1>
- <sect1 id="b9vde7j">
-  <title>Facilitate Forum Use</title>
-  <para>Now that you have set up your zone, SiteScape recommends that you learn more about facilitating and optimizing the long-range use of Forum by reading the following online manuals:</para>
-  <itemizedlist mark="bullet" spacing="normal">
-   <listitem>
-    <para>Making Teams Work</para>
-    <para>This manual covers issues that go beyond management and configuration, to address how to optimize your teams' use of Forum. One primary concept is to balance providing your teams with structure (such as a workspace hierarchy and dedicated applications created before team members ever access the zone) with a more informal, organic process (one in which teams create norms for Forum use and have input to workflow-process definitions). After deployment of Forum, the result should be an online space that your teams find intuitive, helpful in completing work effectively, flexible in ways that match a team's natural agility, and appropriately open to sharing information within the team and across the organization's matrix of teams. </para>
-   </listitem>
-   <listitem>
-    <para>Getting Started with Workflow </para>
-    <para>This tutorial teaches you how to automate your teams' common business processes, and how to use discussion forums to create powerful, dedicated applications. </para>
-   </listitem>
-  </itemizedlist>
-  <para>To access these manuals, open the Help system and click Getting Started Manuals.</para>
- </sect1>
-</chapter>
-
-<chapter id="b9vell9" lang="en" xml:base="03_controllingaccess.xml">
- <title>Controlling Access</title>
- <para>SiteScape software provides two methods for controlling access to the zone, workspaces, and forums.</para>
- <para>The default method is called role-based access control. Role-based access control associates groups with a set of access rights. </para>
- <para>SiteScape's legacy method for controlling access is called managing by rights. This method allows you to map individual rights directly to one or more groups.</para>
- <para>This chapter provides information about each type of access-control:</para>
- <itemizedlist role="subtoc" mark="bullet" spacing="normal">
-  <listitem>
-   <para><xref linkend="b9vemc3" xrefstyle="SectTitleOnPage"/></para>
-  </listitem>
-  <listitem>
-   <para><xref linkend="b9vepke" xrefstyle="SectTitleOnPage"/></para>
-  </listitem>
- </itemizedlist>
- <para>More detailed information is available in the Access Control topic in the Manager Help.</para>
- <sect1 id="b9vemc3">
-  <title>Managing by Roles</title>
-  <para>Role-based access control associates groups with a set of related rights; together, this set of rights defines a role. Each role gives the users in the associated groups permission (or rights) to perform each of the tasks in the set. Role-based access control simplifies and speeds access control, because it allows you to assign a broad, general level of access without requiring you to apply every right individually.</para>
-  <para>To manage using roles, click the access-control link on the management pages for discussions, chat rooms, calendars, and workspaces.</para>
-  <para>The default access roles, with their default rights are:</para>
-  <itemizedlist mark="bullet" spacing="normal">
-   <listitem>
-    <para> Visitors (read only)</para>
-    <para>Can view information in the resource (forum, workspace, calendar, and so on), but cannot add information or use other tools that are reserved for higher-level roles.</para>
-   </listitem>
-   <listitem>
-    <para> Participants (write)</para>
-    <para>Can view information, add information (such as a topic or reply in a discussion forum), and send e-mail to another registered user.</para>
-   </listitem>
-   <listitem>
-    <para>Moderators (manage, modify, and delete)</para>
-    <para>Can view, modify, or delete all entries, add information, send e-mail to another registered user, and create team workspaces.</para>
-   </listitem>
-   <listitem>
-    <para>Managers (manage, modify, and delete)</para>
-    <para>Can perform management tasks for the resource, such as using the management menu, controlling access to the resource, creating additional resources such as workspaces, and using advanced tools (such as the tool to send e-mail to all registered users).</para>
-   </listitem>
-  </itemizedlist>
-  <para>Each type of resource has a default set of rights for each role. For example, in a zone, Participants can view forums, send e-mail to registered users, and more; in a discussion forum, Participants can add entries and reply to entries.</para>
-  <para>You can change the set of rights allowed to each role (the role definition) locally, from within an individual resource, by clicking the Modify rights button, located in the header row of each column. For example, in a discussion forum, you may want to remove the right to send e-mail from the Participants role. Local changes to the role definition apply only to the current forum.</para>
-  <note>
-   <para>It is also possible to modify role definitions for all forums of a certain type. For more information, click Access Control in the Manager Help table of contents, and then click Manage Role Definitions.</para>
-  </note>
-  <para>You can allow a resource to inherit membership (the groups in each role) from its parent workspace. Changes will be applied automatically through the inheritance hierarchy. For example, if you create a new workspace, it can inherit its role definitions from the main workspace. </para>
-  <para>The following is an example of a "Manage by roles" page, as accessed from the workspace management page:</para>
-  <informalfigure pgwide="0">
-   <mediaobject>
-    <imageobject role="fo"><imagedata fileref="managebyrols_a.png" width="100%" format="PNG"/></imageobject>
-    <imageobject role="html"><imagedata fileref="managebyrols_a.png" width="100%" format="png"/></imageobject>
-   </mediaobject>
-  </informalfigure>
-  <para>For more information about inheriting role membership, view the Access Control topic in the online Manager Help system.</para>
- </sect1>
- <sect1 id="b9vepke">
-  <title>Managing by Rights</title>
-  <para>Managing by rights is another method for controlling access to resources. When you manage by rights, you work with an "Access Rights" table within an individual resource, such as a workspace or a forum. In the left-most column of the table, group names appear, one group in each row. (Some of the "groups" may be specially defined individual users.) The top row of each table displays the access rights available in that resource, one right in each column. At the intersection of each row and column is a checkbox. When you select or clear the checkbox, you allow or suspend that right for that group.</para>
-  <para>This method of access control allows you to assign to users the same set of rights you can assign using role-based access control. However, you must use the checkboxes in the table to group similar rights manually. This method is more labor-intensive, and does not offer the inheritance feature.</para>
-  <para>You can manage any set of resources using this method of access control.</para>
-  <note>
-   <para>If you upgrade to Version 7.0 from an earlier version, managing by rights is the default method. To use role-based access control, click manage by roles, located toward the top of the page.</para>
-  </note>
-  <para>Below is an example of a "Manage by rights" page, as accessed from the workspace management page:</para>
-  <para/>
-  <sect2 id="b9vescz">
-   <title>Default Users and Groups</title>
-   <para>Both methods of access control use a default set of users and groups:</para>
-   <itemizedlist mark="bullet" spacing="normal">
-    <listitem>
-     <para>Registered Users</para>
-     <para>Users who have a registered username.</para>
-    </listitem>
-    <listitem>
-     <para>Forum Creator</para>
-     <para>The user who created the forum. In this context, a "forum" could be a discussion forum, a specialized forum, a calendar, a workspace, or any of the built-in forums such as tasks or calendars.</para>
-    </listitem>
-    <listitem>
-     <para>Forum Owner</para>
-     <para>Initially, this is the same person who created the forum. It is possible to assign a new forum owner. You cannot assign a group as the forum owner.</para>
-    </listitem>
-    <listitem>
-     <para>Anonymous Users</para>
-     <para>Users who are not logged in. These users share one account, whose username is Anonymous.</para>
-    </listitem>
-    <listitem>
-     <para>Administrators</para>
-     <para>Users who have the right to access the management menus in all resources in the zone. By default, the first members of the Administrators group are the wf_admin user and the user who created the zone.</para>
-    </listitem>
-    <listitem>
-     <para>Entry Creator</para>
-     <para>The user who created an entry. In this context, an "entry" could be an entry in a discussion forum, calendar, chat room, meetings forum, or task forum.</para>
-    </listitem>
-    <listitem>
-     <para>Entry Owner</para>
-     <para>The user who owns an entry. By default, this is the person who created the entry, but a new owner can be assigned.</para>
-    </listitem>
-   </itemizedlist>
-  </sect2>
+  <title>Invite Users to the Site</title>
+  <para>Most end users require some minimal guidance before entering the site. They need to be invited (there is no automatic way to do this, unless you invite them during team creation (
+   <productname>ICEcore</productname> is designed to be team-centric). The invitation should contain the URL to the site. Also, you may want to include the 
+   <productname>ICEcore</productname> Getting Started Guide and User Guide in the e-mail invitation. 
+  </para>
+  <para>Your organization may want to run some training sessions before having people enter the site. As another option, the administrators may want to customize the getting-started information available on the static web page off the 
+   <guimenu>Welcome</guimenu> portlet.
+  </para>
  </sect1>
 </chapter>
 
