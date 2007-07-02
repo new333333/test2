@@ -18,6 +18,7 @@
 	java.util.Map valuesMap = (java.util.Map)request.getAttribute("valuesMap");
 	String namespace = (String)request.getAttribute("namespace"); 
 	String entryId = (String)request.getAttribute("entryId"); 
+	Boolean readOnly = (Boolean)request.getAttribute("readOnly"); 
 %>
 <c:set var="currentValueInt" value="<%= currentValueInt %>" />
 <c:set var="currentValue" value="<%= currentValue %>" />
@@ -25,8 +26,13 @@
 <c:set var="valuesMap" value="<%= valuesMap %>" />
 <c:set var="namespace" value="<%= namespace %>" />
 <c:set var="entryId" value="<%= entryId %>" />
+<c:set var="readOnly" value="<%= readOnly %>" />
 
-<div class="ss_completedContainer" id="ss_completedContainer_${namespace}_${entryId}" onmouseout="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, this, document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${currentValue}');">
+<div class="ss_completedContainer" id="ss_completedContainer_${namespace}_${entryId}" 
+		<c:if test="${!readOnly}">
+			onmouseout="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, this, document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${currentValue}');"
+		</c:if>
+	>
 	<c:forEach var="cv" items="<%= valuesInt %>">
 		<c:set var="fullValue" value="c${cv}" />
 		<div title="${valuesMap[fullValue]}" 
@@ -38,8 +44,10 @@
 					class="ss_bar_off"
 				</c:otherwise> 
 			</c:choose>
-			onclick="myTasks_${namespace}.ss_saveValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}')"
-			onmouseover="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}');"
+			<c:if test="${!readOnly}">
+				onclick="myTasks_${namespace}.ss_saveValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}')"
+				onmouseover="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}');"
+			</c:if>
 			></div>
 	</c:forEach>
 </div>

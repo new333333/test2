@@ -235,6 +235,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/meeting_return", model);	
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
 				return new ModelAndView("forum/json/vote_survey", model);	
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
+				return new ModelAndView("forum/json/icalendar_upload", model);
 			}
 
 			return new ModelAndView("forum/ajax_return", model);
@@ -376,6 +378,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxCheckStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_WIKILINK_FORM)) {
 			return ajaxWikiLinkForm(request, response);
+		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
+			return ajaxUploadICalendarFileStatus(request, response);
 		}
 		
 		return ajaxReturn(request, response);
@@ -1363,28 +1367,26 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private void ajaxUploadICalendarFile(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		// Get a handle on the uploaded file
+		List createdEntryIds = Collections.EMPTY_LIST;
 		String fileHandle = WebHelper.getFileHandleOnUploadedFile(request);
 		if (fileHandle != null) {
-			
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-			
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
-			
-			List createdEntryIds = getIcalModule().parseToEntries(folderId, file.getInputStream());
-			
+			if (folderId != -1) {
+				createdEntryIds = getIcalModule().parseToEntries(folderId, file.getInputStream());
+			}
 			WebHelper.releaseFileHandle(fileHandle);
 		}
+		response.setRenderParameter("ssICalendarEntryIdsSize", Integer.toString(createdEntryIds.size()));
+	}
 	
-		// And then, here's what you need to do at the time you create an entry.
+	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response) {
+		int entriesAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryIdsSize", 0);
 		
-		// You can use WebHelper.wrapFileHandleInMultipartFile(fileHandle) method
-		// to create a MultipartFile instance from the file handle and then put
-		// it into a map. Then you can pass it (along with other stuff) to 
-		// addEntry method to create an entry with file attachment, etc. 
+		Map model = new HashMap();
+		model.put("entriesAmount", entriesAmount);
 		
-		// When you're done creating an entry, make sure to call 
-		// WebHelper.releaseFileHandle(fileHandle) method to release system 
-		// resources associated with the file handle. 
+		return new ModelAndView("forum/json/icalendar_upload", model);
 	}
 	
 	private void ajaxAddToClipboard(ActionRequest request, 

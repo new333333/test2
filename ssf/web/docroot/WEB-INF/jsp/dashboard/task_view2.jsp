@@ -111,13 +111,13 @@
 			</ul>
 		</td>
 		<td>
-			<c:if test="${! empty entry.completed}">
-				<c:forEach var="done" items="${entry.ssEntryDefinitionElementData.completed.values}">
-					<c:if test="${entry.completed == done.key}">
-						${done.value}
-					</c:if>
-				</c:forEach>
-			</c:if>			
+			<c:if test="${! empty entry.completed && !empty entry.ssEntryDefinitionElementData.completed.values}">
+				<ssf:progressBar currentValue="${entry.completed}" 
+					valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
+					namespace="${renderResponse.namespace}" 
+					entryId="${entry._docId}}" 
+					readOnly="true"/>
+			</c:if>
 		</td>		
 	</tr>
 	</c:forEach>

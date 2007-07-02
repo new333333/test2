@@ -232,6 +232,8 @@
 			
 			if (task.status == "s3" || task.status == "s4") {
 				dojo.html.addClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
+			} else {
+				dojo.html.removeClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			}
 		}
 				
