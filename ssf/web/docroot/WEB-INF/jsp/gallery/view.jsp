@@ -23,6 +23,7 @@
   <div class="ss_decor-border6">
     <div class="ss_content_window">
 
+<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 <%@ include file="/WEB-INF/jsp/dashboard/gallery_view.jsp" %>
 
 </div></div></div>

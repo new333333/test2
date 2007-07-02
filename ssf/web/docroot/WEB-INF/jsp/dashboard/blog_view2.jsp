@@ -13,6 +13,7 @@
   //this is used by penlets and portlets
  
 %>
+<%  //ss_namespace, ss_divId setup on input %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <c:set var="hitCount" value="0"/>
@@ -46,7 +47,7 @@
 	<c:if test="${ssDashboard.scope != 'portlet'}">
 	    <c:if test="${fileEntry._entityType == 'folderEntry' || 
       		fileEntry._entityType == 'reply'}">
-		<ssf:menu titleId="ss_folderName_${hitCount}_${componentId}_<portlet:namespace/>" 
+		<ssf:menu titleId="ss_folderName_${hitCount}_${componentId}_${ss_namespace}/>" 
 		    menuClass="ss_actions_bar2 ss_actions_bar_submenu">
 		  <ssf:param name="title" useBody="true">
 		      <c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">

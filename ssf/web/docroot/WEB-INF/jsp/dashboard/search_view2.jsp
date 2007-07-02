@@ -11,25 +11,19 @@
  *
  */
 %>
+<% //may be called through ajax 
+ //ss_namespace, ss_divId setup on input
+%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
-	<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
+<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
 <c:set var="ss_pageSize" value="${ssDashboard.beans[componentId].ssSearchFormData.ss_pageSize}" />
 <c:set var="summaryWordCount" value="30"/>
-<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}">
-	<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}"/>
+<c:if test="${!empty ssDashboard.dashboard.components[componentId].data.summaryWordCount}">
+	<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[componentId].data.summaryWordCount}"/>
 </c:if>
-<c:set var="portletNamespace" value=""/>
-<ssf:ifnotadapter>
-<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
-</ssf:ifnotadapter>
-
-<c:if test="${empty ss_namespace}">
-<c:set var="ss_namespace" value="${portletNamespace}_${componentId}" />
-</c:if>
-
 
 <c:set var="ssResultEntries" value="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}"/>
 <c:set var="ssResultTotalRecords" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}" />
@@ -60,14 +54,14 @@
 					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssResultTotalRecords}">
 				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>
@@ -119,9 +113,9 @@
 
 									<ssf:menuLink 
 										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+								    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+										namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 										
 										<ssf:param name="url" useBody="true">
@@ -167,7 +161,7 @@
 								<c:if test="${isDashboard == 'yes'}">
 									href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
 										<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');"
+									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 								</c:if>
 								<c:if test="${empty isDashboard || isDashboard == 'no'}">
 							     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
@@ -190,9 +184,9 @@
 								<h3 class="ss_entryTitle">
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 											
 											<ssf:param name="url" useBody="true">
@@ -219,7 +213,7 @@
 									<c:if test="${isDashboard == 'yes'}">
 										<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}">
 											<ssf:param name="entityType" value="${entry._entityType}"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}', 'yes');"
+										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${ss_namespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
 								     <a href="<ssf:url adapter="false" portletName="ss_forum" entryId="${entry._docId}" action="view_folder_entry" actionUrl="false" >
@@ -237,7 +231,7 @@
 								<c:if test="${isDashboard == 'yes'}">
 									href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
 										<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');"
+									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 								</c:if>
 								<c:if test="${empty isDashboard || isDashboard == 'no'}">
 							     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
@@ -271,9 +265,9 @@
 
 									<ssf:menuLink 
 										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+								    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+										namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 										
 										<ssf:param name="url" useBody="true">
@@ -330,9 +324,9 @@
 								<h3 class="ss_entryTitle">
 									<ssf:menuLink 
 										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+								    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+										namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 										isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 										
 										<ssf:param name="url" useBody="true">
@@ -358,7 +352,7 @@
 									<c:if test="${isDashboard == 'yes'}">
 										<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._principal.workspaceId}" entryId="${entry._principal.workspaceId}">
 											<ssf:param name="entityType" value="workspace" /><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._principal.workspaceId}','${entry._principal.workspaceId}', 'workspace', '${portletNamespace}', 'yes');"
+										onClick="return ss_gotoPermalink('${entry._principal.workspaceId}','${entry._principal.workspaceId}', 'workspace', '${ss_namespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
 								     <a href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._principal.workspaceId}" entryId="${entry._docId}" action="view_ws_listing" actionUrl="false" >
@@ -411,9 +405,9 @@
 								<h3 class="ss_entryTitle">
 									<ssf:menuLink 
 										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+								    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+										namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 										
 										<ssf:param name="url" useBody="true">
@@ -469,9 +463,9 @@
 								<h3 class="ss_entryTitle">
 									<ssf:menuLink 
 										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+								    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+										namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 										
 										<ssf:param name="url" useBody="true">
@@ -526,9 +520,9 @@
 								<h3 class="ss_entryTitle">
 									<ssf:menuLink 
 										displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-								    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-										namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+								    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+										namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 										useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 										
 										<ssf:param name="url" useBody="true">
@@ -601,14 +595,14 @@
 					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssResultTotalRecords}">
 				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>
@@ -616,7 +610,7 @@
 			<div class="ss_clear"></div>
 		</div>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
-	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-	namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${componentId}" 
+	linkMenuObjIdx="${ss_namespace}_${componentId}" 
+	namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
 </ssf:menuLink>		

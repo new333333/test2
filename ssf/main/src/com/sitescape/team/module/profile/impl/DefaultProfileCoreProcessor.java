@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.text.DateFormat;
 
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
@@ -67,6 +68,7 @@ import com.sitescape.util.Validator;
  */
 public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
+	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
     
 	//cannot be deleted
     protected void deleteBinder_preDelete(Binder binder, Map ctx) {     	
@@ -316,7 +318,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		p.setDeleted(true);
       		Map updatesCtx = new HashMap();
        		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
-       		String newName = Validator.replacePathCharacters(NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString());
+       		String newName = Validator.replacePathCharacters(NLT.get("profile.deleted.label") + " " + 
+       				dateFmt.format(entry.getModification().getDate()) + " " + 
+       				entry.getModification().getDate().getTime()); //need long value for uniqueness otherwise time isn't enough
        		p.setName(newName); //mark as deleted - change name incase re-added -unique key
       		p.setForeignName(newName); //clear name incase re-added - unique key
       	    p.setTitle(p.getTitle() + " (" + newName + ")");

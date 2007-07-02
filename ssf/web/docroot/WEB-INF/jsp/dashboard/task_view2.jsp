@@ -13,17 +13,14 @@
   //this is used by penlets and portlets
  
 %>
+<%  //ss_namespace, ss_divId setup on input %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<c:set var="hitCount" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}"/>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
-<c:set var="portletNamespace" value=""/>
-<ssf:ifnotadapter>
-<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
-</ssf:ifnotadapter>
+<c:set var="hitCount" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}"/>
 
 <div class="ss_searchResult_dashboardHeader">
 	<div class="ss_dashboardPaginator"> 
@@ -35,14 +32,14 @@
 		</c:if>
 		  <c:if test="${ss_pageNumber > 0}">
 		    <span>
-		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'task'); return false;"
+		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'task'); return false;"
 		        href="#" ><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>&nbsp;&nbsp;&nbsp;
 		    </span>
 		  </c:if>
 		  <span class="ss_pageNumber">${ss_pageNumber+1}</span>
 		  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 		    <span>&nbsp;&nbsp;
-		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'task'); return false;"
+		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'task'); return false;"
 		        href="#" ><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 		    </span>
 		  </c:if>
@@ -82,9 +79,9 @@
 				
 			<ssf:menuLink 
 				displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-				entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-		    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-				namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+				entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+		    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+				namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 				useBinderFunction="no" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 
 				
@@ -114,7 +111,7 @@
 			<c:if test="${! empty entry.completed && !empty entry.ssEntryDefinitionElementData.completed.values}">
 				<ssf:progressBar currentValue="${entry.completed}" 
 					valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
-					namespace="${renderResponse.namespace}" 
+					namespace="${ss_namespace}" 
 					entryId="${entry._docId}}" 
 					readOnly="true"/>
 			</c:if>
@@ -124,7 +121,7 @@
 </table>
 </div>
 			
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
-	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-	namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${componentId}" 
+	linkMenuObjIdx="${ss_namespace}_${componentId}" 
+	namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
 </ssf:menuLink>	

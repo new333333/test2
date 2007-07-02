@@ -1,5 +1,4 @@
 <%
-// The dashboard "workspace tree" component
 /**
  * The contents of this file are governed by the terms of your license
  * with SiteScape, Inc., which includes disclaimers of warranties and
@@ -13,10 +12,14 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+<ssf:ifnotadapter>
+<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+</ssf:ifnotadapter>
+<c:set var="componentId" value="${ssComponentId}" scope="request"/>
+<c:if test="${empty ssComponentId}">
+<c:set var="componentId" value="${ssDashboard.ssComponentId}" scope="request"/>
+</c:if>
 
-<c:set var="ssTeamMembersCount" value="${ssDashboard.beans[componentId].ssTeamMembersCount}" scope="request"/>
-<c:set var="ssTeamMembers" value="${ssDashboard.beans[componentId].ssTeamMembers}"  scope="request"/>
-<div id="${ss_divId}">
-<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
-</div>
+<c:if test="${empty ss_divId}">
+<c:set var="ss_divId" value="ss_results_${ss_namespace}_${componentId}"  scope="request"/>
+</c:if>

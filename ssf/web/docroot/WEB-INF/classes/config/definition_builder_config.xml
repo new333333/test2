@@ -97,9 +97,7 @@
 			<property name="caption" caption="__caption" type="text" value="__entry_signature"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 		</jsps>
 	</item>
 	
@@ -108,9 +106,7 @@
 			<property name="caption" caption="__caption" type="text" value="__entry_creator"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 		</jsps>
 	</item>
 	
@@ -119,9 +115,7 @@
 			<property name="caption" caption="__caption" type="text" value="__entry_date"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 		</jsps>
 	</item>
 	
@@ -130,9 +124,7 @@
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 		</jsps>
 	</item>
 	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData">
@@ -140,9 +132,8 @@
 			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_attachments.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 	
@@ -151,8 +142,7 @@
 			<property name="caption" caption="__caption" type="text" value="__dashboard_canvas"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
 		</jsps>
 	</item>
 	
@@ -307,7 +297,7 @@
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_title.jsp" />
 		</jsps>
 	</item>
@@ -325,8 +315,7 @@
 				<exclude name="attachFiles" />
 		</option_entry_data>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
 		</jsps>
 	</item>
 		
@@ -337,9 +326,7 @@
 			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
-			
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
 		</jsps>
 	</item>
 		
@@ -348,7 +335,7 @@
 			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_workflow.jsp" />
 		</jsps>
 	</item>
@@ -539,8 +526,7 @@
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
 		</jsps>
 	</item>
 	
@@ -557,22 +543,20 @@
 			<exclude name="folderIcon" />
 		</option_entry_data>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="folderList" caption="__folder_listing" category="folderViewData" >
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
 		</jsps>
 	</item>
 
 	<item name="viewEntry" caption="__view_entry_selectbox" category="folderViewData" >
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
 		</jsps>
 	</item>
 		
@@ -778,7 +762,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
@@ -940,7 +923,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
@@ -1158,16 +1140,14 @@
 				optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="workspaceTitleView" caption="__title" canBeDeleted="true" 
 		multipleAllowed="true" category="workspaceViewData">
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
 		</jsps>
 	</item>
 	
@@ -1185,15 +1165,13 @@
 					<exclude name="attachFiles"/>
 				</option_entry_data>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData">
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 		</jsps>
 	</item>
 		
@@ -1251,8 +1229,7 @@
 				optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -1261,8 +1238,7 @@
 			<property name="caption" caption="__caption" type="text" value="__user_workspace_businessCard"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
 		</jsps>
 	</item>
 			
@@ -1729,8 +1705,6 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/box.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/box.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
 	</item>
 		
@@ -1763,8 +1737,6 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
 		<help>ihelp.designers.expand_area</help>
 	</item>
@@ -1792,16 +1764,12 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="divider" caption="__divider" category="generalLayout">
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
 		<help>ihelp.designers.divider</help>
 	</item>
@@ -1833,8 +1801,6 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 		</jsps>
 	</item>
 		
@@ -1865,8 +1831,6 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
 	</item>
 
@@ -1896,8 +1860,6 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/html.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 	</item>
 		
@@ -1930,7 +1892,6 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<help>ihelp.designers.custom_jsp</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderHidden" />
 	</item>
 <!-- General layout views -->	
 	<item name="boxView" caption="__box" category="generalViewLayout">
@@ -1957,9 +1918,7 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/box.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/box.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
 	</item>
 	<item name="expandableDivView" caption="__expandable_div" category="generalViewLayout">
@@ -1987,9 +1946,7 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
 		<help>ihelp.designers.expand_area</help>
 	</item>
@@ -2014,17 +1971,13 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
 	</item>
 		
 	<item name="dividerView" caption="__divider" category="generalViewLayout">
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
 	</item>
 		
@@ -2052,9 +2005,8 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+	
 		</jsps>
 	</item>
 		
@@ -2082,9 +2034,7 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
 	</item>
 
@@ -2111,9 +2061,7 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/html.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 	</item>
 		
@@ -2138,8 +2086,7 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
 		</jsps>
 	</item>
 <!-- Workflow items -->

@@ -118,7 +118,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 
 		String cId = "";
 		if (operation.equals("_modifyComponentData") || 
-				operation.equals("_deleteComponent")) {
+				operation.equals("_deleteComponent") ||
+				formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x") ||
+				formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			cId = componentId;
 		}
 

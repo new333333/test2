@@ -12,24 +12,29 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start == 'this'}">
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
+<c:set var="treeName" value="wsTree_${ss_namespace}_${componentId}"/>
 <script type="text/javascript">
-function wsTreeComponent${ssComponentId}_showId(id, obj, action) {
+function ${treeName}_showId(id, obj, action) {
+<c:if test="${ssConfigJspStyle != 'template'}">
 	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder" binderId="ssBinderIdPlaceHolder"/>";
+	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
+			name="action" value="ssActionPlaceHolder"/><portlet:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
+</c:if>
 	return false;
 }
-
 </script>
 
-<ssf:tree treeName="wsTreeComponent${ssComponentId}" 
-  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}" 
-  topId="${ssDashboard.beans[ssComponentId].topId}" 
-  highlightNode="${ssDashboard.beans[ssComponentId].topId}" 
+
+<ssf:tree treeName="${treeName}" 
+  treeDocument="${ssDashboard.beans[componentId].workspaceTree}" 
+  topId="${ssDashboard.beans[componentId].topId}" 
+  highlightNode="${ssDashboard.beans[componentId].topId}" 
   initOnly="true"/>
 
 
-</c:if>

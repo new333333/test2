@@ -12,38 +12,27 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="treeName" value="wsTree${ssComponentId}${renderResponse.namespace}"/>
-<script type="text/javascript">
-function ${treeName}_showId(id, obj, action) {
-<c:if test="${ssConfigJspStyle != 'template'}">
-	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-</c:if>
-	return false;
-}
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
-</script>
+<c:set var="treeName" value="wsTree_${ss_namespace}_${componentId}"/>
+
 <c:set var="rootOpen" value="true"/>
-<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen}">
+<c:if test="${!empty ssDashboard.dashboard.components[componentId].data.rootOpen}">
   <c:set var="rootOpen" 
-    value="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen}"/>
+    value="${ssDashboard.dashboard.components[componentId].data.rootOpen}"/>
 </c:if>
 
-<c:if test="${empty ssDashboard.beans[ssComponentId].workspaceTree}">
+<c:if test="${empty ssDashboard.beans[componentId].workspaceTree}">
   <span class="ss_bold"><ssf:nlt checkIfTag="true"
-    tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[ssComponentId].name]}"/></span><br/>
+    tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[componentId].name]}"/></span><br/>
   <span class="ss_italic"><ssf:nlt tag="dashboard.displayNotAvailable"/></span>
 </c:if>
 
-<c:if test="${!empty ssDashboard.beans[ssComponentId].workspaceTree}">
+<c:if test="${!empty ssDashboard.beans[componentId].workspaceTree}">
 <ssf:tree treeName="${treeName}" 
-  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}" 
-  topId="${ssDashboard.beans[ssComponentId].topId}" 
-  highlightNode="${ssDashboard.beans[ssComponentId].topId}" 
-  rootOpen="${rootOpen}" />
+  treeDocument="${ssDashboard.beans[componentId].workspaceTree}" 
+  topId="${ssDashboard.beans[componentId].topId}" 
+  highlightNode="${ssDashboard.beans[componentId].topId}" 
+  rootOpen="${rootOpen}" 
+  noInit="true"/>
 </c:if>
