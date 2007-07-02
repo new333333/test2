@@ -30,7 +30,7 @@
 <script type="text/javascript">
 var ss_findPlaces_searchText = ""
 var ss_findPlaces_pageNumber = 0;
-var ss_findPlaces_pageNumberBefore = -1;
+var ss_findPlaces_pageNumberBefore = 0;
 var ss_findPlacesDivTopOffset = 2;
 
 var ss_findPlacesSearchInProgress = 0;
@@ -241,9 +241,10 @@ function ss_findPlacesPrevPage${prefix}() {
 }
 
 function ss_findPlacesClose${prefix}() {
+	ss_findPlaces_pageNumber=0;
+	ss_findPlaces_pageNumberBefore=0;
 	document.getElementById('ss_findPlaces_searchText_${prefix}').focus();
 }
-
 
 function ss_findPlacesBlurTextArea${prefix}() {
 	if (!ss___findPlacesIsMouseOverList) {

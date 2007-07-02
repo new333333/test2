@@ -252,6 +252,9 @@ function ss_findUserPrevPage(prefix) {
 }
 
 function ss_findUserClose(prefix) {
+	ss_findUser_pageNumber[prefix] = 0;
+	ss_findUser_pageNumberBefore[prefix] = 0;
+	
 	var textObj = document.getElementById('ss_findUser_searchText_' + prefix);
 	if (textObj == null) {
 		textObj = self.parent.document.getElementById('ss_findUser_searchText_' + prefix);

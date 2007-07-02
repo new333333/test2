@@ -247,6 +247,8 @@ function ss_findTagPrevPage(prefix) {
 }
 
 function ss_findTagClose(prefix) {
+	ss_findTag_pageNumber[prefix] = 0;
+	ss_findTag_pageNumberBefore[prefix] = 0;
 	document.getElementById('ss_findTag_searchText_'+prefix).focus();
 }
 
