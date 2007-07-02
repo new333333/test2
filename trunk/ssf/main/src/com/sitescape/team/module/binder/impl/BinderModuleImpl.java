@@ -535,7 +535,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (Validator.isNull(newTag)) return;
 		Binder binder = loadBinder(binderId);
 		if (community) checkAccess(binder, BinderOperation.manageTag); 
-		newTag = newTag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
+		newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
 		String[] newTags = newTag.split(" ");
 		if (newTags.length == 0) return;
 		List tags = new ArrayList();

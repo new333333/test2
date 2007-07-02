@@ -689,7 +689,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     //inside write transaction    
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
 		if (Validator.isNull(newtag)) return;
-		newtag = newtag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
+		newtag = newtag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
 		String[] newTags = newtag.split(" ");
 		if (newTags.length == 0) return;
 		List tags = new ArrayList();
