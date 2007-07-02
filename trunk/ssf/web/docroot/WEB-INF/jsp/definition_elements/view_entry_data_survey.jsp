@@ -32,55 +32,58 @@
 
 
 <c:set var="alreadyVotedCurrentUser" value="false"/>
+<c:set var="hasRightsToVote" value="${aclMap[entity.id]['addReply']}"/>
 <form id="ssSurveyForm_${property_name}" method="post">
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="false" />
 	<c:forEach var="question" items="${ssDefinitionEntry.customAttributes[property_name].value.surveyModel.questions}" >
-	<c:set var="hasAnyQuestion" value="true" />
-	<div class="ss_questionContainer">
-		<p><c:out value="${question.question}" escapeXml="false"/></p>
-		<c:if test="${overdue || question.alreadyVotedCurrentUser}">
-			<ol>
-			<c:forEach var="answer" items="${question.answers}">
-				<li>
-					<c:if test="${question.type == 'multiple' || question.type == 'single'}">
-						<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
+		<c:set var="hasAnyQuestion" value="true" />
+		<div class="ss_questionContainer">
+			<p><c:out value="${question.question}" escapeXml="false"/></p>
+			<c:choose>
+				<c:when test="${overdue || question.alreadyVotedCurrentUser || !hasRightsToVote}">
+					<ol>
+					<c:forEach var="answer" items="${question.answers}">
+						<li>
+							<c:if test="${question.type == 'multiple' || question.type == 'single'}">
+								<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
+							</c:if>
+							<span><c:out value="${answer.text}" escapeXml="false"/></span>
+							<div class="ss_clear"></div>
+						</li>
+					</c:forEach>
+					</ol>
+					<c:if test="${question.type == 'multiple'}">
+						<p class="ss_legend"><ssf:nlt tag="survey.vote.multiple.legend"/></p>
 					</c:if>
-					<span><c:out value="${answer.text}" escapeXml="false"/></span>
-					<div class="ss_clear"></div>
-				</li>
-			</c:forEach>
-			</ol>
-			<c:if test="${question.type == 'multiple'}">
-				<p class="ss_legend"><ssf:nlt tag="survey.vote.multiple.legend"/></p>
-			</c:if>
-		</c:if>
-		<c:if test="${!overdue && !question.alreadyVotedCurrentUser}">
-			<c:if test="${question.type == 'multiple'}">
-				<ol>
-				<c:forEach var="answer" items="${question.answers}">
-					<li>
-						<input type="checkbox" style="width: 19px;" name="answer_${question.index}" id="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}" value="${answer.index}" />
-						<label for="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
-					</li>
-				</c:forEach>
-				</ol>
-			</c:if>
-			<c:if test="${question.type == 'single'}">
-				<ol>
-				<c:forEach var="answer" items="${question.answers}">
-					<li>
-						<input type="radio" style="width: 19px;" name="answer_${question.index}" value="${answer.index}" id="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"/>
-						<label for="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
-					</li>
-				</c:forEach>
-				</ol>
-			</c:if>
-			<c:if test="${question.type == 'input'}">
-				<input type="text" name="answer_${question.index}">
-			</c:if>
-		</c:if>
-	</div>
+				</c:when>
+				<c:otherwise>
+					<c:if test="${question.type == 'multiple'}">
+						<ol>
+						<c:forEach var="answer" items="${question.answers}">
+							<li>
+								<input type="checkbox" style="width: 19px;" name="answer_${question.index}" id="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}" value="${answer.index}" />
+								<label for="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
+							</li>
+						</c:forEach>
+						</ol>
+					</c:if>
+					<c:if test="${question.type == 'single'}">
+						<ol>
+						<c:forEach var="answer" items="${question.answers}">
+							<li>
+								<input type="radio" style="width: 19px;" name="answer_${question.index}" value="${answer.index}" id="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"/>
+								<label for="${ss_namespace}_${property_name}_answer_${question.index}_${answer.index}"><c:out value="${answer.text}" escapeXml="false"/></label>
+							</li>
+						</c:forEach>
+						</ol>
+					</c:if>
+					<c:if test="${question.type == 'input'}">
+						<input type="text" name="answer_${question.index}">
+					</c:if>
+				</c:otherwise>
+			</c:choose>
+		</div>
 		<c:set var="alreadyVotedCurrentUser" value="${question.alreadyVotedCurrentUser}"/>
 	</c:forEach>
 	
@@ -99,8 +102,15 @@
 							<ssf:nlt tag="survey.vote.notAllowed.overdue"/>
 						</c:when>
 						<c:otherwise>
-							<input type="button" value="Vote!" 
-								onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
+							<c:choose>
+								<c:when test="${hasRightsToVote}">
+									<input type="button" value="Vote!" 
+										onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
+								</c:when>
+								<c:otherwise>
+									<ssf:nlt tag="survey.vote.notAllowed.accessRights"/>
+								</c:otherwise>
+							</c:choose>
 						</c:otherwise>
 					</c:choose>
 				</c:otherwise>

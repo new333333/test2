@@ -233,7 +233,7 @@
 			</script>
 			
 			<tr>
-				<td class="ss_entryTitle ss_normalprint<c:if test="${entry.status == 'completed' || entry.status == 'cancelled'}"> ss_task_completed</c:if>" 
+				<td class="ss_entryTitle ss_normalprint<c:if test="${entry.status == 's3' || entry.status == 's4'}"> ss_task_completed</c:if>" 
 					id="ss_tasks_<portlet:namespace/>_${entry._docId}_title">
 					<c:set var="isDashboard" value="yes"/>
 						<ssf:menuLink 
@@ -273,8 +273,8 @@
 							valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
 							namespace="${renderResponse.namespace}" 
 							entryId="${entry._docId}}" />
-					</c:if>			
-				</td>		
+					</c:if>
+				</td>
 			</tr>
 		
 		</c:forEach>

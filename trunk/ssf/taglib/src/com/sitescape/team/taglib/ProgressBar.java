@@ -23,13 +23,10 @@
 package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
-import javax.portlet.RenderRequest;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -37,10 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.collections.OrderedMap;
-import org.apache.commons.collections.map.LinkedMap;
-
-import com.sitescape.team.domain.Statistics;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class ProgressBar extends BodyTagSupport {
@@ -52,6 +45,8 @@ public class ProgressBar extends BodyTagSupport {
 	private Map valuesMap;
 	
 	private String entryId;
+	
+	private Boolean readOnly = false;
 
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -84,6 +79,7 @@ public class ProgressBar extends BodyTagSupport {
 				httpReq.setAttribute("valuesMap", valuesMap);		
 				httpReq.setAttribute("namespace", this.namespace);
 				httpReq.setAttribute("entryId", this.entryId);
+				httpReq.setAttribute("readOnly", this.readOnly);
 				
 			}
 			
@@ -98,6 +94,11 @@ public class ProgressBar extends BodyTagSupport {
 			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
+			this.currentValue = null;
+			this.namespace = null;
+			this.valuesMap = null;
+			this.entryId = null;
+			this.readOnly = false;
 		}
 		return EVAL_PAGE;		
 	}
@@ -116,6 +117,10 @@ public class ProgressBar extends BodyTagSupport {
 
 	public void setEntryId(String entryId) {
 		this.entryId = entryId;
+	}
+
+	public void setReadOnly(Boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 
 }

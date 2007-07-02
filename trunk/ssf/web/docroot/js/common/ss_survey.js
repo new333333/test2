@@ -295,7 +295,11 @@ ssSurvey.vote = function(formId, binderId, entryId) {
 			alert(ss_not_logged_in);
 		},
 		load: function(type, data, evt) {
-			alert(ssSurvey.votedLabel);
+			if (data.notLoggedIn) {
+				alert(ss_not_logged_in);
+			} else {
+				alert(ssSurvey.votedLabel);
+			}
 			try { window.close(); } catch (e){}
 			try { parent.ss_hideEntryDiv(); } catch (e){}
 		},

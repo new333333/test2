@@ -1578,16 +1578,21 @@ var ss_calendar_import = {
 		dojo.io.bind({
 	    	url: url,
 			error: function(type, data, evt) {
-				try {
+				alert(ss_not_logged_in);
 				ss_calendar_import.cancel();
-				} catch (e) {alert(e)}
 			},
 			load: function(type, data, evt) {
-				try {
+				if (data.notLoggedIn) {
+					alert(ss_not_logged_in);
+				} else if (data.entriesAmountMsg) {
+					alert(data.entriesAmountMsg);
+				} else {
+					throw "Wrong server response.";
+				}
 				ss_calendar_import.cancel();
-				} catch (e) {alert(e)}
 			},
 			preventCache: true,
+			mimetype: "text/json",
 			formNode: dojo.byId("ss_calendar_import_form")
 		});
 

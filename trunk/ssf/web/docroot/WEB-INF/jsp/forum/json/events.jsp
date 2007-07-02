@@ -86,7 +86,7 @@ events : [<%--
 		  	},
 		  	<c:choose>
 			  	<c:when test="${evim.cal_starttimestring != evim.cal_endtimestring}">
-			  		text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm"/> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="HH:mm"/>",
+			  		text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="time" timeStyle="short" />",
 			  	</c:when>
 			  	<c:otherwise>
 			  		text: "",
