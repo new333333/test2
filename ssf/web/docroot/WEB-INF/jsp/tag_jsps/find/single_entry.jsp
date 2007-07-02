@@ -33,7 +33,7 @@
 <script type="text/javascript">
 var ss_findEntries_searchText = ""
 var ss_findEntries_pageNumber = 0;
-var ss_findEntries_pageNumberBefore = -1;
+var ss_findEntries_pageNumberBefore = 0;
 var ss_findEntriesDivTopOffset = 2;
 
 var ss_findEntriesSearchInProgress = 0;
@@ -248,6 +248,8 @@ function ss_findEntriesPrevPage<portlet:namespace/>() {
 }
 
 function ss_findEntriesClose<portlet:namespace/>() {
+	ss_findEntries_pageNumber = 0;
+	ss_findEntries_pageNumberBefore = 0;
 	document.getElementById('ss_findEntries_searchText_<portlet:namespace/>').focus();
 }
 
