@@ -41,7 +41,7 @@ public class SynchUser {
 		// to do with authentication of the user.
 		try {
 			AuthenticationManagerUtil.authenticate(zoneName, username, password,
-				passwordAutoSynch, null);
+				passwordAutoSynch, false, null);
 		}
 		catch(UserDoesNotExistException e) {
 			// This means that the user doesn't exist in Aspen and the
