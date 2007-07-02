@@ -40,13 +40,13 @@
 
  <target id="banqre4" pid="b9vchn9" name="BridgeHead" level="2"> <text>For a quick installation edit the following sections:</text> </target>
 
- <target id="banqre5" pid="b9vchn9" name="Procedure" level="2" number="1"> <text>Change the Host name in the Network section.  Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
+ <target id="banqre5" pid="b9vchn9" name="Procedure" level="2" number="1"> <text>Change the Host name in the Network section. Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
 
- <target id="banqre6" pid="b9vchn9" name="Step" level="3" number="1"> <text>Change the Host name in the Network section.  Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
+ <target id="banqre6" pid="b9vchn9" name="Step" level="3" number="1"> <text>Change the Host name in the Network section. Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
 
  <target id="banqre7" pid="b9vchn9" name="Step" level="3" number="2"> <text>Consider changing the JavaVirtualMachine setting in the Memory section if you have a large installation.</text> </target>
 
- <target id="banqre8" pid="b9vchn9" name="Step" level="3" number="3"> <text>Use the default file system configuration.  This stores the files in /home/icecoredata</text> </target>
+ <target id="banqre8" pid="b9vchn9" name="Step" level="3" number="3"> <text>Use the default file system configuration. This stores the files in /home/icecoredata</text> </target>
 
  <target id="banqre9" pid="b9vchn9" name="Step" level="3" number="4"> <text>The default database configuration is MySQL, with the default MySQL passwords.</text> </target>
 
@@ -63,6 +63,22 @@
  <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.7"> <text>Starting and Stopping ICEcore</text> </target>
 
  <target id="bannxe9" pid="b9vchnb" name="BridgeHead" level="2"> <text>Starting ICEcore</text> </target>
+
+ <target id="bant502" pid="b9vchnb" name="BridgeHead" level="2"> <text>Setting up ICEcore to start on system startup</text> </target>
+
+ <target id="bant5c0" pid="b9vchnb" name="Procedure" level="2" number="1"> <text>C:\yourinstall\liferay-portal-tomcat-jdk5-4.1.2\bin\service.bat install icecore</text> </target>
+
+ <target id="bant5c1" pid="b9vchnb" name="Step" level="3" number="1"> <text>C:\yourinstall\liferay-portal-tomcat-jdk5-4.1.2\bin\service.bat install icecore</text> </target>
+
+ <target id="bant6f3" pid="b9vchnb" name="Step" level="3" number="2"> <text>Use the Services Control Panel to configure the service to your needs.</text> </target>
+
+ <target id="bant6o3" pid="b9vchnb" name="Procedure" level="2" number="1"> <text>cd /etc/init.d</text> </target>
+
+ <target id="bant6o4" pid="b9vchnb" name="Step" level="3" number="1"> <text>cd /etc/init.d</text> </target>
+
+ <target id="bant6vx" pid="b9vchnb" name="Step" level="3" number="2"> <text>ln -s  /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/icecore</text> </target>
+
+ <target id="bant6wo" pid="b9vchnb" name="Step" level="3" number="3"> <text>chkconfig --add icecore </text> </target>
 
  <target id="bannyv1" pid="b9vchnb" name="BridgeHead" level="2"> <text>Log Files/Monitoring</text> </target>
 
