@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<project name="as-module" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+		
+	<property name="jar.file" value="ssf-asmodule.jar" />
+	
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar-into-shared">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+</project>

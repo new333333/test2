@@ -1,0 +1,83 @@
+/**
+ * The contents of this file are governed by the terms of your license
+ * with SiteScape, Inc., which includes disclaimers of warranties and
+ * limitations on liability. You may not use this file except in accordance
+ * with the terms of that license. See the license for the specific language
+ * governing your rights and limitations under the license.
+ *
+ * Copyright (c) 2007 SiteScape, Inc.
+ *
+ */
+/*
+ * Created on Dec 14, 2004
+ *
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+package com.sitescape.team.domain;
+
+
+/**
+ * @author Janet McCann
+ * @hibernate.class table="SS_Subscriptions" dynamic-update="true" lazy="false" 
+ * @hibernate.mapping auto-import="false"
+ * need auto-import = false so names don't collide with jbpm
+ * 
+ * A subscription is similiar to a notification, except it is managed by a user.  
+ * An individual chooses to be notified.  A notification is managed by the folder 
+ * administrator.
+ */
+public class Subscription  {
+    public static final int DIGEST_STYLE_EMAIL_NOTIFICATION = 1;
+    public static final int MESSAGE_STYLE_EMAIL_NOTIFICATION = 2;
+    public static final int MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION = 3;
+    public static final int DISABLE_ALL_NOTIFICATIONS=4;
+    
+    private int style=DIGEST_STYLE_EMAIL_NOTIFICATION;
+    private UserEntityPK id;
+	public Subscription() {
+    	
+    }
+    public Subscription(Long userId, EntityIdentifier entityId) {
+    	setId(new UserEntityPK(userId, entityId));
+    }
+    public Subscription(UserEntityPK key) {
+       	setId(key);
+     }
+    /**
+	* @hibernate.composite-id
+	**/
+	public UserEntityPK getId() {
+		return id;
+	}
+	public void setId(UserEntityPK id) {
+		this.id = id;
+	}    
+
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public int getStyle() {
+        return style;
+    }
+    public void setStyle(int style) {
+        this.style = style;
+    }
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        if ((obj == null) || (!(obj instanceof Subscription)))
+            return false;
+        
+        Subscription o = (Subscription) obj;
+        if (getId().equals(o.getId())) return true;
+                
+        return false;
+    }
+    public int hashCode() {
+    	return getId().hashCode();
+    }
+  
+}

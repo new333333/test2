@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9vell9" pid="b9vell9" name="Chapter" level="0" number="3"> <text>Controlling Access</text> </target>
+
+ <target id="b9vemc3" pid="b9vemc3" name="Sect1" level="1" number="3.1"> <text>Managing by Roles</text> </target>
+
+ <target id="b9vepke" pid="b9vepke" name="Sect1" level="1" number="3.2"> <text>Managing by Rights</text> </target>
+
+ <target id="b9vescz" pid="b9vepke" name="Sect2" level="2" number="3.2.1"> <text>Default Users and Groups</text> </target>
+
+</targets>

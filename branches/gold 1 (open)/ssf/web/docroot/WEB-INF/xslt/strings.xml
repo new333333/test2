@@ -1,0 +1,35 @@
+<strings>
+    <str name="TOC">
+	   	<lang name="en">Table of contents</lang>
+    </str>
+    <str name="ChangedOne">
+   		<lang name="en">changed entry in </lang>
+    </str>
+    <str name="ChangedMany">
+   		<lang name="en">changed entries in </lang>
+    </str>
+    <str name="fromLabel">
+   		<lang name="en">From:</lang>
+    </str>
+    <str name="dateLabel">
+   		<lang name="en">Date:</lang>
+    </str>
+    <str name="folderLabel">
+	   <lang name="en">Folder:</lang>
+    </str>
+    <str name="newEntry">
+	   <lang name="en">new</lang></str>
+    <str name="modifiedEntry">
+	   <lang name="en">modified</lang>
+    </str>
+    <str name="workflowEntry">
+	   <lang name="en">Workflow state modified</lang>
+    </str>
+   <str name="folderPermalink">
+	   <lang name="en">Folder permalink</lang>
+    </str>
+   <str name="reply">
+	   <lang name="en">Reply</lang>
+    </str>
+
+</strings>

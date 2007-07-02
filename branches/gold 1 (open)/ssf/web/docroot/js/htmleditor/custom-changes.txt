@@ -1,0 +1,142 @@
+1. From the function focusEditor, remove the two calls to focus() so
+that the function now looks like this:
+
+HTMLArea.prototype.focusEditor = function() {
+	switch (this._editMode) {
+	    case "wysiwyg" : break;
+	    case "textmode": break;
+	    default	   : alert("ERROR: mode " + this._editMode + " is not defined");
+	}
+	return this._doc;
+};
+
+2. From the function generate, change the loop that calls other
+onsubmit methods to save each method's return value, and then return
+the conjunction of all those, as ffs:
+
+		// modified by MAB 11/24/2004 for V3.0 rc1, to make the return
+		// correctly reflect previous submit methods return values
+		f.onsubmit = function() {
+			editor._textArea.value = editor.getHTML();
+			var a = this.__msh_prevOnSubmit;
+			// call previous submit methods if they were there.
+			var previous_return = true;
+			if (typeof a != "undefined") {
+				for (var i in a) {
+					previous_return = previous_return && a[i]();
+				}
+			}
+			return previous_return;
+		};
+
+
+3. There appears to be a race condition where HTMLArea.I18N.tooltips is referenced before the 
+js file containing the definition has been loaded. I added a check to test if HTMLArea.I18N.tooltips
+is defined before referencing it, thereby preventing a javascript error pop-up.  PMH
+
+Routine:  "HTMLArea.Config = function () {...}"
+
+Original code:
+
+	// initialize tooltips from the I18N module and generate correct image path
+	for (var i in this.btnList) {
+		var btn = this.btnList[i];
+		btn[1] = _editor_url + this.imgURL + btn[1];
+		if (typeof HTMLArea.I18N.tooltips[i] != "undefined") {
+			btn[0] = HTMLArea.I18N.tooltips[i];
+		}
+	}
+
+
+Modified code:
+
+	// initialize tooltips from the I18N module and generate correct image path
+	for (var i in this.btnList) {
+		var btn = this.btnList[i];
+		btn[1] = _editor_url + this.imgURL + btn[1];
+		if (typeof HTMLArea.I18N != "undefined" && typeof HTMLArea.I18N.tooltips != "undefined" && typeof HTMLArea.I18N.tooltips[i] != "undefined") {
+			btn[0] = HTMLArea.I18N.tooltips[i];
+		}
+	}
+
+
+
+4) Same as #3 for HTMLArea.I18N.msg
+
+Original code:
+
+HTMLArea.prototype._createStatusBar = function() {
+	var statusbar = document.createElement("div");
+	statusbar.className = "statusBar";
+	this._htmlArea.appendChild(statusbar);
+	this._statusBar = statusbar;
+	// statusbar.appendChild(document.createTextNode(HTMLArea.I18N.msg["Path"] + ": "));
+	// creates a holder for the path view
+	div = document.createElement("span");
+	div.className = "statusBarTree";
+	div.innerHTML = HTMLArea.I18N.msg["Path"] + ": ";
+	this._statusBarTree = div;
+	this._statusBar.appendChild(div);
+	if (!this.config.statusBar) {
+		// disable it...
+		statusbar.style.display = "none";
+	}
+};
+
+
+
+Modified code:
+
+HTMLArea.prototype._createStatusBar = function() {
+	var statusbar = document.createElement("div");
+	statusbar.className = "statusBar";
+	this._htmlArea.appendChild(statusbar);
+	this._statusBar = statusbar;
+	// statusbar.appendChild(document.createTextNode(HTMLArea.I18N.msg["Path"] + ": "));
+	// creates a holder for the path view
+	div = document.createElement("span");
+	div.className = "statusBarTree";
+	if (typeof HTMLArea.I18N != "undefined" && typeof HTMLArea.I18N.msg != "undefined") {div.innerHTML = HTMLArea.I18N.msg["Path"] + ": ";}
+	this._statusBarTree = div;
+	this._statusBar.appendChild(div);
+	if (!this.config.statusBar) {
+		// disable it...
+		statusbar.style.display = "none";
+	}
+};
+
+
+4. Fix paste, by allowing ^V to be passed through to the editor's
+paste routine.
+
+In HTMLArea.prototype._editorEvent, comment out this line:
+
+//		    case 'v': cmd = "paste"; break;
+
+5. Fix pop-up warning on a secure site that the page contains both
+secure and non-secure items (IE). Find this section:
+
+	// create the IFRAME
+	var iframe = document.createElement("iframe");
+	htmlarea.appendChild(iframe);
+	this._iframe = iframe;
+
+and insert:
+
+	iframe.src = this.popupURL("blank.html");
+
+so that the resulting code looks like:
+
+	// create the IFRAME
+	var iframe = document.createElement("iframe");
+	iframe.src = this.popupURL("blank.html");
+	htmlarea.appendChild(iframe);
+	this._iframe = iframe;
+
+6. Fix tab order so that you tab into the iframe (text area) rather
+than the select boxes. Inside the function createSelect, after the
+line that creates the element, set the tabIndex to 99:
+
+	el = document.createElement("select");
+	el.tabIndex = 99;
+

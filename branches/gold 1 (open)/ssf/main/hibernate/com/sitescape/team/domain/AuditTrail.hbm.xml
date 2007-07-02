@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_AuditTrail" discriminator-value="A" name="com.sitescape.team.domain.AuditTrail">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="char" column="type"/>
+ 	<property name="entityId"/>
+   	<property name="entityType" length="16"/>
+    <property name="owningBinderId"/>
+ 	<property name="owningBinderKey" length="255" />
+    <property name="startBy"/>
+    <property name="startDate"/>
+    <property name="endBy"/>
+    <property name="endDate"/>
+ 	<property name="description" length="512"/>
+	<property name="transactionType" length="16"/>
+    <subclass name="com.sitescape.team.domain.WorkflowStateHistory" discriminator-value="W">
+ 		<property name="tokenId"/>
+    	<property name="state" length="64"/>
+	    <property name="threadName" length="64"/>
+		<property name="definitionId" length="32"/>
+	    <property name="ended"/>
+    </subclass>
+    <subclass name="com.sitescape.team.domain.LoginInfo" discriminator-value="L">
+    </subclass>
+  </class>
+</hibernate-mapping>
