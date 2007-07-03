@@ -137,7 +137,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	  title="<ssf:nlt tag="navigation.myTeams"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
-      <ssHelpSpot helpId="navigation_bar/myteams_button" offsetX="3" offsetY="13"  
+      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
 	    <div id="ss_navbarMyTeamsButton<portlet:namespace/>">
 	      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
@@ -660,7 +660,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <div style="float: right; padding-top:5px; padding-bottom: 5px;">
 <ssHelpSpot helpId="navigation_bar/create_team_button" 
   title="<ssf:nlt tag="helpSpot.createTeam"/>"
-  offsetX="-22" offsetY="8" xAlignment="center">
+  offsetX="-13" offsetY="-1" xAlignment="center">
 <c:if test="${empty ss_inlineHelpDivIdNumber}">
   <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
 </c:if>
@@ -678,9 +678,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssHelpSpot>
 </div>
 
-<ssHelpSpot helpId="navigation_bar/my_teams" 
+<ssHelpSpot helpId="navigation_bar/my_teams_portlet"  
   title="<ssf:nlt tag="helpSpot.myTeams"/>"
-  offsetX="-22" offsetY="8" xAlignment="center">
+  offsetX="-11" offsetY="2" xAlignment="center">
 <div style="padding-top:5px; padding-bottom: 5px;">
 <a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeams('<portlet:namespace/>','<ssf:url 
     	adapter="true" 

@@ -25,8 +25,6 @@
 
 <p><ssf:nlt tag="help.getStartedProduct.content.workspaces.projects" /></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.access"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
 </div>
 
 <div class="ss_help_more_pages_section">
