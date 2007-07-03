@@ -28,7 +28,12 @@
 	if (height == null || height.equals("")) {
 		height = "200";
 	}
-	if (Integer.valueOf(height).intValue() < 100) height = "100";
+	height = height.replaceAll("px", "").trim();
+	try {
+		//Don't crash if someone put in a bogus value for the height
+		if (Integer.valueOf(height).intValue() < 100) height = "100";
+	}
+	catch(Exception e) {}
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
