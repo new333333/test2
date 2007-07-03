@@ -34,6 +34,7 @@ import com.sitescape.team.ssfs.NoSuchObjectException;
 import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class DispatchServer extends GenericServlet {
@@ -52,8 +53,9 @@ public class DispatchServer extends GenericServlet {
 			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
 			String password = (String) req.getAttribute(CrossContextConstants.PASSWORD);
 			Boolean ignorePassword = (Boolean) req.getAttribute(CrossContextConstants.IGNORE_PASSWORD);
-			if(ignorePassword == null)
-				ignorePassword = Boolean.FALSE;
+			if(ignorePassword == null) {
+				ignorePassword = SPropsUtil.getBoolean("ssfs.ignore.password.enabled", false);
+			}
 
 			// Authenticate the user against SSF user database.
 			try {
