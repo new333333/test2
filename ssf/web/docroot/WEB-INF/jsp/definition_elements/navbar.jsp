@@ -122,21 +122,6 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
     ></div>
 
 </ssf:ifnotaccessible>
-<ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible">
-      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetY="-10" offsetX="-5"  
-          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	  </ssHelpSpot>
-	<a href="javascript: ss_showFavoritesPane('<portlet:namespace/>');"
-    ><img <ssf:alt tag="navigation.favorites"/> src="<html:imagesPath/>icons/toolbar_favorites.gif"/></a>
-	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
-	    </div>
-	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" 
-	      style="visibility:hidden;margin:0px;padding:0px;clear:both;"
-	    ></div>
-	</div>
-</ssf:ifaccessible>
 </td>
 <td>
 <!-- My Teams -->
@@ -462,20 +447,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  </ssHelpSpot>
 	</div>
 </ssf:ifnotaccessible>
-<ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible">
-      <ssHelpSpot helpId="navigation_bar/favorites_button_portlet" offsetY="-20" offsetX="0"   
-          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	  </ssHelpSpot>
-	<a href="javascript: ss_showFavoritesPane('<portlet:namespace/>');"
-    ><img <ssf:alt tag="navigation.favorites"/> src="<html:imagesPath/>icons/toolbar_favorites_big.jpg"/></a>
-	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
-	    </div>
-	    <div class="ss_clear" id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;clear:both;"
-	    ></div>
-	</div>
-</ssf:ifaccessible>
   </td>
   
   <td class="ss_global_toolbar_portlet_box" colspan="3">
