@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
-	Object percent = request.getAttribute("percent"); 
+	Integer percent = (Integer) request.getAttribute("percent"); 
 	String count = request.getAttribute("count").toString(); 
 %>
 <c:set var="percent" value="<%= percent %>" scope="request"/>

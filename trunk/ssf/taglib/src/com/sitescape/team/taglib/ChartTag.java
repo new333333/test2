@@ -22,11 +22,6 @@
 
 package com.sitescape.team.taglib;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.portlet.RenderRequest;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class ChartTag extends BodyTagSupport {
@@ -54,8 +48,8 @@ public class ChartTag extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			float p = (this.count * 100) / this.total;
-			httpReq.setAttribute("percent", new Float(p));
+			float p = (float)(this.count * 100) / this.total;
+			httpReq.setAttribute("percent", Math.round(p));
 			httpReq.setAttribute("count", count);
 			
 			String jsp = "/WEB-INF/jsp/tag_jsps/charts/chart.jsp";
