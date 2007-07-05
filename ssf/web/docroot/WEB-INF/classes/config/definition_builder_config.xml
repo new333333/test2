@@ -197,7 +197,7 @@
 				<option name="guestbook" caption="__entry_form_guestbook" />
 				<option name="task" caption="__entry_form_task" />
 				<option name="survey" caption="__entry_form_survey" />
-				<help>ihelp.other.entry_view_type</help>
+				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -270,7 +270,7 @@
 				  default="entryView" value="entryView">
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
-				<help>ihelp.other.entry_view_type</help>
+				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
 
@@ -349,7 +349,7 @@
 				  default="blog" value="blog">
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
-				<help>ihelp.other.entry_view_type</help>
+				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
 
@@ -504,7 +504,7 @@
 				<option name="task" caption="__folder_task" />
 				<option name="survey" caption="__folder_survey" />
 				<option name="milestone" caption="__folder_milestone" />
-				<help>ihelp.other.folder_view_type</help>
+				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
@@ -1560,7 +1560,7 @@
 		<properties>
 			<property name="name" caption="__data_time_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data_time']">
-				<help>ihelp.designers.data__time_name</help>
+				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1948,7 +1948,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
-		<help>ihelp.designers.expand_area</help>
 	</item>
 		
 	<item name="fieldsetView" caption="__fieldset" category="generalViewLayout">

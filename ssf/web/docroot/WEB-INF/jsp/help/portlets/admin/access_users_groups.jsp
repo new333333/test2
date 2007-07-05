@@ -47,6 +47,8 @@
 
 <li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.siteAdmin"/></li>
 
+<li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.workspaceCreator"/></li>
+
 </ul>
 
 </div>

@@ -107,7 +107,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <c:if test="<%= !isIE %>">
        offsetY="-17" 
     </c:if>
-      title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
   </ssHelpSpot>
 <a href="javascript:;" 
 	<ssf:ifaccessible>

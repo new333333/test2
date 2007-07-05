@@ -36,8 +36,6 @@
 
 </ul>
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.content.alterAccess"/></p>
-
 <p><ssf:nlt tag="help.myWorkspaceIcon.content.ifNew"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
