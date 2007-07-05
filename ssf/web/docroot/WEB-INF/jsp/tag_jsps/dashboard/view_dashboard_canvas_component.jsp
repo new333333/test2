@@ -152,16 +152,17 @@ if (displayStyle == null || displayStyle.equals("")) {
         class="ss_content_window_content"
       </c:if>
     >
+			<ssf:dashboard id="${ss_dashboard_id}"
+			   type="viewData" configuration="${ssDashboard}"
+			   initOnly="true" />
+<% // this is the div that will be replaced, don't remove setup from init phase %>
 		<div id="<portlet:namespace/>_dashboard_component_${ss_component_count}" 
 		    align="left" style="margin:0px; 
 		    <c:if test="${!ss_dashboard_visible}">
 		      visibility:hidden; display:none;
 		    </c:if>
 		    padding:2px;">
-			<c:set var="ss_component_count" value="${ss_component_count + 1}" scope="request"/>
-			<ssf:dashboard id="${ss_dashboard_id}"
-			   type="viewData" configuration="${ssDashboard}"
-			   initOnly="true" />
+		<c:set var="ss_component_count" value="${ss_component_count + 1}" scope="request"/>
 			<c:if test="${ss_dashboard_visible}">
 			  <ssf:dashboard id="${ss_dashboard_id}"
 			     type="viewData" configuration="${ssDashboard}"/>

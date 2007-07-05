@@ -16,5 +16,5 @@ public interface PresenceServiceImplMBean {
 	
 	public String getJabberServerPort();
 	
-	public boolean getEnable();
+	public boolean isEnabled();
 }

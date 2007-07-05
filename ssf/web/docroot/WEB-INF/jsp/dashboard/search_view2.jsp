@@ -10,15 +10,10 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
+ //Don't include "include.jsp" directly 
 %>
-<% //may be called through ajax 
- //ss_namespace, ss_divId setup on input
-%>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="componentId" value="${ssComponentId}"/>
-<c:if test="${empty ssComponentId}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
 <c:set var="ss_pageSize" value="${ssDashboard.beans[componentId].ssSearchFormData.ss_pageSize}" />
 <c:set var="summaryWordCount" value="30"/>
 <c:if test="${!empty ssDashboard.dashboard.components[componentId].data.summaryWordCount}">

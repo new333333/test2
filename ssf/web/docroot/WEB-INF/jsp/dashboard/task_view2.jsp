@@ -11,15 +11,9 @@
  *
  */
   //this is used by penlets and portlets
- 
+ //Don't include "include.jsp" directly 
 %>
-<%  //ss_namespace, ss_divId setup on input %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
-<c:set var="componentId" value="${ssComponentId}"/>
-<c:if test="${empty ssComponentId}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="hitCount" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}"/>
 
 <div class="ss_searchResult_dashboardHeader">

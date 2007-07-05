@@ -725,14 +725,16 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}
 
 	private void addStartMeetingOption(Toolbar footerToolbar, RenderRequest request, String[] contributorIds) {
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
-		Map qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);		
-		qualifiers.put("post", Boolean.TRUE);
-		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+		if (getIcBrokerModule().isEnabled()) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);		
+			qualifiers.put("post", Boolean.TRUE);
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		
-		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+		}
 	}
 	
 	private void addClipboardOption(Toolbar toolbar, String[] contributorIds) {

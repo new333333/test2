@@ -9,9 +9,8 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
+ //Don't include "include.jsp" directly
 %>
-
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
 <c:set var="ss_pageNumber" value="0"/>

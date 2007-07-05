@@ -12,8 +12,7 @@
 %>
 <% // List team members %>
 <% // Template used also on dashboard %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="hitCount" value="0"/>
 
 <ssf:ifnotadapter>
@@ -21,7 +20,6 @@
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 </ssf:ifnotadapter>
 
-<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
 
 <div class="ss_buddies">

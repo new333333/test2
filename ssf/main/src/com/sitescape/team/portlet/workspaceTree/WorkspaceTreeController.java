@@ -501,13 +501,15 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
 			
 			// Meet
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-			qualifiers = new HashMap();
-			qualifiers.put("popup", Boolean.TRUE);
-			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+			if (getIcBrokerModule().isEnabled()) {
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+				qualifiers = new HashMap();
+				qualifiers.put("popup", Boolean.TRUE);
+				toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+			}
 		}
 		
 		//	The "Manage dashboard" menu
@@ -556,21 +558,21 @@ public class WorkspaceTreeController extends SAbstractController  {
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
 		// start meeting
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		if (canGetTeamMembers) {
-			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+		if (getIcBrokerModule().isEnabled()) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			if (canGetTeamMembers) {
+				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+			}
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			if (!canGetTeamMembers) {
+				qualifiers.put("post", Boolean.TRUE);
+				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+			}
+			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		}
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		if (!canGetTeamMembers) {
-			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
-		}
-		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
-		
-
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 				NLT.get("ui.availableThemeIds") + "', '" +

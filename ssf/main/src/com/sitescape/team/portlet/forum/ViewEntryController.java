@@ -577,16 +577,17 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		qualifiers.put("post", Boolean.TRUE);
-		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
-		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
-
+		if (getIcBrokerModule().isEnabled()) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			qualifiers.put("post", Boolean.TRUE);
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+		}
 		
 		if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
 			qualifiers = new HashMap();

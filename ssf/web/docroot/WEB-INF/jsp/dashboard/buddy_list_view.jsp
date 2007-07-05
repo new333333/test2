@@ -10,6 +10,9 @@
  *
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_dashboard_context" value="1"/>
-<%@ include file="/WEB-INF/jsp/presence/view.jsp" %>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
+<div id="${ss_divId}">
+<%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view2.jsp" %>
+
+</div>
