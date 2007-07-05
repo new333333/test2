@@ -792,7 +792,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		   else
 			   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinderId, def.getId(), inputData, fileItems), zoneId);
 	   }
-	   binder.setProperties(new HashMap(cfg.getProperties()));
+	   Map props = cfg.getProperties();
+	   if (props != null) binder.setProperties(props);
 	   copyBinderAttributes(cfg, binder);
 	   if (!cfg.isDefinitionsInherited()) {
 	    	binder.setDefinitionsInherited(false);
