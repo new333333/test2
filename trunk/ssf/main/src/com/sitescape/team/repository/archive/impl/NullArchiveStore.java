@@ -18,6 +18,10 @@ import com.sitescape.team.repository.archive.ArchiveStore;
 
 public class NullArchiveStore implements ArchiveStore {
 
+	public String getName() {
+		return null;
+	}
+
 	public String write(Binder binder, DefinableEntity entity, VersionAttachment v) throws UncheckedIOException {
 		return null;
 	}

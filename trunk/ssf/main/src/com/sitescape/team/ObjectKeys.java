@@ -333,6 +333,7 @@ public interface ObjectKeys {
     public static final String XTAG_FILE_VERSION_NUMBER="versionNumber";
     public static final String XTAG_FILE_VERSION_NAME="versionName";
     
+    public static final String XTAG_FILE_ARCHIVE_STORE_NAME="archiveStoreName";
     public static final String XTAG_FILE_ARCHIVE_URI="archiveURI";
     
     public static final String XTAG_WA_FUNCTION="function";

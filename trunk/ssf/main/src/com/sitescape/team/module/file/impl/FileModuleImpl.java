@@ -916,6 +916,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 
 		List<KeyValuePair> archiveURIs = new ArrayList<KeyValuePair>();
+		String archiveStoreName = null;
 
 		if(!ObjectKeys.FI_ADAPTER.equals(fAtt.getRepositoryName())) { // regular repository
 			// If there is any problem with the repository itself or communication 
@@ -939,6 +940,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// Archive the contents of the file. We archive all versions of the file.
 				ArchiveStore archiveStore = RepositorySessionFactoryUtil.getArchiveStore(repositoryName);
 				if(archiveStore != null) {
+					archiveStoreName = archiveStore.getName();
 					for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
 						VersionAttachment v = (VersionAttachment) i.next();
 						try {
@@ -994,6 +996,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
    		if(archiveURIs.size() > 0) {
    			Element fileElem = parent.addElement("fileArchive");
+   			if(archiveStoreName != null)
+   				fileElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_STORE_NAME, archiveStoreName);
    			for(KeyValuePair pair : archiveURIs) {
    				Element verElem = fileElem.addElement("versionArchive");
    				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
