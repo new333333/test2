@@ -553,7 +553,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		   	if (!community) tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(bei);
 		   	tag.setPublic(community);
-	   		tag.setName(newTags[i]);
+	   		tag.setName(tagName);
 	   		tags.add(tag);
 	   	}
 	   	coreDao.save(tags);
