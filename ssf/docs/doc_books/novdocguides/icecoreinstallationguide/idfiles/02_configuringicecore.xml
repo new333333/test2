@@ -18,9 +18,7 @@
 
  <target id="b9vdg79" pid="b9vde7e" name="Step" level="4" number="4"> <text>Click the Login button.</text> </target>
 
- <target id="b9vdhwi" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Management Levels</text> </target>
-
- <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.3"> <text>Using ICEcore Management Menus </text> </target>
+ <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the ICEcore Administration Portlet </text> </target>
 
  <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the ICEcore Adminstration Portlet to Your Home Page:</text> </target>
 

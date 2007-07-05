@@ -2042,7 +2042,7 @@
    <String `Entity Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `7/2/2007 6:23:36 PM'>
+   <String `7/5/2007 12:36:42 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4288,58 +4288,6 @@
     <MType 8>
     <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1044855'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1044637'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1044705'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
