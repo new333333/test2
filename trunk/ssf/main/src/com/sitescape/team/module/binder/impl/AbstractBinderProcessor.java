@@ -952,6 +952,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void moveBinder_index(Binder binder, Map ctx) {
     	//delete tree first
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
+		//delete actual binder
+		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
     	indexTree(binder, null);
     }
     //somewhere up the parent chain we have a new parent
