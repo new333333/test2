@@ -829,8 +829,6 @@ public static final String[] monthNamesShort = {
 				folderEntries = getFolderModule().getEntries(folderId, options);
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-				//Get the list of all entries to build the archive list
-				buildBlogBeans(response, folder, options, model, folderEntries);
 				buildWikiBeans(response, folder, options, model, folderEntries);
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
@@ -1095,8 +1093,27 @@ public static final String[] monthNamesShort = {
 		*/
 	}
 
-	//Routine to build the beans for the blog archives list
 	public void buildWikiBeans(RenderResponse response, Binder binder, Map options, Map model, Map folderEntries) {
+		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+		List entryCommunityTags = new ArrayList();
+		List entryPersonalTags = new ArrayList();
+		entryCommunityTags = BinderHelper.sortCommunityTags(entries);
+		entryPersonalTags = BinderHelper.sortPersonalTags(entries);
+		
+		int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
+		int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
+		
+		int intMaxHits = intMaxHitsForCommunityTags;
+		if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
+		
+		entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
+		entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
+
+		entryCommunityTags = BinderHelper.determineSignBeforeTag(entryCommunityTags, "");
+		entryPersonalTags = BinderHelper.determineSignBeforeTag(entryPersonalTags, "");
+		
+		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
+		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
 		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
 	}
 	
