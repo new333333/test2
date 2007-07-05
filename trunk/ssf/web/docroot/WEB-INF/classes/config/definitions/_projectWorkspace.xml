@@ -28,7 +28,7 @@
 		</item>
 		<item name="fieldset" caption="__fieldset" category="generalLayout" id="7">
 			<properties>
-				<property name="legend" value="project_info"/>
+				<property name="legend" value="__project_info"/>
 			</properties>
 			<item name="user_list" caption="__user_list" type="data"
 				category="commonEntryData" id="8">
