@@ -998,10 +998,26 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/user_list_search", model);
 	}
-
+	
+	private boolean ajaxCheckCurrentTag(String newTag){
+		if (Validator.isNull(newTag)) return false;
+		 
+		newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
+		String[] newTags = newTag.split(" ");
+		if (newTags.length == 0) return false;
+		
+	   	String tagName = newTags[newTags.length - 1].trim();
+	   	if (tagName.length() > ObjectKeys.MAX_TAG_LENGTH) {
+	   		return true;
+	   	}
+	   		
+	   	return false;
+	}
+	
 	private ModelAndView ajaxFindUserSearch(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
 		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
@@ -1020,7 +1036,31 @@ public class AjaxController  extends SAbstractControllerRetry {
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
-
+		
+		model.put(WebKeys.DIV_ID, listDivId);
+		
+		if(op.equals("find_tag_search")) {
+		
+			boolean result = ajaxCheckCurrentTag(searchText);
+		
+			if(result) {
+				List thelist = null;
+				view = "forum/find_tag_search";
+				viewAccessible = "forum/find_tag_search_accessible";
+				
+				model.put(WebKeys.TAG_LENGTH_WARNING, NLT.get("tags.maxLengthWarning"));
+				model.put(WebKeys.TAGS, thelist);
+				
+				if (u.getDisplayStyle() != null && 
+						u.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+					view = viewAccessible;
+				} else {
+					response.setContentType("text/xml");
+				}
+				return new ModelAndView(view, model);	
+			}
+		}
+		
 		//Build the search query
 		SearchFilter searchTermFilter = new SearchFilter();
 		
@@ -1122,7 +1162,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, findType);
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
-		model.put(WebKeys.DIV_ID, listDivId);
+		
 		model.put(WebKeys.NAMESPACE, namespace);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (user.getDisplayStyle() != null && 
