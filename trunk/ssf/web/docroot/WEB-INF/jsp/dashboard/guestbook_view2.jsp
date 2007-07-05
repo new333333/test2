@@ -11,16 +11,10 @@
  *
  */
   //this is used by penlets and portlets
- 
+ //Don't include "include.jsp" directly 
 %>
-<% //may be called through ajax 
- //ss_namespace, ss_divId setup on input
-%>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="componentId" value="${ssComponentId}"/>
-<c:if test="${empty ssComponentId}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
 <c:set var="hitCount" value="0"/>
 
 <div class="ss_blog">

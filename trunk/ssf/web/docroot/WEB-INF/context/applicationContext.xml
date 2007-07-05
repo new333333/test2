@@ -782,7 +782,7 @@ text/calendar											  ics
 	<bean id="presenceService" class="com.sitescape.team.presence.impl.PresenceServiceImpl">
 		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
 		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
-		<property name="enable"><value>${presence.service.enable}</value></property>
+		<property name="enabled"><value>${presence.service.enable}</value></property>
 	</bean>
 	
 	<!-- ================================ Instant Collaboration Support==================== -->
@@ -792,6 +792,7 @@ text/calendar											  ics
 		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
 		<property name="jabberDomain"><value>${presence.broker.jabber.domain}</value></property>
 		<property name="defaultCommunityId"><value>${presence.broker.default.community.id}</value></property>
+		<property name="enabled"><value>${presence.service.enable}</value></property>
 	</bean>
 	<!-- ================================  Mail Support =============================== -->
 	<!-- this bean is only used to allow setting of initial context properties -->

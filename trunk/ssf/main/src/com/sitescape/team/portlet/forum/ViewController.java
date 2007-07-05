@@ -156,15 +156,9 @@ public class ViewController  extends SAbstractController {
  			//if we list groups, then we have issues when a user appears in multiple groups??
  			//how do we update the correct divs??
  			//so, explode the groups and just show members
- 			//TODO: either deal with groups correctly or remove
   			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
-  			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-  			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-  			if ((binderId != null) && (entryId != null)) {
-  				model.put(WebKeys.URL_BINDER_ID, binderId);
-  				model.put(WebKeys.URL_ENTRY_ID, entryId);
-  			}
- 			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
+  			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
+  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
 			Workspace binder = getWorkspaceModule().getWorkspace();
 			Document wsTree;

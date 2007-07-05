@@ -22,11 +22,16 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DashboardPortlet;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.util.Validator;
 
 
 /**
@@ -42,8 +47,9 @@ public class UpdatePresenceController  extends SAbstractController {
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
 		//if action in the url, assume this is an ajax update call
-		model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
-		model.put(WebKeys.DASHBOARD_COMPONENT_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_COMPONENT_ID, ""));
+		model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, ""));
+		String componentId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		model.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
 		response.setContentType("text/xml");
 		if (!WebHelper.isUserLoggedIn(request)) {
 			Map statusMap = new HashMap();
@@ -52,7 +58,19 @@ public class UpdatePresenceController  extends SAbstractController {
 			//Signal that the user is not logged in. 
 			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
-			return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
+			return new ModelAndView("forum/fetch_url_return", model);
+		} else	if (Validator.isNotNull(componentId)) {
+			String scope=null;
+			if (componentId.contains("_")) scope = componentId.split("_")[0];
+			if (Validator.isNull(scope)) scope = DashboardHelper.Local;
+			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			User user = RequestContextHolder.getRequestContext().getUser();
+			DashboardHelper.getDashboardMap(binder, 
+					getProfileModule().getUserProperties(user.getId()).getProperties(), 
+					model, scope, componentId, false);
+			return new ModelAndView("dashboard/buddy_list_view2", model);
 		} else {
 			//refresh call
 			Set p = LongIdUtil.getIdsAsLongSet(request.getParameterValues("userList"));
@@ -60,7 +78,7 @@ public class UpdatePresenceController  extends SAbstractController {
 			p = LongIdUtil.getIdsAsLongSet(request.getParameterValues("groupList"));
 			model.put(WebKeys.GROUPS, getProfileModule().getGroups(p));
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-			return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
+			return new ModelAndView("dashboard/buddy_list_view2", model);
 		}
 	}
 }

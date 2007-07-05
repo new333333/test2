@@ -39,5 +39,6 @@ public interface ICBrokerModule {
 
 	public String addMeeting(Set memberIds, Binder binder,
 			Entry entry, String password, int scheduleTime, String forumToken, int[] meetingType) throws ICException;
+	public boolean isEnabled();
 
 }

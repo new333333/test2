@@ -69,6 +69,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	protected String jabberDomain;
 
 	protected String defaultCommunityId;
+	protected boolean enable = false;
 
 	private String[] zonFieldSet = { "username", "directoryid", "profileid",
 			"type", "server", "screenname", "title", "firstname", "middlename",
@@ -186,6 +187,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		this.defaultCommunityId = defaultCommunityId;
 	}
 
+	public void setEnabled(boolean enable) {
+		this.enable = enable;
+	}
+	public boolean isEnabled() {
+		return enable;
+	}
 	public void PresenceBroker() {
 		try {
 			server = new XmlRpcClient(zonUrl);
@@ -195,10 +202,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public void afterPropertiesSet() {
-		try {
-			server = new XmlRpcClient(zonUrl);
-		} catch (MalformedURLException e) {
-			logger.error(e);
+		if (isEnabled()) {
+			try {
+				server = new XmlRpcClient(zonUrl);
+			} catch (MalformedURLException e) {
+				logger.error(e);
+			}
 		}
 	}
 
@@ -236,6 +245,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public boolean getScreenNameExists(String screenname) throws ICException {
+		if (!isEnabled()) return false;
 		Object result = findScreenName(screenname);
 		// System.out.println("Object is " + result);
 		// the result is buried 4 deep (vectors within vectors)
@@ -274,6 +284,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public void sendIm(String from, String recipient, String message) throws ICException {
+		if (!isEnabled()) return;
 		List result = null;
 
 		if (sessionId.length() <= 0) {
@@ -302,6 +313,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public Vector fetchContact(String screenname) throws ICException {
+		if (!isEnabled()) return null;
 		Object result = null;
 		String userId = "";
 		if (sessionId.length() <= 0) {
@@ -340,6 +352,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public int deleteUser(String screenname) throws ICException {
+		if (!isEnabled()) return 0;
 		Object result = null;
 		String userId = "";
 
@@ -374,6 +387,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public String getCommunityId(String communityname) throws ICException {
+		if (!isEnabled()) return null;
 		Object result = null;
 		String name = "";
 		String id = "";
@@ -426,6 +440,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		// private String[] userParamDefaultValues =
 		// {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","0","0","1","",""};
 
+		if (!isEnabled()) return false;
 		Object result = null;
 
 		if (sessionId.length() <= 0) {
@@ -457,6 +472,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	public boolean modUser(HashMap moduserparams) throws ICException {
+		if (!isEnabled()) return false;
 
 		Object result = null;
 
@@ -491,6 +507,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	public String addMeeting(Set participantsLongIds, String title,
 			String description, String message, String password,
 			int scheduleTime, String forumToken, int[] meetingType) throws ICException {
+		if (!isEnabled()) return null;
 
 		// HashMap participant = null;
 		// String[] participantFields = { "zonScreenName", "displayName",
@@ -547,6 +564,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			Entry entry, String password, int scheduleTime, String forumToken,
 			int[] meetingType)
 			throws ICException {
+		if (!isEnabled()) return null;
 		return addMeeting(memberIds, getMeetingTitle(binder, entry),
 				getMeetingDescription(binder, entry), getModelLink(binder,
 						entry), password, scheduleTime, forumToken,

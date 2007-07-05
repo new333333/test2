@@ -11,10 +11,10 @@
  *
  */
  //this is used by penlets and portlets
+ //Don't include "include.jsp" directly 
 %>
-
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
 <c:if test="${!empty ssDashboard.beans[componentId].ssBinder}">
 <c:set var="folder" value="${ssDashboard.beans[componentId].ssBinder}"/>
 

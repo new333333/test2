@@ -11,12 +11,10 @@
  *
  */
   //this is used by penlets and portlets
- 
+ //Don't include "include.jsp" directly 
 %>
-
-<% // see task_view_init for setup  %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
 <c:set var="ss_pageNumber" value="0"/>
 <c:if test="${ssConfigJspStyle != 'template'}">
 

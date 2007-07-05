@@ -28,7 +28,7 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 
 	protected String jabberServer;
 	protected String jabberServerPort;
-	protected boolean enable = false;
+	protected boolean enabled = false;
 	protected PresenceListener pl;
 	protected HashMap presenceMap = new HashMap();
 	
@@ -50,15 +50,15 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 		this.jabberServerPort = jabberServerPort;
 	}
 	
-	public void setEnable(boolean enable) {
-		this.enable = enable;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
-	public boolean getEnable() {
-		return enable;
+	public boolean isEnabled() {
+		return enabled;
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		if(enable) {
+		if(isEnabled()) {
 			// Using jabberServer info, establish a socket connection to the 
 			// Jabber server or any other initialization that you have to do
 			// at the system startup time. 
@@ -75,7 +75,7 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 	}
 
 	public int getPresenceInfo(User user) {
-		if (!enable) 
+		if (!enabled) 
 			return -99;
 		if (user == null) return -1;
 		String zonName = user.getZonName();
@@ -87,7 +87,7 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 	}
 	
 	public int getPresenceInfo(String zonName) {
-		if (!enable) 
+		if (!enabled) 
 			return -99;
 		if (presenceMap.containsKey(zonName)) {
 			return ((Integer)presenceMap.get(zonName)).intValue();

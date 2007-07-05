@@ -10,13 +10,10 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
+ //Don't include "include.jsp" directly 
 %>
-<%  //ss_namespace, ss_divId setup on input %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="componentId" value="${ssComponentId}"/>
-<c:if test="${empty ssComponentId}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+
 <table><tr><td>
 <c:choose>
 <c:when test="${ssDashboard.dashboard.components[componentId].data.galleryImageSize == 'small'}">
