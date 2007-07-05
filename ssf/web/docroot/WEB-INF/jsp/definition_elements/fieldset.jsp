@@ -19,7 +19,7 @@
 <div class="formBreak">
 <fieldset class="ss_fieldset">
 <c:if test="${!empty property_legend}">
-<legend class="ss_legend"><c:out value="${property_legend}"/></legend>
+<legend class="ss_legend"><ssf:nlt tag="${property_legend}" checkIfTag="true"/></legend>
 </c:if>
 <table>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
