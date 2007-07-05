@@ -15,7 +15,7 @@
  www.novell.com
 
 
- ESTIMATED PAGE COUNT (based on 200 words per page): 38
+ ESTIMATED PAGE COUNT (based on 200 words per page): 36
  ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 22
 
 
@@ -26,10 +26,10 @@
          417    bookinfo   ICEcore Installation and Configuration Guide
          341    preface    About This Guide
         4266    chapter    Installing    ICEcore 
-        2510    chapter    Configuring    ICEcore 
+        2216    chapter    Configuring    ICEcore 
          128    glossary      ICEcore Glossary 
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        7662    book       ICEcore Installation and Configuration Guide
+        7368    book       ICEcore Installation and Configuration Guide
 
 
  GRAPHICS REFERENCED IN BOOK
@@ -74,7 +74,7 @@
 
        Count       Type
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          24       xref
+          25       xref
            0       link
            0       ulink-xrefext
            0       ulink-xrefexttext
@@ -2427,15 +2427,15 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
   </listitem>
   <listitem>
    <para><xref linkend="bapqrpq" xrefstyle="SectTitleOnPage"/></para>
-   <para>One of your first tasks as a site manager is to set the access roles to control how different users can view and participate in the site workspaces according to what access role they are assigned.</para>
+   <para>As the site manager, you need to create the initial workspaces for the site. Planning the initial content for your site is an important step in regards to how your users learn and use the site.</para>
   </listitem>
   <listitem>
    <para><xref linkend="b9vde7f" xrefstyle="SectTitleOnPage"/></para>
-   <para>You must specify an outgoing e-mail server to be able to invite users to the zone, and to use features such as "I forgot my password," e-mail notifications, and more.</para>
+   <para>You must set up e-mail for a workspace to use features such as e-mail notifications and postings. Users cannot receive e-mail notification of new or modified entries in a discussion folder until you enable this feature.</para>
   </listitem>
   <listitem>
    <para><xref linkend="b9vde7i" xrefstyle="SectTitleOnPage"/></para>
-   <para>Users cannot receive e-mail notification of new or modified entries in a discussion forum until you enable this feature.</para>
+   <para>Once the site is configured for initial use, you need to invite your users to the site. The users should already be added, see <xref linkend="b9vchnd" xrefstyle="SectTitleOnPage"/>.</para>
   </listitem>
  </orderedlist>
  <sect1 id="b9vde7e">
@@ -2510,43 +2510,12 @@ test
     <guimenu>administrator</guimenu> is the only member of the Administrators group for the LifeRay portal Administrators group. Members of the Administrators group have the right to perform portal management tasks. If you choose, you can add other members to this group, so that they can help manage the portal.
    </para>
   </sect2>
-  <sect2 id="b9vdhwi">
-   <title>Management Levels</title>
-   <para>Although it is possible have members of the Administrators group manage everything, this strategy becomes problematic as you create more workspaces and folders. At some point, it is helpful to delegate workspace management and the management of individual resources.</para>
-   <para>The management levels and the default tasks that managers at those levels may perform are:</para>
-   <itemizedlist mark="bullet" spacing="normal">
-    <listitem>
-     <para>
-      <productname>ICEcore</productname> Administration
-     </para>
-     <para>Primarily responsible for working with the 
-      <productname>ICEcore</productname> software so that everything runs smoothly. Tasks include updating the installation on the server, managing users and groups, managing the database server, enabling e-mail for the system, and other technical tasks that come up.
-     </para>
-    </listitem>
-    <listitem>
-     <para>Site Managers</para>
-     <para>Primarily responsible for performing the initial setup of the site, managing users and groups, creating workspaces, delegating management, customizing the site using templates, and assisting the discussion folder managers with the creation of initial custom commands and workflow processes.</para>
-    </listitem>
-    <listitem>
-     <para>Team Managers</para>
-     <para>Responsible for creating and deleting folders in a workspace, determining which folders appear in the workspace, viewing auditing information about the workspace, customizing the workspace using templates, and creating or deleting additional workspaces. </para>
-    </listitem>
-    <listitem>
-     <para>Folder Managers</para>
-     <para>Responsible for managing a single folder. The responsibilities vary according to the type of folder being managed (discussion, calendar, tasks, and so on). Folder managers can modify access controls for the folder and allow or prevent viewing, participation, and other actions.</para>
-     <para>Managing a discussion folder requires more effort than managing other kinds of folders. These managers are responsible for auditing activity, deleting or moving entries, defining global keywords for users, managing the schedule for e-mail notifications, defining new commands and workflow processes, adding or removing columns in the list of entries, customizing the folder using templates, running reports about content in the discussion folder, and managing the e-mail posting of folder entries.</para>
-    </listitem>
-   </itemizedlist>
-   <para>Additional information about delegating management is available in the online Help system, in the 
-    <guimenu>Workspace Organization</guimenu> section.
-   </para>
-  </sect2>
   <sect2 id="b9vdjua">
-   <title>Using 
-    <productname>ICEcore</productname> Management Menus 
+   <title>Using the 
+    <productname>ICEcore</productname> Administration Portlet 
    </title>
    <para>The 
-    <productname>ICEcore</productname> management options are designed to provide you with a maximum amount of flexibility when managing resources for your teams.
+    <productname>ICEcore</productname> Administration portlet is designed to provide you with a maximum amount of flexibility when managing resources for your teams.
    </para>
    <para>Access the 
     <productname>ICEcore</productname> management options via the 
