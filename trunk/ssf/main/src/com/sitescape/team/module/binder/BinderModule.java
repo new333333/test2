@@ -47,8 +47,7 @@ public interface BinderModule {
 		modifyBinder,
 		moveBinder,
 		report,
-		setProperty,
-		
+		setProperty,		
 	}
 	/**
 	 * Subscribe to a binder.  Use to request notification of changes.

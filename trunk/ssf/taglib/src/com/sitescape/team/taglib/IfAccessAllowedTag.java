@@ -89,12 +89,6 @@ public class IfAccessAllowedTag extends BodyTagSupport {
 	
 	public void setOperation(String operation) {
 		this.operation = operation;
-		
-		if(operation.equals("manageTag"))
-			this.binderOperation = 
-				com.sitescape.team.module.binder.BinderModule.BinderOperation.manageTag;
-		else if (operation.equals("manageTeamMembers"))
-			this.binderOperation = 
-				com.sitescape.team.module.binder.BinderModule.BinderOperation.manageTeamMembers;
+		binderOperation = BinderModule.BinderOperation.valueOf(operation);
 	}
 }

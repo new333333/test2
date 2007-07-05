@@ -391,7 +391,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	  <c:set var="eleName" value="<%= eleName %>"/>
 	  <c:set var="eleCaption" value="<%= eleCaption %>"/>
 	  <ssf:slidingTableColumn width="20%">
-	    ${eleCaption}
+	    <div class="ss_title_menu">${eleCaption}</div>
 	  </ssf:slidingTableColumn>
 <%
 	}

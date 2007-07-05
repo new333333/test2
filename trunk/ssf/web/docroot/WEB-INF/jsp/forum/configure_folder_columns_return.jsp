@@ -75,7 +75,7 @@
   	</c:forEach>
   </c:forEach>
    
-<c:if test="${ss_accessControlMap[ssBinder.id]['modifyBinder']}">
+<c:if test="${ss_accessControlMap[ssBinder.id]['modifyBinder'] and ssConfigJspStyle != 'template'}">
   <br/>
   <input type="checkbox" name="setFolderDefaultColumns"/>
   <span class="ss_labelAfter"><label for="setFolderDefaultColumns">

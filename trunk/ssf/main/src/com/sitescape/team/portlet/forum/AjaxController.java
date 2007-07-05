@@ -57,6 +57,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
@@ -819,7 +820,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			binderAccessMap.put(BinderOperation.modifyBinder.toString(), true);
 		}
 		accessControlMap.put(binderId, binderAccessMap);
-		
+		if (binder instanceof TemplateBinder) model.put(WebKeys.CONFIG_JSP_STYLE, "template");
 		UserProperties userProperties;
 		Map columns = null;
 		if (binderId == null) {
