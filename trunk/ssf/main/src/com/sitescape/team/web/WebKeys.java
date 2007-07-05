@@ -668,6 +668,7 @@ public class WebKeys {
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "ssUser";
 	public static final String TAG_NAME = "ssTag";
+	public static final String TAG_LENGTH_WARNING = "ssTagLengthWarning";
 	public static final String TAG_SEARCH_TEXT = "ssTagSearchText";
     public static final String TAG_SIGN="ssTagSign";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
