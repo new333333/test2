@@ -35,8 +35,9 @@ public class LicenseChecker {
 		
 		if(featureName.equals("com.sitescape.team.module.folder.MirroredFolder")) {
 			return authorizedUnlessOpen();
-		}
-		else {
+		} else if (featureName.equals("com.sitescape.team.module.workflow.Workflow")) {
+			return authorizedUnlessOpen();		
+		} else {
 			return false; // brain dead and stubborn
 		}
 	}

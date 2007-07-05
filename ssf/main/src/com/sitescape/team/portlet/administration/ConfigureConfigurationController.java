@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -202,7 +203,29 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Long newId = getAdminModule().addTemplate(configId, srcConfigId);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());
 				
+			} else if (WebKeys.OPERATION_SAVE_FOLDER_COLUMNS.equals(operation)) {
+				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+				Map columns = new LinkedHashMap();
+				String[] columnNames = new String[] {"number", "title", "size", "download", "html", "state", "author", "date"};
+				for (int i = 0; i < columnNames.length; i++) {
+					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
+				}
+				Iterator itFormData = formData.entrySet().iterator();
+				while (itFormData.hasNext()) {
+					Map.Entry me = (Map.Entry) itFormData.next();
+					if (me.getKey().toString().startsWith("customCol_", 0)) {
+						String colName = me.getKey().toString().substring(10, me.getKey().toString().length());
+						columns.put(colName, "on");
+					}
+				}
+				getBinderModule().setProperty(configId, ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
+					
+				//Reset the column positions to the default
+				getProfileModule().setUserProperty(null, configId, WebKeys.FOLDER_COLUMN_POSITIONS, "");
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			}
+		
 		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
 			//Get the function id from the form
 			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
