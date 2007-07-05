@@ -17,6 +17,8 @@ import com.sitescape.team.domain.VersionAttachment;
 
 public interface ArchiveStore {
 	
+	public String getName();
+	
 	/**
 	 * Archive the file version and return its unique URI or <code>null</code>
 	 * if archiving is not supported.
