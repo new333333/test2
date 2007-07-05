@@ -12,6 +12,7 @@
 %>
 <% //View statistics for all subfolders (only 1. level) which have any one %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${ssConfigJspStyle != 'template'}">
 <fieldset class="ss_fieldset">
 	<legend class="ss_legend"><ssf:nlt tag="project.statistics.title" /></legend>
 		<ul class="ss_nobullet">
@@ -46,3 +47,4 @@
 			</c:forEach>
 		</ul>
 	</fieldset>
+</c:if>
