@@ -710,8 +710,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Principal> result = new TreeSet<Principal>(c);
-       	result.addAll(getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true));
-       	return result;
+       	if (explodeGroups) {
+			//empty teams can end up in the list of ids, this will prune them
+			result.addAll(getProfileDao().loadUsers(ids, RequestContextHolder.getRequestContext().getZoneId()));
+		} else {
+			result.addAll(getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true));
+		}
+		return result;
 	}
 	
 	
