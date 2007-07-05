@@ -53,7 +53,8 @@
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');">1</a></div> 
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');">2</a></div>
 <div class="current_page">3</div>
-<div class="no_next_page" title="<ssf:nlt tag="helpTitleAlt.noNextPage" />">>></a><a id="skip_nav_panel_numbers" /></div>
+<div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/teaming', 'ss_moreinfo_panel');">4</a></div>
+<div><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/teaming', 'ss_moreinfo_panel');">>></a><a id="skip_nav_panel_numbers" /></div>
 </div>
 
 </div>

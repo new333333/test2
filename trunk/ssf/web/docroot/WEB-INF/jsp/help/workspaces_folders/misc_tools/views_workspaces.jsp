@@ -14,18 +14,18 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.email.from"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.other.def_view_type.intro" /></p>
 
-<p><ssf:nlt tag="ihelp.email.from.restOfForm" /></p>
-
-</div>
+<p><ssf:nlt tag="ihelp.other.def_view_type.workspaces" /></p>
 
 <p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
 <a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
 </p>
 
 <div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('workspaces_folders/misc_tools/email_alias_explained', 'ss_moreinfo_panel');"><ssf:nlt tag="ihelp.email.from.moreInfo.topic"/></a><a id="skip_nav_titles"/></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/team_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a><a id="skip_nav_titles"/></p>
+</div>
+
 </div>
 
 </div>

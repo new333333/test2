@@ -36,6 +36,7 @@
 <div class="ss_help_moreinfo">
 <p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.subtopic.workspaces"/></a></p>
 <p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/folder_types', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.subtopic.folders"/></a></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/teaming', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.subtopic.getStarted"/></a></p>
 </div>
 
 <div class="ss_help_more_pages_section"><a id="skip_nav_titles" />
@@ -44,6 +45,7 @@
 <div class="current_page">1</div> 
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');">2</a></div>
 <div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/folder_types', 'ss_moreinfo_panel');">3</a></div>
+<div class="not_last_link"><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/teaming', 'ss_moreinfo_panel');">4</a></div>
 <div><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/understand_workspaces_folders', 'ss_moreinfo_panel');">>></a><a id="skip_nav_panel_numbers" /><a id="skip_nav_all" /></div>
 </div>
 

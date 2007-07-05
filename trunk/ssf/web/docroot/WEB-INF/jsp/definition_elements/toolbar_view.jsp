@@ -83,7 +83,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%><c:if test="<%= isIE %>"><%--
                     --%> offsetX="-15"<%--
                 --%></c:if><%--
-                --%> offsetY="-2" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot><%--
+                --%> offsetY="-2" xAlignment="left" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot><%--
             --%></c:when><%--
 
         --%></c:choose><%--
@@ -268,7 +268,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%><c:if test="<%= isIE %>"><%--
                     --%> offsetX="-15"  <%--
                 --%></c:if><%--
-                --%> offsetY="-2" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"><%--
+                --%> offsetY="-2" xAlignment="left" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"><%--
                 --%></ssHelpSpot><%--
             --%></c:when><%--
 

@@ -33,7 +33,7 @@ function <portlet:namespace/>_onsub(obj) {
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>" onSubmit="return(<portlet:namespace/>_onsub(this))">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.designers.data_name"/><br/>
+	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/>
 	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/>

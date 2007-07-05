@@ -116,7 +116,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'workspace'}">
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/> <ssf:inlineHelp tag="ihelp.other.def_view_type"/> </legend>
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/views_workspaces" /> </legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
           <c:choose>
@@ -140,7 +140,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'folder'}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:inlineHelp tag="ihelp.other.view_type"/> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:inlineHelp tag="ihelp.other.view_type" /> </legend>
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssPublicBinderDefinitions}">
@@ -165,7 +165,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
 
   <c:if test="${!empty folderViewCount}">
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default view"/> <ssf:inlineHelp tag="ihelp.other.def_view_type"/> </legend>
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default view"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/views_folders" /> </legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
         <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
@@ -190,7 +190,7 @@ function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
   </c:if>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp tag="ihelp.other.def_entry_type"/> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp tag="ihelp.other.def_entry_type" /> </legend>
 
     <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:choose>

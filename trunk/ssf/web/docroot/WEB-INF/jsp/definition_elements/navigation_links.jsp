@@ -38,12 +38,12 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <div class="ss_breadcrumb">
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" 
   <c:if test="<%= !isIE %>">
-   offsetX="0" offsetY="4"
+   offsetY="4"
   </c:if>
   <c:if test="<%= isIE %>">
-   offsetX="-372" offsetY="2"
+   offsetY="2"
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 

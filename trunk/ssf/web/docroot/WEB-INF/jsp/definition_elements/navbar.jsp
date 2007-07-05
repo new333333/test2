@@ -494,7 +494,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			<portlet:param name="action" value="advanced_search"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>" style="display: inline;">
-		  <ssHelpSpot helpId="navigation_bar/search_button_portlet" offsetX="-15" offsetY="12" 
+		  <ssHelpSpot helpId="navigation_bar/search_button_portlet" offsetX="-15" offsetY="12" xAlignment="center" 
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 			<input name="searchText" type="text" />
 			<input type="hidden" name="quickSearch" value="true"/>					
