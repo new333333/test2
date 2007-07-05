@@ -22,9 +22,16 @@
 	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
 	  <c:set var="count" value="0"/>
 	  <div id="<c:out value="${ss_divId}"/>" style="padding:2px;">
+		<c:if test="${empty ss_tags}">
+		<c:if test="${ssTagLengthWarning != null}">
+			<ul>
+			<li><c:out value="${ssTagLengthWarning}"/></li>
+			</ul>
+		</c:if>
+		</c:if>
 		<c:if test="${!empty ss_tags}">
 	      <ul>
-	      	
+			
 		    <c:forEach var="tag" items="${ss_tags}">
 		      <c:set var="count" value="${count + 1}"/>
 
