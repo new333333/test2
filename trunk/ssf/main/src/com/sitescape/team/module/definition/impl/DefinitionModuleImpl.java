@@ -45,27 +45,24 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
@@ -80,7 +77,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneId", "type"};
-	private String release;
+	private boolean hasWorkflow;
 	
 	private WorkflowModule workflowModule;
 	
@@ -93,7 +90,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public void afterPropertiesSet() {
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 		this.configRoot = this.definitionConfig.getRootElement();
-		this.release = SPropsUtil.getString("release.type", "");
+		
+		this.hasWorkflow = LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.workflow.Workflow");
 
     }
     /*
@@ -102,7 +100,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
      * @see com.sitescape.team.module.definition.DefinitionModule#testAccess(java.lang.String)
      */
    	public boolean testAccess(int type, DefinitionOperation operation) {
-   		if (type == Definition.WORKFLOW && release.equals("open")) return false;
+   		if (type == Definition.WORKFLOW && !hasWorkflow) return false;
    		try {
    			checkAccess(type, operation);
    			return true;
@@ -119,7 +117,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    		} else if (type == Definition.WORKFLOW) {
-   			if (release.equals("open")) throw new NotSupportedException(operation.toString(), "open edition");
+   			if (!hasWorkflow) throw new NotSupportedException(operation.toString(), "open edition");
    			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);  			
    		} else {
