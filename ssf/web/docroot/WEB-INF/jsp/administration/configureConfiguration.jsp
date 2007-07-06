@@ -207,7 +207,7 @@ function ss_confirmDeleteConfig() {
 </div>
 </div>
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak" align="left"/>
 <form method="post" action="<portlet:renderURL><portlet:param 
 		name="action" value="configure_configuration"/>
 		</portlet:renderURL>" >
