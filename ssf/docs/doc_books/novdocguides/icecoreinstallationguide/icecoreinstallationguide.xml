@@ -243,6 +243,22 @@
     </para>
     <itemizedlist mark="bullet" spacing="normal">
      <listitem>
+      <para>Linux systems need to have a minimum open file limit of 4096.</para>
+      <para>For SLES, check 
+       <literal>/etc/security/limits.conf</literal>:
+      </para>
+
+<screen>
+hard nofile 65535
+</screen>
+
+
+<screen>
+soft nofile 4096
+</screen>
+
+     </listitem>
+     <listitem>
       <para>Minimum 2Ghz processor</para>
      </listitem>
      <listitem>
