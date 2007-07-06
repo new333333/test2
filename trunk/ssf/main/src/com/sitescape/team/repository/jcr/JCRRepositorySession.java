@@ -34,7 +34,6 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -82,17 +81,6 @@ public class JCRRepositorySession implements RepositorySession {
 	}
 
 	public String createVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException {
-		try {
-			return createVersioned(binder, entity, relativeFilePath, mf.getInputStream());
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	public String createVersioned(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -111,17 +99,6 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 		catch(RepositoryException e) {
 			throw new RepositoryServiceException(e);
-		}
-	}
-
-	public void update(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException {
-		try {
-			update(binder, entity, relativeFilePath, mf.getInputStream());
-		} 
-		catch (IOException e) {
-			throw new UncheckedIOException(e);
 		}
 	}
 

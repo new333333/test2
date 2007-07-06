@@ -10,11 +10,14 @@
  */
 package com.sitescape.team.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadItem {
@@ -51,8 +54,6 @@ public class FileUploadItem {
 	
 	private File file;
 	private boolean isTempFile = false;
-	
-	private boolean ready = false;
 	
 	private boolean synchToRepository = true; // can be false only for mirrored entries/files
 
@@ -143,51 +144,44 @@ public class FileUploadItem {
 	public String getOriginalFilename() {
 		return mf.getOriginalFilename();
 	}
-	
-	/*
-	public MultipartFile getMultipartFile() {
-		return mf;
-	}*/
 
 	public String getRepositoryName() {
 		return repositoryName;
 	}
 	
 	public byte[] getBytes() throws IOException {
-		return mf.getBytes();
+		if(file != null)
+			return FileCopyUtils.copyToByteArray(file);
+		else
+			return mf.getBytes();
 	}
 	
 	public InputStream getInputStream() throws IOException  {
-		return mf.getInputStream();
-	}
-
-	public File getFile() throws IOException {
-		if(!ready)
-			setup();
-		return file;
+		if(file != null)
+			return new BufferedInputStream(new FileInputStream(file));
+		else 
+			return mf.getInputStream();
 	}
 	
 	public void delete() throws IOException {
-		if(file != null && isTempFile) {
+		if(file != null && isTempFile)
 			FileHelper.delete(file);
-		}
+
 		if(mf instanceof SimpleMultipartFile)
 			((SimpleMultipartFile) mf).close();
 	}
 	
-	private void setup() throws IOException {
-		// Make sure that the uploaded data is accessible through File interface,
-		// regardless of the mechanism used. 
-		if(mf instanceof SimpleMultipartFile)
-			file = ((SimpleMultipartFile) mf).getFile();
-		
-		if(file == null) {
-			file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
-			mf.transferTo(file);
-			isTempFile = true;
+	public void makeReentrant() throws IOException {
+		if(mf instanceof SimpleMultipartFile) {
+			SimpleMultipartFile smp = (SimpleMultipartFile) mf;
+			if(smp.getFile() == null) {
+				if(file == null) {
+					file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
+					mf.transferTo(file);
+					isTempFile = true;										
+				}
+			}
 		}
-		
-		ready = true;
 	}
 	
 	/**
