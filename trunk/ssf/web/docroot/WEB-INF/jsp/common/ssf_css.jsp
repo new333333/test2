@@ -1847,7 +1847,7 @@ div#ss_navbarHelpButton {
 div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
 	width: 4px;
 	height: 43px;
-	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.jpg) no-repeat;	
+	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.gif) no-repeat;	
 	margin: 0 5px 0 5px;	
 }
 
@@ -4470,7 +4470,7 @@ div.ss_bar_status {
 
 a.ss_taskStatus img, img.ss_taskStatus {
 	width: 21px;
-	height: 21px;
+	height: 22px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
