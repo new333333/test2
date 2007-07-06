@@ -19,18 +19,25 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%@ page contentType="text/css" %>
 </c:if>
 <%
-//Color themes: "defaultblue", "defaultgreen", "defaultgray"
+//Color themes: 
+//    icib - ICEcore Icy Blue  (default, fallback)
+//    iccg - ICEcore Cool Green
+//    icwg - ICEcore Wintry Gray
+//    cust - Custom
 %>
-<c:set var="ss_color_theme" value="defaultblue" scope="request"/>
+<c:set var="ss_color_theme" value="icib" scope="request"/>
 <c:if test="${!empty ssCssTheme}">
   <c:set var="ss_color_theme" value="${ssCssTheme}" scope="request"/>
 </c:if>
 <c:choose>
- <c:when test="${ss_color_theme == 'defaultgreen'}">
+ <c:when test="${ss_color_theme == 'iccg'}">
   <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultgreen.jsp" />
  </c:when>
- <c:when test="${ss_color_theme == 'defaultgray'}">
+ <c:when test="${ss_color_theme == 'icwg'}">
   <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultgray.jsp" />
+ </c:when>
+ <c:when test="${ss_color_theme == 'cust'}">
+  <jsp:include page="/WEB-INF/jsp/common/css_theme_cust.jsp" />
  </c:when>
  <c:otherwise>
   <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultblue.jsp" />

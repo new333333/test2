@@ -330,5 +330,22 @@
 		
 		<antcall target="copy-artifacts-to-tomcat" />
 	</target>
-	
+
+	<target name="image-themes">
+		<copy todir="${app.server.dir}/webapps/ssf/i/icib" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="${app.server.dir}/webapps/ssf/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="${app.server.dir}/webapps/ssf/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/themes/iccg" />
+		</copy>
+		<copy todir="${app.server.dir}/webapps/ssf/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="${app.server.dir}/webapps/ssf/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/themes/icwg" />
+		</copy>
+	</target>
 </project>

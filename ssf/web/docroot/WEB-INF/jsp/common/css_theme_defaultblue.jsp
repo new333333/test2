@@ -11,7 +11,7 @@
  */
 --%><%@ include file="/WEB-INF/jsp/common/common.jsp"%>
 /* *************************************************************
-   *    css_theme_defaultblue        DEFAULT BLUE
+   *    css_theme_icib        ICEcore Icy Blue
    **************************************************************/
 <%--
  --
