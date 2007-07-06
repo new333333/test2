@@ -25,11 +25,11 @@
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
          417    bookinfo   ICEcore Installation and Configuration Guide
          341    preface    About This Guide
-        4266    chapter    Installing    ICEcore 
+        4289    chapter    Installing    ICEcore 
         2216    chapter    Configuring    ICEcore 
          128    glossary      ICEcore Glossary 
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        7368    book       ICEcore Installation and Configuration Guide
+        7391    book       ICEcore Installation and Configuration Guide
 
 
  GRAPHICS REFERENCED IN BOOK
@@ -330,6 +330,22 @@
      <remark>----- Need specs!</remark>
     </para>
     <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Linux systems need to have a minimum open file limit of 4096.</para>
+      <para>For SLES, check 
+       <literal>/etc/security/limits.conf</literal>:
+      </para>
+
+<screen>
+hard nofile 65535
+</screen>
+
+
+<screen>
+soft nofile 4096
+</screen>
+
+     </listitem>
      <listitem>
       <para>Minimum 2Ghz processor</para>
      </listitem>
