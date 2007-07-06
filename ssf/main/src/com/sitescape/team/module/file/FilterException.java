@@ -14,10 +14,18 @@ import com.sitescape.team.exception.UncheckedCodedException;
 
 public class FilterException extends UncheckedCodedException {
 
-	private static final String FilterException_ErrorCode = "errorcode.content.filter";
+	private static final long serialVersionUID = 1L;
+	private static final String FilterException_DefaultErrorCode = "errorcode.content.filter";
 	 
 	public FilterException(String fileName) {
-        super(FilterException_ErrorCode, new Object[]{fileName});
+        super(FilterException_DefaultErrorCode, new Object[]{fileName});
     }
 
+	public FilterException(String errorCode, String fileName) {
+		super(errorCode, new Object[]{fileName});
+	}
+	
+	public FilterException(String errorCode, Object[] errorArgs) {
+		super(errorCode, errorArgs);
+	}
 }

@@ -13,7 +13,6 @@ package com.sitescape.team.repository;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.springframework.web.multipart.MultipartFile;
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
 
@@ -59,26 +58,7 @@ public interface RepositorySession {
 	public int fileInfo(Binder binder, DefinableEntity entity,
 			String relativeFilePath) throws RepositoryServiceException,
 			UncheckedIOException;
-	
-	/**
-	 * Creates a new file resource in the repository system. 
-	 * <p>
-	 * The first version of the resource is created and its version name is
-	 * returned. 
-	 * 
-	 * @param session
-	 * @param binder
-	 * @param entity
-	 * @param relativeFilePath A pathname of the file relative to the entity. This may
-	 * simply be the name of the file. 
-	 * @param mf
-	 * @return
-	 * @throws RepositoryServiceException
-	 */
-	public String createVersioned(Binder binder, 
-			DefinableEntity entity, String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException;
-	
+		
 	/**
 	 * Creates a new file resource in the repository system. 
 	 * <p>
@@ -112,28 +92,6 @@ public interface RepositorySession {
 	 */
 	public void createUnversioned(Binder binder, 
 			DefinableEntity entity, String relativeFilePath, InputStream in) 
-		throws RepositoryServiceException, UncheckedIOException;
-	
-	/**
-	 * Updates the existing file resource.  
-	 * <p>
-	 * If the resource is versioned, it is expected to have been checked out
-	 * prior to invoking this method. The changes made to the repository 
-	 * through this method are made permanent when {@link #checkin} is executed.
-	 * <p>
-	 * If the resource is unversioned, on the other hand, the change is 
-	 * immediate and permanent.
-	 * 
-	 * @param session
-	 * @param binder
-	 * @param entity
-	 * @param relativeFilePath A pathname of the file relative to the entity. This may
-	 * simply be the name of the file. 
-	 * @param mf
-	 * @throws RepositoryServiceException
-	 */
-	public void update(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, MultipartFile mf) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**

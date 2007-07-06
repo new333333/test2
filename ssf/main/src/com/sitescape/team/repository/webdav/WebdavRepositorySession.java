@@ -22,7 +22,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
@@ -62,19 +61,6 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException {
-		try {
-			return createResource(wdr, binder, entry, relativeFilePath, 
-					mf.getInputStream(), true);
-		} catch (IOException e) {
-			wdr.logError(logger);
-			throw new UncheckedIOException(e);
-		}
-	}
-
-
-	public String createVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return createResource(wdr, binder, entry, relativeFilePath, in, true);
@@ -92,17 +78,6 @@ public class WebdavRepositorySession implements RepositorySession {
 			wdr.logError(logger);
 			throw new UncheckedIOException(e);
 		}	
-	}
-
-	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, MultipartFile mf) 
-		throws RepositoryServiceException, UncheckedIOException {
-		try {
-			updateResource(wdr, binder, entry, relativeFilePath, mf.getInputStream());
-		} catch (IOException e) {
-			wdr.logError(logger);
-			throw new UncheckedIOException(e);
-		}
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 

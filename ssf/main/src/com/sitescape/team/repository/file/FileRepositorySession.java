@@ -28,7 +28,6 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
@@ -83,25 +82,6 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException, UncheckedIOException {
-		File fileDir = getFileDir(binder, entry, relativeFilePath);
-		
-        try {
-    		FileHelper.mkdirsIfNecessary(fileDir);
-    		
-    		File tempFile = File.createTempFile(TEMPFILE_PREFIX, null, fileDir);
-
-        	mf.transferTo(tempFile);
-
-        	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, tempFile);
-		} catch (IllegalStateException e) {
-			throw new RepositoryServiceException(e);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	public String createVersioned(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
@@ -144,40 +124,6 @@ public class FileRepositorySession implements RepositorySession {
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
 		}
-	}
-
-	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, MultipartFile mf) throws RepositoryServiceException, UncheckedIOException {
-		
-		int fileInfo = fileInfo(binder, entry, relativeFilePath);
-		
-		try {
-			if(fileInfo == VERSIONED_FILE) {
-				File workingFile = getWorkingFile(binder, entry, relativeFilePath);
-				
-				if(!workingFile.exists())
-					throw new RepositoryServiceException("Cannot update file " + 
-							relativeFilePath + " for entry " + entry.getTypedId() + 
-							": It must be checked out first"); 
-	
-				mf.transferTo(workingFile);
-			}
-			else if(fileInfo == UNVERSIONED_FILE) {
-				File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
-				
-				mf.transferTo(unversionedFile);
-			}
-			else {
-				throw new RepositoryServiceException("Cannot update file " + relativeFilePath + 
-						" for entry " + entry.getTypedId() + ": It does not exist"); 
-			}
-		}
-		catch (IllegalStateException e) {
-			throw new RepositoryServiceException(e);
-		} 
-		catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}			
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 

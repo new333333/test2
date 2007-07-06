@@ -593,15 +593,8 @@
 	</bean>
 	
 
-	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.file.impl.FileModuleImpl">
+	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="contentFilter">
-			<bean class="com.sitescape.team.module.file.impl.VirusScanningFilter"/>
-		</property>			
-		<!-- valid values are DELETE and MOVE -->
-		<property name="failedFilterFile"><value>DELETE</value></property>
-		<!-- valid values are CONTINUE and ABORT -->
-		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
 		<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
 		<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
 	</bean>

@@ -10,8 +10,10 @@
  */
 package com.sitescape.team.module.file.impl;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,6 +82,7 @@ import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SimpleProfiler;
@@ -111,17 +114,17 @@ import com.sitescape.team.ObjectKeys;
  */
 public class FileModuleImpl extends CommonDependencyInjection implements FileModule, InitializingBean {
 
-	private static final String FAILED_FILTER_FILE_DELETE 			= "DELETE";
-	private static final String FAILED_FILTER_FILE_MOVE 			= "MOVE";
+	private static final String FAILED_FILTER_FILE_DELETE 			= "delete";
+	private static final String FAILED_FILTER_FILE_MOVE 			= "move";
 	private static final String FAILED_FILTER_FILE_DEFAULT			= FAILED_FILTER_FILE_DELETE;
-	private static final String FAILED_FILTER_TRANSACTION_CONTINUE 	= "CONTINUE";
-	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "ABORT";
+	private static final String FAILED_FILTER_TRANSACTION_CONTINUE 	= "continue";
+	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "abort";
 	private static final String FAILED_FILTER_TRANSACTION_DEFAULT	= FAILED_FILTER_TRANSACTION_ABORT;
 		
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private TransactionTemplate transactionTemplate;
-	private ContentFilter contentFilter;
+	private ContentFilter contentFilter; // may be null
 	private String failedFilterFile;
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
@@ -137,18 +140,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		this.transactionTemplate = transactionTemplate;
 	}
 
-	protected ContentFilter getContentFilter() {
-		return contentFilter;
-	}
-	
-	public void setContentFilter(ContentFilter contentFilter) {
-		this.contentFilter = contentFilter;
-	}
-	
-	protected String getFailedFilterFile() {
-		return failedFilterFile;
-	}
-
 	public void setLockExpirationAllowance(int lockExpirationAllowance) {
 		this.lockExpirationAllowance = lockExpirationAllowance;
 	}
@@ -157,24 +148,30 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return this.lockExpirationAllowance * 1000;
 	}
 	
-	public void setFailedFilterFile(String failedFilterFile) {
-		if(FAILED_FILTER_FILE_DELETE.equals(failedFilterFile)) {
+	protected String getFailedFilterFile() {
+		return failedFilterFile;
+	}
+	
+	protected void initFailedFilterFile() {
+		String failedFilterFile = SPropsUtil.getString("file.content.filter.failed.filter.file", "");
+		
+		if(failedFilterFile.equals("")) {
+			this.failedFilterFile = FAILED_FILTER_FILE_DEFAULT;
+		}
+		else if(FAILED_FILTER_FILE_DELETE.equalsIgnoreCase(failedFilterFile)) {
 			this.failedFilterFile = FAILED_FILTER_FILE_DELETE;
 		}
-		else if(FAILED_FILTER_FILE_MOVE.equals(failedFilterFile)) {
+		else if(FAILED_FILTER_FILE_MOVE.equalsIgnoreCase(failedFilterFile)) {
 			this.failedFilterFile = FAILED_FILTER_FILE_MOVE;
 		}
 		else {
-			logger.info("Unknown failedFilterFile " + failedFilterFile + 
-					" defaults to " + FAILED_FILTER_FILE_DEFAULT);
+			logger.info("Unknown value " + failedFilterFile + 
+					" for property file.content.filter.failed.filter.file: Using default value " 
+					+ FAILED_FILTER_FILE_DEFAULT);
 			this.failedFilterFile = FAILED_FILTER_FILE_DEFAULT;
 		}
 	}
-
-	protected String getFailedFilterTransaction() {
-		return failedFilterTransaction;
-	}
-
+	
 	public void setHtmlConverterManager(IHtmlConverterManager htmlConverterManager) {
 		this.htmlConverterManager = htmlConverterManager;
 	}
@@ -191,22 +188,50 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return imageConverterManager;
 	}
 	
-	public void setFailedFilterTransaction(String failedFilterTransaction) {
-		if(FAILED_FILTER_TRANSACTION_CONTINUE.equals(failedFilterTransaction)) {
+	protected String getFailedFilterTransaction() {
+		return failedFilterTransaction;
+	}
+	
+	protected void initFailedFilterTransaction() {
+		String failedFilterTransaction = SPropsUtil.getString("file.content.filter.failed.filter.transaction", "");
+		
+		if(failedFilterTransaction.equals("")) {
+			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_DEFAULT;			
+		}
+		else if(FAILED_FILTER_TRANSACTION_CONTINUE.equals(failedFilterTransaction)) {
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_CONTINUE;
 		}
 		else if(FAILED_FILTER_TRANSACTION_ABORT.equals(failedFilterTransaction)) {
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_ABORT;
 		}
 		else {
-			logger.info("Unknown failedFilterTransaction " + failedFilterTransaction + 
-					" defaults to " + FAILED_FILTER_TRANSACTION_DEFAULT);
+			logger.info("Unknown value " + failedFilterTransaction +
+					" for property file.content.filter.failed.filter.transaction: Using default value "
+					+ FAILED_FILTER_TRANSACTION_DEFAULT);
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_DEFAULT;
 		}
 	}
 		
+	protected ContentFilter getContentFilter() {
+		return contentFilter;
+	}
+	
+	protected void initContentFilter() throws Exception {
+		String contentFilterClassName = SPropsUtil.getString("file.content.filter.class");
+		if(Validator.isNotNull(contentFilterClassName)) {
+			Class contentFilterClass = ReflectHelper.classForName(contentFilterClassName);
+			contentFilter = (ContentFilter) contentFilterClass.newInstance();
+		}
+		
+		initFailedFilterFile();
+		
+		initFailedFilterTransaction();		
+	}
+	
 	public void afterPropertiesSet() throws Exception {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		
+		initContentFilter();	
 	}
 
 	public FilesErrors deleteFiles(final Binder binder, 
@@ -510,6 +535,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     
 	public FilesErrors filterFiles(Binder binder, List fileUploadItems) 
 		throws FilterException {
+		if(contentFilter == null)
+			return new FilesErrors(); // Nothing to filter with
+		
 		FilesErrors errors = null;
 		// Note that we do not have to use String comparison in the expression
 		// below. Just reference comparison is enough. 
@@ -517,12 +545,30 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors = new FilesErrors();
 		}
 		
+		InputStream is;
+		
     	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
-    			getContentFilter().filter(fui);
+        		fui.makeReentrant();
+        		
+        		is = fui.getInputStream();
+        		
+        		try {
+        			contentFilter.filter(fui.getOriginalFilename(), is);
+        		}
+        		finally {
+        			try {
+        				is.close();
+        			}
+        			catch(IOException ignore) {}
+        		}
+    			
     			//Only advance on success
     			++i;
+    		}
+    		catch(IOException e) {
+    			throw new UncheckedIOException(e);
     		}
     		catch(FilterException e) {
     			if(errors != null) {
@@ -541,7 +587,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			}
     			else {
     				try {
-						move(binder, fui);
+    					moveFilterFailedFile(binder, fui);
 					} catch (IOException e1) {
 						logger.error("Failed to move bad file " + fui.getOriginalFilename(), e1);
 					}
@@ -565,6 +611,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		}
     	}
 	
+    	if(errors == null)
+    		errors = new FilesErrors();
+    	
     	return errors;
 	}
 	
@@ -1049,12 +1098,32 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         });	
 	}
 	
-	private void move(Binder binder, FileUploadItem fui) throws IOException {
-		File filteringFailedDir = SPropsUtil.getFile("filtering.failed.dir");
+	private void moveFilterFailedFile(Binder binder, FileUploadItem fui) throws IOException {
+		File filteringFailedDir = SPropsUtil.getFile("file.content.filter.failed.dir");
 		if(!filteringFailedDir.exists())
 			FileHelper.mkdirs(filteringFailedDir);
-		FileHelper.move(fui.getFile(), 
-				new File(filteringFailedDir, makeFileName(binder, fui)));
+		File outFile = new File(filteringFailedDir, makeFileName(binder, fui));
+		// The caller is responsible for ensuring that the fui is reentrant.
+		InputStream is = fui.getInputStream();
+		try {
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(outFile));
+			try {
+				FileCopyUtils.copy(is, os);
+				fui.delete();
+			}
+			finally {
+				try {
+					os.close();
+				}
+				catch(IOException ignore) {}
+			}
+		}
+		finally {
+			try {
+				is.close();
+			}
+			catch(IOException ignore) {}
+		}
 	}
 	
 	private static final String DELIM = "_";
