@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 /* *************************************************************
-   *    css_theme_defaultgray        DEFAULT GRAY
+   *    css_theme_icwg        ICEcore Wintry Gray
    **************************************************************/
 <% //FONT STYLES %>
 	<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
