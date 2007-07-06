@@ -478,17 +478,15 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (firstOnCurrentPage > totalRecordsFound) {
 			firstOnCurrentPage = 0;
 		}
-		
+
+		int currentPageNo = firstOnCurrentPage / pageInterval + 1;
 		int lastOnCurrentPage = firstOnCurrentPage + pageInterval;
 		if ((countReturned - firstOnCurrentPage)<pageInterval) {
 			//If asking for more than search results returned, don't go beyond the ammount returned
 			//TODO Make the search request ask for the proper results (i.e., set the "starting count" properly on the search)
 			lastOnCurrentPage = firstOnCurrentPage + (countReturned-firstOnCurrentPage);
-			firstOnCurrentPage = lastOnCurrentPage - pageInterval;
 			if (firstOnCurrentPage < 0) firstOnCurrentPage = 0;
 		}
-		
-		int currentPageNo = (firstOnCurrentPage + pageInterval)/pageInterval; 
 		
 		List shownOnPage = ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage);
 		checkFileIds(shownOnPage);
