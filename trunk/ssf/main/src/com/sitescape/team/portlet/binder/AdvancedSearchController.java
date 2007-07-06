@@ -475,7 +475,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			firstOnCurrentPage = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
 		}
 		
-		if (firstOnCurrentPage > totalRecordsFound) {
+		if (firstOnCurrentPage > totalRecordsFound || firstOnCurrentPage < 0) {
 			firstOnCurrentPage = 0;
 		}
 
