@@ -37,13 +37,13 @@ function <portlet:namespace/>_modifyAlias() {
 <table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
 <tr>
 <th><ssf:nlt tag="incoming.job_title"/></th>
-<th><ssf:nlt tag="incoming.aliases"/></th>
+<th><ssf:nlt tag="incoming.aliases"/> <ssf:inlineHelp tag="ihelp.email.incomingAddresses" /></th>
 </tr>
 <tr><td valign="top">
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
 <input type="checkbox" class="ss_labelRight" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if>/>
-<ssf:nlt tag="incoming.enable.all"/>
+<ssf:nlt tag="incoming.enable.all"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" />
 <br/>
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>

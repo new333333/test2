@@ -75,10 +75,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br/>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">
 <tr><td> 
-<span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span>
+<span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" />
 
 <input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"> 
-<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" /><c:if test="${!ssScheduleInfo2.enabled}"><br/><ssf:nlt tag="incoming.disabled"/></c:if>
+<c:if test="${!ssScheduleInfo2.enabled}"><br/><ssf:nlt tag="incoming.disabled"/></c:if>
 
 </td>
 <td class="ss_buttonBarRight">

@@ -18,7 +18,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageWorkspaceMenu"/></span>
 </div>
 
-<p><ssf:nlt tag="help.manageMenuBar.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.manageMenuBar.intro" /></p>
 
 <p><ssf:nlt tag="help.manageMenuBar.menuDescription" /></p>
 
