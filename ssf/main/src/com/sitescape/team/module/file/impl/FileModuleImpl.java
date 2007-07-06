@@ -217,7 +217,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	protected void initContentFilter() throws Exception {
-		String contentFilterClassName = SPropsUtil.getString("file.content.filter.class");
+		String contentFilterClassName = SPropsUtil.getString("file.content.filter.class", "");
 		if(Validator.isNotNull(contentFilterClassName)) {
 			Class contentFilterClass = ReflectHelper.classForName(contentFilterClassName);
 			contentFilter = (ContentFilter) contentFilterClass.newInstance();
