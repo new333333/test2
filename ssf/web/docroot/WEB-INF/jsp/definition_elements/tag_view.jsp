@@ -100,7 +100,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <tbody>
 <tr>
 <td valign="top" style="padding-right:2px;">
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" 
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
     <c:if test="<%= isIE %>">
        offsetY="-3" 
     </c:if>
