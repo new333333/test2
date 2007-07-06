@@ -43,7 +43,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
    offsetY="4"
   </c:if>
   <c:if test="<%= isIE %>">
-   offsetY="2"
+   offsetY="2" xAlignment="center"
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 
