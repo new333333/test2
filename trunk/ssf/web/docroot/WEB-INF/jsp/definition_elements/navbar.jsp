@@ -824,3 +824,8 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 </div>
 <!-- End of favorites pane -->
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe'}" >
+<!-- iframe div -->
+<%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
+<!-- end of iframe div -->
+</c:if>

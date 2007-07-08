@@ -46,6 +46,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    entryId="${ssDefinitionEntry.id}"
 					    entityType="${ssDefinitionEntry.entityType}" >
 					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
@@ -60,6 +61,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		    entryId="${ssDefinitionEntry.id}"
 		    entityType="${ssDefinitionEntry.entityType}" >
 		    <ssf:param name="fileId" value="${selection.id}"/>
+		    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 		    <ssf:param name="viewType" value="thumbnail"/>
 		    </ssf:url>"/></a>
 		    </div>
@@ -70,6 +72,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    entryId="${ssDefinitionEntry.id}"
 					    entityType="${ssDefinitionEntry.entityType}" >
 					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
@@ -96,6 +99,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			   	 	entryId="${ssDefinitionEntry.id}"
 				    entityType="${ssDefinitionEntry.entityType}" >
 			    	<ssf:param name="fileId" value="${selection.id}"/>
+			    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 			    	<ssf:param name="viewType" value="html"/>
 			    	</ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
@@ -162,6 +166,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    entityType="${ssDefinitionEntry.entityType}" >
 				    <ssf:param name="fileId" value="${selection.id}"/>
 				    <ssf:param name="versionId" value="${fileVersion.id}"/>
+				    <ssf:param name="fileTime" value="${fileVersion.modification.date.time}"/>
 				    </ssf:url>"
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"

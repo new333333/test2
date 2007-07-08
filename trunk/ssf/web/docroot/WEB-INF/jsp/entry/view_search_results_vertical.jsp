@@ -14,7 +14,6 @@
 
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
-	String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 	//int sliderDivHeight = 18;
 	int sliderDivHeight = 7;
 	String sliderDivOffset = "-20";

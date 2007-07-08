@@ -50,6 +50,7 @@
 	    entityType="${ssDefinitionEntry.entityType}" >
 	    <ssf:param name="fileId" value="${selection.id}"/>
 	    <ssf:param name="viewType" value="scaled"/>
+    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 	    </ssf:url>" alt="${property_caption}" /></a>
   </c:if>
   <c:set var="pictureCount" value="${pictureCount + 1}"/>
@@ -135,6 +136,7 @@
 	    entryId="${ssDefinitionEntry.id}"
 	    entityType="${ssDefinitionEntry.entityType}" >
 	    <ssf:param name="fileId" value="${selection.id}"/>
+	    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 	    <ssf:param name="viewType" value="thumbnail"/>
 	    </ssf:url>" /></a></div>
   </c:forEach>

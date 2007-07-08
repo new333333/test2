@@ -474,6 +474,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	    entryId="${entry1._docId}" >
 		<ssf:param name="entityType" value="${entry1._entityType}"/>
 	    <ssf:param name="fileId" value="${entry1._fileID}"/>
+	    <ssf:param name="fileTime" value="${entry1._fileTime}"/>
 	    </ssf:url>"  class="ss_download_link"
 		onClick="return ss_openUrlInWindow(this, '_blank');"
 	  ><span><ssf:nlt tag="entry.download"/></span></a>
@@ -491,6 +492,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 			    entryId="${entry1._docId}" >
 				<ssf:param name="entityType" value="${entry1._entityType}"/>
 			    <ssf:param name="fileId" value="${entry1._fileID}"/>
+			    <ssf:param name="fileTime" value="${entry1._fileTime}"/>
 			    <ssf:param name="viewType" value="html"/>
 			    </ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> 
 			><span <%= seenStyle %>>[<ssf:nlt tag="entry.HTML" />]</span></a>

@@ -14,8 +14,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
-	String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-
 	//Get the folder type of this definition (folder, file, or event)
 	String folderViewStyle = "folder";
 	Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
