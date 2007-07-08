@@ -18,10 +18,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 
@@ -30,6 +32,16 @@ public class ViewCssController extends SAbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
+		HttpSession ses = request.getSession(false);
+
+		Date cssDate = new Date();
+		if(ses != null) {
+			cssDate = (Date) ses.getAttribute("ssCssDate");
+			if (cssDate == null) {
+				cssDate = new Date();
+				ses.setAttribute("ssCssDate", cssDate);
+			}
+		}
 		String theme = RequestUtils.getStringParameter(request, WebKeys.URL_CSS_THEME, "");
 		String sheet = RequestUtils.getStringParameter(request, WebKeys.URL_CSS_SHEET, "");
 		Map model = new HashMap();
@@ -37,7 +49,8 @@ public class ViewCssController extends SAbstractController {
 		response.setContentType("text/css");			
 
 		SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
-		Date d = new Date(System.currentTimeMillis() - (24*60*60*1000));
+		//24*60*60*1000 = 86400000
+		Date d = new Date(cssDate.getTime() - Long.valueOf("86400000"));
 		df.applyPattern("E, d MMM yyyy kk:mm:ss z");
 		response.setHeader(
 				"Last-Modified", df.format(d));

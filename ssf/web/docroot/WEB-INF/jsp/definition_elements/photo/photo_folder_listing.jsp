@@ -34,6 +34,8 @@
 <%
 	String _fileId = fileEntry.get("_fileID").toString();
 	if (_fileId.contains(",")) _fileId = _fileId.substring(0, _fileId.indexOf(","));
+	String _fileTime = fileEntry.get("_fileTime").toString();
+	if (_fileTime.contains(",")) _fileTime = _fileTime.substring(0, _fileTime.indexOf(","));
 %>			
 			    <div>
 			    <a href="<ssf:url 
@@ -42,6 +44,7 @@
 				    entryId="${fileEntry._docId}" >
 	    			<ssf:param name="entityType" value="${fileEntry._entityType}"/>
 				    <ssf:param name="fileId" value="<%= _fileId %>"/>
+				    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
 				    </ssf:url>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
 			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
@@ -50,6 +53,7 @@
 			    entryId="${fileEntry._docId}" >
 	    		<ssf:param name="entityType" value="${fileEntry._entityType}"/>
 			    <ssf:param name="fileId" value="<%= _fileId %>"/>
+			    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
 			    <ssf:param name="viewType" value="thumbnail"/>
 			    </ssf:url>"></a><br\>
 			    <a 

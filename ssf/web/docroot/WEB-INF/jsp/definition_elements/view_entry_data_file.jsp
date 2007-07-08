@@ -32,6 +32,7 @@ if (isIECheck) strBrowserType = "ie";
     entryId="${ssDefinitionEntry.id}"
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${selection.id}"/>
+    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/>
 </a>
 <c:if test="${ssConfigJspStyle != 'mail'}">

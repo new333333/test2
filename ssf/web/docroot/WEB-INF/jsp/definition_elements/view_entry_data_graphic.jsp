@@ -23,6 +23,7 @@
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     <ssf:param name="viewType" value="scaled"/>
+    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
     </ssf:url>" alt="${property_caption}" />
 </c:forEach>
 </c:if>

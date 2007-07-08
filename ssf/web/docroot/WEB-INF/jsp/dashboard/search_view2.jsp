@@ -189,6 +189,7 @@
 	    											<ssf:param name="entityType" value="${entry._entityType}"/>
 													<ssf:param name="entryId" value="${entry._docId}"/>
 													<ssf:param name="fileId" value="${entry._fileID}"/>
+													<ssf:param name="fileTime" value="${entry._fileTime}"/>
 												</ssf:url>
 											</ssf:param>
 											
@@ -248,6 +249,7 @@
 							  src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
 	    										<ssf:param name="entityType" value="${entry._entityType}"/>
 												<ssf:param name="fileId" value="${entry._fileID}"/>
+												<ssf:param name="fileTime" value="${entry._fileTime}"/>
 											    <ssf:param name="viewType" value="thumbnail"/>
 											    </ssf:url>" />
 							</c:if>
@@ -329,6 +331,7 @@
 	    										<ssf:param name="entityType" value="${entry._entityType}"/>
 												<ssf:param name="entryId" value="${entry._docId}"/>
 												<ssf:param name="fileId" value="${entry._fileID}"/>
+												<ssf:param name="fileTime" value="${entry._fileTime}"/>
 											</ssf:url>
 										</ssf:param>
 

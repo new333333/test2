@@ -41,6 +41,7 @@ if (isIECheck) strBrowserType = "ie";
     entryId="${ssDefinitionEntry.id}"
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${fileHandle.id}"/>
+    <ssf:param name="fileTime" value="${fileHandle.modification.date.time}"/>
     </ssf:url>">
 <c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
@@ -76,6 +77,7 @@ if (isIECheck) strBrowserType = "ie";
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${fileHandle.id}"/>
     <ssf:param name="versionId" value="${fileVersion.id}"/>
+    <ssf:param name="fileTime" value="${fileVersion.modification.date.time}"/>
     </ssf:url>"><ssf:nlt tag="entry.version"/> ${fileVersion.versionNumber}</a></td>
 <td class="ss_compact20"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${fileVersion.modification.date}" type="both" 

@@ -12,6 +12,9 @@ package com.sitescape.team.servlet.forum;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -49,6 +52,7 @@ public class ViewFileController extends SAbstractController {
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
 		String fileTitle = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
+		String fileTime = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TIME, ""); 
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_ZIPPED)) {
 			streamZipFile(request, response, fileId, fileTitle);
 		}
@@ -189,14 +193,22 @@ public class ViewFileController extends SAbstractController {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 				FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 				response.setContentType(mimeTypes.getContentType(shortFileName));
-				response.setHeader("Cache-Control", "private");
-				response.setHeader("Pragma", "no-cache");
+				if (fileTime.equals("") || 
+						!fileTime.equals(String.valueOf(fa.getModification().getDate().getTime()))) {
+					response.setHeader("Cache-Control", "private");
+					response.setHeader("Pragma", "no-cache");
+				}
 				String attachment = "";
 				if (!downloadFile.equals("")) attachment = "attachment; ";
 				response.setHeader(
 							"Content-Disposition",
 							attachment + "filename=\"" + shortFileName + "\"");
 				
+				SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
+				Date d = fa.getModification().getDate();
+				df.applyPattern("E, d MMM yyyy kk:mm:ss z");
+				response.setHeader(
+						"Last-Modified", df.format(d));
 				if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
 					try {
 						response.setContentType("image/jpeg");
