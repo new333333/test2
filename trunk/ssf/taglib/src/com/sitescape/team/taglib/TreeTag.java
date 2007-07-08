@@ -105,12 +105,14 @@ public class TreeTag extends TagSupport {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
 			User user = RequestContextHolder.getRequestContext().getUser();
+			String colorTheme = user.getTheme();
+			if (colorTheme == null || colorTheme.equals("")) colorTheme = WebKeys.THEME_IC_ICE_BLUE; 
 			this.userDisplayStyle = user.getDisplayStyle();
 	        if (this.userDisplayStyle == null) this.userDisplayStyle = "";
 
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
-		    setCommonImg(contextPath + "/images");
+		    setCommonImg(contextPath + "/i/" + colorTheme);
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_forum", Boolean.parseBoolean("true"));
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
