@@ -50,6 +50,9 @@ public class WebKeys {
     public static final String SEARCH_TITLE = "searchTitle";
     public static final String SEARCH_ACL_TAG_ID = "_aclTagField";
     public static final String IS_APPLET_SUPPORTED = "ssIsAppletSupported";
+    public static final String THEME_IC_ICE_BLUE = "icib";
+    public static final String THEME_IC_COOL_GREEN = "iccg";
+    public static final String THEME_IC_WINTRY_GRAY = "icwg";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
