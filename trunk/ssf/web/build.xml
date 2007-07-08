@@ -132,7 +132,7 @@
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
-			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml"
+			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,images/**,themes/**"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
 			<!-- No longer necessary
@@ -141,7 +141,35 @@
 			</manifest>-->
 		</war>
 	
+		<antcall target="add-image-themes"/>
+	
 		<antcall target="add-release-info"/>
+	</target>
+
+	<target name="add-image-themes">
+		<delete dir="temp"/>
+	
+		<copy todir="temp/i/icib" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/i/iccg" overwrite="true">
+			<fileset dir="${web.dir}/themes/iccg" />
+		</copy>
+		<copy todir="temp/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/i/icwg" overwrite="true">
+			<fileset dir="${web.dir}/themes/icwg" />
+		</copy>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
 	</target>
 
 	<target name="add-release-info">
@@ -177,7 +205,7 @@
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}"
-				excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml"
+				excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,images/**,themes/**"
 			/>
 		</copy>
 	</target>
@@ -331,20 +359,20 @@
 		<antcall target="copy-artifacts-to-tomcat" />
 	</target>
 
-	<target name="image-themes">
-		<copy todir="${app.server.dir}/webapps/ssf/i/icib" overwrite="true">
+	<target name="deploy-image-themes">
+		<copy todir="${app.server.ssf.dir}/i/icib" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="${app.server.dir}/webapps/ssf/i/iccg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/i/iccg" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="${app.server.dir}/webapps/ssf/i/iccg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/i/iccg" overwrite="true">
 			<fileset dir="${web.dir}/themes/iccg" />
 		</copy>
-		<copy todir="${app.server.dir}/webapps/ssf/i/icwg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/i/icwg" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="${app.server.dir}/webapps/ssf/i/icwg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/i/icwg" overwrite="true">
 			<fileset dir="${web.dir}/themes/icwg" />
 		</copy>
 	</target>
