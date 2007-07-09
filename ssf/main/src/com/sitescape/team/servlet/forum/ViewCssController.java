@@ -51,7 +51,7 @@ public class ViewCssController extends SAbstractController {
 		SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
 		//24*60*60*1000 = 86400000
 		Date d = new Date(cssDate.getTime() - Long.valueOf("86400000"));
-		df.applyPattern("E, d MMM yyyy kk:mm:ss z");
+		df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
 		response.setHeader(
 				"Last-Modified", df.format(d));
 		String viewPath = "common/ssf_css";
