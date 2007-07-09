@@ -8,16 +8,16 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-dojo.provide("ss_widget.MultiplePageableSelect");
+dojo.provide("sitescape.widget.MultiplePageableSelect");
 
-dojo.require("ss_widget.SelectPageable");
+dojo.require("sitescape.widget.SelectPageable");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.widget.html.stabile");
 
 dojo.widget.defineWidget(
-	"ss_widget.MultiplePageableSelect",
-	ss_widget.SelectPageable,
+	"sitescape.widget.MultiplePageableSelect",
+	sitescape.widget.SelectPageable,
 	{
 		allowMultiple: false,
 		collectedValues: new Array(),
@@ -28,7 +28,7 @@ dojo.widget.defineWidget(
 		imgRootPath: "",
 		hiddenFormElementName: "",
 		selectOption : function(/*Event*/ evt){
-			ss_widget.MultiplePageableSelect.superclass.selectOption.call(this, evt);
+			sitescape.widget.MultiplePageableSelect.superclass.selectOption.call(this, evt);
 			this.addSelectedToCollection(this.selectedResult[1], this.selectedResult[0]);
 		},
 		createCollectedDiv : function(){

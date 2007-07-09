@@ -266,10 +266,16 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	if (!endDate)
 		endDate = '';
 
-	dojo.widget.createWidget("DropDownDatePicker", {value:startDate, lang: ss_user_locale, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo,
-							maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderStartDate"+orderNo+""));
+	dojo.widget.createWidget("DropdownDatePickerActivateByInput", 
+								{value:startDate, 
+								lang: ss_user_locale, 
+								id:'searchStartDate'+orderNo, 
+								name:'searchStartDate'+orderNo,
+								maxListLength : 10,	
+								autoComplete: false}, 
+							document.getElementById("placeholderStartDate"+orderNo+""));
 
-	dojo.widget.createWidget("DropDownDatePicker", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+	dojo.widget.createWidget("DropdownDatePickerActivateByInput", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
 

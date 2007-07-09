@@ -27,6 +27,11 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 /**
  * @author billmers
  *
@@ -61,11 +66,17 @@ public class DateHelper {
  */
     static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber, boolean applyTimeZone) 
     throws ConfigurationException {
-        Date d = new Date();
         // date fields don't have a sequence number; time fields do
         String datePrefix = id + "_";
         String timePrefix = id + "_" + sequenceNumber + "_";
-              
+        
+        if (isDojoWidgetDatePickerInUse(inputData, datePrefix)) {
+        	return getDateFromDojoWidgetInput (inputData, datePrefix, timePrefix, applyTimeZone);
+        }
+        
+        
+        Date d = new Date();
+        
         // if the year isn't present, it probably means no date was entered
         if (!inputData.exists(datePrefix+"year")) {
             return null;
@@ -133,7 +144,57 @@ public class DateHelper {
         return d;
     }
     
-    static public String getDateStringFromDMY (String day, String month, String year) 
+    private static Date getDateFromDojoWidgetInput(InputDataAccessor inputData, String datePrefix, String timePrefix, boolean applyTimeZone) {
+    	
+    	if (!inputData.exists(datePrefix + "fullDate") || 
+    			"".equals(inputData.getSingleValue(datePrefix+"fullDate"))) {
+    		return null;
+    	}
+    	
+        DateTimeZone dateTimeZone = null;
+        if (applyTimeZone && inputData.exists(datePrefix + "timezoneid")) {
+            String timeZoneString = inputData.getSingleValue(datePrefix + "timezoneid");
+            if ("".equals(timeZoneString)) {
+            	timeZoneString = DateTimeZone.UTC.getID();
+            }
+            dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
+        }
+        
+        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+        if (dateTimeZone != null) {
+        	dateFormatter = dateFormatter.withZone(dateTimeZone);
+        }
+		DateTime dateTime = null;
+		if (inputData.exists(datePrefix + "fullDate")) {
+			dateTime = dateFormatter.parseDateTime(inputData.getSingleValue(datePrefix+"fullDate"));
+		}
+		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
+		if (dateTimeZone != null) {
+			timeFormatter = timeFormatter.withZone(dateTimeZone);
+		}
+		if (inputData.exists(timePrefix + "fullTime")) {
+			// Remove time zone information from time string. Time zone is set by dojo TimePicker widget,
+			// but this is user client time zone what is NOT the same like user profile time zone.
+			String timeString = inputData.getSingleValue(timePrefix + "fullTime");
+			if (!"".equals(timeString)) {
+				if (timeString.indexOf("-") > -1) {
+					timeString = timeString.substring(0, timeString.indexOf("-"));
+				}
+				if (timeString.indexOf("+") > -1) {
+					timeString = timeString.substring(0, timeString.indexOf("+"));
+				}			
+				DateTime time = timeFormatter.parseDateTime(timeString);
+				dateTime = dateTime.withTime(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(), time.getMillisOfSecond());
+			}
+		}
+		return dateTime.toDate();
+	}
+
+	private static boolean isDojoWidgetDatePickerInUse(InputDataAccessor inputData, String datePrefix) {
+    	return inputData.exists(datePrefix + "fullDate");
+    }
+
+	static public String getDateStringFromDMY (String day, String month, String year) 
 			throws ConfigurationException {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Calendar cal = Calendar.getInstance();

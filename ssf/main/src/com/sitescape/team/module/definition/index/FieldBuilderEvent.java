@@ -39,8 +39,12 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 		// range check to see if this event is in range
 		Field evDtStartField = new Field(makeFieldName(dataElemName, EntityIndexUtils.EVENT_FIELD_START_DATE), DateTools.dateToString(event.getDtStart().getTime(),	DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
 		Field evDtEndField = new Field(makeFieldName(dataElemName, EntityIndexUtils.EVENT_FIELD_END_DATE), DateTools.dateToString(event.getDtEnd().getTime(), DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-
-		return new Field[] { evDtStartField, evDtEndField};
+		if (event.isAllDayEvent()) {
+			return new Field[] { evDtStartField, evDtEndField};
+		}
+		Field evTimeZoneIDField = new Field(makeFieldName(dataElemName, EntityIndexUtils.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		
+		return new Field[] { evDtStartField, evDtEndField, evTimeZoneIDField};
 	}
 
 

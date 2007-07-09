@@ -29,6 +29,8 @@ import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -367,11 +369,8 @@ public class AddEntryController extends SAbstractController {
 		
 		if (year != -1 && month != -1 && dayOfMonth != -1) {
 			TimeZone timeZone = RequestContextHolder.getRequestContext().getUser().getTimeZone();
-						
-			Calendar startDate = new GregorianCalendar(timeZone);
-			startDate.set(Calendar.YEAR, year);
-			startDate.set(Calendar.MONTH, month);
-			startDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+		
+			DateTime startDate = (new DateTime(DateTimeZone.forTimeZone(timeZone))).withYear(year).withMonthOfYear(month).withDayOfMonth(dayOfMonth);
 			
 			if (time != null) {
 				String[] timeS = time.split(":");
@@ -380,13 +379,12 @@ public class AddEntryController extends SAbstractController {
 						if (timeS.length > 0) {
 							int hour = Integer.parseInt(timeS[0]);
 							if (hour != -1) {
-								startDate.set(Calendar.HOUR_OF_DAY, hour);
-								startDate.set(Calendar.MINUTE, 0);
+								startDate = startDate.withHourOfDay(hour).withMinuteOfHour(0);
 							}
 						}
 						if (timeS.length > 1) {
 							int minute = Integer.parseInt(timeS[1]);
-							startDate.set(Calendar.MINUTE, minute);
+							startDate = startDate.withMinuteOfHour(minute > 30 ? 60 - minute : 30 - minute);
 						}
 					} catch (NumberFormatException e) {
 						// do nothing, no hour, no minute
@@ -394,8 +392,8 @@ public class AddEntryController extends SAbstractController {
 				}
 			}
 		
-			Event event = new Event(startDate, new Duration(0, 0, duration, 0), 0);
-			
+			Event event = new Event(startDate.toGregorianCalendar(), new Duration(0, 0, duration, 0), 0);
+			event.setTimeZone(timeZone);
 			model.put(WebKeys.CALENDAR_INITIAL_EVENT, event);
 		}
 		

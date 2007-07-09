@@ -30,6 +30,10 @@ import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+
+import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -47,6 +51,7 @@ public class Eventeditor extends TagSupport {
   private Event initEvent = null;
   private Boolean hasDuration = new Boolean("false");
   private Boolean hasRecurrence = new Boolean("true");
+  private Boolean required = false;
 
   public int doStartTag() throws JspException {
     JspWriter jspOut = pageContext.getOut(); 
@@ -71,8 +76,8 @@ public class Eventeditor extends TagSupport {
       RequestDispatcher rd = req.getRequestDispatcher(jsp); 
       
       // if initEvent is provided, take it apart and pass in two dates
-      Date startDate = new Date();
-      Date endDate = new Date();
+      Date startDate = null;
+      Date endDate = null;
       // initialize the event, if none was provided
       if (initEvent != null) {
           Calendar startCal = initEvent.getDtStart();
@@ -87,15 +92,19 @@ public class Eventeditor extends TagSupport {
           
           startDate = startCal.getTime();
           endDate = endCal.getTime();
-      } else {
+      } else if (required) {
     	  initEvent = new Event();
-    	  GregorianCalendar startCal = new GregorianCalendar();
-    	  startCal.setTime(startDate);
-    	  initEvent.setDtStart(startCal);
+    	  initEvent.setTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+    	  
+    	  
+    	  DateTime startDateTime = new DateTime();
+    	  startDateTime = startDateTime.plusMinutes(startDateTime.getMinuteOfHour() > 30 ?  60 - startDateTime.getMinuteOfHour(): 30 - startDateTime.getMinuteOfHour());
+    	  startDate = startDateTime.toDate();
+    	  initEvent.setDtStart(startDateTime.toGregorianCalendar());
     	  if (hasDuration.booleanValue()) {
-    		  GregorianCalendar endCal = new GregorianCalendar();
-    		  endCal.setTime(endDate);
-    		  initEvent.setDtEnd(endCal);
+    		  startDateTime = startDateTime.plusMinutes(30);
+    		  endDate = startDateTime.toDate();
+    		  initEvent.setDtEnd(startDateTime.toGregorianCalendar());
     	  }
       }
       
@@ -156,6 +165,10 @@ public class Eventeditor extends TagSupport {
   public void setInitEvent(Event initEvent) {
       this.initEvent = initEvent;
   }
+
+	public void setRequired(Boolean required) {
+		this.required = required;
+	}
   
 }
 

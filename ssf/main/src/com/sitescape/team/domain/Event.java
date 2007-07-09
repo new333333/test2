@@ -54,6 +54,8 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import org.dom4j.Element;
+import org.joda.time.DateTime;
+import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CalendarHelper;
@@ -1438,8 +1440,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public TimeZone getTimeZone() {
-		if (timeZone != null) return timeZone;
-		return TimeZone.getDefault();
+		return timeZone;
+	}
+	
+	public boolean isAllDayEvent() {
+		return timeZone == null;
 	}
 	
 	public void setTimeZone(TimeZone timeZone) {
@@ -2952,6 +2957,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setTimeZoneSensitive(newEvent.isTimeZoneSensitive());
 			changed = true;
 		}
+		if ((getTimeZone() == null && newEvent.getTimeZone() != null) || 
+				(getTimeZone() != null && newEvent.getTimeZone() == null) ||
+				(getTimeZone() != null && newEvent.getTimeZone() != null && !getTimeZone().equals(newEvent.getTimeZone()))) {
+			setTimeZone(newEvent.getTimeZone());
+			changed = true;
+		}
 		int[] val = newEvent.getBySecond();
 		if ((bySecond != val) && hasDiffs(bySecond, val)) {
 			setBySecond(val);
@@ -3072,7 +3083,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * 				second one is end date
 	 */
 	public List getAllRecurrenceDates() {
-		if (this.hasDuration()) {
+		if (!this.isAllDayEvent()) {
 			Event eventClone = (Event)this.clone();
 			eventClone.convertToSavedTimeZone();
 			return eventClone.getAllRecurrenceDatesWithCurrentTimeZone();
@@ -3149,7 +3160,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @return list of Calendar object instances 
 	 */
 	public List getAllEventDays() {
-		if (this.hasDuration()) {
+		if (!this.isAllDayEvent()) {
 			Event eventClone = (Event)this.clone();
 			eventClone.convertToSavedTimeZone();
 			return eventClone.getAllEventDaysWithCurrentTimeZone();
@@ -3233,6 +3244,15 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		}
 		
 		return result;
+	}
+
+	public boolean isOneDayEvent() {
+		if (getDtStart() == null || getDtEnd() == null) {
+			return false;
+		}
+		YearMonthDay start = new DateTime(getDtStart()).toYearMonthDay();
+		YearMonthDay end = new DateTime(getDtEnd()).toYearMonthDay();
+		return (start).equals(end);
 	}
 
 }

@@ -41,7 +41,6 @@ public class WebKeys {
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
-    public static final String LOCALE = "ss_locale";
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
     public static final String EVENT = "event";
     public static final String PRINCIPAL = "_principal";

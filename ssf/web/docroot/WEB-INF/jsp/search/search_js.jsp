@@ -13,12 +13,13 @@
 <%@ page import="java.util.ArrayList" %>
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
+dojo.require('sitescape.widget.WorkflowSelect');
+dojo.require('sitescape.widget.EntrySelect');
+dojo.require('sitescape.widget.FieldSelect');
+dojo.require('sitescape.widget.SelectPageable');
+dojo.require('sitescape.widget.DropdownDatePickerActivateByInput');
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_search.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/WorkflowSelect.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/EntrySelect.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/FieldSelect.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPageable.js"></script>
 
 <script type="text/javascript">
 

@@ -37,9 +37,9 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
+dojo.require('sitescape.widget.SelectPageable');
+dojo.require('sitescape.widget.MultiplePageableSelect');
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPageable.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/widget/MultiplePageableSelect.js"></script>
 
 <script type="text/javascript">
 
