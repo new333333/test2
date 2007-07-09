@@ -30,15 +30,15 @@
   <c:if test="${ssUser.displayStyle == 'accessible'}" >
   <select name="roleIds" onChange="ss_selectRole${ss_namespace}();">
     <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole" /></option>
-    <c:forEach var="function" items="${ssFunctionMap}">
+    <c:forEach var="function" items="${ssFunctions}">
       <c:set var="includeRole" value="1"/>
       <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
-        <c:if test="${sortedFunction.id == function.key.id}">
+        <c:if test="${sortedFunction.id == function.id}">
           <c:set var="includeRole" value="0"/>
         </c:if>
       </c:forEach>
       <c:if test="${includeRole == '1'}">
-        <option value="${function.key.id}"><ssf:nlt tag="${function.key.name}" checkIfTag="true"/></option>
+        <option value="${function.id}"><ssf:nlt tag="${function.name}" checkIfTag="true"/></option>
       </c:if>
     </c:forEach>
   </select>
