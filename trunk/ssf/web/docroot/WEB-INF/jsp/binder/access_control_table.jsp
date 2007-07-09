@@ -38,7 +38,7 @@
         </c:if>
       </c:forEach>
       <c:if test="${includeRole == '1'}">
-        <option value="${function.key.id}"><c:out value="${function.key.translatedName}"/></option>
+        <option value="${function.key.id}"><ssf:nlt tag="${function.key.name}" checkIfTag="true"/></option>
       </c:if>
     </c:forEach>
   </select>
@@ -53,7 +53,7 @@
 <input type="hidden" name="roleIds" value="${function.id}"/>
 <TH class="ss_table_smheaders"><a href="#" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext">${function.translatedName}
+  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
 </span></a></TH>
 </c:forEach>
 </TR>
@@ -161,7 +161,7 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
   <TH class="ss_table_smheaders"><a href="#" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext">${function.translatedName}
+  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
   *
   </c:if>
@@ -238,7 +238,7 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
   <TH class="ss_table_smheaders"><a href="#" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext">${function.translatedName}
+  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
   *
   </c:if>

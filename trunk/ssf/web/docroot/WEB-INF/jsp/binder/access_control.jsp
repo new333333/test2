@@ -440,7 +440,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
 	        <li>
 	          <a href="javascript: ;" 
 	          onClick="ss_addAccessControlRole${ss_namespace}('${function.key.id}');"
-	          ><c:out value="${function.key.translatedName}"/></a>
+	          ><ssf:nlt tag="${function.key.name}" checkIfTag="true"/></a>
 	        </li>
 	      </c:if>
 	    </c:forEach>
@@ -500,7 +500,7 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
     </a>
   </div>
   <div>
-	<span class="ss_bold"><%= NLT.getDef(function.getName() %></span><br/>
+	<span class="ss_bold"><%= NLT.getDef(function.getName()) %></span><br/>
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function.operations}">
