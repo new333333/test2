@@ -38,6 +38,7 @@ public class IndexUtils  {
     public static final String LASTACTIVITY_DAY_FIELD = "_lastActivityDay";
     public static final String LASTACTIVITY_YEAR_MONTH_FIELD = "_lastActivityYearMonth";
     public static final String LASTACTIVITY_YEAR_FIELD = "_lastActivityYear";
+    public static final String TOTALREPLYCOUNT_FIELD = "_totalReplyCount";
       
     //only index for top leve; entries
     public static void addLastActivityDate(Document doc, FolderEntry entry) {
@@ -65,6 +66,11 @@ public class IndexUtils  {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(DOCNUMBER_FIELD, entry.getDocNumber(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
+    }    
+    public static void addTotalReplyCount(Document doc, FolderEntry entry) {
+    	//Add the id of the creator (no, not that one...)
+        Field countNumField = new Field(TOTALREPLYCOUNT_FIELD, Integer.toString(entry.getTotalReplyCount()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        doc.add(countNumField);
     }    
     public static void addSortNumber(Document doc, FolderEntry entry) {
     	//Add the id of the creator (no, not that one...)
