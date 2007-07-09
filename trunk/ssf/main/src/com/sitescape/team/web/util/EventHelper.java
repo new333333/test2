@@ -48,46 +48,34 @@ public class EventHelper {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	
         // we make the id match what the event editor would do
+    	String prefix = id + "_";
+    	
         Event e = new Event();
-        String prefix = id + "_";
-        if (hasDuration.booleanValue()) {
-        	e.setTimeZone(user.getTimeZone());
-            // duration present means there is a start and end id
-            String startId = "dp_" + id;
-            String endId = "dp2_" + id;
+       
+        // duration present means there is a start and end id
+        String startId = "dp_" + id;
+        String endId = "dp2_" + id;
 
-            Date start = inputData.getDateValue(startId);
-            Date end = inputData.getDateValue(endId);
-            // for now, if either date in the range is missing, we return null Event
-            // (consider instead making a checked exception?)
-            if (start == null || end == null) {
-                return null;
-            }
-            GregorianCalendar startc = new GregorianCalendar();
-            GregorianCalendar endc = new GregorianCalendar();
-            startc.setTime(start);
-            endc.setTime(end);
-            e.setDtStart(startc);
-            e.setDtEnd(endc);
-        } else {
-        	// all day events don't have time zone
-        	e.setTimeZone(TimeZone.getTimeZone("GMT"));
-            String whenId = "dp3_" + id;
-            Date when = DateHelper.getDateFromInput_IgnoreTimeZone(inputData, whenId);
-            if (when == null) {
-                return null;
-            }
-            GregorianCalendar whenc = new GregorianCalendar();
-            whenc.setTime(when);
-            
-            // no duration => all day event (we don't need the time)
-            whenc.set(Calendar.HOUR, 0);
-            whenc.set(Calendar.MINUTE, 0);
-            whenc.set(Calendar.SECOND, 0);
-            whenc.set(Calendar.MILLISECOND, 0);
-            
-            e.setDtStart(whenc);
+        Date start = inputData.getDateValue(startId);
+        Date end = inputData.getDateValue(endId);
+        // for now, if either date in the range is missing, we return null Event
+        // (consider instead making a checked exception?)
+        if (start == null || (hasDuration && end == null)) {
+            return null;
         }
+        GregorianCalendar startc = new GregorianCalendar();
+        startc.setTime(start);
+        e.setDtStart(startc);
+        if (end != null) {
+        	GregorianCalendar endc = new GregorianCalendar();
+        	endc.setTime(end);
+        	e.setDtEnd(endc);
+        }
+        
+        if (!isAllDayEvent(inputData, id)) {
+        	e.setTimeZone(user.getTimeZone());
+        }
+
         if (hasRecurrence.booleanValue()) {
             String repeatUnit = inputData.getSingleValue(prefix+"repeatUnit");
             String intervalStr = inputData.getSingleValue(prefix+"everyN");
@@ -147,6 +135,11 @@ public class EventHelper {
         
         return e;
     }
+
+
+	private static boolean isAllDayEvent(InputDataAccessor inputData, String id) {
+		return inputData.exists("allDayEvent_" + id);
+	}
 
 
 	private static void parseDaysOfWeekWithPositions(Event e, InputDataAccessor inputData, String prefix) {

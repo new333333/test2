@@ -67,7 +67,7 @@ events : [<%--
 		  {eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
 		  	entryId : "<%= e.get("_docId").toString() %>",
 		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
-		  	<c:if test="${evim.cal_duration == 0 && evim.eventType == 'event'}">
+		  	<c:if test="${evim.cal_allDay && evim.eventType == 'event'}">
 		  		<c:set var="timeZone" value="GMT"/>
 		  	</c:if>
 		  	startDate : {
@@ -85,14 +85,29 @@ events : [<%--
 			  	minutes: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="mm"/>"
 		  	},
 		  	<c:choose>
-			  	<c:when test="${evim.cal_starttimestring != evim.cal_endtimestring}">
-			  		text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="time" timeStyle="short" />",
+			  	<c:when test="${!evim.cal_allDay}">
+				  	<c:choose>
+				  		<c:when test="${!evim.cal_oneDayEvent}">
+			  				text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="both" timeStyle="short" dateStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="both" timeStyle="short" dateStyle="short" />",
+					  	</c:when>
+					  	<c:otherwise>
+					  	  	<c:choose>
+						  		<c:when test="${evim.cal_starttime == evim.cal_endtime}">
+					  				text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" />",
+							  	</c:when>
+							  	<c:otherwise>
+							  		text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="time" timeStyle="short" />",
+							  	</c:otherwise>
+							</c:choose>
+					  	</c:otherwise>
+					</c:choose>			  		
 			  	</c:when>
 			  	<c:otherwise>
 			  		text: "",
 			  	</c:otherwise>
 			</c:choose>
 		  	dur: ${evim.cal_duration},
+		  	allDay: ${evim.cal_allDay},
 		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
 		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",

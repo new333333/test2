@@ -100,7 +100,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-        model.put(WebKeys.LOCALE, getUserLocale());
         
         // this is necessary for the breadcrumbs and places choose
         Workspace top = getWorkspaceModule().getTopWorkspace();
@@ -143,11 +142,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Workspace ws = getWorkspaceModule().getWorkspace();
 		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
-	}
-
-	private String getUserLocale() {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return user.getLocale().getLanguage();
 	}
 	
 	private Map prepareSearchResultPage(RenderRequest request) throws PortletRequestBindingException {

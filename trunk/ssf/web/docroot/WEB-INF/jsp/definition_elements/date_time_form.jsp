@@ -35,50 +35,48 @@
 		required = "";
 	}
 %>
+<c:set var="elementName" value="<%= elementName %>" />
 <script type="text/javascript">
 	ss_addValidator("<%= elementName %>", ss_date_validator, '<%= elementName %>_error', '<%= elementName %>_label');
 </script>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
 	<div id="<%= elementName %>_error" style="visibility:hidden; display:none;"><span class="ss_formError">Please enter a valid date.</span></div>
+	
+
+	<c:set var="initDate" value="<%= new Date() %>"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
-		<jsp:useBean id="initDate" type="java.util.Date" />
-		<table width="300px" class="ss_style" cellpadding="0" border="0">
-			<tr>
-				<td>
-					<ssf:datepicker id="<%= elementName %>" 
-					  formName="<%= formName %>" 
-					  initDate="<%= initDate %>" />
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<ssf:timepicker 
-						formName="<%= formName %>"
-						initDate="<%= initDate %>"
-						id="<%= elementName %>" />
-				</td>
-			</tr>
-		</table>
 	</c:if>
-	<c:if test="${empty ssDefinitionEntry.customAttributes[property_name].value}">
-		<table class="ss_style" cellpadding="0" border="0">
-			<tr>
-				<td>
-					<ssf:datepicker id="<%= elementName %>" 
-					  formName="<%= formName %>" 
-					  initDate="<%= new Date() %>" />
-				</td>
-			</tr>
-			<tr>
-				<td>					  
-					<ssf:timepicker 
-						formName="<%= formName %>"
-						initDate="<%= new Date() %>"
-						id="<%= elementName %>" />
-				</td>
-			</tr>
-		</table>						
-	</c:if>
+
+	<table class="ss_style" cellpadding="0" border="0">
+		<tr>
+			<td>
+				<div dojoType="DropdownDatePickerActivateByInput" 
+					widgetId="date_${elementName}_${prefix}" 
+					id="date_${elementName}_${prefix}"
+					name="${elementName}_fullDate" 
+					lang="${ssUser.locale.language}" 
+					value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"></div>
+				</div>
+			</td>
+			<td>
+				<div dojoType="DropdownTimePickerActivateByInput"
+					widgetId="date_time_${elementName}_${prefix}" 
+					id="date_time_${elementName}_${prefix}"
+					name="${elementName}_0_fullTime" 
+					lang="${ssUser.locale.language}" 
+					value="<fmt:formatDate value="${initDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"></div>
+				<input type="hidden" name="${elementName}_timezoneid" value="${ssUser.timeZone.ID}" />
+			</td>
+		</tr>
+	</table>
+	
+	<script type="text/javascript">
+		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
+		dojo.require("sitescape.widget.DropdownTimePickerActivateByInput");
+		djConfig.searchIds.push("date_${elementName}_${prefix}");
+		djConfig.searchIds.push("date_time_${elementName}_${prefix}");
+	</script>
+	
 </div>

@@ -11,6 +11,7 @@
  */
 %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.domain.Event" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <% // these beans need to be here because we need to
@@ -18,90 +19,122 @@
    // passed into other tags (can't be done via JSTL) %>
 <jsp:useBean id="evid" type="String" scope="request" />
 <jsp:useBean id="formName" type="String" scope="request" />
-<jsp:useBean id="startDate" type="java.util.Date" scope="request" />
-<jsp:useBean id="endDate" type="java.util.Date" scope="request" />
-<jsp:useBean id="initEvent" type="com.sitescape.team.domain.Event" scope="request" />
+<%
+	Event initEvent = (Event)request.getAttribute("initEvent");
+	Date startDate = (Date)request.getAttribute("startDate");
+	Date endDate = (Date)request.getAttribute("endDate");
+%>
+<c:set var="initEvent" value="<%= initEvent %>" />
 
 <jsp:useBean id="attMap" type="java.util.HashMap" scope="request" />
+<c:set var="allDayEventId" value="allDayEvent_${evid}" />
+<c:set var="dateId" value="dp_${evid}" />
+<c:set var="dateId2" value="dp2_${evid}" />
+<c:set var="endrangeId" value="endRange_${evid}" />
 
-<% 
-   String dateId;
-   String dateId2;
-   String dateId3;
-   String endrangeId;
-   dateId = "dp_" + evid;
-   dateId2 = "dp2_" + evid;
-   dateId3 = "dp3_" + evid;
-   endrangeId = "endRange_" + evid;
-%>
-<script type="text/javascript" src="<html:rootPath />js/common/PopupWindow.js"></script>
-<script type="text/javascript" src="<html:rootPath />js/common/AnchorPosition.js"></script>
+<script type="text/javascript">
+	dojo.require('sitescape.widget.DropdownDatePickerActivateByInput');
+	dojo.require('sitescape.widget.DropdownTimePickerActivateByInput');
+	dojo.require('sitescape.widget.DropdownEventDatePicker');
+	dojo.require('sitescape.widget.DropdownEventTimePicker');
+</script>
+
+<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
 <c:set var="prefix" value="${evid}" />
 
-<table class="ss_style" border="0" cellpadding="0"><tr><td>
- <table class="ss_style" border="0" cellpadding="4" cellspacing="0">
- <c:choose>
- <c:when test="${attMap.hasDur}">
- <tr>
-   <td class="contentbold"><ssf:nlt tag="event.start" />:</td>
-   <td>
-   <ssf:datepicker 
-       formName="<%= formName %>"
-       initDate="<%= startDate %>"
-       id="<%= dateId %>" />
-   </td>
-</tr>
- <tr>
-   <td class="contentbold">&nbsp;</td>
-   <td>
-   <ssf:timepicker 
-       formName="<%= formName %>"
-       initDate="<%= startDate %>"
-       id="<%= dateId %>" />
-   </td>
-</tr>
- <tr>
-   <td class="contentbold"><ssf:nlt tag="event.end" />:</td>
-   <td>
-   <ssf:datepicker 
-       formName="<%= formName %>"
-       initDate="<%= endDate %>"
-       id="<%= dateId2 %>" />
-   </td>
-</tr>
- <tr>
-   <td class="contentbold">&nbsp;</td>
-   <td>
-   <ssf:timepicker 
-       formName="<%= formName %>"
-       initDate="<%= endDate %>"
-       id="<%= dateId2 %>" />
-   </td>
-</tr>
-
-
-
- </c:when>
- <c:otherwise>
-
-	<% // all events without duration are 'all day' events, so don't have start time (only date) %>
-	 <tr>
-	   <td class="contentbold"><ssf:nlt tag="event.when" />:</td>
-	   <td>
-	   <ssf:datepicker 
-	       formName="<%= formName %>"
-	       initDate="<%= startDate %>"
-	       id="<%= dateId3 %>" 
-	       ignoreTimeZone="true" />
-	   </td>
+<table class="ss_style">
+	<tr>
+		<td class="contentbold"><ssf:nlt tag="event.start" />:</td>
+		<td>
+			<div dojoType="DropdownEventDatePicker" 
+				widgetId="event_start_${prefix}" 
+				name="${dateId}_fullDate" 
+				id="${dateId}_${prefix}"
+				lang="${ssUser.locale.language}" 
+				value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+				startDateWidgetId="event_start_${prefix}"
+				startTimeWidgetId="event_start_time_${prefix}"
+				endDateWidgetId="event_end_${prefix}"
+				endTimeWidgetId="event_end_time_${prefix}"></div>
+		</td>
+		<td>
+			<span id="${prefix}eventStartTime"
+				<c:if test="${initEvent.allDayEvent}">
+					style="display: none; "
+				</c:if>
+				>
+				<div dojoType="DropdownEventTimePicker"
+					widgetId="event_start_time_${prefix}" 
+					name="${dateId}_0_fullTime" 
+					id="${dateId}_time_${prefix}"
+					lang="${ssUser.locale.language}" 
+					value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
+					startDateWidgetId="event_start_${prefix}"
+					startTimeWidgetId="event_start_time_${prefix}"
+					endDateWidgetId="event_end_${prefix}"
+					endTimeWidgetId="event_end_time_${prefix}"></div>
+					
+				<input type="hidden" name="${dateId}_timezoneid" value="${initEvent.timeZone.ID}" />
+			</span>	
+		</td>
+		<c:if test="${attMap.hasDur}">
+			<td>
+				<input type="checkbox" name="${allDayEventId}"
+				<c:if test="${initEvent.allDayEvent}">
+					checked="checked"
+				</c:if> id="${prefix}_${dateId}_allDayEvent" 
+				onclick="ssEventEditor${prefix}.toggleAllDay(this); " /><label for="${prefix}_${dateId}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
+			</td>
+		</c:if>
 	</tr>
-
-</c:otherwise>
-</c:choose>
+	
+	<c:if test="${attMap.hasDur}">
+		<tr>
+			<td class="contentbold"><ssf:nlt tag="event.end" />:</td>
+			<td>
+				<div dojoType="DropdownEventDatePicker" 
+					widgetId="event_end_${prefix}" 
+					name="${dateId2}_fullDate" 
+					id="${dateId2}_${prefix}"
+					lang="${ssUser.locale.language}" 
+					value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+					startDateWidgetId="event_start_${prefix}"
+					startTimeWidgetId="event_start_time_${prefix}"
+					endDateWidgetId="event_end_${prefix}"
+					endTimeWidgetId="event_end_time_${prefix}"></div>
+			</td>
+			<td>
+				<span id="${prefix}eventEndTime"
+					<c:if test="${initEvent.allDayEvent}">
+						style="display: none; "
+					</c:if>			
+					>
+					<div dojoType="DropdownEventTimePicker"
+						widgetId="event_end_time_${prefix}" 
+						name="${dateId2}_0_fullTime" 
+						id="${dateId2}_time_${prefix}"
+						lang="${ssUser.locale.language}" 
+						value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
+						startDateWidgetId="event_start_${prefix}"
+						startTimeWidgetId="event_start_time_${prefix}"
+						endDateWidgetId="event_end_${prefix}"
+						endTimeWidgetId="event_end_time_${prefix}"></div>
+						
+					<input type="hidden" name="${dateId2}_timezoneid" value="${initEvent.timeZone.ID}" />
+				</span>
+			</td>
+		</tr>
+	</c:if>
 </table>
 
 
+
+
+
 <script type="text/javascript">
+
+var ssEventEditor${prefix} = new ssEventEditor("${prefix}");
+
 
 var ${prefix}_isRecurVisible=false;
 
@@ -206,60 +239,52 @@ function ${prefix}_toggleRecur(name) {
   </c:forEach>
   
 
-  <div style="text-align:left; ">
-     <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
-     <img border="0" <ssf:alt tag="alt.expand"/>
-       src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" /></a>
-     <img border="0" <ssf:alt tag="Loading"/>
-       src="<html:imagesPath />pics/sym_s_repeat.gif" /> 
-     <a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
-     <b><ssf:nlt tag="event.recurrence" /></b></a><br></a>
-  </div>
+	<div style="text-align:left; ">
+		<a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
+			<img border="0" <ssf:alt tag="alt.expand"/>
+				src="<html:imagesPath />pics/sym_s_expand.gif" name="${prefix}_expandgif" />
+		</a>
+		<img border="0" <ssf:alt tag="Loading"/>
+			src="<html:imagesPath />pics/sym_s_repeat.gif" /> 
+		<a href="javascript: ;" onClick="${prefix}_toggleRecur('${prefix}_recur_div')" >
+			<b><ssf:nlt tag="event.recurrence" /></b></a>
+		<br>
+	</div>
 
-   <div name="${prefix}_recur_div" id="${prefix}_recur_div" style="visibility:hidden; display:none;">
-     <table class="ss_style" border="0" cellpadding="4" cellspacing="0">
-
-     <tr>
-     <td colspan="3" class="contentbold">
-
-     &nbsp;<ssf:nlt tag="event.frequency" />
-    </td>
-    </tr>
-    <tr>
-     <td colspan="2" >
-     <input type="radio"  
-      name="${prefix}_repeatUnit" id="norepeat" 
-      value="none" 
-    <c:if test="${freqval == 'none'}"> checked="checked" </c:if>
-   >
-    <label for="norepeat"> <ssf:nlt tag="event.no_repeat" /></label></td>
-    </tr>
-    <tr>
-     <td nowrap="nowrap" >
-      <input type="radio" name="${prefix}_repeatUnit" id="repeatday"
-      value="day" 
-     <c:if test="${freqval == 'day'}"> checked="checked" </c:if>
-     >
-
-      <ssf:nlt tag="event.every" /> <input type="text" class="ss_text" name="${prefix}_everyNday" size="2" 
-       value="${initEvent.interval}"
-   > <ssf:nlt tag="event.days" /></td>
-    </tr>
-
-    <tr>
-     <td  valign="top" nowrap="nowrap">
-      <input type="radio" name="${prefix}_repeatUnit" id="repeatweek"
-      <c:if test="${freqval == 'week'}">
-      checked="checked"
-      </c:if>
-      value="week" >
-      <ssf:nlt tag="event.every" /> <input type="text" class="ss_text" name="${prefix}_everyNweek" size="2" 
-       value="${initEvent.interval}" > <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
-
-   <input type="checkbox" name="${prefix}_day0" id="${prefix}_day0"
-   <c:if test="${day0sel == 'yes'}"> checked="checked" </c:if>
-   >
-   <font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>
+	<div name="${prefix}_recur_div" id="${prefix}_recur_div" style="visibility:hidden; display:none;">
+		<table class="ss_style" border="0" cellpadding="4" cellspacing="0">
+			<tr>
+				<td colspan="3" class="contentbold">&nbsp;<ssf:nlt tag="event.frequency" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" >
+					<input type="radio"  
+						name="${prefix}_repeatUnit" id="norepeat" 
+						value="none" 
+						<c:if test="${freqval == 'none'}"> checked="checked" </c:if>
+					/>
+					<label for="norepeat"> <ssf:nlt tag="event.no_repeat" /></label></td>
+			</tr>
+			<tr>
+				<td nowrap="nowrap" >
+					<input type="radio" name="${prefix}_repeatUnit" id="repeatday"
+						value="day" 
+						<c:if test="${freqval == 'day'}"> checked="checked" </c:if>
+					/>
+					<ssf:nlt tag="event.every" /> 
+					<input type="text" class="ss_text" name="${prefix}_everyNday" size="2" 
+						value="${initEvent.interval}"/> <ssf:nlt tag="event.days" /></td>
+			</tr>
+			<tr>
+				<td valign="top" nowrap="nowrap">
+					<input type="radio" name="${prefix}_repeatUnit" id="repeatweek"
+						<c:if test="${freqval == 'week'}"> checked="checked"</c:if>
+					value="week" />
+					<ssf:nlt tag="event.every" /> <input type="text" class="ss_text" name="${prefix}_everyNweek" size="2" 
+						value="${initEvent.interval}" /> <ssf:nlt tag="event.weeks" /> <ssf:nlt tag="event.occurson" /> 
+					<input type="checkbox" name="${prefix}_day0" id="${prefix}_day0"
+						<c:if test="${day0sel == 'yes'}"> checked="checked" </c:if> />
+					<font size="-2"><ssf:nlt tag="calendar.day.abbrevs.su" /></font>
    <input type="checkbox" name="${prefix}_day1" id="${prefix}_day1"
    <c:if test="${day1sel == 'yes'}"> checked="checked" </c:if>
    >
@@ -406,15 +431,15 @@ function ${prefix}_toggleRecur(name) {
    > 
    <ssf:nlt tag="event.repeat_until" /> 
 
-   <c:choose>
-   <c:when test="${empty initEvent.until}">
-   <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" />
-   </c:when>
-   <c:otherwise>
-   <ssf:datepicker formName="<%= formName %>" id="<%= endrangeId %>" 
-         initDate= "<%= initEvent.getUntil().getTime() %>" />
-   </c:otherwise>
-   </c:choose>
+	<div dojoType="DropdownDatePickerActivateByInput" 
+		widgetId="repeat_until_${prefix}" 
+		name="${endrangeId}_fullDate" 
+		id="${endrangeId}_${prefix}"
+		lang="${ssUser.locale.language}" 
+		<c:if test="${!empty initEvent.until}">
+			value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+		</c:if>
+		></div>
     
    </td>
    </tr>
@@ -433,7 +458,7 @@ function ${prefix}_toggleRecur(name) {
   </div>
 </c:if>
 
-</td></tr></table>
+
 
 <% // recurrence stuff; emit and initialize various hidden fields from the initEvent %>
 <c:if test="${attMap.hasRecur}">
@@ -462,18 +487,6 @@ function getRadioButtonIdx(ptr, type, val) {
 }
 
 function ${prefix}_onsub() {
-  <c:if test="${attMap.hasDur}">
-  // tests iff duration is on the page
-  // check for negative duration
-  var ms;
-  ms1 = getTimeMilliseconds('<%= formName %>', '<%= dateId %>');
-  ms2 = getTimeMilliseconds('<%= formName %>', '<%= dateId2 %>');
-  diff = ms2 - ms1;
-  if (diff < 0) {
-    alert("End time must be later than start time.");
-    return(false);
-  }
-  </c:if>
 
   <c:if test="${attMap.hasRecur}">
 
@@ -506,6 +519,12 @@ function ${prefix}_onsub() {
 ss_createOnSubmitObj('${prefix}onsub', 
      '${formName}', ${prefix}_onsub);
      
+
+djConfig.searchIds.push("${dateId}_${prefix}");
+djConfig.searchIds.push("${dateId2}_${prefix}");
+djConfig.searchIds.push("${endrangeId}_${prefix}");
+djConfig.searchIds.push("${dateId}_time_${prefix}");
+djConfig.searchIds.push("${dateId2}_time_${prefix}");
 
 </script>
 

@@ -31,6 +31,7 @@
 	Boolean hasRecur = new Boolean(hR);
 	if (caption == null) {caption = "";}
 	String required = (String) request.getAttribute("property_required");
+	Boolean req = Boolean.parseBoolean(required);
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
 		required = "<span class=\"ss_required\">*</span>";
@@ -39,13 +40,12 @@
 	}
 %>
 <script type="text/javascript">
-ss_addValidator("dp_<%= elementName %>", ss_date_validator, '<%= elementName %>_startError', '<%= elementName %>_label');
-ss_addValidator("dp2_<%= elementName %>", ss_date_validator, '<%= elementName %>_endError', '<%= elementName %>_label');
+ss_addValidator("dp_<%= elementName %>_fullDate", ss_date_validator, '<%= elementName %>_startError', '<%= elementName %>_label');
+ss_addValidator("dp2_<%= elementName %>_fullDate", ss_date_validator, '<%= elementName %>_endError', '<%= elementName %>_label');
 </script>
 <span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
 <div id="<%= elementName %>_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
 <div id="<%= elementName %>_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
-
 <c:choose>
 	<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 		<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
@@ -55,11 +55,10 @@ ss_addValidator("dp2_<%= elementName %>", ss_date_validator, '<%= elementName %>
 	</c:when>	
 </c:choose>
 
-<jsp:useBean id="ev" type="com.sitescape.team.domain.Event" class="com.sitescape.team.domain.Event" />
-
 <ssf:eventeditor id="<%= elementName %>" 
          formName="<%= formName %>" 
-         initEvent="<%= ev %>"
+         initEvent="${ev}"
+         required="<%= req %>"
          hasDuration="<%= hasDur %>"
          hasRecurrence="<%= hasRecur %>" />
 </div>

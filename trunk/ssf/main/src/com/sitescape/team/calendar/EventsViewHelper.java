@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateTools;
+import org.joda.time.DateTimeZone;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -175,6 +176,7 @@ public class EventsViewHelper {
 
 			String recurrenceDatesField = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
 			String eventId = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID);
+			String timeZoneID = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_TIME_ZONE_ID);
 			if (recurrenceDatesField != null) {
 				String[] recurrenceDates = recurrenceDatesField.split(",");
 				for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
@@ -194,23 +196,19 @@ public class EventsViewHelper {
 
 					Event event = new Event();
 					event.setId(eventId);
+					if (timeZoneID != null) {
+						event.setTimeZone(DateTimeZone.forID(timeZoneID).toTimeZone());
+					}
 					Calendar startCal = Calendar.getInstance();
 					startCal.setTime(evStartDate);
 					
 					Calendar endCal = Calendar.getInstance();
 					endCal.setTime(evEndDate);
 
-					long duration = ((endCal.getTime()
-							.getTime() - startCal.getTime()
-							.getTime()) / 60000);
-					
-					if (duration > 0) {
-						// no duration -> all day event, no time, no time zone
-						startCal = CalendarHelper.convertToTimeZone(startCal,
-								timeZone);						
-						endCal = CalendarHelper.convertToTimeZone(endCal,
-								timeZone);
-					}
+					startCal = CalendarHelper.convertToTimeZone(startCal,
+							timeZone);						
+					endCal = CalendarHelper.convertToTimeZone(endCal,
+							timeZone);
 					
 					event.setDtStart(startCal);
 					event.setDtEnd(endCal);
@@ -257,6 +255,8 @@ public class EventsViewHelper {
 				.getDtEnd().getTime()));
 		eventBean.put("cal_starttime", event.getDtStart().getTime());
 		eventBean.put("cal_endtime", event.getDtEnd().getTime());
+		eventBean.put("cal_oneDayEvent", event.isOneDayEvent());
+		eventBean.put("cal_allDay", event.isAllDayEvent());
 		eventBean.put("cal_duration", (event.getDtEnd().getTime()
 				.getTime() - event.getDtStart().getTime()
 				.getTime()) / 60000);

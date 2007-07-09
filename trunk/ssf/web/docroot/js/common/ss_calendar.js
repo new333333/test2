@@ -922,12 +922,7 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
     e.style.borderColor = borderColor
     e.style.height = (((((duration <= 0) ? 30 : duration) / 60) * 42) - 4) + "px";
     var eHtml = "";
-    if (duration >= 0) {
-        eHtml = Date.shortTime(time);
-    }
-    
    	eHtml += '<a href="javascript: //">' + (title?title:'--no title--') + '</a>';
-    
     eHtml += "<br/>" + text;
     // ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?"<":"") +
     e.innerHTML =  eHtml; 
@@ -1232,7 +1227,7 @@ var ss_cal_Events = {
 							duration = 1440 - e.startDate.getMinutesOfTheDay();
 							continues = this.CONTINUES_RIGHT;
 						}
-					} else if (date.compareByDate(e.endDate) > 0 ||
+					} else if (date.compareByDate(e.endDate) > 0 &&
 							date.compareByDate(e.startDate) < 0) {
 						// event continues
 						start = 0;
@@ -1247,8 +1242,7 @@ var ss_cal_Events = {
 					}
 							
 				
-		            if (e.eventType == "event" &&
-		            	(e.endDate.compareByDate(e.startDate) != 0 || e.dur == 0)) {
+		            if (e.eventType == "event" && e.allDay) {
 		                var grid = "ss_cal_dayGridAllDay";
 		                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
 		                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,

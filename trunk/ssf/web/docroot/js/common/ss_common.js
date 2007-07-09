@@ -4977,8 +4977,7 @@ function ss_addValidator(idOfEntryToValidate, validateRoutine, messageId, labelI
     if(errorHandlerRoutine == null) {
     	errorHandlerRoutine = ss_defaultValidationErrorHandler;
     }
-    var next = ss_validatorList.length;
-    ss_validatorList[next] = new ss_validatorObj(idOfEntryToValidate, validateRoutine, messageId, labelId, errorHandlerRoutine);
+    ss_validatorList.push(new ss_validatorObj(idOfEntryToValidate, validateRoutine, messageId, labelId, errorHandlerRoutine));
 }
 
 function ss_validatorObj(id, validateRoutine, messageId, labelId, errorHandler) {

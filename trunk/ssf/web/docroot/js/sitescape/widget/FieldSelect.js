@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-dojo.provide("ss_widget.FieldSelect");
+dojo.provide("sitescape.widget.FieldSelect");
 
 dojo.require("dojo.widget.Select");
 dojo.require("dojo.widget.*");
@@ -17,7 +17,7 @@ dojo.require("dojo.widget.html.stabile");
 
 
 dojo.declare(
-  "ss_widget.FieldSelectDataProvider",
+  "sitescape.widget.FieldSelectDataProvider",
   dojo.widget.ComboBoxDataProvider,  
   function(/*Array*/ dataPairs, /*Number*/ limit, /*Number*/ timeout){
 	this.data = [];
@@ -55,7 +55,7 @@ dojo.declare(
 
 
 dojo.widget.defineWidget(
-	"ss_widget.FieldSelect",
+	"sitescape.widget.FieldSelect",
 	dojo.widget.Select,
 	{
 		nestedUrl : '',
@@ -64,7 +64,7 @@ dojo.widget.defineWidget(
 		searchFieldIndex: "",
 		nextNodeRef: null,
 		widgetContainer: null,
-		dataProviderClass: "ss_widget.FieldSelectDataProvider",		
+		dataProviderClass: "sitescape.widget.FieldSelectDataProvider",		
 		removeKids: function () {
 			if (this.nextNodeRef != null) 
 				try {
@@ -126,12 +126,12 @@ dojo.widget.defineWidget(
 			}
 		},
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag) {
-			ss_widget.FieldSelect.superclass.fillInTemplate.call(this, args, frag);
+			sitescape.widget.FieldSelect.superclass.fillInTemplate.call(this, args, frag);
 			this.setValue("");
 		},
 		selectOption : function(/*Event*/ evt){
 			this.removeKids();
-			ss_widget.FieldSelect.superclass.selectOption.call(this, evt);
+			sitescape.widget.FieldSelect.superclass.selectOption.call(this, evt);
 			this.addKids();
 		},
 		setDefaultValues: function(fieldId, fieldLabel, userValue, type, userValueLabel){
@@ -144,14 +144,14 @@ dojo.widget.defineWidget(
 			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
 						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
 						autoComplete: false, nodeObj: this.widgetContainer};
-			this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
+			this.nextNodeRef = dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last");
 		},
 		
 		addEventField: function(value) {
 			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
 						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
 						autoComplete: false, nodeObj: this.widgetContainer};
-			this.nextNodeRef = dojo.widget.createWidget("DropDownDatePicker", prop, this.widgetContainer, "last");
+			this.nextNodeRef = dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last");
 		},
 		
 		addUserListField: function(value, label) {

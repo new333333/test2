@@ -1,11 +1,11 @@
-dojo.provide("ss_widget.SelectPageable");
+dojo.provide("sitescape.widget.SelectPageable");
 
 dojo.require("dojo.widget.Select");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.*");
 dojo.require("dojo.widget.html.stabile");
 
-ss_widget.incrementalPagableComboBoxDataProvider = function(/*String*/ url, /*Number*/ limit, /*Number*/ timeout){
+sitescape.widget.incrementalPagableComboBoxDataProvider = function(/*String*/ url, /*Number*/ limit, /*Number*/ timeout){
 	this.searchUrl = url;
 	this.inFlight = false;
 	this.activeRequest = null;
@@ -130,11 +130,11 @@ ss_widget.incrementalPagableComboBoxDataProvider = function(/*String*/ url, /*Nu
 }
 
 dojo.widget.defineWidget(
-	"ss_widget.SelectPageable",
+	"sitescape.widget.SelectPageable",
 	dojo.widget.Select,
 	{
 	
-		dataProviderClass: "ss_widget.incrementalPagableComboBoxDataProvider",
+		dataProviderClass: "sitescape.widget.incrementalPagableComboBoxDataProvider",
 	
 		openResultList: function(/*Array*/ results){
 			if (!this.isEnabled){

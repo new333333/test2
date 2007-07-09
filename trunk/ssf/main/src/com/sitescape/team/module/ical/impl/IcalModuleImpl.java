@@ -35,6 +35,7 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
+import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
@@ -48,11 +49,13 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.component.VToDo;
 import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.TzId;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.PercentComplete;
@@ -70,6 +73,7 @@ import org.dom4j.Element;
 import org.joda.time.DateTimeZone;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
@@ -158,10 +162,11 @@ public class IcalModuleImpl implements IcalModule {
 			for(Object comp : cal.getComponents("VEVENT")) {
 				VEvent eventComponent = (VEvent) comp;
 				event = new Event();
-				DateProperty start = eventComponent.getStartDate();
+				DtStart start = eventComponent.getStartDate();
 				GregorianCalendar startCal = new GregorianCalendar();
 				startCal.setTime(start.getDate());
 				event.setDtStart(startCal);
+				event.setTimeZone(IcalModuleImpl.getTimeZone((TzId)start.getParameter(Parameter.TZID)));
 				if(start.getParameter(Value.DATE.getName()) == null) {
 					if(eventComponent.getEndDate() != null) {
 						GregorianCalendar endCal = new GregorianCalendar();
@@ -216,8 +221,8 @@ public class IcalModuleImpl implements IcalModule {
 					description = eventComponent.getDescription().toString();
 				}
 				String summary = null;
-				if(eventComponent.getSummary() != null) {
-					summary = eventComponent.getSummary().toString();
+				if(eventComponent.getSummary() != null && eventComponent.getSummary().getValue() != null) {
+					summary = eventComponent.getSummary().getValue().toString();
 				}
 				handler.handleEvent(event, description, summary);
 			}
@@ -230,6 +235,21 @@ public class IcalModuleImpl implements IcalModule {
 		}
 	}
 	
+	private static java.util.TimeZone getTimeZone(TzId tzid) {
+		if (tzid != null) {
+			DateTimeZone dateTimeZone = DateTimeZone.forID(tzid.getValue());
+			if (dateTimeZone != null) {
+				return dateTimeZone.toTimeZone();
+			}
+		}
+		
+		if (RequestContextHolder.getRequestContext().getUser() != null) {
+			return RequestContextHolder.getRequestContext().getUser().getTimeZone();
+		}
+		
+		return DateTimeZone.UTC.toTimeZone();
+	}
+
 	/**
 	 * parseEvents
 	 * 
@@ -435,7 +455,7 @@ public class IcalModuleImpl implements IcalModule {
 	private VToDo createVTodo(DefinableEntity entry, Event event,
 			TimeZone timeZone) {
 		VToDo vToDo = null;
-		if (event.hasDuration()) {
+		if (!event.isAllDayEvent()) {
 			DateTime dtStart = new DateTime(event.getDtStart().getTime());
 			dtStart.setTimeZone(timeZone);
 			
@@ -651,7 +671,7 @@ public class IcalModuleImpl implements IcalModule {
 	private VEvent createVEvent(DefinableEntity entry, Event event,
 			TimeZone timeZone) {
 		VEvent vEvent = null;
-		if (event.hasDuration()) {
+		if (!event.isAllDayEvent()) {
 			DateTime dt = new DateTime(event.getDtStart().getTime());
 			if (timeZone != null) {
 				// must be if has duration...

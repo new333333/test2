@@ -35,22 +35,31 @@
 		required = "";
 	}
 %>
+<c:set var="elementName" value="<%= elementName %>" />
 <script type="text/javascript">
 ss_addValidator("<%= elementName %>", ss_date_validator, '<%= elementName %>_error', '<%= elementName %>_label');
 </script>
 <div class="ss_entryContent">
 <span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
 <div id="<%= elementName %>_error" style="visibility:hidden; display:none;"><span class="ss_formError">Please enter a valid date.</span></div>
-<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
-<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
-<jsp:useBean id="initDate" type="java.util.Date" />
-<ssf:datepicker id="<%= elementName %>" 
-  formName="<%= formName %>" 
-  initDate="<%= initDate %>" />
-</c:if>
-<c:if test="${empty ssDefinitionEntry.customAttributes[property_name].value}">
-<ssf:datepicker id="<%= elementName %>" 
-  formName="<%= formName %>" 
-  initDate="<%= new Date() %>" />
-</c:if>
+
+	
+	
+	<c:set var="initDate" value="<%= new Date() %>"/>
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+	</c:if>
+
+	<div dojoType="DropdownDatePickerActivateByInput" 
+		widgetId="date_${elementName}_${prefix}" 
+		id="date_${elementName}_${prefix}"
+		name="${elementName}_fullDate" 
+		lang="${ssUser.locale.language}" 
+		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"></div>
+	</div>
+	
+	<script type="text/javascript">
+		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
+		djConfig.searchIds.push("date_${elementName}_${prefix}");
+	</script>
 </div>

@@ -14,9 +14,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 
-<script type="text/javascript" src="<html:rootPath/>js/widget/SelectPageable.js"></script>
 <script type="text/javascript">
 	dojo.require('dojo.widget.*');
+	dojo.require('sitescape.widget.SelectPageable');
 
 	function ${treeName}_showId(forum, obj) {
 		var formObj = ss_getContainingForm(obj);
