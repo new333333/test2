@@ -31,7 +31,6 @@
 					  </c:otherwise>
 					</c:choose>
 					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
 				</portlet:actionURL>"
 			
 				<c:choose>
@@ -77,7 +76,6 @@
 					  </c:otherwise>
 					</c:choose>
 					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
 				</portlet:actionURL>"
 				
 				<c:choose>
@@ -121,7 +119,6 @@
 					  </c:otherwise>
 					</c:choose>
 					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
 				</portlet:actionURL>"
 				
 				<c:choose>
