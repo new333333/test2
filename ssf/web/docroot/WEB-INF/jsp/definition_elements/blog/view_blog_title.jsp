@@ -105,45 +105,30 @@ offsetX="-25" offsetY="-15"
 offsetX="-5"  
 </c:if>
 title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
-<a href="javascript: ;" 
-  onClick="ss_showPopupDivCentered('<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;"
-  <ssf:title tag="title.subscribe.to.entry" />
-><div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div></a>
+
+<a onclick=" ss_createPopupDiv(this, '<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;" 
+	href="<ssf:url
+			adapter="true" 
+			portletName="ss_forum" 
+			action="__ajax_request" 
+			actionUrl="true">
+				<ssf:param name="operation" value="entry_subscribe" />
+				<ssf:param name="binderId" value="${ssDefinitionEntry.parentBinder.id}" />
+				<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
+				<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+				<ssf:param name="namespace" value="${renderResponse.namespace}" />
+		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>>
+		<div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div>
+</a>
+	
 </div>
 </div>
+
 <div style="padding-left: 6px">
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 </div>
 
 <c:set var="entryIdString" value="<%= title_entry.getId().toString() %>"/>
-
-<div align="left" name="<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}" 
-  id="<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}" 
-  style="display:none; visibility:hidden; padding:4px;" class="ss_popupMenu ss_indent_medium">
-<form class="ss_style ss_form" method="post" 
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${ssDefinitionEntry.parentBinder.id}"/><portlet:param 
-		name="entryId" value="${ssDefinitionEntry.id}"/><portlet:param 
-		name="operation" value="subscribe"/></portlet:actionURL>" 
-  style="display:inline;">
-  <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
-  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_2" value="2"
-  <c:if test="${ssBlogEntries[entryIdString].ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><label for="notifyType_${entryIdString}_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
-  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_3" value="3"
-  <c:if test="${ssBlogEntries[entryIdString].ssSubscription.style=='3'}"> checked="checked"</c:if>
-  /><label for="notifyType_${entryIdString}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
-<c:if test="${!empty ssBlogEntries[entryIdString].ssSubscription}">
-  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_delete" value="-1"/><label for="notifyType_${entryIdString}_delete"><ssf:nlt tag="subscribe.delete"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>
-</c:if>
-  <br/>
-  <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">
- &nbsp;&nbsp;&nbsp;
-  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;">
-</form>
-</div>
 
 </c:if>
 

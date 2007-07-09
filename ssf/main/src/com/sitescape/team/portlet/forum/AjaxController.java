@@ -189,7 +189,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS) ||
-					op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
+					op.equals(WebKeys.OPERATION_SUBSCRIBE) || op.equals(WebKeys.OPERATION_ENTRY_SUBSCRIBE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
@@ -259,6 +259,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxConfigureFolderColumns(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			return ajaxSubscribe(request, response);
+		} else if (op.equals(WebKeys.OPERATION_ENTRY_SUBSCRIBE)) {
+			return ajaxEntrySubscribe(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
 			return ajaxSaveEntryWidth(request, response);
 			
@@ -861,6 +863,26 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER, binder);
 		return new ModelAndView("forum/subscribe_return", model);
 	}
+
+	private ModelAndView ajaxEntrySubscribe(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+		Subscription sub = getFolderModule().getSubscription(entry);
+		
+		model.put(WebKeys.SUBSCRIPTION, sub);
+		model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binderId));
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.NAMESPACE, namespace);
+		
+		return new ModelAndView("forum/subscribe_entry_return", model);
+	}	
+	
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
