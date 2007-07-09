@@ -186,6 +186,9 @@ public static final String[] monthNamesShort = {
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
 			String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			if (entryId.equals("")) {
+				entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_SUBSCRIBE_ENTRY_ID, "");
+			}
 			if (style != null) {
 				if (entryId.equals("")) {
 					if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
@@ -1844,12 +1847,9 @@ public static final String[] monthNamesShort = {
 					accessControlEntryMap.put("modifyEntry", new Boolean(true));
 				}
 			}
-			
 
 			entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(entry.getId()));
 			entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(entry.getId()));
-			
-			entryMap.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(entry));
 		}
 	}
 

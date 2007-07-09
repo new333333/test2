@@ -562,10 +562,16 @@ public class ViewEntryController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_showPopupDivCentered('ss_subscription_entry'); return false;");
-		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), "#", qualifiers);
 
+		AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+		adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENTRY_SUBSCRIBE);
+		adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		
+		qualifiers = new HashMap();		
+		qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
+		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
 		
 		String[] contributorIds = collectContributorIds(entry);
 		
@@ -682,7 +688,6 @@ public class ViewEntryController extends  SAbstractController {
 		Map tagResults = TagUtil.uniqueTags(getFolderModule().getTags(entry));
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
-		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(entry));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);

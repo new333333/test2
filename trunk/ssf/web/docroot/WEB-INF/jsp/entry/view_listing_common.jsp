@@ -269,27 +269,6 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 
 </ssf:ifnotadapter>
 
-<div align="left" name="ss_subscription_entry" id="ss_subscription_entry" 
-  style="display:none; visibility:hidden; padding:4px;" class="ss_popupMenu ss_indent_medium">
-<form class="ss_style ss_form" method="post" action="" style="display:inline;">
-  <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
-  <input type="radio" name="notifyType" value="2" id="notifyType_${ssEntry.id}_2"
-  <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssEntry.id}_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
-  <input type="radio" name="notifyType" value="3" id="notifyType_${ssEntry.id}_3"
-  <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssEntry.id}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
-<c:if test="${!empty ssSubscription}">
-  <input type="radio" name="notifyType" id="notifyType_${ssEntry.id}_delete" value="-1"/><label for="notifyType_${ssEntry.id}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
-</c:if>
-  <br/>
-  <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">
- &nbsp;&nbsp;&nbsp;
-  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('ss_subscription_entry');return false;">
-</form>
-</div>	
-
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 
