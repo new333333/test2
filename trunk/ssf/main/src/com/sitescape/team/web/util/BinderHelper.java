@@ -786,7 +786,6 @@ public class BinderHelper {
 		}
 		
 		//Build a sorted list of functions
-		List sortedFunctions = new ArrayList();
 		Map sortedFunctionsMap = new TreeMap();
 		for (int i=0; i<functions.size(); ++i) {
 			Function f = (Function)functions.get(i);
@@ -797,25 +796,16 @@ public class BinderHelper {
 					pMap.containsKey(WebKeys.TEAM_MEMBER) ||
 					newRoleIds.contains(f.getId())) {
 				//This function has some membership; add it to the sorted list
-				sortedFunctionsMap.put(f.getName().toLowerCase() + f.getId().toString(), f);
+				sortedFunctionsMap.put(NLT.getDef(f.getName()).toLowerCase() + f.getId().toString(), f);
 			}
 		}
-		Iterator itFunctions = sortedFunctionsMap.keySet().iterator();
-		while (itFunctions.hasNext()) {
-			sortedFunctions.add(sortedFunctionsMap.get((String) itFunctions.next()));
-		}
-		//Build the sorted lists of users and groups
-		List sortedGroups = new ArrayList();
-		Iterator itGroups = sortedGroupsMap.keySet().iterator();
-		while (itGroups.hasNext()) {
-			sortedGroups.add(sortedGroupsMap.get((String) itGroups.next()));
-		}
+		//list of sorted functions
+		List sortedFunctions = new ArrayList(sortedFunctionsMap.values());
 
-		List sortedUsers = new ArrayList();
-		Iterator itUsers = sortedUsersMap.keySet().iterator();
-		while (itUsers.hasNext()) {
-			sortedUsers.add(sortedUsersMap.get((String) itUsers.next()));
-		}
+		//Build the sorted lists of users and groups
+		List sortedGroups = new ArrayList(sortedGroupsMap.values());
+
+		List sortedUsers = new ArrayList(sortedUsersMap.values());
 		
 		//Build list of allowed roles
 		for (int i=0; i<functions.size(); ++i) {
@@ -917,10 +907,16 @@ public class BinderHelper {
 	}
 	public static void buildAccessControlRoleBeans(AllModulesInjected bs, Map model) {
 		//Add the list of existing functions for this zone
-		model.put(WebKeys.FUNCTIONS, bs.getAdminModule().getFunctions());
+		//since names are translatable, build our own function map
+		Map functions = new TreeMap();
+		List<Function> fs = bs.getAdminModule().getFunctions();
+		for (Function f:fs) {
+			functions.put(NLT.getDef(f.getName()).toLowerCase() + f.getId(), f);
+		}
+		model.put(WebKeys.FUNCTIONS, functions.values());
 		
 		//Add the list of workAreaOperations that can be added to each function
-		//title must by map key to keep alphabetical
+		//title must be map key to keep alphabetical
 		Map operations = new TreeMap();
 		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
 		while (itWorkAreaOperations.hasNext()) {

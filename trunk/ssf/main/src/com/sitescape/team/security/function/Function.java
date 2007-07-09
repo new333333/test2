@@ -66,9 +66,6 @@ public class Function {
     public String getName() {
         return name;
     }
-    public String getTranslatedName() {
-        return NLT.getDef(name);
-    }
     public void setName(String name) {
         if(name == null)
             throw new IllegalArgumentException("Name must not be null");

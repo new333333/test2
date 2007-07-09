@@ -10,6 +10,10 @@
     <version unsaved-value="undefined" name="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
     <property name="name" length="128" not-null="true"/>
+<properties name="functionNameKey" unique="true" update="false" insert="false">
+<property name="zoneId" update="false" insert="false"/>
+<property name="name" update="false" insert="false"/>
+</properties>
     <set cascade="all" lazy="false" table="SS_FunctionOperations" name="operationNames">
       <cache usage="nonstrict-read-write"/>
       <key column="functionId"/>
