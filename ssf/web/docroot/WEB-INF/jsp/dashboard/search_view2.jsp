@@ -204,7 +204,7 @@
 										
 						<div id="details_${status.count}" class="ss_entryDetails">
 							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
-							   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" timeZone="${ssUser.timeZone.ID}"/></p>
+							   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium"/></p>
 							<p><ssf:nlt tag="searchResult.label.entry" />:
 									<c:if test="${isDashboard == 'yes'}">
 										<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}">
