@@ -2042,7 +2042,7 @@
    <String `Entity Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `6/28/2007 7:34:52 PM'>
+   <String `7/9/2007 10:58:50 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2100,70 +2100,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `front.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String ` Valid Entities (1)'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Entity'>
-   <Char Tab> 
-   <String `References'>
-   <Char Tab> 
-   <String `Source'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTab'>
-  <ParaLine 
-   <String `product'>
-   <Char Tab> 
-   <String `1'>
-   <Char Tab> 
-   <String `entity-decl.ent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String ` References'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\front.fm|1038916'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `preface.fm'>
   > # end of ParaLine
  > # end of Para
@@ -2215,7 +2151,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044110'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1046615'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2241,7 +2177,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044177'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045187'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2267,7 +2203,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044244'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045254'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2293,7 +2229,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044311'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045321'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2319,7 +2255,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044378'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045388'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2345,7 +2281,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044445'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045455'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2371,7 +2307,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044512'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045522'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2397,7 +2333,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044579'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045589'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2423,7 +2359,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044646'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1045656'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2449,7 +2385,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044713'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1046453'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2475,7 +2411,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044780'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1046518'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2501,7 +2437,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044847'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1046576'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2527,7 +2463,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044914'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1046061'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2553,7 +2489,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1044981'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\preface.fm|1046366'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2637,7 +2573,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111571'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116709'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2663,7 +2599,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111639'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121788'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2689,7 +2625,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111706'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116844'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2715,7 +2651,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111773'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116911'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2741,7 +2677,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111840'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116978'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2767,7 +2703,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111907'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117045'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2793,7 +2729,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1111974'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117112'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2819,7 +2755,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112034'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117172'>
     <MCurrPage `1'>
    > # end of Marker
    <String `conf_prod_name'>
@@ -2845,7 +2781,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112103'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117241'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2871,7 +2807,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112170'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117308'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2897,7 +2833,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112237'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117375'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2923,7 +2859,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112304'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117442'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2949,7 +2885,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112371'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117509'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -2975,7 +2911,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112438'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121798'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3001,7 +2937,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112505'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117643'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3027,7 +2963,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112572'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117710'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3053,7 +2989,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112632'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117770'>
     <MCurrPage `1'>
    > # end of Marker
    <String `conf_prod_name'>
@@ -3079,7 +3015,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112701'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117839'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3105,7 +3041,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112768'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117906'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3131,7 +3067,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112835'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1117973'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3157,7 +3093,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112895'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118033'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3183,7 +3119,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1112963'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118101'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3209,7 +3145,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113030'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118168'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3235,7 +3171,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113097'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118235'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3261,7 +3197,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113164'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118302'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3287,7 +3223,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113231'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118369'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3313,7 +3249,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113298'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118436'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3339,7 +3275,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113366'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118504'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3365,7 +3301,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113434'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118572'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3391,7 +3327,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113503'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118641'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3417,7 +3353,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113571'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118709'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3443,7 +3379,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113639'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118777'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3469,7 +3405,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113706'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118844'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3495,7 +3431,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113765'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118903'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3521,7 +3457,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113833'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1118971'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3547,7 +3483,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113901'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119039'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3573,7 +3509,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1113970'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119108'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3599,7 +3535,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114038'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119176'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3625,7 +3561,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114107'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119245'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3651,7 +3587,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114174'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119312'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3677,7 +3613,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114242'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119380'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3703,7 +3639,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114311'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119449'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3729,7 +3665,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114379'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119517'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3755,7 +3691,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114448'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119586'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3781,7 +3717,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114516'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119654'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3807,7 +3743,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114585'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119723'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3833,7 +3769,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114653'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119791'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3859,7 +3795,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114722'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119860'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3885,7 +3821,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114790'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119928'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3911,7 +3847,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114859'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1119997'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -3937,7 +3873,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114927'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120065'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3963,7 +3899,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1114995'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120133'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -3989,7 +3925,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115063'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120201'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -4015,7 +3951,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115133'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120271'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4041,7 +3977,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115201'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120339'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -4067,7 +4003,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115269'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120407'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -4093,7 +4029,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115337'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120475'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mdash'>
@@ -4119,7 +4055,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115408'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120546'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4145,7 +4081,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115475'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120613'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4171,7 +4107,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115542'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120680'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4197,7 +4133,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115609'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120747'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4223,7 +4159,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115676'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120814'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4249,7 +4185,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115743'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120881'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4275,7 +4211,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115802'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1120940'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4301,7 +4237,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115866'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121004'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4327,7 +4263,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115926'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121064'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4353,7 +4289,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1115993'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121131'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4379,7 +4315,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116060'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121198'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4405,7 +4341,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116127'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121265'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4431,7 +4367,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116194'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121332'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4457,7 +4393,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116253'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121391'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4483,7 +4419,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116322'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121460'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4509,7 +4445,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116389'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121527'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4535,7 +4471,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116456'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121594'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4561,7 +4497,241 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1116516'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121654'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121961'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121968'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1121974'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1122050'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1122250'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1123668'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `mdash'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124578'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124846'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1125067'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4661,7 +4831,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1110717'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1124109'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4739,7 +4909,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1110897'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1124194'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4869,7 +5039,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111230'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112655'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4895,7 +5065,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111290'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112857'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4921,33 +5091,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111350'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111418'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1113355'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -4999,7 +5143,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111548'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114125'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -5129,7 +5273,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111880'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115783'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -5156,32 +5300,6 @@
     <MType 8>
     <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1111940'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112000'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -5296,6 +5414,448 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112449'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112720'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1113092'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114028'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115736'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117550'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118463'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119234'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119472'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120197'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120379'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120746'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120863'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121130'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121686'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121774'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123208'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `glossary.fm'>
@@ -5350,6 +5910,396 @@
     <MType 8>
     <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1037357'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1037854'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1037939'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1038036'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1038935'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1039075'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1039164'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1039339'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1039544'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1039697'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1039967'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1040097'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1040186'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1040855'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1040861'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `product'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `empty'>
+  <ParaLine 
+   <String `'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `blue'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\glossary.fm|1040519'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
