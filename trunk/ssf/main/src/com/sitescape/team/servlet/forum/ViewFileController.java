@@ -206,7 +206,7 @@ public class ViewFileController extends SAbstractController {
 				
 				SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
 				Date d = fa.getModification().getDate();
-				df.applyPattern("E, d MMM yyyy kk:mm:ss z");
+				df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
 				response.setHeader(
 						"Last-Modified", df.format(d));
 				if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
