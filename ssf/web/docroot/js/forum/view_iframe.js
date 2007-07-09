@@ -58,6 +58,7 @@ function ss_positionEntryDiv() {
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
 	
     var wObj = self.document.getElementById('ss_showfolder')
+    if (wObj == null) return;
 
     var width = ss_getObjectWidth(wObj);
     if (ss_entryWindowWidth == 0) {ss_entryWindowWidth = parseInt((width * 3) / 4);}
