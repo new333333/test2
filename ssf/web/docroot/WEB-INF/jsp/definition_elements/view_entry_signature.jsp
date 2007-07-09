@@ -19,6 +19,7 @@
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
   </td>
   <td valign="top" style="padding-left:15px;">
+  <c:set var="property_caption" value=""/>
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
   </td>
  </tr>
