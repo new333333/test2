@@ -47,6 +47,12 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <c:if test="${ss_folderViewStyle == 'task'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/task/task.jsp" />
 </c:if>
+<c:if test="${ss_folderViewStyle == 'survey'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey.jsp" />
+</c:if>
+<c:if test="${ss_folderViewStyle == 'milestone'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_view.jsp" />
+</c:if>
 <c:if test="${ss_folderViewStyle == 'table'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/template_folder_view.jsp" />
 </c:if>
