@@ -85,7 +85,7 @@
     </item>
     <item name="entrySignatureView" caption="__entry_signature" id="11">
       <properties>
-        <property name="caption" value=""/>
+        <property name="caption" value="__entry_signature"/>
       </properties>
     </item>
     <item name="descriptionView" caption="__description" id="12">
