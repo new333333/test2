@@ -79,9 +79,10 @@ public class PresenceInfo extends BodyTagSupport {
 			} else {
 				userStatus = -99;
 			}
+			String dudeGif = ""; 
+			String altText = NLT.get("presence.none");
 			if (userStatus != -99) {
-				String dudeGif = "sym_s_white_dude.gif"; 
-				String altText = NLT.get("presence.none");
+				dudeGif = "sym_s_white_dude.gif"; 
 				if (userStatus > 0) {
 					if ((userStatus & 16) == 16) {
 						dudeGif = "sym_s_yellow_dude.gif";
@@ -94,29 +95,28 @@ public class PresenceInfo extends BodyTagSupport {
 					dudeGif = "sym_s_gray_dude.gif";
 					altText = NLT.get("presence.offline");
 				}
-				
-				//Pass the user status to the jsp
-				httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
-				httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
-				httpReq.setAttribute(WebKeys.PRESENCE_TITLE_STYLE, this.titleStyle);
-				httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
-				// TODO get date in the user's local time zone
-				httpReq.setAttribute(WebKeys.PRESENCE_SWEEP_TIME, new Date());
-				httpReq.setAttribute(WebKeys.PRESENCE_DUDE, dudeGif);
-				httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
-				httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");
-				httpReq.setAttribute(WebKeys.PRESENCE_COMPONENT_ID, this.componentId);
-				httpReq.setAttribute(WebKeys.PRESENCE_DIV_ID, this.optionsDivId);
-				httpReq.setAttribute(WebKeys.PRESENCE_SHOW_OPTIONS_INLINE, this.showOptionsInline);
-	
-				// Output the presence info
-				String jsp = "/WEB-INF/jsp/tag_jsps/presence/show_dude.jsp";
-				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-				ServletRequest req = pageContext.getRequest();
-				StringServletResponse res = new StringServletResponse(httpRes);
-				rd.include(req, res);
-				pageContext.getOut().print(res.getString().trim());
 			}
+			// Pass the user status to the jsp
+			httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
+			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
+			httpReq.setAttribute(WebKeys.PRESENCE_TITLE_STYLE, this.titleStyle);
+			httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
+			// TODO get date in the user's local time zone
+			httpReq.setAttribute(WebKeys.PRESENCE_SWEEP_TIME, new Date());
+			httpReq.setAttribute(WebKeys.PRESENCE_DUDE, dudeGif);
+			httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
+			httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");
+			httpReq.setAttribute(WebKeys.PRESENCE_COMPONENT_ID, this.componentId);
+			httpReq.setAttribute(WebKeys.PRESENCE_DIV_ID, this.optionsDivId);
+			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_OPTIONS_INLINE, this.showOptionsInline);
+
+			// Output the presence info
+			String jsp = "/WEB-INF/jsp/tag_jsps/presence/show_dude.jsp";
+			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+			ServletRequest req = pageContext.getRequest();
+			StringServletResponse res = new StringServletResponse(httpRes);
+			rd.include(req, res);
+			pageContext.getOut().print(res.getString().trim());
 		}
 	    catch(Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
