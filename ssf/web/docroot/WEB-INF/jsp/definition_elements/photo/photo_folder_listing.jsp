@@ -17,7 +17,7 @@
       <div class="ss_blog_content_container1">
       <div class="ss_blog_content_container2">
         <div class="ss_blog_content">
-			<table><tr><td>
+			<table width="99%"><tr><td>
 			<div class="ss_thumbnail_gallery ss_thumbnail_medium"> 
 			<c:forEach var="fileEntry" items="${ssFolderEntries}" >
 <jsp:useBean id="fileEntry" type="java.util.HashMap" />
