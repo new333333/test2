@@ -15,11 +15,140 @@
 
 <table class="ss_milestones_list">
 	<tr>
-		<th><ssf:nlt tag="milestone.title"/></th>
+		<th>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+			
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.title") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.title") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+</c:if>	
+			      <div class="ss_title_menu"><ssf:nlt tag="milestone.title"/> </div>
+			    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    </a>
+</c:if>		
+		</th>
 		<th><ssf:nlt tag="milestone.responsible"/></th>
 		<th><ssf:nlt tag="milestone.tasks"/></th>
-		<th><ssf:nlt tag="milestone.status"/></th>
-		<th><ssf:nlt tag="milestone.dueDate"/></th>
+		<th>
+<c:if test="${ssConfigJspStyle != 'template'}">
+				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="status"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.status") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.status") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+</c:if>
+			      <div class="ss_title_menu"><ssf:nlt tag="milestone.status"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    </a>
+</c:if>		
+		</th>
+		<th>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="start_end#EndDate"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
+				</portlet:actionURL>"
+				
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.dueDate") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.dueDate") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+</c:if>
+			      <div class="ss_title_menu"><ssf:nlt tag="milestone.dueDate"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    </a>
+</c:if>		
+		</th>
 	</tr>
 	<c:forEach var="entry" items="${ssFolderEntries}" >
 		<jsp:useBean id="entry" type="java.util.HashMap" />
