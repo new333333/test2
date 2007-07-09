@@ -847,6 +847,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     public void modifyFunction(Long id, Map updates) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
+		if (updates.containsKey("name") && function.getName() != updates.get("name")) {
+			List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+			//make sure unqiue - do after find or hibernate will update
+			zoneFunctions.remove(function);
+			function.setName((String)updates.get("name"));
+			if (zoneFunctions.contains(function)) {
+				//Role already exists
+				throw new FunctionExistsException(function.getName());
+			}
+			
+		}
 		ObjectBuilder.updateObject(function, updates);
 		functionManager.updateFunction(function);			
     }

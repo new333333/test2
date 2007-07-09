@@ -23,9 +23,8 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NotSupportedException;
-import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.security.function.FunctionExistsException;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -46,7 +45,11 @@ public class ConfigureRolesController extends  SAbstractController {
 					operations.add(operation);
 				}
 			}
-			getAdminModule().addFunction(PortletRequestUtils.getStringParameter(request, "roleName"), operations);
+			try {
+				getAdminModule().addFunction(PortletRequestUtils.getStringParameter(request, "roleName"), operations);
+			} catch (FunctionExistsException ns) {
+				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+			}
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
 			//Get the function id from the form
@@ -62,8 +65,16 @@ public class ConfigureRolesController extends  SAbstractController {
 					operations.add(operation);
 				}
 			}
+			String roleName = PortletRequestUtils.getStringParameter(request, "roleName");
+			if (!Validator.isNull(roleName)) {
+				updates.put("name", roleName);
+			}
 			updates.put("operations", operations);
-			getAdminModule().modifyFunction(functionId, updates);
+			try {
+				getAdminModule().modifyFunction(functionId, updates);
+			} catch (FunctionExistsException ns) {
+				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+			}
 		} else if (formData.containsKey("deleteBtn")) {
 			//Get the function id from the form
 			Long functionId = PortletRequestUtils.getLongParameter(request, "roleId");

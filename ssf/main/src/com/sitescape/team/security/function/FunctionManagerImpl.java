@@ -40,7 +40,7 @@ public class FunctionManagerImpl implements FunctionManager {
     public void deleteFunction(Function function) throws NotSupportedException {
     	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
     	if (result.isEmpty()) getSecurityDao().delete(function);
-    	else throw new NotSupportedException("errorcode.role.inuse", new Object[]{function.getName()});
+    	else throw new NotSupportedException("errorcode.role.inuse", new Object[]{NLT.getDef(function.getName())});
     }
 
     public void updateFunction(Function function) {
