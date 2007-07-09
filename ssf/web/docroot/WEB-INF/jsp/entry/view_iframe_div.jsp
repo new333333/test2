@@ -74,7 +74,7 @@
     display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" 
     height="95%" width="100%" 
-    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
+    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
   </ssf:box>
 </div>
 
