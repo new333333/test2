@@ -94,7 +94,8 @@
 	
 	<item name="entrySignatureView" caption="__entry_signature" category="commonEntryViewData" >
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="__entry_signature"/>
+<!-- don't want caption by default -->
+			<property name="caption" caption="__caption" type="text" value=""/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
