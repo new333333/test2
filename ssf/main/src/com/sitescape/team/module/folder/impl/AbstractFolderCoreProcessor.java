@@ -11,6 +11,7 @@
 package com.sitescape.team.module.folder.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
@@ -51,6 +53,7 @@ import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.XmlUtils;
+import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.util.Validator;
 /**
@@ -88,7 +91,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	super.addEntry_done(binder, entry, inputData, ctx);
    		getRssModule().updateRssFeed(entry); 
      }
-
+ 
     //***********************************************************************************************************
     //no transaction    
     public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
@@ -102,7 +105,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         try {
          	final FolderEntry entry = addReply_create(def, ctx);
-          	Long lastParentVersion = parent.getLogVersion();
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
@@ -113,11 +115,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
            		addReply_postSave(parent, entry, inputData, entryData, ctx);
            	return null;
         	}});
-        	//assume parent has been updated, index now
-        	if (!lastParentVersion.equals(parent.getLogVersion())) {
-    			indexEntry(parent);
-        		
-        	}
            	// Need entry id before filtering 
             FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), entry, entryData, fileData, ctx);
         	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors, ctx);
@@ -208,7 +205,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, List fileData, Map ctx) {
     	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
-    	//Also re-index the top entry (to catch the change in lastActivity)
+    	//Also re-index the top entry (to catch the change in lastActivity and total reply count)
     	indexEntry(entry.getTopEntry());
     }
     
@@ -235,13 +232,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     	getRssModule().updateRssFeed(entry);
  	}
-    //***********************************************************************************************************
-    //inside write transaction
-    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
-    	super.modifyWorkflowState(binder, entry, tokenId, toState);
-       	getRssModule().updateRssFeed(entry);
-           	
+    protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
+    		InputDataAccessor inputData, List fileUploadItems, 
+    		Collection<FileAttachment> filesToIndex, Map ctx) {
+    	super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
+       	//Also re-index the top entry (to catch the change in lastActivity and total reply count)
+    	if (!((FolderEntry)entry).isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
     }
+
+    //***********************************************************************************************************
     //inside write transaction    
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
@@ -252,20 +251,22 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
         Statistics statistics = getFolderStatistics((Folder)parentBinder);        
         statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
-        setFolderStatistics((Folder)parentBinder, statistics);
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
       	//pass replies along as context so we can delete them all at once
      	//load in reverse hkey order so foreign keys constraints are handled correctly
        	FolderEntry fEntry = (FolderEntry)entry;
+       	ctx.put("this.topEntry", fEntry.getTopEntry());
      	List<FolderEntry> replies= getFolderDao().loadEntryDescendants(fEntry);
       	//repeat pre-delete for each reply
       	for (int i=0; i<replies.size(); ++i) {
       		FolderEntry reply = (FolderEntry)replies.get(i);
+            statistics.deleteStatistics(reply.getEntryDef(), reply.getCustomAttributes());
     		super.deleteEntry_preDelete(parentBinder, reply, null);
     		reply.updateLastActivity(reply.getModification().getDate());
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
-      	ctx.put(this.getClass().getName(), replies);
+        setFolderStatistics((Folder)parentBinder, statistics);
+        ctx.put("this.replies", replies);
       	
     }
     //inside write transaction    
@@ -274,7 +275,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction    
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
-    	List replies = (List)ctx.get(this.getClass().getName());
+    	List replies = (List)ctx.get("this.replies");
        	for (int i=0; i<replies.size(); ++i) {
     		super.deleteEntry_processFiles(parentBinder, (FolderEntry)replies.get(i), deleteMirroredSource, null);
     	}
@@ -285,7 +286,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
-       	List entries = new ArrayList((List)ctx.get(this.getClass().getName()));
+       	List entries = new ArrayList((List)ctx.get("this.replies"));
        	entries.add(entry);
        	if (!entry.isTop()) {
        		//remove from list of children
@@ -297,13 +298,51 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction    
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted());  //will handle in bulk way
-        List replies = (List)ctx.get(this.getClass().getName());
-      	for (int i=0; i<replies.size(); ++i) {
-    		super.deleteEntry_indexDel(parentBinder, (FolderEntry)replies.get(i), null);
+        List replies = (List)ctx.get("this.replies");
+      	if (replies != null) {
+      		for (int i=0; i<replies.size(); ++i) {
+      			super.deleteEntry_indexDel(parentBinder, (FolderEntry)replies.get(i), null);
+      		}
     	}
 		super.deleteEntry_indexDel(parentBinder, entry, null);
+		FolderEntry top = (FolderEntry)ctx.get("this.topEntry");
+		if (top != null) indexEntry(top);
+		
    }
-    
+    //***********************************************************************************************************
+    //inside write transaction
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+    	super.addEntryWorkflow(binder, entry, definition);
+    	if (!entry.isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
+    }
+    //***********************************************************************************************************
+    //inside write transaction
+    public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+    	super.deleteEntryWorkflow(binder, entry, definition);
+    	if (!entry.isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
+    }
+    //***********************************************************************************************************
+    //inside write transaction
+    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
+    	super.modifyWorkflowState(binder, entry, tokenId, toState);
+    	if (!entry.isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
+      	getRssModule().updateRssFeed(entry);
+           	
+    }
+    //***********************************************************************************************************
+    //inside write transaction
+   public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
+	   Long version = entry.getLogVersion();
+	   super.setWorkflowResponse(binder, entry, stateId, inputData);
+	   if (version != entry.getLogVersion()) {
+		   FolderEntry fEntry = (FolderEntry)entry;
+		   fEntry.updateLastActivity(fEntry.getModification().getDate());
+		   if (!fEntry.isTop()) {
+			   indexEntry(fEntry.getTopEntry());
+		   }
+	   }
+   }
+
     //***********************************************************************************************************
     //inside write transaction    
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
@@ -527,12 +566,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         IndexUtils.addSortNumber(indexDoc, fEntry);
         // Add ReservedBy Principal Id
        	IndexUtils.addReservedByPrincipalId(indexDoc, fEntry);
-
-        // Add the folder Id
+         // Add the folder Id
         IndexUtils.addFolderId(indexDoc, (Folder)binder);
         //add last activity for top entries
-        if (fEntry.isTop()) IndexUtils.addLastActivityDate(indexDoc, fEntry);
-
+      	//add total reply count for top entries
+        if (fEntry.isTop()) {
+        	IndexUtils.addLastActivityDate(indexDoc, fEntry);
+           	IndexUtils.addTotalReplyCount(indexDoc, fEntry);
+        }
+        
         return indexDoc;
     }
        
