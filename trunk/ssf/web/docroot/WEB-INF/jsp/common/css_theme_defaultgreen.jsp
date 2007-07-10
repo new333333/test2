@@ -51,7 +51,7 @@
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	
 <% //BLOG %>
-	<c:set var="ss_blog_summary_title_background_color" value="#E8F7EF" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#77AA77" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_blog_sidebar_box_outline" value="#BFCA8A" scope="request"/>
@@ -70,11 +70,11 @@
 	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
 	
 <% //BUTTON %>
-	<c:set var="ss_linkbutton_background_color" value="#DEE7C6" scope="request"/>
-	<c:set var="ss_linkbutton_outline_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#DDFFFF" scope="request"/>
+	<c:set var="ss_linkbutton_outline_color" value="#77AA77" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
-	<c:set var="ss_linkbutton_border_color_in" value="#BF8ACA" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_in" value="#77AA77" scope="request"/>
 	<c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
 	
 <% //CALENDAR %>
@@ -135,7 +135,7 @@
 <%  //LINK COLORS   %>
 	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_link_visited_color" value="#333333" scope="request"/>	
-	<c:set var="ss_style_link_hover_color" value="#33AA33" scope="request"/> 	
+	<c:set var="ss_style_link_hover_color" value="77AA77" scope="request"/> 	
 
 <%  //LOGO   %>
  	<c:set var="ss_logo_text" value="#BE9E83" scope="request"/>
@@ -155,11 +155,15 @@
 	<c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/> 
 	
+<% //PROFILE COLORS	 %>
+	<c:set var="ss_profileBox1_background_color" value="#AABBAA" scope="request"/>
+	
+	
 <% //SLIDING TABLE %>
 	<c:set var="ss_sliding_table_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_sliding_table_border_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_sliding_table_text_color" value="#33CC33" scope="request"/>
-	<c:set var="ss_sliding_table_link_hover_color" value="#33CC33" scope="request"/>
+	<c:set var="ss_sliding_table_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_sliding_table_link_hover_color" value="#BBBBBB" scope="request"/>
 	<c:set var="ss_sliding_table_row0_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_sliding_table_row1_background_color" value="#ECECEC" scope="request"/>
 
