@@ -96,7 +96,7 @@ function ss_enableDisableFolderOptions(bindersCount) {
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
       <input type="radio" name="binderConfigId" value="${config.id}" 
       <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
-      onChange="ss_enableDisableFolderOptions('${config.binderCount}')"
+      onClick="ss_enableDisableFolderOptions('${config.binderCount}')"
       ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 <br/>  
