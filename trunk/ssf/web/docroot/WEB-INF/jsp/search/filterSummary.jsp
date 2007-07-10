@@ -1,5 +1,29 @@
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-
+	<script type="text/javascript">
+	
+	<c:if test="${!empty ssWorkflowDefinitionMap}">
+		var ss_searchWorkflows = new Array();
+		var ss_searchSteps = new Array();
+		<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
+			ss_searchWorkflows['${wf.id}'] = '${wf.title}';
+			<c:forEach var="step" items="${wf.steps}">
+				ss_searchSteps['${wf.id}-${step.name}'] = '${step.title}';
+			</c:forEach>
+		</c:forEach>
+	</c:if>
+	<c:if test="${!empty ssEntryDefinitionMap}">
+		var ss_searchEntries = new Array();
+		var ss_searchFields = new Array();
+		var ss_searchFieldsTypes = new Array();
+		<c:forEach var="entry" items="${ssEntryDefinitionMap}">
+			ss_searchEntries['${entry.id}'] = '${entry.title}';
+			<c:forEach var="field" items="${entry.fields}">
+				ss_searchFields['${entry.id}-${field.name}'] = '${field.title}';
+				ss_searchFieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
+			</c:forEach>
+		</c:forEach>
+	</c:if>
+	</script>
 <div id="ss_filterSummary_content">
 	<h4><ssf:nlt tag="searchForm.summary.Title"/></h4>
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
@@ -57,7 +81,7 @@
 				
 				<p><ssf:nlt tag="searchForm.label.entry"/>:
 				<script type="text/javascript">
-					document.write(ss_searchEntries['${block.entryType}']);
+					document.write(ss_searchFields['${block.entryType}']);
 					if (ss_searchFields['${block.entryType}-${block.entryElement}']) {
 						document.write(" - " + ss_searchFields['${block.entryType}-${block.entryElement}']);
 					}
