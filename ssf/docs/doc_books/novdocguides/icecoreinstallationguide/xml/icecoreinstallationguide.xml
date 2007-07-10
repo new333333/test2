@@ -15,7 +15,7 @@
  www.novell.com
 
 
- ESTIMATED PAGE COUNT (based on 200 words per page): 36
+ ESTIMATED PAGE COUNT (based on 200 words per page): 43
  ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 22
 
 
@@ -27,9 +27,9 @@
          341    preface    About This Guide
         4289    chapter    Installing    ICEcore 
         2216    chapter    Configuring    ICEcore 
-         128    glossary      ICEcore Glossary 
+        1459    glossary      ICEcore Glossary 
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        7391    book       ICEcore Installation and Configuration Guide
+        8722    book       ICEcore Installation and Configuration Guide
 
 
  GRAPHICS REFERENCED IN BOOK
@@ -75,7 +75,7 @@
        Count       Type
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           25       xref
-           0       link
+          52       link
            0       ulink-xrefext
            0       ulink-xrefexttext
            5       ulink
@@ -3171,46 +3171,506 @@ test
  <title>
   <productname>ICEcore</productname> Glossary
  </title>
+ <para>Items that include an “(a)” are more relevant for 
+  <productname>ICEcore</productname> site administrators. 
+ </para>
+ <glossentry id="basbaeb">
+  <glossterm>access control</glossterm>
+  <glossdef>
+   <para>The tool that determines who has the right to perform which tasks in which places. See also
+    <link linkend="basbb5e"> role-based access control</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascb1c">
+  <glossterm>accessibility mode</glossterm>
+  <glossdef>
+   <para>An optimized user interface that facilitates use by assistive devices, such as readers.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbo2i">
+  <glossterm>accessory</glossterm>
+  <glossdef>
+   <para>A section located at the top of a workspace or folder page that provides a summary view, most likely of the information contained within the item. For example, an accessory can show all of the entries within a folder authored by someone designated as a subject-matter expert.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc69b">
+  <glossterm>advanced search</glossterm>
+  <glossdef>
+   <para>Extra search tools that allow you to specify more specific criteria (such as the author of an item or restricting the search to a portion of the workspace tree).</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basce9u">
+  <glossterm>alias</glossterm>
+  <glossdef>
+   <para>See 
+    <link linkend="basccz5">e-mail alias</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbdpv">
+  <glossterm>attachment</glossterm>
+  <glossdef>
+   <para>A file attached to an 
+    <link linkend="b9rtisd">entry</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbfl6">
+  <glossterm>author</glossterm>
+  <glossdef>
+   <para>The person who created an entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbgb5">
+  <glossterm>blog</glossterm>
+  <glossdef>
+   <para>A folder contain a chronological listing of journal entries.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbgn2">
+  <glossterm>blog archive</glossterm>
+  <glossdef>
+   <para>A feature of blog folders that allow you to see entries authored in a specific month.</para>
+  </glossdef>
+ </glossentry>
  <glossentry id="b9rth09">
   <glossterm>buddy list</glossterm>
   <glossdef>
-   <para>A list of people that you contact frequently.</para>
+   <para>A list of people whose presence you want to check and whom you contact frequently.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbh7z">
+  <glossterm>calendar</glossterm>
+  <glossdef>
+   <para>A folder containing entries for scheduled appointments. </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbjg8">
+  <glossterm>clipboard</glossterm>
+  <glossdef>
+   <para>A tool that gathers people’s names. Later, when using a tool that requires names, you can take them from your clipboard.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbk2c">
+  <glossterm>comment</glossterm>
+  <glossdef>
+   <para>A reply to an 
+    <link linkend="b9rtisd">entry</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basb1xw">
+  <glossterm>community tag</glossterm>
+  <glossdef>
+   <para>A keyword 
+    <link linkend="b9rtisg">tag</link> applied to an item by the owner of a workspace or folder. Other users of the workspace or folder can perform searches based on community tags.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbkja">
+  <glossterm>configuration (a)</glossterm>
+  <glossdef>
+   <para>A set of tools that alter the way item content is presented. There are many types of configuration, ranging from setting allowable 
+    <link linkend="basbhw5">views</link> for an item, selecting a color scheme, creating custom entries, and creating workflow processes.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbp07">
+  <glossterm>default view</glossterm>
+  <glossdef>
+   <para>The 
+    <link linkend="basbkja">configuration</link> of the information you see when you first view a workspace or folder. Some items may be configured to allow alternate 
+    <link linkend="basbhw5">views</link>, which you can select.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbq2d">
+  <glossterm>definition (a)</glossterm>
+  <glossdef>
+   <para>A set of elements for both the 
+    <link linkend="basbqw8">form</link> and 
+    <link linkend="basbhw5">view</link> of a workspace, folder, or entry.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbtgj">
+  <glossterm>designer (a)</glossterm>
+  <glossdef>
+   <para>A tool used to create 
+    <link linkend="basbq2d">definitions</link> or 
+    <link linkend="basbm6t">workflow processes</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbtzu">
+  <glossterm>discussion</glossterm>
+  <glossdef>
+   <para>A folder whose entries are discussion topics and comments about those topics.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basccz5">
+  <glossterm>e-mail alias</glossterm>
+  <glossdef>
+   <para>An alternative e-mail address for an e-mail account. To enable e-mail posting into a folder, you must provide an e-mail alias for the one account used to post into all folders in your 
+    <productname>ICEcore</productname> installation. Consult with your 
+    <productname>ICEcore</productname> site administrator for further assistance; site administrators, consult with the IT person responsible for creating e-mail accounts to create new aliases.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascc56">
+  <glossterm>e-mail notification</glossterm>
+  <glossdef>
+   <para>An e-mail message that 
+    <productname>ICEcore</productname> sends indicating new or changed entries in a folder (and subfolders).
+   </para>
   </glossdef>
  </glossentry>
  <glossentry id="b9rtisd">
   <glossterm>entry</glossterm>
   <glossdef>
-   <para>An item, such as a wiki topic, file, or photo, that is contained in a folder.</para>
+   <para>An item in a folder.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbv3d">
+  <glossterm>favorites panel</glossterm>
+  <glossdef>
+   <para>A tool used to save links to workspaces and folders most important to you, providing a method of accessing these places quickly.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascis7">
+  <glossterm>file folder</glossterm>
+  <glossdef>
+   <para>A folder whose entries are configured to highlight an attached file and to facilitate file management.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbvqh">
+  <glossterm>filter</glossterm>
+  <glossdef>
+   <para>A setting that limits a 
+    <link linkend="b9rtise">folder</link> listing to only the entries that match the filter’s search criteria. For example, you can create a filter that shows only the contents of a folder authored by you or that were created past a certain date.
+   </para>
   </glossdef>
  </glossentry>
  <glossentry id="b9rtise">
   <glossterm>folder</glossterm>
   <glossdef>
-   <para>A container for entries and other folders. Each folder has a type, such as blog, wiki, or calendar, that determines its appearance and features.</para>
+   <para>A container for 
+    <link linkend="b9rtisd">entries</link> and other folders. Each folder has a type, such as 
+    <link linkend="basbgb5">blog</link>, 
+    <link linkend="bascjfp">wiki</link>, or 
+    <link linkend="basbh7z">calendar</link>, that determines its appearance and features.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbqw8">
+  <glossterm>form (a)</glossterm>
+  <glossdef>
+   <para>An HTML form used to create a workspace, folder, or entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbwud">
+  <glossterm>global workspace</glossterm>
+  <glossdef>
+   <para>
+    <link linkend="b9rtisi">workspace</link> that, by default, allows everyone to participate.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbynz">
+  <glossterm>guestbook</glossterm>
+  <glossdef>
+   <para>A 
+    <link linkend="b9rtise">folder</link> or 
+    <link linkend="basbo2i">accessory</link> whose entries indicate who has visited the place.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbzdf">
+  <glossterm>help mode</glossterm>
+  <glossdef>
+   <para>A dimmed page and information icons (“i”). When you click on an information icon, 
+    <productname>ICEcore</productname> presents a panel of information about that section of the page.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc25e">
+  <glossterm>inherit (a)</glossterm>
+  <glossdef>
+   <para>A process by which a workspace or folder automatically uses 
+    <link linkend="basbkja">configuration</link> settings from its 
+    <link linkend="basc2qo">parent</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc4i1">
+  <glossterm>instant message (IM)</glossterm>
+  <glossdef>
+   <para>A quick communication between teammates using the Zon messaging software.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc024">
+  <glossterm>LifeRay (a)</glossterm>
+  <glossdef>
+   <para>The 
+    <link linkend="basc0hl">portal</link> software within which 
+    <productname>ICEcore</productname> runs by default.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc3mt">
+  <glossterm>meeting</glossterm>
+  <glossdef>
+   <para>An online communication by teammates using the Zon messaging software. Zon provides tools that assist with online meetings, such as people designated as running the meeting, a way for participants to “raise their hands,” and a whiteboard.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascll8">
+  <glossterm>milestone</glossterm>
+  <glossdef>
+   <para>A 
+    <link linkend="b9rtise">folder</link> that, by default, summarizes the status of tasks in a task folder as they relate to meeting 
+    <link linkend="bascklm">project</link> milestones.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc4xi">
+  <glossterm>navigator</glossterm>
+  <glossdef>
+   <para>A set of tools that you can use to go anyplace within 
+    <productname>ICEcore</productname> you want to go. The tools include “
+    <link linkend="basby2b">My workspace</link>,” “
+    <link linkend="basbv3d">Favorites</link>,” viewing your 
+    <link linkend="basbx96">teams</link>, search, 
+    <link linkend="basbzdf">Help</link>, and a 
+    <link linkend="basc6rs">workspace tree</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbfw4">
+  <glossterm>owner</glossterm>
+  <glossdef>
+   <para>The person who created the workspace, folder, or entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc7vf">
+  <glossterm>parallel workflow process (a)</glossterm>
+  <glossdef>
+   <para>A set of 
+    <link linkend="basbn2q">state</link> transitions that happen at the same time as other state transitions. A state in the main thread initiates the parallel process, and a state later in the main thread can wait for the completion of the parallel thread.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc2qo">
+  <glossterm>parent (a)</glossterm>
+  <glossdef>
+   <para>A workspace or folder that contains another workspace or folder. The item contained within the parent is sometimes called its child.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc8uy">
+  <glossterm>participant</glossterm>
+  <glossdef>
+   <para>An 
+    <link linkend="basbb5e">access role</link> that, generally, by default, allows people to author entries in a folder.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc9pq">
+  <glossterm>permalink</glossterm>
+  <glossdef>
+   <para>A web address (URL) for an 
+    <productname>ICEcore</productname> workspace, folder, or entry that you can copy, paste, and send to a teammate so that they may access a page directly by specifying the address to their web browser.
+   </para>
   </glossdef>
  </glossentry>
  <glossentry id="b9rtisf">
+  <glossterm>personal tag</glossterm>
+  <glossdef>
+   <para>A keyword 
+    <link linkend="b9rtisg">tag</link> that you apply to an item, and that only you can see and use.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basby2b">
+  <glossterm>personal workspace</glossterm>
+  <glossdef>
+   <para>A workspace that serves as a person’s homepage in 
+    <productname>ICEcore</productname>, including contact information, pictures, a personal 
+    <link linkend="basbgb5">blog</link>, and more.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascaiw">
+  <glossterm>photo gallery</glossterm>
+  <glossdef>
+   <para>A 
+    <link linkend="b9rtise">folder</link> whose entries are pictures.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc0hl">
+  <glossterm>portal page</glossterm>
+  <glossdef>
+   <para>A web page that can run various application in sections of its page. For example, Google and Yahoo use portal pages. Sections within a portal page may display the local time, the local weather, your favorite stock quotes, and more.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc1qi">
+  <glossterm>portlet</glossterm>
+  <glossdef>
+   <para>A section on a portal page. 
+    <productname>ICEcore</productname> runs in portlets.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basb1o0">
   <glossterm>presence</glossterm>
   <glossdef>
-   <para>The state of being connected to a communications service and available for communication. Presence information is indicated by status icons.</para>
+   <para>The state of being connected to a communications service and available for communication. Presence information is indicated by status icons (Online, Away, </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascklm">
+  <glossterm>project-management workspace</glossterm>
+  <glossdef>
+   <para>A 
+    <link linkend="b9rtisi">workspace</link> configured to facilitate the tracking of tasks and completion of complex project work.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbb5e">
+  <glossterm>role-based access control</glossterm>
+  <glossdef>
+   <para>A mechanism that controls access by assigning people and groups to roles, and the roles determine the rights assigned to those people. See the online Help for a list of 
+    <productname>ICEcore</productname> default role definitions.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbcy1">
+  <glossterm>site administrator</glossterm>
+  <glossdef>
+   <para>The person or people who have the right to perform any task anyplace in the 
+    <productname>ICEcore</productname> installation.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascocd">
+  <glossterm>state</glossterm>
+  <glossdef>
+   <para>See 
+    <link linkend="basbn2q">workflow state</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascbib">
+  <glossterm>subscription</glossterm>
+  <glossdef>
+   <para>A way to track new or changed items in 
+    <productname>ICEcore</productname>.
+   </para>
   </glossdef>
  </glossentry>
  <glossentry id="b9rtisg">
   <glossterm>tag</glossterm>
   <glossdef>
-   <para>A keyword that anyone can add to a place to make it easier to find that and related places. Community tags are shared. Personal tags are private. </para>
+   <para>A keyword that anyone can apply to a workspace, folder, or entry to make it easier to find. See also 
+    <link linkend="b9rtisf">personal tag</link> and 
+    <link linkend="basb1xw">community tag</link>. 
+   </para>
   </glossdef>
  </glossentry>
- <glossentry id="b9rtish">
-  <glossterm>tag cloud</glossterm>
+ <glossentry id="bascl0a">
+  <glossterm>task</glossterm>
   <glossdef>
-   <para>A weighted list of tags in which frequently used tags are displayed in larger type.</para>
+   <para>A 
+    <link linkend="b9rtise">folder</link> that, by default, contains entries that track progress with completing an assignment.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascfza">
+  <glossterm>team</glossterm>
+  <glossdef>
+   <para>An 
+    <link linkend="basbb5e">access role</link> that, by default, allows people to 
+    <link linkend="basc8uy">participate</link> in a workspace or folder, to do some minor administrative tasks, and to communicate easily with each other.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbx96">
+  <glossterm>team workspace</glossterm>
+  <glossdef>
+   <para>A 
+    <link linkend="b9rtisi">workspace</link> that restricts participation to only teammates.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbs53">
+  <glossterm>template (a)</glossterm>
+  <glossdef>
+   <para>A set of default configuration settings used to create a new workspace or folder. A template includes at least one 
+    <link linkend="basbq2d">definition</link>, 
+    <link linkend="basbaeb">access control</link>, a possible hierarchy of defined items, and possibly more.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbhw5">
+  <glossterm>view</glossterm>
+  <glossdef>
+   <para>A presentation of an item’s content. For example, you can view a discussion folder in either a list or table format. By default, most folders use one view (calendar folders use a calendar view, blog folders use a blog view, and so on.)</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc99o">
+  <glossterm>visitor</glossterm>
+  <glossdef>
+   <para>An 
+    <link linkend="basbb5e">access role</link> that, by default, allows people to read entries and make 
+    <link linkend="basbk2c">comments</link> on them (but not create new entries).
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basch8k">
+  <glossterm>WebDAV</glossterm>
+  <glossdef>
+   <para>The Web Distributed Authoring and Versioning protocol. If your system provides a tool that uses this protocol, it allows you to manage 
+    <productname>ICEcore</productname> file-folder entries using the WebDAV window.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascjfp">
+  <glossterm>wiki</glossterm>
+  <glossdef>
+   <para>A 
+    <link linkend="b9rtise">folder</link> whose entries are authored by all 
+    <link linkend="basc8uy">participants</link>.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbm6t">
+  <glossterm>workflow</glossterm>
+  <glossdef>
+   <para>An online representation of a business process (for example, document review, paid time-off requests, document sign off, and so on). An 
+    <link linkend="b9rtisd">entry</link> can have an associated workflow process, which places the entry into various workflow states.
+   </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbn2q">
+  <glossterm>workflow state</glossterm>
+  <glossdef>
+   <para>A status label for an 
+    <link linkend="b9rtisd">entry</link> in a workflow process. A state determines who has the right to work with an entry (including who may see it), who needs to be notified, who needs to perform the next task, and which subsequent states are possible.
+   </para>
   </glossdef>
  </glossentry>
  <glossentry id="b9rtisi">
   <glossterm>workspace</glossterm>
   <glossdef>
    <para>A container for folders and other workspaces.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc6rs">
+  <glossterm>workspace tree</glossterm>
+  <glossdef>
+   <para>A tool that allows you to navigate the hierarchy of workspaces, subworkspaces, 
+    <link linkend="b9rtise">folders</link>, and subfolders within 
+    <productname>ICEcore</productname>.
+   </para>
   </glossdef>
  </glossentry>
 </glossary>
