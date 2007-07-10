@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DocumentSelection;
@@ -816,9 +817,8 @@ public class LocalLuceneSession implements LuceneSession {
 
 		LuceneHelper.closeAll();
 		
-		IndexWriter indexWriter = null;
 		try {
-			indexWriter = LuceneHelper.getWriter(indexPath, true);
+			LuceneHelper.getWriter(indexPath, true);
 		} catch (IOException e) {
 			throw new LuceneException(
 					"Could not open writer on the index [" + this.indexPath
@@ -839,6 +839,7 @@ public class LocalLuceneSession implements LuceneSession {
 			return text.substring(0,1024);
 		else return text;
 	}
+	
 	public static Analyzer getAnalyzer(String snippet) {
 		// pass the snippet to the language taster and see which
 		// analyzer to use
@@ -846,7 +847,10 @@ public class LocalLuceneSession implements LuceneSession {
 		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
 			return defaultAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
-			return new ChineseAnalyzer();
+			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
+			retAnalyzer.addAnalyzer(BasicIndexUtils.FOLDER_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(BasicIndexUtils.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
+			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;
 			Analyzer analyzer = defaultAnalyzer;
