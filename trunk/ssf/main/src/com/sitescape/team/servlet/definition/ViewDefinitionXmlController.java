@@ -24,7 +24,7 @@ import org.springframework.web.bind.RequestUtils;
 
 public class ViewDefinitionXmlController extends SAbstractController {
 	
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
 		String id = RequestUtils.getStringParameter(request, "id", "");

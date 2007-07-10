@@ -29,7 +29,7 @@ import com.sitescape.team.web.servlet.SAbstractController;
  *
  */
 public class ErrorController extends SAbstractController {
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
 		Map model = new HashMap();

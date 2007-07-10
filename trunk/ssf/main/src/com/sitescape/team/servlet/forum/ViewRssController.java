@@ -29,7 +29,7 @@ import org.springframework.web.bind.RequestUtils;
 
 public class ViewRssController extends SAbstractController {
 	
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
 		Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));

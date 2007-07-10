@@ -29,7 +29,7 @@ import com.sitescape.team.web.servlet.SAbstractController;
 
 public class ViewCssController extends SAbstractController {
 	
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
 		HttpSession ses = request.getSession(false);

@@ -73,7 +73,7 @@ public class ReportDownloadController extends  SAbstractController {
 		return column.equals(ReportModule.USER_ID);
 	}
 	
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
 		Map formData = request.getParameterMap();

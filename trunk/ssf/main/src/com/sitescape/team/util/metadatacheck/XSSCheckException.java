@@ -8,11 +8,10 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.util;
+package com.sitescape.team.util.metadatacheck;
 
-import com.sitescape.team.exception.CheckedCodedException;
 
-public class XSSCheckException extends CheckedCodedException {
+public class XSSCheckException extends MetadataCheckException {
 
 	private static final long serialVersionUID = 1L;
 	

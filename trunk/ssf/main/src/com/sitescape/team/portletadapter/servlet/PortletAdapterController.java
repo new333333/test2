@@ -39,6 +39,12 @@ import com.sitescape.team.web.servlet.SAbstractController;
  */
 public class PortletAdapterController extends SAbstractController {
 	
+	// This class overrides handleRequestInternal instead of handleRequestAfterValidation
+	// that regular controllers would normally extend. That is because this portletadapter
+	// (which is in itself a framework) would pass those paramaters to our portlet super
+	// controller, which would perform the same validation before passing the data to
+	// the individual portlet application controller. Therefore we can safely skip the
+	// validation at servlet level in this case.
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		String portletName = RequestUtils.getRequiredStringParameter(req,
