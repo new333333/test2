@@ -169,7 +169,7 @@ function ss_showForumEntryInIframe_Overlay(url, entityType) {
     wObj1.style.zIndex = ssEntryZ;
     wObj1.style.visibility = "visible";
     //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
-    
+
     if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
     	wObj.src = ss_forumRefreshUrl;
@@ -179,6 +179,8 @@ function ss_showForumEntryInIframe_Overlay(url, entityType) {
     	wObj.src = url
     }
 
+	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
+    
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 
