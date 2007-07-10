@@ -205,7 +205,7 @@ public class SearchFilter {
 				Element el = (Element)nodes.next();
 				if (el.getName().equals(SearchFilterKeys.FilterTerms)) {
 					
-					this.sfRoot.add(el);
+					this.sfRoot.add((Element)el.clone());
 					
 					this.currentFilterTerms = el;
 					Attribute joinAndAttr = this.currentFilterTerms.attribute(SearchFilterKeys.FilterAnd);
