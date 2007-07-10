@@ -3567,12 +3567,13 @@ div.ss_smallRBoxBody {
 
 
 div.ss_profileBox1 {
-  background: ${ss_style_header_bar_background};
+  background: ${ss_profileBox1_background_color};
   font-family:${ss_style_folder_view_font_family};
 }
 
 div.ss_profileBox2 {
   background: ${ss_replies_background_color};
+  width: 230px:
 }
 
 div.ss_profile_box_title {
