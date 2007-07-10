@@ -814,6 +814,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					}
+				} else if (type.equals("workflowEntryDataUserList")) {
+					//Workflow conditions typically have 4 bits of data to capture: 
+					//  the definition id, the element name, the operation, and the operand value
+					if (inputData.exists("conditionDefinitionId") && 
+							inputData.exists("conditionElementName")) {
+						Element newPropertyEle = configProperty.createCopy();
+						newPropertiesEle.add(newPropertyEle);
+						String conditionDefinitionId = inputData.getSingleValue("conditionDefinitionId");
+						String conditionElementName = inputData.getSingleValue("conditionElementName");
+						Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
+						workflowCondition.addAttribute("definitionId", conditionDefinitionId);
+						workflowCondition.addAttribute("elementName", conditionElementName);
+					}
 				} else {
 					if (type.equals("boolean") || type.equals("checkbox")) {
 						String value = "false";
