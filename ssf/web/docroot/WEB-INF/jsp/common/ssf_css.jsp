@@ -4639,5 +4639,12 @@ div.ss_themeMenu ul {
 }
 
 
+div.ss_license_warning {
+  color: red;
+  font-weight: bold;
+  font-family: ${ss_style_font_family};
+  font-size: ${ss_style_font_size}; 
+}
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
