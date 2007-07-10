@@ -499,12 +499,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else {
 			Map valuesData = new HashMap();
 			if (WebHelper.isUserLoggedIn(request)) {
-				valuesData = (Map)((Map) fieldsData.get(entryField)).get("values");
-				String fieldType = (String)((Map) fieldsData.get(entryField)).get("type");
-				if (valuesData == null && "checkbox".equals(fieldType)) {
-					valuesData = new HashMap();
-					valuesData.put(Boolean.TRUE.toString(), NLT.get("searchForm.checkbox.selected"));
-					valuesData.put(Boolean.FALSE.toString(), NLT.get("searchForm.checkbox.unselected"));
+				Map entryFieldMap = (Map) fieldsData.get(entryField); 
+				if (entryFieldMap != null) {
+					valuesData = (Map) entryFieldMap.get("values");
+					String fieldType = (String)entryFieldMap.get("type");
+					if (valuesData == null && "checkbox".equals(fieldType)) {
+						valuesData = new HashMap();
+						valuesData.put(Boolean.TRUE.toString(), NLT.get("searchForm.checkbox.selected"));
+						valuesData.put(Boolean.FALSE.toString(), NLT.get("searchForm.checkbox.unselected"));
+					}
 				}
 			}
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
