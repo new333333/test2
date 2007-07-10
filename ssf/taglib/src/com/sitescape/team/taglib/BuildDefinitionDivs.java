@@ -1003,7 +1003,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(def.getTitle().replaceAll("&", "&amp;"));
+									sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1116,12 +1116,77 @@ public class BuildDefinitionDivs extends TagSupport {
 							//Build a list of the entry definitions
 							Definition entryDef = (Definition)defs.get(i);
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(entryDef.getTitle().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
 						sb.append("<div id=\"conditionOperations\"></div><br/>\n");
 						sb.append("<div id=\"conditionOperand\"></div>\n");
+						
+					
+					} else if (type.equals("workflowEntryDataUserList")) {
+						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='condition']");
+						if (workflowConditionProperty != null) {
+							Element workflowConditionEle = (Element) workflowConditionProperty.selectSingleNode("workflowEntryDataUserList");
+							if (workflowConditionEle != null) {
+								//We have the current condition element; print out its values
+								String definitionId = workflowConditionEle.attributeValue("definitionId", "");
+								String elementName = workflowConditionEle.attributeValue("elementName", "");
+								//Get the entry definition itself
+								Definition def = DefinitionHelper.getDefinition(definitionId);
+								if (def != null) {
+									
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.workflowEntryDataUserList"));
+									sb.append("</span><br/><br/>");
+									sb.append("<table class=\"ss_form\"><tbody>");
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionEntryType"));
+									sb.append("</span><br/>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\">");
+									sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
+									sb.append("</td>");
+									sb.append("</tr>");
+									
+									sb.append("<tr>");
+									sb.append("<td valign=\"top\">");
+									sb.append("<span class=\"ss_bold\">");
+									sb.append(NLT.get("definition.currentWorkflowConditionElementName"));
+									sb.append("</span><br/>");
+									sb.append("</td>");
+									sb.append("<td valign=\"top\">");
+									sb.append(elementName);
+									sb.append("</td>");
+									sb.append("</tr>");
+																		
+									sb.append("</tbody></table>");
+									sb.append("");
+									sb.append("");
+									sb.append("<br/>");
+								}
+							}
+						}
+						
+						sb.append("<span class=\"ss_bold\">");
+						sb.append(NLT.get("definition.selectEntryType"));
+						sb.append("</span><br/>");
+						sb.append("<select name=\"conditionDefinitionId\" ");
+						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_user_list_elements')\" ");
+						sb.append(">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						//GET both entry and file Entry definitions
+						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+						for (int i=0; i<defs.size(); ++i) {
+							//Build a list of the entry definitions
+							Definition entryDef = (Definition)defs.get(i);
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+						}
+						sb.append("</select>\n<br/><br/>\n");
+						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
 						
 					
 					} else if (type.equals("userGroupSelect")) {

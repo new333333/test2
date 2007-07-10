@@ -297,6 +297,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 			return ajaxGetFilterData(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
@@ -1301,6 +1302,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element", model);
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS)) {
+			return new ModelAndView("definition_builder/get_condition_entry_user_list_element", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element_operations", model);
 		} else {
