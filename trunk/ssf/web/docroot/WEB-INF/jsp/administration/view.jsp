@@ -16,6 +16,14 @@
   <div class="ss_portlet_style ss_portlet">
   <div class="ss_style">
     <c:out value="${releaseInfo}"/>
+<ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
+<ssf:ifLicenseExpired invert="true">
+  <ssf:ifLicenseExpired inThisManyDays="30"><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expiring.soon.warning"/></span></div></ssf:ifLicenseExpired>
+  <ssf:ifLicenseExpired inThisManyDays="30" invert="true">  
+	  <ssf:ifLicenseOutOfCompliance><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.out.of.compliance"/></span></div></ssf:ifLicenseOutOfCompliance>
+  </ssf:ifLicenseExpired>
+</ssf:ifLicenseExpired>
+
 	<table border="0" width="100%">
 	<tr>
 	  <td>
