@@ -22,7 +22,7 @@
 <br/>
 
 
-<div style="padding-bottom: 2px;">
+<div style="padding-bottom: 14px;">
 
 <c:if test="${!empty ss_blog_reply_url}">
 <a href="${ss_blog_reply_url}" 

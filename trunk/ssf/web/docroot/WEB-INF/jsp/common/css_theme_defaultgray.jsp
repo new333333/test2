@@ -149,6 +149,8 @@
 	<c:set var="ss_style_muted_label_color" value="#666666" scope="request"/>
 	<c:set var="ss_style_muted_tag_color" value="#555555" scope="request"/>
 	
+<% //PROFILE COLORS	 %>
+	<c:set var="ss_profileBox1_background_color" value="#AFAFAF" scope="request"/>	
 			
 <% //PORTLET COLORS	 %>
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>

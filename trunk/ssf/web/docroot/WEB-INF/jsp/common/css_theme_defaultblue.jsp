@@ -61,7 +61,7 @@
   --
   -- BLOG
   --
---%><c:set var="ss_blog_summary_title_background_color" value="#E8EFF7" scope="request"/><%--
+--%><c:set var="ss_blog_summary_title_background_color" value="#AFC8E3" scope="request"/><%--
 --%><c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/><%--
 --%><c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/><%--
 --%><c:set var="ss_blog_sidebar_box_outline" value="#AFC8E3" scope="request"/><%--	
@@ -199,15 +199,20 @@
 --%><c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/><%-- 
 --%><%--
-  --
+
+<% //PROFILE COLORS	 %>
+
+--%><c:set var="ss_profileBox1_background_color" value="#AFC8E3" scope="request"/><%--
+--%><%--
+
   -- SLIDING TABLE
   --
 --%><c:set var="ss_sliding_table_background_color" value="#FFFFFF" scope="request"/><%--
 --%><c:set var="ss_sliding_table_border_color" value="#CCCCCC" scope="request"/><%--
---%><c:set var="ss_sliding_table_text_color" value="#3333FF" scope="request"/><%--
---%><c:set var="ss_sliding_table_link_hover_color" value="#3333FF" scope="request"/><%--
+--%><c:set var="ss_sliding_table_text_color" value="#333333" scope="request"/><%--
+--%><c:set var="ss_sliding_table_link_hover_color" value="#AEC8E3" scope="request"/><%--
 --%><c:set var="ss_sliding_table_row0_background_color" value="#FFFFFF" scope="request"/><%--
---%><c:set var="ss_sliding_table_row1_background_color" value="#ECECEC" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row1_background_color" value="#AEC8E3" scope="request"/><%--
 --%><%--
   --
   -- TAG
@@ -256,7 +261,7 @@
 --%><c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/><%--	
 
---%><c:set var="ss_page_nav_background_color" value="#AAAABB" scope="request"/><%--	
+--%><c:set var="ss_page_nav_background_color" value="#DEE7C6" scope="request"/><%--	
 --%><%--
   --
   -- REPLYS
