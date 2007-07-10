@@ -42,6 +42,7 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.metadatacheck.MetadataCheckUtil;
 import com.sitescape.util.FileUtil;
 
 /**
@@ -55,6 +56,8 @@ public class FacadeImpl extends AbstractFacade {
 
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
+		fileUploadDataItemName = MetadataCheckUtil.check(fileUploadDataItemName);
+		fileName = MetadataCheckUtil.check(fileName);
 
 		// Get all the attachments
 		AttachmentPart[] attachments;
@@ -95,6 +98,8 @@ public class FacadeImpl extends AbstractFacade {
 	 */
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
+		iCalDataAsXML = MetadataCheckUtil.check(iCalDataAsXML);
+		
 		super.uploadCalendarEntries(folderId, iCalDataAsXML);
 		try {
 			for(AttachmentPart part : getMessageAttachments()) {
