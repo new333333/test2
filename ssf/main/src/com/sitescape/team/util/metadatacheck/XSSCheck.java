@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.util;
+package com.sitescape.team.util.metadatacheck;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,29 +18,36 @@ import java.util.regex.Pattern;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.StringPool;
 
-public class XSSCheck {
+public class XSSCheck implements MetadataCheck {
 
 	private static final String MODE_DISALLOW = "disallow"; // default mode
 	private static final String MODE_GROUPS = "groups";
 	private static final String MODE_STRIP = "strip";
 	
-	private static final String PATTERN_STR = SPropsUtil.getString("xss.regexp.pattern");
-	private static final Pattern PATTERN = Pattern.compile(PATTERN_STR);
-	private static final boolean ENABLE = SPropsUtil.getBoolean("xss.check.enable");
-	private static String MODE = SPropsUtil.getString("xss.check.mode");
-	private static final String[] GROUPS = SPropsUtil.getStringArray("xss.groups", ",");
+	private String patternStr;
+	private Pattern pattern;
+	private boolean enable;
+	private String mode;
+	private String[] groups;
 	
-	static {
+	public XSSCheck() {
+		patternStr = SPropsUtil.getString("xss.regexp.pattern");
+		pattern = Pattern.compile(patternStr);
+		enable = SPropsUtil.getBoolean("xss.check.enable");
+		mode = SPropsUtil.getString("xss.check.mode");
+		groups = SPropsUtil.getStringArray("xss.groups", ",");
+
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
-		if(MODE.equals(MODE_GROUPS))
-			MODE = MODE_GROUPS;
-		else if(MODE.equals(MODE_STRIP))
-			MODE = MODE_STRIP;
+		if(mode.equals(MODE_GROUPS))
+			mode = MODE_GROUPS;
+		else if(mode.equals(MODE_STRIP))
+			mode = MODE_STRIP;
 		else
-			MODE = MODE_DISALLOW;
+			mode = MODE_DISALLOW;
 	}
 	
 	/**
@@ -51,63 +58,34 @@ public class XSSCheck {
 	 * @return output data as string
 	 * @throws XSSCheckException
 	 */
-	public static String check(String input) throws XSSCheckException {
-		if(ENABLE)
+	public String check(String input) throws XSSCheckException {
+		if(enable)
 			return doCheck(input);
 		else
 			return input;
 	}
 	
-	/**
-	 * Detect potential XSS threat. The exact behavior of this method
-	 * is determined by the configuration settings in ssf.properties. 
-	 * 
-	 * @param input input map
-	 * @return output map, this map may or may not be identical to the input map
-	 * @throws XSSCheckException
-	 */
-	public static Map<String,String[]> check(Map<String,String[]> input) throws XSSCheckException {
-		Map output;
-		if(ENABLE) {
-			output = new TreeMap<String, String[]>();
-			
-			String[] value=null,newValue=null;
-			for(String key : input.keySet()) {
-				value = input.get(key);
-				if(value != null) {
-					newValue = new String[value.length];
-					for(int i = 0; i < value.length; i++) {
-						newValue[i] = check(value[i]);
-					}
-				}
-				output.put(key, newValue);
-			}
-		}
-		else {
-			output = input;
-		}
+	private String doCheck(String input) throws XSSCheckException {
+		if(input == null || input.equals(""))
+			return input;
 		
-		return output;
-	}
-	
-	private static String doCheck(String input) throws XSSCheckException {
 		CharSequence sequence = input.subSequence(0, input.length());
 
-		Matcher matcher = PATTERN.matcher(sequence);
+		Matcher matcher = pattern.matcher(sequence);
 
 		// We can use much faster reference comparison rather than string 
 		// value equality test due to the way we setup above.
-		if(MODE == MODE_DISALLOW) {
+		if(mode == MODE_DISALLOW) {
 			if(matcher.find())
 				throw new XSSCheckException();
 			else
 				return input;
 		}
-		else if(MODE == MODE_GROUPS) {
+		else if(mode == MODE_GROUPS) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			Set groupNames = user.computeGroupNames();
-			for(int i = 0; i < GROUPS.length; i++) {
-				if(groupNames.contains(GROUPS[i]))
+			for(int i = 0; i < groups.length; i++) {
+				if(groupNames.contains(groups[i]))
 					return input;
 			}
 			if(matcher.find())

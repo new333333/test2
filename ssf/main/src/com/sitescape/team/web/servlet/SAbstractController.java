@@ -10,8 +10,15 @@
  */
 package com.sitescape.team.web.servlet;
 
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.sitescape.team.module.admin.AdminModule;
@@ -30,6 +37,7 @@ import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.metadatacheck.MetadataCheckUtil;
 
 public abstract class SAbstractController extends AbstractController
 implements AllModulesInjected {
@@ -165,6 +173,27 @@ implements AllModulesInjected {
 	}
 	public void setLicenseModule(LicenseModule licenseModule) {
 		this.licenseModule = licenseModule;
+	}
+
+	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		Map formData = req.getParameterMap();
+		Map newFormData = MetadataCheckUtil.check(formData);
+		HttpServletRequest newReq;
+		if(newFormData != formData) {
+			newReq = new ParamsWrappedHttpServletRequest(req, newFormData);
+		}
+		else {
+			newReq = req;
+		}
+		return handleRequestAfterValidation(newReq, res);
+	}
+	
+	/**
+	 * Subclasses must override this method.
+	 * Default implementation throws a ServletException
+	 */
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	    throw new ServletException("Subclass must override this method");
 	}
 
 }

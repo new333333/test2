@@ -29,7 +29,7 @@ public class ListController extends SAbstractController {
 	private boolean authErr = false;
 
 	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// Get the list of RSS items and write it to servlet response as XML.
 		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
 		Binder binder = null;

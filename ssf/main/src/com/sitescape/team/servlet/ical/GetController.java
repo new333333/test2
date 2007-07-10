@@ -40,7 +40,7 @@ public class GetController extends SAbstractController {
 	private MailModule mailModule;
 
 	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
 		if (binderId == null) {

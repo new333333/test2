@@ -28,7 +28,6 @@ import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ical.IcalModule;
-import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.module.profile.ProfileModule;
@@ -38,7 +37,7 @@ import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.XSSCheck;
+import com.sitescape.team.util.metadatacheck.MetadataCheckUtil;
 
 public abstract class SAbstractController extends AbstractController 
 implements AllModulesInjected {
@@ -181,7 +180,7 @@ implements AllModulesInjected {
 	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Map newFormData = XSSCheck.check(formData);
+		Map newFormData = MetadataCheckUtil.check(formData);
 		ActionRequest newReq;
 		if(newFormData != formData) {
 			if(request instanceof MultipartFileSupport)

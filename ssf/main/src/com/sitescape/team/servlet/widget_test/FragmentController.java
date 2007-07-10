@@ -22,7 +22,7 @@ import com.sitescape.team.web.servlet.SAbstractController;
 
 public class FragmentController extends SAbstractController {
 
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
 		String viewPath = "widget_test/view_fragment2";
