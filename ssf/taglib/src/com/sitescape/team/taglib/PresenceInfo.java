@@ -79,7 +79,7 @@ public class PresenceInfo extends BodyTagSupport {
 			} else {
 				userStatus = -99;
 			}
-			String dudeGif = ""; 
+			String dudeGif = "sym_s_white_dude.gif"; 
 			String altText = NLT.get("presence.none");
 			if (userStatus != -99) {
 				dudeGif = "sym_s_white_dude.gif"; 
