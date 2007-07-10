@@ -1,8 +1,8 @@
 package com.sitescape.team.util.metadatacheck;
 
-import com.sitescape.team.exception.CheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
-public class MetadataCheckException extends CheckedCodedException {
+public class MetadataCheckException extends UncheckedCodedException {
 
 	private static final long serialVersionUID = 1L;
 	
