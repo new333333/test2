@@ -51,7 +51,7 @@
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	
 <% //BLOG %>
-	<c:set var="ss_blog_summary_title_background_color" value="#77AA77" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#AFC8E3" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_blog_sidebar_box_outline" value="#BFCA8A" scope="request"/>

@@ -986,10 +986,10 @@ table.ss_blog_title table {
 }
 
 div.ss_blog_title  {
-  background-color:${ss_style_header_bar_background};
+  background-color:${ss_blog_summary_title_background_color};
   overflow: hidden;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 3px;
+  padding-bottom: 3px;
   padding-left: 2px;
   padding-right: 5px;
 }
@@ -2339,7 +2339,7 @@ ul.ss_actions_bar1  {
 		width: 100%;
 	</c:if>
 	<c:if test="<%= !isIE %>">
-		width: 99.3%;
+		width: 99.6%;
 	</c:if> 
 	list-style-type:none;	
 	margin: 0;

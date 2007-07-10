@@ -25,7 +25,7 @@
 <%
 	//Get a dispalyable number for the replies
 	String docNumber = "";
-	String fontSize = "ss_largestprint";
+	String fontSize = "ss_largeprint";
 	if (title_entry.getTopEntry() != null) fontSize = "ss_largerprint";
 	if (title_entry.getTopEntry() != null && title_entry.getDocNumber() != null) {
 		docNumber = title_entry.getDocNumber();
