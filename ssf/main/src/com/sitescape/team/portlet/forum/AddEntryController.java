@@ -368,6 +368,7 @@ public class AddEntryController extends SAbstractController {
 		int duration = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_TIME_DURATION, -1);
 		
 		if (year != -1 && month != -1 && dayOfMonth != -1) {
+			month++;
 			TimeZone timeZone = RequestContextHolder.getRequestContext().getUser().getTimeZone();
 		
 			DateTime startDate = (new DateTime(DateTimeZone.forTimeZone(timeZone))).withYear(year).withMonthOfYear(month).withDayOfMonth(dayOfMonth);
