@@ -62,23 +62,27 @@ public class WSClient
 			} else if(args[0].equals("printDefinitionConfig")) {
 				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);			
 			} else if(args[0].equals("addEntry")) {
-				String s = readText(args[3]);
+				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
 				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s});			
 			} else if(args[0].equals("modifyEntry")) {
-				String s = readText(args[3]);
+				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
 				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});			
 			} else if(args[0].equals("uploadFile")) {
 				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);			
 			} else if(args[0].equals("uploadCalendar")) {
-				String s = readText(args[2]);
+				String s = FacadeClientHelper.readText(args[2]);
 				System.out.println("XML: " + s);
 				String attachFile = null;
 				if(args.length > 3) {
 					attachFile = args[3];
 				}
 				justDoIt("uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);			
+			} else if(args[0].equals("search")) {
+				String s = FacadeClientHelper.readText(args[1]);
+				System.out.println("XML: " + s);
+				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});			
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -90,22 +94,6 @@ public class WSClient
 		}
 	}
 	
-	static String readText(String filename)
-	{
-		StringBuffer buf = new StringBuffer();
-		try {
-			FileReader f = new FileReader(filename);
-			char in[] = new char[32768];
-			int len;
-			while((len = f.read(in, 0, 32767)) > 0) {
-				buf.append(in, 0, len);
-			}
-		} catch(IOException e) {
-			System.err.println("Error reading file " + filename + ": " + e);
-		}
-		return buf.toString();
-	}
-
 	static Object fetch(String operation, Object[] args) throws Exception {
 		return fetch(operation, args, null);
 	}
@@ -183,6 +171,7 @@ public class WSClient
 		System.out.println("printWorkspaceTree <workspace id> <depth>");
 		System.out.println("printPrincipal <binder id> <principal id>");
 		System.out.println("printFolderEntries <folder id>");
+		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("printTeamMembers <binder id>");
 		System.out.println("printTeams");
 		System.out.println("printFolderEntry <folder id> <entry id> <includeAttachments>");

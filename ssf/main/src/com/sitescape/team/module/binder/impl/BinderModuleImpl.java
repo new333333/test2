@@ -607,10 +607,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Map executeSearchQuery(Document searchQuery) {
 		return executeSearchQuery(searchQuery, null);
 	}
+
+	public Map executeSearchQuery(Document query, int offset, int maxResults) {
+       	//Create the Lucene query
+	   	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+	   	SearchObject so = qb.buildQuery(query);
+
+	   	return executeSearchQuery(so, offset, maxResults);
+	}
+
 	public Map executeSearchQuery(Document searchQuery, Map options) {
-        List entries = new ArrayList();
-        Hits hits = new Hits(0);
-       
        	Document qTree = SearchUtils.getInitalSearchDocument(searchQuery, options);
     	SearchUtils.getQueryFields(qTree, options); 
 
@@ -621,14 +627,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	//Set the sort order
 	   	SortField[] fields = SearchUtils.getSortFields(options); 
 	   	so.setSortBy(fields);
-		    	
-	   	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
-		    	
+
 	   	if(logger.isDebugEnabled()) {
 	   		logger.debug("Query is in executeSearchQuery: " + searchQuery.asXML());
-	   		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
 	   	}
-		    	
+
 	   	int maxResults = 10;
 	   	int offset = 0;
 	   	if (options != null) {
@@ -637,6 +640,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   		if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
 	   			offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 	   	}
+
+	   	return executeSearchQuery(so, offset, maxResults);
+	}
+	protected Map executeSearchQuery(SearchObject so, int offset, int maxResults) {
+        List entries = new ArrayList();
+        Hits hits = new Hits(0);
+
+	   	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+
+	   	if(logger.isDebugEnabled()) {
+	   		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
+	   	}
+
 	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
 	   	try {
 	        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
@@ -645,15 +661,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	} finally {
 	   		luceneSession.close();
 	    }
-	       
+
 	    entries = SearchUtils.getSearchEntries(hits);
 	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), EntityIndexUtils.CREATORID_FIELD);
-               
+
         Map retMap = new HashMap();
         retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
         retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
         retMap.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
- 
+
     	return retMap; 
 	}	
     

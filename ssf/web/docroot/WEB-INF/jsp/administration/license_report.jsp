@@ -63,10 +63,10 @@ License Audit Report  -- <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy-
 </p>
 <p>
 License Information<br/>
-  Key id:    BETA<br/>
-  Issued:    BETA<br/>
-  Effective: BETA<br/>
-  Users:     BETA<br/>
+  Key id:    ${ssLicenseKey}<br/>
+  Issued:    ${ssLicenseIssued}<br/>
+  Effective: ${ssLicenseEffective}<br/>
+  Users:     ${ssLicenseUsers}<br/>
 </p><%--
 --%><c:set var="highWater" value="-1"/><%--
 --%><c:set var="highWaterDate" value=""/><%--
@@ -102,7 +102,7 @@ Usage History
 Report checksum: 41fec13e30afd9cffe48a20ba5ce55982f95c0cf
 </p>
 <p>
-Please send the audit report to: BETA
+${ssLicenseContact}
 </p>   
 </c:if>
 </td></tr></table>

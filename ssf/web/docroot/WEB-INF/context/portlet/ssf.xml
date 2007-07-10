@@ -45,6 +45,7 @@
 		
 	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
 	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LicenseReportController" />
+	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageLicenseController" />
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
 	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
@@ -99,6 +100,7 @@
 
 						<entry key="login_report"><ref bean="loginReportController"/></entry>
 						<entry key="license_report"><ref bean="licenseReportController"/></entry>
+						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
 						<entry key="activity_report"><ref bean="activityReportController"/></entry>
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
 					</map>

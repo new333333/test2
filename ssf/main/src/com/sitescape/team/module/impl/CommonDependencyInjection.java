@@ -18,6 +18,7 @@ import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.fi.connection.ResourceDriverManager;
+import com.sitescape.team.license.LicenseManager;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;
 import com.sitescape.team.search.LuceneSessionFactory;
@@ -55,6 +56,7 @@ public abstract class CommonDependencyInjection {
 	protected PresenceService presenceService;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	protected ResourceDriverManager resourceDriverManager;
+	protected LicenseManager licenseManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -127,6 +129,12 @@ public abstract class CommonDependencyInjection {
 	}
 	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {
 		this.resourceDriverManager = resourceDriverManager;
+	}
+	public LicenseManager getLicenseManager() {
+		return licenseManager;
+	}
+	public void setLicenseManager(LicenseManager licenseManager) {
+		this.licenseManager = licenseManager;
 	}
 
 }

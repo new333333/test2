@@ -10,11 +10,31 @@
  */
 package com.sitescape.team.module.license;
 
-import com.sitescape.team.util.SPropsUtil;
+import java.util.Calendar;
+
+import com.sitescape.team.SingletonViolationException;
+import com.sitescape.team.license.LicenseManager;
 
 public class LicenseChecker {
 
-	private static String releaseType;
+	private static LicenseChecker instance = null;
+	public LicenseChecker() {
+		if(instance != null)
+			throw new SingletonViolationException(LicenseChecker.class);
+		
+		instance = this;
+	}
+    private static LicenseChecker getInstance() {
+    	return instance;
+    }
+
+    private LicenseManager licenseManager;
+	public void setLicenseManager(LicenseManager licenseManager) {
+		this.licenseManager = licenseManager;
+	}
+	protected LicenseManager getLicenseManager() {
+		return licenseManager;
+	}
 	
 	/**
 	 * Check if the license permits the specified feature to be executed within
@@ -28,27 +48,16 @@ public class LicenseChecker {
 	 * @return
 	 */
 	public static boolean isAuthorizedByLicense(String featureName) {
-		// TODO This is a 100% fake implementation and must be completely 
-		// re-written to use the real License Manager.
-		
-		init();
-		
-		if(featureName.equals("com.sitescape.team.module.folder.MirroredFolder")) {
-			return authorizedUnlessOpen();
-		} else if (featureName.equals("com.sitescape.team.module.workflow.Workflow")) {
-			return authorizedUnlessOpen();		
-		} else {
-			return false; // brain dead and stubborn
-		}
+		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName);
 	}
 	
-	private static void init() {
-		if(releaseType == null) {
-			releaseType = SPropsUtil.getString("release.type", "open");
-		}
+	public static boolean inCompliance()
+	{
+		return getInstance().getLicenseManager().inCompliance();
 	}
 	
-	private static boolean authorizedUnlessOpen() {
-		return !releaseType.equals("open");
+	public static boolean validLicense(Calendar when)
+	{
+		return getInstance().getLicenseManager().validLicense(when);
 	}
 }

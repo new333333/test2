@@ -10,20 +10,29 @@
  */
 package com.sitescape.team.module.license.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.dom4j.Document;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.Restrictions;
+import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.LicenseMonitor;
+import com.sitescape.team.license.LicenseException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
@@ -94,5 +103,58 @@ implements LicenseModule, InitializingBean {
 										 	.add(Restrictions.notNull("password")));
 	}
 
-	abstract public void createSnapshot();
+	public void recordCurrentUsage()
+	{
+		LicenseStats stats = createSnapshot();
+		getReportModule().addLicenseStats(stats);
+
+		stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
+											      getLicenseManager().getExpirationDate());
+		getLicenseManager().recordUserCount(stats.getInternalUserCount(),
+											stats.getExternalUserCount());
+	}
+
+	abstract protected LicenseStats createSnapshot();
+	
+	public void updateLicense() throws AccessControlException, LicenseException
+	{
+		checkAccess(LicenseOperation.manageLicense);
+		getLicenseManager().loadLicense();
+		LicenseStats stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
+											      getLicenseManager().getExpirationDate());
+		getLicenseManager().recordUserCount(stats.getInternalUserCount(),
+											stats.getExternalUserCount());
+	}
+	
+	public void validateLicense() throws LicenseException
+	{
+		getLicenseManager().validate();
+	}
+
+	public Document getLicense()
+	{
+		return getLicenseManager().getLicense();
+	}
+	
+	public boolean testAccess(LicenseOperation operation)
+	{
+   		try {
+   			checkAccess(operation);
+   			return true;
+   		} catch (AccessControlException ac) {
+   			return false;
+   		}		
+	}
+	
+	protected void checkAccess(LicenseOperation operation) throws AccessControlException
+	{
+		switch (operation) {
+		case manageLicense:
+			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(),
+					WorkAreaOperation.SITE_ADMINISTRATION);
+			break;
+		default:
+			throw new NotSupportedException(operation.toString(), "checkAccess");
+		}
+	}
 }

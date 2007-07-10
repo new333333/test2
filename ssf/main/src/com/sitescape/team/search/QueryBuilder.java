@@ -52,8 +52,6 @@ public class QueryBuilder {
 
 	public static final String OR_ELEMENT = "OR";
 
-	public static final String LIKE_ELEMENT = "LIKE";
-
 	public static final String NOT_ELEMENT = "NOT";
 
 	public static final String SORTBY_ELEMENT = "SORTBY";
@@ -63,18 +61,6 @@ public class QueryBuilder {
 	public static final String RANGE_START = "START";
 
 	public static final String RANGE_FINISH = "FINISH";
-
-	public static final String USERACL_ELEMENT = "USERACL";
-
-//	public static final String GROUP_VISIBILITY_ELEMENT = "GROUPVIS";
-
-//	public static final String GROUP_VISIBILITY_ATTRIBUTE = "visibility";
-
-	public static final String RELATIVE_DATE_RANGE_ELEMENT = "DATERANGE";
-
-	public static final String PAST_RANGE_ATTRIBUTE = "past";
-
-	public static final String RANGE_DAYCOUNT_ATTRIBUTE = "dayCount";
 
 	public static final String PERSONALTAGS_ELEMENT = "PERSONALTAGS";
 
@@ -92,8 +78,6 @@ public class QueryBuilder {
 
 	public static final String TAG_ELEMENT = "TAG";
 
-	private static final long DAYMILLIS = 1000 * 60 * 60 * 24;
-	
 	private static final String DEFAULT = LanguageTaster.DEFAULT;
 	
 	
@@ -117,9 +101,6 @@ public class QueryBuilder {
 		Element root = domQuery.getRootElement();
 		if (!root.getText().equals(QUERY_ELEMENT)) {
 			//return "Bad Query Dom Object";
-		}
-		for (Iterator i = root.attributeIterator(); i.hasNext();) {
-			//String attribute = (String)i.next();
 		}
 
 		parseRootElement(root, so);
@@ -193,27 +174,14 @@ public class QueryBuilder {
 			qString += " NOT (";
 			qString += parseElement((Element) node, operator, so);
 			qString += ")";
-		} else if (operator.equals(LIKE_ELEMENT)) {
-			List elements = element.elements();
-			if (elements.size() > 1) {
-				// Only one at a time
-				System.out.println("Problem in the LIKE element");
-			}
-			Node node = (Node) elements.get(0);
-			qString += parseElement((Element) node, operator, so);
-			qString += "~";
 		} else if (operator.equals(SORTBY_ELEMENT)) {
 			processSORTBY(element, so);
 		} else if (operator.equals(LANGUAGE_ELEMENT)) {
 			processLANG(element,so);
 		} else if (operator.equals(RANGE_ELEMENT)) {
 			qString += "(" + processRANGE(element) + ")";
-		} else if (operator.equals(USERACL_ELEMENT)) {
-			return qString;
 		} else if (operator.equals(PERSONALTAGS_ELEMENT)) {
 			qString += "(" + processPERSONALTAGS(element) + ")";
-		} else if (operator.equals(RELATIVE_DATE_RANGE_ELEMENT)) {
-			qString += "(" + processDATERANGE(element) + ")";
 		} else if (operator.equals(FIELD_ELEMENT)) {
 			qString += processFIELD(element);
 		} else if (operator.equals(null)) {
@@ -313,44 +281,6 @@ public class QueryBuilder {
 			}
 		}
 		return ptagString;
-	}
-
-	private String processDATERANGE(Element element) {
-
-		String retStr = "";
-		boolean past = true;
-		int count = 1;
-
-		String pastText = element.attributeValue(PAST_RANGE_ATTRIBUTE);
-		String countText = element.attributeValue(RANGE_DAYCOUNT_ATTRIBUTE);
-
-		if (pastText.equalsIgnoreCase("false"))
-			past = false;
-
-		count = new Integer(countText).intValue();
-
-		Date dateToday = new Date();
-		String today = EntityIndexUtils.formatDayString(dateToday);
-		long millis = dateToday.getTime();
-		long offset = count * DAYMILLIS;
-
-		if (past)
-			offset *= -1;
-
-		millis += offset;
-
-		Date rangeDate = new Date(millis);
-
-		String otherDate = EntityIndexUtils.formatDayString(rangeDate);
-
-		if (past)
-			retStr += EntityIndexUtils.MODIFICATION_DAY_FIELD + ":[ "
-					+ otherDate + " TO " + today + " ]";
-		else
-			retStr += EntityIndexUtils.MODIFICATION_DAY_FIELD + ":[ " + today
-					+ " TO " + otherDate + " ]";
-
-		return retStr;
 	}
 
 	private String processRANGE(Element element) {

@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 
+import org.dom4j.Document;
+import org.dom4j.Node;
+
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.web.WebKeys;
 
@@ -29,6 +32,20 @@ public class LicenseReportController extends AbstractReportController {
 		}
 		model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
 		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+
+		Document doc = getLicenseModule().getLicense();
+		Node node = null;
+		model.put(WebKeys.LICENSE_KEY, getValue(doc, "//KeyInfo/@uid"));
+		model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
+		model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + getValue(doc, "//Dates/@expiration"));
+		model.put(WebKeys.LICENSE_USERS, getValue(doc, "//Users/@registered"));
+		model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
+	}
+	
+	private String getValue(Document doc, String xpath)
+	{
+		Node node = null;
+		return (node=doc.selectSingleNode(xpath))!=null?node.getText():"";
 	}
 	
 	@Override

@@ -104,7 +104,15 @@ public interface BinderModule {
      * @return
      */
     public Map executeSearchQuery(Document searchQuery, Map options);
-   /**
+    /**
+     * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
+     * @param query
+     * @param offset
+     * @param maxResults
+     * @return
+     */
+    public Map executeSearchQuery(Document query, int offset, int maxResults);
+    /**
      * Get a binder
      * @param binderId
      * @return

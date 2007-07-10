@@ -21,6 +21,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.license.LicenseManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AccessType;
@@ -43,6 +44,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     private FunctionManager functionManager;
     private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
     private ProfileDao profileDao;
+    private LicenseManager licenseManager;
     public FunctionManager getFunctionManager() {
         return functionManager;
     }
@@ -61,6 +63,12 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	}
 	protected ProfileDao getProfileDao() {
 		return profileDao;
+	}
+	public void setLicenseManager(LicenseManager licenseManager) {
+		this.licenseManager = licenseManager;
+	}
+	protected LicenseManager getLicenseManager() {
+		return licenseManager;
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
     	//need to use this work areas owner, even if inheriting
@@ -130,6 +138,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
 
 		if (user.isSuper()) return true;
+		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && !getLicenseManager().validLicense())return false;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)
