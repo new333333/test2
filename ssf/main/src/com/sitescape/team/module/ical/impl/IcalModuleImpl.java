@@ -57,6 +57,7 @@ import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.PercentComplete;
 import net.fortuna.ical4j.model.property.Priority;
@@ -413,6 +414,7 @@ public class IcalModuleImpl implements IcalModule {
 		calendar.getProperties().add(PROD_ID);
 		calendar.getProperties().add(Version.VERSION_2_0);
 		calendar.getProperties().add(CalScale.GREGORIAN);
+		calendar.getProperties().add(Method.REQUEST);
 		return calendar;
 	}
 
@@ -455,24 +457,17 @@ public class IcalModuleImpl implements IcalModule {
 	private VToDo createVTodo(DefinableEntity entry, Event event,
 			TimeZone timeZone) {
 		VToDo vToDo = null;
-		if (!event.isAllDayEvent()) {
-			DateTime dtStart = new DateTime(event.getDtStart().getTime());
-			dtStart.setTimeZone(timeZone);
-			
-			DateTime due = new DateTime(event.getDtEnd().getTime());
-			due.setTimeZone(timeZone);
+		DateTime dtStart = new DateTime(event.getDtStart().getTime());
+		dtStart.setTimeZone(timeZone);
+		
+		DateTime due = new DateTime(event.getDtEnd().getTime());
+		due.setTimeZone(timeZone);
 
-			vToDo = new VToDo(dtStart, due, entry.getTitle());
-			vToDo.getProperties().getProperty(Property.DTSTART).getParameters()
-					.add(Value.DATE_TIME);
-			vToDo.getProperties().getProperty(Property.DUE).getParameters()
-				.add(Value.DATE_TIME);			
-		} else {
-			Date d = new Date(event.getDtStart().getTime());
-			vToDo = new VToDo(d, entry.getTitle());
-			vToDo.getProperties().getProperty(Property.DTSTART).getParameters()
-					.add(Value.DATE);
-		}
+		vToDo = new VToDo(dtStart, due, entry.getTitle());
+		vToDo.getProperties().getProperty(Property.DTSTART).getParameters()
+				.add(Value.DATE_TIME);
+		vToDo.getProperties().getProperty(Property.DUE).getParameters()
+			.add(Value.DATE_TIME);			
 
 		setComponentDescription(vToDo, entry.getDescription().getText());
 		setComponentUID(vToDo, entry, event);
