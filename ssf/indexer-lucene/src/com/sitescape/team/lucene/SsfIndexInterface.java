@@ -43,6 +43,8 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public void commit(String indexname) throws RemoteException;
 
 	public void stop(String indexname) throws RemoteException;
+	
+	public void stop() throws RemoteException;
 
 	public void optimize(String indexname) throws RemoteException;
 
