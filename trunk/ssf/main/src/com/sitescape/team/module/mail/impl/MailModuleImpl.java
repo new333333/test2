@@ -31,6 +31,7 @@ import java.util.TimeZone;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -39,6 +40,7 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
@@ -68,6 +70,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.ical.util.ICalUtils;
 import com.sitescape.team.jobs.FailedEmail;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.definition.notify.Notify;
@@ -519,8 +522,19 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			if (timezone == null) timezone = TimeZone.getDefault();
 			df.setTimeZone(timezone);
 			notify.setDateFormat(df);
+			
 			message = null;
-			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+			int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
+
+			if (notify.getEvents() != null && notify.getEvents().entrySet().size() == 1) {
+				// Need to attach icalendar as alternative content,
+				// but only if there is one iCalendar.
+				// More iCalendars means: there are more entries to send
+				// and those iCalendars are not alternative to email text 
+				// (e.g. send folder per email).
+				multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
+			}
+			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
 			helper.setSubject(processor.getSubject(folder, notify));
 			for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
 				String email = (String)iter.next();
@@ -583,19 +597,46 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (!iCal.getComponents("VTODO").isEmpty()) {
 					component = "VTODO";
 				}
-				String contentType = "text/calendar" + (component != null ? "; component=" + component : "");
-				
+				String contentType = "text/calendar";
+				contentType += (component != null ? "; component=" + component : "");
+				contentType += "; method=" + ICalUtils.getMethod(iCal);
 				
 				DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), contentType, fileName);
+		
+				MimeBodyPart mimeICalendarAttachment = new MimeBodyPart();
+				mimeICalendarAttachment.setDisposition(MimeBodyPart.ATTACHMENT);
+				mimeICalendarAttachment.setFileName(fileName);
+				mimeICalendarAttachment.setDataHandler(new DataHandler(dataSource));
+				helper.getMimeMultipart().addBodyPart(mimeICalendarAttachment);				
 				
-				MimeBodyPart mimeBodyPart = new MimeBodyPart();
-				mimeBodyPart.setDisposition(MimeBodyPart.INLINE);
-				mimeBodyPart.setFileName(fileName);
-				// We're using setHeader here to remain compatible with JavaMail 1.2,
-				// rather than JavaMail 1.3's setContentID.
-				// mimeBodyPart.setHeader(HEADER_CONTENT_ID, "<" + contentId + ">");
-				mimeBodyPart.setDataHandler(new DataHandler(dataSource));
-				helper.getMimeMultipart().addBodyPart(mimeBodyPart);
+				
+				// attach alternative iCalendar content
+				if (eventsSize == 1) {
+					MimeMultipart mimeMultipart = helper.getMimeMultipart();
+					MimeBodyPart bodyPart = null;
+					for (int i = 0; i < mimeMultipart.getCount(); i++) {
+						BodyPart bp = mimeMultipart.getBodyPart(i);
+						if (bp.getFileName() == null) {
+							bodyPart = (MimeBodyPart) bp;
+						}
+					}
+					if (bodyPart == null) {
+						MimeBodyPart mimeBodyPart = new MimeBodyPart();
+						mimeMultipart.addBodyPart(mimeBodyPart);
+						bodyPart = mimeBodyPart;
+					}
+					try {
+						MimeMultipart bodyContent = (MimeMultipart)bodyPart.getContent();
+						
+						MimeBodyPart mimeICalendarAlternative = new MimeBodyPart();
+						mimeICalendarAlternative.setDataHandler(new DataHandler(dataSource));
+						
+						bodyContent.addBodyPart(mimeICalendarAlternative);
+					
+					} catch (IOException e) {
+						logger.error(e);
+					}
+				}
 				c++;
 			}
 			notify.clearEvents();

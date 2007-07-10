@@ -23,4 +23,14 @@ public class ICalUtils {
 		return null;
 	}
 	
+	public static String getMethod(Calendar calendar) {
+		
+		Property method = calendar.getProperty(Property.METHOD);
+		if (method != null) {
+			return method.getValue();
+		}
+		
+		return null;
+	}	
+	
 }
