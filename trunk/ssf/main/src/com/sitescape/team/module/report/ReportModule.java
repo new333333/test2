@@ -1,5 +1,6 @@
 package com.sitescape.team.module.report;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public interface ReportModule {
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
 
 	public void addLicenseStats(LicenseStats stats);
+	public LicenseStats getLicenseHighWaterMark(Calendar startDate, Calendar endDate);
 	
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);

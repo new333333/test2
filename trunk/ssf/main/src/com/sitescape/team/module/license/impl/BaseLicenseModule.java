@@ -6,9 +6,10 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.LicenseStats;
 
 public class BaseLicenseModule extends AbstractLicenseModule {
-	public void createSnapshot()
+	public LicenseStats createSnapshot()
 	{
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		getReportModule().addLicenseStats(new LicenseStats(zoneId, new Date(), countInternalUsers(zoneId), 0, 0));
+		LicenseStats stats = new LicenseStats(zoneId, new Date(), countInternalUsers(zoneId), 0, 0);
+		return stats;
 	}
 }

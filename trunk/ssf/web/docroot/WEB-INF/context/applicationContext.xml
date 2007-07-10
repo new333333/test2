@@ -325,6 +325,7 @@
 		<property name="functionManager"><ref local="functionManager"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="licenseManager"><ref bean="licenseManager"/></property>
 	</bean>
 	<!--<bean id="accessControlManager" class="com.sitescape.team.security.impl.NullAccessControlManager">
 	</bean>
@@ -417,6 +418,7 @@
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
+		<property name="licenseManager"><ref bean="licenseManager"/></property>
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
@@ -558,7 +560,8 @@
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
-	<bean id="definitionBuilderConfig" class="com.sitescape.team.module.definition.DefinitionConfigurationBuilder">
+	<bean id="definitionBuilderConfig" class="com.sitescape.team.module.definition.DefinitionConfigurationBuilder"
+		depends-on="licenseChecker">
 		<property name="configFiles">
 			<list>
 				<value>config/definition_builder_config.xml</value>
@@ -614,6 +617,9 @@
 	<bean id="licenseModule"  parent="baseTransactionProxy">
 		<property name="target"><ref bean="licenseModuleTarget"/></property>
 	</bean>			
+	<bean id="licenseChecker" class="com.sitescape.team.module.license.LicenseChecker">
+		<property name="licenseManager"><ref bean="licenseManager"/> </property>
+	</bean>
 
 	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
 		

@@ -31,6 +31,13 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 <ssf:skipLink tag="<%= NLT.get("skip.footer.toolbar") %>" id="footerToolbar_${ss_footerToolbarCount}_${renderResponse.namespace}">
 
 <c:set var="isWebdavSupported" value="<%= webdavSupportedFooter %>"/>
+<ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
+<ssf:ifLicenseExpired invert="true">
+  <ssf:ifLicenseExpired inThisManyDays="30"><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expiring.soon.warning"/></span></div></ssf:ifLicenseExpired>
+  <ssf:ifLicenseExpired inThisManyDays="30" invert="true">  
+	  <ssf:ifLicenseOutOfCompliance><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.out.of.compliance"/></span></div></ssf:ifLicenseOutOfCompliance>
+  </ssf:ifLicenseExpired>
+</ssf:ifLicenseExpired>
 <c:if test="${!empty ssFooterToolbar}">
 <div align="center" class="ss_footer_toolbar">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/footer_toolbar" offsetX="-13" offsetY="-15" 

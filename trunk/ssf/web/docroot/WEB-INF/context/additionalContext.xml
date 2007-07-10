@@ -35,6 +35,8 @@
 	<bean id="archiveStore" class="com.sitescape.team.repository.archive.impl.NullArchiveStore">
 	</bean>
 	
+	<bean id="licenseManager" class="com.sitescape.team.license.impl.NullLicenseManager">
+	</bean>
 	<!-- ============================== Document Converter ============================ -->
 
     <bean id="textConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">

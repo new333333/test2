@@ -41,6 +41,11 @@ public interface Facade {
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML);
 
 	/*
+	 * Set maxResults = -1 for "all results"
+	 */
+	public String search(String query, int offset, int maxResults);
+
+	/*
     public void deleteFolderEntry(long folderId, long entryId);
 
 	public long addReply(long folderId, long parentEntryId, String definitionId, String inputDataAsXML);

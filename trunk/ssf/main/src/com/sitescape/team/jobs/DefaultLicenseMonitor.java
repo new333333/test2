@@ -24,6 +24,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -35,7 +36,7 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 			throws JobExecutionException
 	{
 		LicenseModule licenseModule = (LicenseModule) SpringContextUtil.getBean("licenseModule");
-		licenseModule.createSnapshot();
+		licenseModule.recordCurrentUsage();
 	}
 
 	public void schedule(Long zoneId, int hour)

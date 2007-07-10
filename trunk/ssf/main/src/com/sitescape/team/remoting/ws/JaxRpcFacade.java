@@ -65,6 +65,11 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.uploadCalendarEntries(folderId, iCalDataAsXML);
 	}
 
+	public String search(String query, int offset, int maxResults)
+	{
+		return this.facade.search(query, offset, maxResults);
+	}
+
 	/*
 	public void deleteFolderEntry(long binderId, long entryId) {
 		this.facade.deleteFolderEntry(binderId, entryId);

@@ -246,12 +246,16 @@ public class WebUrlUtil {
 	}
 	
 	public static String getEntryViewURL(FolderEntry entry) {
+		return getEntryViewURL(entry.getParentFolder().getId().toString(), entry.getId().toString());
+	}
+	
+	public static String getEntryViewURL(String parentBinderId, String entryId) {
 		String entryUrl="";
 		try {
 			AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", false);
 			url.setParameter("action", WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-			url.setParameter(WebKeys.URL_BINDER_ID, entry.getParentFolder().getId().toString());
-			url.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+			url.setParameter(WebKeys.URL_BINDER_ID, parentBinderId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			entryUrl = url.toString();
 		}
 		catch(Exception e) {}

@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.samples.remoting.client.util;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
 
@@ -17,6 +18,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 public class FacadeClientHelper {
@@ -62,4 +64,32 @@ public class FacadeClientHelper {
 		}
 	}
 
+	public static String readText(String filename)
+	{
+		StringBuffer buf = new StringBuffer();
+		try {
+			FileReader f = new FileReader(filename);
+			char in[] = new char[32768];
+			int len;
+			while((len = f.read(in, 0, 32767)) > 0) {
+				buf.append(in, 0, len);
+			}
+		} catch(IOException e) {
+			System.err.println("Error reading file " + filename + ": " + e);
+		}
+		return buf.toString();
+	}
+
+	public static void main(String args[]) {
+		try {
+//		 turn validation on
+			SAXReader reader = new SAXReader(true);
+//		 request XML Schema validation
+			reader.setFeature("http://apache.org/xml/features/validation/schema", true);
+			Document document = reader.read( args[0] );
+			prettyPrintXML(document);
+		} catch(Exception e) {
+			System.err.println(e);
+		}
+	}
 }

@@ -124,6 +124,29 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public void addLicenseStats(LicenseStats stats) {
 		getCoreDao().save(stats);
 	}
+	
+	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
+	{
+		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+		
+				List result = session.createCriteria(LicenseStats.class)
+						.add(Restrictions.ge("snapshotDate", startDate.getTime()))
+						.add(Restrictions.lt("snapshotDate", endDate.getTime()))
+						.setProjection(Projections.projectionList()
+								.add(Projections.max("internalUserCount"))
+								.add(Projections.max("externalUserCount")))
+					.list();
+				return result;
+			}});
+		LicenseStats stats = new LicenseStats();
+		if(marks.size() > 0) {
+			Object cols[] = (Object[]) marks.get(0);
+			stats.setInternalUserCount(((Long) cols[0]).longValue());
+			stats.setExternalUserCount(((Long) cols[1]).longValue());
+		}
+		return stats;
+	}
 
 	public List<Map<String,Object>> generateReport(Collection binderIds, boolean byUser, Date startDate, Date endDate) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();

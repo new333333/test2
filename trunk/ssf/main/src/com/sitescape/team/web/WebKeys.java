@@ -203,6 +203,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
+	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
@@ -555,6 +556,13 @@ public class WebKeys {
     public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LICENSE_DATA="ssLicenseData";
+    public static final String LICENSE_KEY="ssLicenseKey";
+    public static final String LICENSE_ISSUED="ssLicenseIssued";
+    public static final String LICENSE_EFFECTIVE="ssLicenseEffective";
+    public static final String LICENSE_USERS="ssLicenseUsers";
+    public static final String LICENSE_CONTACT="ssLicenseContact";
+    public static final String LICENSE="ssLicense";
+    public static final String LICENSE_EXCEPTION="ssLicenseException";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
