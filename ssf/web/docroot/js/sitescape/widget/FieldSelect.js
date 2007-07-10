@@ -166,7 +166,9 @@ dojo.widget.defineWidget(
 		},
 
 		addCheckboxField: function(value, label) {
-			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+"checkbox", id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+			var localElementName="checkbox";
+			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
+			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+localElementName, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
 			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
 			if (value && label) {
 				this.nextNodeRef.setValue(value);
@@ -175,7 +177,9 @@ dojo.widget.defineWidget(
 		},
 		
 		addRadioField: function(value, label) {
-			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+"radio", id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+			var localElementName="radio";
+			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
+			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+localElementName, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
 			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
 			if (value && label) {
 				this.nextNodeRef.setValue(value);
@@ -184,7 +188,9 @@ dojo.widget.defineWidget(
 		},
 		
 		addSelectBoxField: function(value, label) {
-			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+"selectbox", id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+			var localElementName="selectbox";
+			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
+			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+localElementName, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
 			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
 			if (value && label) {
 				this.nextNodeRef.setValue(value);

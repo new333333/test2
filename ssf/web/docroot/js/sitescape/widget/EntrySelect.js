@@ -39,8 +39,9 @@ dojo.widget.defineWidget(
 				return;
 			}
 			var id = this.widgetContainer.id+entryId;
-			var stepsProp = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+entryId, id:id, name:"elementName"+this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, nestedUrl:this.nestedUrl, entryTypeId:entryId, widgetContainer:this.widgetContainer};
+			var stepsProp = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+entryId+"&elementName="+fieldId, id:id, name:"elementName"+this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, nestedUrl:this.nestedUrl, entryTypeId:entryId, widgetContainer:this.widgetContainer};
 			this.widgetStepsRef = dojo.widget.createWidget("FieldSelect", stepsProp, this.widgetContainer, "last");
+			
 			this.widgetStepsRef.setDefaultValues(fieldId, fieldLabel, userValues, fieldType, userValueLabel);
 			
 		}
