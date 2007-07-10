@@ -165,7 +165,7 @@
 	<c:set var="ss_sliding_table_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_sliding_table_link_hover_color" value="#BBBBBB" scope="request"/>
 	<c:set var="ss_sliding_table_row0_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_sliding_table_row1_background_color" value="#ECECEC" scope="request"/>
+	<c:set var="ss_sliding_table_row1_background_color" value="#DBF2E6" scope="request"/>
 
 <% //TAG %>
 	<c:set var="ss_tag_color" value="#996699" scope="request"/>
