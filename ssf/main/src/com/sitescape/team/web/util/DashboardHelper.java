@@ -215,6 +215,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
@@ -274,6 +275,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
+						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSummaryConfigBean(binder, ssDashboard, 
@@ -863,6 +865,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
 				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
 				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
+				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY) ||
 				component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
 				
 				idData.put(WebKeys.BINDER_ID_LIST, folderIds);  //longs
@@ -1033,7 +1036,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName) ||
-						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
+						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY.equals(cName)) {
 					
 					//multi-select	
 					Set <String> folderIds = LongIdUtil.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
@@ -1152,6 +1156,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			return Definition.VIEW_STYLE_PHOTO_ALBUM;
 		} else if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(name)) {
 			return Definition.VIEW_STYLE_TASK;
+		} else if (ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY.equals(name)) {
+			return Definition.VIEW_STYLE_CALENDAR;
 		}
 		return Definition.VIEW_STYLE_DEFAULT;
 	}

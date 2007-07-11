@@ -3682,7 +3682,7 @@ span.ss_cal_eventTime {
   background-color: ${ss_calendar_today_background_color};
 }
 
-ul#ss_calendarNaviBar {	
+ul.ss_calendarNaviBar {	
 	font-family: Arial;
 	border: 1px solid #CCCCCC;
 	background-color: #AFC8E3;
@@ -3693,7 +3693,7 @@ ul#ss_calendarNaviBar {
 }
 
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOption, ul#ss_calendarNaviBar .ss_calendarNaviBarSeparator {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	position:relative;
 	vertical-align: middle;
 	float: left;
@@ -3702,19 +3702,19 @@ ul#ss_calendarNaviBar li.ss_calendarNaviBarOption, ul#ss_calendarNaviBar .ss_cal
 	display: inline;
 }
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOption {	
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption {	
 	padding: 0 4px 0 4px;
 	margin: 0;	
 }
 
-ul#ss_calendarNaviBar .ss_calendarNaviBarSeparator {
+ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	border-left: 1px dotted #FFFFFF;
 	margin: 0 5px 0 5px;
 	padding: 0;
 	width: 0;
 }
 
-ul#ss_calendarNaviBar .ss_hoursSelectorTitle {
+ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
 	background-color: #AFC8E3;
 	color: #333333;
 	text-decoration: none;
@@ -3722,7 +3722,7 @@ ul#ss_calendarNaviBar .ss_hoursSelectorTitle {
 	font-size: 11px;
 }
 
-ul#ss_calendarNaviBar .ss_calHoursSelectorMenu {
+ul.ss_calendarNaviBar .ss_calHoursSelectorMenu {
 	height: 22px;
 	<c:if test="<%= isIE %>">
 		margin-top: 6px;
@@ -3732,42 +3732,42 @@ ul#ss_calendarNaviBar .ss_calHoursSelectorMenu {
 	</c:if>	
 }
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
 	padding-top: 3px;
 }
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOptionBigImg {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionBigImg {
 	padding-top: 1px;
 	font-size: 0;
 }
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOption > a > img.ss_fullHeight {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption > a > img.ss_fullHeight {
 	margin: 1px 0 1px 0;
 }
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
 	background-color: #AFC8E3;
 }
 
-ul#ss_calendarNaviBar li.ss_calendarNaviBarOption a#anchor_ss_goto img {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a#anchor_ss_goto img {
 	margin: 7px 0 7px 0;
 }
 
-ul#ss_calendarNaviBar span#ss_calViewDatesDescriptions {	
+ul.ss_calendarNaviBar span.ss_calViewDatesDescriptions {	
 	color: #FFFFFF;
 }
 
-ul#ss_calendarNaviBar li.ss_calViewDatesDescriptionLi {
+ul.ss_calendarNaviBar li.ss_calViewDatesDescriptionLi {
 	width: 208px;
 	text-align: center;
 	padding: 0;
 }
 
-ul#ss_calendarNaviBar li.ss_calSelectDate {
+ul.ss_calendarNaviBar li.ss_calSelectDate {
 	padding: 0 10px 0 7px;
 }
 
-ul#ss_calendarNaviBar li.ss_taskViewOptions {
+ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	border: 1px solid white; 
 	height: 24px; 
 	margin: 2px 0 2px 0;
@@ -3887,7 +3887,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 /* Ajax loading... */
-#ss_loading {
+#ss_loading, .ss_loading {
 	text-align: center;
 }
 
@@ -4002,7 +4002,7 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	margin:0px 0px 0px 0px;
 }
 
-#ss_searchResult, .ss_searchResult {
+.ss_searchResult {
 	margin: 0px;
 	padding:0px;
 <c:if test="<%= isIE %>">	
@@ -4010,7 +4010,7 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	/* width: 502px;*/
 </c:if>
 }
-#ss_searchResult li,  .ss_searchResult li {
+.ss_searchResult li {
 	border-bottom: 1px solid #cccccc;
 	display:block;
 	margin:12px 12px 12px 12px;	

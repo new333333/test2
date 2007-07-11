@@ -66,6 +66,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_BINDER_IDS="binderIds";
     public static final String URL_FOLDER_ID = "folderId";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";

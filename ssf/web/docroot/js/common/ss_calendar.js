@@ -105,7 +105,9 @@ Date.prototype.addDays = function (days) {
 }
 
 
-function ss_calendar() {
+function ss_calendar(prefix) {
+	
+	var prefix = prefix;
 
 	// Records data about calendars (e.g., display colors, tick formats, layout data)
 	var ss_cal_CalData = {
@@ -186,8 +188,7 @@ function ss_calendar() {
 	    		return;
 	    	}
 	
-	    	var url = ss_findEventsUrl;
-	    	
+	    	var url = window["ss_findEventsUrl" + prefix];
 	    	var dateToLoad = date;
 	    	if (requiredDay && !ss_cal_CalData.getMonthViewInfo(requiredDay)) {
 	    		dateToLoad = requiredDay;
@@ -209,7 +210,7 @@ function ss_calendar() {
 					alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-				    var loading = document.getElementById("ss_loading");
+				    var loading = document.getElementById("ss_loading" + prefix);
 			    	if (loading) {
 			    		loading.parentNode.removeChild(loading);
 			    	}
@@ -248,6 +249,7 @@ function ss_calendar() {
 					ss_cal_Events.setEventTypeByName(data.eventType);
 					
 			        ss_cal_Events.redrawAll();
+			        
 				},
 							
 				mimetype: "text/json",
@@ -290,16 +292,16 @@ function ss_calendar() {
 		    		this.firstDayToShow = this.currentDate;
 		    	}
 		    	
-	            dojo.html.hide(dojo.byId("ss_cal_MonthGridMaster"));
-	            dojo.html.show(dojo.byId("ss_cal_DayGridMaster"));
+	            dojo.html.hide(dojo.byId("ss_cal_MonthGridMaster" + prefix));
+	            dojo.html.show(dojo.byId("ss_cal_DayGridMaster" + prefix));
 	
-	            this.drawDayHeader("ss_cal_dayGridHeader", this.gridSize, this.firstDayToShow);
-	            this.drawDayGrid("ss_cal_dayGridAllDay", ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_allDay", 1); 
-	            this.drawDayGrid("ss_cal_dayGridHour", ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_hourGrid", 0); 
-	            this.drawHourMarkers("hourHeader", Date.hourTickList);
+	            this.drawDayHeader("ss_cal_dayGridHeader" + prefix, this.gridSize, this.firstDayToShow);
+	            this.drawDayGrid("ss_cal_dayGridAllDay" + prefix, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_allDay", 1); 
+	            this.drawDayGrid("ss_cal_dayGridHour" + prefix, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_hourGrid", 0); 
+	            this.drawHourMarkers("hourHeader" + prefix, Date.hourTickList);
 	            if (!this.dayGridCreated && !this.readOnly) {
-	                dojo.event.connect(dojo.byId("ss_cal_dayGridHour"),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour"))});
-	                dojo.event.connect(dojo.byId("ss_cal_dayGridAllDay"), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay"))});
+	                dojo.event.connect(dojo.byId("ss_cal_dayGridHour" + prefix),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + prefix))});
+	                dojo.event.connect(dojo.byId("ss_cal_dayGridAllDay" + prefix), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + prefix))});
 	                this.dayGridCreated = true;
 	            }
 				this.showCalendarDaysDescription(this.firstDayToShow);
@@ -307,8 +309,8 @@ function ss_calendar() {
 	        	var monthViewInfo = ss_cal_CalData.getMonthViewInfo(this.currentDate);
 	    		this.firstDayToShow = monthViewInfo.beginView;
 	    		
-	            dojo.html.hide(dojo.byId("ss_cal_DayGridMaster"));
-	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster"));
+	            dojo.html.hide(dojo.byId("ss_cal_DayGridMaster" + prefix));
+	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster" + prefix));
 	            
 				this.drawMonthGrid(ss_cal_CalData.today, this.currentDate, monthViewInfo);
 				this.showCalendarMonthDescription();
@@ -332,7 +334,7 @@ function ss_calendar() {
 	    },
 	
 	    showCalendarDescription: function(descr) {
-	        var calViewDescription = document.getElementById("ss_calViewDatesDescriptions");
+	        var calViewDescription = document.getElementById("ss_calViewDatesDescriptions" + prefix);
 	    	if (calViewDescription) {
 	    		calViewDescription.innerHTML = descr;
 	    	}
@@ -457,7 +459,7 @@ function ss_calendar() {
 	    },
 	
 	    drawMonthGrid: function(today, currentDate, monthViewInfo) {
-	        var container = dojo.byId("ss_cal_monthGrid");
+	        var container = dojo.byId("ss_cal_monthGrid" + prefix);
 	        var vOffset = 0;
 	        var hOffset = 0;
 	        this.monthGridWeeks = 5;
@@ -468,14 +470,14 @@ function ss_calendar() {
 	        }
 	        var vOffsetSize = (1.0 / 7) * 100.0;
 	        var hOffsetSize = (1.0 / this.monthGridWeeks) * 100.0;
-	        var header = dojo.byId("ss_cal_monthGridHeader");
+	        var header = dojo.byId("ss_cal_monthGridHeader" + prefix);
 	
 	
-			var todayMarker = dojo.byId("ss_cal_monthGridToday");
+			var todayMarker = dojo.byId("ss_cal_monthGridToday" + prefix);
 			if (!todayMarker) {
 				todayMarker = document.createElement("div");
 				todayMarker.className = "ss_cal_todayMarker";
-				todayMarker.setAttribute("id", "ss_cal_monthGridToday");
+				todayMarker.setAttribute("id", "ss_cal_monthGridToday" + prefix);
 				container.appendChild(todayMarker);
 			}
 	        todayMarker.style.width = vOffsetSize + "%";
@@ -490,7 +492,7 @@ function ss_calendar() {
 	        }
 	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
 	
-	        var v = dojo.dom.getFirstChildElement(dojo.byId("ss_cal_monthGridHeader"));
+	        var v = dojo.dom.getFirstChildElement(dojo.byId("ss_cal_monthGridHeader" + prefix));
 	        while (v) {
 	            if (dojo.html.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
 	            v = dojo.dom.getNextSiblingElement(v);
@@ -518,7 +520,7 @@ function ss_calendar() {
 	            vOffset += vOffsetSize;
 	        }
 	
-	        while (hOffset < 100) {
+	        while (hOffset < 99) {
 	            hOffset += hOffsetSize;
 	            var hrule = document.createElement("div");
 	            hrule.className = "ss_cal_monthHRule";
@@ -551,7 +553,7 @@ function ss_calendar() {
 	    drawMonthGridDayBadge : function(date, counter, container, vOffsetSize, hOffsetSize) {
 	    	var isToday = ss_cal_CalData.isToday(date);
 	    	if (isToday) {
-	    		var today = dojo.byId("ss_cal_monthGridToday");
+	    		var today = dojo.byId("ss_cal_monthGridToday" + prefix);
 				today.style.left = (vOffsetSize * (counter % 7)) + "%";
 	            today.style.top = (hOffsetSize * Math.floor(counter / 7)) + "%";
 	            dojo.html.show(today);
@@ -617,8 +619,8 @@ function ss_calendar() {
 	    },
 	
 	    fullDayGrid: function() {
-	        outer = dojo.byId("ss_cal_dayGridWindowOuter");
-	        inner = dojo.byId("ss_cal_dayGridWindowInner");
+	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
+	        inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
 	        //outer.style.height = "1008px";
 	        //inner.style.top = "-3px";
 	        
@@ -626,7 +628,7 @@ function ss_calendar() {
 	        dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 500, end: 1008 }], 200).play();
 	   	    dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -255, end: -3 }], 200).play();
 	        
-	        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours");
+	        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours" + prefix);
 	        var children = celendarHoursSelector.childNodes;
 	        var arrow;
 	        for (var i = 0; i < children.length; i++) {
@@ -642,15 +644,15 @@ function ss_calendar() {
 	    },
 	
 	    workDayGrid: function() {
-	        outer = dojo.byId("ss_cal_dayGridWindowOuter");
-	        inner = dojo.byId("ss_cal_dayGridWindowInner");
+	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
+	        inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
 	        //outer.style.height = "500px";
 	        //inner.style.top = "-255px";
 	        
 	       	dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 1008, end: 500 }], 200).play();
 	       	dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -255 }], 200).play();
 	        
-	        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours");
+	        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours" + prefix);
 	        var children = celendarHoursSelector.childNodes;
 	        var arrow;
 	        for (var i = 0; i < children.length; i++) {
@@ -668,7 +670,7 @@ function ss_calendar() {
 	    	var allHrefIds = ["ss_calDaySelectButton", "ss_cal3DaysSelectButton", "ss_cal5DaysSelectButton", 
 	    				"ss_cal7DaysSelectButton", "ss_cal14DaysSelectButton", "ss_calMonthSelectButton"];
 	    	for (var i = 0; i < allHrefIds.length; i++) {
-	    		dojo.html.setClass(document.getElementById(allHrefIds[i]), allHrefIds[i]);
+	    		dojo.html.setClass(document.getElementById(allHrefIds[i] + prefix), allHrefIds[i]);
 	    	}
 	    	
 	    	// current to active
@@ -679,7 +681,7 @@ function ss_calendar() {
 	    			hrefId = "ss_calDaySelectButton";
 	    		}
 	    	}
-	     	var hrefObj = document.getElementById(hrefId);
+	     	var hrefObj = document.getElementById(hrefId + prefix);
 	     	dojo.html.setClass(hrefObj, hrefId + "Active");
 	    }
 	}
@@ -731,12 +733,12 @@ function ss_calendar() {
 	            if (this.allDayCount[i] > maxEvents) { maxEvents = this.allDayCount[i]; }
 	        }
 	        if (isIE) {
-	            dojo.byId("ss_cal_dayGridAllDay").style.height = ((maxEvents + 1) * 21) + "px";
+	            dojo.byId("ss_cal_dayGridAllDay" + prefix).style.height = ((maxEvents + 1) * 21) + "px";
 	            // Force IE to recalculate the offset of the next blocks
-	            dojo.byId("ss_cal_dayGridWindowOuter").style.top = "1px";
-	            dojo.byId("ss_cal_dayGridWindowOuter").style.top = "0px";
+	            dojo.byId("ss_cal_dayGridWindowOuter" + prefix).style.top = "1px";
+	            dojo.byId("ss_cal_dayGridWindowOuter" + prefix).style.top = "0px";
 	        } else {
-	            dojo.lfx.propertyAnimation("ss_cal_dayGridAllDay", [{ property: "height", end: ((maxEvents + 1) * 21) }], 100).play();
+	            dojo.lfx.propertyAnimation("ss_cal_dayGridAllDay" + prefix, [{ property: "height", end: ((maxEvents + 1) * 21) }], 100).play();
 	        }
 	    },
 	
@@ -1084,13 +1086,13 @@ function ss_calendar() {
 								
 					
 			            if (e.eventType == "event" && e.allDay) {
-			                var grid = "ss_cal_dayGridAllDay";
+			                var grid = "ss_cal_dayGridAllDay" + prefix;
 			                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
 			                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
 			                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(date.getFullYear(), date.getMonth(), date.getDate()), -1, e.title, e.text,
 			                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid, continues);
 			            } else {
-			                var grid = "ss_cal_dayGridHour";
+			                var grid = "ss_cal_dayGridHour" + prefix;
 			                if (duration == 0) duration = 30;
 			                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
 			                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
@@ -1113,7 +1115,7 @@ function ss_calendar() {
 	        this.undrawEvents();
 	        
 	        for (var d in this.collisionM[this.eventsTypes[this.eventsType]]) {
-	            var grid = "ss_cal_monthGrid";
+	            var grid = "ss_cal_monthGrid" + prefix;
 	                        
 	            var year = 1 * d.substring(0, 4);
 	            var month = 1 * d.substring(5, 7);
@@ -1154,7 +1156,7 @@ function ss_calendar() {
 	
 	    cancelHover: function(animate) {
 	        if (this.overEventId != "") {
-	            var hb = dojo.byId("hoverBox");
+	            var hb = dojo.byId("hoverBox" + prefix);
 	            if (animate) {
 	                dojo.lfx.html.fadeHide(hb, 100).play();
 	            } else {
@@ -1178,7 +1180,7 @@ function ss_calendar() {
 	            //console.log("Hover: " + eventId);
 	            this.hoverEventId = eventId + "-" + gridDay;
 	
-	            var hb = dojo.byId("hoverBox");
+	            var hb = dojo.byId("hoverBox" + prefix);
 	            var ebox = dojo.html.abs(n);
 	            var eboxm = dojo.html.getBorderBox(n);
 	            hb.style.visibility = "visible";
@@ -1304,25 +1306,27 @@ function ss_calendar() {
 	    		}
 	    	}
 	    	
-	    	var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose");
-			var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect");
-			if (this.eventsType == 0) {
-				ss_calChooseEntryTypes.checked = false;
-			} else {
-				ss_calChooseEntryTypes.checked = true;
-				if (this.eventsType == 1) {
-					ss_calSelectEntryTypes.selectedIndex = 0;
+	    	var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose" + prefix);
+			var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect" + prefix);
+			if (ss_calChooseEntryTypes && ss_calSelectEntryTypes) {
+				if (this.eventsType == 0) {
+					ss_calChooseEntryTypes.checked = false;
 				} else {
-					ss_calSelectEntryTypes.selectedIndex = 1;
-				}
-			}    	
+					ss_calChooseEntryTypes.checked = true;
+					if (this.eventsType == 1) {
+						ss_calSelectEntryTypes.selectedIndex = 0;
+					} else {
+						ss_calSelectEntryTypes.selectedIndex = 1;
+					}
+				}    	
+			}
 	    },
 	    
 	    changeEventType: function() {
 	    	var oldEventType = this.eventsType;
 			
-			var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose");
-			var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect");
+			var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose" + prefix);
+			var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect" + prefix);
 			if (!ss_calChooseEntryTypes || !ss_calSelectEntryTypes) {
 				return;
 			}
@@ -1387,6 +1391,7 @@ function ss_calendar() {
 	    var event = ss_cal_Events.eventData[eventId];
 	    var viewHref = ss_viewEventUrl;
 		viewHref += "&entryId=" + event.entryId;
+		viewHref += "&binderId=" + event.binderId;
 	    ss_loadEntryUrl(viewHref, event.entryId);
 	}
 	
@@ -1509,6 +1514,7 @@ function ss_calendar() {
 	        ebox.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
 			var viewHref = ss_viewEventUrl;
 	    	viewHref += "&entryId=" + e.entryId;
+	    	viewHref += "&binderId=" + e.binderId;
 			ebox.innerHTML = '<a href="'+viewHref+'" onClick="'+e.viewOnClick+' return false;">'+(e.title?e.title:'--no title--')+'</a>';
 	        container.appendChild(ebox);
 	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        

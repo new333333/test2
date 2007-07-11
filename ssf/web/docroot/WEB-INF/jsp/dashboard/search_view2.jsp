@@ -78,7 +78,7 @@
 			<div class="ss_clear"></div>
 		</div>
 
-		<ul id="ss_searchResult">
+		<ul class="ss_searchResult">
 		<c:forEach var="entry" items="${ssResultEntries}" varStatus="status">
 		
 			<jsp:useBean id="entry" type="java.util.HashMap" />

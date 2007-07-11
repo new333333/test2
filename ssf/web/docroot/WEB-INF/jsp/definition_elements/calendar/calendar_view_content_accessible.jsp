@@ -14,16 +14,7 @@
 <%@ page import="java.util.HashMap" %>
 <script type="text/javascript">
 
-	var ss_findEventsUrl = "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="find_calendar_events" />
-		    	</ssf:url>";
-
-	var ss_viewEventUrl = ss_viewEntryURL + "&binderId=${ssFolder.id}";
+	var ss_viewEventUrl = ss_viewEntryURL;
 				
 	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
 		    	adapter="true" 
@@ -42,10 +33,10 @@
 	var ss_calendarWorkDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
 	var ss_calendarFullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
 	
-	function ss_getMonthCalendarEvents() {
-		var formObj = document.getElementById("ssCalNavBar");
-		if (formObj && formObj.ss_goto_year && formObj.ss_goto_month && formObj.ss_goto_date) {
-			ss_calendar_${renderResponse.namespace}.ss_cal_Events.switchView("monthdirect", formObj.ss_goto_year.value, formObj.ss_goto_month.value - 1, formObj.ss_goto_date.value);
+	function ss_getMonthCalendarEvents${prefix}() {
+		var formObj = document.getElementById("ssCalNavBar${prefix}");
+		if (formObj && formObj.ss_goto${prefix}_year && formObj.ss_goto${prefix}_month && formObj.ss_goto${prefix}_date) {
+			ss_calendar_${prefix}.ss_cal_Events.switchView("monthdirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
 		}
 	}
 	
@@ -56,7 +47,7 @@
 <%
 	Map entriesSeen = new HashMap();
 %>
-			<ul id="ss_searchResult">
+			<ul class="ss_searchResult">
 			
 				<c:if test="${empty ssFolderEntries}">
 					<span class="ssVisibleEntryNumbers"><ssf:nlt tag="folder.NoResults" /></span>
@@ -93,9 +84,9 @@
 								<ssf:menuLink 
 									displayDiv="false" action="view_folder_entry" 
 									adapter="true" entryId="${entry._docId}" binderId="${entry._binderId}" 
-									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}">
+									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${prefix}' 
+							    	menuDivId="ss_emd_${prefix}" linkMenuObjIdx="${prefix}" 
+									namespace="${prefix}" entryCallbackRoutine="${showEntryCallbackRoutine}">
 									<ssf:param name="url" useBody="true">
 										<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
 										action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
@@ -134,6 +125,6 @@
 			</ul>
 			
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${prefix}" linkMenuObjIdx="${prefix}" 
+	namespace="${prefix}">
 </ssf:menuLink>

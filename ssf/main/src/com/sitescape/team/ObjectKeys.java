@@ -127,6 +127,7 @@ public interface ObjectKeys {
     public static final String CONFIG_PROPERTY_REPOSITORIES = "repositories";
 
     public static final String DASHBOARD_COMPONENT_BLOG_SUMMARY = "blog";
+    public static final String DASHBOARD_COMPONENT_CALENDAR_SUMMARY = "calendar";
     public static final String DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY = "guestbook";
     public static final String DASHBOARD_COMPONENT_TASK_SUMMARY = "task";
     public static final String DASHBOARD_COMPONENT_BUDDY_LIST = "buddyList";
