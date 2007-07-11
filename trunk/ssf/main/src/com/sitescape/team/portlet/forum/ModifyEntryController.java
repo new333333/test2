@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
@@ -181,6 +182,9 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 
 			model.put(WebKeys.ENTRY, entry);
+			Subscription sub = getFolderModule().getSubscription(entry);
+			model.put(WebKeys.SUBSCRIPTION, sub);
+			
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
