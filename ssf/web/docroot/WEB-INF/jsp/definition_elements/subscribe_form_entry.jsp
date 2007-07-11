@@ -18,7 +18,10 @@
 <div class="ss_entryContent ss_indent_medium">
   <table>
   <tr>
-    <td><input type="checkbox" name="_subscribe"/>
+    <td><input type="checkbox" name="_subscribe"
+      <c:if test="${ssSubscription.style=='2' || ssSubscription.style=='3'}"> checked="checked"</c:if>
+      />
+      <input type="hidden" name="_subscribe_element_present" value="1"/>
 	</td>
 	<td>
 	  <span class="ss_labelRight"><ssf:nlt tag="toolbar.menu.subscribeToEntry"/></span>
@@ -28,7 +31,9 @@
   <tr>
     <td></td>
     <td>
-	  <input type="checkbox" name="_subscribe_include_attachments"/>&nbsp;<span class="ss_labelRight">
+	  <input type="checkbox" name="_subscribe_include_attachments"
+      <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
+	  />&nbsp;<span class="ss_labelRight">
 	  <ssf:nlt tag="entry.sendMail.includeAttachments"/></span>
 	</td>
   </tr>
