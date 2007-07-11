@@ -12,26 +12,41 @@
 %>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
-<% // This is JSON type AJAX response  %>
-{
-		"title" : "<c:out value="${ssEntry.title}" escapeXml="false"/>",
-  		"id" : "${ssEntry.id}",
-  		"dueDate" : <c:forEach var="event" items="${ssEntry.events}" varStatus="loopStatus">
-						<c:if test="${loopStatus.first}">"<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-					      value="${event.dtEnd.time}" type="both" 
-						  dateStyle="medium" timeStyle="short" />"</c:if>
-					</c:forEach>,
-		"status" : <c:forEach var="status" items="${ssEntry.customAttributes['status'].valueSet}" varStatus="loopStatus">
-						<c:if test="${loopStatus.first}">"${status}"</c:if>
-					</c:forEach>,
-		"completed" : <c:forEach var="completed" items="${ssEntry.customAttributes['completed'].valueSet}" varStatus="loopStatus">
-						<c:if test="${loopStatus.first}">"${completed}"</c:if>
-					</c:forEach>,
-		"priority" : <c:forEach var="priority" items="${ssEntry.customAttributes['priority'].valueSet}" varStatus="loopStatus">
-						<c:if test="${loopStatus.first}">"${priority}"</c:if>
-					</c:forEach>,
-		"assigned" : [<c:forEach var="user" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment")) %>" varStatus="assignedStatus">
-						"${user.title}"<c:if test="${!assignedStatus.last}">,</c:if>
-					</c:forEach>]
-}
+
+<c:choose>
+	<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+		{notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn}}
+	</c:when>
+	<c:when test="${!empty ss_ajaxStatus.ss_operation_denied}">
+		{denied : "<c:out value="${ss_ajaxStatus.ss_operation_denied}" escapeXml="false"/>"}
+	</c:when>	
+	<c:otherwise>
+		<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
+		<% // This is JSON type AJAX response  %>
+		{
+			"title" : "<c:out value="${ssEntry.title}" escapeXml="false"/>",
+	  		"id" : "${ssEntry.id}",
+	  		"dueDate" : <c:forEach var="event" items="${ssEntry.events}" varStatus="loopStatus">
+							<c:if test="${loopStatus.first}">"<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+						      value="${event.dtEnd.time}" type="both" 
+							  dateStyle="medium" timeStyle="short" />"</c:if>
+						</c:forEach>,
+			"status" : <c:forEach var="status" items="${ssEntry.customAttributes['status'].valueSet}" varStatus="loopStatus">
+							<c:if test="${loopStatus.first}">"${status}"</c:if>
+						</c:forEach>,
+			"completed" : <c:forEach var="completed" items="${ssEntry.customAttributes['completed'].valueSet}" varStatus="loopStatus">
+							<c:if test="${loopStatus.first}">"${completed}"</c:if>
+						</c:forEach>,
+			"priority" : <c:forEach var="priority" items="${ssEntry.customAttributes['priority'].valueSet}" varStatus="loopStatus">
+							<c:if test="${loopStatus.first}">"${priority}"</c:if>
+						</c:forEach>,
+			"assigned" : [<c:forEach var="user" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment")) %>" varStatus="assignedStatus">
+							"${user.title}"<c:if test="${!assignedStatus.last}">,</c:if>
+						</c:forEach>]
+		}
+			
+	</c:otherwise>
+</c:choose>
+
+
+

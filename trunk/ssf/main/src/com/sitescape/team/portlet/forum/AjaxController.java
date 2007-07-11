@@ -78,6 +78,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.survey.Answer;
 import com.sitescape.team.survey.Question;
@@ -238,6 +239,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/json/vote_survey", model);	
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				return new ModelAndView("forum/json/icalendar_upload", model);
+			} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
+				return  new ModelAndView("forum/json/update_task", model);
 			}
 
 			return new ModelAndView("forum/ajax_return", model);
@@ -2229,12 +2232,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 			TaskHelper.adjustTaskAttributesDependencies(entry, formData, newPriority, newStatus, newCompleted);
 			
-			getFolderModule().modifyEntry(binderId, entryId, 
-					new MapInputData(formData), new HashMap(), new HashSet(), null);
-		
-			model.put(WebKeys.ENTRY, entry);
-			
-			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			try {
+				getFolderModule().modifyEntry(binderId, entryId, 
+						new MapInputData(formData), new HashMap(), new HashSet(), null);
+				
+				model.put(WebKeys.ENTRY, entry);
+				
+				model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			} catch (OperationAccessControlException e) {
+				Map statusMap = new HashMap();
+				statusMap.put("ss_operation_denied", NLT.get("task.update.unauthorized"));
+				model.put(WebKeys.AJAX_STATUS, statusMap);
+			}
 		}		
 		
 		response.setContentType("text/json");
