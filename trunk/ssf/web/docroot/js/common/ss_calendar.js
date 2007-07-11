@@ -115,8 +115,45 @@ function ss_calendar(prefix) {
 		/* Presentation data */
 	    map: new Array(),
 	    setMap: function(pMap) { for (var i in pMap) { this.map[pMap[i].calsrc] = pMap[i]; } },
-	    box: function(src) { return this.map[src].box },
-	    border: function(src) { return this.map[src].border },
+	    binderCalendarMapping: new Array(),
+	    getCalendar: function(binderId) {
+	    	if (this.binderCalendarMapping[binderId]) {
+	    		return this.binderCalendarMapping[binderId];
+	    	} else {
+	    		// find first free calendar definition
+	    		for (var i in this.map) {
+	    			var inUse = false;
+	    			for (var j in this.binderCalendarMapping) {
+	    				if (this.binderCalendarMapping[j] == i) {
+	    					inUse = true;
+	    				}
+	    			}
+	    			if (!inUse) {
+	    				this.binderCalendarMapping[binderId] = i;
+	    				return this.binderCalendarMapping[binderId];
+	    			}		
+	    		}
+	    		
+	    		// no more free calendars
+	    		return null;
+	    	}
+	    },
+	    box: function(binderId) {
+	    	var calsrc = this.getCalendar(binderId);
+	    	if (calsrc) {
+	    		return this.map[this.getCalendar(binderId)].box;
+	    	} 
+	    	// no more free calendars colors, generate one from binderid
+	    	return dojo.gfx.color.rgb2hex(204, 204, binderId);
+	    },
+	    border: function(binderId) { 
+	    	var calsrc = this.getCalendar(binderId);
+	    	if (calsrc) {
+	    		return this.map[this.getCalendar(binderId)].border;
+	    	}
+	    	// no more free calendars colors, generate one from binderid
+	    	return dojo.gfx.color.rgb2hex(170, 170, binderId);
+	    },
 	    
 	    today : null,
 	
@@ -902,7 +939,6 @@ function ss_calendar(prefix) {
 	            if (this.eventData[nei.eventId]) {
 	            	continue;
 	            }
-	            
 	            nei.start = nei.startDate.hour + (nei.startDate.minutes/60);
 	            nei.startDate = new Date(nei.startDate.year, nei.startDate.month - 1, nei.startDate.dayOfMonth, nei.startDate.hour, nei.startDate.minutes);
 	            nei.endDate = new Date(nei.endDate.year, nei.endDate.month - 1, nei.endDate.dayOfMonth, nei.endDate.hour, nei.endDate.minutes);
@@ -1090,7 +1126,7 @@ function ss_calendar(prefix) {
 			                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
 			                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
 			                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(date.getFullYear(), date.getMonth(), date.getDate()), -1, e.title, e.text,
-			                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid, continues);
+			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, continues);
 			            } else {
 			                var grid = "ss_cal_dayGridHour" + prefix;
 			                if (duration == 0) duration = 30;
@@ -1099,7 +1135,7 @@ function ss_calendar(prefix) {
 			                       this.collisionCount(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       this.collisionIndex(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       gridDay, start, duration, e.title, e.text,
-			                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid);
+			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid);
 			            }
 			            this.dayGridEvents.push(eid);
 					}
@@ -1185,8 +1221,8 @@ function ss_calendar(prefix) {
 	            var eboxm = dojo.html.getBorderBox(n);
 	            hb.style.visibility = "visible";
 	            hb.innerHTML = dojo.byId("calevt" + e.displayIds[gridDay]).innerHTML;
-	            hb.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
-	            hb.style.borderColor = ss_cal_CalData.border(e.calsrc);
+	            hb.style.backgroundColor = ss_cal_CalData.box(e.binderId);
+	            hb.style.borderColor = ss_cal_CalData.border(e.binderId);
 	            dojo.html.setOpacity(hb,0);
 	            dojo.html.show(hb);
 	            dojo.html.placeOnScreen(hb, (ebox.left + 30), (ebox.top - hb.offsetHeight - 20), 10, false, "TL");
@@ -1511,7 +1547,7 @@ function ss_calendar(prefix) {
 	        ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
 	        ebox.style.height = ((eventHeight/heightFactor) * 100) + "%";
 	        var e = ss_cal_Events.eventData[eventList[i]];
-	        ebox.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
+	        ebox.style.backgroundColor = ss_cal_CalData.box(e.binderId);
 			var viewHref = ss_viewEventUrl;
 	    	viewHref += "&entryId=" + e.entryId;
 	    	viewHref += "&binderId=" + e.binderId;
