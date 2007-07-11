@@ -44,9 +44,11 @@
 	function ss_getMonthCalendarEvents() {
 		var formObj = document.getElementById("ssCalNavBar");
 		if (formObj && formObj.ss_goto_year && formObj.ss_goto_month && formObj.ss_goto_date) {
-			ss_cal_Events.switchView("monthdirect", formObj.ss_goto_year.value, formObj.ss_goto_month.value - 1, formObj.ss_goto_date.value);
+			ss_calendar_${renderResponse.namespace}.ss_cal_Events.switchView("monthdirect", formObj.ss_goto_year.value, formObj.ss_goto_month.value - 1, formObj.ss_goto_date.value);
 		}
 	}
+	
+	ss_calendar_${renderResponse.namespace} = new ss_calendar();
 	
 </script>
 
@@ -118,7 +120,8 @@
 
 <div class="ss_cal_eventBody" id="hoverBox" style="display: none; visibility: hidden; position: absolute; padding: 10px; background-color: #FFFFFF; z-index: 2003; border: 1px solid black;"></div>
 <script type="text/javascript">
-	ss_initializeCalendar();
+	ss_calendar_${renderResponse.namespace}.ss_initializeCalendar();
+	
 	ss_createOnLoadObj('ss_cal_hoverBox', function() {
 		ss_moveDivToBody("hoverBox");
 		ss_moveDivToBody("infoLightBox");
