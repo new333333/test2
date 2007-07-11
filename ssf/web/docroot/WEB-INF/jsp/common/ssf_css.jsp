@@ -3749,7 +3749,7 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
 	background-color: #AFC8E3;
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a#anchor_ss_goto img {
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
 	margin: 7px 0 7px 0;
 }
 
