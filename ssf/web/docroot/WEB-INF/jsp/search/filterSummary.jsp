@@ -81,7 +81,7 @@
 				
 				<p><ssf:nlt tag="searchForm.label.entry"/>:
 				<script type="text/javascript">
-					document.write(ss_searchFields['${block.entryType}']);
+					document.write(ss_searchEntries['${block.entryType}']);
 					if (ss_searchFields['${block.entryType}-${block.entryElement}']) {
 						document.write(" - " + ss_searchFields['${block.entryType}-${block.entryElement}']);
 					}
