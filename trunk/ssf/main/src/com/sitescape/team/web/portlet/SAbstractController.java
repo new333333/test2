@@ -37,7 +37,7 @@ import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.stringcheck.MetadataCheckUtil;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public abstract class SAbstractController extends AbstractController 
 implements AllModulesInjected {
@@ -180,7 +180,7 @@ implements AllModulesInjected {
 	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Map newFormData = MetadataCheckUtil.check(formData);
+		Map newFormData = StringCheckUtil.check(formData);
 		ActionRequest newReq;
 		if(newFormData != formData) {
 			if(request instanceof MultipartFileSupport)
