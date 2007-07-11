@@ -254,6 +254,16 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
 	</item>
 
+	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData">
+		<properties>
+			<property name="name" caption="__name" type="text" value="_subscribe" readonly="true" />
+			<property name="caption" caption="__caption" type="text" value="__subscribe" />
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/subscribe_form_entry.jsp" />
+		</jsps>
+	</item>
+	
 	<item name="sendMail" caption="__sendMail" multipleAllowed="false" category="entryData">
 		<properties>
 			<property name="name" caption="__name" type="text" value="_sendMail" readonly="true" />

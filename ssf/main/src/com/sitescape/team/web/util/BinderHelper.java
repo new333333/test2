@@ -44,6 +44,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -1237,7 +1238,16 @@ public class BinderHelper {
 					//TODO Log that mail wasn't sent
 				}
 			}
-}
+		}
+	}
+	
+	public static void subscribeToThisEntry(AllModulesInjected bs, ActionRequest request, 
+			Long folderId, Long entryId) {
+		String subscribe = PortletRequestUtils.getStringParameter(request, "_subscribe", "");
+		String subscribeIncludeAttachments = PortletRequestUtils.getStringParameter(request, "_subscribe_include_attachments", "");
+		int style = Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION;
+		if (subscribeIncludeAttachments.equals("on")) style = Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION;
+		if (subscribe.equals("on")) bs.getFolderModule().addSubscription(folderId, entryId, style);
 	}
 	
 }
