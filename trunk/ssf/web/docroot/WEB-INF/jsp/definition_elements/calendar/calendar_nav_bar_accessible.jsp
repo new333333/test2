@@ -185,14 +185,14 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 	
 	&nbsp;&nbsp;
 	
-	<form name="ssCalNavBar" id="ssCalNavBar" action="${goto_form_url}" 
+	<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" 
 	  class="ss_toolbar_color"
 	  method="post" style="display:inline;"><div class="ss_toolbar_color" style="display:inline;">
-		<ssf:datepicker formName="ssCalNavBar" showSelectors="true" 
-		 popupDivId="ss_calDivPopup" id="ss_goto" initDate="${ssCurrentDate}"
-		 callbackRoutine="ss_getMonthCalendarEvents" immediateMode="true" altText="<%= NLT.get("calendar.view.popupAltText") %>"
+		<ssf:datepicker formName="ssCalNavBar${prefix}" showSelectors="true" 
+		 popupDivId="ss_calDivPopup${prefix}" id="ss_goto${prefix}" initDate="${ssCurrentDate}"
+		 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" altText="<%= NLT.get("calendar.view.popupAltText") %>"
 		 /></div></form>
 		 
-	<div id="ss_calDivPopup" class="ss_calPopupDiv"></div>
+	<div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"></div>
 
 </div>

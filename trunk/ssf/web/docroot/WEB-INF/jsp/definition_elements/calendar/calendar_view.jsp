@@ -42,7 +42,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 </script>
 
 <% // Then include the navigation widgets for this view %>
-
+<c:set var="prefix" value="${renderResponse.namespace}" />
 <table class="ss_actions_bar2_pane">
 	<tr>
 		<td>
@@ -69,6 +69,20 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		</td>
 	</tr>
 </table>
+
+<script type="text/javascript">
+
+	var ss_findEventsUrl${prefix} = "<ssf:url 
+		    	adapter="true" 
+		    	portletName="ss_forum" 
+		    	action="__ajax_request" 
+		    	actionUrl="true" >
+					<ssf:param name="binderId" value="${ssBinder.id}" />
+					<ssf:param name="binderIds" value="${ssBinder.id}" />
+					<ssf:param name="operation" value="find_calendar_events" />
+		    	</ssf:url>";
+
+</script>		    	
 
 <ssf:ifaccessible>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content_accessible.jsp" %>

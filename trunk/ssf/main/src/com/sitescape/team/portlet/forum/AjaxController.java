@@ -77,6 +77,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
+import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
@@ -2139,6 +2140,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			List binderIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, WebKeys.URL_BINDER_IDS));
+			Boolean isDashboardRequest = PortletRequestUtils.getBooleanParameter(request, "ssDashboardRequest", false);
+			model.put("ssDashboardRequest", isDashboardRequest);
 			Binder binder = getBinderModule().getBinder(binderId);
 			
 			int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
@@ -2177,9 +2181,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
 
 	       	List entries;
-			if (binder instanceof Folder) {
-				folderEntries = getFolderModule().getEntries(binderId, options);
-				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			if (binder instanceof Folder || binder instanceof Workspace) {
+				Document searchFilter = SearchFiltersBuilder.buildFolderListQuery(request, binderIds);
+				Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+				entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				
+				// folderEntries = getFolderModule().getEntries(binderId, options);
+				// entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 			} else {
 				//a template
 				entries = new ArrayList();

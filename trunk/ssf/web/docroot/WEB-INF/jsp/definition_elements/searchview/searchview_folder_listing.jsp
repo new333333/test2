@@ -18,7 +18,7 @@
 <%
 	Map entriesSeen = new HashMap();
 %>
-			<ul id="ss_searchResult">
+			<ul class="ss_searchResult">
 				<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 					<li>
 					<jsp:useBean id="entry" type="java.util.HashMap" />

@@ -15,7 +15,7 @@
 <c:if test="${empty isDashboard}">
 	<c:set var="isDashboard" value="no"/>
 </c:if>
-		<ul id="ss_searchResult">
+		<ul class="ss_searchResult">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 		
 			<jsp:useBean id="entry" type="java.util.HashMap" />

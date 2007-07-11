@@ -66,6 +66,7 @@ events : [<%--
     --%>
 		  {eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
 		  	entryId : "<%= e.get("_docId").toString() %>",
+		  	binderId : "<%= e.get("_binderId").toString() %>",
 		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
 		  	<c:if test="${evim.cal_allDay && evim.eventType == 'event'}">
 		  		<c:set var="timeZone" value="GMT"/>
@@ -111,6 +112,6 @@ events : [<%--
 		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
 		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",
-			viewOnClick: "<ssf:escapeJavaScript value="ss_loadEntry(this,'${evim.entry._docId}');"/>"}<c:if test="${!status.last}">,</c:if><%--
+			viewOnClick: "ss_loadEntry(this,'${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}'<c:if test="${!empty ssDashboardRequest}">, true</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]
 }
