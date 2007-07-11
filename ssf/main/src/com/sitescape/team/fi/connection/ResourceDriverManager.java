@@ -11,6 +11,8 @@ public interface ResourceDriverManager {
 
 	public List<ResourceDriver> getAllowedResourceDrivers();
 	
+	public ResourceDriver getDriver(String driverName) throws FIException;
+
 	public ResourceSession getSession(String driverName)
 	throws FIException, UncheckedIOException;
 	
@@ -46,4 +48,12 @@ public interface ResourceDriverManager {
 	 * @return
 	 */
 	public String getName(String driverName, String resourcePath) throws FIException;
+	
+	/**
+	 * Returns whether the specified driver is read-only.
+	 * @param driverName
+	 * @return
+	 * @throws FIException
+	 */
+	public boolean isReadonly(String driverName) throws FIException;
 }

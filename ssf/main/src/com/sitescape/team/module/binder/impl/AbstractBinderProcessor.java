@@ -53,6 +53,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.exception.UncheckedCodedException;
+import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
@@ -394,13 +395,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
 				synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
 			if(Boolean.TRUE.equals(synchToSource)) {
-				ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
-				try {
-					session.createDirectory();
+				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+				
+				if(driver.isReadonly()) {
+					throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
+							new String[] {binder.getPathName(), driver.getTitle()});
 				}
-				finally {
-					session.close();
-				}								
+				else {
+					ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+					try {
+						session.createDirectory();
+					}
+					finally {
+						session.close();
+					}	
+				}
 			}
 		}
     }
@@ -619,16 +628,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		normalizeResourcePath(binder, inputData);
     	
     	if(isMirroredAndNotTopLevel(binder) && !oldTitle.equals(newTitle)) {
-			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
-			try {
-				session.move(binder.getParentBinder().getResourcePath(), newTitle);
-				
-				// Do not yet update the resource path in the binder, since we 
-				// need old info again shortly.
-			}
-			finally {
-				session.close();
-			}								
+			ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+    		
+    		if(driver.isReadonly()) {
+				throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
+						new String[] {binder.getPathName(), driver.getTitle()});
+    		}
+    		else {
+				ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+				try {
+					session.move(binder.getParentBinder().getResourcePath(), newTitle);
+					
+					// Do not yet update the resource path in the binder, since we 
+					// need old info again shortly.
+				}
+				finally {
+					session.close();
+				}	
+    		}
     	}
     }
 
@@ -777,13 +794,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
     	if(deleteMirroredSource && binder.isMirrored()) {
     		try {
-    			ResourceSession session = getResourceDriverManager().getSession(binder.getResourceDriverName(), binder.getResourcePath());
-    			try {
-    				session.delete();
-    			}
-    			finally {
-    				session.close();
-    			}	
+				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+
+				if(driver.isReadonly()) {
+					throw new NotSupportedException("errorcode.notsupported.deleteMirroredBinder.readonly", 
+							new String[] {binder.getPathName(), driver.getTitle()});
+				}
+				else {
+	    			ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+	    			try {
+	    				session.delete();
+	    			}
+	    			finally {
+	    				session.close();
+	    			}	
+				}
+    		}
+    		catch(NotSupportedException e) {
+    			logger.warn(e.getLocalizedMessage());
     		}
     		catch(Exception e) {
     			logger.error("Error deleting source resource for mirrored binder [" + binder.getPathName() + "]", e);
@@ -849,16 +877,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		if(source.getParentBinder().isMirrored()) { // mirrored but not top-level
     			if(destination.isMirrored()) {
     				if(source.getResourceDriverName().equals(destination.getResourceDriverName())) {
-    					// We can/must move the resource.
-    					ResourceSession session = getResourceDriverManager().getSession(source.getResourceDriverName(), source.getResourcePath());
-    					try {
-    						session.move(destination.getResourcePath(), source.getTitle());  	
-    						// Do not yet update the resource path in the source, it will be done by callder.
-    						resourcePathAffected=true;
-    					}
-    					finally {
-    						session.close();
-    					}								
+    					ResourceDriver driver = getResourceDriverManager().getDriver(source.getResourceDriverName());
+    					
+    		    		if(driver.isReadonly()) {
+    						throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
+    								new String[] {source.getPathName(), driver.getTitle()});
+    		    		}
+    		    		else {
+        					// We can/must move the resource.
+	    					ResourceSession session = driver.openSession().setPath(source.getResourcePath()); 
+	    					try {
+	    						session.move(destination.getResourcePath(), source.getTitle());  	
+	    						// Do not yet update the resource path in the source, it will be done by callder.
+	    						resourcePathAffected=true;
+	    					}
+	    					finally {
+	    						session.close();
+	    					}	
+    		    		}
     				}
     				else {
     					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()

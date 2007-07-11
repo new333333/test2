@@ -38,4 +38,13 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	public String getName(String driverName, String resourcePath) throws FIException {
 		return null;
 	}
+	
+	public boolean isReadonly(String driverName) throws FIException {
+		return true; // It doesn't matter what we return
+	}
+
+	public ResourceDriver getDriver(String driverName) throws FIException {
+		return null;
+	}
+
 }

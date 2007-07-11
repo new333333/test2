@@ -204,27 +204,36 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
 	}
     
-    private void checkInputFilesForMirroredBinder(List fileUploadItems, FilesErrors errors) {
+    private void checkInputFilesForMirroredBinder(Binder binder, List fileUploadItems, FilesErrors errors) {
 		String mirroredFileName = null;
+		boolean readonly = getResourceDriverManager().isReadonly(binder.getResourceDriverName());
 		for(int i = 0; i < fileUploadItems.size();) {
 			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
 			if(fui.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
-				if(mirroredFileName == null) {
-					mirroredFileName = fui.getOriginalFilename();
-					i++;
+				if(fui.isSynchToRepository() && readonly) {
+   					fileUploadItems.remove(i);
+    				errors.addProblem(new FilesErrors.Problem
+							(fui.getRepositoryName(), fui.getOriginalFilename(), 
+									FilesErrors.Problem.PROBLEM_MIRRORED_FILE_READONLY_DRIVER));					
 				}
 				else {
-					if(mirroredFileName.equals(fui.getOriginalFilename())) {
-						// This is a very questionable use case. However, since 
-						// the expected post-condition is still stable, we will
-						// let it continue.
+					if(mirroredFileName == null) {
+						mirroredFileName = fui.getOriginalFilename();
 						i++;
 					}
 					else {
-	   					fileUploadItems.remove(i);
-	    				errors.addProblem(new FilesErrors.Problem
-								(fui.getRepositoryName(), fui.getOriginalFilename(), 
-										FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE));
+						if(mirroredFileName.equals(fui.getOriginalFilename())) {
+							// This is a very questionable use case. However, since 
+							// the expected post-condition is still stable, we will
+							// let it continue.
+							i++;
+						}
+						else {
+		   					fileUploadItems.remove(i);
+		    				errors.addProblem(new FilesErrors.Problem
+									(fui.getRepositoryName(), fui.getOriginalFilename(), 
+											FilesErrors.Problem.PROBLEM_MIRRORED_FILE_MULTIPLE));
+						}
 					}
 				}
 			}
@@ -248,7 +257,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    			checkInputFilesForNonMirroredBinder(fileUploadItems, nameErrors);
    		}
    		else {
-   			checkInputFilesForMirroredBinder(fileUploadItems, nameErrors);
+   			checkInputFilesForMirroredBinder(binder, fileUploadItems, nameErrors);
    		}
    		
    		if (binder.isLibrary()) {
@@ -487,7 +496,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    			if(fas.size() > 1)
    				logger.warn("Integrity error: Entry " + entry.getId() + " in binder [" + binder.getPathName() + "] mirrors multiple files");
    			if(fas.isEmpty()) {
-   	   			checkInputFilesForMirroredBinder(fileUploadItems, nameErrors);
+   	   			checkInputFilesForMirroredBinder(binder, fileUploadItems, nameErrors);
    			}
    			else {
    	  			for(int i = 0; i < fileUploadItems.size(); i++) {
