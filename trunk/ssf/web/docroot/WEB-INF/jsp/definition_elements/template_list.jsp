@@ -24,7 +24,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
 
 <c:if test="${ss_folderViewStyle == 'event'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/calendar_view.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/calendar/calendar_view.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'file'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/file_folder_view.jsp" />

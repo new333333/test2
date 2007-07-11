@@ -51,7 +51,7 @@
 	
 </script>
 
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar_accessible.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_nav_bar_accessible.jsp" %>
 
 <%
 	Map entriesSeen = new HashMap();
