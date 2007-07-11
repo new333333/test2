@@ -54,11 +54,33 @@ ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 <td>&nbsp;&nbsp;&nbsp;</td>
 <td valign="middle" nowrap>
 <c:if test="${!empty ssDefinitionEntry.popularity}">
-<span class="ss_muted_label_small"><c:out value="${ssDefinitionEntry.popularity}"/> 
-<ssf:nlt tag="popularity.visits" text="visits"/></span>
+<span class="ss_muted_label_small">
+  <c:if test="${ssDefinitionEntry.popularity == 1}">
+    <ssf:nlt tag="popularity.visit1"/>
+  </c:if>
+  <c:if test="${ssDefinitionEntry.popularity > 1}">
+    <ssf:nlt tag="popularity.visits"><ssf:param 
+      name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt></span>
+  </c:if>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.popularity}">
 <span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
+</c:if>
+</td>
+<td>&nbsp;&nbsp;&nbsp;</td>
+<td valign="middle" nowrap>
+<c:if test="${!empty ssDefinitionEntry.totalReplyCount}">
+<span class="ss_muted_label_small">
+  <c:if test="${ssDefinitionEntry.totalReplyCount == 1}">
+    <ssf:nlt tag="popularity.comment1"/>
+  </c:if>
+  <c:if test="${ssDefinitionEntry.totalReplyCount > 1}">
+    <ssf:nlt tag="popularity.comments"><ssf:param 
+      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></span>
+  </c:if>
+</c:if>
+<c:if test="${ssDefinitionEntry.totalReplyCount == 0}">
+<span class="ss_muted_label_small"><ssf:nlt tag="popularity.comments.none" /></span>
 </c:if>
 </td>
 </tr>

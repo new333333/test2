@@ -120,6 +120,16 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
      </ssf:slidingTableColumn>
   </c:if>
+  <c:if test="${!empty ssFolderColumns['comments']}">
+    <ssf:slidingTableColumn width="13%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Comments"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+  <c:if test="${!empty ssFolderColumns['size']}">
+    <ssf:slidingTableColumn width="13%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Size"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
   <c:if test="${!empty ssFolderColumns['download']}">
     <ssf:slidingTableColumn width="13%">
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Download"/> </div>

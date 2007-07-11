@@ -195,6 +195,12 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
     </ssf:slidingTableColumn>
   </c:if>
 
+  <c:if test="${!empty ssFolderColumns['comments']}">
+    <ssf:slidingTableColumn width="12%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Comments"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+
   <c:if test="${!empty ssFolderColumns['size']}">
     <ssf:slidingTableColumn width="12%">
 
@@ -454,6 +460,12 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		    </c:if>
 	    	<c:out value="${entry1.title}"/>
 	</ssf:menuLink> 
+  </ssf:slidingTableColumn>
+ </c:if>
+  
+ <c:if test="${!empty ssFolderColumns['comments']}">
+  <ssf:slidingTableColumn>
+      <span <%= seenStyle %>>${entry1._totalReplyCount}</span>
   </ssf:slidingTableColumn>
  </c:if>
   
