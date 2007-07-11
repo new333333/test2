@@ -39,10 +39,14 @@
 					// alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-					try {
+					if (data.notLoggedIn) {
+						alert(ss_not_logged_in);
+					} else if (data.denied) {
+						alert(data.denied);
+					} else {
 						tasks[entryId] = data;
-				    	redrawTask(tasks[entryId]);
-					} catch (e) {alert(e);}
+			    		redrawTask(tasks[entryId]);
+					}
 				},
 							
 				mimetype: "text/json",
@@ -64,10 +68,14 @@
 					// alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-					try {
+					if (data.notLoggedIn) {
+						alert(ss_not_logged_in);
+					} else if (data.denied) {
+						alert(data.denied);
+					} else {
 						tasks[entryId] = data;
-				    	redrawTask(tasks[entryId]);
-					} catch (e) {alert(e);}
+			    		redrawTask(tasks[entryId]);
+					}
 				},
 							
 				mimetype: "text/json",
@@ -89,10 +97,14 @@
 					// alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-					try {
+					if (data.notLoggedIn) {
+						alert(ss_not_logged_in);
+					} else if (data.denied) {
+						alert(data.denied);
+					} else {
 						tasks[entryId] = data;
 				    	redrawTask(tasks[entryId]);
-					} catch (e) {alert(e);}
+					}
 				},
 							
 				mimetype: "text/json",
@@ -264,7 +276,7 @@
 				var tempValue = i*10;
 				var realValue = "c" + (tempValue==0?"000":(tempValue==100?"100":"0"+tempValue));
 				ss_setStyle(completedStatusDivs[task.id][i], tempValue, value);
-	var title = completed[realValue];
+				var title = completed[realValue];
 				completedStatusDivs[task.id][i].title = completed[realValue];
 				
 				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], realValue));
@@ -295,8 +307,8 @@
 		}
 		
 		this.ss_saveValue = function(task, container, statusContainer, newValue) {
-			dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, statusContainer, newValue));
-			statusContainer.innerHTML = completed[newValue];
+			// dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, statusContainer, newValue));
+			// statusContainer.innerHTML = completed[newValue];
 			that.changeCompleted(task.id, newValue);
 		}
 		
@@ -350,14 +362,12 @@
 				} else {
 					dojo.html.setClass(hrefObj, "ss_taskStatus");			
 				}
-					    
-			    function declareChangeStatus(obj, taskId, newStatus) {		
-					return function() {
-						obj.changeStatus(taskId, newStatus);
-					}
-				}
-				var callChangeStatus = declareChangeStatus(that, task.id, statuses[i].key);
-				dojo.event.connect(hrefObj, "onclick", callChangeStatus);
+					
+				dojo.event.connect(hrefObj, "onclick", (function() {
+						return function() {
+							that.changeStatus(task.id, statuses[i].key);
+						}
+					})());
 				
 				var imgObj= document.createElement('img');
 				if (task.status == statuses[i].key) {
