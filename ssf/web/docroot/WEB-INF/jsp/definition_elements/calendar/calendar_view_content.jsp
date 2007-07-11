@@ -52,7 +52,7 @@
 	
 </script>
 
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_nav_bar.jsp" %>
 
 
 <div style="width: 100%"><%-- IE needs this for some stupid reason --%>

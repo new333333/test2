@@ -107,7 +107,6 @@ Date.prototype.addDays = function (days) {
 
 function ss_calendar() {
 
-	
 	// Records data about calendars (e.g., display colors, tick formats, layout data)
 	var ss_cal_CalData = {
 	
@@ -436,8 +435,20 @@ function ss_calendar() {
 	            badge.style.left = dayOffset + "%";
 	            badge.style.width = dayOffsetSize + "%";
 	               
-	            badge.innerHTML = '<a href="javascript: ;" onClick="ss_cal_Events.switchView(\'daydirect\', ' + currentDayToShow.getFullYear() + ', ' + currentDayToShow.getMonth() + ', ' + currentDayToShow.getDate() + ')">' + 
-	               Date.getDayHeader(new Date(currentDayToShow.getFullYear(), currentDayToShow.getMonth() , currentDayToShow.getDate())) + '</a>';                     
+	            var changeViewLink = document.createElement("a");
+	            changeViewLink.href = "javascript: // ;";
+	            changeViewLink.innerHTML = Date.getDayHeader(new Date(currentDayToShow.getFullYear(), currentDayToShow.getMonth() , currentDayToShow.getDate()));
+	        	var yyyy = currentDayToShow.getFullYear();
+	        	var mm = currentDayToShow.getMonth();
+	        	var dd = currentDayToShow.getDate();
+	        	(function(yyyy, mm, dd) {
+		        	dojo.event.connect(changeViewLink, "onclick", function(evt) {
+							ss_cal_Events.switchView('daydirect', yyyy, mm, dd);
+	        			});
+	        	})(yyyy, mm, dd);
+			    badge.appendChild(changeViewLink);
+	            
+	                                    
 	            container.appendChild(badge);
 	            dayOffset += dayOffsetSize;
 	            
@@ -555,8 +566,20 @@ function ss_calendar() {
 	        }
 	        badge.style.left = (d * vOffsetSize) + "%";
 	        badge.style.top = (w * hOffsetSize) + "%";
-	        badge.innerHTML = '<a href="javascript: ;" onClick="ss_cal_Events.switchView(\'daydirect\', ' + date.getFullYear() + ', ' + date.getMonth() + ', ' + date.getDate() + ')">' + 
-	               date.getDate() + '</a>';
+	               
+            var changeViewLink = document.createElement("a");
+            changeViewLink.href = "javascript: // ;";
+            changeViewLink.innerHTML = date.getDate();
+            var yyyy = date.getFullYear();
+            var mm = date.getMonth();
+            var dd = date.getDate();
+            (function(yyyy, mm, dd) {
+	        	dojo.event.connect(changeViewLink, "onclick", function(evt) {
+							ss_cal_Events.switchView('daydirect', yyyy, mm, dd);
+	        			});
+            })(yyyy, mm, dd);
+		    badge.appendChild(changeViewLink);	               
+	               
 	        container.appendChild(badge);
 	    },    
 	
