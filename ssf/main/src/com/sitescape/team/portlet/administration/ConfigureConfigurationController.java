@@ -206,7 +206,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			} else if (WebKeys.OPERATION_SAVE_FOLDER_COLUMNS.equals(operation)) {
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 				Map columns = new LinkedHashMap();
-				String[] columnNames = new String[] {"number", "title", "size", "download", "html", "state", "author", "date"};
+				String[] columnNames = new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date"};
 				for (int i = 0; i < columnNames.length; i++) {
 					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
 				}

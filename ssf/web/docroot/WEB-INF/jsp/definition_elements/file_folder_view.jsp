@@ -20,6 +20,7 @@
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
 		ssFolderColumns.put("title", "title");
+		ssFolderColumns.put("comments", "comments");
 		ssFolderColumns.put("size", "size");
 		ssFolderColumns.put("download", "download");
 		ssFolderColumns.put("html", "html");
