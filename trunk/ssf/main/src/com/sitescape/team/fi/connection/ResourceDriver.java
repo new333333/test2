@@ -21,6 +21,8 @@ public interface ResourceDriver {
 	
 	/**
 	 * Return the name of the driver instance.
+	 * Note: Driver manager uses this name not the name of the corresponding
+	 * bean to locate drivers in the system. 
 	 * 
 	 * @return
 	 */
@@ -36,6 +38,7 @@ public interface ResourceDriver {
 	
 	/**
 	 * Return the type of the driver.
+	 * This is informational purpose only.
 	 *  
 	 * @return
 	 */
@@ -82,4 +85,10 @@ public interface ResourceDriver {
 	 * @return
 	 */
 	public String getName(String resourcePath) throws FIException;
+	
+	/**
+	 * Returns whether the driver is read-only.
+	 * @return
+	 */
+	public boolean isReadonly();
 }
