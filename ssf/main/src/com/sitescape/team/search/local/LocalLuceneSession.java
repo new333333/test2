@@ -11,9 +11,11 @@
 package com.sitescape.team.search.local;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -883,4 +885,46 @@ public class LocalLuceneSession implements LuceneSession {
 			return analyzer;
 		}
 	}
+	public void backup() {
+		// take the lock
+		IndexWriter indexWriter = null;
+		synchronized (LocalLuceneSession.class) {
+
+			// close all
+			LuceneHelper.closeAll();
+		
+			// create a name for the copy directory
+			SimpleDateFormat formatter =
+			new SimpleDateFormat (".yyyy.MM.dd.HH.mm.ss");
+			Date currentTime = new Date();
+			String dateString = formatter.format(currentTime);
+			String indexCopyPath = indexPath + dateString;
+			// merge to that dir
+			try {
+				indexWriter = new IndexWriter(indexCopyPath, new SsfIndexAnalyzer(),
+						true);
+			} catch (Exception ie) {
+				if (debugEnabled)
+					logger.debug(ie);
+				return;
+			}
+			indexWriter.setUseCompoundFile(false);
+			try {
+				indexWriter.addIndexes(new Directory[] { FSDirectory.getDirectory(indexPath)});
+				indexWriter.close();
+			} catch (Exception ie) {
+				if (debugEnabled)
+					logger.debug(ie);	
+			} finally {
+				try {
+					indexWriter.close();
+				} catch (Exception e) {
+					if (debugEnabled) {
+						logger.debug(e);
+					}
+				}
+			}
+		}
+	}
+
 }
