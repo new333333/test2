@@ -395,7 +395,7 @@
 	
 	<!--<bean id="BasicConduitFactory" class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>-->
 	
-	<bean id="metadataCheckUtil" class = "com.sitescape.team.util.metadatacheck.MetadataCheckUtil" depends-on="sPropsUtil">
+	<bean id="metadataCheckUtil" class = "com.sitescape.team.util.stringcheck.MetadataCheckUtil" depends-on="sPropsUtil">
 	</bean>	
 	
 	<!-- =========================== Business Components =========================== -->

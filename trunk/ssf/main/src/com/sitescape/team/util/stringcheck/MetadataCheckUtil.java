@@ -1,4 +1,4 @@
-package com.sitescape.team.util.metadatacheck;
+package com.sitescape.team.util.stringcheck;
 
 import java.util.Map;
 import java.util.TreeMap;

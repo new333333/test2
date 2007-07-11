@@ -1,4 +1,4 @@
-package com.sitescape.team.util.metadatacheck;
+package com.sitescape.team.util.stringcheck;
 
 import com.sitescape.team.exception.UncheckedCodedException;
 

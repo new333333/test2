@@ -8,7 +8,7 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-package com.sitescape.team.util.metadatacheck;
+package com.sitescape.team.util.stringcheck;
 
 
 public class XSSCheckException extends MetadataCheckException {

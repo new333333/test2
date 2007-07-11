@@ -37,7 +37,7 @@ import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.metadatacheck.MetadataCheckUtil;
+import com.sitescape.team.util.stringcheck.MetadataCheckUtil;
 
 public abstract class SAbstractController extends AbstractController 
 implements AllModulesInjected {
