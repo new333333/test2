@@ -42,7 +42,7 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.util.metadatacheck.MetadataCheckUtil;
+import com.sitescape.team.util.stringcheck.MetadataCheckUtil;
 import com.sitescape.util.FileUtil;
 
 /**

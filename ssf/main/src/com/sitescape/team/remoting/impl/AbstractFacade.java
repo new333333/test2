@@ -61,7 +61,7 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.metadatacheck.MetadataCheckUtil;
+import com.sitescape.team.util.stringcheck.MetadataCheckUtil;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.FileUtil;
