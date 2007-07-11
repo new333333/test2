@@ -32,7 +32,7 @@
 
 
 <c:set var="alreadyVotedCurrentUser" value="false"/>
-<c:set var="hasRightsToVote" value="${ss_accessControlMap[entity.id]['addReply']}"/>
+<c:set var="hasRightsToVote" value="${ss_accessControlMap[ssDefinitionEntry.id]['addReply']}"/>
 <form id="ssSurveyForm_${property_name}" method="post">
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="false" />
