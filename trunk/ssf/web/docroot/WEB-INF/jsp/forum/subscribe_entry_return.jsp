@@ -32,7 +32,7 @@
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
   <input type="radio" name="notifyType" value="2" id="notifyType_${ssEntry.id}_2"
   <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssEntry.id}_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
+  /><label for="notifyType_${ssEntry.id}_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify_entry"/><br/>
   <input type="radio" name="notifyType" value="3" id="notifyType_${ssEntry.id}_3"
   <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
   /><label for="notifyType_${ssEntry.id}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>

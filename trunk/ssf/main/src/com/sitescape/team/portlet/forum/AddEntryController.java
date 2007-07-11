@@ -112,6 +112,9 @@ public class AddEntryController extends SAbstractController {
 			//See if the user wants to send mail
 			BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
 			
+			//See if the user wants to subscribe to this entry
+			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+			
 			//flag reload of folder listing
 			//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("cancelBtn")) {
