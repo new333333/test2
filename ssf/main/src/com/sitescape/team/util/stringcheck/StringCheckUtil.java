@@ -9,58 +9,58 @@ import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 
-public class MetadataCheckUtil implements InitializingBean {
+public class StringCheckUtil implements InitializingBean {
 
-	private static MetadataCheckUtil instance; // A singleton instance
+	private static StringCheckUtil instance; // A singleton instance
 	
-	private static MetadataCheck[] checkers;
+	private static StringCheck[] checkers;
 	
-	public MetadataCheckUtil() {
+	public StringCheckUtil() {
 		if(instance != null)
-			throw new SingletonViolationException(MetadataCheckUtil.class);
+			throw new SingletonViolationException(StringCheckUtil.class);
 		
 		instance = this;
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		String[] classNames = SPropsUtil.getStringArray("metadata.check.checker.classes", ",");
+		String[] classNames = SPropsUtil.getStringArray("string.check.checker.classes", ",");
 	
-		checkers = new MetadataCheck[classNames.length];
+		checkers = new StringCheck[classNames.length];
 		
 		Class checkerClass;
 		for(int i = 0; i < classNames.length; i++) {
 			checkerClass = ReflectHelper.classForName(classNames[i]);
-			checkers[i] = (MetadataCheck) checkerClass.newInstance();
+			checkers[i] = (StringCheck) checkerClass.newInstance();
 		}
 	}
 
-    private static MetadataCheckUtil getInstance() {
+    private static StringCheckUtil getInstance() {
     	return instance;
     }
 
-	public static String check(String input) throws MetadataCheckException {
+	public static String check(String input) throws StringCheckException {
 		return getInstance().checkAll(input);
 	}
 	
-	public static Map<String,String[]> check(Map<String,String[]> input) throws MetadataCheckException {
+	public static Map<String,String[]> check(Map<String,String[]> input) throws StringCheckException {
 		return getInstance().checkAll(input);
 	}
 
-	private String checkAll(String input) throws MetadataCheckException {
+	private String checkAll(String input) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
 			input = checkers[i].check(input);
 		}
 		return input;
 	}
 	
-	private Map<String,String[]> checkAll(Map<String,String[]> input) throws MetadataCheckException {
+	private Map<String,String[]> checkAll(Map<String,String[]> input) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
 			input = checkAll(checkers[i], input);
 		}
 		return input;
 	}
 
-	private Map<String,String[]> checkAll(MetadataCheck checker, Map<String,String[]> input) throws MetadataCheckException {
+	private Map<String,String[]> checkAll(StringCheck checker, Map<String,String[]> input) throws StringCheckException {
 		Map output = new TreeMap<String, String[]>();
 		
 		String[] value=null,newValue=null;

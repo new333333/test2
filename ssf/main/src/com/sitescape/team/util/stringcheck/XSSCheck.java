@@ -21,7 +21,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.StringPool;
 
-public class XSSCheck implements MetadataCheck {
+public class XSSCheck implements StringCheck {
 
 	private static final String MODE_DISALLOW = "disallow"; // default mode
 	private static final String MODE_GROUPS = "groups";

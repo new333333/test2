@@ -11,7 +11,7 @@
 package com.sitescape.team.util.stringcheck;
 
 
-public class XSSCheckException extends MetadataCheckException {
+public class XSSCheckException extends StringCheckException {
 
 	private static final long serialVersionUID = 1L;
 	

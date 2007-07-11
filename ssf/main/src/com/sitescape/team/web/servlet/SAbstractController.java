@@ -37,7 +37,7 @@ import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.stringcheck.MetadataCheckUtil;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public abstract class SAbstractController extends AbstractController
 implements AllModulesInjected {
@@ -177,7 +177,7 @@ implements AllModulesInjected {
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Map formData = req.getParameterMap();
-		Map newFormData = MetadataCheckUtil.check(formData);
+		Map newFormData = StringCheckUtil.check(formData);
 		HttpServletRequest newReq;
 		if(newFormData != formData) {
 			newReq = new ParamsWrappedHttpServletRequest(req, newFormData);

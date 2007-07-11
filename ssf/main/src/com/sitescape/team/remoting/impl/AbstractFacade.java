@@ -61,7 +61,7 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.stringcheck.MetadataCheckUtil;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.FileUtil;
@@ -183,7 +183,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 	}
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = MetadataCheckUtil.check(inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -201,7 +201,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
-		iCalDataAsXML = MetadataCheckUtil.check(iCalDataAsXML);
+		iCalDataAsXML = StringCheckUtil.check(iCalDataAsXML);
 		
 		Document doc = getDocument(iCalDataAsXML);
 		List<Node> entryNodes = (List<Node>) doc.selectNodes("//entry");
@@ -219,7 +219,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	
 	public String search(String query, int offset, int maxResults)
 	{
-		query = MetadataCheckUtil.check(query);
+		query = StringCheckUtil.check(query);
 		
 		Document queryDoc = getDocument(query);
 		
@@ -266,7 +266,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
-		inputDataAsXML = MetadataCheckUtil.check(inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -286,7 +286,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	*/
 	
 	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = MetadataCheckUtil.check(inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -336,7 +336,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	
 	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = MetadataCheckUtil.check(inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -350,7 +350,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	
 	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = MetadataCheckUtil.check(inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -364,7 +364,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
-		inputDataAsXML = MetadataCheckUtil.check(inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
 		
