@@ -697,16 +697,8 @@ public class ViewEntryController extends  SAbstractController {
 		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
 			replies.add(entry);
-			for (int i=0; i<replies.size(); i++) {
-				FolderEntry reply = (FolderEntry)replies.get(i);
-				//if any reply is not seen, add it to list - try to avoid update transaction
-				if (!seen.checkIfSeen(reply)) {
-					//has to be done in a transaction
-					getProfileModule().setSeen(null, replies);
-					break;
-				}
-			}
-		} else if (!seen.checkIfSeen(entry)) {
+		}
+		if (!seen.checkIfSeen(entry)) {  
 			getProfileModule().setSeen(null, entry);
 		}
 		Map captionMap = new HashMap();

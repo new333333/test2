@@ -38,11 +38,9 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.FolderHierarchyException;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
@@ -54,7 +52,6 @@ import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.XmlUtils;
-import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.util.Validator;
 /**
@@ -81,7 +78,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		setFolderStatistics(folder, statistics);
     	}
     }
-
+    //inside write transaction
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
+    }
     //no transaction
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
@@ -218,7 +218,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
-		//make sure this is set after lastActivity
     	Statistics statistics = getFolderStatistics((Folder)binder);
         statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
         setFolderStatistics((Folder)binder, statistics);
@@ -231,8 +230,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
     	super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
-       	//Also re-index the top entry (to catch the change in lastActivity and total reply count)
-    	if (!((FolderEntry)entry).isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
+       	//Also re-index the top entry (to catch the change in lastActivity)
+    	FolderEntry fEntry = (FolderEntry)entry;
+    	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());
     }
 
     //***********************************************************************************************************
@@ -261,7 +261,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		reply.updateLastActivity(reply.getModification().getDate());
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
-      	if (top != null) getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(top);
         setFolderStatistics((Folder)parentBinder, statistics);
         ctx.put("this.replies", replies);
       	
@@ -310,6 +309,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.addEntryWorkflow(binder, entry, definition);
+    	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
  		   indexEntry(top);
@@ -319,8 +319,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.deleteEntryWorkflow(binder, entry, definition);
-      	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
-       	seenMap.setSeen(entry);
+    	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
  		   indexEntry(top);
@@ -330,8 +329,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
     	super.modifyWorkflowState(binder, entry, tokenId, toState);
-      	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
-       	seenMap.setSeen(entry);
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
  		   indexEntry(top);
@@ -347,11 +344,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  	   if (version != entry.getLogVersion()) {
 		   FolderEntry fEntry = (FolderEntry)entry;
 		   fEntry.updateLastActivity(fEntry.getModification().getDate());
- 		   SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
- 		   seenMap.setSeen(fEntry);
  		   if (!fEntry.isTop()) {
  			   FolderEntry top = fEntry.getTopEntry();
- 			   seenMap.setSeen(top);
  			   indexEntry(top);
  		   }
 	   }

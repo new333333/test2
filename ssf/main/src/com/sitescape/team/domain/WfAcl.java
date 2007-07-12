@@ -35,12 +35,17 @@ public class WfAcl {
 	public AccessType getType() {
 		return type;
 	}
-	public void setPrincipals(Set ids) {
-		this.ids = ids;
+	public void addPrincipal(Long id) {
+		if (this.ids == null) this.ids = new HashSet();
+		this.ids.add(id);
 	}
-	public void setPrincipals(String stringIds) {
+	public void addPrincipals(Set<Long> ids) {
+		if (this.ids == null) this.ids = new HashSet();
+		this.ids.addAll(ids);
+	}
+	public void addPrincipals(String stringIds) {
+		if (this.ids == null) this.ids = new HashSet();
 		String [] result = StringUtil.split(stringIds);
-		this.ids = new HashSet();
 		for (int i=0; i<result.length; ++i) {
 			try {
 				this.ids.add(Long.valueOf(result[i]));

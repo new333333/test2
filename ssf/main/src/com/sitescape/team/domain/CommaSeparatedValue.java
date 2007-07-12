@@ -38,14 +38,18 @@ public class CommaSeparatedValue implements Serializable {
 	    	values.add(value[i]);
 	    }	 
 	}
+     public void setValue(Set<String> value) {
+ 		this.values = value;
+ 	}
  	public Set getValueSet() {
+ 		if (values == null) return new HashSet();
 		return values;
 	}
 	public String getValueString() {
 		return toString();
 	}
     public String toString() {
-        if ((values == null) || values.isEmpty()) return null;
+        if ((values == null) || values.isEmpty()) return "";
         return StringUtil.merge((String[])values.toArray(sample));
      }
     

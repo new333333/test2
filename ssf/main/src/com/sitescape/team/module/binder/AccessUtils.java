@@ -302,19 +302,20 @@ public class AccessUtils  {
        	}
      }     
      
-     public static void checkTransitionIn(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
+     public static void checkTransitionIn(Binder binder, Entry entry, Definition definition, String toState)  
      	throws AccessControlException {
+    	 if (!(entry instanceof WorkflowSupport)) return;
+    	 //build a fake state
     	 WorkflowState ws = new WorkflowState();
     	 ws.setDefinition(definition);
     	 ws.setState(toState);
-    	 checkTransitionAcl(binder, entry, ws, WfAcl.AccessType.transitionIn);
+    	 ws.setOwner((Entry)entry);
+    	 checkTransitionAcl(binder, (WorkflowSupport)entry, ws, WfAcl.AccessType.transitionIn);
      }
-     public static void checkTransitionOut(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
+     public static void checkTransitionOut(Binder binder, Entry entry, Definition definition, WorkflowState ws)  
      	throws AccessControlException {
-       	 WorkflowState ws = new WorkflowState();
-    	 ws.setDefinition(definition);
-    	 ws.setState(toState);
-    	 checkTransitionAcl(binder, entry, ws, WfAcl.AccessType.transitionOut);
+    	 if (!(entry instanceof WorkflowSupport)) return;
+    	 checkTransitionAcl(binder, (WorkflowSupport)entry, ws, WfAcl.AccessType.transitionOut);
      }
      private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WorkflowState state, WfAcl.AccessType type)  
       	throws AccessControlException {

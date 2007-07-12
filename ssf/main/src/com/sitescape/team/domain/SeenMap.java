@@ -56,7 +56,7 @@ public class SeenMap {
 	 * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType" not-null="true"
 	 * @return
 	 */
-	protected Map getSeenMap() {
+	public Map getSeenMap() {
 		return seenMap;
 	}
 	protected void setSeenMap(Map seenMap) {
@@ -105,16 +105,19 @@ public class SeenMap {
     	return checkAndSetSeen(entry, false);
     }
 	protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
+		if (!entry.isTop()) return true; //only maintain for top
 		return checkAndSetSeen(entry.getId(), entry.getLastActivity(), setIt);
 	}
 	public boolean checkAndSetSeen(Map entry, boolean setIt) {
-      	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
+		if (EntityIndexUtils.ENTRY_TYPE_REPLY.equals(entry.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) return true;
+		Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
 		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
 		if (modDate == null) return true;
     	return checkAndSetSeen(id, modDate, setIt);
 	}	
     public boolean checkIfSeen(Map entry) {
-      	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
+		if (EntityIndexUtils.ENTRY_TYPE_REPLY.equals(entry.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) return true;
+     	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
 		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
     	if (modDate == null) return true;
     	return checkAndSetSeen(id, modDate, false);
