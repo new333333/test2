@@ -56,6 +56,12 @@
 
 <tr>
 <td colspan="2">
+	<ssf:clipboard type="user" formElement="users" />	
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
 <input type="submit" class="ss_submit" name="applyBtn"
  value="<ssf:nlt tag="button.apply"/>"
 />

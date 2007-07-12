@@ -1143,7 +1143,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
 							.getFilter().asXML());
 		
-				}		
+				} else if (ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST.equals(cName)) {
+					String users = LongIdUtil.getIdsAsString(request.getParameterValues(DashboardHelper.ElementNamePrefix+"users"));
+					String groups = LongIdUtil.getIdsAsString(request.getParameterValues(DashboardHelper.ElementNamePrefix+"groups"));
+					if (users != null && !users.equals("")) componentData.put("users", users);
+					if (groups != null && !groups.equals("")) componentData.put("groups", groups);
+				}
 				//Save the title and data map
 				componentMap.put(Dashboard.COMPONENT_TITLE, componentTitle);
 				componentMap.put(Dashboard.DISPLAYSTYLE, displayStyle);
