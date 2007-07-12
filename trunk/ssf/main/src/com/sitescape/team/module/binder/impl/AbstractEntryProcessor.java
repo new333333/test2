@@ -682,6 +682,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	//attachment meta-data not deleted.  Done in optimized delete entry
+    	if(deleteMirroredSource && parentBinder.isMirrored()) {
+    		if(getResourceDriverManager().isReadonly(parentBinder.getResourceDriverName())) {
+    			if(logger.isDebugEnabled())
+    				logger.debug("Source file will not be deleted when deleting mirrored entry " + entry.getId()
+    						+ " because corresponding resource driver is read-only");
+    			deleteMirroredSource = false;
+    		}
+    	}
     	getFileModule().deleteFiles(parentBinder, entry, deleteMirroredSource, null);
     }
     
