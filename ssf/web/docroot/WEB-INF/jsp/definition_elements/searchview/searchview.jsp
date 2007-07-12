@@ -25,16 +25,16 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 <div style="margin:0px;">
 
 <div align="right" class="ssPageNavi">
-<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-	<tr>
-		<td align="left" width="55%">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-		</td>
-		<td align="right" width="20%">
-			&nbsp;
-		</td>
-	</tr>
-</table>
+	<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
+		<tr>
+			<td align="left" width="55%">
+				<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
+			</td>
+			<td align="right" width="20%">
+				&nbsp;
+			</td>
+		</tr>
+	</table>
 </div>
 
 <div class="ss_folder_border">

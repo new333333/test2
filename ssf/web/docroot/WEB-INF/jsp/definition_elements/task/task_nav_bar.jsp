@@ -15,7 +15,7 @@
   <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_tools" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.calendarTools"/>"></ssHelpSpot>
     
-	<ul id="ss_calendarNaviBar">
+	<ul class="ss_calendarNaviBar">
 		<li class="ss_calendarNaviBarOption ss_taskViewOptions">
 			<ssf:nlt tag="task.navi.chooseView"/>:
 			<a class="ss_calDaySelectButton" href="<ssf:url 
