@@ -48,6 +48,18 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </tr></table>
 <!-- STATISTIC-END -->
 
+<div align="right" class="ssPageNavi">
+	<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
+		<tr>
+			<td align="left" width="55%">
+				<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
+			</td>
+			<td align="right" width="20%">
+				&nbsp;
+			</td>
+		</tr>
+	</table>
+</div>
 
 <div class="ss_folder_border">
 

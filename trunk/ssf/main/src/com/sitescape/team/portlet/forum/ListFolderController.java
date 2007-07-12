@@ -1861,14 +1861,10 @@ public static final String[] monthNamesShort = {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 
 		Map folderEntries = new HashMap();
-//		Map options = new HashMap();
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
-		
-		options.put(ObjectKeys.SEARCH_MAX_HITS, 1000);
-		
 		
 		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
 		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);
