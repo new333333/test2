@@ -17,10 +17,14 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.CommaSeparatedValue;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
@@ -111,7 +115,7 @@ public class WorkflowUtils {
     }    
 
 
-    public static WfAcl getStateAcl(Definition wfDef, String stateName, WfAcl.AccessType type) {
+    public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
 		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
@@ -119,34 +123,46 @@ public class WorkflowUtils {
 			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
 			if (accessControls != null) {
 				if (WfAcl.AccessType.read.equals(type))
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"), type);
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"), entity, type);
 				else if (WfAcl.AccessType.write.equals(type))  
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"), type);
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"), entity, type);
 				else if (WfAcl.AccessType.delete.equals(type)) 
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"), type);
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"), entity, type);
 				else if (WfAcl.AccessType.transitionOut.equals(type))
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"), type);
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"), entity, type);
 				else if (WfAcl.AccessType.transitionIn.equals(type))
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"), type);
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"), entity, type);
 			}
 			
 		}
-		return getAcl(null, type);
+		return getAcl(null, entity, type);
     }
 
-    private static WfAcl getAcl(Element aclElement, WfAcl.AccessType type) {
+    private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
     	WfAcl result = new WfAcl(type);
     	if (aclElement == null) return result;
     	Element props = (Element)aclElement.selectSingleNode("./properties/property[@name='folderDefault']");
     	if (props != null)
     		result.setUseDefault(GetterUtil.getBoolean(props.attributeValue("value"), true));
+    	//build list of users
     	props = (Element)aclElement.selectSingleNode("./properties/property[@name='userGroupAccess']");
     	if (props != null)
-    		result.setPrincipals(props.attributeValue("value"));
+    		result.addPrincipals(LongIdUtil.getIdsAsLongSet(props.attributeValue("value"), ","));
+    	if (entity.getEntryDef() != null) {
+    		props = (Element)aclElement.selectSingleNode("./properties/property[@name='condition']/workflowEntryDataUserList[@definitionId='" +
+    			entity.getEntryDef().getId() + "']");
+    		if (props != null) {
+    			String userListName = props.attributeValue("elementName"); //custom attribute name
+   				CustomAttribute attr = entity.getCustomAttribute(userListName); 
+   				if (attr != null) {
+   					result.addPrincipals(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+   				}
+    		}
+    	}
     	props = (Element)aclElement.selectSingleNode("./properties/property[@name='entryCreator']");
     	if ((props != null) && GetterUtil.getBoolean(props.attributeValue("value"), false)) {
     		//add special owner to allow list
-    		result.getPrincipals().add(ObjectKeys.OWNER_USER_ID);
+    		result.addPrincipal(ObjectKeys.OWNER_USER_ID);
     	}
     	return result;
     }

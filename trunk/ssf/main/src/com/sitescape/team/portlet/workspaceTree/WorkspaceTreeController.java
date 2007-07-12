@@ -187,7 +187,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 			DashboardHelper.getDashboardMap(binder, userProperties, model);
-			model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
+//			model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 			String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 			Document searchFilter = null;
 			if (searchFilterName != null && !searchFilterName.equals("")) {
@@ -195,8 +195,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				searchFilter = (Document)searchFilters.get(searchFilterName);
 			}
 			//See if the user has selected a specific view to use
-	        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
-			String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 			DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 			
 			

@@ -46,6 +46,7 @@ import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
@@ -808,16 +809,30 @@ public static final String[] monthNamesShort = {
 			Map<String,Object>model, String viewType) throws Exception {
 		Map folderEntries = null;
 		Long folderId = folder.getId();
+		User user = RequestContextHolder.getRequestContext().getUser();
 					
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
+			Collection<FolderEntry> full = (Collection)folderEntries.get(ObjectKeys.FULL_ENTRIES);
+			SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
+			//viewing a blog is seeing the entries, but still want ui to display unseen icon
+			//so return a dummy map that still has the entries unseen to the UI
+			SeenMap newMap = new DummySeenMap(seen);
+			model.put(WebKeys.SEEN_MAP, newMap);
+			for (FolderEntry f:full) {
+				//try to avoid extra set transaction if not needed
+				if (!seen.checkIfSeen(f)) {  
+					Collection<Entry> es = new ArrayList(full);
+					getProfileModule().setSeen(null, es);
+					break;
+				}
+			}
 			//Get the WebDAV URLs
 			buildWebDAVURLs(folderEntries, model, folder);
 			
 			//Get the list of all entries to build the archive list
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
-			User user = RequestContextHolder.getRequestContext().getUser();
 			String strUserDisplayStyle = user.getDisplayStyle();
 			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 			
@@ -1891,6 +1906,36 @@ public static final String[] monthNamesShort = {
     	}
 		
 		return folderEntries;
+	}
+	/**
+	 * Dummy class to wrap old seenMap so we can set the entries as seen from a controller,
+	 * but maintain the previous state for the jsps.
+	 * @author Janet
+	 *
+	 */
+	public class DummySeenMap extends SeenMap {
+		protected DummySeenMap() {};
+		
+		protected DummySeenMap(SeenMap currentMap) {
+			setSeenMap(new HashMap(currentMap.getSeenMap()));
+		}
+		public void setSeen(Entry entry) {
+		}
+		public void setSeen(FolderEntry entry) {
+		}
+		public boolean checkIfSeen(FolderEntry entry) {
+			return checkAndSetSeen(entry, false);
+		}
+		protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
+			return super.checkAndSetSeen(entry, false);
+		}
+		public boolean checkAndSetSeen(Map entry, boolean setIt) {
+			return super.checkAndSetSeen(entry, false);
+		}	
+		public boolean checkIfSeen(Map entry) {
+			return super.checkAndSetSeen(entry, false);
+		}   
+		   
 	}
 }
 

@@ -17,7 +17,7 @@ import java.util.Iterator;
 public class LongIdUtil {
 	public static final String DEFAULT_SEPARATOR=" ";
 
-	public static Set getIdsAsLongSet(String []sIds) {
+	public static Set<Long> getIdsAsLongSet(String []sIds) {
 		Set memberIds = new HashSet();
 		if (sIds != null) {
 			for (int i = 0; i < sIds.length; i++) {
@@ -30,10 +30,10 @@ public class LongIdUtil {
 		return memberIds;		
 	}
 	
-	public static Set getIdsAsLongSet(String ids) {
+	public static Set<Long> getIdsAsLongSet(String ids) {
 		return getIdsAsLongSet(ids, DEFAULT_SEPARATOR);
 	}
-	public static Set getIdsAsLongSet(String ids, String separator) {
+	public static Set<Long> getIdsAsLongSet(String ids, String separator) {
 		Set<Long> idSet = new HashSet<Long>();
 		if (ids == null) return idSet;
 		String [] sIds = ids.split(separator);
@@ -44,15 +44,19 @@ public class LongIdUtil {
 		}
 		return idSet;
 	}
-	public static Set getIdsAsStringSet(String ids) {
+	public static Set<String> getIdsAsStringSet(String ids) {
 		return getIdsAsStringSet(ids, DEFAULT_SEPARATOR);
 	}
-	public static Set getIdsAsStringSet(String ids, String separator) {
+	public static Set<String> getIdsAsStringSet(String ids, String separator) {
 		Set<String> idSet = new HashSet<String>();
 		if (ids == null) return idSet;
 		String [] sIds = ids.split(separator);
 		for (int i = 0; i < sIds.length; i++) {
-			idSet.add(sIds[i]);
+			try  {
+				Long.parseLong(sIds[i]);
+				//continue if valid long
+				idSet.add(sIds[i]);
+			} catch (Exception ex) {};
 		}
 		return idSet;
 	}

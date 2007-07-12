@@ -62,6 +62,7 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
@@ -1371,55 +1372,34 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (survey != null) {entryData.put(nameValue, survey);}
 					} else if (itemName.equals("user_list")) {
 						if (inputData.exists(nameValue)) {
-							String[] userIds = inputData.getSingleValue(nameValue).trim().split(" ");
-							Set users = new HashSet();
-							for (int i = 0; i < userIds.length; i++) {
-								try {
-									Long.parseLong(userIds[i]);
-									users.add(userIds[i]);
-								} catch (NumberFormatException ne) {}
-							}
-							if (!users.isEmpty()) {
-								CommaSeparatedValue v = new CommaSeparatedValue();
-								v.setValue((String[])users.toArray(userIds));
-								entryData.put(nameValue, v);
-							}
+							Set<String>userIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue), " ");
+							CommaSeparatedValue v = new CommaSeparatedValue();
+							v.setValue(userIds);
+							entryData.put(nameValue, v);
 						}
-					} else if (itemName.equals("places")) {
+					} else if (itemName.equals("places") || itemName.equals("userListSelectbox")) {
 						if (inputData.exists(nameValue)) {
-							String[] folderIds = inputData.getValues(nameValue);
-							Set folders = new HashSet();
-							for (int i = 0; i < folderIds.length; i++) {
+							String[] ids = inputData.getValues(nameValue);
+							Set longIds = new HashSet();
+							for (int i = 0; i < ids.length; i++) {
 								try {
-									Long.parseLong(folderIds[i]);
-									folders.add(folderIds[i]);
+									Long.parseLong(ids[i]); //validate as long
+									longIds.add(ids[i]);	//but store string
 								} catch (NumberFormatException ne) {}
 							}
-							if (!folders.isEmpty()) {
-								CommaSeparatedValue v = new CommaSeparatedValue();
-								folderIds = new String[folders.size()];
-								v.setValue((String[])folders.toArray(folderIds));
-								entryData.put(nameValue, v);
-							}
-						}
-					} else if (itemName.equals("userListSelectbox")) {
-						if (inputData.exists(nameValue)) {
-							String[] userIds = inputData.getValues(nameValue);
-							Set users = new HashSet();
-							for (int i = 0; i < userIds.length; i++) {
-								try {
-									Long.parseLong(userIds[i]);
-									users.add(userIds[i]);
-								} catch (NumberFormatException ne) {}
-							}
-							if (!users.isEmpty()) {
-								CommaSeparatedValue v = new CommaSeparatedValue();
-								v.setValue((String[])users.toArray(userIds));
-								entryData.put(nameValue, v);
-							}
+							CommaSeparatedValue v = new CommaSeparatedValue();
+							v.setValue(longIds);
+							entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("selectbox")) {
-						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
+						if (inputData.exists(nameValue)) {
+					    	String multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
+					    	if ("true".equals(multiple)) {
+					    		entryData.put(nameValue, inputData.getValues(nameValue));
+					    	} else {
+					    		entryData.put(nameValue, inputData.getSingleValue(nameValue));					    		
+					    	}
+						}
 					} else if (itemName.equals("checkbox")) {
 						if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
 							entryData.put(nameValue, Boolean.TRUE);

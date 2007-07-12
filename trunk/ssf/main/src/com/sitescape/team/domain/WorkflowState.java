@@ -160,7 +160,7 @@ public class WorkflowState {
     	if (wfAcls == null) wfAcls = new HashMap();
     	else acl = (WfAcl)wfAcls.get(type);
     	if (acl != null) return acl;
-    	acl = WorkflowUtils.getStateAcl(definition, state, type);
+    	acl = WorkflowUtils.getStateAcl(definition, getOwner().getEntity(), state, type);
     	wfAcls.put(type, acl);
     	return acl;
     }

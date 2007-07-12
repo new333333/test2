@@ -560,7 +560,7 @@ public class IcalModuleImpl implements IcalModule {
 			return;
 		}
 
-		Set value = (Set) customAttribute.getValue();
+		Set value = (Set) customAttribute.getValueSet();
 
 		if (value == null) {
 			return;
@@ -606,7 +606,7 @@ public class IcalModuleImpl implements IcalModule {
 			return;
 		}
 
-		Set value = (Set) customAttribute.getValue();
+		Set value = (Set) customAttribute.getValueSet();
 
 		if (value == null) {
 			return;
@@ -643,7 +643,7 @@ public class IcalModuleImpl implements IcalModule {
 			return;
 		}
 
-		Set value = (Set) customAttribute.getValue();
+		Set value = (Set) customAttribute.getValueSet();
 		
 
 		int priority = 0;

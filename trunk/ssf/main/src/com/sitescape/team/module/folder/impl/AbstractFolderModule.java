@@ -543,7 +543,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 						entryId = new Long(entryIdString);
 					}
 					try {
-						modifyDate = DateTools.stringToDate(hits.doc(i).getField(EntityIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
+						modifyDate = DateTools.stringToDate(hits.doc(i).getField(IndexUtils.LASTACTIVITY_DAY_FIELD).stringValue());
 					} catch (ParseException pe) {} // no need to do anything
 					Counter cnt = (Counter)unseenCounts.get(folderIdString);
 					if (cnt == null) {
@@ -570,9 +570,28 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
     	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
     	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-    	//andElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	Element field,child;
+    	//choose 1 of the folders
+    	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
+    	Iterator itFolders = folders.iterator();
+    	while (itFolders.hasNext()) {
+    		Folder folder = (Folder) itFolders.next();
+        	field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.TOP_FOLDERID_FIELD);
+        	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	Folder topFolder = folder.getTopFolder();
+        	if (topFolder == null) topFolder = folder;
+    		child.setText(topFolder.getId().toString());
+    	}
+    	//choose only entries/ not replies
+    	field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+
+		//choose a range of dates
     	Element rangeElement = andElement.addElement(QueryBuilder.RANGE_ELEMENT);
-    	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
+    	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_DAY_FIELD);
     	rangeElement.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
     	Element startRange = rangeElement.addElement(QueryBuilder.RANGE_START);
     	Date now = new Date();
@@ -580,18 +599,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	startRange.addText(EntityIndexUtils.formatDayString(startDate));
     	Element finishRange = rangeElement.addElement(QueryBuilder.RANGE_FINISH);
     	finishRange.addText(EntityIndexUtils.formatDayString(now));
-    	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
-    	Iterator itFolders = folders.iterator();
-    	while (itFolders.hasNext()) {
-    		Folder folder = (Folder) itFolders.next();
-        	Element field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.TOP_FOLDERID_FIELD);
-        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	Folder topFolder = folder.getTopFolder();
-        	if (topFolder == null) topFolder = folder;
-    		child.setText(topFolder.getId().toString());
-    	}
-    	
+
+     	
     	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
     	SearchObject so = qb.buildQuery(qTree);

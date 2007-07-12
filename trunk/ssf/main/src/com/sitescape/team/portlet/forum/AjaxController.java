@@ -1710,17 +1710,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.SEEN_MAP, seen);
 			List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 			if (replies != null)  {
-				replies.add(entry);
+				accessControlMap.put(entry.getId(), entryAccessMap);
 				for (int i=0; i<replies.size(); i++) {
 					FolderEntry reply = (FolderEntry)replies.get(i);
 					accessControlMap.put(reply.getId(), entryAccessMap);
-					//if any reply is not seen, add it to list - try to avoid update transaction
-					if (!seen.checkIfSeen(reply)) {
-						getProfileModule().setSeen(null, replies);
-						break;
-					}
 				}
-			} else if (!seen.checkIfSeen(entry)) {
+			}
+			if (!seen.checkIfSeen(entry)) { //only mark top entries as seen
 				getProfileModule().setSeen(null, entry);
 			}
 		}

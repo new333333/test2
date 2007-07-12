@@ -59,7 +59,7 @@ public class TaskHelper {
 			return null;
 		}
 		
-		Set value = (Set) customAttribute.getValue();
+		Set value = (Set) customAttribute.getValueSet();
 		
 		if (value == null) {
 			return null;
@@ -81,7 +81,7 @@ public class TaskHelper {
 			return null;
 		}
 		
-		Set value = (Set) customAttribute.getValue();
+		Set value = (Set) customAttribute.getValueSet();
 		
 		if (value == null) {
 			return null;
