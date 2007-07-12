@@ -48,7 +48,7 @@ public class TaskHelper {
 	}
 	
 	
-	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.WEEK;
+	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.ALL;
 
 	
 	public static String getTaskCompletedValue(Entry entry) {

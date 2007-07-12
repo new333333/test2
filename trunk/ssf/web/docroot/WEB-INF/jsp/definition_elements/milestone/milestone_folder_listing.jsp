@@ -58,8 +58,92 @@
 			    </a>
 </c:if>		
 		</th>
-		<th><ssf:nlt tag="milestone.responsible"/></th>
-		<th><ssf:nlt tag="milestone.tasks"/></th>
+		<th>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="responsible"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+				</portlet:actionURL>"
+			
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.responsible") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.responsible") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+</c:if>	
+			      <div class="ss_title_menu"><ssf:nlt tag="milestone.responsible"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    </a>
+</c:if>				
+		</th>
+		<th>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_sort_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssFolderSortBy" value="tasks"/>
+					<c:choose>
+					  <c:when test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'false'}">
+					  	<portlet:param name="ssFolderSortDescend" value="true"/>
+					  </c:when>
+					  <c:otherwise>
+					  	<portlet:param name="ssFolderSortDescend" value="false"/>
+					  </c:otherwise>
+					</c:choose>
+					<portlet:param name="tabId" value="${tabId}"/>
+				</portlet:actionURL>"
+			
+				<c:choose>
+				  <c:when test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'false'}">
+				  	<ssf:title tag="title.sort.by.column.desc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.tasks") %>" />
+				  	</ssf:title>
+				  </c:when>
+				  <c:otherwise>
+				  	<ssf:title tag="title.sort.by.column.asc">
+				  		<ssf:param name="value" value="<%= NLT.get("milestone.tasks") %>" />
+				  	</ssf:title>
+				  </c:otherwise>
+				</c:choose>	
+				 >
+</c:if>	
+			      <div class="ss_title_menu"><ssf:nlt tag="milestone.tasks"/> </div>
+			    	<c:if test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'true'}">
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					</c:if>
+					<c:if test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'false'}">
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					</c:if>
+<c:if test="${ssConfigJspStyle != 'template'}">
+			    </a>
+</c:if>			
+		</th>
 		<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
 				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
@@ -221,7 +305,7 @@
 					</c:forEach>
 				</ul>
 			</td>
-			<td ${tdClass}>
+			<td>
 				<%
 					java.util.Map statusCaptions = com.sitescape.team.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
 					String caption = (String)statusCaptions.get(entry.get("status"));
