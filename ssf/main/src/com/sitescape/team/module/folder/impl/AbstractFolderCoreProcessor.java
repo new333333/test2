@@ -38,6 +38,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.FolderHierarchyException;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
@@ -83,8 +84,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
-    	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
-							setSeen(entry);
+    	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
+       	seenMap.setSeen(entry);
+    	if (!entry.isTop()) {
+    	   	FolderEntry top = ((FolderEntry)entry).getTopEntry();
+    	   	seenMap.setSeen(top);
+    	}
     }
     //no transaction
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
@@ -223,7 +228,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
 		//make sure this is set after lastActivity
-		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
+       	seenMap.setSeen(fEntry);
+    	if (!fEntry.isTop()) {
+    	   	FolderEntry top = fEntry.getTopEntry();
+    	   	seenMap.setSeen(top);
+    	}
     	Statistics statistics = getFolderStatistics((Folder)binder);
         statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
         setFolderStatistics((Folder)binder, statistics);
@@ -255,7 +265,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
       	//pass replies along as context so we can delete them all at once
      	//load in reverse hkey order so foreign keys constraints are handled correctly
        	FolderEntry fEntry = (FolderEntry)entry;
-       	ctx.put("this.topEntry", fEntry.getTopEntry());
+       	FolderEntry top = fEntry.getTopEntry();
+       	ctx.put("this.topEntry", top);
      	List<FolderEntry> replies= getFolderDao().loadEntryDescendants(fEntry);
       	//repeat pre-delete for each reply
       	for (int i=0; i<replies.size(); ++i) {
@@ -265,6 +276,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		reply.updateLastActivity(reply.getModification().getDate());
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
+      	if (top != null) getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(top);
         setFolderStatistics((Folder)parentBinder, statistics);
         ctx.put("this.replies", replies);
       	
@@ -313,20 +325,38 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.addEntryWorkflow(binder, entry, definition);
-    	if (!entry.isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
+       	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
+       	seenMap.setSeen(entry);
+    	if (!entry.isTop()) {
+ 		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
+ 		   seenMap.setSeen(top);
+ 		   indexEntry(top);
+    	}
     }
     //***********************************************************************************************************
     //inside write transaction
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.deleteEntryWorkflow(binder, entry, definition);
-    	if (!entry.isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
+      	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
+       	seenMap.setSeen(entry);
+    	if (!entry.isTop()) {
+ 		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
+ 		   seenMap.setSeen(top);
+ 		   indexEntry(top);
+    	}
     }
     //***********************************************************************************************************
     //inside write transaction
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
     	super.modifyWorkflowState(binder, entry, tokenId, toState);
-    	if (!entry.isTop()) indexEntry(((FolderEntry)entry).getTopEntry());
-      	getRssModule().updateRssFeed(entry);
+      	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
+       	seenMap.setSeen(entry);
+    	if (!entry.isTop()) {
+ 		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
+ 		   seenMap.setSeen(top);
+ 		   indexEntry(top);
+    	}
+       	getRssModule().updateRssFeed(entry);
            	
     }
     //***********************************************************************************************************
@@ -334,12 +364,16 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
 	   Long version = entry.getLogVersion();
 	   super.setWorkflowResponse(binder, entry, stateId, inputData);
-	   if (version != entry.getLogVersion()) {
+ 	   if (version != entry.getLogVersion()) {
 		   FolderEntry fEntry = (FolderEntry)entry;
 		   fEntry.updateLastActivity(fEntry.getModification().getDate());
-		   if (!fEntry.isTop()) {
-			   indexEntry(fEntry.getTopEntry());
-		   }
+ 		   SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
+ 		   seenMap.setSeen(fEntry);
+ 		   if (!fEntry.isTop()) {
+ 			   FolderEntry top = fEntry.getTopEntry();
+ 			   seenMap.setSeen(top);
+ 			   indexEntry(top);
+ 		   }
 	   }
    }
 

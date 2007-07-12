@@ -51,7 +51,6 @@
 </div>
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
-		ssSeenMap.setSeen(title_entry);
 		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
