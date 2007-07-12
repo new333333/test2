@@ -336,10 +336,19 @@ public class AdvancedSearchController extends AbstractBinderController {
 		List placesWithCounters = sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 		
 		List peoplesRating = ratePeople(peoplesWithCounters);
-		if (peoplesRating.size() > 20) peoplesRating = peoplesRating.subList(0,20);
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE + "_all", peoplesRating);
+		
+		List peoplesRatingToShow = new ArrayList();
+		if (peoplesRating.size() > 20) {
+			peoplesRatingToShow.addAll(peoplesRating.subList(0,20));
+		} else {
+			peoplesRatingToShow.addAll(peoplesRating);
+		}
 		List placesRating = ratePlaces(placesWithCounters);
-		if (placesRating.size() > 20) placesRating = placesRating.subList(0,20);
-		model.put(WebKeys.FOLDER_ENTRYPEOPLE, peoplesRating);
+		if (placesRating.size() > 20) {
+			placesRating = placesRating.subList(0,20);
+		}
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE, peoplesRatingToShow);
 		model.put(WebKeys.FOLDER_ENTRYPLACES, placesRating);
 
 		Map folders = prepareFolderList(placesWithCounters);
@@ -709,7 +718,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private Toolbar buildFooterToolbar(Map model, RenderRequest request) {
 		Toolbar footerToolbar = new Toolbar();
 		List users = (List)model.get(WebKeys.FOLDER_ENTRIES);
-		String[] contributorIds = collectContributorIds(users);
+		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE + "_all"));
 
 		addClipboardOption(footerToolbar, contributorIds);
 		addStartMeetingOption(footerToolbar, request, contributorIds);
@@ -750,10 +759,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 			Iterator entriesIt = entries.iterator();
 			while (entriesIt.hasNext()) {
 				Map entry = (Map)entriesIt.next();
-				String creatorId = entry.get(EntityIndexUtils.CREATORID_FIELD).toString();
-				String modificationId = entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString();
-				principals.add(creatorId);
-				principals.add(modificationId);
+				Principal principal = (Principal)entry.get(WebKeys.USER_PRINCIPAL);
+				principals.add(principal.getId().toString());
 			}	
 		}
 		String[] as = new String[principals.size()];
