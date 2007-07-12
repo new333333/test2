@@ -91,6 +91,42 @@ public class FacadeImpl extends AbstractFacade {
 			throw new RemotingException(e);
 		}
 	}
+	
+	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
+
+		// Get all the attachments
+		AttachmentPart[] attachments;
+		try {
+			attachments = getMessageAttachments();
+		} catch (AxisFault e) {
+			throw new RemotingException(e);
+		}
+
+		// Create a map of file item names to items 
+		Map fileItems = new HashMap();
+		int i = 1;
+		for(AttachmentPart attachment : attachments) {
+			DataHandler dh;
+			try {
+					dh = attachment.getDataHandler();
+			} catch (SOAPException e) {
+				throw new RemotingException(e);
+			}
+	
+			// Wrap it up in a datastructure expected by our app.
+			String name = null;
+			if(i < fileNames.length) {
+				name = fileNames[i];
+			} else {
+				name = "attachment" + i;
+			}
+			AxisMultipartFile mf = new AxisMultipartFile(name, dh);
+			
+			fileItems.put(fileUploadDataItemName + i, mf);
+		}
+		
+		return fileItems;
+	}
 
 	/**
 	 * Extend basic support in AbstractFacade to include importing calendar entries

@@ -27,6 +27,8 @@ public interface Facade {
 	// 
 	// Folder operations
 	// 	
+	public long addFolder(long parentBinderId, long binderConfigId, String title);
+	
 	public String getFolderEntriesAsXML(long folderId);
 
 	public String getFolderEntryAsXML(long folderId, long entryId, boolean includeAttachments);

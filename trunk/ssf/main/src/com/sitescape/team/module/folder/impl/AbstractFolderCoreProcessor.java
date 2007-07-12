@@ -81,16 +81,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		setFolderStatistics(folder, statistics);
     	}
     }
-    //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
-    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
-    	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
-       	seenMap.setSeen(entry);
-    	if (!entry.isTop()) {
-    	   	FolderEntry top = ((FolderEntry)entry).getTopEntry();
-    	   	seenMap.setSeen(top);
-    	}
-    }
+
     //no transaction
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
@@ -228,12 +219,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
 		//make sure this is set after lastActivity
-    	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
-       	seenMap.setSeen(fEntry);
-    	if (!fEntry.isTop()) {
-    	   	FolderEntry top = fEntry.getTopEntry();
-    	   	seenMap.setSeen(top);
-    	}
     	Statistics statistics = getFolderStatistics((Folder)binder);
         statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
         setFolderStatistics((Folder)binder, statistics);
@@ -325,11 +310,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.addEntryWorkflow(binder, entry, definition);
-       	SeenMap seenMap = getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId());
-       	seenMap.setSeen(entry);
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
- 		   seenMap.setSeen(top);
  		   indexEntry(top);
     	}
     }
@@ -341,7 +323,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	seenMap.setSeen(entry);
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
- 		   seenMap.setSeen(top);
  		   indexEntry(top);
     	}
     }
@@ -353,7 +334,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	seenMap.setSeen(entry);
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
- 		   seenMap.setSeen(top);
  		   indexEntry(top);
     	}
        	getRssModule().updateRssFeed(entry);

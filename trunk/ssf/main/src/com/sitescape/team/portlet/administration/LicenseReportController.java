@@ -45,7 +45,7 @@ public class LicenseReportController extends AbstractReportController {
 	private String getValue(Document doc, String xpath)
 	{
 		Node node = null;
-		return (node=doc.selectSingleNode(xpath))!=null?node.getText():"";
+		return (doc != null && (node=doc.selectSingleNode(xpath))!=null)?node.getText():"";
 	}
 	
 	@Override
