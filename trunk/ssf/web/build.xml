@@ -128,7 +128,7 @@
 		</replace>
 	</target>
 		
-	<target name="war" depends="make-jboss-web.xml,make-web.xml,make-strings.xml">
+	<target name="war" depends="make-jboss-web.xml,make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
@@ -399,7 +399,7 @@
 				</java>	 
 			</target>
 	
-	<target name="make-portlet-properties.xml">
+	<target name="make-portlet-properties">
 					<java 	classname="com.sitescape.team.tools.portletproperties.GeneratePortletProperties"
 							fork="true"
 							newenvironment="true"
