@@ -270,6 +270,44 @@ div.ss_replies div.ss_entryDescription {
   background-color: ${ss_style_text_field_background_color};
   }
 
+fieldset.ss_fieldset {
+  -moz-border-radius: 5px; 
+  margin-top: 6px;
+  margin-bottom: 4px;
+  border: 1px solid ${ss_style_border_color_light};
+}
+  
+fieldset.ss_fieldset_square {
+  border: 1px solid ${ss_style_border_color_light};
+  padding: 5px;
+  margin-top: 12px;
+}
+
+legend.ss_legend {
+  font-family: ${ss_style_font_family};
+  font-weight: bold;
+  font-size: ${ss_style_font_size}; 
+  color: ${ss_style_text_color};
+}
+
+legend.ss_legend_bold {
+  font-family: ${ss_style_font_family};
+  font-weight: bold;
+  font-size: ${ss_style_font_size}; 
+  color: ${ss_style_text_color};
+}
+
+.ss_formInstructions { 
+  border-color: #cccccc; 
+  border-style: solid; 
+  border-width: 1px; 
+  font-size: smaller;
+  padding: 2px;
+}
+
+
+
+
 /* entry styles: common to entry views and entry forms */
 .ss_entryTitle {
   font-weight: bold;

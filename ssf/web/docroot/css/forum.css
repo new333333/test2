@@ -237,36 +237,6 @@ div.ss_buttonBarRight {
   text-align: right;
   }
 
-/* ------------------------------------------------------------------------ */
-/* form-only styles: any form but only forms */
-
-fieldset.ss_fieldset {
-  -moz-border-radius: 5px; 
-  margin-top: 6px;
-  margin-bottom: 4px;
-  }
-  
-fieldset.ss_fieldset_square {
-  border: 1px #666666 solid;
-  padding: 5px;
-  margin-top: 12px;
-  }
-
-legend.ss_legend {
-  color: red;
-  }
-
-legend.ss_legend_bold {
-  font: bold 140%/1.6 Arial,sans-serif;
-  }
-
-.ss_formInstructions { 
-  border-color: #cccccc; 
-  border-style: solid; 
-  border-width: 1px; 
-  font-size: smaller;
-  padding: 2px;
-  }
 
 /* ------------------------------------------------------------------------ */
 /* navigation */
