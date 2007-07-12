@@ -10,6 +10,8 @@
  */
 //Routines to display an expandable/contractable tree
 //
+var ss_treeIds;
+if (ss_treeIds == null) ss_treeIds = new Array();
 function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
 	ss_hideBucketText()
 	if (page == null) page = "";
@@ -22,6 +24,9 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
     var iObj = self.document.getElementById(treeName + "icon" + id);
     eval("var showTreeIdRoutine = ss_treeShowIdRoutine_"+treeName+";");
     if (tObj == null) {
+        //See if the tree is in the process of being loaded
+        if (ss_treeIds[treeName + "div" + id] != null) return;
+        ss_treeIds[treeName + "div" + id] = "1";
         //The div hasn't been loaded yet. Go get the div via ajax
 		eval("var url = ss_treeAjaxUrl_" + treeName);
 		url = ss_replaceSubStrAll(url, "&amp;", "&");
