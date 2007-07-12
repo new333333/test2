@@ -543,7 +543,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 						entryId = new Long(entryIdString);
 					}
 					try {
-						modifyDate = DateTools.stringToDate(hits.doc(i).getField(IndexUtils.LASTACTIVITY_DAY_FIELD).stringValue());
+						modifyDate = DateTools.stringToDate(hits.doc(i).getField(IndexUtils.LASTACTIVITY_FIELD).stringValue());
 					} catch (ParseException pe) {} // no need to do anything
 					Counter cnt = (Counter)unseenCounts.get(folderIdString);
 					if (cnt == null) {
