@@ -86,10 +86,13 @@ public class GeneratePortletXml {
 		List <Element> elements = node.elements("portlet");
 		
 		for(int i = 0; i < elements.size(); i++) {
+			Element lastEle = elements.get(i).element("resource-bundle");
+			elements.get(i).remove(lastEle);
 			for (int j=0; j<localeCodes.length; j++) {
 				Element temp = elements.get(i).addElement("supported-locale");
 				temp.addText(localeCodes[j]);
 			}
+			elements.get(i).add(lastEle);
 		}
 	}
 }
