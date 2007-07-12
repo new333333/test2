@@ -77,7 +77,13 @@
 													
 					<div id="details_${status.count}" class="ss_entryDetails">
 						<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
-						   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+						   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
+						   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+							<c:if test="${!empty entry._totalReplyCount}">
+							    <span style="padding-left: 10px;" class="ss_label"><ssf:nlt 
+							      tag="popularity.Comments"/>: ${entry._totalReplyCount}</span>
+							</c:if>
+						 </p>
 						<c:if test="${!empty entry._workflowStateCaption}">
 							<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> <c:out value="${entry._workflowStateCaption}" /></p>
 						</c:if>
