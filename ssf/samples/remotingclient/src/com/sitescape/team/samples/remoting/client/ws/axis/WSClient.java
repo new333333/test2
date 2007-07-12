@@ -48,29 +48,31 @@ public class WSClient
 			if(args[0].equals("printWorkspaceTree")) {
 				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("printPrincipal")) {
-				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});			
+				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("printFolderEntries")) {
-				fetchAndPrintXML("getFolderEntriesAsXML", new Object[] {Long.parseLong(args[1])});			
+				fetchAndPrintXML("getFolderEntriesAsXML", new Object[] {Long.parseLong(args[1])});
+			} else if(args[0].equals("addFolder")) {
+				fetchAndPrintIdentifier("addFolder", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
 			} else if(args[0].equals("printTeamMembers")) {
-				fetchAndPrintXML("getTeamMembersAsXML", new Object[] {Long.parseLong(args[1])});			
+				fetchAndPrintXML("getTeamMembersAsXML", new Object[] {Long.parseLong(args[1])});
 			} else if(args[0].equals("printTeams")) {
-				fetchAndPrintXML("getTeamsAsXML", new Object[] {});			
+				fetchAndPrintXML("getTeamsAsXML", new Object[] {});
 			} else if(args[0].equals("printFolderEntry")) {
 				fetchAndPrintXML("getFolderEntryAsXML", new Object[] {Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
 			} else if(args[0].equals("printDefinition")) {
-				fetchAndPrintXML("getDefinitionAsXML", new Object[] {args[1]});			
+				fetchAndPrintXML("getDefinitionAsXML", new Object[] {args[1]});
 			} else if(args[0].equals("printDefinitionConfig")) {
-				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);			
+				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);
 			} else if(args[0].equals("addEntry")) {
 				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
-				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s});			
+				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s});
 			} else if(args[0].equals("modifyEntry")) {
 				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
-				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});			
+				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
-				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);			
+				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = FacadeClientHelper.readText(args[2]);
 				System.out.println("XML: " + s);
@@ -78,11 +80,11 @@ public class WSClient
 				if(args.length > 3) {
 					attachFile = args[3];
 				}
-				justDoIt("uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);			
+				justDoIt("uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);
 			} else if(args[0].equals("search")) {
 				String s = FacadeClientHelper.readText(args[1]);
 				System.out.println("XML: " + s);
-				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});			
+				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -170,6 +172,7 @@ public class WSClient
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth>");
 		System.out.println("printPrincipal <binder id> <principal id>");
+		System.out.println("addFolder <parent binder id> <binder config id> <title>");
 		System.out.println("printFolderEntries <folder id>");
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("printTeamMembers <binder id>");

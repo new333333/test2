@@ -61,8 +61,10 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.FileUtil;
 import com.sitescape.util.Validator;
@@ -100,6 +102,15 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
 
+	public long addFolder(long parentBinderId, long binderConfigId, String title)
+	{
+		try {
+			return getAdminModule().addBinderFromTemplate(binderConfigId, parentBinderId, title, null);
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+	
 	public String getFolderEntriesAsXML(long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
@@ -182,18 +193,27 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			entryElem.addAttribute("href", entryUrl);
 		}
 	}
+
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
-		
+		SimpleProfiler.setProfiler(new SimpleProfiler("webServices"));
 		try {
 			return getFolderModule().addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, getIcalModule()), null).longValue();
+				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{} )).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		} finally {
+//			logger.info(SimpleProfiler.toStr());
+			SimpleProfiler.clearProfiler();
 		}
+	}
+	
+	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
+	{
+		return new HashMap();
 	}
 	
 	public abstract void uploadFolderFile(long binderId, long entryId, 
