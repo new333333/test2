@@ -89,17 +89,18 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 				checkbox.setAttribute("name", window.ss_clipboardUsersFormElement[prefix]);
 				checkbox.setAttribute("id", checkboxId);
 				checkbox.setAttribute("value", members[(j * rows) + i][0]);
-				checkbox.setAttribute("checked", "checked");
 				
 				cell.appendChild(checkbox);
+				checkbox.checked = "checked";// must be after appendChild (IE problem)
 				
 				var label = document.createElement("label");
-				label.setAttribute("for", checkboxId);
+				
 	
 				var txtNode = document.createTextNode(members[(j * rows) + i][1]);
 				label.appendChild(txtNode);
 				
 				cell.appendChild(label);
+				label.setAttribute("for", checkboxId);
 				
 				checkboxes.push(checkbox);
 			}

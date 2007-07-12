@@ -88,9 +88,12 @@ try {
 				checkbox.setAttribute("name", window.ss_teamMembersFormElement[prefix]);
 				checkbox.setAttribute("id", checkboxId);
 				checkbox.setAttribute("value", members[(j * rows) + i][0]);
-				if (checkAll) checkbox.setAttribute("checked", "checked");
 				
 				cell.appendChild(checkbox);
+				
+				if (checkAll) {
+					checkbox.checked = "checked";// must be after appendChild (IE problem)
+				}
 				
 				var label = document.createElement("label");
 				label.setAttribute("for", checkboxId);

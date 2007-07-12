@@ -11,6 +11,7 @@
 package com.sitescape.team.web.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -543,8 +544,16 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		//handle bad data
 		if (ids instanceof String) {
 			return LongIdUtil.getIdsAsLongSet((String)ids);
-		} else return new HashSet<Long>();
-
+		} else if (Collection.class.isAssignableFrom(ids.getClass())) {
+			Set result = new HashSet<Long>();
+			Iterator it = ((Collection)ids).iterator();
+			while (it.hasNext()) {
+				result.addAll(getIds(it.next()));
+			}
+			return result;
+		} else {
+			return new HashSet<Long>();
+		}
 	}
 	protected void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
 	    		String id, Map component, boolean isConfig) {
@@ -1010,7 +1019,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
 				String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
 				//Save this value as a string for use when displaying the component
-				componentData.put(elementName, PortletRequestUtils.getStringParameter(request, key, ""));
+				componentData.put(elementName, Arrays.asList(PortletRequestUtils.getStringParameters(request, key)));
 			}
 		}
 			

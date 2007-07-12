@@ -38,6 +38,8 @@ public class TeamMembers extends BodyTagSupport {
 	
 	private Boolean appendAll= false;
 	
+	private Boolean checkOnLoad= false;
+	
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
 	}
@@ -59,6 +61,7 @@ public class TeamMembers extends BodyTagSupport {
 			httpReq.setAttribute("formElement", this.formElement);
 			httpReq.setAttribute("instanceCount", this.instanceCount);
 			httpReq.setAttribute("appendAll", this.appendAll);
+			httpReq.setAttribute("checkOnLoad", this.checkOnLoad);
 			
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/team/team_members.jsp";
@@ -74,6 +77,7 @@ public class TeamMembers extends BodyTagSupport {
 			formElement = "";
 			binderId = "";			
 			appendAll = false;
+			checkOnLoad = false;
 			instanceCount = null;
 		}
 
@@ -90,6 +94,10 @@ public class TeamMembers extends BodyTagSupport {
 
 	public void setAppendAll(Boolean appendAll) {
 		this.appendAll = appendAll;
+	}
+
+	public void setCheckOnLoad(Boolean checkOnLoad) {
+		this.checkOnLoad = checkOnLoad;
 	}
 
 }
