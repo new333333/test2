@@ -3070,11 +3070,13 @@ white-space: nowrap !important;
 	font-weight: bold;
 	margin-left: 0px;
 }
-.ss_table_smheaders {
+table.ss_table thead th.ss_table_smheaders {
+	font-family: ${ss_style_folder_view_font_family};
 	font-size: ${ss_style_font_fineprint};
 	font-weight: bold;
 	color: ${ss_style_text_color};
 	line-height: normal;
+	white-space: normal;
 }
 .ss_table_paragraph_red {
 	font-size: ${ss_style_font_smallprint};
