@@ -363,11 +363,13 @@
 					dojo.html.setClass(hrefObj, "ss_taskStatus");			
 				}
 					
-				dojo.event.connect(hrefObj, "onclick", (function() {
-						return function() {
-							that.changeStatus(task.id, statuses[i].key);
+				(function(taskId, statusKey) {
+				dojo.event.connect(hrefObj, "onclick", 
+						function() {
+							that.changeStatus(taskId, statusKey);
 						}
-					})());
+					);
+				})(task.id, statuses[i].key);
 				
 				var imgObj= document.createElement('img');
 				if (task.status == statuses[i].key) {
