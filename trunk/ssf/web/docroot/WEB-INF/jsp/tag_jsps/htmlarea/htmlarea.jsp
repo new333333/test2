@@ -28,6 +28,7 @@ tinyMCE.init(
   accessibility_focus: true,
 </ssf:ifaccessible>
   remove_script_host: false,
+  gecko_spellcheck : true,
   plugins: "table,<%--
   --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
   --%>preview,contextmenu,paste,ss_wikilink", 
