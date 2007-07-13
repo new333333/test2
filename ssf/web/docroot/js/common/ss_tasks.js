@@ -43,7 +43,7 @@
 						alert(ss_not_logged_in);
 					} else if (data.denied) {
 						alert(data.denied);
-					} else {
+					} else if (data) {
 						tasks[entryId] = data;
 			    		redrawTask(tasks[entryId]);
 					}
@@ -72,7 +72,7 @@
 						alert(ss_not_logged_in);
 					} else if (data.denied) {
 						alert(data.denied);
-					} else {
+					} else if (data) {
 						tasks[entryId] = data;
 			    		redrawTask(tasks[entryId]);
 					}
@@ -101,7 +101,7 @@
 						alert(ss_not_logged_in);
 					} else if (data.denied) {
 						alert(data.denied);
-					} else {
+					} else if (data) {
 						tasks[entryId] = data;
 				    	redrawTask(tasks[entryId]);
 					}
@@ -129,12 +129,11 @@
 					// alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-					try {
-				    	statuses = data.statuses;
-				    	priorities = data.priorities;
-				    	completed = data.completed;
-				    	// loadTasks();
-					} catch (e) {alert(e);}
+					if (data) {
+			    		statuses = data.statuses;
+			    		priorities = data.priorities;
+			    		completed = data.completed;
+					}
 				},
 							
 				mimetype: "text/json",
@@ -144,6 +143,7 @@
 		}
 		
 		function loadTasks() {
+			// TODO: no more in use, remove
 			if (!binderId || binderId == "") {
 				return;
 			}
