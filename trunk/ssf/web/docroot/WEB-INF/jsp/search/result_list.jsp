@@ -96,19 +96,11 @@
 								<c:if test="${entry._entryType == 'reply' && !empty entry._entryTopEntryId}">
 									<p>
 									<ssf:nlt tag="searchResult.label.entry" />: <a 
-									<c:if test="${isDashboard == 'yes'}">
-										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-										    binderId="${entry._binderId}" entryId="${entry._entryTopEntryId}">
-											<ssf:param name="entityType" value="folderEntry"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
-									</c:if>
-									<c:if test="${empty isDashboard || isDashboard == 'no'}">
 								     href="<ssf:url adapter="false" portletName="ss_forum" entryId="${entry._entryTopEntryId}" 
 								        action="view_folder_entry" actionUrl="false" >
 						    			<ssf:param name="binderId" value="${entry._binderId}"/>
 	    	  							<ssf:param name="newTab" value="1"/>
 	    	  							</ssf:url>" 
-	    	  						</c:if>
 									class="ss_parentPointer">
 									${entry._entryTopEntryTitle}
 									</a>
@@ -119,7 +111,7 @@
 									<c:if test="${isDashboard == 'yes'}">
 										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
 											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
+										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
 								     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
@@ -197,7 +189,7 @@
 									<c:if test="${isDashboard == 'yes'}">
 										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
 											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');">
+										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${portletNamespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
 								     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
@@ -578,8 +570,10 @@
 			</li>
 		</c:forEach>
 		</ul>
-
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
-	linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-	namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
-</ssf:menuLink>		
+		
+<c:if test="${isDashboard == 'no'}">
+	<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
+		linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
+		namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
+	</ssf:menuLink>		
+</c:if>
