@@ -3611,7 +3611,7 @@ div.ss_profileBox1 {
 
 div.ss_profileBox2 {
   background: ${ss_replies_background_color};
-  width: 230px:
+  width: 230px;
 }
 
 div.ss_profile_box_title {
