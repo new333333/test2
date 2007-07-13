@@ -9,22 +9,23 @@
  * Copyright (c) 2007 SiteScape, Inc.
  *
  */
-%>
+%><%--
 
-<c:if test="${!empty ss_portletInitialization}">
-<script type="text/javascript">
+--%><c:if test="${!empty ss_portletInitialization}"><%--
+	--%><script type="text/javascript">
 var url = '${ss_portletInitializationUrl}';
 if (url != '') self.location.href = url;
-</script>
-</c:if>
-<c:if test="${empty ss_portletInitialization}">
-<c:if test="${empty ssf_support_files_loaded}">
-<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
-<%
-boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
-%>
+</script><%--
+--%></c:if><%--
 
-<script type="text/javascript">
+--%><c:if test="${empty ss_portletInitialization}"><%--
+	--%><c:if test="${empty ssf_support_files_loaded}"><%--
+		--%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
+		--%><%
+			boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+			%><%--
+
+		--%><script type="text/javascript">
 // Dojo configuration
 djConfig = { 
 	isDebug: false,
@@ -420,8 +421,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 <c:if test="${!empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a href="${ss_accessibleUrl}"><img 
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
-    src="<html:imagesPath/>pics/1pix.gif" /></a>
-</c:if>
-
-</c:if>
-</c:if>
+    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
+		--%></c:if><%--
+	--%></c:if><%--
+--%></c:if>
