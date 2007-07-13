@@ -416,12 +416,14 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 		return;
 	}
 	var queryName = inputObj.value;
-	if (!queryName || queryName == "" || queryName == "Query name") {
+	if (!queryName || queryName.trim() == "" || queryName == window.ss_searchResultSavedSearchInputLegend) {
 		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
 		errMsgBoxObj.innerHTML = ss_noNameMsg;
-		ss_showDiv(errMsgBoxObj);
+		ss_showDiv(errMsgBoxId);
 		inputObj.focus();
 		return;
+	} else {
+		ss_hideDiv(errMsgBoxId);
 	}
 	if (!ss_nameAlreadyInUse(queryName) || (ss_overwrite(queryName))) {
 	
@@ -458,6 +460,11 @@ function ss_callRemoveSavedQuery(queryName, errMsg, objToRemove) {
 function ss_addSavedSearchToView(data) {
 	if (!ss_nameAlreadyInUse(data.savedQueryName)) {
 		var savedQueriesList = document.getElementById("ss_savedQueriesList");	
+		
+		if (savedQueriesList && !hasListElements(savedQueriesList)) {
+			savedQueriesList.innerHTML = "";
+		}
+		
 		var newLi = document.createElement("li");
 	
 		var removerLink = document.createElement('a');
@@ -478,6 +485,18 @@ function ss_addSavedSearchToView(data) {
 		savedQueriesList.appendChild(newLi);
 		ss_addToSaved(data.savedQueryName);
 	}
+}
+
+function hasListElements(htmlObj) {
+	if (!htmlObj) {
+		return false;
+	}
+	for (var i = 0; i < htmlObj.childNodes.length; i++) {
+		if (htmlObj.childNodes[i].tagName == "LI") {
+			return true;
+		}
+	}
+	return false;
 }
 
 

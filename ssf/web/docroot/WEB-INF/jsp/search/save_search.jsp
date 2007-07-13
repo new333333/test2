@@ -19,8 +19,8 @@
 	</div>
 	<div id="ss_saved_searches" class="ss_rating_box_content" style="visibility:visible;display:block;">
 		<c:if test="${!empty ss_filterMap}">
-			<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="Query name" onfocus="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
-			<a href="javascript: //;" onclick="ss_saveSearchQuery('searchQueryName', 'ss_saveQueryErrMsg');">Save</a>
+			<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="<ssf:nlt tag="searchResult.savedSearch.input.legend"/>" onfocus="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
+			<a href="javascript: //;" onclick="ss_saveSearchQuery('searchQueryName', 'ss_saveQueryErrMsg');"><ssf:nlt tag="searchResult.savedSearch.save"/></a>
 			<div id="ss_saveQueryErrMsg" style="visibility: hidden;"></div>
 		</c:if>
 		<ul id="ss_savedQueriesList">
