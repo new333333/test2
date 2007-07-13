@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="quickstart" pid="quickstart" name="QuickStart" level="0"> <text>ICEcore Quick Start Guide</text> </target>
+ <target id="quickstart" pid="quickstart" name="QuickStart" level="0"> <text>ICECore Quick Start Guide</text> </target>
 
  <target id="b20g4u4" pid="b20g4u4" name="Sect1" level="1"> <text>ICEcore</text> </target>
 

@@ -6,9 +6,7 @@
 ]>
 
 <chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="05/01/07" lang="en" xml:base="icecorequickstart.xml">
- <title>
-  <productname>&product;</productname> Quick Start Guide
- </title>
+ <title>ICECore Quick Start Guide</title>
  <para>Teaming + Conferencing</para>
  <para>1.0</para>
  <para>July, 2007</para>
