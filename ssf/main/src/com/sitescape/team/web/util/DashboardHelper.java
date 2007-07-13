@@ -1019,7 +1019,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
 				String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
 				//Save this value as a string for use when displaying the component
-				componentData.put(elementName, Arrays.asList(PortletRequestUtils.getStringParameters(request, key)));
+				List stringParams = Arrays.asList(PortletRequestUtils.getStringParameters(request, key));
+				if (stringParams != null && stringParams.size() == 1) {
+					componentData.put(elementName, stringParams.iterator().next());
+				} else {
+					componentData.put(elementName, stringParams);
+				}
 			}
 		}
 			
