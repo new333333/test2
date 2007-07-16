@@ -137,15 +137,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	  			case manageTeamMembers:
 		 			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 	
 		 			break;	
-	  			case getTeamMembers:
-	  				Set teamIds = binder.getTeamMemberIds();
-	  				//quick check
-	  				User user = RequestContextHolder.getRequestContext().getUser();
-	  				if (teamIds.contains(user.getId())) return;
-	  				Set myIds = getProfileDao().getPrincipalIds(user);
-	  				if (!Collections.disjoint(myIds, teamIds)) return;
-	  				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 	
-	  				break;
 	 			case manageTag:
 	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.ADD_COMMUNITY_TAGS);
 	 				 break;
@@ -721,9 +712,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	return null;
 	 }
 
-	public SortedSet<Principal> getTeamMembers(Long binderId, boolean explodeGroups) {
-		//give access to team members  or binder Admins.
-		Collection<Long> ids = getTeamMemberIds(binderId, explodeGroups);
+	public SortedSet<Principal> getTeamMembers(Binder binder, boolean explodeGroups) {
+		//If have binder , can read so no more access checking is needed
+		Set ids = binder.getTeamMemberIds();		
+	    // explode groups
+		if (explodeGroups) ids  = getProfileDao().explodeGroups(ids, binder.getZoneId());
 		//turn ids into real Principals
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -737,11 +730,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return result;
 	}
 	
-	
 	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) {
-		Binder binder = loadBinder(binderId);
-		//give access to team members  or binder Admins.
-		checkAccess(binder, BinderOperation.getTeamMembers);
+		//getBinder does read check
+		Binder binder = getBinder(binderId);
 		Set ids = binder.getTeamMemberIds();		
 	    // explode groups
 		if (explodeGroups) return getProfileDao().explodeGroups(ids, binder.getZoneId());
