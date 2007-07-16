@@ -37,7 +37,6 @@ import com.sitescape.team.util.StatusTicket;
 public interface BinderModule {
 	public enum BinderOperation {
 		deleteBinder,
-		getTeamMembers,
 		indexBinder,
 		indexTree,
 		manageDefinitions,
@@ -172,12 +171,11 @@ public interface BinderModule {
 	public List<Tag> getTags(Binder binder);
 	/**
 	 * Get a list of team members for the given binder
-	 * @param binderId
+	 * @param binder
 	 * @param explodeGroups
 	 * @return
-	 * @throws AccessControlException
 	 */
-	public SortedSet<Principal> getTeamMembers(Long binderId, boolean explodeGroups) throws AccessControlException;
+	public SortedSet<Principal> getTeamMembers(Binder binder, boolean explodeGroups);
 	/**
 	 * Return a list of team member ids
 	 * @param binderId

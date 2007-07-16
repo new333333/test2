@@ -675,18 +675,16 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		}
     		idData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
     		idData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-    		try {
-    			Collection users = getBinderModule().getTeamMembers(binder.getId(), true);
-    			Object[] usersSet = users.toArray();
-    			Collection usersPage = new HashSet();
-    			int iEnd = pageSize*pageNumber + pageSize;
-    			if (iEnd > usersSet.length) iEnd = usersSet.length;
-    			for (int i = pageSize*pageNumber; i < iEnd; i++) {
-    				usersPage.add(usersSet[i]);
-    			}
-    			idData.put(WebKeys.TEAM_MEMBERS, usersPage);
-    			idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
-    		} catch (AccessControlException ac) {} //justskip
+   			Collection users = getBinderModule().getTeamMembers(binder, true);
+   			Object[] usersSet = users.toArray();
+   			Collection usersPage = new HashSet();
+   			int iEnd = pageSize*pageNumber + pageSize;
+   			if (iEnd > usersSet.length) iEnd = usersSet.length;
+   			for (int i = pageSize*pageNumber; i < iEnd; i++) {
+   				usersPage.add(usersSet[i]);
+   			}
+   			idData.put(WebKeys.TEAM_MEMBERS, usersPage);
+   			idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
     	}
 	}
 	

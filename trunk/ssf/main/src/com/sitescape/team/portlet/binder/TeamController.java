@@ -71,15 +71,12 @@ public class TeamController extends AbstractBinderController {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_BINDER_ID);
-		if (binderId != null) {
-			Binder binder = getBinderModule().getBinder(binderId);
-			model.put(WebKeys.BINDER, binder);
-		}
-		Set memberIds = getBinderModule().getTeamMemberIds(binderId, false);
+		Binder binder = getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, binder);
+		Set memberIds = binder.getTeamMemberIds();
 		//split into users/groups
 		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
 		model.put(WebKeys.GROUPS, getProfileModule().getGroups(memberIds));
-
 		return new ModelAndView(WebKeys.VIEW_ADD_TEAM_MEMBERS, model);
 	}
 

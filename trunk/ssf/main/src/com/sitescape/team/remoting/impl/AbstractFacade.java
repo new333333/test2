@@ -438,7 +438,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	public String getTeamMembersAsXML(long binderId)
 	{
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
-		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder.getId(), true);
+		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
 		Document doc = DocumentHelper.createDocument();
 		Element team = doc.addElement("team");
 		team.addAttribute("inherited", binder.isTeamMembershipInherited()?"true":"false");
