@@ -35,7 +35,7 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 </c:forEach>
 </table>
 <c:if test="${!empty ssFolderList}">
-  <span class="ss_fineprint" style="padding-left:4px;">[<ssf:nlt tag="portlet.forum.delete.select.forums"/>]</span>
+  <span class="ss_fineprint" style="padding-left:4px;">[<ssf:nlt tag="portlet.forum.delete.select.bookmarks"/>]</span>
   <br/>
 </c:if>
 <br>
