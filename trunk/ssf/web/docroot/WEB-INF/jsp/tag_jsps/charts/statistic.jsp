@@ -33,14 +33,13 @@
 		<h5 class="ss_statisticLabel"><ssf:nlt tag="<%=statisticLabel%>"/>:</h5>
 	</c:if>
 	
-	<div class="ss_statisticContainer ${barStyle}">
+	<table class="ss_statisticContainer ${barStyle}"><tr>
 		<c:forEach var="singleValue" items="${percentStatistic}" varStatus="status">
 			<c:if test="${singleValue.value.percent > 0}">
-				<div class="ss_statisticBar statistic${status.index mod 8}" style="width:${singleValue.value.percent}%;" title="<ssf:nlt tag="${singleValue.value.label}" /> - ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)"><span>${singleValue.value.percent}%<span></div>
+				<td class="ss_statisticBar statistic${status.index mod 8}" style="width:${singleValue.value.percent}%;" title="<ssf:nlt tag="${singleValue.value.label}" /> - ${singleValue.value.percent}% (${singleValue.value.value} <ssf:nlt tag="statistic.unity" />)"><span>${singleValue.value.percent}%</span></td>
 			</c:if>
 		</c:forEach>
-	</div>
-	<div class="ss_clear_float"></div>
+	</tr></table>
 	
 	<c:if test="${showLegend}">
 	<div class="${barStyle}">

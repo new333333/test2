@@ -3973,6 +3973,11 @@ div.ss_searchContainer, div.ss_surveyContainer {
   zoom:1; /* a workaround IE bug */
 </c:if>	
 }
+p.ss_survey_question, span.ss_survey_answer {
+	font-size: ${ss_style_font_normalprint};
+	color:red;
+}
+
 div.ss_searchContainer #ss_content { 
 	border-left: 1px solid #afc8e3; 
     border-bottom: 1px solid #afc8e3; 
@@ -4332,7 +4337,7 @@ div.ss_chartContainer {
 	margin-right: 5px;
 }
 
-div.ss_chartContainer div.ss_total {
+div.ss_chartContainer div.ss_total, div.ss_chartContainer table.ss_total {
 	border: 1px solid #afc8e3;
 	background-color: #e8eff7;
 	width: 300px;
@@ -4340,48 +4345,65 @@ div.ss_chartContainer div.ss_total {
 	padding:0px;
 	height: 15px;
 }
-div.ss_chartContainer div.ss_total div {
+div.ss_chartContainer table.ss_total {
+	border-spacing: 0;
+	border-padding:0;
+	border-collapse: collapse;	
+}
+
+div.ss_chartContainer div.ss_total div, div.ss_chartContainer table.ss_total td.ss_bar {
 	background-color: #afc8e3;
 	color:#000099;
 	<c:if test="<%= isIE %>">
 	  zoom:1; /* a workaround IE bug - font color not display correctly */
 	</c:if>	
 }
+div.ss_chartContainer table.ss_total td { 
+	line-height:13px; 
+	font-size: ${ss_style_font_finestprint};	
+}
 /* Charts styles - end*/
 
 /* Statistic styles - start */
-div.ss_statisticContainer {
-	float:left;
-	margin: 3px 0px 3px 6px;
-	padding:0px;
-	font-size: ${ss_style_font_finestprint};
-	white-space: nowrap;
-}
-div.shortColoredBar { width: 100px;}
-div.coloredBar { width: 300px;}
+table.shortColoredBar { width: 100px;}
+table.coloredBar { width: 300px;}
 
 table.ss_statisticTable td {vertical-align:top;}
 
-div.statistic0 {background-color:#EF5612;}
-div.statistic1 {background-color:#EC9112;}
-div.statistic2 {background-color:#617F9F;}
-div.statistic3 {background-color:#995DB2;}
-div.statistic4 {background-color:#70AE55;}
-div.statistic5 {background-color:#72AF58;}
-div.statistic6 {background-color:#617F9F;}
-div.statistic7 {background-color:#547AA5;}
-
-div.ss_statusBar div.statistic0 {background-color:#EC9112;}
-div.ss_statusBar div.statistic1 {background-color:#617F9F;}
-div.ss_statusBar div.statistic2 {background-color:#70AE55;}
-div.ss_statusBar div.statistic3 {background-color:#995DB2;}
-
-div.ss_statisticBar {
-	float: left;
-	color: #ffffff;
+table.ss_statisticContainer {
+	margin: 3px 0px 3px 6px;
+	padding:0px;
+	border-spacing: 0;
+	border-padding:0;
+	border-collapse: collapse;	
+	border:0px;
 }
-div.ss_statisticBar span {
+table.ss_statisticContainer td {
+	font-size: ${ss_style_font_finestprint};
+	white-space: nowrap;
+	padding: 0px;
+	border-spacing: 0;
+	border-padding:0;
+	border-collapse: collapse;	
+	border:0;
+}
+div.statistic0, td.statistic0 {background-color:#EF5612;}
+div.statistic1, td.statistic1 {background-color:#EC9112;}
+div.statistic2, td.statistic2 {background-color:#617F9F;}
+div.statistic3, td.statistic3 {background-color:#995DB2;}
+div.statistic4, td.statistic4 {background-color:#70AE55;}
+div.statistic5, td.statistic5 {background-color:#72AF58;}
+div.statistic6, td.statistic6 {background-color:#617F9F;}
+div.statistic7, td.statistic7 {background-color:#547AA5;}
+
+div.ss_statusBar div.statistic0, table.ss_statusBar td.statistic0 {background-color:#EC9112;}
+div.ss_statusBar div.statistic1, table.ss_statusBar td.statistic1 {background-color:#617F9F;}
+div.ss_statusBar div.statistic2, table.ss_statusBar td.statistic2 {background-color:#70AE55;}
+div.ss_statusBar div.statistic3, table.ss_statusBar td.statistic3 {background-color:#995DB2;}
+
+div.ss_statisticBar span, td.ss_statisticBar span {
 	margin-left: 2px;
+	color: #ffffff;
 }
 h5.ss_statisticLabel {
 	margin:6px 0px 0px 6px;
@@ -4408,7 +4430,7 @@ div.ss_task_list_container {
 	<c:if test="<%= isIE %>">
 		height:1%;
 	</c:if>
-	margin:0px; 
+	margin:0px;
 	padding:0px;
 	width:100%;
 }
