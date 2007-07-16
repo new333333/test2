@@ -18,11 +18,16 @@
 <c:set var="percent" value="<%= percent %>" scope="request"/>
 
 <div class="ss_chartContainer">
-	<div class="ss_total">
-		<c:if test="${percent > 0}">
-		<div class="ss_bar" style="width:<%= percent %>%;">&nbsp;</div>
-		</c:if>
-	</div>
+	<table class="ss_total">
+		<tr>
+			<c:if test="${percent > 0}">
+			<td class="ss_bar" style="width:<%= percent %>%;">&nbsp;</td>
+			</c:if>
+			<c:if test="${percent < 100}">
+			<td>&nbsp;</td>
+			</c:if>
+		</tr>
+	</table>
 	<%= percent %>% <ssf:nlt tag="survey.xvotes"><ssf:param name="value" value="<%= count %>"/></ssf:nlt>
 </div>
 

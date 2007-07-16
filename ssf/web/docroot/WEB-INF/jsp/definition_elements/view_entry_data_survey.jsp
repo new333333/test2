@@ -39,7 +39,7 @@
 	<c:forEach var="question" items="${ssDefinitionEntry.customAttributes[property_name].value.surveyModel.questions}" >
 		<c:set var="hasAnyQuestion" value="true" />
 		<div class="ss_questionContainer">
-			<p><c:out value="${question.question}" escapeXml="false"/></p>
+			<p class="ss_survey_question" style="zoom:1;"><c:out value="${question.question}" escapeXml="false"/></p>
 			<c:choose>
 				<c:when test="${overdue || question.alreadyVotedCurrentUser || !hasRightsToVote}">
 					<ol>
@@ -48,7 +48,7 @@
 							<c:if test="${question.type == 'multiple' || question.type == 'single'}">
 								<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
 							</c:if>
-							<span><c:out value="${answer.text}" escapeXml="false"/></span>
+							<span class="ss_survey_answer" style="zoom:1;"><c:out value="${answer.text}" escapeXml="false"/></span>
 							<div class="ss_clear"></div>
 						</li>
 					</c:forEach>
