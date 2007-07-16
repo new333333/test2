@@ -44,6 +44,10 @@ public class SearchFilter {
 		placeTypes.add(EntityIdentifier.EntityType.workspace.name());
 		placeTypes.add(EntityIdentifier.EntityType.profiles.name());
 	}
+	protected static List folderTypes = new ArrayList(1);
+	static {	
+		folderTypes.add(EntityIdentifier.EntityType.folder.name());
+	}
 	protected static List binderType = new ArrayList(1);
 	static {
 		binderType.add(BasicIndexUtils.DOC_TYPE_BINDER);
@@ -467,7 +471,7 @@ public class SearchFilter {
 		}
 	}
 		
-	public void addPlacesFilter(String searchText) {
+	public void addPlacesFilter(String searchText, Boolean foldersOnly) {
 		checkCurrent();
 	
 		// this is not the same as in addFilter! 
@@ -486,7 +490,11 @@ public class SearchFilter {
 			filterTerm.setText(searchText.trim());
 		}
 		
-		addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, placeTypes);		
+		if (foldersOnly) {
+			addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, folderTypes);		
+		} else {
+			addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes,SearchFilterKeys.FilterEntityType, placeTypes);		
+		}
 
 		addAndNestedTerms(SearchFilterKeys.FilterTypeDocTypes,SearchFilterKeys.FilterDocType, binderType);		
 	}

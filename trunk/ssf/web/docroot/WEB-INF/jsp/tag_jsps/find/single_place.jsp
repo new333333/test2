@@ -133,6 +133,7 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findPlaces_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
+	ajaxRequest.addKeyValue("foldersOnly", '${foldersOnly}')
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
 	ajaxRequest.addKeyValue("namespace", "${prefix}")
 	//ajaxRequest.setEchoDebugInfo();

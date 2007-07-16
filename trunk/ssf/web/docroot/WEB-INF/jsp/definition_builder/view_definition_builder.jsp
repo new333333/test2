@@ -341,6 +341,17 @@ function ss_postLoadGetConditionRequest() {
 	}
 }
 
+function ss_setFolderSelectHeight() {
+	setTimeout("ss_setFolderSelectHeight2();", 100);
+}
+
+function ss_setFolderSelectHeight2() {
+	var obj = self.getElementById('ss_folderSelectIframe')
+	if (obj != null) {
+		obj.style.height = "400px"
+	}
+}
+
 function showOptions(id, name, item) {
 	//alert('showOptions: ' + id + ', ' + name + ', ' + item)
 	//User selected an operation, show the operation options
