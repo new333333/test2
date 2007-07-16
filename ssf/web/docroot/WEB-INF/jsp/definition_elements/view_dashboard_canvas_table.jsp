@@ -74,7 +74,7 @@
 			  </c:forEach>
 			</div>
 
-			<div style="visibility:hidden; display:none;
+			<div style="visibility:hidden; 
 			  width:${ssDashboard.narrowFixedWidth}px;"><img border="0"
 			  <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif"></div></td>
   
