@@ -200,13 +200,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * Load all entries of a folder and it sub-folders that have been updated with a specified range.
      */
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before) {
-		return loadFolderTreeUpdates(folder, since, before, new OrderBy(Constants.ID));
+		return loadFolderTreeUpdates(folder, since, before, new OrderBy(Constants.ID), -1);
 	}
 
 	/**
 	 * See <code>loadFolderTreeUpdates</code>. Order results as specified.
 	 */
-	public List loadFolderTreeUpdates(final Folder folder, final Date since, final Date before, final OrderBy order) {
+	public List loadFolderTreeUpdates(final Folder folder, final Date since, final Date before, final OrderBy order, final int maxResults) {
         List entries = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -217,6 +217,9 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                 		int i=0;
 						q.setTimestamp(i++, since);
 						q.setTimestamp(i++, before);
+						if (maxResults > 0) {
+							q.setMaxResults(maxResults);
+						}
 						return q.list();
                     }
                 }

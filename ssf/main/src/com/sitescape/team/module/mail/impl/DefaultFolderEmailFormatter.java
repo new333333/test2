@@ -135,7 +135,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public List getEntries(Folder folder, Date start, Date until) {
  		Folder top = folder.getTopFolder();
 		if (top == null) top = folder;
-		return getFolderDao().loadFolderTreeUpdates(top, start ,until, new OrderBy("HKey.sortKey"));
+		return getFolderDao().loadFolderTreeUpdates(top, start ,until, new OrderBy("HKey.sortKey"), -1);
  		
     }
 	/**
