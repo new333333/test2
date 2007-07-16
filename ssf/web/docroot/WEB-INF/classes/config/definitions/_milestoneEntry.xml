@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_milestoneEntry" caption="__definition_default_milestone_entry" type="1" nextId="38" definitionType="1" databaseId="40288182131a1e4501131a2fe53a0048">
+<definition name="_milestoneEntry" caption="__definition_default_milestone_entry" type="1" nextId="39" definitionType="1" databaseId="40288182131a1e4501131a2fe53a0048">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
@@ -82,6 +82,12 @@
           <property name="number" value=""/>
           <property name="storage" value=""/>
           <property name="hide" value=""/>
+        </properties>
+      </item>
+      <item name="subscribe" caption="__subscribe" category="entryData" id="38">
+        <properties>
+          <property name="name" value="_subscribe"/>
+          <property name="caption" value="__subscribe"/>
         </properties>
       </item>
       <item name="sendMail" caption="__sendMail" category="entryData" id="37">
