@@ -36,6 +36,8 @@ public interface ResourceDriver {
 	 */
 	public String getTitle();
 	
+	public String getTitleAndMode();
+	
 	/**
 	 * Return the type of the driver.
 	 * This is informational purpose only.
