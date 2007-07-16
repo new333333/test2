@@ -53,8 +53,12 @@ public class ModifyEntryController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
+			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+			if (!entry.isTop()) entry = entry.getTopEntry();
+			else entry = null;
 			getFolderModule().deleteEntry(folderId, entryId);
-			setupViewFolder(response, folderId);		
+			if (entry != null) 	setupViewEntry(response, folderId, entry.getId());
+			else setupViewFolder(response, folderId);		
 		
 		} else if (op.equals(WebKeys.OPERATION_LOCK)) {
 			getFolderModule().reserveEntry(folderId, entryId);
