@@ -18,6 +18,10 @@
 <c:set var="hitCount" value="0"/>
 
 <div class="ss_blog">
+<c:set var="summaryWordCount" value="20"/>
+<c:if test="${!empty ssDashboard.dashboard.components[componentId].data.summaryWordCount}">
+	<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[componentId].data.summaryWordCount}"/>
+</c:if>
 
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
 
@@ -53,8 +57,11 @@
 				<c:if test="${!empty fileEntry._desc}">
 				<div class="ss_blockquote_watermark"></div>
 				<div class="ss_blockquote_watermark_content">
-					<span><ssf:markup type="view" binderId="${fileEntry._binderId}" 
-					  entryId="${fileEntry._docId}"><c:out value="${fileEntry._desc}" escapeXml="false"/></ssf:markup></span>
+					<span><ssf:markup type="view" binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}">
+						<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+								${fileEntry._desc}
+						</ssf:textFormat>
+					  </ssf:markup></span>
 				</div>
 				</c:if>
 			</td>					 	
