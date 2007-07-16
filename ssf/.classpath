@@ -47,7 +47,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-mock.jar"/>
-	<classpathentry exported="true" kind="lib" path="main/classes"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
@@ -85,5 +84,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jboss-common.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/struts.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/util-java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-jcr-commons.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
