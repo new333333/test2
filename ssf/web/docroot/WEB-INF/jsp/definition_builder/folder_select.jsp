@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div>
-<span><ssf:nlt tag="definition.selectFolderToMoveTo"/></span>
+<span class="ss_bold"><ssf:nlt tag="definition.selectFolderToMoveTo"/></span>
 <input type="hidden" id="propertyId_${propertyId}" 
   name="propertyId_${propertyId}"
   value="${propertyValue}" />
@@ -33,8 +33,7 @@
 	</tr>
   </tbody>
 </table>
+<br/>
+<span class="ss_labelLeft"><ssf:nlt tag="definition.selected_folder"/></span>
+<span id="propertyId_${propertyId}_title">${binderTitle}</span>
 </div>
-
-
-
-

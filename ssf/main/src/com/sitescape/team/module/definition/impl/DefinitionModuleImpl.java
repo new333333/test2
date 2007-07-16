@@ -763,7 +763,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("selectbox") || type.equals("itemSelect") || 
 								type.equals("radio") || type.equals("replyStyle") || 
-								type.equals("iconList") || type.equals("repositoryList")) {
+								type.equals("iconList") || type.equals("repositoryList") || 
+								type.equals("folderSelect")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("boolean") || type.equals("checkbox")) {
 							if (value == null) {value = "false";}
