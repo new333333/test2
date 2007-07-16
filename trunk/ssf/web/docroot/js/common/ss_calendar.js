@@ -1231,7 +1231,7 @@ function ss_calendar(prefix) {
 	    },
 	
 	
-	    switchView: function(	/* String: "daydelta", "3daydelta", "week", "fortnight", "workweek", "month", "daydirect", "monthdirect", "prev", "next" */ 
+	    switchView: function(	/* String: "daydelta", "3daydelta", "week", "fortnight", "workweek", "month", "daydirect", "monthdirect", "datedirect", "prev", "next" */ 
 	    							mode, 
 	    							year, month, dayOfMonth) {
 	    	var grid;
@@ -1298,6 +1298,10 @@ function ss_calendar(prefix) {
 	                dayToShow = new Date(year, month, dayOfMonth);
 	                grid = "month";
 	                break;
+	                
+	            case "datedirect":
+	                dayToShow = new Date(year, month, dayOfMonth);
+	                break;	                
 	                
 	            case "daydirect":
 	                ss_cal_Grid.gridSize = 1;

@@ -35,7 +35,7 @@
 	function ss_getMonthCalendarEvents${prefix}() {
 		var formObj = document.getElementById("ssCalNavBar${prefix}");
 		if (formObj && formObj.ss_goto${prefix}_year && formObj.ss_goto${prefix}_month && formObj.ss_goto${prefix}_date) {
-			ss_calendar_${prefix}.ss_cal_Events.switchView("monthdirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
+			ss_calendar_${prefix}.ss_cal_Events.switchView("datedirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
 		}
 	}
 	
