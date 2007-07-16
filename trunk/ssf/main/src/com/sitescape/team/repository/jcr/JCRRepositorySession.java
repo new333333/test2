@@ -33,6 +33,7 @@ import javax.jcr.version.VersionException;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 
+import org.apache.jackrabbit.util.Text;
 import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.UncheckedIOException;
@@ -394,6 +395,8 @@ public class JCRRepositorySession implements RepositorySession {
 		if(relativeFilePath.startsWith(Constants.SLASH))
 			relativeFilePath = relativeFilePath.substring(1);
 		
+		relativeFilePath = Text.escapeIllegalJcrChars(relativeFilePath);
+		
 		return entityNodePath + relativeFilePath;
 	}
 	
@@ -412,7 +415,7 @@ public class JCRRepositorySession implements RepositorySession {
 		
 		Node folderNode = createFoldersIfNecessary(getFolderNodePath(fileNodePath));
 		
-		String fileName = getFileName(relativeFilePath);
+		String fileName = getEscapedFileName(relativeFilePath);
 		
 		Node fileNode = folderNode.addNode(fileName, JCRConstants.NT_FILE);
 		
@@ -469,7 +472,7 @@ public class JCRRepositorySession implements RepositorySession {
 	
 	private void updateFile(Binder binder, DefinableEntity entity,
 			String relativeFilePath, InputStream is) throws RepositoryException {
-		String fileName = getFileName(relativeFilePath);
+		String fileName = getEscapedFileName(relativeFilePath);
 		
 		Node contentNode = getFileContentNode(binder, entity, relativeFilePath);
 				
@@ -557,8 +560,7 @@ public class JCRRepositorySession implements RepositorySession {
 					dirNode = dirNode.getNode(dirNameArray[i]);
 				}
 				else {
-					dirNode = dirNode.addNode(
-						dirNameArray[i], JCRConstants.NT_FOLDER);
+					dirNode = dirNode.addNode(dirNameArray[i], JCRConstants.NT_FOLDER);
 				}
 			}
 		}
@@ -575,6 +577,10 @@ public class JCRRepositorySession implements RepositorySession {
 			return relativeFilePath;
 		else
 			return relativeFilePath.substring(index + 1);
+	}
+	
+	private String getEscapedFileName(String relativeFilePath) {
+		return Text.escapeIllegalJcrChars(getFileName(relativeFilePath));
 	}
 	
 	private void checkoutFile(Binder binder, DefinableEntity entity, 
