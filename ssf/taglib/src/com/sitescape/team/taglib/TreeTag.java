@@ -556,7 +556,7 @@ public class TreeTag extends TagSupport {
 					} else {
 						classField = titleClass;
 					}
-					jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
+					jspOut.print("<a "+classField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
 					if (s_id != null && !s_id.equals("")) {
 						if (action.equals(""))
 							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");

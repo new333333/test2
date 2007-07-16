@@ -279,12 +279,13 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
 
+/* check/uncheck checkboxes in tree on click in the place name */
 function t_advSearchForm_wsTree_showId(forum, obj) {
-	var searchForm = document.getElementById("ss_advSearchForm");
-	if (searchForm["ss_sf_id_"+forum] && searchForm["ss_sf_id_"+forum].checked) {
-		searchForm["ss_sf_id_"+forum].checked=false;
+	var r = document.getElementById("ss_tree_checkboxt_searchForm_wsTreesearchFolders_" + forum);
+	if (r && r.checked) {
+		r.checked=false;
 	} else {
-		searchForm["ss_sf_id_"+forum].checked=true;
+		r.checked=true;
 	}
 	return false;
 }
