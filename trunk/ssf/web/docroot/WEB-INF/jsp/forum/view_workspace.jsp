@@ -30,27 +30,6 @@
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 	<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
-	<script type="text/javascript">
-		var ss_reloadUrl = "${ss_reloadUrl}";
-		var ss_confirmDeleteWorkspaceText = "<ssf:nlt tag="workspace.confirmDeleteWorkspace"/>";
-		var ss_confirmDeleteProfileText = "<ssf:nlt tag="workspace.confirmDeleteProfile"/>";
-		
-		function ss_confirmDeleteWorkspace() {
-			if (confirm(ss_confirmDeleteWorkspaceText)) {
-				return true
-			} else {
-				return false
-			}
-		}
-		function ss_confirmDeleteProfile() {
-			if (confirm(ss_confirmDeleteProfileText)) {
-				return true
-			} else {
-				return false
-			}
-		}
-	</script>
-
 	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 
 		<% // Navigation bar %>

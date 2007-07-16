@@ -761,6 +761,7 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
+    public static final String VIEW_CONFIRM_DELETE_USER_WORKSPACE="profile/confirm_delete_user_workspace";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
