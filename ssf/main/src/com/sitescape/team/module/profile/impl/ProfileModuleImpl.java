@@ -544,7 +544,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	Long wsId = u.getWorkspaceId();
         	if (wsId != null) {
         		try {
-        			getBinderModule().deleteBinder(wsId);
+        			getBinderModule().deleteBinder(wsId, true);
         			u.setWorkspaceId(null);       		
         		} catch (Exception ue) {}    
         	}

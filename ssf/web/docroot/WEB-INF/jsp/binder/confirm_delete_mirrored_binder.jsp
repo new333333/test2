@@ -20,12 +20,25 @@
   id="ss_confirm_delete_mirrored_binder"
   method="post">
 <span class="ss_bold">
+<c:if test="${ssBinder.entityType == 'folder'}">
 <ssf:nlt tag="folder.confirmDeleteFolder"><ssf:param name="value" value="${ssBinder.pathName}"/></ssf:nlt>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+<ssf:nlt tag="workspace.confirmDeleteWorkspace"><ssf:param name="value" value="${ssBinder.pathName}"/></ssf:nlt>
+</c:if>
 </span><br/><br/>
 
 <c:set var="cb_checked" value=""/>
 <div style="display:block">
-<input type="checkbox" name="ss_deleteSource" <c:out value="${cb_checked}"/> onClick="if (document.ss_confirm_delete_mirrored_binder.ss_deleteSource.checked) document.ss_confirm_delete_mirrored_binder.deleteSource.value='true'; else document.ss_confirm_delete_mirrored_binder.deleteSource.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.deleteMirroredFolderContents"/></span></input>
+<input type="checkbox" name="ss_deleteSource" <c:out value="${cb_checked}"/> onClick="if (document.ss_confirm_delete_mirrored_binder.ss_deleteSource.checked) document.ss_confirm_delete_mirrored_binder.deleteSource.value='true'; else document.ss_confirm_delete_mirrored_binder.deleteSource.value='false';">
+&nbsp;<span class="ss_labelRight">
+<c:if test="${ssBinder.entityType == 'folder'}">
+<ssf:nlt tag="folder.deleteMirroredFolderContents"/>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+<ssf:nlt tag="workspace.deleteMirroredFolderContents"/>
+</c:if>
+</span></input>
 </div>
 <input type="hidden" name="deleteSource" value="false"/>
 <br/>

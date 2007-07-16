@@ -350,8 +350,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		if (!workspace.isReserved()) {
 			if (getBinderModule().testAccess(workspace, BinderOperation.deleteBinder)) {
 				adminMenuCreated=true;
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "return ss_confirmDeleteWorkspace();");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
@@ -426,14 +424,12 @@ public class WorkspaceTreeController extends SAbstractController  {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
 				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
 				//	The "Delete" menu item
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 				url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
+				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url);
 			}
 			if (showModifyProfileMenu && !showDeleteProfileMenu) {
 				//	The "Modify" menu item

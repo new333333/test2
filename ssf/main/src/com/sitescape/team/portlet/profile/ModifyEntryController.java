@@ -23,6 +23,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.shared.MapInputData;
@@ -31,6 +32,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.util.GetterUtil;
 
 /**
  * @author Peter Hurley
@@ -44,8 +46,9 @@ public class ModifyEntryController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.OPERATION_DELETE)) {
-			getProfileModule().deleteEntry(binderId, entryId, false);			
+		if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DELETE)) {
+			String deleteWs = PortletRequestUtils.getStringParameter(request, "deleteWs", null);
+			getProfileModule().deleteEntry(binderId, entryId, GetterUtil.getBoolean(deleteWs, false));			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
@@ -104,18 +107,25 @@ public class ModifyEntryController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Principal entry  = getProfileModule().getEntry(binderId, entryId);
-		model.put(WebKeys.ENTRY, entry);
-		model.put(WebKeys.FOLDER, entry.getParentBinder());
-		model.put(WebKeys.BINDER, entry.getParentBinder());
-		model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-		Definition entryDef = entry.getEntryDef();
-		if (entryDef == null) {
-			DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.OPERATION_DELETE)) {
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.BINDER, entry.getParentBinder());
+			return new ModelAndView(WebKeys.VIEW_CONFIRM_DELETE_USER_WORKSPACE, model);
 		} else {
-			DefinitionHelper.getDefinition(entryDef, model, "//item[@type='form']");
-		}
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.FOLDER, entry.getParentBinder());
+			model.put(WebKeys.BINDER, entry.getParentBinder());
+			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
+			Definition entryDef = entry.getEntryDef();
+			if (entryDef == null) {
+				DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
+			} else {
+				DefinitionHelper.getDefinition(entryDef, model, "//item[@type='form']");
+			}
 		
-		return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
+			return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
+		}
 	}
 }
 
