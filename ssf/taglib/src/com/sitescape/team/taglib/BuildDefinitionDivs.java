@@ -1234,10 +1234,10 @@ public class BuildDefinitionDivs extends TagSupport {
 						if (!propertyValue0.equals("")) binderId = Long.valueOf(propertyValue0);
 						req.setAttribute(WebKeys.BINDER_ID, binderId);
 						BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
-						Binder binder = binderModule.getBinder(binderId);
-						if (binder != null) {
+						try {
+							Binder binder = binderModule.getBinder(binderId);
 							req.setAttribute(WebKeys.BINDER_TITLE, binder.getTitle());
-						}
+						} catch (Exception ex) {};
 						
 						StringServletResponse res = new StringServletResponse(httpRes);
 						try {
