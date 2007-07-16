@@ -26,7 +26,7 @@ function ss_showTags<portlet:namespace/>(divNumber, entityType, entryId) {
 	divObj.visibility = "visible";
 	divObj.style.zIndex = ssMenuZ;
 	var anchorObj = document.getElementById('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber));
-	ss_setObjectTop(divObj, ss_getDivTop('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)) + "px");
+	ss_setObjectTop(divObj, (ss_getDivTop('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)) + 20) + "px");
 	var rightEdge = parseInt(ss_getDivLeft('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)));
 	var leftEdge = parseInt(rightEdge - ss_getObjectWidth(divObj));
 	if (leftEdge < 0) leftEdge = 0;
