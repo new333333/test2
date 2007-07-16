@@ -23,11 +23,14 @@
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 <script type="text/javascript">
-function ss_saveFolderId(id) {
-		alert('${propertyId}')
+function ss_saveFolderId(id, type, clickObj) {
 	var obj = self.parent.document.getElementById('${propertyId}');
+	var objTitle = self.parent.document.getElementById('${propertyId}_title');
 	if (obj != null) {
 		obj.value = id
+	}
+	if (objTitle != null && clickObj != null) {
+		objTitle.innerHTML = clickObj.innerHTML
 	}
 }
 </script>

@@ -30,9 +30,11 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Definition;
 
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionUtils;
 
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -1229,8 +1231,13 @@ public class BuildDefinitionDivs extends TagSupport {
 						req.setAttribute("propertyId", propertyId);
 						req.setAttribute("propertyValue", propertyValue0);
 						Long binderId = null;
-						if (!propertyValue0.equals("")) Long.valueOf(propertyValue0);
+						if (!propertyValue0.equals("")) binderId = Long.valueOf(propertyValue0);
 						req.setAttribute(WebKeys.BINDER_ID, binderId);
+						BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
+						Binder binder = binderModule.getBinder(binderId);
+						if (binder != null) {
+							req.setAttribute(WebKeys.BINDER_TITLE, binder.getTitle());
+						}
 						
 						StringServletResponse res = new StringServletResponse(httpRes);
 						try {
