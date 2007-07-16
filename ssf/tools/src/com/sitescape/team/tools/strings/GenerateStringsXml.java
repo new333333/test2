@@ -70,15 +70,11 @@ public class GenerateStringsXml {
     		xOut = new XMLWriter(fOut, fmt);
            	Element strRoot = document.getRootElement();
             
-           	String []strElemNames = {"TOC", "ChangedOne", "ChangedMany", 
-           			"fromLabel", "dateLabel", "folderLabel", "newEntry",
-           			"modifiedEntry", "workflowEntry", "folderPermalink",
-           			"reply"};
            	
            	String []localeCodes = {"en", "de", "es", "fr", "it", "ja",	
            			"nl", "pt_BR", "sv", "zh_CN", "zh_TW"};
            	
-           	generateTags(strRoot, strElemNames, localeCodes, pathname);
+           	generateTags(strRoot, localeCodes, pathname);
             xOut.write(strRoot);
     		xOut.flush();
 	    } catch (Exception ex) {
@@ -90,7 +86,7 @@ public class GenerateStringsXml {
 	    }
 	}
 				
-	private static void generateTags(Element node, String []strElemNames, String []localeCodes, String pathname)  throws Exception {
+	private static void generateTags(Element node, String []localeCodes, String pathname)  throws Exception {
 		List <Element> elements = node.elements();
 		
 		ReloadableResourceBundleMessageSource rrbms = new ReloadableResourceBundleMessageSource();
@@ -101,12 +97,12 @@ public class GenerateStringsXml {
 		FileSystemResourceLoader fsrl = new FileSystemResourceLoader();
 		
 		rrbms.setResourceLoader(fsrl);
-		
-		for(int i = 0; i < elements.size(); i++) {
+		for (Element element:elements) {
+			String name = element.attributeValue("name");
 			for (int j=0; j<localeCodes.length; j++) {
-				Element temp = elements.get(i).addElement("lang");
+				Element temp = element.addElement("lang");
 				temp.addAttribute("name", localeCodes[j]);
-				String text= rrbms.getMessage("strings.xml." + strElemNames[i], null , "", new Locale(localeCodes[j]));
+				String text= rrbms.getMessage("strings.xml." + name, null , "", new Locale(localeCodes[j]));
 				temp.addText(text);
 			}
 		}
