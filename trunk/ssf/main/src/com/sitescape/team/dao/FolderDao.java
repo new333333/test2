@@ -58,7 +58,7 @@ public interface FolderDao {
      */
     
 	public List<FolderEntry> loadFolderTreeUpdates(Folder folder, Date since, Date before);
-	public List<FolderEntry> loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
+	public List<FolderEntry> loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order, int maxResults);
 	
 	public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException,NoFolderByTheIdException;
   
