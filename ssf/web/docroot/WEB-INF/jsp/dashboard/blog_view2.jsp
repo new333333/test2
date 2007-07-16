@@ -16,6 +16,10 @@
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
 <c:set var="hitCount" value="0"/>
+<c:set var="summaryWordCount" value="30"/>
+<c:if test="${!empty ssDashboard.dashboard.components[componentId].data.summaryWordCount}">
+	<c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[componentId].data.summaryWordCount}"/>
+</c:if>
 
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
   <c:set var="hitCount" value="${hitCount + 1}"/>
@@ -95,23 +99,13 @@
 </div>
 
 <div style="padding-bottom:10px;">
-<jsp:useBean id="fileEntry" type="java.util.Map" />
-<%
-	if (fileEntry.containsKey("_desc")) {
-		String[] words = ((String)fileEntry.get("_desc")).split(" ");
-		String summary = "";
-		for (int i = 0; i < words.length; i++) {
-			summary = summary + " " + words[i];
-			//Limit the summary to 200 words
-			if (i >= 200) {
-				if (i < words.length - 1) summary = summary + "...";
-				break;
-			}
-		}
-%>
+
     <div class="ss_smallprint ss_indent_medium">  
-      <ssf:markup binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}"
-      ><c:out value="<%= summary %>" escapeXml="false"/></ssf:markup>
+      <ssf:markup binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}">
+ 		<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+					${fileEntry._desc}
+		</ssf:textFormat>
+      </ssf:markup>
     </div>
 <%
 	}
