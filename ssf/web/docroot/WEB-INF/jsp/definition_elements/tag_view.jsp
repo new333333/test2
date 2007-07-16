@@ -168,7 +168,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
     </td><td>
       <a class="ss_linkButton" href="#" 
-        onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');return false;"
+        onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
         <ssf:title tag="title.add.personal.tags" />
       ><ssf:nlt tag="button.add"/></a>
     </td></tr>
@@ -197,7 +197,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     
     <ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">  
     <a class="ss_linkButton" href="#" 
-      onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');return false;"
+      onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
       <ssf:title tag="title.add.community.tags" />
     ><ssf:nlt tag="button.add"/></a>
     </ssf:ifAccessAllowed>  
