@@ -3975,7 +3975,7 @@ div.ss_searchContainer, div.ss_surveyContainer {
 }
 p.ss_survey_question, span.ss_survey_answer {
 	font-size: ${ss_style_font_normalprint};
-	color:red;
+	color:#333333;
 }
 
 div.ss_searchContainer #ss_content { 
