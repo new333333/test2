@@ -17,11 +17,11 @@
 	<c:if test="${!empty ssPagePrevious || !empty ssPageNext}">	
 		{
 		<c:if test="${!empty ssPagePrevious}">
-			_prev: {text: "[prev]", pgStr: "${ssPagePrevious.start};${ssPagePrevious.end}"}
+			_prev: {text: "<ssf:nlt tag="widget.prev"/>", pgStr: "${ssPagePrevious.start};${ssPagePrevious.end}"}
 		</c:if>
 		<c:if test="${!empty ssPageNext}">
 			<c:if test="${!empty ssPagePrevious}">,</c:if>
-			_next: {text: "[next]", pgStr: "${ssPageNext.start};${ssPageNext.end}"}
+			_next: {text: "<ssf:nlt tag="widget.next"/>", pgStr: "${ssPageNext.start};${ssPageNext.end}"}
 		</c:if>
 		},
 	</c:if>

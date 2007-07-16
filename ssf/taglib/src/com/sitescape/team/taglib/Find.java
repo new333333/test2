@@ -45,6 +45,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private String clickRoutineArgs = "";
     private String binderId = "";
     private Boolean searchSubFolders;
+    private Boolean foldersOnly;
     private String instanceCount;
     private String accessibilityText;
 
@@ -70,6 +71,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
+			if (foldersOnly == null) foldersOnly = false;
 			this.instanceCount = UUID.randomUUID().toString();
 			
 			//Output the start of the area
@@ -112,6 +114,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute("instanceCode", this.hashCode() + "_" + this.formName + "_" + this.formElement);
 			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
 			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
+			req.setAttribute("foldersOnly", this.foldersOnly.toString());
 			req.setAttribute("binderId", this.binderId);
 			req.setAttribute("accessibilityText", this.accessibilityText);
 			
@@ -136,6 +139,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
+			this.foldersOnly = false;
 			this.instanceCount = null;
 			this.accessibilityText = null;
 			if (_params != null) {
@@ -203,6 +207,10 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setSearchSubFolders(Boolean searchSubFolders) {
 	    this.searchSubFolders = searchSubFolders;
+	}
+	
+	public void setFoldersOnly(Boolean foldersOnly) {
+	    this.foldersOnly = foldersOnly;
 	}
 	
 	public void setAccessibilityText(String accessibilityText) {

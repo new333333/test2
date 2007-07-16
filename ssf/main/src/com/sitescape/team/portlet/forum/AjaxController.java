@@ -386,6 +386,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxCheckStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_WIKILINK_FORM)) {
 			return ajaxWikiLinkForm(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_PLACE_FORM)) {
+			return ajaxFindPlaceForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 			return ajaxUploadICalendarFileStatus(request, response);
 		}
@@ -1054,6 +1056,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
+		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
@@ -1096,7 +1099,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		SearchFilter searchTermFilter = new SearchFilter();
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
-			searchTermFilter.addPlacesFilter(searchText);
+			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));
 
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
@@ -2507,5 +2510,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("binder/wikilink_ajax_return", model);
 	}
 
+	private ModelAndView ajaxFindPlaceForm(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
+		String propertyIdText = PortletRequestUtils.getStringParameter(request, "propertyId", "");
+		model.put("binderId", binderIdText);
+		model.put("propertyId", propertyIdText);
 
+		return new ModelAndView("binder/find_place_ajax_return", model);
+	}
 }

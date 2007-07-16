@@ -498,6 +498,12 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
+			<name>foldersOnly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
 			<name>accessibilityText</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

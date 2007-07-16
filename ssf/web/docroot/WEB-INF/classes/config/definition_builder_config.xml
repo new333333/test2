@@ -2351,6 +2351,7 @@
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
 			<option name="notifications" />
+			<option name="moveEntry" />
 		</options>
 		<help>ihelp.workflow.on_entry</help>
 	</item>
@@ -2365,6 +2366,7 @@
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
 			<option name="notifications" />
+			<option name="moveEntry" />
 		</options>
 	</item>
 	
@@ -2377,6 +2379,12 @@
 			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
 			<property name="bodyText" caption="__notification_body_text" type="text" />
 			<property name="appendBody" caption="__notification_append_body" type="checkbox" />
+		</properties>
+	</item>
+	
+	<item name="moveEntry" caption="__moveEntry">
+		<properties>
+			<property name="folder" caption="__toFolder" type="folderSelect" />
 		</properties>
 	</item>
 	

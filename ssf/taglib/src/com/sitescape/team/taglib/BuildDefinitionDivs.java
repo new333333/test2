@@ -1219,6 +1219,25 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(res.getString().replaceAll("&", "&amp;"));
 						} catch(Exception e) {}
 						
+					} else if (type.equals("folderSelect")) {
+						HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
+						HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+						RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/definition_builder/folder_select.jsp");
+
+						ServletRequest req = null;
+						req = new DynamicServletRequest(httpReq);
+						req.setAttribute("propertyId", propertyId);
+						req.setAttribute("propertyValue", propertyValue0);
+						Long binderId = null;
+						if (!propertyValue0.equals("")) Long.valueOf(propertyValue0);
+						req.setAttribute(WebKeys.BINDER_ID, binderId);
+						
+						StringServletResponse res = new StringServletResponse(httpRes);
+						try {
+							rd.include(req, res);
+							sb.append(res.getString().replaceAll("&", "&amp;"));
+						} catch(Exception e) {}
+						
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
