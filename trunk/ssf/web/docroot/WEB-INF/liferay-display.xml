@@ -13,6 +13,7 @@
 		<portlet id="ss_guestbook" />
 		<portlet id="ss_wiki" />
 		<portlet id="ss_search" />
+		<portlet id="ss_task" />
 		<portlet id="ss_toolbar" />
 	</category>
 </display>

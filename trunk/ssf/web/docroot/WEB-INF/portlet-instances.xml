@@ -67,4 +67,10 @@
          <portlet-ref>ss_toolbar</portlet-ref>
       </instance>
    </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_task-instance</instance-id>
+         <portlet-ref>ss_task</portlet-ref>
+      </instance>
+   </deployment>
 </deployments>
