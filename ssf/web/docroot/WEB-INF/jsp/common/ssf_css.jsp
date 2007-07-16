@@ -146,6 +146,22 @@ a.ss_download_link {
   font-size: ${ss_style_font_finestprint} !important; 
 }
 
+<%-- 
+  -- Rich text editor font styles 
+  -- Must match equivalent declarations in editor_css.jsp
+  --%>
+.ss_size_8px  { font-size: 8px  !important;}
+.ss_size_9px  { font-size: 9px  !important;}
+.ss_size_10px { font-size: 10px !important;}
+.ss_size_11px { font-size: 11px !important;}
+.ss_size_12px { font-size: 12px !important;}
+.ss_size_13px { font-size: 13px !important;}
+.ss_size_14px { font-size: 14px !important;}
+.ss_size_15px { font-size: 15px !important;}
+.ss_size_16px { font-size: 16px !important;}
+
+
+
 .ss_nowrap {
   white-space: nowrap;
 }
@@ -4347,7 +4363,7 @@ div.ss_chartContainer div.ss_total, div.ss_chartContainer table.ss_total {
 }
 div.ss_chartContainer table.ss_total {
 	border-spacing: 0;
-	border-padding:0;
+	padding:0;
 	border-collapse: collapse;	
 }
 
@@ -4374,7 +4390,7 @@ table.ss_statisticContainer {
 	margin: 3px 0px 3px 6px;
 	padding:0px;
 	border-spacing: 0;
-	border-padding:0;
+	padding:0;
 	border-collapse: collapse;	
 	border:0px;
 }
@@ -4383,7 +4399,6 @@ table.ss_statisticContainer td {
 	white-space: nowrap;
 	padding: 0px;
 	border-spacing: 0;
-	border-padding:0;
 	border-collapse: collapse;	
 	border:0;
 }

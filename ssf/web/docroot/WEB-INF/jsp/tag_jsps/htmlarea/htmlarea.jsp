@@ -35,10 +35,12 @@ tinyMCE.init(
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 
-  theme_advanced_styles: "Large=ss_largerprint;Fine=ss_fineprint",
+  convert_fonts_to_spans: true,
+  theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px",
   theme_advanced_buttons2_add: "pastetext,pasteword,<%--
   --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
-  --%>ss_wikilink,spellchecker",
+  --%>ss_wikilink",
+  theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
 

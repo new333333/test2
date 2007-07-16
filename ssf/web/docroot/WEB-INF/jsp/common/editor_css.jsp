@@ -43,3 +43,13 @@ font-size:10px !important;
 .ss_finestprint {
 font-size:9px !important;
 }
+
+.ss_size_8px  { font-size: 8px  !important;}
+.ss_size_9px  { font-size: 9px  !important;}
+.ss_size_10px { font-size: 10px !important;}
+.ss_size_11px { font-size: 11px !important;}
+.ss_size_12px { font-size: 12px !important;}
+.ss_size_13px { font-size: 13px !important;}
+.ss_size_14px { font-size: 14px !important;}
+.ss_size_15px { font-size: 15px !important;}
+.ss_size_16px { font-size: 16px !important;}

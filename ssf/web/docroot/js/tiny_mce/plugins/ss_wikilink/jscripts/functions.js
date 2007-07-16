@@ -57,14 +57,24 @@ function ss_cancelICElinkEdit() {
 	tinyMCEPopup.close();
 }
 
+function ss_popup_folder() {
+    dojo.html.toggleDisplay("folder_popup");
+}
+function ss_popup_page() {
+    dojo.html.toggleDisplay("page_popup");
+}
+
+
 function ss_loadLinkBinderId(binderId, type, obj) {
 	dojo.byId("binderId").value = binderId;
     ss_findEntriesBinderIdss_findLinkEntryForm_searchTitle = binderId;
 	dojo.byId("linkToFolderName").innerHTML = dojo.dom.textContent(obj);
+	dojo.html.toggleDisplay('folder_popup');
 }
 
 function ss_loadLinkEntryId(entryId, obj) {
 	dojo.byId("pageName").value = dojo.dom.textContent(obj);
+	dojo.html.toggleDisplay("page_popup");
 }
 
 function setAttrib(elm, attrib, value) {

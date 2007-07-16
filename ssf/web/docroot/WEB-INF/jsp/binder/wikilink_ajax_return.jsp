@@ -28,9 +28,20 @@
 	<base target="_self" />
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
+<form>
+Link to folder: <b><span id="linkToFolderName">(current folder)</span></b>
+<input type="hidden" name="binderId" id="binderId" size="5" value="${binderId}"/>
+
+<a href="javascript:;" onclick="ss_popup_folder();">[Change]</a>
+</p>
 <p>
-Popup: To link to page in a different folder, enter the folder
-name...
+<b>Page name to link to:</b> <input name="pageName" id="pageName" size="30"/>
+<a href="javascript:;" onclick="ss_popup_page();">[Find]</a>
+</p>
+</form>
+
+<div id="folder_popup" style="position: absolute; display: none; background: #CCCCCC; top: 30px; padding: 10px;  border: 1px solid #333333;">
+To link to a different folder, enter the folder name:
 <br/>
 <form method="post" name="ss_findLinkPlaceForm"
 	action="">
@@ -40,25 +51,16 @@ name...
     width="140px" 
     binderId="${binderId}"
     searchSubFolders="false"
+    foldersOnly="true"
     singleItem="true"
     clickRoutine="ss_loadLinkBinderId"
     accessibilityText="iclink.folder"
     /> 
 <input type="hidden" name="searchTitle"/>
 </form>
-</p>
-<p>
-<form>
-Link to folder: <b><span id="linkToFolderName">(current folder)</span></b>
-<input type="hidden" name="binderId" id="binderId" size="5"/>
-</p>
-<p>
-<b>Page name to link to:</b> <input name="pageName" id="pageName" size="30"/>
-</p>
-<p>
-</form>
-<p>
-Popup: find page... 
+</div>
+<div id="page_popup" style="position: absolute; display: none; background: #CCCCCC; top: 60px; padding: 10px; border: 1px solid #333333;">
+Find a page:
 <form method="post" name="ss_findLinkEntryForm"
 	action="">
  <ssf:find formName="ss_findLinkEntryForm"
@@ -73,7 +75,7 @@ Popup: find page...
     /> 
 <input type="hidden" name="searchTitle"/>
 </form>
-</p>
+</div>
 
 
 <a href="javascript:;" onClick="ss_insertICElinkFromForm('${binderId}');">Insert</a>
