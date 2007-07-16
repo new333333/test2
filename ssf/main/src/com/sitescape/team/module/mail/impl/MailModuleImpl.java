@@ -37,6 +37,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -288,7 +289,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					
 					Folder folder = (Folder)postingDef.getBinder();
 					FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-					sendErrors(folder, processor.postMessages(folder,postingDef, aliasMsgs, session));
+					sendErrors(folder, session, processor.postMessages(folder,postingDef, aliasMsgs, session));
 				}				
 
 			} catch (Exception ex) {
@@ -301,27 +302,63 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}		
 		
 	}
-	private void sendErrors(Binder binder, List errors) {
+	private void sendErrors(Binder binder, Session session, List errors) {
 		if (!errors.isEmpty()) {
-			for (int i=0; i<errors.size(); ++i) {
-				MimeMessage mailMsg = null;
-				try {
-					mailMsg = (MimeMessage)errors.get(i);
-					mailMsg.saveChanges();
-					Transport.send(mailMsg);
-				} catch (MailParseException px) {
-					logger.error(px.getLocalizedMessage());	    		
-				} catch (MailSendException sx) {
-					if (binder != null) {
-				  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
-				   		process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
-					}
-					logger.error("Error sending posting reject:" + sx.getLocalizedMessage());
-				} catch (MailAuthenticationException ax) {
-					logger.error("Authentication Exception:" + ax.getLocalizedMessage());
-				} catch (Exception ex) {
-					logger.error("Error sending posting reject:" + ex.getLocalizedMessage());
+			String sendProtocol = session.getProperty("mail.transport.protocol");
+			String prefix = "mail." + sendProtocol + ".";
+			String hostName = session.getProperty(prefix + "host");
+			if (Validator.isNull(hostName)) {
+				hostName = session.getProperty("mail.host");
+			}
+			int port = Integer.parseInt(session.getProperty(prefix + "port"));
+			if (Validator.isNull(session.getProperty(prefix + "port"))) {
+				port = Integer.parseInt(session.getProperty("mail.port"));
+			}
+			String auth = session.getProperty(prefix + "auth");
+			if (Validator.isNull(auth)) 
+				auth = session.getProperty("mail.auth");
+			String user = session.getProperty(prefix + "user");
+			if (Validator.isNull(user)) 
+				user = session.getProperty("mail.user");
+			Transport transport=null;
+			try {
+				
+				transport = session.getTransport(sendProtocol);
+				if ("true".equals(auth)) {
+					String password = session.getProperty(prefix + "password");
+					if (Validator.isNull(password)) 
+						password = session.getProperty("mail.password");
+					transport.connect(hostName, port, user, password);
+				} else {
+					transport.connect();
 				}
+			
+				for (int i=0; i<errors.size(); ++i) {
+					MimeMessage mailMsg = null;
+					try {
+						mailMsg = (MimeMessage)errors.get(i);
+						mailMsg.saveChanges();
+						transport.sendMessage(mailMsg, mailMsg.getAllRecipients());
+					} catch (MailParseException px) {
+						logger.error(px.getLocalizedMessage());	    		
+					} catch (MailSendException sx) {
+						if (binder != null) {
+							FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
+							process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
+						}
+						logger.error("Error sending posting reject:" + sx.getLocalizedMessage());
+					} catch (MailAuthenticationException ax) {
+						logger.error("Authentication Exception:" + ax.getLocalizedMessage());
+					} catch (AuthenticationFailedException ax) {
+						logger.error("Authentication Exception:" + ax.getLocalizedMessage());
+					} catch (Exception ex) {
+					logger.error("Error sending posting reject:" + ex.getLocalizedMessage());
+					}
+				}
+			} catch (Exception ex) {
+				logger.error("Error sending posting reject:" + ex.getLocalizedMessage());
+			} finally {
+				if (transport != null) try {transport.close();} catch (Exception ex) {};
 			}
 		}
 		

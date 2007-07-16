@@ -89,6 +89,7 @@ import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Html;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 /**
@@ -690,11 +691,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		try {
 			msg.setFlag(Flags.Flag.DELETED, true);
 			if (!pDef.getEmailAddress().equals(from.getAddress())) {
+				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml(error)});
 				Message reject = msg.reply(false);
-				reject.setText("Unable to post: " + error);
+				reject.setText(errorMsg);
 				reject.setFrom(new InternetAddress(pDef.getEmailAddress()));
 				reject.setContent(msg.getContent(), msg.getContentType());
-				reject.setSubject(reject.getSubject() + " (Unable to post message: " + error + ")");
+				reject.setSubject(reject.getSubject() + " (" + errorMsg + ")");
 				return reject;
 			} 
 		} catch (Exception ex2) {}
