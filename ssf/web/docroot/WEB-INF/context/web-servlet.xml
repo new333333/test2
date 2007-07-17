@@ -58,6 +58,7 @@
 		<property name="urlMap">
 			<map>
 				<entry key="/viewFile"><ref local="viewFile"/></entry>
+				<entry key="/viewFile/*"><ref local="viewFile"/></entry>
 				<entry key="/rssFeed"><ref local="rssFeed"/></entry>
 				<entry key="/viewiCal"><ref local="viewiCal"/></entry>				
 				<entry key="/viewCss"><ref local="viewCss"/></entry>				

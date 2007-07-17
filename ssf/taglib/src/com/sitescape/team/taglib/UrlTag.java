@@ -57,7 +57,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	 * 
 	 *
 	 */
-	private void setup() {
+	protected void setup() {
 		if (_params != null) {
 			_params.clear();
 		}
@@ -117,7 +117,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 					params.put("action", new String[] {this.action});
 				}
 				
-				String webUrl = WebUrlUtil.getServletRootURL(req) + webPath + "?";
+				String webUrl = getWebUrl(req) + "?";
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
@@ -260,6 +260,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 		}
 
 		_params.put(name, values);
+	}
+
+	protected String getWebUrl(HttpServletRequest req) {
+		return WebUrlUtil.getServletRootURL(req) + webPath;
 	}
 
 }

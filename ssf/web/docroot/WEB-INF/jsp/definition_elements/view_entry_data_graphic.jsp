@@ -16,14 +16,15 @@
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
 <c:forEach var="selection" items="${selections}">
-<img border="0" src="<ssf:url 
+<img border="0" src="<ssf:fileurl 
     webPath="viewFile"
+    fileName="${selection.fileItem.name}"
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}"
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     <ssf:param name="viewType" value="scaled"/>
     <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-    </ssf:url>" alt="${property_caption}" />
+    </ssf:fileurl>" alt="${property_caption}" />
 </c:forEach>
 </c:if>
