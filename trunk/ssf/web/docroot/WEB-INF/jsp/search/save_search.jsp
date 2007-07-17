@@ -19,7 +19,9 @@
 	</div>
 	<div id="ss_saved_searches" class="ss_rating_box_content" style="visibility:visible;display:block;">
 		<c:if test="${!empty ss_filterMap}">
-			<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" value="<ssf:nlt tag="searchResult.savedSearch.input.legend"/>" onfocus="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
+			<input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" 
+			  value="<ssf:nlt tag="searchResult.savedSearch.input.legend"/>" 
+			onfocus="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
 			<a href="javascript: //;" onclick="ss_saveSearchQuery('searchQueryName', 'ss_saveQueryErrMsg');"><ssf:nlt tag="searchResult.savedSearch.save"/></a>
 			<div id="ss_saveQueryErrMsg" style="visibility: hidden;"></div>
 		</c:if>
@@ -28,11 +30,13 @@
 				<ssf:nlt tag="searchResult.savedSearch.noResults"/>
 			</c:if>
 			<c:forEach var="query" items="${ss_savedQueries}">
+			<jsp:useBean id="query" type="String" />
 				<script type="text/javascript">
-					ss_addToSaved("${query}");
+					ss_addToSaved('<%= query.replaceAll("'", "\\\\'") %>');
 				</script>
 				<li>
-					<a href="#" onclick="ss_removeSavedSearchQuery('${query}','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
+					<a href="javascript: ;" 
+					onclick="ss_removeSavedSearchQuery('<%= query.replaceAll("'", "\\\\'") %>','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value="${query}"/>
