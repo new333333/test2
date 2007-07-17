@@ -40,14 +40,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}"><div class="ss_thumbnail_gallery ss_thumbnail_small"> 
-		<a style="text-decoration: none;" href="<ssf:url 
+		<a style="text-decoration: none;" href="<ssf:fileurl 
 					    webPath="viewFile"
+    					fileName="${selection.fileItem.name}"
 					    folderId="${ssDefinitionEntry.parentBinder.id}"
 					    entryId="${ssDefinitionEntry.id}"
 					    entityType="${ssDefinitionEntry.entityType}" >
 					    <ssf:param name="fileId" value="${selection.id}"/>
 					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-					    </ssf:url>" 
+					    </ssf:fileurl>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
 					</c:if>
