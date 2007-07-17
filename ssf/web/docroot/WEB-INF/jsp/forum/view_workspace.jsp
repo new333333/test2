@@ -30,6 +30,10 @@
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 	<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
+	<script type="text/javascript">
+		var ss_reloadUrl = "${ss_reloadUrl}";
+	</script>
+
 	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 
 		<% // Navigation bar %>
