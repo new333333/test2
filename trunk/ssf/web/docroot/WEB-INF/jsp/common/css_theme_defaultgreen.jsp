@@ -70,7 +70,7 @@
 	<c:set var="ss_box_title_text_color" value="#993333" scope="request"/>
 	
 <% //BUTTON %>
-	<c:set var="ss_linkbutton_background_color" value="#DDFFFF" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#DDF0DD" scope="request"/>
 	<c:set var="ss_linkbutton_outline_color" value="#77AA77" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
