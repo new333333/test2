@@ -60,6 +60,7 @@ import com.sitescape.util.Validator;
 
 public class WebHelper {
 	protected static Log logger = LogFactory.getLog(WebHelper.class);
+	private static String specialAmp = "___aMp___";
 
 	public static boolean isUserLoggedIn(HttpServletRequest request) {
 		try {
@@ -393,13 +394,14 @@ public class WebHelper {
 	    		if (fa != null) {
     		    	//Now, replace the url with special markup version
     	        		String newText = new String("{{attachmentFileId: fileId=" + fa.getId() 
-    	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId 
-    	        				+ "&amp;entityType=" + entityType + "}}\"");
+    	        				+ specialAmp + "binderId=" + binderId + specialAmp + "entryId=" + entryId 
+    	        				+ specialAmp + "entityType=" + entityType + "}}\"");
     	        		description.setText(m1.replaceFirst(newText.replace("$", "\\$")));
     	        		m1 = p1.matcher(description.getText());
 	    		}
 			}
     	}
+    	description.setText(description.getText().replaceAll(specialAmp, "&"));
 	}
 	
 	public static void scanDescriptionForAttachmentFileUrls(Description description) {
@@ -441,12 +443,14 @@ public class WebHelper {
 		    	Matcher m1 = p1.matcher(img);
 	        	if (m1.find() && m1.groupCount() >= 1) {
 	        		img = new String(m1.replaceFirst("src=\"{{attachmentFileId: fileId=" + fileId 
-	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId + "&amp;entityType=" + entityType + "}}\""));
+	        				+ specialAmp + "binderId=" + binderId + specialAmp + "entryId=" + entryId
+	        				+ specialAmp +"entityType=" + entityType + "}}\""));
 	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));
 	        		m = pattern.matcher(description.getText());
 	        	}
 	    	}
     	}
+    	description.setText(description.getText().replaceAll(specialAmp, "&"));
 	}
 
 	
@@ -524,20 +528,22 @@ public class WebHelper {
 			    		//Look for the attachment
 			    		FileAttachment fa = entity.getFileAttachment(url.trim());
 			    		if (fa != null) {
-			    			webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
-			    			webUrl += WebKeys.URL_ENTITY_TYPE + "=" + fa.getOwner().getEntity().getEntityType().toString() + "&amp;";
+			    			webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + specialAmp;
+			    			webUrl += WebKeys.URL_ENTITY_TYPE + "=" + 
+			    				fa.getOwner().getEntity().getEntityType().toString() + specialAmp;
 			    		} else {
-			    			webUrl += WebKeys.URL_FILE_TITLE + "=" + url.trim() + "&amp;";
+			    			webUrl += WebKeys.URL_FILE_TITLE + "=" + url.trim() + specialAmp;
 			    		}
 					} else {
-		    			webUrl += WebKeys.URL_FILE_TITLE + "=" + url.trim() + "&amp;";
+		    			webUrl += WebKeys.URL_FILE_TITLE + "=" + url.trim() + specialAmp;
 					}
-					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
-					webUrl += WebKeys.URL_BINDER_ID + "=" + binderId.toString() + "&amp;";
+					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + specialAmp;
+					webUrl += WebKeys.URL_BINDER_ID + "=" + binderId.toString() + specialAmp;
 					if (entryId != null) {
-						webUrl += WebKeys.URL_ENTRY_ID + "=" + entryId.toString() + "&amp;";
+						webUrl += WebKeys.URL_ENTRY_ID + "=" + entryId.toString() + specialAmp;
 					}
 					outputString = m1.replaceFirst(webUrl);
+					m1 = p1.matcher(outputString);
 		    	}
 	    	}
 	    	
@@ -555,7 +561,7 @@ public class WebHelper {
 		    		String fileIds = m2.group(2).trim();
 		    		//Look for the attachment
 					String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
-					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
+					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + specialAmp;
 					webUrl += fileIds;
 					outputString = m2.replaceFirst(webUrl);
 					m2 = p2.matcher(outputString);
@@ -685,7 +691,7 @@ public class WebHelper {
 			logger.error("Error processing markup [7]: " + inputString, e);
 			return inputString;
 		}
-     	return outputString;
+     	return outputString.replaceAll(specialAmp, "&");
 	}
 	
 	//Routine to compute a normalized title
