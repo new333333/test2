@@ -18,19 +18,18 @@ public class ScheduleHelper {
 	public static Schedule getSchedule(PortletRequest request) {
 		String val;
 		Schedule schedule = new Schedule();
-		val = PortletRequestUtils.getStringParameter(request, "minuteType", "");
+		val = PortletRequestUtils.getStringParameter(request, "hourType", "");
 		if (val.equals("repeat")) {
 			int iVal = PortletRequestUtils.getIntParameter(request, "minutesRepeat", -1);
 			if (iVal != -1)
 				schedule.setMinutes("0/" + iVal);
 			else 
-				schedule.setMinutes("0/1");				
+				schedule.setMinutes("0");				
 		} else {
 			int minutes = PortletRequestUtils.getIntParameter(request, "schedMinutes", -1);
 			if (minutes != -1) schedule.setMinutes(Integer.toString(minutes));
 		}		
 		
-		val = PortletRequestUtils.getStringParameter(request, "hourType", "");
 		if (val.equals("repeat")) {
 			int iVal = PortletRequestUtils.getIntParameter(request, "hoursRepeat", -1);
 			if (iVal != -1)
