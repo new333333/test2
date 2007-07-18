@@ -22,9 +22,9 @@
 	var ss_searchWorkflows = new Array();
 	var ss_searchSteps = new Array();
 	<c:forEach var="wf" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
-		ss_searchWorkflows['${wf.id}'] = '${wf.title}';
-		<c:forEach var="step" items="${wf.steps}">
-			ss_searchSteps['${wf.id}-${step.name}'] = '${step.title}';
+		ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
+		<c:forEach var="step" items="<ssf:escapeJavaScript value="${wf.steps}"/>">
+			ss_searchSteps['${wf.id}-<ssf:escapeJavaScript value="${step.name}"/>'] = '<ssf:escapeJavaScript value="${step.title}"/>';
 		</c:forEach>
 	</c:forEach>
 </c:if>
@@ -33,10 +33,10 @@
 	var ss_searchFields = new Array();
 	var ss_searchFieldsTypes = new Array();
 	<c:forEach var="entry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}">
-		ss_searchEntries['${entry.id}'] = '${entry.title}';
-		<c:forEach var="field" items="${entry.fields}">
-			ss_searchFields['${entry.id}-${field.name}'] = '${field.title}';
-			ss_searchFieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
+		ss_searchEntries['${entry.id}'] = '<ssf:escapeJavaScript value="${entry.title}"/>';
+		<c:forEach var="field" items="<ssf:escapeJavaScript value="${entry.fields}"/>">
+			ss_searchFields['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.title}"/>';
+			ss_searchFieldsTypes['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.type}"/>';
 		</c:forEach>
 	</c:forEach>
 </c:if>
@@ -65,7 +65,7 @@
 	</div>
 </div>
 <script type="text/javascript">
-ss_createOnSubmitObj('ss_prepareAdditionalSearchOptions', '${ss_dashboard_config_form_name}', ss_prepareAdditionalSearchOptions);
+ss_createOnSubmitObj('ss_prepareAdditionalSearchOptions', '<ssf:escapeJavaScript value="${ss_dashboard_config_form_name}"/>', ss_prepareAdditionalSearchOptions);
 	
 <%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 

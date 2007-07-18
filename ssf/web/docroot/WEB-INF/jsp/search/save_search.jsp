@@ -30,13 +30,13 @@
 				<ssf:nlt tag="searchResult.savedSearch.noResults"/>
 			</c:if>
 			<c:forEach var="query" items="${ss_savedQueries}">
-			<jsp:useBean id="query" type="String" />
 				<script type="text/javascript">
-					ss_addToSaved('<%= query.replaceAll("'", "\\\\'") %>');
+						ss_addToSaved('<ssf:escapeJavaScript value="${query}"/>');
+						
 				</script>
 				<li>
 					<a href="javascript: ;" 
-					onclick="ss_removeSavedSearchQuery('<%= query.replaceAll("'", "\\\\'") %>','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
+					onclick="ss_removeSavedSearchQuery('<ssf:escapeJavaScript value="${query}"/>','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
 					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value="${query}"/>

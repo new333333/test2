@@ -15,6 +15,6 @@
 <% // This is JSON type AJAX response  %>
 [<%--
 --%><c:forEach var="query" items="${ss_UserQueries}" varStatus="status"><%--
-  --%>"${query.key}"<c:if test="${!status.last}">,</c:if><%--
+  --%>"<ssf:escapeJavaScript value="${query.key}"/>"<c:if test="${!status.last}">,</c:if><%--
 --%></c:forEach><%--
 --%>]
