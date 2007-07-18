@@ -1789,11 +1789,8 @@ function ss_setupStatusMessageDiv() {
 
 //Routine to write text to the debug window
 function ss_debug(text) {
-	try {
-		if (!ss_debugTextareaId) return;
-		var temp = ss_debugTextareaId;
-		if (temp == '') return;
-	} catch(e) {return}
+	if (typeof ss_debugTextareaId == "undefined") return;
+	if (ss_debugTextareaId == '') return;
 	var debugTextarea = document.getElementById(ss_debugTextareaId);
 	if (debugTextarea != null) {
 		var html = debugTextarea.value;
