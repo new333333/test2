@@ -55,7 +55,10 @@ import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.Due;
+import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.Organizer;
@@ -63,6 +66,7 @@ import net.fortuna.ical4j.model.property.PercentComplete;
 import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.RRule;
+import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
@@ -82,7 +86,6 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.ical.util.TimeZoneShorterTransformer;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -128,26 +131,17 @@ public class IcalModuleImpl implements IcalModule {
 		this.folderModule = folderModule;
 	}
 
-	private static class ComponentType {
+	private static enum ComponentType {
 
-		private int type;
-
-		public ComponentType(int i) {
-			this.type = i;
-		}
-
-		public static final ComponentType Task = new ComponentType(1);
-
-		public static final ComponentType Calendar = new ComponentType(2);
-
+		Task, Calendar;
 	}
 
 	/**
 	 * parseEvents
 	 * 
-	 * Extracts the VEVENTs from an ical input stream, converts each to an Event, and calls
+	 * Extracts the VEVENTs and VTODOs from an ical input stream, converts each to an Event, and calls
 	 *   the supplied handler with the event, along with the SUMMARY and DESCRIPTION, if any,
-	 *   from the VEVENT
+	 *   from the VEVENT (VTODO).
 	 * 
 	 * @param icalData
 	 * @param handler
@@ -158,74 +152,68 @@ public class IcalModuleImpl implements IcalModule {
 		throws IOException, ParserException
 	{
 		Event event = null;
+		Map<String, TimeZone> timeZones = new HashMap();
 		try {
 			Calendar cal = (new CalendarBuilder()).build(new UnfoldingReader(icalData));
+			for(Object comp : cal.getComponents("VTIMEZONE")) {
+				VTimeZone timeZoneComponent = (VTimeZone) comp;
+				timeZones.put(timeZoneComponent.getTimeZoneId().getValue(), new TimeZone(timeZoneComponent));
+			}
 			for(Object comp : cal.getComponents("VEVENT")) {
 				VEvent eventComponent = (VEvent) comp;
-				event = new Event();
-				DtStart start = eventComponent.getStartDate();
-				GregorianCalendar startCal = new GregorianCalendar();
-				startCal.setTime(start.getDate());
-				event.setDtStart(startCal);
-				event.setTimeZone(IcalModuleImpl.getTimeZone((TzId)start.getParameter(Parameter.TZID)));
-				if(start.getParameter(Value.DATE.getName()) == null) {
-					if(eventComponent.getEndDate() != null) {
-						GregorianCalendar endCal = new GregorianCalendar();
-						endCal.setTime(eventComponent.getEndDate().getDate());
-						event.setDtEnd(endCal);
-					} else {
-						event.setDuration(new com.sitescape.util.cal.Duration(eventComponent.getDuration().toString()));
-					}
-				}
-				RRule recurrence = (RRule) eventComponent.getProperty("RRULE");
-				if(recurrence != null && (eventComponent.getRecurrenceId() == null)) {
-					Recur recur = recurrence.getRecur();
-					event.setFrequency(recur.getFrequency());
-					event.setInterval(recur.getInterval());
-					if(recur.getUntil() != null) {
-						GregorianCalendar untilCal = new GregorianCalendar();
-						untilCal.setTime(recur.getUntil());
-						event.setUntil(untilCal);
-					} else {
-						event.setCount(recur.getCount());
-					}
-					if(recur.getDayList() != null) {
-						event.setByDay(recur.getDayList().toString());
-					}
-					if(recur.getHourList() != null) {
-						event.setByHour(recur.getHourList().toString());
-					}
-					if(recur.getMinuteList() != null) {
-						event.setByMinute(recur.getMinuteList().toString());
-					}
-					if(recur.getMonthDayList() != null) {
-						event.setByMonthDay(recur.getMonthDayList().toString());
-					}
-					if(recur.getMonthList() != null) {
-						event.setByMonth(recur.getMonthList().toString());
-					}
-					if(recur.getSecondList() != null) {
-						event.setBySecond(recur.getSecondList().toString());
-					}
-					if(recur.getWeekNoList() != null) {
-						event.setByWeekNo(recur.getWeekNoList().toString());
-					}
-					if(recur.getYearDayList() != null) {
-						event.setByYearDay(recur.getYearDayList().toString());
-					}
-					if(recur.getWeekStartDay() != null) {
-						event.setWeekStart(recur.getWeekStartDay().toString());
-					}
-				}
+				
+				event = parseEvent(eventComponent.getStartDate(), eventComponent.getEndDate(), null, 
+									eventComponent.getDuration(), (RRule) eventComponent.getProperty("RRULE"),
+									eventComponent.getRecurrenceId(), timeZones);
+				
 				String description = null;
 				if(eventComponent.getDescription() != null) {
-					description = eventComponent.getDescription().toString();
+					description = eventComponent.getDescription().getValue();
 				}
 				String summary = null;
-				if(eventComponent.getSummary() != null && eventComponent.getSummary().getValue() != null) {
-					summary = eventComponent.getSummary().getValue().toString();
+				if(eventComponent.getSummary() != null) {
+					summary = eventComponent.getSummary().getValue();
 				}
 				handler.handleEvent(event, description, summary);
+			}
+			for(Object comp : cal.getComponents("VTODO")) {
+				VToDo todoComponent = (VToDo) comp;
+				
+				event = parseEvent(todoComponent.getStartDate(), null, todoComponent.getDue(), 
+						todoComponent.getDuration(), (RRule) todoComponent.getProperty("RRULE"),
+						todoComponent.getRecurrenceId(), timeZones);
+	
+				String description = null;
+				if(todoComponent.getDescription() != null) {
+					description = todoComponent.getDescription().getValue();
+				}
+				
+				String summary = null;
+				if(todoComponent.getSummary() != null) {
+					summary = todoComponent.getSummary().getValue();
+				}
+				
+				com.sitescape.team.ical.util.Priority priority = com.sitescape.team.ical.util.Priority.fromIcalPriority(todoComponent.getPriority());
+				com.sitescape.team.ical.util.Status status = com.sitescape.team.ical.util.Status.fromIcalStatus(todoComponent.getStatus());		
+				com.sitescape.team.ical.util.PercentComplete percentComplete = com.sitescape.team.ical.util.PercentComplete.fromIcalPercentComplete(todoComponent.getPercentComplete());
+				
+				String location = null;
+				if(todoComponent.getLocation() != null) {
+					location = todoComponent.getLocation().getValue();
+				}	
+				
+				// TODO: it's not implemented!
+				List attendees = new ArrayList();
+				Iterator it = todoComponent.getProperties(Property.ATTENDEE).iterator();
+				while (it.hasNext()) {
+					Attendee attendee = (Attendee)it.next();
+					attendees.add(attendee.getParameter(Parameter.CN).getValue());
+				}
+				
+				handler.handleTodo(event, description, summary, 
+						priority!=null?priority.name():null, 
+						status!=null?status.name():null, 
+						percentComplete!=null?percentComplete.name():null, location, attendees);
 			}
 		} catch(IOException e) {
 			logger.debug("IOException while parsing iCal stream", e);
@@ -236,6 +224,83 @@ public class IcalModuleImpl implements IcalModule {
 		}
 	}
 	
+	private Event parseEvent(DtStart start, DtEnd end, Due due, Duration duration, RRule recurrence,
+			RecurrenceId recurrenceId, Map<String, TimeZone> timeZones) {
+		Event event = new Event();
+		
+		GregorianCalendar startCal = new GregorianCalendar();
+		if (start != null) {
+			startCal.setTime(start.getDate());
+		}
+		event.setDtStart(startCal);
+		
+		TzId tzId = (TzId)start.getParameter(Parameter.TZID);
+		if (tzId != null) {
+			TimeZone tz = timeZones.get(tzId.getValue());
+			event.setTimeZone(tz);
+		} // else - all days event
+		
+		if(end != null) {
+			java.util.Date endDate = end.getDate();
+			if (end.getParameter(Value.DATE.getName()) != null) {
+				endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
+			}
+			GregorianCalendar endCal = new GregorianCalendar();
+			endCal.setTime(endDate);
+			event.setDtEnd(endCal);
+		} else if (due != null) {
+			java.util.Date endDate = due.getDate();
+			if (due.getParameter(Value.DATE.getName()) != null) {
+				endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
+			}
+			GregorianCalendar endCal = new GregorianCalendar();
+			endCal.setTime(endDate);
+			event.setDtEnd(endCal);			
+		} else if (duration != null) {
+			event.setDuration(new com.sitescape.util.cal.Duration(duration.toString()));
+		}
+		if (recurrence != null && (recurrenceId == null)) {
+			Recur recur = recurrence.getRecur();
+			event.setFrequency(recur.getFrequency());
+			event.setInterval(recur.getInterval());
+			if(recur.getUntil() != null) {
+				GregorianCalendar untilCal = new GregorianCalendar();
+				untilCal.setTime(recur.getUntil());
+				event.setUntil(untilCal);
+			} else {
+				event.setCount(recur.getCount());
+			}
+			if(recur.getDayList() != null) {
+				event.setByDay(recur.getDayList().toString());
+			}
+			if(recur.getHourList() != null) {
+				event.setByHour(recur.getHourList().toString());
+			}
+			if(recur.getMinuteList() != null) {
+				event.setByMinute(recur.getMinuteList().toString());
+			}
+			if(recur.getMonthDayList() != null) {
+				event.setByMonthDay(recur.getMonthDayList().toString());
+			}
+			if(recur.getMonthList() != null) {
+				event.setByMonth(recur.getMonthList().toString());
+			}
+			if(recur.getSecondList() != null) {
+				event.setBySecond(recur.getSecondList().toString());
+			}
+			if(recur.getWeekNoList() != null) {
+				event.setByWeekNo(recur.getWeekNoList().toString());
+			}
+			if(recur.getYearDayList() != null) {
+				event.setByYearDay(recur.getYearDayList().toString());
+			}
+			if(recur.getWeekStartDay() != null) {
+				event.setWeekStart(recur.getWeekStartDay().toString());
+			}
+		}
+		return event;
+	}
+
 	private static java.util.TimeZone getTimeZone(TzId tzid) {
 		if (tzid != null) {
 			DateTimeZone dateTimeZone = DateTimeZone.forID(tzid.getValue());
@@ -271,6 +336,10 @@ public class IcalModuleImpl implements IcalModule {
 			public void handleEvent(Event e, String description, String summary)
 			{
 				events.add(e);
+			}
+
+			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
+				events.add(event);
 			}
 		};
 
@@ -329,6 +398,33 @@ public class IcalModuleImpl implements IcalModule {
 					logger.warn("Can not create entry from iCal file.", e);
 				}
 			}
+			
+			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
+				Map<String, Object> formData = new HashMap<String, Object>();
+				
+				formData.put("binderId", new String[] {folderId.toString()});
+				formData.put("description", new String[] {description != null ? description : ""});
+				formData.put("entryType", new String[] {entryType});
+				formData.put("title", new String[] {summary != null ? summary : ""});
+				formData.put(eventName, event);
+				formData.put("priority", new String[] {priority});
+				formData.put("status", new String[] {status});
+				formData.put("completed", new String[] {completed});
+				formData.put("location", new String[] {location});
+				
+				// TODO: how to find attendee? by email?
+				
+				MapInputData inputData = new MapInputData(formData);
+				try {
+					Long entryId = folderModule.addEntry(folderId, entryType, inputData, new HashMap());
+					entries.add(entryId);
+					logger.info("New entry id created from iCal file [" + entryId + "]");
+				} catch (AccessControlException e) {
+					logger.warn("Can not create entry from iCal file.", e);
+				} catch (WriteFilesException e) {
+					logger.warn("Can not create entry from iCal file.", e);
+				}
+			}
 		};
 
 		parseEvents(new InputStreamReader(icalFile), entryCreator);
@@ -349,8 +445,6 @@ public class IcalModuleImpl implements IcalModule {
 			Collection events, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar();
 		generate(calendar, entry, events, defaultTimeZoneId);
-		TimeZoneShorterTransformer timeZoneShorterTransformer = new TimeZoneShorterTransformer();
-		calendar = timeZoneShorterTransformer.transform(calendar);
 		return calendar;
 	}
 	
@@ -366,9 +460,6 @@ public class IcalModuleImpl implements IcalModule {
 			DefinableEntity entry = (DefinableEntity)it.next();
 			generate(calendar, entry, entry.getEvents(), defaultTimeZoneId);
 		}
-		
-		TimeZoneShorterTransformer timeZoneShorterTransformer = new TimeZoneShorterTransformer();
-		calendar = timeZoneShorterTransformer.transform(calendar);
 		
 		// Calendar without any components can not exists
 		// so put time zone
@@ -457,18 +548,37 @@ public class IcalModuleImpl implements IcalModule {
 	private VToDo createVTodo(DefinableEntity entry, Event event,
 			TimeZone timeZone) {
 		VToDo vToDo = null;
-		DateTime dtStart = new DateTime(event.getDtStart().getTime());
-		dtStart.setTimeZone(timeZone);
 		
-		DateTime due = new DateTime(event.getDtEnd().getTime());
-		due.setTimeZone(timeZone);
+		if (!event.isAllDayEvent()) {
+			DateTime start = new DateTime(event.getDtStart().getTime());
+			if (timeZone != null) {
+				start.setTimeZone(timeZone);
+			}
 
-		vToDo = new VToDo(dtStart, due, entry.getTitle());
-		vToDo.getProperties().getProperty(Property.DTSTART).getParameters()
-				.add(Value.DATE_TIME);
-		vToDo.getProperties().getProperty(Property.DUE).getParameters()
-			.add(Value.DATE_TIME);			
-
+			Dur duration = null;
+			if (event.getDuration().getWeeks() > 0) {
+				duration = new Dur(event.getDuration().getWeeks());
+			} else {
+				duration = new Dur(event.getDuration().getDays(), event
+						.getDuration().getHours(), event.getDuration()
+						.getMinutes(), event.getDuration().getSeconds());
+			}
+			vToDo = new VToDo(start, duration, entry.getTitle());
+			vToDo.getProperties().getProperty(Property.DTSTART)
+					.getParameters().add(Value.DATE_TIME);
+		} else {
+			Date start = new Date(event.getDtStart().getTime());
+			Date end = (Date)start.clone();
+			if (event.getDtEnd() != null) {
+				end = new Date(event.getDtEnd().getTime());
+			}
+			vToDo = new VToDo(start, end, entry.getTitle());
+			vToDo.getProperties().getProperty(Property.DTSTART)
+					.getParameters().add(Value.DATE);
+			vToDo.getProperties().getProperty(Property.DUE)
+					.getParameters().add(Value.DATE);			
+		}
+		
 		setComponentDescription(vToDo, entry.getDescription().getText());
 		setComponentUID(vToDo, entry, event);
 
@@ -566,36 +676,36 @@ public class IcalModuleImpl implements IcalModule {
 			return;
 		}
 
-		int completed = 0;
+		com.sitescape.team.ical.util.PercentComplete completed = null;
 
 		if (value.contains("c000")) {
-			completed = 0;
+			completed = com.sitescape.team.ical.util.PercentComplete.c000;
 		} else if (value.contains("c010")) {
-			completed = 10;
+			completed = com.sitescape.team.ical.util.PercentComplete.c010;
 		} else if (value.contains("c020")) {
-			completed = 20;
+			completed = com.sitescape.team.ical.util.PercentComplete.c020;
 		} else if (value.contains("c030")) {
-			completed = 30;
+			completed = com.sitescape.team.ical.util.PercentComplete.c030;
 		} else if (value.contains("c040")) {
-			completed = 40;
+			completed = com.sitescape.team.ical.util.PercentComplete.c040;
 		} else if (value.contains("c050")) {
-			completed = 50;
+			completed = com.sitescape.team.ical.util.PercentComplete.c050;
 		} else if (value.contains("c060")) {
-			completed = 60;
+			completed = com.sitescape.team.ical.util.PercentComplete.c060;
 		} else if (value.contains("c070")) {
-			completed = 70;
+			completed = com.sitescape.team.ical.util.PercentComplete.c070;
 		} else if (value.contains("c080")) {
-			completed = 80;
+			completed = com.sitescape.team.ical.util.PercentComplete.c080;
 		} else if (value.contains("c090")) {
-			completed = 90;
+			completed = com.sitescape.team.ical.util.PercentComplete.c090;
 		} else if (value.contains("c100")) {
-			completed = 100;
+			completed = com.sitescape.team.ical.util.PercentComplete.c100;
 		} else {
 			logger.error("The task compleded has wrong value [" + value + "].");
 			return;
 		}
 
-		toDo.getProperties().add(new PercentComplete(completed));
+		toDo.getProperties().add(completed.toIcalPercentComplete());
 	}
 
 	private void addToDoStatus(VToDo toDo, DefinableEntity entry) {
@@ -612,16 +722,16 @@ public class IcalModuleImpl implements IcalModule {
 			return;
 		}
 
-		String status = null;
+		com.sitescape.team.ical.util.Status status = null;
 
 		if (value.contains("s1")) {
-			status = "NEEDS-ACTION";
+			status = com.sitescape.team.ical.util.Status.s1;
 		} else if (value.contains("s2")) {
-			status = "IN-PROCESS";
+			status = com.sitescape.team.ical.util.Status.s2;
 		} else if (value.contains("s3")) {
-			status = "COMPLETED";
+			status = com.sitescape.team.ical.util.Status.s3;
 		} else if (value.contains("s4")) {
-			status = "CANCELLED";
+			status = com.sitescape.team.ical.util.Status.s4;
 		} else {
 			logger.error("The task status has wrong value [" + value + "].");
 			return;
@@ -632,7 +742,7 @@ public class IcalModuleImpl implements IcalModule {
 			return;
 		}
 
-		toDo.getProperties().add(new Status(status));
+		toDo.getProperties().add(status.toIcalStatus());
 	}
 
 	private void addToDoPriority(VToDo toDo, DefinableEntity entry) {
@@ -645,32 +755,30 @@ public class IcalModuleImpl implements IcalModule {
 
 		Set value = (Set) customAttribute.getValueSet();
 		
-
-		int priority = 0;
+		com.sitescape.team.ical.util.Priority priority = null;
 		if (value != null) {
 			if (value.contains("p5")) {
-				priority = 9;
+				priority = com.sitescape.team.ical.util.Priority.p5;
 			} else if (value.contains("p4")) {
-				priority = 8;
+				priority = com.sitescape.team.ical.util.Priority.p4;
 			} else if (value.contains("p3")) {
-				priority = 5;
+				priority = com.sitescape.team.ical.util.Priority.p3;
 			} else if (value.contains("p2")) {
-				priority = 2;
+				priority = com.sitescape.team.ical.util.Priority.p2;
 			} else if (value.contains("p1")) {
-				priority = 1;
+				priority = com.sitescape.team.ical.util.Priority.p1;
 			}
 		}
-		toDo.getProperties().add(new Priority(priority));
+		toDo.getProperties().add(priority.toIcalPriority());
 	}
 
 	private VEvent createVEvent(DefinableEntity entry, Event event,
 			TimeZone timeZone) {
 		VEvent vEvent = null;
 		if (!event.isAllDayEvent()) {
-			DateTime dt = new DateTime(event.getDtStart().getTime());
+			DateTime start = new DateTime(event.getDtStart().getTime());
 			if (timeZone != null) {
-				// must be if has duration...
-				dt.setTimeZone(timeZone);
+				start.setTimeZone(timeZone);
 			}
 
 			Dur duration = null;
@@ -681,14 +789,21 @@ public class IcalModuleImpl implements IcalModule {
 						.getDuration().getHours(), event.getDuration()
 						.getMinutes(), event.getDuration().getSeconds());
 			}
-			vEvent = new VEvent(dt, duration, entry.getTitle());
+			vEvent = new VEvent(start, duration, entry.getTitle());
 			vEvent.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE_TIME);
 		} else {
-			Date d = new Date(event.getDtStart().getTime());
-			vEvent = new VEvent(d, entry.getTitle());
+			Date start = new Date(event.getDtStart().getTime());
+			Date end = (Date)start.clone();
+			if (event.getDtEnd() != null) {
+				end = new Date(event.getDtEnd().getTime());
+			}
+			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
+			vEvent = new VEvent(start, end, entry.getTitle());
 			vEvent.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE);
+			vEvent.getProperties().getProperty(Property.DTEND)
+					.getParameters().add(Value.DATE);			
 		}
 
 		setComponentDescription(vEvent, entry.getDescription().getText());

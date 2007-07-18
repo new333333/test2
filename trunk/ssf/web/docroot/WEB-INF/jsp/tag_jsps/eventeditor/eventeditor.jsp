@@ -42,6 +42,14 @@
 <script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
 <c:set var="prefix" value="${evid}" />
 
+<c:set var="timeZoneID" value="GMT"/>
+<c:if test="${!empty initEvent.timeZone}">
+	<c:set var="timeZoneID" value="${initEvent.timeZone.ID}" />
+</c:if>
+<c:if test="${empty initEvent}">
+	<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
+</c:if>
+
 <table class="ss_style">
 	<tr>
 		<td class="contentbold"><ssf:nlt tag="event.start" />:</td>
@@ -50,8 +58,8 @@
 				widgetId="event_start_${prefix}" 
 				name="${dateId}_fullDate" 
 				id="${dateId}_${prefix}"
-				lang="${ssUser.locale.language}" 
-				value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+				lang="${ssUser.locale.language}"
+				value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 				startDateWidgetId="event_start_${prefix}"
 				startTimeWidgetId="event_start_time_${prefix}"
 				endDateWidgetId="event_end_${prefix}"
@@ -67,14 +75,31 @@
 					widgetId="event_start_time_${prefix}" 
 					name="${dateId}_0_fullTime" 
 					id="${dateId}_time_${prefix}"
-					lang="${ssUser.locale.language}" 
-					value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
+					lang="${ssUser.locale.language}" 	
+					<c:choose>
+						<c:when test="${initEvent.allDayEvent}">
+							value="08:00:00"
+						</c:when>
+						<c:otherwise>
+							value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+						</c:otherwise>
+					</c:choose>									
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
 					endDateWidgetId="event_end_${prefix}"
 					endTimeWidgetId="event_end_time_${prefix}"></div>
 					
-				<input type="hidden" name="${dateId}_timezoneid" value="${initEvent.timeZone.ID}" />
+				<input type="hidden" name="${dateId}_timezoneid" value="${ssUser.timeZone.ID}" />
+				<input type="hidden" name="${dateId}_skipTime" id="${dateId}_skipTime_${prefix}"
+					<c:choose>
+						<c:when test="${initEvent.allDayEvent}">
+							value="true"
+						</c:when>
+						<c:otherwise>
+							value="false"
+						</c:otherwise>
+					</c:choose>
+					/>
 			</span>	
 		</td>
 		<c:if test="${attMap.hasDur}">
@@ -83,7 +108,7 @@
 				<c:if test="${initEvent.allDayEvent}">
 					checked="checked"
 				</c:if> id="${prefix}_${dateId}_allDayEvent" 
-				onclick="ssEventEditor${prefix}.toggleAllDay(this); " /><label for="${prefix}_${dateId}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
+				onclick="ssEventEditor${prefix}.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " /><label for="${prefix}_${dateId}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
 			</td>
 		</c:if>
 	</tr>
@@ -97,7 +122,7 @@
 					name="${dateId2}_fullDate" 
 					id="${dateId2}_${prefix}"
 					lang="${ssUser.locale.language}" 
-					value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+					value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
 					endDateWidgetId="event_end_${prefix}"
@@ -114,13 +139,30 @@
 						name="${dateId2}_0_fullTime" 
 						id="${dateId2}_time_${prefix}"
 						lang="${ssUser.locale.language}" 
-						value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
+						<c:choose>
+							<c:when test="${initEvent.allDayEvent}">
+								value="08:30:00"
+							</c:when>
+							<c:otherwise>
+								value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+							</c:otherwise>
+						</c:choose>						
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
 						endTimeWidgetId="event_end_time_${prefix}"></div>
 						
-					<input type="hidden" name="${dateId2}_timezoneid" value="${initEvent.timeZone.ID}" />
+					<input type="hidden" name="${dateId2}_timezoneid" value="${ssUser.timeZone.ID}" />
+					<input type="hidden" name="${dateId2}_skipTime" id="${dateId2}_skipTime_${prefix}"
+						<c:choose>
+							<c:when test="${initEvent.allDayEvent}">
+								value="true"
+							</c:when>
+							<c:otherwise>
+								value="false"
+							</c:otherwise>
+						</c:choose>
+						/>
 				</span>
 			</td>
 		</tr>
@@ -437,7 +479,7 @@ function ${prefix}_toggleRecur(name) {
 		id="${endrangeId}_${prefix}"
 		lang="${ssUser.locale.language}" 
 		<c:if test="${!empty initEvent.until}">
-			value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+			value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 		</c:if>
 		></div>
     

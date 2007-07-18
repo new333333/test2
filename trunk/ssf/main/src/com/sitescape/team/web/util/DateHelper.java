@@ -37,6 +37,8 @@ import org.joda.time.format.DateTimeFormatter;
  *
  */
 public class DateHelper {
+	
+	public static final int MILIS_IN_THE_DAY = (1000 * 60 * 60 * 24) - 1;
     
 
  /*
@@ -160,19 +162,26 @@ public class DateHelper {
             dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
         }
         
+		String skipTime = null;
+		if (inputData.exists(datePrefix + "skipTime")) {
+			skipTime = inputData.getSingleValue(datePrefix + "skipTime");
+		}
+        
         DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-        if (dateTimeZone != null) {
+        if (!"true".equals(skipTime) && dateTimeZone != null) {
         	dateFormatter = dateFormatter.withZone(dateTimeZone);
         }
 		DateTime dateTime = null;
 		if (inputData.exists(datePrefix + "fullDate")) {
 			dateTime = dateFormatter.parseDateTime(inputData.getSingleValue(datePrefix+"fullDate"));
 		}
-		DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
-		if (dateTimeZone != null) {
-			timeFormatter = timeFormatter.withZone(dateTimeZone);
-		}
-		if (inputData.exists(timePrefix + "fullTime")) {
+
+		if (!"true".equals(skipTime) && inputData.exists(timePrefix + "fullTime")) {
+			DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("HH:mm:ss");
+			if (dateTimeZone != null) {
+				timeFormatter = timeFormatter.withZone(dateTimeZone);
+			}
+			
 			// Remove time zone information from time string. Time zone is set by dojo TimePicker widget,
 			// but this is user client time zone what is NOT the same like user profile time zone.
 			String timeString = inputData.getSingleValue(timePrefix + "fullTime");

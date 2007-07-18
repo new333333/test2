@@ -36,6 +36,7 @@ import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.web.util.DateHelper;
 
 public class SearchFilter {
 	protected static List placeTypes = new ArrayList(3);
@@ -134,7 +135,7 @@ public class SearchFilter {
 			DateTime endD = null;
 			if (!endDate.equals("")) {
 				endD = fmt.parseDateTime(endDate);
-				endD = endD.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY);
+				endD = endD.withMillisOfDay(DateHelper.MILIS_IN_THE_DAY);
 			}
 			return new Period(startD != null ? fmt.print(startD) : null, endD != null ? fmt.print(endD) : null);
 		}

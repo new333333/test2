@@ -19,6 +19,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.User;
@@ -32,7 +34,6 @@ import com.sitescape.util.cal.DayAndPosition;
  */
 public class EventHelper {
     
-
     // default method assumes duration and recurrence patterns
     static public Event getEventFromMap (InputDataAccessor inputData, String id) {
         Boolean hasDur = new Boolean("true");
@@ -50,7 +51,7 @@ public class EventHelper {
         // we make the id match what the event editor would do
     	String prefix = id + "_";
     	
-        Event e = new Event();
+        Event event = new Event();
        
         // duration present means there is a start and end id
         String startId = "dp_" + id;
@@ -60,20 +61,31 @@ public class EventHelper {
         Date end = inputData.getDateValue(endId);
         // for now, if either date in the range is missing, we return null Event
         // (consider instead making a checked exception?)
-        if (start == null || (hasDuration && end == null)) {
+//        if (start == null || (hasDuration && end == null)) {
+        if (start == null) {
             return null;
         }
         GregorianCalendar startc = new GregorianCalendar();
         startc.setTime(start);
-        e.setDtStart(startc);
+        event.setDtStart(startc);
         if (end != null) {
         	GregorianCalendar endc = new GregorianCalendar();
         	endc.setTime(end);
-        	e.setDtEnd(endc);
+        	event.setDtEnd(endc);
         }
         
         if (!isAllDayEvent(inputData, id)) {
-        	e.setTimeZone(user.getTimeZone());
+        	event.setTimeZone(user.getTimeZone());
+        } else {
+        	if (event.getDtStart() != null) {
+        		DateTime startEvent = new DateTime(event.getDtStart());
+        		event.setDtStart(startEvent.withMillisOfDay(0).toGregorianCalendar());
+        	}
+        	
+        	if (event.getDtEnd() != null) {
+        		DateTime endEvent = new DateTime(event.getDtEnd());
+        		event.setDtEnd(endEvent.withMillisOfDay(DateHelper.MILIS_IN_THE_DAY).toGregorianCalendar());
+        	}
         }
 
         if (hasRecurrence.booleanValue()) {
@@ -83,57 +95,57 @@ public class EventHelper {
             String rangeSel = inputData.getSingleValue(prefix+"rangeSel");
 
             if (repeatUnit.equals("none")) {
-                e.setFrequency(Event.NO_RECURRENCE);
+                event.setFrequency(Event.NO_RECURRENCE);
             } else {
 	            if (repeatUnit.equals("day")) {
-	                e.setFrequency(Event.DAILY);
-	                e.setInterval(intervalStr);
+	                event.setFrequency(Event.DAILY);
+	                event.setInterval(intervalStr);
 	                
 	                // it's not yet implemented in UI
-	                parseOnDaysOfWeek(e, inputData, prefix);
+	                parseOnDaysOfWeek(event, inputData, prefix);
 	            }
 	            if (repeatUnit.equals("week")) {
-	                e.setFrequency(Event.WEEKLY);
-	                e.setInterval(intervalStr);
+	                event.setFrequency(Event.WEEKLY);
+	                event.setInterval(intervalStr);
 	                
-	                parseOnDaysOfWeek(e, inputData, prefix);
+	                parseOnDaysOfWeek(event, inputData, prefix);
 	            }
 	            
 	            if (repeatUnit.equals("month")) {
-	                e.setFrequency(Event.MONTHLY);
-	                e.setInterval(intervalStr);
+	                event.setFrequency(Event.MONTHLY);
+	                event.setInterval(intervalStr);
 	                
-	                parseDaysOfWeekWithPositions(e, inputData, prefix);
-	                parseDaysOfMonth(e, inputData, prefix);
-	                parseMonths(e, inputData, prefix);
+	                parseDaysOfWeekWithPositions(event, inputData, prefix);
+	                parseDaysOfMonth(event, inputData, prefix);
+	                parseMonths(event, inputData, prefix);
 	                
 	            } else if (repeatUnit.equals("year")) {
-	                e.setFrequency(Event.YEARLY);
-	                e.setInterval(intervalStr);
+	                event.setFrequency(Event.YEARLY);
+	                event.setInterval(intervalStr);
 	                
-	                parseDaysOfWeekWithPositions(e, inputData, prefix);
-	                parseDaysOfMonth(e, inputData, prefix);
-	                parseMonths(e, inputData, prefix);
+	                parseDaysOfWeekWithPositions(event, inputData, prefix);
+	                parseDaysOfMonth(event, inputData, prefix);
+	                parseMonths(event, inputData, prefix);
 	            }
 	            
 	            if (rangeSel.equals("count")) {
 	                String repeatCount = inputData.getSingleValue(prefix+"repeatCount");
-	                e.setCount(repeatCount);
+	                event.setCount(repeatCount);
 	            } else if (rangeSel.equals("until")) {
 	                String untilId = "endRange_" + id;
 	                Date until = inputData.getDateValue(untilId);
 	                GregorianCalendar untilCal = new GregorianCalendar();
 	                untilCal.setTime(until);
-	                e.setUntil(untilCal);
+	                event.setUntil(untilCal);
 	            } else if (rangeSel.equals("forever")) {
-	            	e.setCount(0);
+	            	event.setCount(0);
 	            }
             }
         } else {
-            e.setFrequency(Event.NO_RECURRENCE);
+            event.setFrequency(Event.NO_RECURRENCE);
         }
         
-        return e;
+        return event;
     }
 
 

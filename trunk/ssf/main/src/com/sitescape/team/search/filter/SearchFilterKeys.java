@@ -109,7 +109,5 @@ public class SearchFilterKeys {
    	public static final String MinimumSystemDay = "19000000";
    	public static final String MaximumSystemDate = "30000000000000";
    	public static final String MaximumSystemDay = "30000000";
-   	public static final int MILIS_IN_THE_DAY = (1000 * 60 * 60 * 24) - 1;
-   	
-   	
+      	
 }

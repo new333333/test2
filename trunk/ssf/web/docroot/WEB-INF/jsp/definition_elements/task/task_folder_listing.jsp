@@ -317,9 +317,20 @@
 				<c:if test="${! empty entry.priority}">
 					<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_<portlet:namespace/>.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
 				<td class="ss_due">
-					<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-					      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
-						  dateStyle="short" timeStyle="short" />
+					<c:choose>
+						<c:when test="${!empty entry['start_end#TimeZoneID']}">
+							<fmt:formatDate 
+									timeZone="${ssUser.timeZone.ID}"
+									value="${entry['start_end#EndDate']}" type="both" 
+									dateStyle="short" timeStyle="short" />						
+						</c:when>	
+						<c:otherwise>
+							<fmt:formatDate 
+									timeZone="GMT"
+									value="${entry['start_end#EndDate']}" type="date" 
+									dateStyle="short"/>
+						</c:otherwise>
+					</c:choose>
 				</td>
 				<td class="ss_iconsContainer" id="ss_tasks_<portlet:namespace/>_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_<portlet:namespace/>.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
 				<td class="ss_assigned">
