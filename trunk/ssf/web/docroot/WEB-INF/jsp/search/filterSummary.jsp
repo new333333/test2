@@ -5,9 +5,9 @@
 		var ss_searchWorkflows = new Array();
 		var ss_searchSteps = new Array();
 		<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
-			ss_searchWorkflows['${wf.id}'] = '${wf.title}';
+			ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
 			<c:forEach var="step" items="${wf.steps}">
-				ss_searchSteps['${wf.id}-${step.name}'] = '${step.title}';
+				ss_searchSteps['${wf.id}-<ssf:escapeJavaScript value="${step.name}"/>'] = '<ssf:escapeJavaScript value="${step.title}"/>';
 			</c:forEach>
 		</c:forEach>
 	</c:if>
@@ -16,10 +16,10 @@
 		var ss_searchFields = new Array();
 		var ss_searchFieldsTypes = new Array();
 		<c:forEach var="entry" items="${ssEntryDefinitionMap}">
-			ss_searchEntries['${entry.id}'] = '${entry.title}';
+			ss_searchEntries['${entry.id}'] = '<ssf:escapeJavaScript value="${entry.title}"/>';
 			<c:forEach var="field" items="${entry.fields}">
-				ss_searchFields['${entry.id}-${field.name}'] = '${field.title}';
-				ss_searchFieldsTypes['${entry.id}-${field.name}'] = '${field.type}';
+				ss_searchFields['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.title}"/>';
+				ss_searchFieldsTypes['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.type}"/>';
 			</c:forEach>
 		</c:forEach>
 	</c:if>
@@ -35,8 +35,8 @@
 					<p><ssf:nlt tag="searchForm.label.workflow"/>:
 					<script type="text/javascript">
 						document.write(ss_searchWorkflows['${block.searchWorkflow}']+" - ");
-						if (ss_searchSteps['${block.searchWorkflow}-${step}'])
-							document.write(ss_searchSteps['${block.searchWorkflow}-${step}']);
+						if (ss_searchSteps['${block.searchWorkflow}-<ssf:escapeJavaScript value="${step}"/>'])
+							document.write(ss_searchSteps['${block.searchWorkflow}-<ssf:escapeJavaScript value="${step}"/>']);
 					</script>
 					</p>
 				</c:forEach>
@@ -81,9 +81,9 @@
 				
 				<p><ssf:nlt tag="searchForm.label.entry"/>:
 				<script type="text/javascript">
-					document.write(ss_searchEntries['${block.entryType}']);
-					if (ss_searchFields['${block.entryType}-${block.entryElement}']) {
-						document.write(" - " + ss_searchFields['${block.entryType}-${block.entryElement}']);
+					document.write(ss_searchEntries['<ssf:escapeJavaScript value="${block.entryType}"/>']);
+					if (ss_searchFields['<ssf:escapeJavaScript value="${block.entryType}"/>-<ssf:escapeJavaScript value="${block.entryElement}"/>']) {
+						document.write(" - " + ss_searchFields['<ssf:escapeJavaScript value="${block.entryType}"/>-<ssf:escapeJavaScript value="${block.entryElement}"/>']);
 					}
 				</script>
 				:
