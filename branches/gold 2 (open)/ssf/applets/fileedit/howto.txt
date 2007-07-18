@@ -1,0 +1,38 @@
+# nmake file for the fileedit applet
+JAVABIN="c:\j2sdk1.4.0\bin"
+JAVA="c:\j2sdk1.4.0\bin\java"
+JAVAC="c:\j2sdk1.4.0\bin\javac"
+JAR="c:\j2sdk1.4.0\bin\jar"
+JARSIGNER="c:\j2sdk1.4.0\bin\jarsigner"
+JAWS="c:\j2sdk1.4.0\jre\lib\jaws.jar"
+JREJARS="c:\j2sdk1.4.0\jre\lib\rt.jar;c:\j2sdk1.4.0\jre\lib\jsse.jar;c:\j2sdk1.4.0\jre\lib\jaws.jar"
+CANNERYCLASSPATH=.\cannery.zip;.\fileedit.jar;$(JREJARS)
+
+
+
+CLASSFILES= \
+	    Debug.class \
+	    FEData.class \
+	    LaunchDoc.class \
+	    launcher.class \
+	    PostFileConnection.class \
+	    Util.class
+
+
+JARFILE= ".\fileedit.jar"
+
+all: $(JARFILE)
+
+# Create a JAR file with a suitable manifest.
+
+$(JARFILE): clean
+	$(JAVAC) -classpath $(JAWS) -d . *.java
+	$(JAR) cf $(JARFILE) fileedit	
+	$(JAVA) -cp $(CANNERYCLASSPATH) cannery -e "javax/swing" $(JARFILE) fileedit\launcher.class
+	$(JARSIGNER) -keystore sitescape.keystore -storepass spDJOQ $(JARFILE) mykey
+
+clean:
+        -del fileedit\*.class
+        -del $(JARFILE)
+
+

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring ICEcore</text> </target>
+
+ <target id="b9vde7e" pid="b9vde7e" name="Sect1" level="1" number="2.1"> <text>Log in as Site Manager</text> </target>
+
+ <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>To Log In Using the Administrator Account:</text> </target>
+
+ <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
+
+ <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
+
+ <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the Login field, type:</text> </target>
+
+ <target id="b9vdg76" pid="b9vde7e" name="Step" level="4" number="3"> <text>In the Password field, type:</text> </target>
+
+ <target id="b9vdg79" pid="b9vde7e" name="Step" level="4" number="4"> <text>Click the Login button.</text> </target>
+
+ <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the ICEcore Administration Portlet </text> </target>
+
+ <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the ICEcore Adminstration Portlet to Your Home Page:</text> </target>
+
+ <target id="bantho8" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
+
+ <target id="bantho9" pid="b9vde7e" name="Step" level="4" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
+
+ <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper-left corner, click ICEcore to view the available ICEcore portlets that you can add.</text> </target>
+
+ <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to ICEcore Administration to add this portlet to your Home Page.</text> </target>
+
+ <target id="b9vdczx" pid="b9vdczx" name="Sect1" level="1" number="2.2"> <text>Adjust Access Control for the Site</text> </target>
+
+ <target id="baps7fz" pid="b9vdczx" name="BridgeHead" level="2"> <text>Key Ideas to Keep in Mind:</text> </target>
+
+ <target id="bapq6l0" pid="b9vdczx" name="Sect2" level="2" number="2.2.1"> <text>Default Role Definitions</text> </target>
+
+ <target id="b9ve155" pid="b9vdczx" name="Sect2" level="2" number="2.2.2"> <text>To Change a Default Role Definition:</text> </target>
+
+ <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
+
+ <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
+
+ <target id="b9ve1f5" pid="b9vdczx" name="Step" level="4" number="2"> <text>Click Visitor.</text> </target>
+
+ <target id="b9ve1f7" pid="b9vdczx" name="Step" level="4" number="3"> <text>Under Visitor, deselect the Add Comments option, and then click Apply.</text> </target>
+
+ <target id="b9ve1fa" pid="b9vdczx" name="Step" level="4" number="4"> <text>Click Close to return to your Home Page.</text> </target>
+
+ <target id="bapqyx7" pid="b9vdczx" name="Sect2" level="2" number="2.2.3"> <text>Edit Default Team Workspace Access Rights</text> </target>
+
+ <target id="baprfmt" pid="b9vdczx" name="BridgeHead" level="3"> <text>Create the Team Creator Group:</text> </target>
+
+ <target id="baprgjf" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
+
+ <target id="bapt97t" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
+
+ <target id="baprhy5" pid="b9vdczx" name="Step" level="4" number="2"> <text>In the Manage Groups window, click Add a New Group.</text> </target>
+
+ <target id="bapric4" pid="b9vdczx" name="Step" level="4" number="3"> <text>Enter the new group's name, title, description, and then click Add.</text> </target>
+
+ <target id="baprk2r" pid="b9vdczx" name="Step" level="4" number="4"> <text>Under Select a Group to Modify or Delete, click the Team Creator (Team Creator) group.</text> </target>
+
+ <target id="bapru38" pid="b9vdczx" name="Step" level="4" number="5"> <text>Add users to the group and click Apply.</text> </target>
+
+ <target id="baprt93" pid="b9vdczx" name="Step" level="4" number="6"> <text>Click Close.</text> </target>
+
+ <target id="baprgjh" pid="b9vdczx" name="BridgeHead" level="3"> <text>Grant the Team Creator Group Sole Team Workspace Creation Rights:</text> </target>
+
+ <target id="bapr576" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>Click Team Workspace.</text> </target>
+
+ <target id="bapr577" pid="b9vdczx" name="Step" level="4" number="1"> <text>Click Team Workspace.</text> </target>
+
+ <target id="bapr6pw" pid="b9vdczx" name="Step" level="4" number="2"> <text>Click Access Control.</text> </target>
+
+ <target id="bapr7hy" pid="b9vdczx" name="Step" level="4" number="3"> <text>Click Add a Group in the Access Rights table.</text> </target>
+
+ <target id="baprmbu" pid="b9vdczx" name="Step" level="4" number="4"> <text>Start typing Team Creator in the Add a Group dialog that appears and select Team Creator from the drop-down list that appears.</text> </target>
+
+ <target id="baprnxn" pid="b9vdczx" name="Step" level="4" number="5"> <text>Deselect the Workspace Creator option for the All Users group and select the same right for the Team Creator group.</text> </target>
+
+ <target id="baprqsh" pid="b9vdczx" name="Step" level="4" number="6"> <text>Click Save Changes.</text> </target>
+
+ <target id="baprr9x" pid="b9vdczx" name="Step" level="4" number="7"> <text>Click Close.</text> </target>
+
+ <target id="bapqrpq" pid="bapqrpq" name="Sect1" level="1" number="2.3"> <text>Create Your Initial Workspaces</text> </target>
+
+ <target id="bapsarz" pid="bapqrpq" name="BridgeHead" level="2"> <text>Creating Teams</text> </target>
+
+ <target id="bapsept" pid="bapqrpq" name="Sect2" level="2" number="2.3.1"> <text>Create an Administration Team Workspace</text> </target>
+
+ <target id="bapsonc" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From your Home Page, click Team Workspace.</text> </target>
+
+ <target id="bapsond" pid="bapqrpq" name="Step" level="4" number="1"> <text>From your Home Page, click Team Workspace.</text> </target>
+
+ <target id="bapssn2" pid="bapqrpq" name="Step" level="4" number="2"> <text>Click Add a Team Workspace.</text> </target>
+
+ <target id="bapsth2" pid="bapqrpq" name="Step" level="4" number="3"> <text>Type in a tile for the new workspace.</text> </target>
+
+ <target id="bapsukt" pid="bapqrpq" name="Step" level="4" number="4"> <text>Select the team members.</text> </target>
+
+ <target id="bapsv49" pid="bapqrpq" name="Step" level="4" number="5"> <text>Select all the initial Workspace Folders you want to create in this workspace.</text> </target>
+
+ <target id="bapswei" pid="bapqrpq" name="Step" level="4" number="6"> <text>Click OK.</text> </target>
+
+ <target id="bapsx9i" pid="bapqrpq" name="Sect2" level="2" number="2.3.2"> <text>Set the Administration Team Access Rights</text> </target>
+
+ <target id="bapsxoy" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration Team workspace, click Access Control.</text> </target>
+
+ <target id="bapsxoz" pid="bapqrpq" name="Step" level="4" number="1"> <text>From the ICEcore Administration Team workspace, click Access Control.</text> </target>
+
+ <target id="bapsy74" pid="bapqrpq" name="Step" level="4" number="2"> <text>In the Access Rights table, click Add a Group.</text> </target>
+
+ <target id="bapt02v" pid="bapqrpq" name="Step" level="4" number="3"> <text>Start typing in admin, and select admin from the drop-down list that appears.</text> </target>
+
+ <target id="bapt0om" pid="bapqrpq" name="Step" level="4" number="4"> <text>For the admin group, select the Workspace and Folder Administrator,  Participant, and  Team Member roles.</text> </target>
+
+ <target id="bapt28g" pid="bapqrpq" name="Step" level="4" number="5"> <text>Click Save Changes.</text> </target>
+
+ <target id="bapt2r3" pid="bapqrpq" name="Step" level="4" number="6"> <text>Click Close.</text> </target>
+
+ <target id="b9vde7f" pid="b9vde7f" name="Sect1" level="1" number="2.4"> <text>Set Up E-mail for a Workspace</text> </target>
+
+ <target id="baptekl" pid="b9vde7f" name="Procedure" level="2" number="1"> <text>From your workspace, select the top level folder for which you want to enable e-mail.</text> </target>
+
+ <target id="baptekm" pid="b9vde7f" name="Step" level="3" number="1"> <text>From your workspace, select the top level folder for which you want to enable e-mail.</text> </target>
+
+ <target id="baptkyb" pid="b9vde7f" name="Step" level="3" number="2"> <text>Click Manage This Folder and select the Email Settings menu item.</text> </target>
+
+ <target id="baptlti" pid="b9vde7f" name="Step" level="3" number="3"> <text>Type in the e-mail alias you recieved from your e-mail administrator in the Reiceiving Email From field.</text> </target>
+
+ <target id="bapto85" pid="b9vde7f" name="Step" level="3" number="4"> <text>Configure the e-mail Notification Schedule and add the users, groups, and any individual e-mail addresses you want to receive e-mail notifications, and then click Apply.</text> </target>
+
+ <target id="b9vde7i" pid="b9vde7i" name="Sect1" level="1" number="2.5"> <text>Invite Users to the Site</text> </target>
+
+</targets>

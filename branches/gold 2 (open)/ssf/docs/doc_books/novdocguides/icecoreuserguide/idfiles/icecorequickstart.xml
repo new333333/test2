@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9rpufv" pid="b9rpufv" name="Chapter" level="0" number="2"> <text> Getting Started</text> </target>
+
+ <target id="banp85h" pid="banp85h" name="Sect1" level="1" number="2.1"> <text>Set Up Your Buddy List</text> </target>
+
+ <target id="banpue8" pid="banp85h" name="BridgeHead" level="2"> <text>Tips for using buddy lists</text> </target>
+
+ <target id="banqhqb" pid="banqhqb" name="Sect1" level="1" number="2.2"> <text>Modify Your Personal Workspace</text> </target>
+
+ <target id="banpibc" pid="banqhqb" name="Sect2" level="2" number="2.2.1"> <text>Add Basic Information</text> </target>
+
+ <target id="banqhqc" pid="banqhqb" name="Sect2" level="2" number="2.2.2"> <text>Edit Contact Information and Add Pictures</text> </target>
+
+ <target id="bas8mfq" pid="banqhqb" name="BridgeHead" level="3"> <text>No Text</text> </target>
+
+ <target id="banq7qc" pid="banqhqb" name="BridgeHead" level="3"> <text>Tips for uploading images</text> </target>
+
+ <target id="banqhqd" pid="banqhqb" name="Sect2" level="2" number="2.2.3"> <text>Add a Blog Entry</text> </target>
+
+ <target id="basapaw" pid="banqhqb" name="BridgeHead" level="3"> <text>Tips for writing blog entries</text> </target>
+
+ <target id="bart9al" pid="banqhqb" name="Sect2" level="2" number="2.2.4"> <text>Collaborating with Others</text> </target>
+
+ <target id="bas8vh2" pid="banqhqb" name="Sect3" level="3"> <text>Commenting on a Blog Entry</text> </target>
+
+ <target id="bas96b7" pid="banqhqb" name="Sect3" level="3"> <text>Collaborate in a Folder</text> </target>
+
+ <target id="banqhqf" pid="banqhqf" name="Sect1" level="1" number="2.3"> <text>Create a Team Workspace</text> </target>
+
+ <target id="banqhqh" pid="banqhqf" name="Sect2" level="2" number="2.3.1"> <text>Create the Workspace</text> </target>
+
+ <target id="bas9vyi" pid="banqhqf" name="BridgeHead" level="3"> <text>Tips for Team Workspaces</text> </target>
+
+ <target id="banqhqj" pid="banqhqf" name="Sect2" level="2" number="2.3.2"> <text>View Team Members</text> </target>
+
+ <target id="bartqwd" pid="banqhqf" name="Sect2" level="2" number="2.3.3"> <text>Communicate with Teammates</text> </target>
+
+ <target id="bas82ol" pid="banqhqf" name="Sect2" level="2" number="2.3.4"> <text>Allow Visitors to Your Team Workspace</text> </target>
+
+ <target id="banqhql" pid="banqhql" name="Sect1" level="1" number="2.4"> <text>Use Advanced Search to Explore</text> </target>
+
+ <target id="banqhqm" pid="banqhqm" name="Sect1" level="1" number="2.5"> <text>Use the Workspace Tree to Explore</text> </target>
+
+</targets>
