@@ -42,6 +42,7 @@
 					<fileset dir="${app.server.dir}/common/endorsed" includes="*.jar" />
 					<fileset dir="${app.server.lib.dir}" includes="*.jar" />
 					<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
+					<pathelement location="${app.server.dir}/common/lib/jsp-api.jar" />
 					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
 				</path>
 				<property name="deploy.liferay.webinf" value="${app.server.dir}/webapps/ROOT/WEB-INF" />
