@@ -291,7 +291,13 @@
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<script type="text/javascript">
 				myTasks_<portlet:namespace/>.addTask({"id" : ${entry._docId},
-													"completed" : "${entry.completed}"});
+													"completed" : "${entry.completed}",
+													completedValues : {
+														<c:forEach var="completed" items="${entry.ssEntryDefinitionElementData['completed'].values}" varStatus="loopStatus">
+															"<c:out value="${completed.key}" escapeXml="false"/>" : "<c:out value="${completed.value}" escapeXml="false"/>"
+															<c:if test="${!loopStatus.last}">,</c:if>
+														</c:forEach>
+													}});
 			</script>
 			
 			<tr>

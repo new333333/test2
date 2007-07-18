@@ -1,11 +1,5 @@
 	function ss_tasks (tableId, binderId, namespace) {
 	
-		var filterType; 	// CLOSED - status: (cancelled + completed)
-									// DAY - start date until today + status: (need action + in progress)
-									// WEEK - start date current week end day + status: (need action + in progress)
-									// MONTH - start date until current month end day + status: (need action + in progress)
-									// ACTIVE - status: (need action + in progress)
-		
 		var binderId = binderId; 
 		
 		var tasksTable = document.getElementById(tableId);
@@ -14,18 +8,10 @@
 		
 		var that = this;
 		
-		var statuses;
-		
-		var priorities;
-		
-		var completed;
-		
 		var namespace = namespace;
 		
 		var completedStatusDivs = new Array();
 			
-		loadExtendedInfo();
-	
 		this.changeStatus = function ( entryId, newStatus) {
 			var url = ss_AjaxBaseUrl + "&operation=update_task";
 			url += "\&binderId=" + binderId;
@@ -112,67 +98,7 @@
 			};
 			dojo.io.bind(bindArgs);
 		}
-
-
-		function loadExtendedInfo () {
-			if (!binderId || binderId == "") {
-				return;
-			}
-
-			var url = ss_AjaxBaseUrl + "&operation=get_tasks_extended_info";
-			url += "\&binderId=" + binderId;
-			url += "\&randomNumber=" + ss_random++;
 				
-			var bindArgs = {
-		    	url: url,
-				error: function(type, data, evt) {
-					// alert(ss_not_logged_in);
-				},
-				load: function(type, data, evt) {
-					if (data) {
-			    		statuses = data.statuses;
-			    		priorities = data.priorities;
-			    		completed = data.completed;
-					}
-				},
-							
-				mimetype: "text/json",
-				method: "get"
-			};
-			dojo.io.bind(bindArgs);
-		}
-		
-		function loadTasks() {
-			// TODO: no more in use, remove
-			if (!binderId || binderId == "") {
-				return;
-			}
-			
-			var url = ss_AjaxBaseUrl + "&operation=find_tasks";
-			url += "\&binderId=" + binderId;
-			if (filterType) {
-				url += "\&ssTaskFilterType=" + filterType;
-			}
-			url += "\&randomNumber=" + ss_random++;
-				
-			var bindArgs = {
-		    	url: url,
-				error: function(type, data, evt) {
-					// alert(ss_not_logged_in);
-				},
-				load: function(type, data, evt) {
-					try {
-				    	overwrite(data.tasks);
-				    	redrawAll();
-					} catch (e) {alert(e);}
-				},
-							
-				mimetype: "text/json",
-				method: "get"
-			};
-			dojo.io.bind(bindArgs);
-		}
-		
 		function overwrite(newTasks) {
 			clearTasks();
 			addTasks(newTasks);
@@ -255,11 +181,11 @@
 			}
 			
 			var value = task.completed;
-			var label = completed[task.completed];
+			var label = task.completedValues[task.completed];
 			
 			
 			completedStatusDivs[task.id][11] = document.createElement('div');
-			completedStatusDivs[task.id][11].innerHTML = completed[task.completed];
+			completedStatusDivs[task.id][11].innerHTML = task.completedValues[task.completed];
 			dojo.html.setClass(completedStatusDivs[task.id][11], "ss_bar_status");
 			
 			var container = document.createElement('div');
@@ -276,8 +202,8 @@
 				var tempValue = i*10;
 				var realValue = "c" + (tempValue==0?"000":(tempValue==100?"100":"0"+tempValue));
 				ss_setStyle(completedStatusDivs[task.id][i], tempValue, value);
-				var title = completed[realValue];
-				completedStatusDivs[task.id][i].title = completed[realValue];
+				var title = task.completedValues[realValue];
+				completedStatusDivs[task.id][i].title = task.completedValues[realValue];
 				
 				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], realValue));
 				dojo.event.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], realValue));
@@ -308,7 +234,7 @@
 		
 		this.ss_saveValue = function(task, container, statusContainer, newValue) {
 			// dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, statusContainer, newValue));
-			// statusContainer.innerHTML = completed[newValue];
+			// statusContainer.innerHTML = task.completedValues[newValue];
 			that.changeCompleted(task.id, newValue);
 		}
 		
@@ -321,7 +247,7 @@
 					counter++;
 				}
 			}
-			statusContainer.innerHTML = completed[newValue];
+			statusContainer.innerHTML = tasks[task.id].completedValues[newValue];
 		}
 		
 		function createCompletedTD(task) {
@@ -353,12 +279,12 @@
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_status");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
-			for (var i in statuses) {
+			for (var i in task.statuses) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 				
-				if (task.status != statuses[i].key) {
-					dojo.html.setClass(hrefObj, "ss_taskStatus ss_taskStatus_" + statuses[i].key + "_u");
+				if (task.status != task.statuses[i].key) {
+					dojo.html.setClass(hrefObj, "ss_taskStatus ss_taskStatus_" + task.statuses[i].key + "_u");
 				} else {
 					dojo.html.setClass(hrefObj, "ss_taskStatus");			
 				}
@@ -369,17 +295,17 @@
 							that.changeStatus(taskId, statusKey);
 						}
 					);
-				})(task.id, statuses[i].key);
+				})(task.id, task.statuses[i].key);
 				
 				var imgObj= document.createElement('img');
-				if (task.status == statuses[i].key) {
-					var src = ss_imagesPath + "icons/status_" + statuses[i].key + ".gif"; 
+				if (task.status == task.statuses[i].key) {
+					var src = ss_imagesPath + "icons/status_" + task.statuses[i].key + ".gif"; 
 				} else {
 					var src = ss_imagesPath + "pics/1pix.gif";
 				}
 				imgObj.src = src;
-				imgObj.setAttribute("alt", statuses[i].value);
-				imgObj.setAttribute("title", statuses[i].value);
+				imgObj.setAttribute("alt", task.statuses[i].value);
+				imgObj.setAttribute("title", task.statuses[i].value);
 				
 				hrefObj.appendChild(imgObj);
 				
@@ -394,12 +320,12 @@
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_priority");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
 				
-			for (var i in priorities) {
+			for (var i in task.priorities) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 		    
-		    	if (task.priority != priorities[i].key) {
-		    		dojo.html.setClass(hrefObj, "ss_taskPriority ss_taskPriority_" + priorities[i].key + "_u");
+		    	if (task.priority != task.priorities[i].key) {
+		    		dojo.html.setClass(hrefObj, "ss_taskPriority ss_taskPriority_" + task.priorities[i].key + "_u");
 				} else {
 					dojo.html.setClass(hrefObj, "ss_taskPriority");			
 				}
@@ -409,19 +335,19 @@
 						obj.changePriority(taskId, newPriority);
 					}
 				}
-				var callChangePriority = declareChangePriority(that, task.id, priorities[i].key);
+				var callChangePriority = declareChangePriority(that, task.id, task.priorities[i].key);
 				dojo.event.connect(hrefObj, "onclick", callChangePriority);
 				
 				var imgObj= document.createElement('img');
 				
-				if (task.priority == priorities[i].key) {
-					var src = ss_imagesPath + "icons/prio_" + priorities[i].key + ".gif"; 
+				if (task.priority == task.priorities[i].key) {
+					var src = ss_imagesPath + "icons/prio_" + task.priorities[i].key + ".gif"; 
 				} else {
 					var src = ss_imagesPath + "pics/1pix.gif";
 				}
 				imgObj.src = src;
-				imgObj.setAttribute("alt", priorities[i].value);
-				imgObj.setAttribute("title", priorities[i].value);
+				imgObj.setAttribute("alt", task.priorities[i].value);
+				imgObj.setAttribute("title", task.priorities[i].value);
 	
 				
 				hrefObj.appendChild(imgObj);
@@ -485,11 +411,6 @@
 			var url = ss_viewEntryURL + "&binderId=" + binderId;
 			url += "&entryId=" + entryId;
 			ss_loadEntryUrl(url, entryId);
-		}
-	
-		this.filterTasks = function(type) {
-			filterType = type;
-			loadTasks();
 		}
 	
 	}

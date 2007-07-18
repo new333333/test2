@@ -24,25 +24,51 @@
 		<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
 		<% // This is JSON type AJAX response  %>
 		{
-			"title" : "<c:out value="${ssEntry.title}" escapeXml="false"/>",
+			"title" : "<ssf:escapeJavaScript value="${ssEntry.title}" />",
 	  		"id" : "${ssEntry.id}",
-	  		"dueDate" : <c:forEach var="event" items="${ssEntry.events}" varStatus="loopStatus">
-							<c:if test="${loopStatus.first}">"<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+	  		"dueDate" : "<c:forEach var="event" items="${ssEntry.events}" varStatus="loopStatus"><%--
+							--%><c:if test="${loopStatus.first}"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 						      value="${event.dtEnd.time}" type="both" 
-							  dateStyle="medium" timeStyle="short" />"</c:if>
-						</c:forEach>,
+							  dateStyle="medium" timeStyle="short" /></c:if><%--
+						--%></c:forEach>",
 			"status" : <c:forEach var="status" items="${ssEntry.customAttributes['status'].valueSet}" varStatus="loopStatus">
-							<c:if test="${loopStatus.first}">"${status}"</c:if>
+							<c:if test="${loopStatus.first}">"<ssf:escapeJavaScript value="${status}" />"</c:if>
 						</c:forEach>,
 			"completed" : <c:forEach var="completed" items="${ssEntry.customAttributes['completed'].valueSet}" varStatus="loopStatus">
-							<c:if test="${loopStatus.first}">"${completed}"</c:if>
+							<c:if test="${loopStatus.first}">"<ssf:escapeJavaScript value="${completed}" />"</c:if>
 						</c:forEach>,
 			"priority" : <c:forEach var="priority" items="${ssEntry.customAttributes['priority'].valueSet}" varStatus="loopStatus">
-							<c:if test="${loopStatus.first}">"${priority}"</c:if>
+							<c:if test="${loopStatus.first}">"<ssf:escapeJavaScript value="${priority}" />"</c:if>
 						</c:forEach>,
 			"assigned" : [<c:forEach var="user" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment")) %>" varStatus="assignedStatus">
-							"${user.title}"<c:if test="${!assignedStatus.last}">,</c:if>
-						</c:forEach>]
+							"<ssf:escapeJavaScript value="${user.title}" />"<c:if test="${!assignedStatus.last}">,</c:if>
+						</c:forEach>],
+			statuses : 
+						[
+							<c:forEach var="status" items="${ssEntryDefinitionElementData['status'].values}" varStatus="loopStatus">
+							{
+								value : "<ssf:escapeJavaScript value="${status.value}" />",
+								key : "<ssf:escapeJavaScript value="${status.key}" />"
+							}<c:if test="${!loopStatus.last}">,</c:if>
+							</c:forEach>
+						],
+			priorities : 
+			[
+				<c:forEach var="priority" items="${ssEntryDefinitionElementData['priority'].values}" varStatus="loopStatus">
+				{
+					value : "<ssf:escapeJavaScript value="${priority.value}" />",
+					key : "<ssf:escapeJavaScript value="${priority.key}" />"
+				}<c:if test="${!loopStatus.last}">,</c:if>
+				</c:forEach>
+			],
+			
+			completedValues : 
+			{
+				<c:forEach var="completed" items="${ssEntryDefinitionElementData['completed'].values}" varStatus="loopStatus">
+					"<ssf:escapeJavaScript value="${completed.key}" />" : "<ssf:escapeJavaScript value="${completed.value}" />"
+					<c:if test="${!loopStatus.last}">,</c:if>
+				</c:forEach>
+			}
 		}
 			
 	</c:otherwise>
