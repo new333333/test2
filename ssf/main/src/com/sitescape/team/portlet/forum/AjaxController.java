@@ -374,8 +374,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetSearchQueryName(request, response);
 		} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
 			return ajaxGetRemovedQueryName(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_TASKS_EXTENDED_INFO)) {
-			return ajaxGetTasksExtendedInfo(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
 			return ajaxUpdateTask(request, response);
 		} else if (op.equals(WebKeys.OPERATION_LIST_SAVED_QUERIES)) {
@@ -2201,27 +2199,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
 	}
-
-	private ModelAndView ajaxGetTasksExtendedInfo(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		
-		if (WebHelper.isUserLoggedIn(request)) {
-			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-			Binder binder = getBinderModule().getBinder(binderId);
-			
-			Iterator defaultEntryDefinitionsIt = binder.getEntryDefinitions().iterator();
-			if (defaultEntryDefinitionsIt.hasNext()) {
-				Definition entryDefinition = (Definition) defaultEntryDefinitionsIt.next();
-				Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryDefinition.getId());
-				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
-			}
-		}
-		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/tasks_extended_info", model);
-	}
 	
 	private ModelAndView ajaxUpdateTask(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -2245,7 +2222,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 						new MapInputData(formData), new HashMap(), new HashSet(), null);
 				
 				model.put(WebKeys.ENTRY, entry);
-				
+				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entry.getEntryDef().getId()));
 				model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			} catch (OperationAccessControlException e) {
 				Map statusMap = new HashMap();

@@ -1884,7 +1884,6 @@ public static final String[] monthNamesShort = {
 		
 		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType).getFilter());
        	
-       	List entries;
 		if (binder instanceof Folder) {
 			folderEntries = getFolderModule().getEntries(binderId, options);
 		} else {
