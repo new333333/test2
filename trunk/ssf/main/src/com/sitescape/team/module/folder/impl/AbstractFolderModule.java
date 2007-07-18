@@ -623,6 +623,17 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         return results;
     }
            
+    public Folder locateEntry(Long entryId) {
+        FolderEntry entry = (FolderEntry)getCoreDao().load(FolderEntry.class, entryId);
+        if (entry == null) return null;
+        Folder parent = entry.getParentFolder();
+        try {
+        	AccessUtils.readCheck(entry);
+        } catch (AccessControlException ac) {
+        	return null;
+        }
+        return parent;
+    }
     public FolderEntry getEntry(Long parentFolderId, Long entryId) {
         FolderEntry entry = loadEntry(parentFolderId, entryId);
         AccessUtils.readCheck(entry);

@@ -192,7 +192,14 @@ public class ViewEntryController extends  SAbstractController {
 					return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
 				}
 			} else {
-				fe = getShowEntry(entryId, formData, request, response, folderId, model);
+				try {
+					fe = getShowEntry(entryId, formData, request, response, folderId, model);
+				} catch (NoFolderEntryByTheIdException nf) {
+					Folder newFolder = getFolderModule().locateEntry(Long.valueOf(entryId));
+					if (newFolder == null) throw nf;
+					model.put("entryMoved", newFolder);
+					throw nf;
+				}
 			}
 			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
 			setRepliesAccessControl(model, fe);
