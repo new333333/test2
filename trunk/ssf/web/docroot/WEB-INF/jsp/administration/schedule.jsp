@@ -103,10 +103,8 @@
 		<option value="55">55
 	</select>
 
-<ssf:inlineHelp tag="ihelp.schedule.at_time"/>
-
 <br/>
-<hr shade=noshade size=1/>
+
 
 <input type="radio"  name="hourType" id="hourType" value="repeat"   <c:if test="${schedule.repeatHours}">checked</c:if>>
 	</input>
@@ -114,7 +112,6 @@
 	<span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
    
 	<select name="hoursRepeat" id="hoursRepeat"<c:if test="${schedule.repeatHours}">value="${schedule.hours}"</c:if>>
-		<option value="">
 		<option value="01">01
 		<option value="02">02
 		<option value="03">03
@@ -125,8 +122,6 @@
 	</select>
 
 <span class="ss_labelRight"><ssf:nlt tag="schedule.hours"/></span>
-
-<ssf:inlineHelp tag="ihelp.schedule.repeat_time"/>
 
 <br/>
 <hr shade=noshade size=1/>
