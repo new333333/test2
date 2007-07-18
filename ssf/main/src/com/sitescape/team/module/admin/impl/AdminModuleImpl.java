@@ -1142,7 +1142,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
    public List<ChangeLog> getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
-	   filter.add("binderId", binderId);
+	   filter.add("owningBinderId", binderId);
 	   if (!Validator.isNull(operation)) {
 		   filter.add("operation", operation);
 	   }
