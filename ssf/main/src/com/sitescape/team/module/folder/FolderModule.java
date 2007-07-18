@@ -123,7 +123,8 @@ public interface FolderModule {
     public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
 	public Map getFullEntries(Long folderId) throws AccessControlException;
 	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;
-	   /**
+	public Folder locateEntry(Long entryId);
+	/**
      * Finds library folder entry by the file name. If no matching entry is 
      * found it returns <code>null</code>. If matching entry is found but the
      * user has no access to it, it throws <code>AccessControlException</code>.

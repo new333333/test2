@@ -33,14 +33,15 @@
 
 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
 <p style="text-align:center;">
+<c:if test="${!empty entryMoved}">
+<ssf:nlt tag="entry.moved">
+<ssf:param name="value" value="${entryMoved.pathName}"/>
+</ssf:nlt>
+</c:if>
+<c:if test="${empty entryMoved}">
 <ssf:nlt tag="entry.deleted"/>
+</c:if>
 </p>
-
-<ssf:ifadapter>
-<p style="text-align:center;">
-<input type="button" value="<ssf:nlt tag="button.close"/>" onclick="window.close();"/>
-</p>
-</ssf:ifadapter>
 
 </div>
 
