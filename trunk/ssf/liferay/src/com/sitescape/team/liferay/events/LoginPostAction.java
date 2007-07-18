@@ -22,7 +22,6 @@ import com.liferay.portal.struts.ActionException;
 import com.liferay.portal.util.PortalUtil;
 import com.sitescape.team.portalmodule.web.security.AuthenticationManager;
 import com.sitescape.team.portalmodule.web.session.SessionManager;
-import com.liferay.portal.service.spring.UserLocalServiceUtil;
 
 public class LoginPostAction extends AbstractAction {
 
@@ -36,28 +35,25 @@ public class LoginPostAction extends AbstractAction {
 		// Print debug information
 		//testRequestEnv("Liferay.LoginPostAction", req);
 
-		// Make sure that the request object has all parameters we need. 
-		
-		String companyId = PortalUtil.getCompanyId(req);
-		if (companyId == null || companyId.length() == 0)
-			throw new ActionException("Company ID is not found");
-
-		String userId = PortalUtil.getUserId(req);
-		if (userId == null || userId.length() == 0)
-			throw new ActionException("User ID is not found");
-
-		String password = PortalUtil.getUserPassword(req);
-		if(password == null)
-			password = ""; // I'm not sure if we should allow this...
-		
 		// Make sure that the portal created a session for the user. 
 		
 		HttpSession ses = req.getSession(false);
 		if (ses == null)
 			throw new ActionException("Session is not found");
-
+		
 		try {
-			com.liferay.portal.model.User user = UserLocalServiceUtil.getUserById(companyId, userId);
+			// Make sure that the request object has all parameters we need. 
+			
+			com.liferay.portal.model.Company company = PortalUtil.getCompany(req);
+
+			com.liferay.portal.model.User user = PortalUtil.getUser(req);
+			if(user == null)
+				throw new ActionException("User not found");
+
+			String password = PortalUtil.getUserPassword(req);
+			if(password == null)
+				password = ""; // I'm not sure if we should allow this...
+			
 			//sync user attributes
 			Map updates = new HashMap();
 			updates.put("firstName", user.getFirstName());
@@ -75,11 +71,11 @@ public class LoginPostAction extends AbstractAction {
 			// user actually accesses the system. 
 			//updates.put("organization", user.getOrganization().getName());
 			// First, authenticate the user against SSF user database.
-			AuthenticationManager.authenticate(companyId, userId, password, updates);
+			AuthenticationManager.authenticate(company.getWebId(), user.getScreenName(), password, updates);
 			
 			// If you're still here, the authentication was successful. 
 			// Create a SSF session for the user. 
-			SessionManager.createSession(req, ses.getId(), companyId, userId);
+			SessionManager.createSession(req, ses.getId(), company.getWebId(), user.getScreenName());
 		} catch (Exception e) {
 			throw new ActionException(e);
 		}
