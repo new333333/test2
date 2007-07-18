@@ -55,25 +55,82 @@
 	</tr>
 	</table>
 <hr shade=noshade size=1/>
-   <input type="radio"  name="hourType" id="hourType" value="repeat" <c:if test="${schedule.repeatHours}">checked</c:if>/>
-    <span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
-  <input type="text" class="ss_text"  name="hoursRepeat" id="hoursRepeat" size="2" value="${schedule.hoursRepeat}"/>
-  &nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.hours"/>  <ssf:inlineHelp tag="ihelp.schedule.repeat_hours"/></span>
-  <br/>
-   <input type="radio"  name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>
-   <span class="ss_labelRight"><ssf:nlt tag="schedule.athours"/></span>
-   <input type="text" class="ss_text"  name="schedHours" id="schedHours" size="5" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>/>  <ssf:inlineHelp tag="ihelp.schedule.at_hours"/>
-   <br/>
+
+<input type="radio"  name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>>
+	</input>
+   
+	<span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span>
+   
+	<select name="schedHours" id="schedHours"<c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
+		<option value="00">00
+		<option value="01">01
+		<option value="02">02
+		<option value="03">03
+		<option value="04">04
+		<option value="05">05
+		<option value="06">06
+		<option value="07">07
+		<option value="08">08
+		<option value="09">09
+		<option value="10">10
+		<option value="11">11
+		<option value="12">12
+		<option value="13">13
+		<option value="14">14
+		<option value="15">15
+		<option value="16">16
+		<option value="17">17
+		<option value="18">18
+		<option value="19">19
+		<option value="20">20
+		<option value="21">21
+		<option value="22">22
+		<option value="23">23
+	</select>
+		:
+	<select name="schedMinutes" id="schedMinutes" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>>
+		<option value="00">00
+		<option value="05">05
+		<option value="10">10
+		<option value="15">15
+		<option value="20">20
+		<option value="25">25
+		<option value="30">30
+		<option value="35">35
+		<option value="40">40
+		<option value="45">45
+		<option value="50">50
+		<option value="55">55
+	</select>
+
+<ssf:inlineHelp tag="ihelp.schedule.at_time"/>
+
+<br/>
 <hr shade=noshade size=1/>
-    <input type="radio" name="minuteType" id="minuteType" value="repeat" <c:if test="${schedule.repeatMinutes}">checked</c:if>/>
-   <span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
-   <input type="text" class="ss_text" name="minutesRepeat" id="minutesRepeat" size="2" value="${schedule.minutesRepeat}"/>
-  	&nbsp;<span class="ss_bold"><ssf:nlt tag="schedule.minutes"/> <ssf:inlineHelp tag="ihelp.schedule.repeat_minutes"/></span>
+
+<input type="radio"  name="hourType" id="hourType" value="repeat"   <c:if test="${schedule.repeatHours}">checked</c:if>>
+	</input>
+   
+	<span class="ss_labelRight"><ssf:nlt tag="schedule.repeat"/></span>
+   
+	<select name="hoursRepeat" id="hoursRepeat"<c:if test="${schedule.repeatHours}">value="${schedule.hours}"</c:if>>
+		<option value="">
+		<option value="01">01
+		<option value="02">02
+		<option value="03">03
+		<option value="04">04
+		<option value="06">06
+		<option value="08">08
+		<option value="12">12
+	</select>
+
+<span class="ss_labelRight"><ssf:nlt tag="schedule.hours"/></span>
+
+<ssf:inlineHelp tag="ihelp.schedule.repeat_time"/>
+
+<br/>
+<hr shade=noshade size=1/>
   	<br/>
-    <input type="radio" name="minuteType" id="minuteType" value="absolute" <c:if test="${!schedule.repeatMinutes}">checked</c:if>/>
-    <span class="ss_labelRight"><ssf:nlt tag="schedule.atminutes"/> </span>
-   <input type="text" class="ss_text" name="schedMinutes" id="schedMinutes" size="3" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>/> <ssf:inlineHelp tag="ihelp.schedule.at_minutes"/>
-   <br/>
    </td></tr>
 </table>
 </table>
