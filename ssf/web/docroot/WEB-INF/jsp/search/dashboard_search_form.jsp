@@ -23,7 +23,7 @@
 	var ss_searchSteps = new Array();
 	<c:forEach var="wf" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
 		ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
-		<c:forEach var="step" items="<ssf:escapeJavaScript value="${wf.steps}"/>">
+		<c:forEach var="step" items="${wf.steps}">
 			ss_searchSteps['${wf.id}-<ssf:escapeJavaScript value="${step.name}"/>'] = '<ssf:escapeJavaScript value="${step.title}"/>';
 		</c:forEach>
 	</c:forEach>
@@ -34,7 +34,7 @@
 	var ss_searchFieldsTypes = new Array();
 	<c:forEach var="entry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}">
 		ss_searchEntries['${entry.id}'] = '<ssf:escapeJavaScript value="${entry.title}"/>';
-		<c:forEach var="field" items="<ssf:escapeJavaScript value="${entry.fields}"/>">
+		<c:forEach var="field" items="${entry.fields}">
 			ss_searchFields['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.title}"/>';
 			ss_searchFieldsTypes['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.type}"/>';
 		</c:forEach>
