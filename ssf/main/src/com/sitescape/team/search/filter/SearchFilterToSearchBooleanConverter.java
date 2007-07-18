@@ -32,6 +32,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.web.util.DateHelper;
 
 /*********************************************************************
  * Object to hold a named search filter
@@ -224,7 +225,7 @@ public class SearchFilterToSearchBooleanConverter {
 		try {
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
 			DateTime date = fmt.parseDateTime(dateAsString);
-			date = date.withMillisOfDay(SearchFilterKeys.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
+			date = date.withMillisOfDay(DateHelper.MILIS_IN_THE_DAY).withZone(DateTimeZone.UTC);
 			d = date.toDate();
 		} catch (Exception e) {
 			try {

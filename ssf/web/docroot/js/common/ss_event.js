@@ -4,13 +4,28 @@ function ssEventEditor(prefix) {
 	
 	var prefix = prefix;
 	
-	this.toggleAllDay = function (checkboxObj) {
+	this.toggleAllDay = function (checkboxObj, timeFormObjIds) {
 		if (!checkboxObj.checked) {
 			ss_show(prefix + "eventStartTime");
 			ss_show(prefix + "eventEndTime");
+			
+			for (var i = 0; i < timeFormObjIds.length; i++) {
+				var timeFormObj = document.getElementById(timeFormObjIds[i]);
+				if (timeFormObj) {
+					timeFormObj.value = "false";
+				}
+			}
+			
 		} else {
 			ss_hide(prefix + "eventStartTime");
-			ss_hide(prefix + "eventEndTime");			
+			ss_hide(prefix + "eventEndTime");	
+			
+			for (var i = 0; i < timeFormObjIds.length; i++) {
+				var timeFormObj = document.getElementById(timeFormObjIds[i]);
+				if (timeFormObj) {
+					timeFormObj.value = "true";
+				}
+			}
 		}
 	}
 	

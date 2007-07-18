@@ -42,6 +42,16 @@ public interface IcalModule {
 		 * @param summary
 		 */
 		void handleEvent(Event event, String description, String summary);
+		
+		/**
+		 * handleTodo
+		 * 
+		 * Called each time a VTODO in the ical input is converted to an Event.  The
+		 *  DESCRIPTION and SUMMARY from the VTODO are passed along, but will be null
+		 *  if they are absent from the VTODO.
+		 * 
+		 */
+		void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee);		
 	}
 	
 	/**
