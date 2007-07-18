@@ -36,9 +36,6 @@
 	}
 %>
 <c:set var="elementName" value="<%= elementName %>" />
-<script type="text/javascript">
-	ss_addValidator("<%= elementName %>", ss_date_validator, '<%= elementName %>_error', '<%= elementName %>_label');
-</script>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
 	<div id="<%= elementName %>_error" style="visibility:hidden; display:none;"><span class="ss_formError">Please enter a valid date.</span></div>
