@@ -89,6 +89,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 			if (folder.isTop()) {
 				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 				model.put(WebKeys.SCHEDULE_INFO, config);
+				model.put(WebKeys.SCHEDULE, config.getSchedule());
 				List defaultDistribution = folder.getNotificationDef().getDistribution();
 				Set gList = new HashSet();
 				Set uList = new HashSet();
