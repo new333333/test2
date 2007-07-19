@@ -163,7 +163,14 @@ function ss_enableDisableFolderOptions(bindersCount) {
   <legend class="ss_legend"><ssf:nlt tag="workspace.announce" /></legend>
     <input type="checkbox" name="announce"/>
 	<span class="ss_labelLeft"><label for="announce">
+	
+	<c:if test="${ssOperation == 'add_workspace'}">
 	  <ssf:nlt tag="workspace.announceToTeam"/>
+	</c:if>
+	<c:if test="${ssOperation == 'add_folder'}">
+	  <ssf:nlt tag="folder.announceToTeam"/>
+	</c:if>
+	  
 	</label></span>
 	<br/>
 	<br/>
