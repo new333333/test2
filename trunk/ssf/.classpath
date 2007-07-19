@@ -37,7 +37,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-portlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/portal-ejb.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
@@ -86,5 +85,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/util-java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-jcr-commons.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-kernel.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/portal-service.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
