@@ -43,6 +43,7 @@ JTDS 0.9.1
 JUnit 3.8.1
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
+Liferay portal-service.jar 4.3.0
 Liferay util-java.jar 4.3.0
 Log4j 1.2.8
 Lucene 1.9.1+indexupdater
