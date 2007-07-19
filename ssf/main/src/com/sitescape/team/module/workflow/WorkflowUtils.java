@@ -141,29 +141,35 @@ public class WorkflowUtils {
     private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
     	WfAcl result = new WfAcl(type);
     	if (aclElement == null) return result;
-    	Element props = (Element)aclElement.selectSingleNode("./properties/property[@name='folderDefault']");
-    	if (props != null)
-    		result.setUseDefault(GetterUtil.getBoolean(props.attributeValue("value"), true));
-    	//build list of users
-    	props = (Element)aclElement.selectSingleNode("./properties/property[@name='userGroupAccess']");
-    	if (props != null)
-    		result.addPrincipals(LongIdUtil.getIdsAsLongSet(props.attributeValue("value"), ","));
-    	if (entity.getEntryDef() != null) {
-    		props = (Element)aclElement.selectSingleNode("./properties/property[@name='condition']/workflowEntryDataUserList[@definitionId='" +
-    			entity.getEntryDef().getId() + "']");
-    		if (props != null) {
-    			String userListName = props.attributeValue("elementName"); //custom attribute name
-   				CustomAttribute attr = entity.getCustomAttribute(userListName); 
-   				if (attr != null) {
-   					result.addPrincipals(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
-   				}
+		List<Element>props = aclElement.selectNodes("./properties/property");
+    	String name, value;
+		if ((props == null) || props.isEmpty()) return result;
+		for (Element prop:props) {
+			name = prop.attributeValue("name","");
+			value = prop.attributeValue("value","");
+			if ("folderDefault".equals(name)) {
+				result.setUseDefault(GetterUtil.getBoolean(value, true));
+			} else if ("userGroupAccess".equals(name)) {
+				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value, ","));
+			} else if ("condition".equals(name)) {
+		    	if (entity.getEntryDef() != null) {
+		    		Element element = (Element)prop.selectSingleNode("./workflowEntryDataUserList[@definitionId='" +
+		    			entity.getEntryDef().getId() + "']");
+		    		if (element != null) {
+		    			String userListName = element.attributeValue("elementName"); //custom attribute name
+		   				CustomAttribute attr = entity.getCustomAttribute(userListName); 
+		   				if (attr != null) {
+		   					result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+		   				}
+		    		}
+		    	}
+    		} else if ("entryCreator".equals(name)) {
+    			if (GetterUtil.getBoolean(value, false)) {
+    				//	add special owner to allow list
+    				result.addPrincipalId(ObjectKeys.OWNER_USER_ID);
+    			}
     		}
-    	}
-    	props = (Element)aclElement.selectSingleNode("./properties/property[@name='entryCreator']");
-    	if ((props != null) && GetterUtil.getBoolean(props.attributeValue("value"), false)) {
-    		//add special owner to allow list
-    		result.addPrincipal(ObjectKeys.OWNER_USER_ID);
-    	}
+		}
     	return result;
     }
  

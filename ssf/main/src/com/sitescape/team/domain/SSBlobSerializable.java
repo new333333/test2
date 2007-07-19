@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
+import org.apache.commons.codec.binary.Base64;
 import com.sitescape.team.dao.util.SSBlobSerializableType;
 /**
  * @author Janet McCann
@@ -76,7 +76,7 @@ public class SSBlobSerializable implements Serializable {
 				oos = new ObjectOutputStream(baos);
 				oos.writeObject(val);
 				oos.flush();
-				return baos.toString("utf-8");
+				return new String(Base64.encodeBase64(baos.toByteArray()),"utf-8");
 			} catch (IOException ex) {
 				return "";
 			} finally {
