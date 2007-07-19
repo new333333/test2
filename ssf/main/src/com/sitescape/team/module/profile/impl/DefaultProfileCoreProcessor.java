@@ -264,7 +264,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        	String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
        	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
        	if (Validator.isNotNull(name)) {
-       		//setting the name - see if new entry and force foreign name to be same
+       		//remove blanks
+          	name = name.trim();
+          	entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name);
+          	//setting the name - see if new entry and force foreign name to be same
        		if (Validator.isNull(((Principal)entry).getName())) {
        			if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
        		}
