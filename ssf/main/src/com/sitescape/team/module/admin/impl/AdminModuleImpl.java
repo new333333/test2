@@ -27,6 +27,8 @@ import javax.mail.internet.InternetAddress;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -89,6 +91,7 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
@@ -436,6 +439,57 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return destination;
 		
 		
+	}
+	public void updateDefaultDefinitions(Long topId) {
+		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
+		
+		//default definitions stored in separate config file
+		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
+		SAXReader reader = new SAXReader(false);  
+		try {
+			Document cfg = reader.read(new ClassPathResource(startupConfig).getInputStream());
+			
+			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
+			for (Element element:elements) {
+				String file = element.getTextTrim();
+				reader = new SAXReader(false);  
+				try {
+					Document doc = reader.read(new ClassPathResource(file).getInputStream());
+					getDefinitionModule().addDefinition(doc, true);
+					//TODO:if support multiple zones, database and replyIds may have to be changed
+				} catch (Exception ex) {
+	        	logger.error("Cannot read definition from file: " + file);
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("Cannot read startup configuration:", ex);
+		}
+	}	
+	public void updateDefaultTemplates(Long topId) {
+		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
+		
+		//default definitions stored in separate config file
+		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
+		SAXReader reader = new SAXReader(false);  
+		try {
+			Document cfg = reader.read(new ClassPathResource(startupConfig).getInputStream());
+			//Now setup configurations
+			List elements = cfg.getRootElement().selectNodes("templateFile");
+			for (int i=0; i<elements.size(); ++i) {
+				Element element = (Element)elements.get(i);
+				String file = element.getTextTrim();
+				reader = new SAXReader(false);  
+				try {
+					Document doc = reader.read(new ClassPathResource(file).getInputStream());
+					addTemplate(doc);
+					//TODO:if support multiple zones, database and replyIds may have to be changed
+				} catch (Exception ex) {
+					logger.error("Cannot add template:", ex);
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("Cannot read startup configuration:", ex);
+		}
 	}
 	//add top level template
 	 public Long addTemplate(int type, Map updates) {

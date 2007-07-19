@@ -320,6 +320,19 @@ public class ViewController extends  SAbstractController {
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
 			elements.put(element.attributeValue("title"), element);
+
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.reload.definitions"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+
 		}
 
 		//Definition export
@@ -335,6 +348,7 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 			elements.put(element.attributeValue("title"), element);
 		}
+		
 		
 		//templates
 		if (getAdminModule().testAccess(AdminOperation.manageTemplate)) {

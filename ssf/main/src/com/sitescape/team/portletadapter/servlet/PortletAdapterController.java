@@ -47,6 +47,7 @@ public class PortletAdapterController extends SAbstractController {
 	// validation at servlet level in this case.
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
+		Map data = req.getParameterMap();
 		String portletName = RequestUtils.getRequiredStringParameter(req,
 				KeyNames.PORTLET_URL_PORTLET_NAME);
 
