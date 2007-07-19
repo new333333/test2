@@ -14,13 +14,11 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,14 +38,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.team.domain.AnyOwner;
-import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
@@ -87,7 +82,8 @@ public class WebHelper {
 		//System.out.println("*** Servlet: USER NAME = " + request.getRemoteUser()); // TODO TBR
 		//System.out.println("*** Servlet: USER PRINCIPAL = " + request.getUserPrincipal()); // TODO TBR
 		
-		String username = request.getRemoteUser();
+		String username = getRemoteUserName(request);
+			
 		if(username != null)
 			return username;
 		
@@ -107,7 +103,7 @@ public class WebHelper {
 		//System.out.println("*** Portlet: USERNAME = " + request.getRemoteUser()); // TODO TBR
 		//System.out.println("*** Portlet: USER PRINCIPAL = " + request.getUserPrincipal()); // TODO TBR
 		
-		String username = request.getRemoteUser();
+		String username = getRemoteUserName(request);
 		if(username != null)
 			return username;
 		
@@ -163,7 +159,7 @@ public class WebHelper {
 	
 	public static PortletSession getRequiredPortletSession(PortletRequest request) 
 	throws IllegalStateException {
-		String username = request.getRemoteUser();
+		String username = getRemoteUserName(request);
 
 		PortletSession ses = request.getPortletSession(false);
 		
@@ -200,7 +196,7 @@ public class WebHelper {
 	
 	public static HttpSession getRequiredSession(HttpServletRequest request) 
 	throws IllegalStateException {
-		String username = request.getRemoteUser();
+		String username = getRemoteUserName(request);
 
 		HttpSession ses = request.getSession(false);
 		
@@ -776,5 +772,21 @@ public class WebHelper {
 		(WebKeys.UNAUTHENTICATED_REQUEST);
 
 		return Boolean.TRUE.equals(unathenticatedRequest);
+	}
+	
+	private static String getRemoteUserName(HttpServletRequest request) {
+		return request.getRemoteUser();
+	}
+	
+	private static String getRemoteUserName(PortletRequest request) {
+		// Important: Do not rely on getRemoteUser! 
+		// Starting with Liferay 4.3.0, this returns the user's internal id (long surrogate 
+		// value) rather than the user's login name (which they call screen name).
+		// It seems bad practice to use surrogate key for this purpose, and it prevents us
+		// to identify Aspen user based on the portal user name since Liferay's surrogate
+		// keys are meaningless in Aspen. Sigh...
+		
+		//return request.getRemoteUser();
+		return null;
 	}
 }
