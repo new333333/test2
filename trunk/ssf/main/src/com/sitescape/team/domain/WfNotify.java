@@ -24,7 +24,7 @@ public class WfNotify {
 	private String body="";
 	private boolean appendTitle;
 	private boolean appendBody;
-	private Set principalIds;
+	private Set ids;
 	
 	public boolean isCreatorEnabled() {
 		return creator;
@@ -57,22 +57,17 @@ public class WfNotify {
 	public void setAppendBody(boolean appendBody) {
 		this.appendBody = appendBody;
 	}
-	public Set getPrincipalIds() {
-		if (principalIds == null) principalIds = new HashSet();
-		return principalIds;
+	public void addPrincipalId(Long id) {
+		if (this.ids == null) this.ids = new HashSet();
+		this.ids.add(id);
 	}
-	public void setPrincipalIds(Set principalIds) {
-		this.principalIds = principalIds;
+	public void addPrincipalIds(Set<Long> ids) {
+		if (this.ids == null) this.ids = new HashSet();
+		this.ids.addAll(ids);
 	}
-	public void setPrincipalIds(String stringIds) {
-		String [] result = StringUtil.split(stringIds);
-		this.principalIds = new HashSet();
-		for (int i=0; i<result.length; ++i) {
-			try {
-				this.principalIds.add(Long.valueOf(result[i]));
-			} catch (Exception e) {}
-
-		}
+	public Set<Long> getPrincipalIds() {
+		if (ids == null) ids = new HashSet();
+		return ids;
 	}
 
 }

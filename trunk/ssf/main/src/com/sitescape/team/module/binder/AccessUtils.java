@@ -329,7 +329,7 @@ public class AccessUtils  {
 		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
  			//just check entry acl, ignore binder
  			//check explicit users
- 			Set allowedIds = acl.getPrincipals();   
+ 			Set allowedIds = acl.getPrincipalIds();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
         	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
 			if (testAccess(user, allowedIds)) return;
@@ -352,7 +352,7 @@ public class AccessUtils  {
  			//see if pass binder READ test
  			readCheck(user, binder, (Entry)entry);
  			//This basically AND's the binder and entry, since we already passed the binder
-			Set allowedIds = acl.getPrincipals();   
+			Set allowedIds = acl.getPrincipalIds();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
         	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
  			if (testAccess(user, allowedIds)) return;

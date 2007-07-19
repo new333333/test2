@@ -136,7 +136,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	       	WorkflowState state = (WorkflowState)iter.next();
 	       	WfAcl a = state.getAcl(type);
 	       	if (a != null) {
-	       		result.addAll(a.getPrincipals());
+	       		result.addAll(a.getPrincipalIds());
 	       	}
 	    }
         if (result.remove(ObjectKeys.OWNER_USER_ID)) result.add(getOwnerId());
