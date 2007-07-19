@@ -34,6 +34,7 @@ public class ListController extends SAbstractController {
 		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
 		Binder binder = null;
 		User user = null;
+		authErr = false;
 		// Test if the user is authenticated or not using the flag stored in
 		// the request. Don't ever make this decision based on the existence
 		// of request context data, since it may be a stale data from previous
