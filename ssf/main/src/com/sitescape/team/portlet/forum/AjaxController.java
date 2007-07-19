@@ -388,6 +388,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxFindPlaceForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 			return ajaxUploadICalendarFileStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_CHANGE_LOG_ENTRY_FORM)) {
+			return ajaxGetChangeLogEntryForm(request, response);
 		}
 		
 		return ajaxReturn(request, response);
@@ -1461,6 +1463,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("entriesAmount", entriesAmount);
 		
 		return new ModelAndView("forum/json/icalendar_upload", model);
+	}
+	
+	private ModelAndView ajaxGetChangeLogEntryForm(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		model.put(WebKeys.BINDER_ID, binderId);
+		return new ModelAndView("administration/get_change_log_entry_form", model);
 	}
 	
 	private void ajaxAddToClipboard(ActionRequest request, 

@@ -270,6 +270,7 @@ public class WebKeys {
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_RELOAD_ENTRY_ATTACHMENTS = "reload_entry_attachments";
 	public static final String OPERATION_ADD_ENTRY_ATTACHMENT_BY_BROWSE = "add_entry_attachment_by_browse";
+	public static final String OPERATION_GET_CHANGE_LOG_ENTRY_FORM = "get_change_log_entry_form";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS = "get_condition_entry_user_list_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";

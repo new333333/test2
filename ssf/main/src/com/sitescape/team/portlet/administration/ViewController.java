@@ -399,8 +399,8 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 			elements.put(element.attributeValue("title"), element);
 		}
-		//For debug - keep off everyones menus
-		if (logger.isDebugEnabled() && getAdminModule().testAccess(AdminOperation.managePosting)) {
+		//Change logs
+		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.view_change_log"));
 			element.addAttribute("image", "bullet");
