@@ -229,8 +229,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		Function adminRole = addAdminRole(top);
 	        		Function teamWsRole = addTeamWorkspaceRole(top);
 
-	        		importDefaultDefs(name);
-
+	        		getAdminModule().updateDefaultDefinitions(top.getId());
+	        		getAdminModule().updateDefaultTemplates(top.getId());
+ 
 	        		//need request context
 	        		getDefinitionModule().setDefaultBinderDefinition(top);
 	        		getDefinitionModule().setDefaultBinderDefinition(profiles);
@@ -304,44 +305,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 			RequestContextHolder.setRequestContext(oldCtx);
 		}
 
-	}
-	private void importDefaultDefs(String zoneName) {
-		//default definitions stored in separate config file
-		String startupConfig = SZoneConfig.getString(zoneName, "property[@name='startupConfig']", "config/startup.xml");
-		SAXReader reader = new SAXReader(false);  
-		try {
-			Document cfg = reader.read(new ClassPathResource(startupConfig).getInputStream());
-			
-			List elements = cfg.getRootElement().selectNodes("definitionFile");
-			for (int i=0; i<elements.size(); ++i) {
-				Element element = (Element)elements.get(i);
-				String file = element.getTextTrim();
-				reader = new SAXReader(false);  
-				try {
-					Document doc = reader.read(new ClassPathResource(file).getInputStream());
-					getDefinitionModule().addDefinition(doc, true);
-					//TODO:if support multiple zones, database and replyIds may have to be changed
-				} catch (Exception ex) {
-	        	logger.error("Cannot read definition from file: " + file);
-				}
-			}
-			//Now setup configurations
-			elements = cfg.getRootElement().selectNodes("templateFile");
-			for (int i=0; i<elements.size(); ++i) {
-				Element element = (Element)elements.get(i);
-				String file = element.getTextTrim();
-				reader = new SAXReader(false);  
-				try {
-					Document doc = reader.read(new ClassPathResource(file).getInputStream());
-					getAdminModule().addTemplate(doc);
-					//TODO:if support multiple zones, database and replyIds may have to be changed
-				} catch (Exception ex) {
-					logger.error("Cannot add template:", ex);
-				}
-			}
-		} catch (Exception ex) {
-			logger.error("Cannot read startup configuration:", ex);
-		}
 	}
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allUsers group

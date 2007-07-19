@@ -268,6 +268,7 @@ public class WebKeys {
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
+	public static final String OPERATION_RELOAD="reload";
 	public static final String OPERATION_RELOAD_ENTRY_ATTACHMENTS = "reload_entry_attachments";
 	public static final String OPERATION_ADD_ENTRY_ATTACHMENT_BY_BROWSE = "add_entry_attachment_by_browse";
 	public static final String OPERATION_GET_CHANGE_LOG_ENTRY_FORM = "get_change_log_entry_form";

@@ -23,6 +23,7 @@ import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -54,8 +55,15 @@ public class ImportDefinitionController extends  SAbstractController {
 		
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");
-		} else
-			response.setRenderParameters(formData);
+		} else {
+			String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
+			if (WebKeys.OPERATION_RELOAD.equals(operation)) {
+				getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId());
+				response.setRenderParameter("redirect", "true");
+			} else {
+				response.setRenderParameters(formData);
+			}
+		}
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

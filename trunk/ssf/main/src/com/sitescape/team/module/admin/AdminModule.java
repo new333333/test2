@@ -196,7 +196,6 @@ public interface AdminModule {
     public void modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
     public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
 	public void modifyTemplate(Long id, Map updates) throws AccessControlException;
- 
 	/**
 	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments and ICals from entries if specified  
 	 * @param ids
@@ -214,6 +213,8 @@ public interface AdminModule {
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId) throws AccessControlException;
+	public void updateDefaultDefinitions(Long topId);
+	public void updateDefaultTemplates(Long topId);
     
  
  }

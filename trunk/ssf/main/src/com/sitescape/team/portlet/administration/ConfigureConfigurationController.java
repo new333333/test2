@@ -77,7 +77,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
 				//adding top level config
-				int type = PortletRequestUtils.getIntParameter(request, "cfgType");
+				Integer type = PortletRequestUtils.getIntParameter(request, "cfgType");
+				if (type == null)  return;
 				if (type == -1) {
 					Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 					Long configId = getAdminModule().addTemplateFromBinder(binderId);
@@ -225,15 +226,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			}
-		
-		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
-			//Get the function id from the form
-			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-			TemplateBinder config = getAdminModule().getTemplate(configId);
-			if (!config.isRoot())
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getParentBinder().getId().toString());
-			response.setRenderParameter(WebKeys.URL_OPERATION, "");
-			getBinderModule().deleteBinder(configId);
+		//process cancels first
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (!WebKeys.OPERATION_ADD.equals(operation)) { //on add - binderId may be 
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -242,6 +235,24 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
 			}
+		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
+			//Get the function id from the form
+			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			TemplateBinder config = getAdminModule().getTemplate(configId);
+			if (!config.isRoot())
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getParentBinder().getId().toString());
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+			getBinderModule().deleteBinder(configId);
+		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
+			Integer type = PortletRequestUtils.getIntParameter(request, "cfgType");
+			if (type != null && type.intValue() == -3) {
+				getAdminModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId());
+			} else {
+				//pass it along
+				response.setRenderParameters(formData);
+
+			}
+			//an add without an okBtn - check for reload
 		} else if (WebKeys.OPERATION_SET_DISPLAY_DEFINITION.equals(operation)) {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), configId, 
