@@ -223,7 +223,7 @@
   --
   -- VERSION DIFFERENCES
   --
---%><c:set var="ss_diff_color_added" value="FFFFAA" scope="request"/><%--
+--%><c:set var="ss_diff_color_added" value="#FFFFAA" scope="request"/><%--
 --%><c:set var="ss_diff_color_deleted" value="red" scope="request"/><%--
 --%><c:set var="ss_diff_color_same" value="lightblue" scope="request"/><%--	
 --%><%--
