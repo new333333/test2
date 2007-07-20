@@ -52,7 +52,7 @@ public abstract class Converter<T>
 				File parentDir = convertedFile.getParentFile();
 				if(!parentDir.exists())
 					parentDir.mkdirs();
-				convertedFile.createNewFile();
+				createConvertedFileWithDefaultContent(convertedFile);
 			}
 			else {
 				createCachedFile(convertedFile, binder, entry, fa, filePath, relativeFilePath, parameters);
@@ -62,6 +62,7 @@ public abstract class Converter<T>
 		return new FileInputStream(convertedFile);
 	}
 
+	protected abstract void createConvertedFileWithDefaultContent(File convertedFile) throws IOException;
 
 	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
 									String filePath, String relativeFilePath, T parameters)

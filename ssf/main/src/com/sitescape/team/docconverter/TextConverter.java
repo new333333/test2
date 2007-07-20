@@ -159,4 +159,10 @@ public abstract class TextConverter extends Converter<String>
         }
 		return null;
 	}
+	
+	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
+		// simply create an empty file
+		convertedFile.createNewFile();
+	}
+
 }
