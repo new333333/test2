@@ -217,4 +217,10 @@ public abstract class HtmlConverter extends Converter<String>
 	{
 		return getCachedFile(binder, entry, fa, fileName, HTML_SUBDIR);
 	}
+	
+	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
+		// simply create an empty file
+		convertedFile.createNewFile();
+	}
+
 }

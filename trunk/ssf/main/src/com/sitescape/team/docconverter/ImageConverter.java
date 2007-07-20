@@ -10,11 +10,13 @@
  */
 package com.sitescape.team.docconverter;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -65,4 +67,10 @@ public abstract class ImageConverter extends Converter<ImageConverter.Parameters
 		public int getWidth() { return width; }
 		public int getHeight() { return height; }
 	}
+	
+	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
+		FileCopyUtils.copy(new File(_defaultImage), convertedFile);
+	}
+
+
 }
