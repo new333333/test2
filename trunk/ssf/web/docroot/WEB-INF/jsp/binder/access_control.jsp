@@ -34,7 +34,7 @@ function ss_selectPrincipals<portlet:namespace/>(ids) {
 	ss_selectPrincipalAccessible<portlet:namespace/>();
 </c:if>
 <c:if test="${ssUser.displayStyle != 'accessible'}" >
-	if (isIE) {
+	if (ss_isIE) {
 		//IE does not display the table right, so repaint the screen
 		ss_selectPrincipalAccessible<portlet:namespace/>();
 	} else {
@@ -54,7 +54,7 @@ function ss_addAccessControlRole<portlet:namespace/>(id) {
 	ss_selectPrincipalAccessible<portlet:namespace/>();
 </c:if>
 <c:if test="${ssUser.displayStyle != 'accessible'}" >
-	if (isIE) {
+	if (ss_isIE) {
 		//IE does not display the table right, so repaint the screen
 		ss_selectPrincipalAccessible<portlet:namespace/>();
 	} else {

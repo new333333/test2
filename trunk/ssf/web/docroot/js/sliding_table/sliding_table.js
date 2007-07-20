@@ -42,7 +42,7 @@ function ss_slidingTableDrag(evt) {
     if (ss_slidingTableDragObj) {
         if (ss_slidingTableStartingToDrag == 1) {
             if (evt.layerX) {
-                if (isNSN || isNSN6 || isMoz5) {
+                if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
                     ss_slidingTableOffsetX = evt.layerX;
                     ss_slidingTableOffsetY = evt.layerY;
                 }
@@ -51,7 +51,7 @@ function ss_slidingTableDrag(evt) {
         }
 		var scrollDivLeft = parseInt(ss_getDivLeft(ss_slidingTableId)) - parseInt(ss_getDivScrollLeft(ss_slidingTableId))
         var dObjLeft
-        if (isNSN || isNSN6 || isMoz5) {
+        if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
             dObjLeft = evt.pageX - ss_slidingTableOffsetX;
         } else {
             dObjLeft = evt.clientX - ss_slidingTableOffsetX;

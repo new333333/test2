@@ -165,7 +165,7 @@ var ss_slidingTableSavedMouseMove = '';
 var ss_slidingTableSavedMouseUp = '';
 function ss_slidingTableStartDragCol(obj, divName) {
     var id = divName
-    if (isNSN || isNSN6 || isMoz5) {
+    if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
         ss_slidingTableDragObj = self.document.getElementById(id);
     } else {
         ss_slidingTableDragObj = self.document.all[id];

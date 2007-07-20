@@ -111,13 +111,8 @@ function showEntryInDiv(str) {
     
     var wObj1 = null
     var wObj2 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-        wObj2 = self.document.getElementById('ss_showentry')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-        wObj2 = self.document.all['ss_showentry']
-    }
+    wObj1 = self.document.getElementById('ss_showentrydiv')
+    wObj2 = self.document.getElementById('ss_showentry')
     
     //If the entry div needs dynamic positioning, do it now
     if (self.ss_positionEntryDiv) {ss_positionEntryDiv();}

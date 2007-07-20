@@ -39,13 +39,8 @@ function ss_showForumEntry(url, callbackRoutine) {
 function ss_showEntryInDiv(str) {
     var wObj1 = null
     var wObj2 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-        wObj2 = self.document.getElementById('ss_showentry')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-        wObj2 = self.document.all['ss_showentry']
-    }
+    wObj1 = self.document.getElementById('ss_showentrydiv')
+    wObj2 = self.document.getElementById('ss_showentry')
     
     //If the entry div needs dynamic positioning, do it now
     ss_positionEntryDiv()
@@ -83,18 +78,10 @@ function ss_showEntryInDiv(str) {
 function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
     var wObj
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj = self.document.getElementById('ss_showentryframe')
-    } else {
-        wObj = self.document.all['ss_showentryframe']
-    }
+    wObj = self.document.getElementById('ss_showentryframe')
     
     var wObj1 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-    }
+    wObj1 = self.document.getElementById('ss_showentrydiv')
     wObj1.style.display = "block";
     wObj1.style.visibility = "visible";
 
@@ -118,11 +105,7 @@ var entryWindowWidth = 400;
 function ss_positionEntryDiv() {
 return
     var wObj1 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-    }
+    wObj1 = self.document.getElementById('ss_showentrydiv')
     var top = parseInt(ss_getDivTop('showbutton'));
     if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
     var left = parseInt(ss_getDivWidth('showbutton') - entryWindowWidth - 14);
@@ -139,11 +122,7 @@ return
 
 function ss_hideEntryDiv() {
     var wObj1 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
-    }
+    wObj1 = self.document.getElementById('ss_showentrydiv')
     wObj1.style.visibility = "hidden";
 }
 
