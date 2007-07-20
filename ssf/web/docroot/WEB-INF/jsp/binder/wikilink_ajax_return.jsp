@@ -22,26 +22,26 @@
 <c:set var="ss_servlet" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
-<title>Insert ICEcore Link</title>
+<title><ssf:nlt tag="wiki.link.popup.title"/></title>
 	<script language="javascript" type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce_popup.js"></script>
 	<script language="javascript" type="text/javascript" src="<html:rootPath/>js/tiny_mce/plugins/ss_wikilink/jscripts/functions.js"></script>
 	<base target="_self" />
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
 <form>
-Link to folder: <b><span id="linkToFolderName">(current folder)</span></b>
+<ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(<ssf:nlt tag="wiki.link.currentfolder"/>)</span></b>
 <input type="hidden" name="binderId" id="binderId" size="5" value="${binderId}"/>
 
-<a href="javascript:;" onclick="ss_popup_folder();">[Change]</a>
+<a href="javascript:;" onclick="ss_popup_folder();">[<ssf:nlt tag="button.change"/>]</a>
 </p>
 <p>
-<b>Page name to link to:</b> <input name="pageName" id="pageName" size="30"/>
-<a href="javascript:;" onclick="ss_popup_page();">[Find]</a>
+<b><ssf:nlt tag="wiki.link.topage"/>:</b> <input name="pageName" id="pageName" size="30"/>
+<a href="javascript:;" onclick="ss_popup_page();">[<ssf:nlt tag="button.find"/>]</a>
 </p>
 </form>
 
 <div id="folder_popup" style="position: absolute; display: none; background: #CCCCCC; top: 30px; padding: 10px;  border: 1px solid #333333;">
-To link to a different folder, enter the folder name:
+<ssf:nlt tag="wiki.link.differentfolder"/>:
 <br/>
 <form method="post" name="ss_findLinkPlaceForm"
 	action="">
@@ -54,13 +54,13 @@ To link to a different folder, enter the folder name:
     foldersOnly="true"
     singleItem="true"
     clickRoutine="ss_loadLinkBinderId"
-    accessibilityText="iclink.folder"
+    accessibilityText="wiki.findFolder"
     /> 
 <input type="hidden" name="searchTitle"/>
 </form>
 </div>
 <div id="page_popup" style="position: absolute; display: none; background: #CCCCCC; top: 60px; padding: 10px; border: 1px solid #333333;">
-Find a page:
+<ssf:nlt tag="wiki.link.findpage"/>:
 <form method="post" name="ss_findLinkEntryForm"
 	action="">
  <ssf:find formName="ss_findLinkEntryForm"
@@ -71,15 +71,15 @@ Find a page:
     searchSubFolders="false"
     singleItem="true"
     clickRoutine="ss_loadLinkEntryId"
-    accessibilityText="iclink.entry"
+    accessibilityText="wiki.findPage"
     /> 
 <input type="hidden" name="searchTitle"/>
 </form>
 </div>
 
 
-<a href="javascript:;" onClick="ss_insertICElinkFromForm('${binderId}');">Insert</a>
-&nbsp;&nbsp;<a href="javascript:;" onClick="ss_cancelICElinkEdit();">Cancel</a>
+<a href="javascript:;" onClick="ss_insertICElinkFromForm('${binderId}');"><ssf:nlt tag="button.insert"/></a>
+&nbsp;&nbsp;<a href="javascript:;" onClick="ss_cancelICElinkEdit();"><ssf:nlt tag="button.cancel"/></a>
 </p>
 </body>
 </html>
