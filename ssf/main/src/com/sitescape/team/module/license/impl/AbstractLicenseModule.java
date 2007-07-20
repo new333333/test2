@@ -108,10 +108,12 @@ implements LicenseModule, InitializingBean {
 		LicenseStats stats = createSnapshot();
 		getReportModule().addLicenseStats(stats);
 
-		stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
-											      getLicenseManager().getExpirationDate());
-		getLicenseManager().recordUserCount(stats.getInternalUserCount(),
-											stats.getExternalUserCount());
+		if(getLicenseManager().validLicense()) {
+			stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
+					getLicenseManager().getExpirationDate());
+			getLicenseManager().recordUserCount(stats.getInternalUserCount(),
+					stats.getExternalUserCount());
+		}
 	}
 
 	abstract protected LicenseStats createSnapshot();
