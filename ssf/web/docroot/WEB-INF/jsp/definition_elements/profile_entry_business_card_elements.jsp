@@ -64,7 +64,7 @@
 
 <td valign="top">
 <div class="ss_smallRBoxTop2 ss_profileBox2"></div><div class="ss_smallRBoxTop1 ss_profileBox2"></div>
-<div class="ss_profileBox2" style="padding: 10px;"><div class="ss_profileBox2" style="height:${property_maxHeight + 25}px;">
+<div class="ss_profileBox2" style="padding: 3px 5px;"><div class="ss_profileBox2" style="height:${property_maxHeight + 25}px;">
  <div class="ss_profile_box_title">Info</div>
  <div class="ss_profile_matte">
   <div class="ss_profile_info_frame  ss_profile_info_box">

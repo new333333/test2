@@ -43,7 +43,7 @@
 			<div class="ss_content_inner">
 					<% // Navigation links %>
 					<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-					<div align="right" width="100%">
+					<div align="right" class="ss_folder_tags">
 						<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 					</div>
 		

@@ -48,7 +48,6 @@
 </tr>
 </c:forEach>
 </table>
-<br/>
 </c:if>
 <div id="${ss_namespace}_add_entry_from_iframe" style="display:none; visibility:hidden;">
 <iframe id="${ss_namespace}_new_guestbook_entry_iframe"

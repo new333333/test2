@@ -173,7 +173,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		</div>
 		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>" 
 		  onMouseOver="this.style.cursor = 'pointer';">
-     		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
+     		<form class="ss_form" method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
 		  		name="ss_simpleSearchForm<portlet:namespace/>" 
 		  		action="<portlet:actionURL windowState="maximized">
 						<portlet:param name="action" value="advanced_search"/>
