@@ -53,10 +53,10 @@ public class WSLoadTest
 		try {
 			for(int i = 0; i < count.intValue(); i++) {
 				if((i+1)%10 == 0) {
-					System.err.println(i);
+					System.err.println(i+1);
 				}
 				String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry"+ i + " " + start.toString()  + "</attribute></entry>";
-				Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderId, definitionId, s}, filename);
+				Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderId, definitionId, s, filename}, filename);
 //				justDoIt("uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", "attachment" + i + ".txt"}, filename);
 			}
 		}

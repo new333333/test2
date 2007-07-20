@@ -194,20 +194,30 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 	}
 
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
+	static int count = 0;
+	static SimpleProfiler profiler = null;
+	
+	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
-		SimpleProfiler.setProfiler(new SimpleProfiler("webServices"));
+		if(profiler == null) {
+			profiler = new SimpleProfiler("webServices");
+			count = 0;
+		}
+		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{} )).longValue();
+				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} )).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		} finally {
-//			logger.info(SimpleProfiler.toStr());
-			SimpleProfiler.clearProfiler();
+			if(++count == 10000) {
+				logger.info(SimpleProfiler.toStr());
+				profiler = null;
+				SimpleProfiler.clearProfiler();
+			}
 		}
 	}
 	

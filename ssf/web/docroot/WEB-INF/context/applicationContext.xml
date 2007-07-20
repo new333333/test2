@@ -299,6 +299,7 @@
 		<property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
+        <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov</value></property>
     </bean>
     
     <bean id="imageOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.ImageOpenOfficeConverter">

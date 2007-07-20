@@ -104,7 +104,7 @@ public class FacadeImpl extends AbstractFacade {
 
 		// Create a map of file item names to items 
 		Map fileItems = new HashMap();
-		int i = 1;
+		int i = 0;
 		for(AttachmentPart attachment : attachments) {
 			DataHandler dh;
 			try {
@@ -118,11 +118,12 @@ public class FacadeImpl extends AbstractFacade {
 			if(i < fileNames.length) {
 				name = fileNames[i];
 			} else {
-				name = "attachment" + i;
+				name = "attachment" + (i+1);
 			}
 			AxisMultipartFile mf = new AxisMultipartFile(name, dh);
 			
-			fileItems.put(fileUploadDataItemName + i, mf);
+			fileItems.put(fileUploadDataItemName + (i+1), mf);
+			i = i+1;
 		}
 		
 		return fileItems;
