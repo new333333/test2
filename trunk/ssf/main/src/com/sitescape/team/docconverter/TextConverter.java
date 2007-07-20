@@ -39,25 +39,32 @@ import org.springframework.util.FileCopyUtils;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.util.SimpleProfiler;
 
 public abstract class TextConverter extends Converter<String>
 {
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
+	protected String excludedExtensions = "";
 	private static final String TEXT_SUBDIR = "text",
 		   TEXT_FILE_SUFFIX = ".txt";
 	
 	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
 		throws IOException
 	{
-		SimpleProfiler.startProfiler("TextConverter.convert");
-		InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
-		StringWriter textWriter = new StringWriter();
-		FileCopyUtils.copy(new InputStreamReader(textStream), textWriter);
-		String result = textWriter.toString();
-		SimpleProfiler.stopProfiler("TextConverter.convert");
+		String result = "";
+		String tmp = "," + excludedExtensions + ",";
+		if(! tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()) + ",")) {
+			SimpleProfiler.startProfiler("TextConverter.convert");
+			InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
+			StringWriter textWriter = new StringWriter();
+			FileCopyUtils.copy(new InputStreamReader(textStream), textWriter);
+			result = textWriter.toString();
+			SimpleProfiler.stopProfiler("TextConverter.convert");
+		}
 		return result;
+		
 	}
 	
 	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
@@ -116,6 +123,14 @@ public abstract class TextConverter extends Converter<String>
 		}
 	}
 
+	public String getExcludedExtensions()
+	{
+		return excludedExtensions;
+	}
+	public void setExcludedExtensions(String excludedExtensions)
+	{
+		this.excludedExtensions = excludedExtensions;
+	}
 	/**
 	 * @return Returns the nullTransform.
 	 */

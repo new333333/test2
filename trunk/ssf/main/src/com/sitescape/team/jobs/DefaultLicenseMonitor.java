@@ -67,7 +67,7 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 			 * Uncomment the next line (which has two statements) to change the schedule
 			 *  to every 2 minutes, starting immediately
 			 */
-			// milliSeconds = 2*60*1000; cal = GregorianCalendar().getInstance();
+			// milliSeconds = 2*60*1000; cal = GregorianCalendar.getInstance();
 			
 
 			SimpleTrigger trigger =

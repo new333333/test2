@@ -66,7 +66,11 @@ public class WSClient
 			} else if(args[0].equals("addEntry")) {
 				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
-				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s});
+				String filename = null;
+				if(args.length > 3) {
+					filename = args[4];
+				}
+				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, filename}, filename);
 			} else if(args[0].equals("modifyEntry")) {
 				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
@@ -163,7 +167,11 @@ public class WSClient
 
 
 	static void fetchAndPrintIdentifier(String operation, Object[] args) throws Exception {
-		Long ident = (Long) fetch(operation, args);
+		fetchAndPrintIdentifier(operation, args, null);
+	}
+	
+	static void fetchAndPrintIdentifier(String operation, Object[] args, String filename) throws Exception {
+		Long ident = (Long) fetch(operation, args, filename);
 
 		System.out.println(ident);
 	}
@@ -180,7 +188,7 @@ public class WSClient
 		System.out.println("printFolderEntry <folder id> <entry id> <includeAttachments>");
 		System.out.println("printDefinition <definition id>");
 		System.out.println("printDefinitionConfig");
-		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString>");
+		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString> [<attachmentFileName>]");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
 		System.out.println("uploadCalendarEntries <folder id> <xmlFilename> [<iCalFilename>]");

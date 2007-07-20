@@ -33,7 +33,7 @@ public interface Facade {
 
 	public String getFolderEntryAsXML(long folderId, long entryId, boolean includeAttachments);
 
-	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML);
+	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML, String attachedFileName);
 	
 	public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
 	
