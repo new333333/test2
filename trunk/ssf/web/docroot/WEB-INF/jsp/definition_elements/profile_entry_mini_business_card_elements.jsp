@@ -17,7 +17,7 @@
 
 
 <div class="ss_smallRBoxTop2 ss_profileBox2"></div><div class="ss_smallRBoxTop1 ss_profileBox2"></div>
-<div class="ss_profileBox2" style="padding: 10px;"><div class="ss_profileBox2" style="">
+<div class="ss_profileBox2" style="padding: 3px 5px;"><div class="ss_profileBox2" style="">
 <table class="ss_minicard_interior">
 	<tr>
 		<td valign="center" style="padding-left: 3px; padding-top: 3px; padding-bottom: 3px;">

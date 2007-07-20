@@ -267,15 +267,43 @@ div.ss_replies div.ss_entryDescription {
   background-color: ${ss_form_element_color};
   color: ${ss_form_element_text_color};
   }
+
+div.ss_style input[type="text"],
+div.ss_style textarea,
+div.ss_global_toolbar_quick input {
+  background-color: #FFFFFF;
+  background-image: none;
+  color: ${ss_form_element_text_color};
+  font-size: ${ss_style_font_smallprint};
+  font-family: ${ss_style_folder_view_font_family};  
+  border: solid 1px #CCCCCC;
+}
+div.ss_style textarea {
+  padding: 0px;
+}
+div.ss_style input[type="text"],
+div.ss_global_toolbar_quick input {
+  padding: 1px;
+}
+
   
 .ss_form textarea {
   background-color: ${ss_form_element_color};
+  background-image: none;
   color: ${ss_form_element_text_color};
+  padding: 0px;
+  font-size: ${ss_style_font_normalprint};
+  font-family: ${ss_style_folder_view_font_family};  
   }
+
 
 .ss_form input.ss_text { 
   background-color: ${ss_form_element_color};
+  background-image: none;
   color: ${ss_form_element_text_color};
+  padding: 0px;
+  font-size: ${ss_style_font_normalprint};
+  font-family: ${ss_style_folder_view_font_family};  
   }
 .ss_readonly {
   background-color: ${ss_form_element_readonly_color};
@@ -284,7 +312,13 @@ div.ss_replies div.ss_entryDescription {
 .ss_text_field {
   border:1px solid ${ss_style_text_field_border_color} !important;
   background-color: ${ss_style_text_field_background_color};
+  padding: 0px;
+  font-size: ${ss_style_font_smallprint};
+  font-family: ${ss_style_folder_view_font_family};  
   }
+
+
+
 
 fieldset.ss_fieldset {
   -moz-border-radius: 5px; 
@@ -1389,6 +1423,11 @@ table.ss_attachments_list td.ss_att_space {
   text-decoration: underline;
 }
 
+div.ss_folder_tags {
+	width: 100%;
+	margin-top: -12px;
+}
+
 .ss_tags {
   color:${ss_tag_color};
   font-weight:bold;
@@ -1783,9 +1822,8 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
 /* -------------------Skins-------------------- */
 .ss_content_outer {
     position: relative;
-	padding-bottom:100px;
+	padding-bottom:20px;
 	margin-top:1px;
-	background:url(<html:imagesPath/>pics/background_content_outer.gif) repeat;
 }
 .ss_content_inner {
 	width:100%;
@@ -2398,7 +2436,7 @@ ul.ss_actions_bar1  {
 	list-style-type:none;	
 	margin: 0;
 	padding: 0 0 0 5px;
-	height: 26px;
+	height: 23px;
 }
 
 .ss_action_bar ul, .ss_actions_bar_submenu {
@@ -2407,13 +2445,12 @@ ul.ss_actions_bar1  {
 .ss_actions_bar li {
 	float:left;
 	display: inline;
-	border-top:    1px solid ${ss_style_drop_highlight};
-	border-left:   1px solid ${ss_style_drop_highlight};
-	border-bottom: 1px solid ${ss_style_drop_shadow};
-	border-right:  1px solid ${ss_style_drop_shadow};	
+	border-top:    1px solid #999999;
+	border-left:   1px solid #999999;
+	border-bottom: 1px solid #999999;
+	border-right:  1px solid #999999;
 	background-color: inherit;
 	margin: 3px 3px 0 0;
-	padding: 2px 3px 3px 3px;
 }
 
 .ss_actions_bar li.ss_toolBarItem {
@@ -4682,6 +4719,16 @@ div.ssPageNavi {
 	background-color: #E8EFF7;
 }
 
+div.ss_results_pro_page {
+	position:relative;
+	top:2; 
+	margin:2px; 
+	padding: 0px 2px 0px 2px;
+	border-top:solid #666666 1px; 
+	border-bottom:solid #666666 1px;  
+	border-right:solid #666666 1px;  
+	border-left:solid #666666 1px;
+}
 #ss_operation_status {
 	width: 300px;
 	

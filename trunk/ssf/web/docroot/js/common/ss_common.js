@@ -93,7 +93,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_spannedAreasList = new Array();
 	var ss_active_menulayer = '';
 	var ss_lastActive_menulayer = '';
-	var ss_activateMenuOffsetTop = 6;
+	var ss_activateMenuOffsetTop = 12;
 	var ss_layerFlag = 0;
 	var ss_forum_maxBodyWindowHeight = 0;
 	var ss_divFadeInArray = new Array();
