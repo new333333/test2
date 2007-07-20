@@ -63,7 +63,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	
 </script>
 
-<!-- Start of global toolbar -- MAXIMIZED PORTAL WINDOW MODE -->
+<!-- Start of global toolbar - MAXIMIZED PORTAL WINDOW MODE -->
 <c:if test="${ss_navbar_style != 'portlet'}">
 <div class="ss_global_toolbar ss_global_toolbar_maximized">
 <table class="ss_global_toolbar_maximized" width="100%" cellspacing="0" cellpadding="0" border="0"><tbody><tr>
@@ -390,7 +390,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </div>
 <div class="ss_clear"></div>
 </c:if>
-<!-- Start of global toolbar -- PORTLET WINDOW MODE -->
+<!-- Start of global toolbar - PORTLET WINDOW MODE -->
 <c:if test="${ss_navbar_style == 'portlet'}">
 <div class="ss_global_toolbar ss_global_toolbar_in_portlet">
 <table width="100%" cellpadding="1" cellspacing="0" border="0">
