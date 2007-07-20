@@ -156,7 +156,7 @@ function ss_startDragDiv(type) {
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
 
 	ss_divDragObj = document.getElementById('ss_showentrydiv')
-    if (isNSN || isNSN6 || isMoz5) {
+    if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
     } else {
         ss_divOffsetX = window.event.offsetX
         ss_divOffsetY = window.event.offsetY
@@ -188,7 +188,7 @@ function ss_divDrag(evt) {
     if (ss_divDragObj) {
         if (ss_startingToDragDiv == 1) {
             if (evt.layerX) {
-                if (isNSN || isNSN6 || isMoz5) {
+                if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
                     ss_divOffsetX = evt.layerX;
                     ss_divOffsetY = evt.layerY;
                 }
@@ -217,7 +217,7 @@ function ss_divDrag(evt) {
         
         var dObjLeft
         var dObjTop
-        if (isNSN || isNSN6 || isMoz5) {
+        if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
             dObjLeft = evt.pageX - ss_divOffsetX;
             dObjTop = evt.pageY - ss_divOffsetY;
         } else {

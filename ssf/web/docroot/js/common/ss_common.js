@@ -29,12 +29,12 @@
 var undefined;
 var ss_declaredDivs;
 if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "undefined" ) {
-	var isNSN = (navigator.appName == "Netscape");
-	var isNSN4 = isNSN && ((navigator.userAgent.indexOf("Mozilla/4") > -1));
-	var isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
-	var isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !isNSN6);
-	var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
-	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
+	var ss_isNSN = (navigator.appName == "Netscape");
+	var ss_isNSN4 = ss_isNSN && ((navigator.userAgent.indexOf("Mozilla/4") > -1));
+	var ss_isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
+	var ss_isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !ss_isNSN6);
+	var ss_isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
+	var ss_isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	
 	//Random number seed (for building urls that are unique)
 	var ss_random = Math.round(Math.random()*999999);
@@ -642,7 +642,7 @@ function ss_createEventObj(function_name, event_name, function_def) {
     ss_eventTypeList[next] = event_name;
     
     //Enable the event
-    if (isNSN) {
+    if (ss_isNSN) {
         //eval("self.document.captureEvents(Event."+event_name+")")
     }
     if (ss_eventList[fn].eventName.toLowerCase() == "unload") {
@@ -670,7 +670,7 @@ function m_setFunctionDef(function_def) {
 //Common event handler
 //  This function will call the desired routines on an event
 function ssf_event_handler(e) {
-    if (!isNSN) {e = event}
+    if (!ss_isNSN) {e = event}
     for (var i = 0; i < ss_eventList.length; i++) {
         if (e.type.toLowerCase() == ss_eventList[i].eventName) {
         	if (ss_eventList[i].functionDef != null && ss_eventList[i].functionDef != "undefined") {
@@ -860,7 +860,7 @@ function ss_getDivTop(divName) {
 
 function ss_getDivLeft(divName) {
     var left = 0;
-    if (isNSN || isNSN6 || isMoz5) {
+    if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
         var obj = self.document.getElementById(divName)
         while (1) {
             if (!obj) {break}
@@ -906,7 +906,7 @@ function ss_getDivWidth(divName) {
 
 function ss_getAnchorTop(anchorName) {
     var top = 0;
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         var obj = document.anchors[anchorName]
         while (1) {
             if (!obj) {break}
@@ -914,7 +914,7 @@ function ss_getAnchorTop(anchorName) {
             if (obj == obj.offsetParent) {break}
             obj = obj.offsetParent
         }
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         top = document.anchors[anchorName].y
     } else {
         var obj = document.all[anchorName]
@@ -930,7 +930,7 @@ function ss_getAnchorTop(anchorName) {
 
 function ss_getAnchorLeft(anchorName) {
     var left = 0;
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         var obj = document.anchors[anchorName]
         while (1) {
             if (!obj) {break}
@@ -938,7 +938,7 @@ function ss_getAnchorLeft(anchorName) {
             if (obj == obj.offsetParent) {break}
             obj = obj.offsetParent
         }
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         left = document.anchors[anchorName].x
     } else {
         var obj = document.all[anchorName]
@@ -954,7 +954,7 @@ function ss_getAnchorLeft(anchorName) {
 
 function ss_getImageTop(imageName) {
     var top = 0;
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         var obj = document.images[imageName]
         while (1) {
             if (!obj) {break}
@@ -962,7 +962,7 @@ function ss_getImageTop(imageName) {
             if (obj == obj.offsetParent) {break}
             obj = obj.offsetParent
         }
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         top = document.images[imageName].y
     } else {
         var obj = document.all[imageName]
@@ -978,7 +978,7 @@ function ss_getImageTop(imageName) {
 
 function ss_getImageLeft(imageName) {
     var left = 0;
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         var obj = document.images[imageName]
         while (1) {
             if (!obj) {break}
@@ -986,7 +986,7 @@ function ss_getImageLeft(imageName) {
             if (obj == obj.offsetParent) {break}
             obj = obj.offsetParent
         }
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         left = document.images[imageName].x
     } else {
         var obj = document.all[imageName]
@@ -1001,9 +1001,9 @@ function ss_getImageLeft(imageName) {
 }
 
 function ss_getObjectWidth(obj) {
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         return parseInt(obj.offsetWidth)
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         return parseInt(obj.clip.width)
     } else {
         return parseInt(obj.clientWidth)
@@ -1011,9 +1011,9 @@ function ss_getObjectWidth(obj) {
 }
 
 function ss_getObjectHeight(obj) {
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         return parseInt(obj.offsetHeight)
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         return parseInt(obj.clip.height)
     } else {
         return parseInt(obj.clientHeight)
@@ -1021,9 +1021,9 @@ function ss_getObjectHeight(obj) {
 }
 
 function ss_getObjectLeft(obj) {
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         return parseInt(obj.style.left)
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         return parseInt(obj.style.left)
     } else {
         return parseInt(obj.style.pixelLeft)
@@ -1031,9 +1031,9 @@ function ss_getObjectLeft(obj) {
 }
 
 function ss_getObjectTop(obj) {
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         return parseInt(obj.style.top)
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         return parseInt(obj.style.top)
     } else {
         return parseInt(obj.style.pixelTop)
@@ -1250,7 +1250,7 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var maxWidth = 0;
     var divWidth = 0;
 
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         // need to bump layer an extra bit to the right to avoid horiz scrollbar
         divWidth = parseInt(self.document.getElementById(divId).offsetWidth) + 25;
         maxWidth = parseInt(window.innerWidth);
@@ -1477,13 +1477,13 @@ function captureXY(e) {
 	    }
 	    divToBeHidden = new Array();
     }
-    if (isNSN6 || isMoz5) {
+    if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
         ss_mousePosY = e.pageY
         ss_mouseX = e.layerX
         ss_mouseY = e.layerY
         return(true)
-    } else if (isNSN) {
+    } else if (ss_isNSN) {
         ss_mousePosX = e.x
         ss_mousePosY = e.y
         ss_mouseX = e.layerX
@@ -1502,7 +1502,7 @@ function captureXY(e) {
         ss_mouseX = event.clientX;
         ss_mouseY = event.clientY;
         var imgObj = window.event.srcElement
-        if (imgObj.name != null && imgObj.name != "" && !isMacIE) {
+        if (imgObj.name != null && imgObj.name != "" && !ss_isMacIE) {
             ss_mouseX = ss_getImageLeft(imgObj.name)
             ss_mouseY = ss_getImageTop(imgObj.name)
         }
@@ -1723,29 +1723,6 @@ function ss_fetch_url_debug(str) {
     //ss_debug(str);
 }
 
-//if (!Array.prototype.push) {
-	function array_push() {
-		for (var i = 0; i < arguments.length; i++) {
-			this[this.length] = arguments[i];
-		}
-	}
-
-	Array.prototype.push = array_push;
-//}
-
-//if (!Array.prototype.pop) {
-	function array_pop() {
-		if (this.length <= 0) {return ""}
-		lastElement = this[this.length - 1];
-		this.length = Math.max(this.length - 1, 0);
-
-		if (lastElement == undefined) {lastElement = ""}
-		return lastElement;
-	}
-
-	Array.prototype.pop = array_pop;
-//}
-
 //Routines to replace substrings in a string
 function ss_replaceSubStr(str, subStr, newSubStrVal) {
     ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " + newSubStrVal)
@@ -1901,7 +1878,7 @@ var ss_helpSystem = {
 	        	helpMenuAnchorDiv.style.display = "block";
 	        	//ss_setObjectHeight(helpMenuAnchorDiv, ss_getObjectHeight(welcomeDiv));
 	        	var offsetT = -2;
-	        	if (isIE) offsetT = 6;
+	        	if (ss_isIE) offsetT = 6;
 	        	//welcomeDiv.style.top = parseInt(ss_getObjectTopAbs(helpMenuAnchorDiv) - offsetT) + "px";
 	        	var offsetL = parseInt((ss_getObjectWidth(helpMenuAnchorDiv) - ss_getObjectWidth(welcomeDiv)) / 2);
 	        	//welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
@@ -4337,7 +4314,7 @@ function ss_getActionFromDefinitionType(definitionType) {
 function ss_launchUrlInNewWindow(obj, fileName) {
 	var pattern = /\.([^/\.]*)$/
 	var results = pattern.exec(fileName)
-	if (!isIE && results != null) {
+	if (!ss_isIE && results != null) {
 		//IE doesn't work on the second attempt to open the same file.
 		var docList = ss_files_that_do_not_pop_up.split(" ")
 		for (var i = 0; i < docList.length; i++) {
