@@ -67,7 +67,7 @@ public class SsfsUtil {
 	}
 	
 	public static String getLibraryBinderUrl(Binder binder) {
-		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL();
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(true);
 		
 		return sb.append("files/library/"). // follow Slide's convention
 		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name
@@ -76,7 +76,7 @@ public class SsfsUtil {
 	
 	private static StringBuffer getInternalCommonPart(Binder binder, 
 			DefinableEntity entity) {
-		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL();
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(true);
 		
 		return sb.append("files/internal/"). // follow Slide's convention
 		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name 
