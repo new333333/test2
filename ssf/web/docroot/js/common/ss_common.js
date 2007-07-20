@@ -2679,6 +2679,60 @@ function ss_toggle_dashboard_hidden_controls(prefix) {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+
+var dashboardCallbacks = new Object();
+
+function ss_addDashboardEvent(componentId, 
+						when /* onBeforeShow, onAfterShow == onShow, onBeforeHide, onAfterHide == onHide */,
+						routineToCall) {
+	if (when == "onShow") {
+		when = "onAfterShow";
+	} else if (when == "onHide") {
+		when = "onAfterHide";
+	}
+	
+	if (!window.dashboardCallbacks) {
+		dashboardCallbacks = new Object();
+	}
+	
+	if (!dashboardCallbacks[componentId]) {
+		dashboardCallbacks[componentId] = new Object();
+	}
+	
+	if (!dashboardCallbacks[componentId][when]) {
+		dashboardCallbacks[componentId][when] = new Array();
+	}
+
+	dashboardCallbacks[componentId][when].push(routineToCall);
+}
+
+function ss_callDashboardEvent(componentId, 
+						when /* onBeforeShow, onAfterShow == onShow, onBeforeHide, onAfterHide == onHide */) {
+	if (when == "onShow") {
+		when = "onAfterShow";
+	} else if (when == "onHide") {
+		when = "onAfterHide";
+	}	
+	
+	if (!window.dashboardCallbacks) {
+		return false;
+	}
+	
+	if (!dashboardCallbacks[componentId]) {
+		return false;
+	}
+	
+	if (!dashboardCallbacks[componentId][when]) {
+		return false;
+	}
+
+	for (var i in dashboardCallbacks[componentId][when]) {
+		dashboardCallbacks[componentId][when][i]();
+	}
+	
+	return true;
+}
+
 function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace) {
 	//ss_debug(obj.alt + ",    " + obj.src)
 	var formObj = ss_getContainingForm(obj)
@@ -2697,6 +2751,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	    callbackRoutine = ss_showComponentCallback;
 	    imgObj.src = ss_componentSrcHide;
 	    imgObj.alt = ss_componentAltHide;
+	    ss_callDashboardEvent(componentId, "onBeforeShow");
 	} else if (imgObj.src.match(/accessory_hide.gif/)) {
 		url += "\&operation=hide_component";
 	    callbackRoutine = ss_hideComponentCallback;
@@ -2712,6 +2767,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			//Signal that the layout changed 
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
+		ss_callDashboardEvent(componentId, "onBeforeHide");
 	} else if (imgObj.className.match(/ss_accessory_delete/)) {
 		url += "\&operation=delete_component";
 	    callbackRoutine = ss_hideComponentCallback;
@@ -2723,24 +2779,29 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
+		ss_callDashboardEvent(componentId, "onBeforeHide");
 	}
 	url += "\&namespace="+namespace;
 	url += "\&" + idStr;
 	url += "\&rn=" + ss_dbrn++;
-	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, divId);
+	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, {"divId" : divId, "componentId" : componentId});
 }
-function ss_showComponentCallback(s, divId) {
+function ss_showComponentCallback(s, data) {
+	// data = {"divId" : divId, "componentId" : componentId}
 	ss_debug(s)
-	var targetDiv = document.getElementById(divId);
+	var targetDiv = document.getElementById(data.divId);
 	if (targetDiv) {
 		targetDiv.innerHTML = s;
 		targetDiv.style.visibility = "visible";
 		targetDiv.style.display = "block";
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
+		ss_callDashboardEvent(data.componentId, "onAfterShow");
 	}
 }
-function ss_hideComponentCallback(s, divId) {
+function ss_hideComponentCallback(s, data) {
+	// data = {"divId" : divId, "componentId" : componentId}
+	ss_callDashboardEvent(data.componentId, "onAfterHide");
 }
 function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace) {
 	var formObj = ss_getContainingForm(obj)

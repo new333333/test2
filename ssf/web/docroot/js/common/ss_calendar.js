@@ -226,6 +226,14 @@ function ss_calendar(prefix) {
 	    	}
 	
 	    	var url = window["ss_findEventsUrl" + prefix];
+	    	if (url.indexOf("binderIds=") == -1) {
+	    		// it's dashboard, try to retrive binderIds from hidden field
+	    		var folderIdsObj = document.getElementById("ssDashboardFolderIds" + prefix);
+	    		if (folderIdsObj) {
+	    			url += "&" + folderIdsObj.value;
+	    		}
+	    	}
+	    	
 	    	var dateToLoad = date;
 	    	if (requiredDay && !ss_cal_CalData.getMonthViewInfo(requiredDay)) {
 	    		dateToLoad = requiredDay;
@@ -247,6 +255,7 @@ function ss_calendar(prefix) {
 					alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
+					try {
 				    var loading = document.getElementById("ss_loading" + prefix);
 			    	if (loading) {
 			    		loading.parentNode.removeChild(loading);
@@ -286,7 +295,7 @@ function ss_calendar(prefix) {
 					ss_cal_Events.setEventTypeByName(data.eventType);
 					
 			        ss_cal_Events.redrawAll();
-			        
+					} catch (e) {alert(e);}
 				},
 							
 				mimetype: "text/json",
@@ -345,8 +354,8 @@ function ss_calendar(prefix) {
 	        } else if (this.currentType == "month") {
 	        	var monthViewInfo = ss_cal_CalData.getMonthViewInfo(this.currentDate);
 	    		this.firstDayToShow = monthViewInfo.beginView;
-	    		
-	            dojo.html.hide(dojo.byId("ss_cal_DayGridMaster" + prefix));
+	    		var aaa = dojo.byId("ss_cal_DayGridMaster" + prefix);
+	            dojo.html.hide(aaa);
 	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster" + prefix));
 	            
 				this.drawMonthGrid(ss_cal_CalData.today, this.currentDate, monthViewInfo);
@@ -787,7 +796,7 @@ function ss_calendar(prefix) {
 	    },
 	
 	    deleteEvent: function(id) {
-	        ss_fadeAndDestroy(dojo.byId("calevt" + id).parentNode, 200);
+	        ss_fadeAndDestroy(dojo.byId("calevt" + prefix + id).parentNode, 200);
 	    },
 	
 	    deleteCurrentEvent: function() {
@@ -865,7 +874,7 @@ function ss_calendar(prefix) {
 	    whataDrag: function(evt) {
 	        //evt = (evt) ? evt : ((event) ? event : null);
 	        var gridQuantum = 3.5 * 6;  // 30 minutes
-	        var currBox = dojo.byId("calevt" + this.currDispId);
+	        var currBox = dojo.byId("calevt" + prefix + this.currDispId);
 	        gridX = (evt.clientX + document.body.scrollLeft);
 	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop)  -  dojo.html.getTotalOffset(currGrid, "top", 0) - currBox.parentNode.offsetTop;
 	        if (gridY > 12) {
@@ -890,7 +899,7 @@ function ss_calendar(prefix) {
 	    },
 	
 	    deleteEvent: function(id) {
-	        ss_fadeAndDestroy(dojo.byId("calevt" + id).parentNode, 200);
+	        ss_fadeAndDestroy(dojo.byId("calevt" + prefix + id).parentNode, 200);
 	    },
 	
 	    deleteCurrentEvent: function() { this.deleteEvent(this.currDispId); },
@@ -1047,7 +1056,7 @@ function ss_calendar(prefix) {
 	
 	    undrawMonthEvents: function() {
 	        while (this.monthGridEvents.length) {
-	            dojo.dom.removeNode(dojo.byId("calevt" + this.monthGridEvents.pop()));
+	            dojo.dom.removeNode(dojo.byId("calevt" + prefix + this.monthGridEvents.pop()));
 	        }
 	    },
 	
@@ -1059,7 +1068,7 @@ function ss_calendar(prefix) {
 				while (event.displayIds.length) {
 					var displayId = event.displayIds.pop();
 					if (displayId) {
-		            	dojo.dom.removeNode(dojo.byId("calevt" + displayId).parentNode);
+		            	dojo.dom.removeNode(dojo.byId("calevt" + prefix + displayId).parentNode);
 		           	}
 	            }
 	        }	
@@ -1185,7 +1194,7 @@ function ss_calendar(prefix) {
 	            //console.log("requestHover", eventId);
 	            this.hoverTimer = setTimeout(function(){ss_cal_Events.displayHover(eventId, gridDay);}, 1000);
 	            var e = this.eventData[eventId];
-	            var n = dojo.byId("calevt" + e.displayIds[gridDay]).parentNode;
+	            var n = dojo.byId("calevt" + prefix + e.displayIds[gridDay]).parentNode;
 	            n.onmouseout = function() { ss_cal_Events.cancelHover(true)};
 	        }
 	    },
@@ -1212,7 +1221,7 @@ function ss_calendar(prefix) {
 	        //console.log("display?", eventId, this.hoverEventId);
 	        if (this.overEventId == eventId + "-" + gridDay) {
 	            var e = this.eventData[eventId];
-	            var n = dojo.byId("calevt" + e.displayIds[gridDay]).parentNode;
+	            var n = dojo.byId("calevt" + prefix + e.displayIds[gridDay]).parentNode;
 	            //console.log("Hover: " + eventId);
 	            this.hoverEventId = eventId + "-" + gridDay;
 	
@@ -1220,7 +1229,7 @@ function ss_calendar(prefix) {
 	            var ebox = dojo.html.abs(n);
 	            var eboxm = dojo.html.getBorderBox(n);
 	            hb.style.visibility = "visible";
-	            hb.innerHTML = dojo.byId("calevt" + e.displayIds[gridDay]).innerHTML;
+	            hb.innerHTML = dojo.byId("calevt" + prefix + e.displayIds[gridDay]).innerHTML;
 	            hb.style.backgroundColor = ss_cal_CalData.box(e.binderId);
 	            hb.style.borderColor = ss_cal_CalData.border(e.binderId);
 	            dojo.html.setOpacity(hb,0);
@@ -1472,7 +1481,7 @@ function ss_calendar(prefix) {
 	
 	    e = document.createElement("div");
 	    e.className = "ss_smallRBoxBody ss_cal_eventBody";
-	    e.setAttribute("id", "calevt" + ss_cal_Events.displayId);
+	    e.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
 	    e.style.backgroundColor = boxColor;
 	    e.style.borderColor = borderColor
 	    e.style.height = (((((duration <= 0) ? 30 : duration) / 60) * 42) - 4) + "px";
@@ -1548,7 +1557,7 @@ function ss_calendar(prefix) {
 	        ebox.style.top = ((w * hOffsetSize) + badgeOffset + (i * eventOffset)) + "%";
 	        ebox.style.width = "13.79%";
 	
-	        ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
+	        ebox.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
 	        ebox.style.height = ((eventHeight/heightFactor) * 100) + "%";
 	        var e = ss_cal_Events.eventData[eventList[i]];
 	        ebox.style.backgroundColor = ss_cal_CalData.box(e.binderId);
@@ -1571,7 +1580,7 @@ function ss_calendar(prefix) {
 	        ebox.style.top = ((w * hOffsetSize) + badgeOffset + (2 * eventOffset)) + "%";
 	        ebox.style.width = "13.79%";
 	
-	        ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
+	        ebox.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
 	        ebox.style.backgroundColor = "#BBBBBB";
 	        ebox.style.height = ((eventHeight/heightFactor1) * 100) + "%";
 	        ebox.innerHTML = "... plus " + (eventCount - 2) + " other events...";

@@ -14,6 +14,7 @@
  //Don't include "include.jsp" directly 
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
+<c:set var="prefix" value="${ssComponentId}${ss_namespace}" />
 
 <c:set var="ss_pageNumber" value="0"/>
 <c:if test="${ssConfigJspStyle != 'template'}">
@@ -33,6 +34,20 @@
 			</c:forEach>
 		</table>
 		<br/>
+		
+			<c:set var="binderIds" value="" />
+			<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}" varStatus="status">
+				<c:choose>
+					<c:when test="${status.first}">
+						<c:set var="binderIds" value="binderIds=${folder.id}" />
+					</c:when>
+					<c:otherwise>
+						<c:set var="binderIds" value="${binderIds}&binderIds=${folder.id}" />
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
+			<input type="hidden" id="ssDashboardFolderIds${prefix}" value="${binderIds}" />
+	
 	</c:if>
 
 	<div id="${ss_divId}" width="100%">

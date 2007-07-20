@@ -62,11 +62,11 @@ monthViewInfo : {year : ${ssCalendarViewBean.monthInfo.year},
 events : [<%--
   --%><c:forEach var="evim" items="${ssCalendarViewBean.events}" varStatus="status"><%--
     --%><jsp:useBean id="evim" type="java.util.Map" /><%--
-    --%><% java.util.HashMap e = (java.util.HashMap) evim.get("entry"); %><%--
     --%>
-		  {eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
-		  	entryId : "<%= e.get("_docId").toString() %>",
-		  	binderId : "<%= e.get("_binderId").toString() %>",
+		  {
+		  eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
+		  	entryId : "${evim.entry['_docId']}",
+		  	binderId : "${evim.entry['_binderId']}",
 		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
 		  	<c:if test="${evim.cal_allDay && evim.eventType == 'event'}">
 		  		<c:set var="timeZone" value="GMT"/>

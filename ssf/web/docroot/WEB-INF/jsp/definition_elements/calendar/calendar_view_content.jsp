@@ -11,38 +11,39 @@
  */
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
-<script type="text/javascript">
 
-	var ss_viewEventUrl = ss_viewEntryURL;
-				
-	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="sticky_calendar_display_settings" />
-		    	</ssf:url>";				
-	
-	var ss_addCalendarEntryUrl = "${addDefaultEntryURL}";
-	if (ss_addCalendarEntryUrl.indexOf("addEntryFromIFrame=1&") > -1) {
-		ss_addCalendarEntryUrl = ss_addCalendarEntryUrl.replace("addEntryFromIFrame=1&", "");
-	}
+<c:if test="${empty isDashboard}">
+	<script type="text/javascript">
+		var ss_viewEventUrl = ss_viewEntryURL;
 					
-	var ss_calendarWorkDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
-	var ss_calendarFullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
-	
-	function ss_getMonthCalendarEvents${prefix}() {
-		var formObj = document.getElementById("ssCalNavBar${prefix}");
-		if (formObj && formObj.ss_goto${prefix}_year && formObj.ss_goto${prefix}_month && formObj.ss_goto${prefix}_date) {
-			ss_calendar_${prefix}.ss_cal_Events.switchView("datedirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
+		var ss_stickyCalendarDisplaySettings =  "<ssf:url 
+			    	adapter="true" 
+			    	portletName="ss_forum" 
+			    	action="__ajax_request" 
+			    	actionUrl="true" >
+						<ssf:param name="binderId" value="${ssBinder.id}" />
+						<ssf:param name="operation" value="sticky_calendar_display_settings" />
+			    	</ssf:url>";				
+		
+		var ss_addCalendarEntryUrl = "${addDefaultEntryURL}";
+		if (ss_addCalendarEntryUrl.indexOf("addEntryFromIFrame=1&") > -1) {
+			ss_addCalendarEntryUrl = ss_addCalendarEntryUrl.replace("addEntryFromIFrame=1&", "");
 		}
-	}
-	
-	ss_calendar_${prefix} = new ss_calendar("${prefix}");
-	
-</script>
-
+						
+		var ss_calendarWorkDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
+		var ss_calendarFullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
+		
+		function ss_getMonthCalendarEvents${prefix}() {
+			var formObj = document.getElementById("ssCalNavBar${prefix}");
+			if (formObj && formObj.ss_goto${prefix}_year && formObj.ss_goto${prefix}_month && formObj.ss_goto${prefix}_date) {
+				ss_calendar_${prefix}.ss_cal_Events.switchView("datedirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
+			}
+		}
+		
+		ss_calendar_${prefix} = new ss_calendar("${prefix}");
+		
+	</script>
+</c:if>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_nav_bar.jsp" %>
 
 
@@ -110,15 +111,17 @@
 </div>
 
 <div class="ss_cal_eventBody" id="hoverBox${prefix}" style="display: none; visibility: hidden; position: absolute; padding: 10px; background-color: #FFFFFF; z-index: 2003; border: 1px solid black;"></div>
-<script type="text/javascript">
-	ss_calendar_${prefix}.ss_initializeCalendar();
-	
-	ss_createOnLoadObj('ss_cal_hoverBox${prefix}', function() {
-		ss_moveDivToBody("hoverBox${prefix}");
-		ss_moveDivToBody("infoLightBox${prefix}");
-		ss_moveDivToBody("infoBox${prefix}");
-		ss_moveDivToBody("infoBox2${prefix}");
-	});
-	
-</script>
+<c:if test="${!isDashboard}">
+	<script type="text/javascript">
+		ss_calendar_${prefix}.ss_initializeCalendar();
+		
+		ss_createOnLoadObj('ss_cal_hoverBox${prefix}', function() {
+			ss_moveDivToBody("hoverBox${prefix}");
+			ss_moveDivToBody("infoLightBox${prefix}");
+			ss_moveDivToBody("infoBox${prefix}");
+			ss_moveDivToBody("infoBox2${prefix}");
+		});
+		
+	</script>
+</c:if>
 <div id="ss_loading${prefix}" class="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/ajax-loader.gif" /></div>
