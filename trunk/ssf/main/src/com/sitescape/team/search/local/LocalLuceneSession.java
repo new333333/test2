@@ -110,6 +110,9 @@ public class LocalLuceneSession implements LuceneSession {
 						"Could not add document to the index [" + indexPath
 								+ "]", e);
 			} finally {
+				try {
+					indexWriter.flush();
+				} catch (Exception e) {}
 				/* try {
 					indexWriter.close();
 				} catch (IOException e) {
@@ -163,6 +166,10 @@ public class LocalLuceneSession implements LuceneSession {
 						"Could not add document to the index [" + indexPath
 								+ "]", e);
 			} finally {
+				try {
+					indexWriter.flush();
+				} catch (Exception e) {}
+
 				/* 
 				 try {
 					indexWriter.close();
@@ -885,20 +892,24 @@ public class LocalLuceneSession implements LuceneSession {
 			return analyzer;
 		}
 	}
+	
 	public void backup() {
-		// take the lock
 		IndexWriter indexWriter = null;
-		synchronized (LocalLuceneSession.class) {
-
-			// close all
-			LuceneHelper.closeAll();
+		String backupDir = indexPath;
 		
+		String bDir = SPropsUtil.getString("lucene.server.backup.dir","");
+		if (!bDir.equalsIgnoreCase("")) {
+			backupDir = bDir;
+		}
+		
+		synchronized (LocalLuceneSession.class) {
+			LuceneHelper.closeAll();
 			// create a name for the copy directory
 			SimpleDateFormat formatter =
 			new SimpleDateFormat (".yyyy.MM.dd.HH.mm.ss");
 			Date currentTime = new Date();
 			String dateString = formatter.format(currentTime);
-			String indexCopyPath = indexPath + dateString;
+			String indexCopyPath = backupDir + dateString;
 			// merge to that dir
 			try {
 				indexWriter = new IndexWriter(indexCopyPath, new SsfIndexAnalyzer(),
@@ -926,5 +937,4 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 		}
 	}
-
 }
