@@ -169,7 +169,7 @@
 	<c:set var="ss_tag_color" value="#888888" scope="request"/>
 	<c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/>
 
-	<c:set var="ss_diff_color_added" value="BBBBBB" scope="request"/>
+	<c:set var="ss_diff_color_added" value="#BBBBBB" scope="request"/>
 	<c:set var="ss_diff_color_deleted" value="red" scope="request"/>
 	<c:set var="ss_diff_color_same" value="lightblue" scope="request"/>	
 
