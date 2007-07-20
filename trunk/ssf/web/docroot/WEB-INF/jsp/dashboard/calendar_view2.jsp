@@ -15,32 +15,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
-<c:set var="prefix" value="${ssComponentId}${renderResponse.namespace}" />
-
-<script type="text/javascript">
-
-<c:set var="binderIds" value="" />
-<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}" varStatus="status">
-	<c:choose>
-		<c:when test="${status.first}">
-			<c:set var="binderIds" value="binderIds=${folder.id}" />
-		</c:when>
-		<c:otherwise>
-			<c:set var="binderIds" value="${binderIds}&binderIds=${folder.id}" />
-		</c:otherwise>
-	</c:choose>
-</c:forEach>
-
-	var ss_findEventsUrl${prefix} = "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="find_calendar_events" />
-		    	</ssf:url><c:if test="${!empty binderIds}">&${binderIds}</c:if><c:if test="${!empty ssDashboard}">&ssDashboardRequest=true</c:if>";
-</script>
-
+<c:set var="isDashboard" value="true" />
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
-
+<script type="text/javascript">
+	ss_callDashboardEvent("${ssComponentId}", "onAfterShow");
+</script>
 
