@@ -186,7 +186,10 @@ public class ViewFileController extends SAbstractController {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 				}
 				
-				response.getOutputStream().flush();
+				try {
+					response.getOutputStream().flush();
+				}
+				catch(Exception ignore) {}
 			}
 			else
 			if (fa != null) {
@@ -233,8 +236,11 @@ public class ViewFileController extends SAbstractController {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				}
-	
-				response.getOutputStream().flush();
+
+				try {
+					response.getOutputStream().flush();
+				}
+				catch(Exception ignore) {}
 			}
 		}
 		return null;
@@ -278,7 +284,10 @@ public class ViewFileController extends SAbstractController {
 			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 		}
 
-		response.getOutputStream().flush();
+		try {
+			response.getOutputStream().flush();
+		}
+		catch(Exception ignore) {}
 	}
 	
 	public static Document createFileListingForZipDownload(String zipFileName)
