@@ -11,10 +11,11 @@
 package com.sitescape.team.module.rss.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -23,275 +24,453 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.Node;
 
+import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.lucene.SsfIndexAnalyzer;
+import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.rss.RssModule;
-import com.sitescape.team.module.rss.impl.RssModuleImplMBean;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.util.PropertyNotFoundException;
+import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.FileHelper;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
+import com.sitescape.util.PropertyNotFoundException;
 
-public class RssModuleImpl extends CommonDependencyInjection implements RssModule, RssModuleImplMBean {
+public class RssModuleImpl extends CommonDependencyInjection implements
+		RssModule, RssModuleImplMBean {
 
-	//TODO MAXITEMS should be set in properties or via that application context file.
-	private final int MAXITEMS = 20;
+	private static QueryParser qp = new QueryParser("guid",
+			new SsfQueryAnalyzer());
+
+	private final String ALL_FIELD = "allField";
+
+	final String FS = System.getProperty("file.separator");
+
+	final String TSFILENAME = "timestampfile";
+
+	final String LOCKFILENAME = "lockfile";
+
 	private final long DAYMILLIS = 24L * 60L * 60L * 1000L;
-	
+
 	protected Log logger = LogFactory.getLog(getClass());
-	
+
 	private String rssRootDir;
-	private long monthAgoTime = 31L * DAYMILLIS;
-	
-	private static final String emptyRssFileContent =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-		"<rss version=\"2.0\">" +
-		"<channel>" +
-	    "<title>Security Community of Practice</title>" +
-	    "<link/>" +
-	    "<description>Updates to the Security Community of Practice forum</description>" +
-	    "<pubDate>" +
-		new Date().toString() +
-		"</pubDate>" +
-	    "<ttl>60</ttl>" +
-	    "<generator feedVersion=\"1.0\">SiteScape Forum</generator>" +
-	    "</channel>" +
-	    "</rss>";
-	
+
+	int maxDays = 31;
+
+	int maxInactiveDays = 7;
+
 	public RssModuleImpl() {
-		int maxDays = 31;
 
 		try {
 			maxDays = SPropsUtil.getInt("rss.max.elapseddays");
 		} catch (PropertyNotFoundException e) {
 		}
+		try {
+			maxInactiveDays = SPropsUtil.getInt("rss.max.inactivedays");
+		} catch (PropertyNotFoundException e) {
+		}
 
-		monthAgoTime = new Date().getTime() - (maxDays * DAYMILLIS);
 	}
-	
+
 	public String getRssRootDir() {
 		return rssRootDir;
 	}
 
 	public void setRssRootDir(String rssRootDir) {
-		if(rssRootDir.endsWith(Constants.SLASH))
+		if (rssRootDir.endsWith(Constants.SLASH))
 			this.rssRootDir = rssRootDir;
 		else
 			this.rssRootDir = rssRootDir + Constants.SLASH;
 	}
-	
-	public void generateRssFeed(Binder binder) {
-		
+
+	private void generateRssFeed(Binder binder) {
+
 		// See if the feed already exists
-		String rssFileName = getRssFileName(binder);
-		File rf = new File(rssFileName);
-		if (rf.exists()) return;
+		String rssPathName = getRssPathName(binder);
+		if (IndexReader.indexExists(rssPathName))
+			return;
 
 		// Make sure the rss directory exists
 		File rssdir = new File(rssRootDir);
-		if (!rssdir.exists()) rssdir.mkdir();	
-		
-		Document doc = createEmptyRssDoc("Updates to the " + binder.getTitle() + " forum");
-		
-	    writeRssFile(binder, doc);
+		if (!rssdir.exists())
+			rssdir.mkdir();
+
+		generateRssIndex(binder);
 	}
-	
-	public String getRssFileName(Binder binder) 
-	{
+
+	private String getRssPathName(Binder binder) {
 		Long id = binder.getId();
 		if (binder instanceof Folder) {
-			Folder f = (Folder)binder;
-			if (!f.isTop()) id = f.getTopFolder().getId();
+			Folder f = (Folder) binder;
+			if (!f.isTop())
+				id = f.getTopFolder().getId();
 		}
-		String rssFileName = rssRootDir + id + ".xml";
-		return rssFileName;
+		String rssPathName = rssRootDir + id;
+		return rssPathName;
 	}
-	
-	public void writeRssFile(Binder binder, Document doc)
-	{
-		String rssFileName = getRssFileName(binder);
-		try {
-			XmlFileUtil.writeFile(doc, rssFileName);
-		} catch (Exception ioe) {logger.error("Can't write RSS file for binder:" + binder.getName() + "error is: " + ioe.toString());}
-		
-	}
-	
-	public void deleteRssFile(Binder binder) {
-		
+
+	private void deleteRssIndex(Binder binder) {
+
 		// See if the feed exists
-		String rssFileName = getRssFileName(binder);
-		File rf = new File(rssFileName);
-		if (rf.exists()) rf.delete();
+		String rssPathName = getRssPathName(binder);
+		File rf = new File(rssPathName);
+		if (rf.exists())
+			FileHelper.deleteRecursively(rf);
 	}
-	
-	
-	public void trimItems(Element rssRoot) {
 
-		// trim based on elapsed time since the entry has been modified.
+	private void generateRssIndex(Binder binder) {
+		// create a new index, then populate it
 
-		// Get the list of nodes with ages set
-		List ageNodes = rssRoot.selectNodes("/rss/channel/item/age");
+		RssFeedLock rfl = new RssFeedLock(rssRootDir, binder);
 
-		// Walk thru the nodes, see if any of the items are older
-		// than the age requirement
-		for (Iterator i = ageNodes.iterator(); i.hasNext();) {
-			Node thisAge = (Node) i.next();
-			long itemAge = Long.parseLong(thisAge.getText());
-			if (itemAge < monthAgoTime) {
-				thisAge.getParent().detach();
+		try {
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
+			}
+			IndexWriter indexWriter = new IndexWriter(this
+					.getRssPathName(binder), new SsfIndexAnalyzer(), true);
+
+			long startDate = new Date().getTime() - (maxDays * DAYMILLIS);
+			Date start = new Date(startDate);
+
+			// TODO figure out sort key
+			List<FolderEntry> entries = getFolderDao().loadFolderTreeUpdates(
+					(Folder) binder, start, new Date(),
+					new OrderBy("HKey.sortKey"), 100);
+			for (int i = 0; i < entries.size(); i++) {
+				Entry entry = entries.get(i);
+				org.apache.lucene.document.Document doc = createDocumentFromEntry(entry);
+				indexWriter.addDocument(doc);
+			}
+			indexWriter.close();
+		} catch (Exception e) {
+			logger.info("generateRssIndex: " + e.toString());
+		} finally {
+			rfl.releaseFeedLock();
+		}
+	}
+
+	/**
+	 * See if the rss feed has been inactive for more than a month, if so, delete it.
+	 * 
+	 * @param entry
+	 * @param indexPath
+	 * @return
+	 */
+	private boolean rssFeedInactive(Entry entry, String indexPath) {
+		// set the pathname to the rss last read timestamp file
+		try {
+			String lastAccessedFile = indexPath + FS + TSFILENAME;
+			File tf = new File(lastAccessedFile);
+			// if it doesn't exist, then create it now
+			if (!tf.exists()) {
+				// create it
+				tf.createNewFile();
+				return false;
+			}
+			long lastModified = tf.lastModified();
+			// see if it's been a month
+			long currentTime = System.currentTimeMillis();
+			long maxInactive = maxInactiveDays * DAYMILLIS;
+			if ((currentTime - lastModified) > maxInactive) {
+				deleteRssIndex(entry.getParentBinder());
+				return true;
+			}
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param indexPath
+	 */
+	private void updateTimestamp(String indexPath) {
+		String lastAccessedFile = indexPath + FS + TSFILENAME;
+		File tf = new File(lastAccessedFile);
+		// if it doesn't exist, then create it now
+		if (!tf.exists()) {
+			// create it
+			try {
+				tf.createNewFile();
+			} catch (Exception e) {
+			}
+			return;
+		} else {
+			tf.setLastModified(System.currentTimeMillis());
+		}
+	}
+
+	/**
+	 * Update the rss feed whenever a new entry is added, or when a current entry
+	 * is modified.  If the RSS index for this folder does not exist, or, hasn't been
+	 * read in a time period then return immediately.  
+	 * 
+	 * The feed will be pruned, both by removing duplicate entries (for modify ops) and
+	 * by the age of the entries.
+	 * 
+	 * @param entry
+	 */
+	public void updateRssFeed(Entry entry) {
+
+		SimpleProfiler.startProfiler("RssModule.updateRssFeed");
+		String indexPath = getRssPathName(entry.getParentBinder());
+
+		// See if the feed already exists
+		File rf = new File(indexPath);
+		if (!rf.exists())
+			return; // if it doesn't already exist, then don't update it.
+
+		RssFeedLock rfl = new RssFeedLock(rssRootDir, entry.getParentBinder());
+		try {
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
+			}
+			// check to see if this feed has been read from in a month, if yes, 
+			// change the last modified timestamp, otherwise, delete it and 
+			// let the next reader recreate it.
+			if (rssFeedInactive(entry, indexPath))
+				return;
+
+			long endDate = new Date().getTime() - (maxDays * DAYMILLIS);
+			String dateRange = "0 TO " + endDate;
+
+			List<Integer> delDocIds = new ArrayList<Integer>();
+
+			IndexSearcher indexSearcher = new IndexSearcher(indexPath);
+			// see if the current entry is already in the index, if it is,
+			// delete it. 
+			String qString = "guid:" + entry.getId().toString();
+			Query q = qp.parse(qString);
+			Hits hits = indexSearcher.search(q);
+
+			for (int i = 0; i < hits.length(); i++) {
+				delDocIds.add(hits.id(i));
+			}
+			// trim the rss file based on number of entries, and/or elapsed time
+			qString = "age:[" + dateRange + "]";
+			hits = indexSearcher.search(qp.parse(qString));
+
+			for (int i = 0; i < hits.length(); i++) {
+				delDocIds.add(hits.id(i));
 			}
 
+			indexSearcher.close();
+			if (delDocIds.size() > 0) {
+				IndexReader ir = IndexReader.open(indexPath);
+				for (int i = 0; i < delDocIds.size(); i++) {
+					ir.deleteDocument((int) delDocIds.get(i));
+				}
+				ir.close();
+			}
+
+			// now add the entry
+			IndexWriter indexWriter = new IndexWriter(indexPath,
+					new SsfIndexAnalyzer(), false);
+			indexWriter.addDocument(this.createDocumentFromEntry(entry));
+			indexWriter.close();
+		} catch (Exception e) {
+			logger.info("Rss module error: " + e.toString());
+		} finally {
+			rfl.releaseFeedLock();
 		}
-	}
-	
-	public void updateRssFeed(Entry entry) {
-		SimpleProfiler.startProfiler("RssModule.updateRssFeed");
-		// See if the feed already exists
-		String rssFileName = getRssFileName(entry.getParentBinder());
-		File rf = new File(rssFileName);
-		if (!rf.exists())
-			this.generateRssFeed(entry.getParentBinder());
-	    
-		Document doc = this.parseFile(this.getRssFileName(entry.getParentBinder()));
-		Element rssRoot = doc.getRootElement();
-		Node channelPubDate = (Node)rssRoot.selectSingleNode("/rss/channel/pubDate");
-		channelPubDate.setText(entry.getModification().getDate().toString());
-		trimItems(rssRoot);
-		Element channelNode = (Element)rssRoot.selectSingleNode("/rss/channel");
-		
-		// see if the current entry is already in the channel, if it is, update it.
-		Node entryNode = channelNode.selectSingleNode("item/guid[.='" + entry.getId() + "']");
-		if (entryNode != null)
-			entryNode.detach();
-		
-		channelNode.add(this.createElementFromEntry(entry));
-		
-		writeRssFile(entry.getParentBinder(), doc);
 		SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
 	}
 
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder, User user) {
-		if(user != null) { // Normal situation
-			// See if the feed already exists
-			boolean access = false;
-			String rssFileName = getRssFileName(binder);
-			File rf = new File(rssFileName);
-			if (!rf.exists())
-				this.generateRssFeed(binder);
-		    
-			Document doc = this.parseFile(this.getRssFileName(binder));
-			Element rssRoot = doc.getRootElement();
-			// Get the list of nodes with acls set
-			List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
-	
-			// get the current users acl set
-			Set<Long> userAclSet = getProfileDao().getPrincipalIds(user);
-			Set userStringSet = new HashSet();
-			for (Long id:userAclSet) {
-				userStringSet.add(id.toString());
-			}
-			// Walk thru the nodes with ACL's and find the ones this
-			// user has read access to, and delete the rest.
-			for (Iterator i = aclNodes.iterator(); i.hasNext();) {
-				Element thisAcl = (Element)i.next();
-				if (user.isSuper()) {
-					// need to delete the acl before we send it to the client
-					thisAcl.detach();
-				} else {
-					access = AccessUtils.checkAccess(thisAcl, userStringSet); 	       	
-					if (!access) {
-	 	       			thisAcl.getParent().detach();
-	 	       		} else {
-	 	       			// need to delete the acl before we send it to the client
-	 	       			thisAcl.detach();
-	 	       		}
+	/**
+	 * Find the rss feed index. If it doesn't exist, then create it.
+	 * Filter results by the requestor's acls.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param binder
+	 * @param user
+	 */
+	public String filterRss(HttpServletRequest request,
+			HttpServletResponse response, Binder binder, User user) {
+
+		String indexPath = getRssPathName(binder);
+		RssFeedLock rfl = new RssFeedLock(rssRootDir, binder);
+
+		if (user != null) { // Normal situation
+			try {
+				// See if the feed already exists
+
+				File rf = new File(indexPath);
+				if (!rf.exists())
+					this.generateRssFeed(binder);
+
+				if (!rfl.getFeedLock()) {
+					logger.info("Couldn't get the RssFeedLock");
 				}
-	        }
-			
-			//detach the age before sending the xml to the user
-			List ageNodes = rssRoot.selectNodes("/rss/channel/item/age");
-			for (Iterator i = ageNodes.iterator(); i.hasNext();) {
-				Node thisAge = (Node)i.next();
-				thisAge.detach();
+
+				updateTimestamp(indexPath);
+
+				IndexSearcher indexSearcher = new IndexSearcher(indexPath);
+
+				// this will add acls to the query
+				Query q = buildRssQuery(user);
+
+				// get the matching entries
+				Hits hits = indexSearcher.search(q);
+
+				// create the return string, add the channel info
+				String rss = addRssHeader(binder.getTitle());
+				// step thru the hits and add them to the rss return string
+				int count = 0;
+				while (count < hits.length()) {
+					org.apache.lucene.document.Document doc = hits.doc(count);
+					rss += doc.getField("rssItem").stringValue();
+					count++;
+				}
+				indexSearcher.close();
+				rss += addRssFooter();
+				rss = WebHelper.markupStringReplacement(null, null, request,
+						response, null, rss, WebKeys.MARKUP_VIEW);
+
+				return rss;
+
+			} catch (Exception e) {
+				logger.info("filterRss: " + e.toString());
+				return "";
+			} finally {
+				rfl.releaseFeedLock();
 			}
-	
-			// return the doc
-			String results = doc.asXML();
-			results = WebHelper.markupStringReplacement(null, null, 
-					request, response, null, results, WebKeys.MARKUP_VIEW);
-			return results;
-		}
-		else {
+
+		} else {
 			// This request is being made without appropriate user authentication.
 			// Do NOT use binder in this case, since it may be null in this situation.
-			Document doc = createEmptyRssDoc("Updates to the Unknown forum");
-			return doc.asXML();
+			return AuthError(request, response);
 		}
 	}
 
-	public String AuthError(HttpServletRequest request, HttpServletResponse response) {
-		Document doc = createEmptyRssDoc("Authentication failure, please get a new URL for this feed.");
+	/**
+	 * return an Authentication error to the reader
+	 * 
+	 *  @param request
+	 *  @param response
+	 */
+	public String AuthError(HttpServletRequest request,
+			HttpServletResponse response) {
+		Document doc = createEmptyRssDoc(NLT.get("rss.auth.failure"));
 		return doc.asXML();
 	}
-	
-    public Document parseFile(String rssFileName) {
-    	Document document = null;
-        try {
-        	document = XmlFileUtil.readFile(rssFileName);
-        } catch (DocumentException de) {logger.error("RSS Error: Can't read RSS file" + rssFileName);
-        } catch (FileNotFoundException fn) {logger.error("RSS Error: File not found" + rssFileName);
-        } catch (Exception e) {}; //already reported}
-        return document;
-    }
-    
-    public Element createElementFromEntry(Entry entry) 
-    {
-    	Element entryElement = DocumentHelper.createElement("item");
-    	//Title needs to change for some readers to display it
-    	entryElement.addElement("title")
-    		.addText(entry.getTitle());// + NLT.get("rss.modified.date", new Object[]{entry.getModification().getDate()}));
-    	entryElement.addElement("link")
-    		.addText(WebUrlUtil.getEntryViewURL((FolderEntry)entry));//ROY
-    	String description = entry.getDescription() == null ? "" : entry.getDescription().getText();
-    	description = WebHelper.markupStringReplacement(null, null, 
-				null, null, entry, description, WebKeys.MARKUP_FILE);
-    	Date eDate = entry.getModification().getDate();
-    	
-    	entryElement.addElement("description")
-    		.addText(description);
-    	entryElement.addElement("author")
-    		.addText(entry.getCreation().getPrincipal().getName());
-    	entryElement.addElement("pubDate")
-			.addText(eDate.toString());
-    	entryElement.addElement("age")
-    		.addText(new Long(eDate.getTime()).toString());
-    	entryElement.addElement("guid")
-    		.addAttribute("isPermaLink", "false")
-    		.addText(entry.getId().toString());
 
-    	Element acl = entryElement.addElement("sitescapeAcl");
-    	//add same acls as search engine uses
-    	EntityIndexUtils.addReadAccess(acl, entry.getParentBinder(), entry);
-    	return entryElement;
-    	
-    }
-    
+	private org.apache.lucene.document.Document createDocumentFromEntry(
+			Entry entry) {
+		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document();
+
+		Date eDate = entry.getModification().getDate();
+
+		Field ageField = new Field("age", new Long(eDate.getTime()).toString(),
+				Field.Store.YES, Field.Index.UN_TOKENIZED);
+		doc.add(ageField);
+		Field guidField = new Field("guid", entry.getId().toString(),
+				Field.Store.YES, Field.Index.TOKENIZED);
+		doc.add(guidField);
+		Field allField = new Field(ALL_FIELD, "all", Field.Store.NO,
+				Field.Index.UN_TOKENIZED);
+		doc.add(allField);
+		Field rssItemField = new Field("rssItem", createRssItem(entry),
+				Field.Store.YES, Field.Index.UN_TOKENIZED);
+		doc.add(rssItemField);
+		// add same acls(folder and entry) as search engine uses
+		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry);
+
+		return doc;
+
+	}
+
+	private Query buildRssQuery(User user) {
+		SearchObject so = new SearchObject();
+		org.dom4j.Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeAndElement = qTreeRootElement
+				.addElement(QueryBuilder.AND_ELEMENT);
+		Element field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, ALL_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText("all");
+		Set<Long> userAcls = getProfileDao().getPrincipalIds(user);
+		QueryBuilder qb = new QueryBuilder(userAcls);
+		if (user.isSuper())
+			so = qb.buildQuery(qTree, true);
+		else
+			so = qb.buildQuery(qTree, false);
+
+		return so.getQuery();
+
+	}
+
+	private String createRssItem(Entry entry) {
+		String ret = "<item>\n";
+		ret += "<title>" + entry.getTitle() + "</title>\n";
+		ret += "<link>"
+				+ WebUrlUtil.getEntryViewURL((FolderEntry) entry).replaceAll(
+						"&", "&amp;") + "</link>\n";
+
+		String description = entry.getDescription() == null ? "" : entry
+				.getDescription().getText();
+		description = WebHelper.markupStringReplacement(null, null, null, null,
+				entry, description, WebKeys.MARKUP_FILE);
+		ret += "<description>" + description + "</description>\n";
+
+		ret += "<author>" + entry.getCreation().getPrincipal().getName()
+				+ "</author>\n";
+
+		Date eDate = entry.getModification().getDate();
+		ret += "<pubDate>" + eDate.toString() + "</pubDate>\n";
+
+		ret += "<age>" + new Long(eDate.getTime()).toString() + "</age>\n";
+		ret += "<guid>" + entry.getId().toString() + "</guid>\n";
+		ret += "</item>\n";
+		return ret;
+	}
+
+	private String addRssHeader(String title) {
+		String ret = "";
+		ret += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+		ret += "<rss version=\"2.0\">\n";
+		ret += "<channel>\n";
+		ret += "<title>" + title + "</title>\n";
+		ret += "<link/>";
+		ret += "<description>" + title + "</description>\n";
+		ret += "<pubDate>" + new Date().toString() + "</pubDate>\n";
+		ret += "<ttl>60</ttl>\n";
+		ret += "<generator feedVersion=\"1.0\">IceCore</generator>\n";
+		return ret;
+	}
+
+	private String addRssFooter() {
+		String ret = "";
+		ret += "</channel>\n";
+		ret += "</rss>\n";
+		return ret;
+	}
+
 	private Document createEmptyRssDoc(String title) {
 		// First create our top-level document
 		Document doc = DocumentHelper.createDocument();
@@ -299,24 +478,75 @@ public class RssModuleImpl extends CommonDependencyInjection implements RssModul
 
 		// Set RSS version number
 		root.addAttribute("version", "2.0");
-		
-	    Element channel = root.addElement("channel");
-	    
-	    channel.addElement("title")
-	    	.addText(title);
-	    channel.addElement("link")
-	    	.addText("" /*this.getRssLink(binder)*/);
-	    channel.addElement("description")
-	    	.addText(title);
-	    channel.addElement("pubDate")
-	    	.addText(new Date().toString());
-	    channel.addElement("ttl")
-	    	.addText("60");
-	    channel.addElement("generator")
-	    	.addAttribute("feedVersion", "1.0")
-	    	.addText("SiteScape Forum");
-	    
-	    return doc;
+
+		Element channel = root.addElement("channel");
+
+		channel.addElement("title").addText(title);
+		channel.addElement("link").addText("");
+		channel.addElement("description").addText(title);
+		channel.addElement("pubDate").addText(new Date().toString());
+		channel.addElement("ttl").addText("60");
+		channel.addElement("generator").addAttribute("feedVersion", "1.0")
+				.addText("IceCore");
+
+		return doc;
 	}
-	
+
+}
+
+class RssFeedLock {
+	protected Log logger = LogFactory.getLog(getClass());
+
+	final String FS = System.getProperty("file.separator");
+
+	final String LOCKFILENAME = "lockfile";
+
+	private FileLock fileLock = null;
+
+	private FileChannel fileChannel = null;
+
+	private String indexPath = null;
+
+	private Binder binder = null;
+
+	RssFeedLock(String ip, Binder b) {
+		indexPath = ip;
+		binder = b;
+	}
+
+	public boolean getFeedLock() {
+
+		String lockName = indexPath + FS + LOCKFILENAME + binder.getId();
+		File lf = new File(lockName);
+		if (!lf.exists()) {
+			try {
+				lf.createNewFile();
+			} catch (Exception e) {
+			}
+		}
+		try {
+			fileChannel = new RandomAccessFile(lf, "rw").getChannel();
+			fileLock = fileChannel.lock();
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	public boolean releaseFeedLock() {
+		try {
+			fileLock.release();
+			fileChannel.close();
+			return true;
+		} catch (Exception e) {
+			logger.info("Couldn't release the RssFeedLock");
+		} finally {
+			try {
+				fileChannel.close();
+			} catch (Exception e) {
+			}
+		}
+		return false;
+	}
+
 }
