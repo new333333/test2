@@ -189,7 +189,7 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 
 --%></ssf:skipLink><%--
 
---%><script language="JavaScript">
+--%><script type="text/javascript">
 var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "false"
 function getWindowBgColor() {
 	return "#ffffff";
