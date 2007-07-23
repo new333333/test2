@@ -57,8 +57,4 @@ var ss_ostatus_clipboard = '<ssf:nlt tag="presence.addToClipboard" text="Add to 
 </script>
 <c:set var="ss_presence_support_loaded" value="1" scope="request"/>
 </c:if>
-<script type="text/javascript">
-
-
-</script>
 
