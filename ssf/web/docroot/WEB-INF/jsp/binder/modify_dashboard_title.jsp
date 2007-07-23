@@ -16,7 +16,6 @@
 
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
 <div style="margin:6px;">
 <span class="ss_bold ss_largerprint"><ssf:nlt tag="dashboard.setTitle"/></span>
 <br>
@@ -101,7 +100,6 @@
 </div>
 </div>
 
-</div>
 </div>
 </div>
 </div>

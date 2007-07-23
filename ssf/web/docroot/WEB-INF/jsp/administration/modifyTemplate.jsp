@@ -14,7 +14,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
 <div style="margin:6px;">
 
 <c:if test="${ssOperation == 'modify'}">
@@ -199,7 +198,6 @@ function <portlet:namespace/>_onsub(obj) {
 </form>
 </c:if>
 </c:if>
-</div>
 </div>
 </div>
 </div>

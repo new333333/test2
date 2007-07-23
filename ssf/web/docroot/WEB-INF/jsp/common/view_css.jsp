@@ -396,17 +396,6 @@ var ss_css_files_loaded = 1;
 <c:set var="ss_skipCssStyles" value="true" scope="request"/>
 <jsp:include page="/WEB-INF/jsp/common/ssf_css.jsp" />
 
-//Routine to round the corners of the rounded box tag
-function ss_rounded() {
-	return
-	if (self.NiftyCheck != null && self.NiftyCheck()) {
-		Rounded("div.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
-		Rounded("div.ss_rounded_border", "all", "${ss_style_background_color}", "transparent", "border smooth");
-		Rounded("div.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
-	}
-}
-//ss_createOnLoadObj('ss_rounded', ss_rounded);
-
 function ss_defineColorValues() {
 	ss_style_background_color = '${ss_style_background_color}';
 	ss_dashboard_table_border_color = '${ss_dashboard_table_border_color}';
