@@ -97,17 +97,20 @@
 </c:if>
 <c:if test="${ss_presence_show_options_inline}">
 <script type="text/javascript">
-ss_presenceMenu('${ss_presence_div_id}', this, 
-    '${ss_presence_user.id}', 
-    '<%= presenceUserTitle %>', 
-    '${ss_presence_userStatus}', 
-    '<%= presenceUserZonName %>', 
-    '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
-    '<%= presenceUserEmailAddress %>', 
-    '${ss_presence_vcard}', 
-    '${current}', 
-    '${ss_presence_component_id}', 
-    '${ss_presence_zonBridge}');
+function ss_showPresenceInline_${ss_presence_div_id}() {
+	ss_presenceMenu('${ss_presence_div_id}', this, 
+	    '${ss_presence_user.id}', 
+	    '<%= presenceUserTitle %>', 
+	    '${ss_presence_userStatus}', 
+	    '<%= presenceUserZonName %>', 
+	    '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
+	    '<%= presenceUserEmailAddress %>', 
+	    '${ss_presence_vcard}', 
+	    '${current}', 
+	    '${ss_presence_component_id}', 
+	    '${ss_presence_zonBridge}');
+}
+ss_createOnLoadObj("ss_showPresenceInline_${ss_presence_div_id}", ss_showPresenceInline_${ss_presence_div_id});
 
 </script>
 </c:if>
