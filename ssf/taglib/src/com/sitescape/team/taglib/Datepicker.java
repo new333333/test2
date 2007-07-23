@@ -131,18 +131,12 @@ public class Datepicker extends TagSupport {
 
 	        StringBuffer sb = new StringBuffer();
 	        // load support for datapicker 
-	        sb.append("<script type=\"text/javascript\" src=\"")
-	          .append(contextPath)
-	          .append("/js/datepicker/CalendarPopup.js\"></script>\n");
-	        sb.append("<script type=\"text/javascript\" src=\"")
-	          .append(contextPath)
-	          .append("/js/common/AnchorPosition.js\"></script>\n");
-	        sb.append("<script type=\"text/javascript\" src=\"")
-	          .append(contextPath)
-	          .append("/js/common/PopupWindow.js\"></script>\n");
-	        sb.append("<script type=\"text/javascript\" src=\"")
-	          .append(contextPath)
-	          .append("/js/datepicker/date.js\"></script>\n");
+			sb.append("<script type=\"text/javascript\">\n");
+	        sb.append("ss_loadJsFile(ss_rootPath, 'js/datepicker/CalendarPopup.js');\n");
+	        sb.append("ss_loadJsFile(ss_rootPath, 'js/common/AnchorPosition.js');\n");
+	        sb.append("ss_loadJsFile(ss_rootPath, 'js/common/PopupWindow.js');\n");
+	        sb.append("ss_loadJsFile(ss_rootPath, 'js/datepicker/date.js');\n");
+			sb.append("</script>\n");
 
 		String varname = prefix; // for some backward compatibility
 			// we have to keep the instance name and the setMultipleValues function name unique
