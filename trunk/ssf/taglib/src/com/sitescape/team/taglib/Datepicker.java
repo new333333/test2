@@ -131,14 +131,21 @@ public class Datepicker extends TagSupport {
 
 	        StringBuffer sb = new StringBuffer();
 	        // load support for datapicker 
-			sb.append("<script type=\"text/javascript\">\n");
-	        sb.append("ss_loadJsFile(ss_rootPath, 'js/datepicker/CalendarPopup.js');\n");
-	        sb.append("ss_loadJsFile(ss_rootPath, 'js/common/AnchorPosition.js');\n");
-	        sb.append("ss_loadJsFile(ss_rootPath, 'js/common/PopupWindow.js');\n");
-	        sb.append("ss_loadJsFile(ss_rootPath, 'js/datepicker/date.js');\n");
-			sb.append("</script>\n");
-
-		String varname = prefix; // for some backward compatibility
+	        sb.append("<script type=\"text/javascript\" src=\"")
+	          .append(contextPath)
+	          .append("/js/datepicker/CalendarPopup.js\"></script>\n");
+	        sb.append("<script type=\"text/javascript\" src=\"")
+	          .append(contextPath)
+	          .append("/js/common/AnchorPosition.js\"></script>\n");
+	        sb.append("<script type=\"text/javascript\" src=\"")
+	          .append(contextPath)
+	          .append("/js/common/PopupWindow.js\"></script>\n");
+	        sb.append("<script type=\"text/javascript\" src=\"")
+	          .append(contextPath)
+	          .append("/js/datepicker/date.js\"></script>\n");
+						
+			
+	        String varname = prefix; // for some backward compatibility
 			// we have to keep the instance name and the setMultipleValues function name unique
 			// in case there is more than one picker on the page
 			
@@ -396,13 +403,22 @@ public class Datepicker extends TagSupport {
 				  .append("\"")
 				  .append("></A>\n");
 				sb.append("<script type=\"text/javascript\">\n");
-	            sb.append(prefix);
+				sb.append("function ");
+				sb.append(prefix);
+				sb.append("_outercall() {\n");
+				sb.append(prefix);
 				sb.append(".showCalendar('anchor_")
 				  .append(prefix)
 				  .append("', ")
 				  .append("getCurrentDateString_")
 				  .append(prefix)
 				  .append("('mdy'));\n");
+				sb.append("}\n");
+				sb.append("ss_createOnLoadObj('");
+				sb.append(prefix);
+				sb.append("', ");
+				sb.append(prefix);
+				sb.append("_outercall);\n");
 				sb.append("</script>\n");
 			}
 			sb.append("<input type=\"hidden\" name=\"")
