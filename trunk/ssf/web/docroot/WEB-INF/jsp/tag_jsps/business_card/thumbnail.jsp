@@ -32,8 +32,11 @@
 		    <ssf:param name="fileId" value="${thumbnail.id}"/>
 		    <ssf:param name="fileTime" value="${thumbnail.modification.date.time}"/>
 		    <ssf:param name="viewType" value="thumbnail"/>
-		    </ssf:url>" onerror="ss_buddyPhotoLoadError(this, '<img border=&quot;0&quot; src=&quot;<html:imagesPath/>pics/thumbnail_no_photo.jpg&quot;>');" />
+		    </ssf:url>" onerror="ss_buddyPhotoLoadError(this, '<html:imagesPath/>pics/thumbnail_no_photo.jpg');" />
 	</c:if>
+
+
+
 	<c:if test="${empty thumbnail}">
 		<img border="0" <ssf:alt tag="alt.thumbnail"/> src="<html:imagesPath/>pics/thumbnail_no_photo.jpg">
 	</c:if>
