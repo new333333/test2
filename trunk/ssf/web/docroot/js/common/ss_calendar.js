@@ -67,7 +67,7 @@ Date.shortTime = function(t) {
 }
 
 Date.getDayHeader = function(date) {
-	return date.getDate() + "-" + date.getMonthNameShort();
+	return Date.dayNamesShort[date.getDay()] + "-" + date.getDate() + "-" + date.getMonthNameShort();
 }
 
 /* Ignores times.
