@@ -34,7 +34,6 @@ function <%=cTreeName%>_showId(id, obj, action) {
 } 
 </script>
 <div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
 <div style="margin:6px;">
 <h3><ssf:nlt tag="administration.configure_cfg" text="Templates"/></h3>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
@@ -103,7 +102,6 @@ function <%=cTreeName%>_showId(id, obj, action) {
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
-</div>
 </div>
 </div>
 </c:if>
@@ -221,7 +219,6 @@ function ss_confirmDeleteConfig() {
 
 <c:if test="${ssOperation == 'add_folder' or ssOperation == 'add_workspace'}">
 <div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
 <div style="margin:6px;">
 <form method="post" action="<portlet:actionURL><portlet:param 
 		name="action" value="configure_configuration"/>
@@ -241,7 +238,6 @@ function ss_confirmDeleteConfig() {
 </div>
 
 </form>
-</div>
 </div>
 </div>
 

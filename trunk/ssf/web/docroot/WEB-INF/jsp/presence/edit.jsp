@@ -15,7 +15,7 @@
 
 <div class="ss_portlet">
 <div class="ss_style ss_form" style="margin:6px;">
-<div class="ss_rounded">
+<div>
 <div style="margin:6px; width:100%;">
 <h3><ssf:nlt tag="portlet.presence.configure" text="Configure buddy list"/></h3>
 <fieldset class="ss_fieldset">

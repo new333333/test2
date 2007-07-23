@@ -19,12 +19,6 @@ div.xportlet-box {
     position: relative;
 }
 
-
-
-/* This style triggers the Nifty Corners rounding effect. 
-   Add "ss_rounded" to any element that is to be rounded. */
-.ss_rounded {}
-    
 .ss_normal {
   font-weight: normal !important;
   }

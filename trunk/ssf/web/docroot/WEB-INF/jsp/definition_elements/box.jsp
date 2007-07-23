@@ -18,14 +18,6 @@
 <c:if test="${!empty property_id}">
   id="${property_id}"
 </c:if>
-<c:if test="${propertyValues_style[0] == 'rounded'}">
-  <c:if test="${ssConfigJspStyle == 'form'}">
-    class="ss_rounded_border_form"
-  </c:if>
-  <c:if test="${ssConfigJspStyle != 'form'}">
-    class="ss_rounded_border"
-  </c:if>
-</c:if>
 <c:if test="${propertyValues_style[0] == 'square'}">
   style="border:solid black 1px; padding:2px; margin-bottom:2px;"
 </c:if>
