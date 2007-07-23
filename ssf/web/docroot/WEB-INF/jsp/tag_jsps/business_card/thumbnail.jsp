@@ -21,7 +21,6 @@
 <c:set var="thumbnail" value="<%= thumbnail %>"/>
 <c:set var="photo_folder" value="<%= photo_folder %>"/>
 <c:set var="photo_entry" value="<%= photo_entry %>"/>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/business_card/thumbnail.js"></script>
 
 <div class="<c:if test="${!empty style}">${style}</c:if><c:if test="${empty style}">ss_thumbnail_small_buddies_list</c:if>"><div>
   	<c:if test="${!empty thumbnail}">
