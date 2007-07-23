@@ -87,8 +87,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_onLayoutChangeList = new Array();
 	var ss_validatorList = new Array();
 	var ss_menuDivClones = new Array();
-	var divToBeHidden = new Array;
-	var divToBeDelayHidden = new Array;
+	var ss_divToBeHidden = new Array;
+	var ss_divToBeDelayHidden = new Array;
 	var ss_onErrorList = new Array();
 	var ss_spannedAreasList = new Array();
 	var ss_active_menulayer = '';
@@ -1330,13 +1330,13 @@ function ss_HideDivIfActivated(divName) {
 
 //Routine to make div's be hidden on next click
 function ss_HideDivOnSecondClick(divName) {
-    divToBeHidden[divToBeHidden.length] = divName;
-    ss_debug('divToBeHidden length = '+divToBeHidden.length)
+    ss_divToBeHidden[ss_divToBeHidden.length] = divName;
+    ss_debug('ss_divToBeHidden length = '+ss_divToBeHidden.length)
 }
 
 //Routine to make div's be hidden on next click
 function ss_NoHideDivOnNextClick(divName) {
-    divToBeDelayHidden[divName] = divName;
+    ss_divToBeDelayHidden[divName] = divName;
 }
 
 function ss_showDivAtXY(divName) {
@@ -1366,7 +1366,7 @@ function ss_showDiv(divName) {
 function ss_hideDiv(divName) {
 	if (document.getElementById(divName))
 			document.getElementById(divName).style.visibility = "hidden";
-    divToBeDelayHidden[divName] = null
+    ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
     
 	//Signal that the layout changed
@@ -1382,7 +1382,7 @@ function ss_hideDivNone(divName) {
 		document.getElementById(divName).style.display = "none";
 		document.getElementById(divName).style.visibility = "hidden";
 	}
-    divToBeDelayHidden[divName] = null
+    ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
     
 	//Signal that the layout changed
@@ -1463,19 +1463,19 @@ function captureXY(e) {
 
     //See if there is a div to be hidden
     ss_lastDivBeingShown = ss_divBeingShown;
-    if (divToBeHidden.length > 0) {
-        for (var i = 0; i < divToBeHidden.length; i++) {
-	        if (divToBeHidden[i] != '') {
-	            if (divToBeDelayHidden[divToBeHidden[i]]) {
-	                divToBeDelayHidden[divToBeHidden[i]] = null
+    if (ss_divToBeHidden.length > 0) {
+        for (var i = 0; i < ss_divToBeHidden.length; i++) {
+	        if (ss_divToBeHidden[i] != '') {
+	            if (ss_divToBeDelayHidden[ss_divToBeHidden[i]]) {
+	                ss_divToBeDelayHidden[ss_divToBeHidden[i]] = null
 	            } else {
-	                ss_hideDiv(divToBeHidden[i])
-	    			if (divToBeHidden[i] == ss_divBeingShown) ss_divBeingShown = null;
-	                divToBeHidden[i] = '';
+	                ss_hideDiv(ss_divToBeHidden[i])
+	    			if (ss_divToBeHidden[i] == ss_divBeingShown) ss_divBeingShown = null;
+	                ss_divToBeHidden[i] = '';
 	            }
 	        }
 	    }
-	    divToBeHidden = new Array();
+	    ss_divToBeHidden = new Array();
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
