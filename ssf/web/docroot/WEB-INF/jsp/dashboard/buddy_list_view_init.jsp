@@ -19,7 +19,10 @@ function ${ss_namespace}_${componentId}_getPresence(timeout) {
 //	if (myDiv == null) return;
 //alert("2");
 	ss_setupStatusMessageDiv();
-	clearTimeout(${ss_namespace}_${componentId}_presenceTimer);
+	if (${ss_namespace}_${componentId}_presenceTimer != null) {
+		clearTimeout(${ss_namespace}_${componentId}_presenceTimer);
+		${ss_namespace}_${componentId}_presenceTimer = null;
+	}
 	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
