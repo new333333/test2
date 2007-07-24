@@ -64,7 +64,7 @@
 			<br/><br/>
 	
 			<span class="ss_bold">
-			  <ssf:nlt tag="dashboard.task.selectTaskFolder"/>
+			  <ssf:nlt tag="dashboard.calendar.selectCalendarFolder"/>
 			</span>
 			<br/><br/>
 			
@@ -72,7 +72,7 @@
 				<c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
 					<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
 						<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>>
-						<span><ssf:nlt tag="dashboard.task.selectFolderRelative"/></span></td></tr>
+						<span><ssf:nlt tag="dashboard.calendar.selectFolderRelative"/></span></td></tr>
 					</table>
 				</c:if>
 				
