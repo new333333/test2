@@ -54,11 +54,92 @@ function ${wsTreeName}_showId(id, obj, action) {
 <ssf:tree treeName="${wsTreeName}"
 	treeDocument="${ssWsDomTree}"  
  	rootOpen="true"
-	singleSelect="" 
+	singleSelect="${ssDefaultSaveLocationId}" 
 	singleSelectName="destination" />
 </div>
 
 <br/>
+
+<!-- Displays the current save location, if one has already been
+	specified in current user session-->
+
+<span class="ss_bold"><ssf:nlt tag="move.currentLocation" /></span>
+<br/>
+
+<% // similar to Navigation links %>
+
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
+<div class="ss_breadcrumb">
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" 
+  <c:if test="<%= !isIE %>">
+   offsetY="4"
+  </c:if>
+  <c:if test="<%= isIE %>">
+   offsetY="2" xAlignment="center"
+  </c:if>
+    title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
+
+<ul style="margin-left:-15px;">
+<c:if test="${!empty ssDefaultSaveLocation.parentBinder}">
+<c:set var="parentBinder" value="${ssDefaultSaveLocation.parentBinder}"/>
+<jsp:useBean id="parentBinder" type="java.lang.Object" />
+<%
+	Stack parentTree = new Stack();
+	while (parentBinder != null) {
+		//if (((Binder)parentBinder).getEntityType().equals(com.sitescape.team.domain.EntityIdentifier.EntityType.profiles)) break;
+		parentTree.push(parentBinder);
+		parentBinder = ((Binder)parentBinder).getParentBinder();
+	}
+	while (!parentTree.empty()) {
+		Binder nextBinder = (Binder) parentTree.pop();
+%>
+<c:set var="nextBinder" value="<%= nextBinder %>"/>
+<br style="float:left;">
+<c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
+<c:if test="${empty nextBinder.title}" >
+--<ssf:nlt tag="entry.noTitle" />--
+</c:if>
+<c:out value="${nextBinder.title}" /></a>
+</c:if>
+<c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
+<div style="display:inline">
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
+  topId="${nextBinder.id}" rootOpen="false" showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
+</div>
+</c:if>
+</br>
+<br style="float:left; padding-top:2px;">&nbsp;&nbsp;//&nbsp;&nbsp;</li>
+<%
+	}
+%>
+</c:if>
+<br style="float:left;">
+<c:if test="${ssDefaultSaveLocation.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefaultSaveLocation.id]}">
+<c:if test="${empty ssDefaultSaveLocation.title}" >
+--<ssf:nlt tag="move.locationUnspecified" />--
+</c:if>
+<c:out value="${ssDefaultSaveLocation.title}" /><img border="0" <ssf:alt/>
+  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+</c:if>
+<c:if test="${ssDefaultSaveLocation.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefaultSaveLocation.id]}">
+<div style="display:inline">
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefaultSaveLocation.id}${renderResponse.namespace}" 
+  treeDocument="${ssNavigationLinkTree[ssDefaultSaveLocation.id]}" 
+  topId="${ssDefaultSaveLocation.id}" rootOpen="false" 
+  showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
+  highlightNode="${ssDefaultSaveLocation.id}" />
+</div>
+</c:if>
+</br>
+</ul>
+</div>
+<div class="ss_clear"></div>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
