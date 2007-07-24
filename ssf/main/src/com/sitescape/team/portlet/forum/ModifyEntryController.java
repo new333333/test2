@@ -18,12 +18,14 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Subscription;
@@ -38,6 +40,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.tree.FolderConfigHelper;
 
 /**
@@ -47,7 +50,7 @@ import com.sitescape.team.web.tree.FolderConfigHelper;
 public class ModifyEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
-
+	
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -115,6 +118,8 @@ public class ModifyEntryController extends SAbstractController {
 				//must be move entry
 				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
 				if (destinationId != null) {
+					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+					portletSession.setAttribute(WebKeys.DEFAULT_SAVE_LOCATION_ID, destinationId);
 					getFolderModule().moveEntry(folderId, entryId, new Long(destinationId));
 					setupViewFolder(response, folderId);		
 				} else {
@@ -178,11 +183,22 @@ public class ModifyEntryController extends SAbstractController {
 			Workspace ws = getWorkspaceModule().getTopWorkspace();
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			
+			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+			Long id = (Long)portletSession.getAttribute(WebKeys.DEFAULT_SAVE_LOCATION_ID);
+			
+			if(id != null)
+			{
+				model.put(WebKeys.DEFAULT_SAVE_LOCATION_ID, id);
+				Binder binder = getBinderModule().getBinder(id);
+				model.put(WebKeys.DEFAULT_SAVE_LOCATION, binder);
+			}
+			
 			path = WebKeys.VIEW_MOVE_ENTRY;
 		} else {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
-				
+			
 			Workspace ws = getWorkspaceModule().getWorkspace();
 			model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 
