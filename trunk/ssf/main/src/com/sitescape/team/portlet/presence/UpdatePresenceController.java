@@ -50,8 +50,8 @@ public class UpdatePresenceController  extends SAbstractController {
 		model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, ""));
 		String componentId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		model.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
-		response.setContentType("text/xml");
 		if (!WebHelper.isUserLoggedIn(request)) {
+			response.setContentType("text/xml");
 			Map statusMap = new HashMap();
 			model.put(WebKeys.AJAX_STATUS, statusMap);	
 	 				

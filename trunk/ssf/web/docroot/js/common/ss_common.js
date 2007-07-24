@@ -1708,7 +1708,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData) {
 		ss_fetch_url_debug("status: " + x.status + ", received " + x.responseText);
 		ss_fetch_url_debug("callbackRoutine " + callbackRoutine);
         if (x.status == 200) {
-        	callbackRoutine(x.responseText, callbackData)        	
+        	callbackRoutine(x.responseText, callbackData) 
         } else {
         	alert(x.status + "  \n" + x.statusText)
         	callbackRoutine(x.statusText)

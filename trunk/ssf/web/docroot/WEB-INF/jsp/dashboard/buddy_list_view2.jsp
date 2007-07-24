@@ -19,7 +19,7 @@
   <div class="ss_portlet_style ss_portlet">
   <table cellpadding="3" style="width:100%;">
   <tr>
-  <td>
+  <td style="padding-bottom:10px;">
   <a class="ss_linkButton ss_bold ss_smallprint" href=""
     onClick="if (${ss_namespace}_${componentId}_getPresence) {${ss_namespace}_${componentId}_getPresence('')};return false;"
   ><ssf:nlt tag="general.Refresh"/></a>
@@ -49,8 +49,7 @@
 					  <tr>
 					  <td><span id="${ss_namespace}_${componentId}_user_<c:out value="${u1.id}"/>"
 					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ss_namespace}_${componentId}"/> </span></td>
-					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td>
+					  <td style="padding-left:10px;">
 					  <ssf:ifadapter>
 					  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					    action="view_permalink"
