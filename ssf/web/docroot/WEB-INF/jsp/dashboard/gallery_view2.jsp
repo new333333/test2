@@ -14,7 +14,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 
-<table><tr><td>
+<table width="99%"><tr><td>
 <c:choose>
 <c:when test="${ssDashboard.dashboard.components[componentId].data.galleryImageSize == 'small'}">
 <div class="ss_thumbnail_gallery ss_thumbnail_small"> 
