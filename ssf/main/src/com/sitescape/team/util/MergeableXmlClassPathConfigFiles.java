@@ -34,6 +34,15 @@ public abstract class MergeableXmlClassPathConfigFiles extends XmlClassPathConfi
         return mergedDoc;
     }
     
+    /*
+    public void setConfigFiles(String[] cFiles) {
+    	if(cFiles.length > 1)
+    		throw new IllegalArgumentException("Current implementation does not support multiple config files");
+    	else
+    		super.setConfigFiles(cFiles);
+    }
+    */
+    
     /**
      * Merges the contents of files into a single <code>org.dom4j.Document</code>.
      * There is no universally agreed-upon algorithm for merging multiple DOM
