@@ -119,10 +119,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					
 							<a href="javascript: ;" 
 								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_namespace_attach}', '<%= operatingSystem %>', 
-									'<ssf:ssfsInternalAttachmentUrl 
-										binder="${ssDefinitionEntry.parentBinder}"
-										entity="${ssDefinitionEntry}" 
-										fileAttachment="${selection}" escapeSingleQuote="yes" />');
+									'${selection.id}');
 									return false;">
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 

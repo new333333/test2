@@ -9,10 +9,9 @@
  *
  */
 package com.sitescape.team.ssfs.util;
-
+import java.net.URLEncoder;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
-
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -42,6 +41,18 @@ public class SsfsUtil {
 		append(fa.getRepositoryName()).
 		append("/").
 		append(fa.getFileItem().getName()).toString();
+	}
+
+	public static String getInternalAttachmentUrlEncoded(PortletRequest req, Binder binder, 
+			DefinableEntity entity, FileAttachment fa) throws Exception {
+		StringBuffer sb = getInternalCommonPart(req, binder, entity);
+		String strFileName = fa.getFileItem().getName();
+		String strUrlEncoded = URLEncoder.encode(strFileName, "UTF-8");
+		
+		return sb.append("attach/").
+		append(fa.getRepositoryName()).
+		append("/").
+		append(strUrlEncoded).toString();
 	}
 	
 	public static String getInternalFileUrl(HttpServletRequest req, Binder binder, 

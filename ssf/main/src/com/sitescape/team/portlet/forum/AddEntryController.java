@@ -11,6 +11,7 @@
 package com.sitescape.team.portlet.forum;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -49,6 +50,7 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.FolderConfigHelper;
@@ -172,12 +174,13 @@ public class AddEntryController extends SAbstractController {
 	        			
 	        			//Getting the file information
 	        			MultipartFile myFile = (MultipartFile)fileMap.get(fileEleName);
-	        	    	String orginalFileName = myFile.getOriginalFilename();
+	        	    	String strEncodedFileName = myFile.getOriginalFilename();
+	        	    	String strDecodedFileName = URLDecoder.decode(strEncodedFileName, "UTF-8"); 
 	        	    	
 	        	    	//Getting the file folder information
 	        	    	String fileFolderNameVal = PortletRequestUtils.getStringParameter(request, fileFolderName, "");
 	        	    	//Getting the list of folders as a arraylist
-	        	    	ArrayList folderArrayList = getFolderList(fileFolderNameVal);
+	        	    	ArrayList folderArrayList = getFolderListWithDecodedValues(fileFolderNameVal);
 	        	    	
 	        	    	//Looping through the folder name to identify under which folder we need to add the attachment
 	        	    	for (int i = 0; i < folderArrayList.size(); i++) {
@@ -212,14 +215,14 @@ public class AddEntryController extends SAbstractController {
 	        	    	//Using the Folder object that was already present or that was recently created 
 	        	    	Folder entryCreationFolder = getFolderModule().getFolder(lngFolderIdToUse);
 	        	    	//Checking to see if the folder already contains the file that we are trying to create
-	        	    	FolderEntry preExistingEntry = getFolderModule().getLibraryFolderEntryByFileName(entryCreationFolder, orginalFileName);
+	        	    	FolderEntry preExistingEntry = getFolderModule().getLibraryFolderEntryByFileName(entryCreationFolder, strDecodedFileName);
 	        	    	
 	        	    	//If there is not pre-existing entry - we create a new entry
 	        	    	//If there is a pre-existing entry - we modify the entry
 	        	    	if (preExistingEntry == null) {
-	        	    		FolderUtils.createLibraryEntry(entryCreationFolder, orginalFileName, myFile.getInputStream(), null, true);
+	        	    		FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, true);
 	        	    	} else {
-	        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, orginalFileName, myFile.getInputStream(), null, true);
+	        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, true);
 	        	    	}
 	        	    	intFileCount++;
 	        		} else {
@@ -242,12 +245,13 @@ public class AddEntryController extends SAbstractController {
 	        		String fileEleName = nameValue + Integer.toString(intFileCount);
 	        		if (fileMap.containsKey(fileEleName)) {
 	        	    	MultipartFile myFile = (MultipartFile)fileMap.get(fileEleName);
-	        	    	String fileName = myFile.getOriginalFilename();
+	        	    	String utf8EncodedFileName = myFile.getOriginalFilename();
+	        	    	String utf8DecodedFileName = URLDecoder.decode(utf8EncodedFileName, "UTF-8");
+	        	    	java.io.InputStream content = myFile.getInputStream();
+	        	    	MultipartFile mf = new SimpleMultipartFile(utf8DecodedFileName, content);
 	        	    	intFileCount++;
-	        	    	
-	        	    	oneFileMap.put(nameValue+"1", myFile);
-	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
-	        	    	
+	        	    	oneFileMap.put(nameValue+"1", mf);
+	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap);
 	        		} else {
@@ -262,11 +266,13 @@ public class AddEntryController extends SAbstractController {
 		}
 	}
 	
-	private ArrayList getFolderList(String strFolderAndFileName) {
+	private ArrayList getFolderListWithDecodedValues(String strFolderAndFileName) throws Exception {
 		ArrayList arrFolders = new ArrayList();
 		String [] strSplitValue = strFolderAndFileName.split("/");
 		for (int i = 0; i < strSplitValue.length; i++) {
-			arrFolders.add(strSplitValue[i]);
+			String strEncodedValue = strSplitValue[i];
+			String strDecodedValue = URLDecoder.decode(strEncodedValue, "UTF-8");
+			arrFolders.add(strDecodedValue);
 		}
 		return arrFolders;
 	}

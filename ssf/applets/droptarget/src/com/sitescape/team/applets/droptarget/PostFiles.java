@@ -28,6 +28,7 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.applet.AppletContext;
+
 import netscape.javascript.JSObject;
 
 public class PostFiles extends Thread {
@@ -48,6 +49,19 @@ public class PostFiles extends Thread {
         } catch (Exception e) {
         }
     }
+
+	private static String getEncodedFolderAndFileName(String strFolderAndFileName) throws Exception {
+		String [] strSplitValue = strFolderAndFileName.split("/");
+		String strEncodedFolder = "";
+		for (int i = 0; i < strSplitValue.length; i++) {
+			if (i != 0) {
+				strEncodedFolder += "/" + URLEncoder.encode(strSplitValue[i], "UTF-8");  
+			} else {
+				strEncodedFolder = URLEncoder.encode(strSplitValue[i], "UTF-8");
+			}
+		}
+		return strEncodedFolder;
+	}    
     
     private static void writeFolderAndFileName(String localFileName, String topDir, TopFrame topFrame, String name, OutputStream out, String boundary) {
         String localfn;
@@ -56,6 +70,7 @@ public class PostFiles extends Thread {
             // replace any backslashes with slashes (backslashes are special in Java strings)
             String lfn = localFileName.replace('\\','/');
             String td = topDir.replace('\\','/');
+            
             // clip off the topDir
             String relFileName = lfn.replaceFirst(td,"");
 
@@ -77,15 +92,16 @@ public class PostFiles extends Thread {
             if (localfn.lastIndexOf("/") != -1) {
             	strFolderName = localfn.substring(0, localfn.lastIndexOf("/"));
             }
+            String strEncodedFolderName = getEncodedFolderAndFileName(strFolderName);
             
             out.write(new String("content-disposition: form-data; name=\"" + name + "\"\r\n\r\n").getBytes());
-            out.write(strFolderName.getBytes());
+            out.write(strEncodedFolderName.getBytes());
             out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
         } catch (Exception e) {
         }
     }
     
-    private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir, String strFormFieldName) {
+    private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir, String strFormFieldName) throws Exception {
         String localfn;
         String localRelFileName;
         try {
@@ -101,8 +117,6 @@ public class PostFiles extends Thread {
           String td = topDir.replace('\\','/');
           // clip off the topDir
           String relFileName = lfn.replaceFirst(td,"");
-
-          
           
           // Drop the initial file separator
           if (relFileName.startsWith("/")) {
@@ -117,9 +131,10 @@ public class PostFiles extends Thread {
           } else {
             localfn = new String(localf + "/" + localRelFileName);
           }
-                    
+          String strUTF8EncodedFileName = getEncodedFolderAndFileName(localfn);
+          
           //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
-          out.write(new String("content-disposition: form-data; name=\""+strFormFieldName+"\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
+          out.write(new String("content-disposition: form-data; name=\""+strFormFieldName+"\"; filename=\"" + strUTF8EncodedFileName + "\"\r\n\r\n").getBytes());
 
           FileInputStream fis = new FileInputStream(localFileName);
           if (localFile.length() != 0) {
@@ -170,6 +185,7 @@ public class PostFiles extends Thread {
         } else {
           localfn = new String(localf + "/" + localRelFileName);
         }
+        
         //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
         out.write(new String("content-disposition: form-data; name=\""+ topFrame.getParameter("appletFileName") +"\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
 
@@ -213,7 +229,7 @@ public class PostFiles extends Thread {
       topDir = td;
       start();
     }
-
+    
     public void run() {
 
       String unlockParam;
@@ -234,6 +250,7 @@ public class PostFiles extends Thread {
             
             conn.setRequestProperty("Content-type","multipart/form-data; boundary=" + boundary);
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
+            conn.setRequestProperty("Accept-Charset", "utf-8;q=0.9");
             conn.setRequestProperty("Connection", "keep-alive");
             conn.connect();
             
