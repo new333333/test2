@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
+
 import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -274,7 +276,7 @@ public class DefinitionHelper {
 		}
 		return false;
 	}
-    public static String getWebDAVURL(Folder folder, FolderEntry entry) {
+    public static String getWebDAVURL(PortletRequest req, Folder folder, FolderEntry entry) {
     	String strEntryURL = "";
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
@@ -300,7 +302,7 @@ public class DefinitionHelper {
 				
 			}
 		}
-		strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
+		strEntryURL = SsfsUtil.getEntryUrl(req, folder, entry, strRepositoryName);
 		
 		return strEntryURL;
     }

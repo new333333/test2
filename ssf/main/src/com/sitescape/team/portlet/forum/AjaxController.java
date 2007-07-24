@@ -1421,7 +1421,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String fileHandle = WebHelper.getFileHandleOnUploadedFile(request);
 		if (fileHandle != null) {
 			// Create a URL containing the handle
-			String url = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
+			String url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
 			"&" + WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE + 
 			"&" + WebKeys.URL_FILE_ID + "=" + fileHandle; 
 

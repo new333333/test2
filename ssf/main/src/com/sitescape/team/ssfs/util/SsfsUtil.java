@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.ssfs.util;
 
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -18,24 +21,22 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 public class SsfsUtil {
-
+	
 	private static String[] editInPlaceFileExtensionsIE;
 	private static String[] editInPlaceFileExtensionsNonIE;
 	
-	public static String getEntryUrl(Binder binder, 
+	public static String getEntryUrl(PortletRequest req, Binder binder, 
 			DefinableEntity entity, String strRepositoryName) {
-		StringBuffer sb = getInternalCommonPart(binder, entity);
+		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		
 		return sb.append("attach/").
 		append(strRepositoryName).
 		append("/").toString();
 	}
-	
-
-	
-	public static String getInternalAttachmentUrl(Binder binder, 
-			DefinableEntity entity, FileAttachment fa) {
-		StringBuffer sb = getInternalCommonPart(binder, entity);
+		
+	public static String getInternalAttachmentUrl(HttpServletRequest req, 
+			Binder binder, DefinableEntity entity, FileAttachment fa) {
+		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		
 		return sb.append("attach/").
 		append(fa.getRepositoryName()).
@@ -43,9 +44,9 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
-	public static String getInternalFileUrl(Binder binder, DefinableEntity entity,
-			String elemName, FileAttachment fa) {
-		StringBuffer sb = getInternalCommonPart(binder, entity);
+	public static String getInternalFileUrl(HttpServletRequest req, Binder binder, 
+			DefinableEntity entity, String elemName, FileAttachment fa) {
+		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		
 		return sb.append("file").
 		append("/").		
@@ -54,9 +55,9 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
-	public static String getInternalTitleFileUrl(Binder binder, 
-			DefinableEntity entity, FileAttachment fa) {
-		StringBuffer sb = getInternalCommonPart(binder, entity);
+	public static String getInternalTitleFileUrl(HttpServletRequest req, 
+			Binder binder, DefinableEntity entity, FileAttachment fa) {
+		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		
 		// Library type element is singleton (ie, at most one instance),
 		// and therefore we do not need to encode element name in url.
@@ -66,17 +67,38 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
-	public static String getLibraryBinderUrl(Binder binder) {
-		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(true);
+	public static String getLibraryBinderUrl(HttpServletRequest req, Binder binder) {
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		return sb.append("files/library/"). // follow Slide's convention
 		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name
 		append(binder.getPathName()).toString();
 	}
 	
-	private static StringBuffer getInternalCommonPart(Binder binder, 
+	public static String getLibraryBinderUrl(PortletRequest req, Binder binder) {
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
+		
+		return sb.append("files/library/"). // follow Slide's convention
+		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name
+		append(binder.getPathName()).toString();
+	}
+	
+	private static StringBuffer getInternalCommonPart(HttpServletRequest req, Binder binder, 
 			DefinableEntity entity) {
-		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(true);
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
+		
+		return sb.append("files/internal/"). // follow Slide's convention
+		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name 
+		append("/").
+		append(binder.getId()).
+		append("/").
+		append(entity.getId()).
+		append("/");	
+	}
+	
+	private static StringBuffer getInternalCommonPart(PortletRequest req, Binder binder, 
+			DefinableEntity entity) {
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		return sb.append("files/internal/"). // follow Slide's convention
 		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name 

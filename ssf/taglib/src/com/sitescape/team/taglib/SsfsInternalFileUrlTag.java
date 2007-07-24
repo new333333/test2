@@ -12,6 +12,7 @@ package com.sitescape.team.taglib;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -39,7 +40,7 @@ public class SsfsInternalFileUrlTag extends TagSupport {
 		if(fa == null)
 			throw new JspException("File attachment must be specified");
 		
-		String url = SsfsUtil.getInternalFileUrl(binder, entity, elemName, fa);
+		String url = SsfsUtil.getInternalFileUrl((HttpServletRequest) pageContext.getRequest(), binder, entity, elemName, fa);
 		
 		try {
 			pageContext.getOut().print(url);

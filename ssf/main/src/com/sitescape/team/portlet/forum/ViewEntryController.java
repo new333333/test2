@@ -530,7 +530,7 @@ public class ViewEntryController extends  SAbstractController {
 			Map qualifiers = new HashMap();
 			toolbar.addToolbarMenu("8_reports", NLT.get("toolbar.reports"), "", qualifiers);
 
-			String servletUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
+			String servletUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_DOWNLOAD_REPORT + "?" +
 			WebKeys.URL_BINDER_ID + "=" + folderId + "&" + WebKeys.URL_ENTRY_ID + "=" + entryId + "&" +
 			WebKeys.URL_REPORT_TYPE + "=entry&forumOkBtn=OK"; 
 			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.activity"), servletUrl, qualifiers);
@@ -678,7 +678,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
 		
-		String strEntryURL = DefinitionHelper.getWebDAVURL(folder, entry);
+		String strEntryURL = DefinitionHelper.getWebDAVURL(req, folder, entry);
 		//String strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
 		//String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
 		
