@@ -22,73 +22,19 @@ import com.sitescape.util.Http;
 
 public class WebUrlUtil {
 	
-	/**
-	 * Returns URL up to the SSF web app context root. The URL starts with a
-	 * scheme and ends with a "/" character (e.g. http://abc.com:8080/ssf/).
-	 * <p>
-	 * If <code>req</code> is null, it uses system config information stored 
-	 * in ssf.properties (which is static) to construct the URL as opposed to 
-	 * the dynamic data available in the <code>HttpServletRequest</code>.   
-	 * 
-	 * @param req may be null
-	 * @return
-	 */
-	public static StringBuffer getContextRootURL(HttpServletRequest req) {
-		if(req == null)
-			return getContextRootURL(req, false);
-		else
-			return getContextRootURL(req, req.isSecure());
-	}
+	private static final int WEB_PROTOCOL_CONTEXT_HTTP	= 1;
+	private static final int WEB_PROTOCOL_CONTEXT_HTTPS	= 2;
+	private static final int WEB_PROTOCOL_HTTP 			= 3;
+	private static final int WEB_PROTOCOL_HTTPS			= 4;
 	
-	/**
-	 * Returns URL up to the SSF web app context path. The URL starts with a 
-	 * scheme and ends with a "/" character (e.g. http://abc.com:8080/ssf/).
-	 * <p>
-	 * If <code>req</code> is null, it uses system config information stored 
-	 * in ssf.properties (which is static) to construct the URL as opposed to 
-	 * the dynamic data available in the <code>HttpServletRequest</code>.   
-	 * 
-	 * @param req may be null
-	 * @param secure
-	 * @return
-	 */
-	public static StringBuffer getContextRootURL(HttpServletRequest req, boolean secure) {
-
-		StringBuffer sb = getHostAndPort(req, secure, false);
-				
-		// Context path
-		String ctx;
-		if(req == null)
-			ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
-		else
-			ctx = req.getContextPath();
-		sb.append(ctx).append("/");
-		
-		return sb;
-	}
+	private static int adapterWebProtocol 	= -1;
+	private static int servletWebProtocol 	= -1;
+	private static int rssWebProtocol 		= -1;
+	private static int icalWebProtocol 		= -1;
+	private static int ssfsWebProtocol 		= -1;
 	
-	public static StringBuffer getContextRootURL(PortletRequest req, boolean secure) {
-
-		StringBuffer sb = getHostAndPort(req, secure);
-				
-		// Context path
-		String ctx;
-		if(req == null)
-			ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
-		else
-			ctx = req.getContextPath();
-		sb.append(ctx).append("/");
-		
-		return sb;
-	}
-	
-	public static StringBuffer getSSFSContextRootURL(boolean portRequired) {
-		return getSSFSContextRootURL(false, portRequired);
-	}
-	
-	public static StringBuffer getSSFSContextRootURL(boolean secure, boolean portRequired) {
-		HttpServletRequest req = null; // Just to fake the compiler
-		StringBuffer sb = getHostAndPort(req, secure, portRequired);
+	public static StringBuffer getSSFSContextRootURL(HttpServletRequest req) {
+		StringBuffer sb = getHostAndPort(req, req.isSecure(), getSsfsWebProtocol(), true);
 		
 		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
 		
@@ -96,23 +42,15 @@ public class WebUrlUtil {
 		
 		return sb;
 	}
-
-	/**
-	 * Returns URL up to the SSF portlet adapter root. The returned URL ends
-	 * with a "/" character (e.g. http://abc.com:8080/ssf/a/).
-	 * <p>
-	 * If <code>req</code> is null, it uses system config information stored 
-	 * in ssf.properties (which is static) to construct the URL as opposed to 
-	 * the dynamic data available in the <code>HttpServletRequest</code>.   
-	 *  
-	 * @param req may be null
-	 * @return
-	 */
-	public static String getAdapterRootURL(HttpServletRequest req) {
-		if(req == null)
-			return getAdapterRootURL(req, false);
-		else
-			return getAdapterRootURL(req, req.isSecure());
+	
+	public static StringBuffer getSSFSContextRootURL(PortletRequest req) {
+		StringBuffer sb = getHostAndPort(req, req.isSecure(), getSsfsWebProtocol(), true);
+		
+		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
+		
+		sb.append(ctx).append("/");
+		
+		return sb;
 	}
 	
 	/**
@@ -128,19 +66,23 @@ public class WebUrlUtil {
 	 * @return
 	 */
 	public static String getAdapterRootURL(HttpServletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("a/").toString();
+		return getSSFContextRootURL(req, secure, getAdapterWebProtocol()).append("a/").toString();
 	}
 	
 	public static String getAdapterRootURL(PortletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("a/").toString();
+		return getSSFContextRootURL(req, secure, getAdapterWebProtocol()).append("a/").toString();
 	}
 	
 	public static String getServletRootURL() {
-		return getServletRootURL(null, false);
+		return getServletRootURL((HttpServletRequest) null, false);
 	}
 
 	public static String getServletRootURL(HttpServletRequest req) {
-		return getServletRootURL(req, req.isSecure());
+		return getServletRootURL(req, ((req != null)? req.isSecure() : false));
+	}
+	
+	public static String getServletRootURL(PortletRequest req) {
+		return getServletRootURL(req, ((req != null)? req.isSecure() : false));
 	}
 	
 	/**
@@ -152,7 +94,11 @@ public class WebUrlUtil {
 	 * @return
 	 */
 	public static String getServletRootURL(HttpServletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("s/").toString();
+		return getSSFContextRootURL(req, secure, getServletWebProtocol()).append("s/").toString();
+	}
+
+	public static String getServletRootURL(PortletRequest req, boolean secure) {
+		return getSSFContextRootURL(req, secure, getServletWebProtocol()).append("s/").toString();
 	}
 
 	/**
@@ -167,17 +113,11 @@ public class WebUrlUtil {
 	 * @return
 	 */
 	public static String getRssRootURL(HttpServletRequest req) {
-		if(req == null)
-			return getRssRootURL(req, false);
-		else
-			return getRssRootURL(req, req.isSecure());
+		return getRssRootURL(req, ((req != null)? req.isSecure() : false));
 	}
 	
 	public static String getRssRootURL(PortletRequest req) {
-		if(req == null)
-			return getRssRootURL(req, false);
-		else
-			return getRssRootURL(req, req.isSecure());
+		return getRssRootURL(req, ((req != null)? req.isSecure() : false));
 	}
 	
 	/**
@@ -192,17 +132,11 @@ public class WebUrlUtil {
 	 * @return
 	 */
 	public static String getIcalRootURL(HttpServletRequest req) {
-		if(req == null)
-			return getIcalRootURL(req, false);
-		else
-			return getIcalRootURL(req, req.isSecure());
+		return getIcalRootURL(req, ((req != null)? req.isSecure() : false));
 	}
 	
 	public static String getIcalRootURL(PortletRequest req) {
-		if(req == null)
-			return getIcalRootURL(req, false);
-		else
-			return getIcalRootURL(req, req.isSecure());
+		return getIcalRootURL(req, ((req != null)? req.isSecure() : false));
 	}
 	
 	/**
@@ -218,11 +152,11 @@ public class WebUrlUtil {
 	 * @return
 	 */
 	public static String getRssRootURL(HttpServletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("rss/").toString();
+		return getSSFContextRootURL(req, secure, getRssWebProtocol()).append("rss/").toString();
 	}
 	
 	public static String getRssRootURL(PortletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("rss/").toString();
+		return getSSFContextRootURL(req, secure, getRssWebProtocol()).append("rss/").toString();
 	}
 	
 	/**
@@ -238,11 +172,11 @@ public class WebUrlUtil {
 	 * @return
 	 */
 	public static String getIcalRootURL(HttpServletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("ical/").toString();
+		return getSSFContextRootURL(req, secure, getIcalWebProtocol()).append("ical/").toString();
 	}
 	
 	public static String getIcalRootURL(PortletRequest req, boolean secure) {
-		return getContextRootURL(req, secure).append("ical/").toString();
+		return getSSFContextRootURL(req, secure, getIcalWebProtocol()).append("ical/").toString();
 	}
 	
 	public static String getEntryViewURL(FolderEntry entry) {
@@ -262,7 +196,121 @@ public class WebUrlUtil {
 		return entryUrl;
 	}
 	
-	private static StringBuffer getHostAndPort(HttpServletRequest req, boolean secure, boolean portRequired) {
+	private static StringBuffer getSSFContextRootURL(PortletRequest req, boolean secure, int webProtocol) {
+		StringBuffer sb = getHostAndPort(req, secure, webProtocol, false);
+				
+		// Context path
+		String ctx;
+		if(req == null)
+			ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+		else
+			ctx = req.getContextPath();
+		sb.append(ctx).append("/");
+		
+		return sb;
+	}
+	
+	private static StringBuffer getSSFContextRootURL(HttpServletRequest req, boolean secure, int webProtocol) {
+		StringBuffer sb = getHostAndPort(req, secure, webProtocol, false);
+				
+		// Context path
+		String ctx;
+		if(req == null)
+			ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+		else
+			ctx = req.getContextPath();
+		sb.append(ctx).append("/");
+		
+		return sb;
+	}
+	
+	private static StringBuffer getHostAndPort(HttpServletRequest req, boolean isSecure, int webProtocol, boolean portRequired) {
+		String host;
+		int port;
+		boolean secure;
+		
+		if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTP) {
+			if(req != null) {
+				host = req.getServerName();
+				port = req.getServerPort();
+				secure = isSecure; // don't use req.isSecure() !
+			}
+			else {
+				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+				secure = false;
+			}
+		}
+		else if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTPS) {
+			if(req != null) {
+				host = req.getServerName();
+				port = req.getServerPort();
+				secure = isSecure; // don't use req.isSecure() !
+			}
+			else {
+				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+				secure = true;
+			}			
+		}
+		else if(webProtocol == WEB_PROTOCOL_HTTP) {
+			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+			secure = false;		
+		}
+		else { // WEB_PROTOCOL_HTTPS
+			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+			secure = true;			
+		}
+		
+		return getHostAndPort(host, port, secure, portRequired);
+	}
+	
+	private static StringBuffer getHostAndPort(PortletRequest req, boolean isSecure, int webProtocol, boolean portRequired) {
+		String host;
+		int port;
+		boolean secure;
+		
+		if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTP) {
+			if(req != null) {
+				host = req.getServerName();
+				port = req.getServerPort();
+				secure = isSecure; // don't use req.isSecure() !
+			}
+			else {
+				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+				secure = false;
+			}
+		}
+		else if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTPS) {
+			if(req != null) {
+				host = req.getServerName();
+				port = req.getServerPort();
+				secure = isSecure; // don't use req.isSecure() !
+			}
+			else {
+				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+				secure = true;
+			}			
+		}
+		else if(webProtocol == WEB_PROTOCOL_HTTP) {
+			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+			secure = false;		
+		}
+		else { // WEB_PROTOCOL_HTTPS
+			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+			secure = true;			
+		}
+		
+		return getHostAndPort(host, port, secure, portRequired);
+	}
+	
+	private static StringBuffer getHostAndPort(String host, int port, boolean secure, boolean portRequired) {
 
 		// Because URLs generated by this class can only be served up by a
 		// Aspen server (in other words, it can not be served by WSRP consumer
@@ -278,26 +326,9 @@ public class WebUrlUtil {
 			sb.append(Http.HTTP_WITH_SLASH);
 			
 		// Server host
-		String host = null;
-		if(req == null) {
-			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
-		}
-		else {
-			host = req.getServerName();
-		}
 		sb.append(host);
 		
 		// Port number
-		int port;
-		if(req == null) {
-			if(secure)
-				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
-			else
-				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
-		}
-		else {
-			port = req.getServerPort();
-		}
 		if(secure) {
 			if(portRequired || (port != Http.HTTPS_PORT)) {
 				sb.append(Constants.COLON).append(port);
@@ -312,53 +343,84 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
-	private static StringBuffer getHostAndPort(PortletRequest req, boolean secure) {
-
-		// Because URLs generated by this class can only be served up by a
-		// Aspen server (in other words, it can not be served by WSRP consumer
-		// because it is not a real portlet URL that the consumer understands), 
-		// we need to encode the actual server name in the URL. 
+	private static int getAdapterWebProtocol() {
+		init();
+		return adapterWebProtocol;
+	}
+	
+	private static int getServletWebProtocol() {
+		init();
+		return servletWebProtocol;
+	}
+	
+	private static int getRssWebProtocol() {
+		init();
+		return rssWebProtocol;
+	}
+	
+	private static int getIcalWebProtocol() {
+		init();
+		return icalWebProtocol;
+	}
+	
+	private static int getSsfsWebProtocol() {
+		init();
+		return ssfsWebProtocol;
+	}
 		
-		StringBuffer sb = new StringBuffer();
-		
-		// Scheme
-		if(secure)
-			sb.append(Http.HTTPS_WITH_SLASH);
-		else
-			sb.append(Http.HTTP_WITH_SLASH);
+	private static void init() {
+		if(adapterWebProtocol == -1) {
+			String prot;
 			
-		// Server host
-		String host = null;
-		if(req == null) {
-			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
-		}
-		else {
-			host = req.getServerName();
-		}
-		sb.append(host);
-		
-		// Port number
-		int port;
-		if(req == null) {
-			if(secure)
-				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+			prot = SPropsUtil.getString("adapter.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				adapterWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				adapterWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				adapterWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
-				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+				adapterWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+			
+			prot = SPropsUtil.getString("servlet.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				servletWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				servletWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				servletWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
+			else
+				servletWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+			
+			prot = SPropsUtil.getString("rss.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				rssWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				rssWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				rssWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
+			else
+				rssWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+			
+			prot = SPropsUtil.getString("ical.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				icalWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				icalWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				icalWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
+			else
+				icalWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;
+
+			prot = SPropsUtil.getString("ssfs.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				ssfsWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				ssfsWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
+			else
+				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;			
 		}
-		else {
-			port = req.getServerPort();
-		}
-		if(secure) {
-			if(port != Http.HTTPS_PORT) {
-				sb.append(Constants.COLON).append(port);
-			}
-		}
-		else {
-			if(port != Http.HTTP_PORT) {
-				sb.append(Constants.COLON).append(port);
-			}			
-		}
-		
-		return sb;
 	}
 }

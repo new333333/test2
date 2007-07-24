@@ -12,6 +12,7 @@ package com.sitescape.team.taglib;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -25,7 +26,7 @@ public class SsfsLibraryBinderUrlTag extends TagSupport {
 		if(binder == null)
 			throw new JspException("Binder must be specified");
 		
-		String url = SsfsUtil.getLibraryBinderUrl(binder);
+		String url = SsfsUtil.getLibraryBinderUrl((HttpServletRequest) pageContext.getRequest(), binder);
 		
 		try {
 			pageContext.getOut().print(url);

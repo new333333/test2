@@ -828,7 +828,7 @@ public static final String[] monthNamesShort = {
 				}
 			}
 			//Get the WebDAV URLs
-			buildWebDAVURLs(folderEntries, model, folder);
+			buildWebDAVURLs(req, folderEntries, model, folder);
 			
 			//Get the list of all entries to build the archive list
 			buildBlogBeans(response, folder, options, model, folderEntries);
@@ -994,14 +994,14 @@ public static final String[] monthNamesShort = {
 		
 	}
 	//Method to find the WebDAV URL for each of the Blog entries
-	public void buildWebDAVURLs(Map folderEntries, Map model, Folder folder) {
+	public void buildWebDAVURLs(RenderRequest req, Map folderEntries, Map model, Folder folder) {
 		List folderList = (List) folderEntries.get(ObjectKeys.FULL_ENTRIES);
 		HashMap hmWebDAVURLs = new HashMap();
 		
 		for (Iterator iter= folderList.iterator(); iter.hasNext();) {
 			Object itrObj = iter.next();
 			FolderEntry folderEntry = (FolderEntry) itrObj;
-			String strWebDAVURL = DefinitionHelper.getWebDAVURL(folder, folderEntry);
+			String strWebDAVURL = DefinitionHelper.getWebDAVURL(req, folder, folderEntry);
 			Long lngFolderEntry = folderEntry.getId();
 			hmWebDAVURLs.put(lngFolderEntry, strWebDAVURL);
 		}
@@ -1598,7 +1598,7 @@ public static final String[] monthNamesShort = {
 		//WebDav folder view
 		String webdavUrl = "";
 		if (folder.isLibrary()) {
-			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+			webdavUrl = SsfsUtil.getLibraryBinderUrl(request, folder);
 			qualifiers = new HashMap();
 			qualifiers.put("webdavUrl", webdavUrl);
 			qualifiers.put("folder", webdavUrl);

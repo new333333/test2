@@ -86,7 +86,7 @@ public class ExportDefinitionController extends  SAbstractController {
 			XmlFileUtil.writeFile(listOfFiles, listOfFilesTempFile.getAbsolutePath());
 
 			response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
-					WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
+					WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
 					listOfFilesTempFile.getName());
 			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			response.setRenderParameter("redirect", "true");

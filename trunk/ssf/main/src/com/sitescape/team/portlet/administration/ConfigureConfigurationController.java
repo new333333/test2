@@ -156,7 +156,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 				if (errors.isEmpty()) {
 					response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
-							WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
+							WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
 							listOfFilesTempFile.getName());
 				} else {
 					response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
