@@ -353,7 +353,7 @@ var ss_baseAjaxRequest = "<ssf:url adapter="true" portletName="ss_forum" action=
 		<ssf:param name="namespace" value="ssNameSpacePlaceHolder" />
     </ssf:url>";
 
-var ss_baseAjaxRequestWithOS = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false" >
+var ss_baseAjaxRequestWithOS = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
 		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
 		<ssf:param name="entryId" value="ssEntryIdPlaceHolder" />
 		<ssf:param name="operation" value="ssOperationPlaceHolder" />

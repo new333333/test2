@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -350,6 +351,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return reloadEntryAttachment(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_OPEN_WEBDAV_FILE)) {
 			return openWebDAVFile(request, response); 
+		} else if (op.equals(WebKeys.OPERATION_OPEN_WEBDAV_FILE_BY_FILEID)) {
+			return openWebDAVFileUsingFileId(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS)) {
 			return addFolderAttachmentOptions(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
@@ -1985,6 +1988,31 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_URL, strURLValue);
+		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
+		model.put(WebKeys.URL_OS_INFO, strOSInfo);
+
+		return new ModelAndView("definition_elements/view_entry_openfile", model);
+	}
+	
+	private ModelAndView openWebDAVFileUsingFileId(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		String fileId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+		String strOSInfo = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OS_INFO, "");
+		
+		Entry entry = getFolderModule().getEntry(binderId, entryId);
+		Binder binder = entry.getParentBinder();
+		FileAttachment topAtt = (FileAttachment)entry.getAttachment(fileId);
+		String url = SsfsUtil.getInternalAttachmentUrlEncoded(request, binder, entry, topAtt);
+		url = url.replaceAll("\\+", "%20"); 
+		String strOpenInEditor = SsfsUtil.openInEditor(url, strOSInfo);
+		
+		Map model = new HashMap();
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.ENTRY_ID, entryId);
+		model.put(WebKeys.ENTRY_ATTACHMENT_URL, url);
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 		model.put(WebKeys.URL_OS_INFO, strOSInfo);
 

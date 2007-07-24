@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,12 +22,15 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -39,7 +43,6 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 public class AddAttachmentController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
-		
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -51,6 +54,31 @@ public class AddAttachmentController extends SAbstractController {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
+				
+				if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {
+					//We need to parse the fileMap and create SimpleMultipartFile with the filename reset using the URLEncoder.decode method.
+					
+					Map appletFileMap = new HashMap();
+					String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
+		        	boolean blnCheckForAppletFile = true;
+		        	int intFileCount = 1;
+		        	while (blnCheckForAppletFile) {
+		        		String fileEleName = nameValue + Integer.toString(intFileCount);
+		        		if (fileMap.containsKey(fileEleName)) {
+		        	    	MultipartFile myFile = (MultipartFile)fileMap.get(fileEleName);
+		        	    	String utf8EncodedFileName = myFile.getOriginalFilename();
+		        	    	String utf8DecodedFileName = URLDecoder.decode(utf8EncodedFileName, "UTF-8");
+		        	    	java.io.InputStream content = myFile.getInputStream();
+		        	    	MultipartFile mf = new SimpleMultipartFile(utf8DecodedFileName, content);
+		        	    	appletFileMap.put(fileEleName, mf);
+		        	    	intFileCount++;
+		        		} else {
+		        			blnCheckForAppletFile = false;
+		        		}
+		        	}
+		        	fileMap = appletFileMap;
+				}
+				
 			} else {
 				fileMap = new HashMap();
 			}

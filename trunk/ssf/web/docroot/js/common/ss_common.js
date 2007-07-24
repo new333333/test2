@@ -3001,10 +3001,16 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
 
-var editClicked = "false";
-function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, strURLValue) {
+function escapeAppletFileURL(s) {
+    var n = s;
+    n = n.replace(/#/g, "%23");
+    n = n.replace(/&/g, "%26");
+    return n;
+}
 
-	var escapedURL = escape(strURLValue);
+var editClicked = "false";
+function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue) {
+	var escapedURL = escapeAppletFileURL(strURLValue);
 	escapedURL = ss_replaceSubStrAll(escapedURL, "+", "%2B");
 
 	var url = ss_baseAjaxRequestWithOS;
@@ -3015,6 +3021,32 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, strURLValue) {
 	url = ss_replaceSubStr(url, "ssOSPlaceHolder", OSInfo);
     url = url + "&ssEntryAttachmentURL="+escapedURL;
 
+	var divId = "ss_div_fileopen" + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	
+	var frameId = 'ss_iframe_fileopen' + entryId + namespace;
+	var frameObj = document.getElementById(frameId);
+	
+	editClicked = "true";
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
+
+	frameObj.src = url;
+	
+	divObj.style.width = "1px";
+	divObj.style.height = "1px";
+}
+
+function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
+	var url = ss_baseAjaxRequestWithOS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "open_webdav_file_by_fileid");
+	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
+	url = ss_replaceSubStr(url, "ssOSPlaceHolder", OSInfo);
+    url = url + "&fileId="+fileId;
+    
 	var divId = "ss_div_fileopen" + entryId + namespace;
 	var divObj = document.getElementById(divId);
 	

@@ -56,7 +56,6 @@ public class FileOpen extends JApplet implements Runnable {
     //
     ////////////////////////////////////////////////////////////////////////
     public void run () {
-    	
     	fileOpen = this;
     	try {
 			strFileName = getParameter(fileToOpen);
@@ -73,32 +72,21 @@ public class FileOpen extends JApplet implements Runnable {
 					
         			boolean blnEditorErrorEncountered = false;
             		try {
-            			
-            			//System.out.println("After replaced URL: strFileName: "+strFileName);
-            			
                         String strURL = strFileName;
-                        String strReplacedURL = strURL.replaceAll("#", "%23");
-                        strReplacedURL = strReplacedURL.replaceAll("&", "%26");
-                        strReplacedURL = strReplacedURL.replaceAll(" ", "%20");
-                        //System.out.println("After replaced URL: strReplacedURL: "+strReplacedURL);
-                        
                         String [] command;
-                        //String strOperSystem = "windows";
-                        //System.out.println("TESTING the Editor Type: Using This: " + strEditorType[i]);
-                        
                         if (strOperatingSystem.equalsIgnoreCase("windows")) {
                        	 	command =  new String[4];
                             command[0] = "cmd";
                             command[1] = "/C";
                             command[2] = "start " + strEditorType[i];
-                            command[3] = strReplacedURL;
+                            command[3] = strURL;
                             //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2] + " " + command[3]);
                         } else if (strOperatingSystem.equalsIgnoreCase("linux")) {
                         	command =  new String[3];
                             command[0] = "bash";
                             command[1] = "-c";
                             //command[2] = "ooffice " + "'"+strReplacedURL+"'";
-                            command[2] = strEditorType[i] + " '"+strReplacedURL+"'";
+                            command[2] = strEditorType[i] + " '"+strURL+"'";
                             //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2]);
                         } else {
                         	System.out.println("Operating System " + strOperatingSystem + " not Handled!");
