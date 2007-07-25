@@ -126,9 +126,9 @@ public interface AdminModule {
 	/**
 	 * Delete an existing function
 	 * @param functionId
-	 * @throws AccessControlException
+	 * @return List of workspace function memberships
 	 */
-    public void deleteFunction(Long functionId) throws AccessControlException;
+    public List deleteFunction(Long functionId);
     /**
      * Delete a email posting definition
      * @param postingId
