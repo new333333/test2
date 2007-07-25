@@ -103,29 +103,6 @@
 
 	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" titleClass="ss_blog_sidebar_subhead" action="wipe" initOpen="true">
 	  <div class="ss_blog_sidebar_box">
-       <div style="padding-bottom: 10px;">
-	    <c:if test="${ssConfigJspStyle != 'template'}">
-	  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
-		<portlet:param name="action" value="${action}"/>
-		<portlet:param name="operation" value="save_folder_sort_info"/>
-		<portlet:param name="binderId" value="${ssBinder.id}"/>
-		<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
-		<portlet:param name="ssFolderSortDescend" value="false"/>
-		</portlet:actionURL>" <ssf:title tag="wiki.showAll" />
-	  ><ssf:nlt tag="wiki.showAll"/></a>
-		</c:if>
-	  
-	    <c:if test="${ssConfigJspStyle != 'template'}">
-	  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
-		<portlet:param name="action" value="${action}"/>
-		<portlet:param name="operation" value="save_folder_sort_info"/>
-		<portlet:param name="binderId" value="${ssBinder.id}"/>
-		<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
-		<portlet:param name="ssFolderSortDescend" value="true"/>
-		</portlet:actionURL>" <ssf:title tag="wiki.showRecent" />
-	  ><ssf:nlt tag="wiki.showRecent"/></a>
-		</c:if>
-       </div>
        <table cellspacing="0" cellpadding="0">
 		  <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
@@ -166,6 +143,53 @@
 		      ><c:out value="${entry1.title}"/></span></a>
 		    </td></tr>
 		  </c:forEach>
+		</table>
+		<table cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+		<td width="50%">
+		<c:choose>
+		  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}"></c:when>
+		  <c:otherwise>
+			<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_page_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<c:if test="${!empty cTag}"><portlet:param name="cTag" value="${cTag}"/></c:if>
+					<c:if test="${!empty pTag}"><portlet:param name="pTag" value="${pTag}"/></c:if>
+					<c:if test="${!empty yearMonth}"><portlet:param name="yearMonth" value="${yearMonth}"/></c:if>
+					<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
+					<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
+					<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
+			</portlet:actionURL>" <ssf:title tag="title.goto.prev.page" /> >&lt;&lt;
+			</a>
+		  </c:otherwise>
+		</c:choose>
+		</td><td align="right" width="50%">
+		<c:choose>
+		  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
+			
+		  </c:when>
+		  <c:otherwise>
+			<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+					<portlet:param name="action" value="${action}"/>
+					<portlet:param name="operation" value="save_folder_page_info"/>
+					<portlet:param name="binderId" value="${ssFolder.id}"/>
+					<portlet:param name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/>
+					<portlet:param name="tabId" value="${tabId}"/>
+					<c:if test="${!empty cTag}"><portlet:param name="cTag" value="${cTag}"/></c:if>
+					<c:if test="${!empty pTag}"><portlet:param name="pTag" value="${pTag}"/></c:if>
+					<c:if test="${!empty yearMonth}"><portlet:param name="yearMonth" value="${yearMonth}"/></c:if>
+					<c:if test="${!empty day}"><portlet:param name="day" value="${day}"/></c:if>
+					<c:if test="${!empty month}"><portlet:param name="month" value="${month}"/></c:if>
+					<c:if test="${!empty year}"><portlet:param name="year" value="${year}"/></c:if>
+			</portlet:actionURL>" <ssf:title tag="title.goto.next.page" />>&gt;&gt;
+			</a>
+		  </c:otherwise>
+		</c:choose>
+		</td>
+		</tr>
 		</table>
        </div>
       </ssf:expandableArea>

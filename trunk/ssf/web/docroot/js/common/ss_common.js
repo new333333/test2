@@ -2657,7 +2657,7 @@ function ss_toggle_dashboard_hidden_controls(prefix) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-var dashboardCallbacks = new Object();
+var ss_dashboardCallbacks = new Object();
 
 function ss_addDashboardEvent(componentId, 
 						when /* onBeforeShow, onAfterShow == onShow, onBeforeHide, onAfterHide == onHide */,
@@ -2668,19 +2668,19 @@ function ss_addDashboardEvent(componentId,
 		when = "onAfterHide";
 	}
 	
-	if (!window.dashboardCallbacks) {
-		dashboardCallbacks = new Object();
+	if (!window.ss_dashboardCallbacks) {
+		ss_dashboardCallbacks = new Object();
 	}
 	
-	if (!dashboardCallbacks[componentId]) {
-		dashboardCallbacks[componentId] = new Object();
+	if (!ss_dashboardCallbacks[componentId]) {
+		ss_dashboardCallbacks[componentId] = new Object();
 	}
 	
-	if (!dashboardCallbacks[componentId][when]) {
-		dashboardCallbacks[componentId][when] = new Array();
+	if (!ss_dashboardCallbacks[componentId][when]) {
+		ss_dashboardCallbacks[componentId][when] = new Array();
 	}
 
-	dashboardCallbacks[componentId][when].push(routineToCall);
+	ss_dashboardCallbacks[componentId][when].push(routineToCall);
 }
 
 function ss_callDashboardEvent(componentId, 
@@ -2691,20 +2691,20 @@ function ss_callDashboardEvent(componentId,
 		when = "onAfterHide";
 	}	
 	
-	if (!window.dashboardCallbacks) {
+	if (!window.ss_dashboardCallbacks) {
 		return false;
 	}
 	
-	if (!dashboardCallbacks[componentId]) {
+	if (!ss_dashboardCallbacks[componentId]) {
 		return false;
 	}
 	
-	if (!dashboardCallbacks[componentId][when]) {
+	if (!ss_dashboardCallbacks[componentId][when]) {
 		return false;
 	}
 
-	for (var i in dashboardCallbacks[componentId][when]) {
-		dashboardCallbacks[componentId][when][i]();
+	for (var i in ss_dashboardCallbacks[componentId][when]) {
+		ss_dashboardCallbacks[componentId][when][i]();
 	}
 	
 	return true;
