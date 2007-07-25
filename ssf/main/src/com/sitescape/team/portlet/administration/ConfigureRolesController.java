@@ -12,6 +12,7 @@ package com.sitescape.team.portlet.administration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,12 +24,16 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 public class ConfigureRolesController extends  SAbstractController {
@@ -78,9 +83,28 @@ public class ConfigureRolesController extends  SAbstractController {
 		} else if (formData.containsKey("deleteBtn")) {
 			//Get the function id from the form
 			Long functionId = PortletRequestUtils.getLongParameter(request, "roleId");
-			try {
-				getAdminModule().deleteFunction(functionId);
-			} catch (NotSupportedException ns) {
+			List result = getAdminModule().deleteFunction(functionId);
+			if (result != null) {
+				NotSupportedException ns;
+				Object o = result.get(result.size() - 1);
+				if(o instanceof Function){
+					Function function = (Function) o;
+					StringBuilder string = new StringBuilder();
+					
+					for(int i = 0; i < result.size() - 1; i++) {
+						Long binderId = ((WorkAreaFunctionMembership)result.get(i)).getWorkAreaId();
+						Binder binder = getBinderModule().getBinder(binderId);
+						if(binder != null) {
+							String ownerTitle = binder.getOwner().getTitle();
+							string.append(ownerTitle + ",");
+						}
+					}
+					response.setRenderParameter(WebKeys.ROLE_USERS, string.toString());
+					ns =  new NotSupportedException("errorcode.role.inuse", new Object[]{NLT.getDef(function.getName())});
+				}
+				else {
+					ns =  new NotSupportedException("errorcode.role.inuse");
+				}
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
 			}
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
@@ -95,6 +119,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
 		Map model = new HashMap();
+		model.put(WebKeys.ROLE_USERS, request.getParameter(WebKeys.ROLE_USERS));
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		
 		//Set up the role beans
