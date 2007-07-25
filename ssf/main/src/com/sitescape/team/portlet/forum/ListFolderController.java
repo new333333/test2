@@ -1506,15 +1506,18 @@ public static final String[] monthNamesShort = {
 	
 		
 		//See if a "sort by" menu is needed
-		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || 
+				viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
+				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
 			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), folder.getId());
 			String searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
 			if (searchSortBy == null) searchSortBy = "";
 			entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_sortBy"));
 			String[] sortOptions = new String[] {"number", "title", "state", "author", "activity"};
-			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
-				sortOptions = new String[] {"title", "author", "activity"};
+			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) || 
+					viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+				sortOptions = new String[] {"title",  "activity"};
 			}
 			Set so = new HashSet();
 			for (String s : sortOptions) so.add(s);
