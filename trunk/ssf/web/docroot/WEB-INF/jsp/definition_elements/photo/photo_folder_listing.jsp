@@ -107,6 +107,20 @@
 
      <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
+		  <div style="margin-top: 15px;">
+		  <c:if test="${ssConfigJspStyle != 'template'}">
+		  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="${action}"/>
+			<portlet:param name="operation" value="view_folder_listing"/>
+			<portlet:param name="binderId" value="${ssBinder.id}"/>
+			</portlet:actionURL>"
+		  ><ssf:nlt tag="photo.showAll"/></a>
+		  </c:if>
+		  <c:if test="${ssConfigJspStyle == 'template'}">
+		    <ssf:nlt tag="photo.showAll"/>
+	      </c:if>
+		  </div>
+
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="photo.findPage"/></div>
 	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
 	    	action="<portlet:actionURL 
@@ -124,36 +138,6 @@
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
 		
-		  <div style="margin-top: 15px;">
-		  <c:if test="${ssConfigJspStyle != 'template'}">
-		  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="${action}"/>
-			<portlet:param name="operation" value="save_folder_sort_info"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-			<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
-			<portlet:param name="ssFolderSortDescend" value="false"/>
-			</portlet:actionURL>"
-		  ><ssf:nlt tag="photo.showAll"/></a>
-		  </c:if>
-		  <c:if test="${ssConfigJspStyle == 'template'}">
-		    <ssf:nlt tag="photo.showAll"/>
-	      </c:if>
-		  </div>
-		  <div style="margin-top: 5px;">		  		  
-		  <c:if test="${ssConfigJspStyle != 'template'}">
-		  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="${action}"/>
-			<portlet:param name="operation" value="save_folder_sort_info"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-			<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
-			<portlet:param name="ssFolderSortDescend" value="true"/>
-			</portlet:actionURL>"
-		  ><ssf:nlt tag="photo.showRecent"/></a>
-		  </c:if>
-		  <c:if test="${ssConfigJspStyle == 'template'}">
-			<ssf:nlt tag="photo.showRecent"/>
-		  </c:if>
-		  </div>
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
         <div class="ss_blog_sidebar_box">		
 		<table>
