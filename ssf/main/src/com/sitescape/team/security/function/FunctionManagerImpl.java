@@ -15,9 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.sitescape.team.NoObjectByTheIdException;
-import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.security.dao.SecurityDao;
-import com.sitescape.team.util.NLT;
 /**
  *
  * @author Jong Kim
@@ -37,10 +35,15 @@ public class FunctionManagerImpl implements FunctionManager {
         getSecurityDao().save(function);
     }
 
-    public void deleteFunction(Function function) throws NotSupportedException {
+    public List deleteFunction(Function function) {
     	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
-    	if (result.isEmpty()) getSecurityDao().delete(function);
-    	else throw new NotSupportedException("errorcode.role.inuse", new Object[]{NLT.getDef(function.getName())});
+    	if (result.isEmpty()) {
+    		getSecurityDao().delete(function);
+    		return null;
+    	}
+    	else {
+    		return result;
+    	}
     }
 
     public void updateFunction(Function function) {
