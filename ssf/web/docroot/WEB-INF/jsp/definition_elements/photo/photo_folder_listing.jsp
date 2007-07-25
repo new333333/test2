@@ -39,7 +39,9 @@
 	if (_fileTime.contains(",")) _fileTime = _fileTime.substring(0, _fileTime.indexOf(","));
 %>			
 			    <div>
-			    <a href="<ssf:url 
+			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
+			      onMouseOut="ss_hideHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')"
+			      href="<ssf:url 
 				    webPath="viewFile"
 				    folderId="${fileEntry._binderId}"
 				    entryId="${fileEntry._docId}" >
@@ -180,3 +182,16 @@
      </div>
 	 <div class="ss_clear_float"></div>
    </div>
+
+<c:forEach var="fileEntry" items="${ssFolderEntries}" >
+  <div id="ss_photoTitle_${fileEntry._docId}" class="ss_hover_over" 
+    style="visibility:hidden; display:none;">
+    <c:if test="${empty fileEntry.title}"
+      ><span 
+      >--<ssf:nlt tag="entry.noTitle"/>--</span
+      ></c:if><span id="folderLine_${fileEntry._docId}"
+      ><c:out value="${fileEntry.title}"/></span><br/>
+    <span >${fileEntry._desc}</span>
+  </div>
+</c:forEach>
+   
