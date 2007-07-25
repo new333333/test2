@@ -466,6 +466,21 @@ function ss_createDivInBody(divId, className) {
 	return divObj;
 }
 
+//Routines to show or hide a pop-up hover over div
+function ss_showHoverOver(parentObj, divName) {
+	ss_moveDivToBody(divName);
+	ss_showHideObj(divName, 'visible', 'block');
+	divObj = document.getElementById(divName)
+	divObj.style.zIndex = '500';
+	var x = dojo.html.getAbsolutePosition(parentObj, true).x
+	var y = dojo.html.getAbsolutePosition(parentObj, true).y
+	ss_setObjectTop(divObj, parseInt(parseInt(y) + ss_getObjectHeight(parentObj)) + "px")
+	ss_setObjectLeft(divObj, x + "px")
+}
+function ss_hideHoverOver(parentObj, divName) {
+	ss_showHideObj(divName, 'hidden', 'none');
+}
+
 //Routines to show or hide an object
 function ss_showObjBlock(objName) {
 	ss_showHideObj(objName, 'visible', 'block')
