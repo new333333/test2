@@ -74,7 +74,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 </c:if>
 	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}"/>
 	  <input type="hidden" name="_componentId" value="${ss_dashboard_id}"/>
-	  <input type="hidden" name="_scope" value="${ss_dashboard_scope}"/>
+	  <input type="hidden" name="_scope" value="${ss_dashboard_componentScope}"/>
 	  <input type="hidden" name="_operation" value=""/>
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
@@ -89,7 +89,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
 			  </c:if>
 			  
-			  <c:if test="${ss_dashboard_scope == 'local' || ss_dashboard_scope == 'global' || ssDashboard.sharedModificationAllowed}">
+			  <c:if test="${ss_dashboard_componentScope == 'local' || ss_dashboard_componentScope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
 				  ><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
