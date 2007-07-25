@@ -84,11 +84,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  	}
  	
 	public User authenticate(String zoneName, String userName, String password,
-			boolean passwordAutoSynch, Map updates, String authenticatorName) 
+			boolean passwordAutoSynch, boolean ignorePassword, Map updates, 
+			String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
 		try {
-			user = authenticate(zoneName, userName, password, passwordAutoSynch, false, authenticatorName);
+			user = authenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword, authenticatorName);
 			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 			
 			if (updates != null && !updates.isEmpty()) {
@@ -106,6 +107,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			boolean userCreate = 
 				SPropsUtil.getBoolean("portal.user.auto.create", false);
  			if (userCreate) {
+ 				if(ignorePassword) {
+ 					// This password should be ignored. Use username as password instead.
+ 					password = userName;
+ 				}
  				user=getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
  				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
