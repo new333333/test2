@@ -24,8 +24,10 @@
 <span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span>
 <br/>
 
+<c:if test="{!empty ssRoleUsers}">
 <span style="padding-left:20px;"><ssf:nlt tag="errorcode.role.inuse.by"/></span>
 <br/>
+</c:if>
 
 <c:forEach var="user" items="${ssRoleUsers}">
 <span style="padding-left:40px;">${user}</span>
