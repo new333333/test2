@@ -24,12 +24,9 @@
 		<property name="bytecode.use_reflection_optimizer">true</property>
 		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="cache.provider_configuration_file_resource_path">/config/ehcache.xml</property>
-		<!-- Set the following two properties to false when running under production since it affect performance -->
-<!--
- 	<property name="show_sql">true</property>
-	
-		<property name="hibernate.generate_statistics">true</property>
- -->
+		<!-- Set the following two properties to false when running under production since it affects performance -->
+		<property name="show_sql">false</property>
+		<property name="hibernate.generate_statistics">false</property>
  		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- Sitescape Mappings -->
 		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>
