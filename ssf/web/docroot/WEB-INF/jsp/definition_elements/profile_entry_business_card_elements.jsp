@@ -29,7 +29,7 @@
 <td valign="top" style="width:${property_maxWidth + 30}px;" >
 <div class="ss_smallRBoxTop2 ss_profileBox1"></div><div class="ss_smallRBoxTop1 ss_profileBox1"></div>
 <div class="ss_profileBox1" style="padding: 10px;"><div style="height:${property_maxHeight + 25}px;">
- <div class="ss_profile_box_title">Photo</div>
+ <div class="ss_profile_box_title"><ssf:nlt tag="profile.photo"/></div>
  <div class="ss_profile_matte">
 <c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
   <div class="ss_profile_picture_frame ss_profile_photo_box_empty">
@@ -65,7 +65,7 @@
 <td valign="top">
 <div class="ss_smallRBoxTop2 ss_profileBox2"></div><div class="ss_smallRBoxTop1 ss_profileBox2"></div>
 <div class="ss_profileBox2" style="padding: 3px 5px;"><div class="ss_profileBox2" style="height:${property_maxHeight + 25}px;">
- <div class="ss_profile_box_title">Info</div>
+ <div class="ss_profile_box_title"><ssf:nlt tag="profile.info"/></div>
  <div class="ss_profile_matte">
   <div class="ss_profile_info_frame  ss_profile_info_box">
 <c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
@@ -104,7 +104,7 @@
 <td valign="top">
 <div class="ss_smallRBoxTop2 ss_profileBox2"></div><div class="ss_smallRBoxTop1 ss_profileBox2"></div>
 <div class="ss_profileBox2" style="padding: 10px;"><div class="ss_profileBox2" style="height:${property_maxHeight + 25}px;">
- <div class="ss_profile_box_title">Contact</div>
+ <div class="ss_profile_box_title"><ssf:nlt tag="profile.contact"/></div>
  <div class="ss_profile_matte">
   <div class="ss_profile_info_frame ss_profile_contact_box">
     <div id="ss_presenceOptions_${renderResponse.namespace}"></div>

@@ -1506,77 +1506,93 @@ public static final String[] monthNamesShort = {
 	
 		
 		//See if a "sort by" menu is needed
-		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT)) {
+		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
 			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), folder.getId());
 			String searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
 			if (searchSortBy == null) searchSortBy = "";
 			entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_sortBy"));
+			String[] sortOptions = new String[] {"number", "title", "state", "author", "activity"};
+			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+				sortOptions = new String[] {"title", "author", "activity"};
+			}
+			Set so = new HashSet();
+			for (String s : sortOptions) so.add(s);
 			
 			//number
-			qualifiers = new HashMap();
-			if (searchSortBy.equals(EntityIndexUtils.DOCID_FIELD)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.DOCID_FIELD);
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
-			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
-					NLT.get("folder.column.Number"), url, qualifiers);
+			if (so.contains("number")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(EntityIndexUtils.DOCID_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.DOCID_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.Number"), url, qualifiers);
+			}
 			
 			//title
-			qualifiers = new HashMap();
-			if (searchSortBy.equals(EntityIndexUtils.SORT_TITLE_FIELD)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
-			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
-					NLT.get("folder.column.Title"), url, qualifiers);
+			if (so.contains("title")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(EntityIndexUtils.SORT_TITLE_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.Title"), url, qualifiers);
+			}
 			
 			//state
-			qualifiers = new HashMap();
-			if (searchSortBy.equals(EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD);
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
-			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
-					NLT.get("folder.column.State"), url, qualifiers);
+			if (so.contains("state")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.State"), url, qualifiers);
+			}
 			
 			//author
-			qualifiers = new HashMap();
-			if (searchSortBy.equals(EntityIndexUtils.CREATOR_TITLE_FIELD)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.CREATOR_TITLE_FIELD);
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
-			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
-					NLT.get("folder.column.Author"), url, qualifiers);
+			if (so.contains("author")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(EntityIndexUtils.CREATOR_TITLE_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.CREATOR_TITLE_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.Author"), url, qualifiers);
+			}
 			
 			//last activity date
-			qualifiers = new HashMap();
-			if (searchSortBy.equals(IndexUtils.LASTACTIVITY_FIELD)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.FOLDER_SORT_BY, IndexUtils.LASTACTIVITY_FIELD);
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
-			entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
-					NLT.get("folder.column.LastActivity"), url, qualifiers);
+			if (so.contains("activity")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(IndexUtils.LASTACTIVITY_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, IndexUtils.LASTACTIVITY_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.LastActivity"), url, qualifiers);
+			}
 		}
 		
 		//	The "Display styles" menu
