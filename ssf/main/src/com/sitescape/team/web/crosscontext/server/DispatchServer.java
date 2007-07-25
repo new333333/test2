@@ -73,7 +73,9 @@ public class DispatchServer extends GenericServlet {
 			try {
 				boolean passwordAutoSynch = 
 					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
-				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch, updates, authenticator);
+				boolean ignorePassword = 
+					SPropsUtil.getBoolean("portal.password.ignore", false);
+				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword, updates, authenticator);
 			}
 			catch(UserDoesNotExistException e) {
 				logger.warn(e.getLocalizedMessage(), e);

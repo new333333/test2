@@ -18,10 +18,10 @@ import com.sitescape.team.util.SpringContextUtil;
 public class AuthenticationManagerUtil {
 
 	public static User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, Map updates, String authenticatorName)
+			boolean passwordAutoSynch, boolean ignorePassword, Map updates, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, username, password, passwordAutoSynch, updates, authenticatorName);
+		return am.authenticate(zoneName, username, password, passwordAutoSynch, ignorePassword, updates, authenticatorName);
 	}
 	
 	public static User authenticate(String zoneName, String username, String password,

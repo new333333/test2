@@ -16,7 +16,8 @@ import java.util.Map;
 public interface AuthenticationManager {
 
 	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, Map updates, String authenticatorName)
+			boolean passwordAutoSynch, boolean ignorePassword, Map updates, 
+			String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException;
 
 	public User authenticate(String zoneName, String username, String password,
