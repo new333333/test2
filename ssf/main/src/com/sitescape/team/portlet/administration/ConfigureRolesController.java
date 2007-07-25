@@ -54,6 +54,8 @@ public class ConfigureRolesController extends  SAbstractController {
 				getAdminModule().addFunction(PortletRequestUtils.getStringParameter(request, "roleName"), operations);
 			} catch (FunctionExistsException ns) {
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+			} catch (IllegalArgumentException iae) {
+				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
 			}
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
