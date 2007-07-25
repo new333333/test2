@@ -11,7 +11,7 @@ function ss_editingICElink() {
 }
 
 function ss_insertICElink(binderId, title, currentBinderId) {
-	var link;
+	var link = "";
 	var inst = tinyMCE.getInstanceById(tinyMCE.getWindowArg('editor_id'));
 	var elm = inst.getFocusElement();
     var linkText = inst.selection.getSelectedText();
@@ -26,7 +26,9 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 	// Create new anchor elements
 	if (elm == null) {
 		if (title == "" && (binderId == "" || binderId == currentBinderId)) {
-			link = '[[' + linkText + ']]';
+		    if (linkText != "") {
+				link = '[[' + linkText + ']]';
+			}
 		} else if ((linkText == "") && (title != "") && (binderId == "" || binderId == currentBinderId)) {
 			link = '[[' + title + ']]';
 		} else {
@@ -35,7 +37,9 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 		    if (title == "") { title = linkText; }
 			link = '<a class="ss_icecore_link" rel="binderId=' + binderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
 		}
-		tinyMCE.execCommand('mceInsertContent', false, link);
+		if (link != "") {
+			tinyMCE.execCommand('mceInsertContent', false, link);
+		}
 	} else {
 		setAttrib(elm, "rel", 'binderId=' + binderId + ' title=' + title);
 		setAttrib(elm, "class", "ss_icecore_link");
@@ -59,9 +63,11 @@ function ss_cancelICElinkEdit() {
 
 function ss_popup_folder() {
     dojo.html.toggleDisplay("folder_popup");
+    dojo.html.hide("page_popup");
 }
 function ss_popup_page() {
     dojo.html.toggleDisplay("page_popup");
+    dojo.html.hide("folder_popup");
 }
 
 
