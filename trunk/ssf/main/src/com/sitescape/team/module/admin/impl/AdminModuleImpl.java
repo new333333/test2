@@ -915,10 +915,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		ObjectBuilder.updateObject(function, updates);
 		functionManager.updateFunction(function);			
     }
-    public void deleteFunction(Long id) {
+    public List deleteFunction(Long id) {
 		checkAccess(AdminOperation.manageFunction);
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
-		functionManager.deleteFunction(f);
+		List result = functionManager.deleteFunction(f);
+		result.add(f);
+		return result;
     }
     public List<Function> getFunctions() {
 		//let anyone read them			
