@@ -19,7 +19,20 @@
 <div class="ss_style ss_portlet">
 <h3><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></h3>
 <c:if test="${!empty ssException}">
-<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+<font color="red">
+
+<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span>
+<br/>
+
+<span style="padding-left:20px;"><ssf:nlt tag="errorcode.role.inuse.by"/></span>
+<br/>
+
+<c:forEach var="user" items="${ssRoleUsers}">
+<span style="padding-left:40px;">${user}</span>
+<br/>
+</c:forEach>
+
+</font>
 </c:if>
 
 <ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
