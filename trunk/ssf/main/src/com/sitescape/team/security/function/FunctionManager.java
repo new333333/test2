@@ -23,7 +23,7 @@ public interface FunctionManager {
     
     public void addFunction(Function function);
     
-    public void deleteFunction(Function function) throws NotSupportedException;
+    public List deleteFunction(Function function);
     
     public void updateFunction(Function function);
     
