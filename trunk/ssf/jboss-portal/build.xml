@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<project name="jboss-portal" basedir="." default="compile">
+<project name="jboss-portal" basedir=".">
 	<!-- This setting will override the value in the properties file -->
-	<!--<property name="portal.type" value="jbossportal"/>-->
+	<property name="portal.type" value="jbossportal"/>
 
 	<import file="../build-common.xml" />
 	

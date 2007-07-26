@@ -267,7 +267,7 @@
 		
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.team.web.portlet.handler.InitRequestContextInterceptor"/>
 		
-	<bean id="portletUserPreloadInterceptor" class="com.sitescape.team.web.portlet.handler.UserPreloadInterceptor">
+	<bean id="portletUserPreloadInterceptor" class="com.sitescape.team.web.portlet.handler.UserPreloadInterceptor" depends-on="sPropsUtil">
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="profileModule"><ref local="profileModule"/></property>
 	</bean>	

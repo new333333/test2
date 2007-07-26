@@ -19,6 +19,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,7 +27,6 @@ import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.profile.ProfileModule;
@@ -35,10 +35,11 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
-public class UserPreloadInterceptor implements HandlerInterceptor {
+public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBean {
 
 	private ProfileDao profileDao;
 	private ProfileModule profileModule;
+	private String[] userModify;
 	
 	protected ProfileDao getProfileDao() {
 		return profileDao;
@@ -54,6 +55,10 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 	public void setProfileModule(ProfileModule profileModule) {
 		this.profileModule = profileModule;
 	}
+
+ 	public void afterPropertiesSet() {
+		userModify = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
+ 	}
 
 	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler)
     	throws Exception {
@@ -97,6 +102,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 				user = getProfileDao().findUserByName(userName, zoneName);
 			}
 			catch(NoUserByTheNameException e) {
+				/*
 				// The user doesn't exist in the Aspen user database. Since this
 				// interceptor is never called unless the user is first authenticated,
 				// this means that the user was authenticated against the portal
@@ -140,7 +146,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 	 					ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);
 	 				}
 	 			} 		
-	 			else
+	 			else */
 	 				throw e;
 			}
 			
@@ -149,9 +155,6 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 		else {
 			user = getProfileDao().loadUser(userId, reqCxt.getZoneName());
 		}
-		
-		boolean userModify = 
-			SPropsUtil.getBoolean("portal.user.auto.synchronize", false);
 		
 		Boolean sync = (Boolean)ses.getAttribute(WebKeys.PORTLET_USER_SYNC, PortletSession.APPLICATION_SCOPE);
 		
@@ -163,46 +166,11 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 		// 3. The information hasn't already been synchronized during current 
 		// session - there is no point in trying to synchronize the info more
 		// than once per login. especially important for efficiency reason.
-		if (userModify && !isRunByAdapter && (sync == null || sync.equals(Boolean.FALSE))) {
-			Map updates = new HashMap();
-			Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
-			if(userAttrs == null) {
-				// According to JSR-168 spec, this means that the user is un-authenticatecd.
-				// However, this interceptor is designed to be invoked only if the user
-				// is authenticated. This indicates some internal problem (which tends 
-				// to occur under Liferay when it's automatic login facility is enabled).
-				// We can not allow the user to proceed in this case.
-				throw new InternalException("User must log off and log in again");
-			}
-			String val = null;
-			if(userAttrs.containsKey("user.name.given")) {
-				val = (String) userAttrs.get("user.name.given");
-				if(!identical(val, user.getFirstName()))
-					updates.put("firstName", val);
-			}
-			if (userAttrs.containsKey("user.name.family")) {
-				val = (String)userAttrs.get("user.name.family");
-				if (!identical(val, user.getLastName())) 
-					updates.put("lastName", val);
-			}
-			if (userAttrs.containsKey("user.name.middle")) {
-				val = (String)userAttrs.get("user.name.middle");
-				if (!identical(val, user.getMiddleName())) 
-					updates.put("middleName", val);
-			}
-			if (userAttrs.containsKey("user.business-info.online.email")) {
-				val = (String)userAttrs.get("user.business-info.online.email");
-				if (!identical(val, user.getEmailAddress())) 
-					updates.put("emailAddress", val);
-			}
-			if (userAttrs.containsKey("user.business-info.postal.organization")) {
-				val = (String)userAttrs.get("user.business-info.postal.organization");
-				if (!identical(val, user.getOrganization())) 
-					updates.put("organization", val);
-			}
-			if (!request.getLocale().equals(user.getLocale())) 
-				updates.put("locale", request.getLocale());
-
+		if (!isRunByAdapter && !Boolean.TRUE.equals(sync)) { 
+			Map updates = getStandardUserInfoFromPortal(request, user);
+			
+			updates = filterUpdates(updates);
+			
 			if(!updates.isEmpty()) {
 				getProfileModule().modifyUserFromPortal(user, updates);				
 			}
@@ -213,18 +181,63 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 		reqCxt.setUser(user);
 	}
 	
-	private boolean identical(String a, String b) {
-		if(a == null) {
-			if(b == null)
-				return true;
-			else
-				return false;
+	private Map filterUpdates(Map updates) {
+		if(updates.isEmpty()) {
+			return updates;
 		}
 		else {
-			if(b == null)
-				return false;
-			else
-				return a.equals(b);
+			Map mods = new HashMap();
+			for (int i = 0; i<userModify.length; ++i) {
+				Object val = updates.get(userModify[i]);
+				if (val != null) {
+					mods.put(userModify[i], val);
+				}					
+			}
+			return mods;
 		}
 	}
+	
+	private Map getStandardUserInfoFromPortal(PortletRequest request, User user) {
+		Map updates = new HashMap();
+		Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
+		if(userAttrs == null) {
+			// According to JSR-168 spec, this means that the user is un-authenticatecd.
+			// However, this interceptor is designed to be invoked only if the user
+			// is authenticated. This indicates some internal problem (which tends 
+			// to occur under order version of Liferay when it's automatic login facility 
+			// is enabled). We can not allow the user to proceed in this case.
+			throw new InternalException("User must log off and log in again");
+		}
+		String val = null;
+		if(userAttrs.containsKey("user.name.given")) {
+			val = (String) userAttrs.get("user.name.given");
+			if(val != null && !val.equals(user.getFirstName()))
+				updates.put("firstName", val);
+		}
+		if (userAttrs.containsKey("user.name.family")) {
+			val = (String)userAttrs.get("user.name.family");
+			if(val != null && !val.equals(user.getLastName()))
+				updates.put("lastName", val);
+		}
+		if (userAttrs.containsKey("user.name.middle")) {
+			val = (String)userAttrs.get("user.name.middle");
+			if(val != null && !val.equals(user.getMiddleName()))
+				updates.put("middleName", val);
+		}
+		if (userAttrs.containsKey("user.business-info.online.email")) {
+			val = (String)userAttrs.get("user.business-info.online.email");
+			if(val != null && !val.equals(user.getEmailAddress()))
+				updates.put("emailAddress", val);
+		}
+		if (userAttrs.containsKey("user.business-info.postal.organization")) {
+			val = (String)userAttrs.get("user.business-info.postal.organization");
+			if(val != null && !val.equals(user.getOrganization()))
+				updates.put("organization", val);
+		}
+		if (!request.getLocale().equals(user.getLocale())) 
+			updates.put("locale", request.getLocale());
+
+		return updates;
+	}
+
 }

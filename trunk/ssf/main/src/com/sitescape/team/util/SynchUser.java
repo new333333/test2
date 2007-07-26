@@ -29,19 +29,23 @@ public class SynchUser {
 	 * @param username 
 	 * @param password
 	 */
-	public void synch(String zoneName, String username, String password) {
+	public void synch(String zoneName, String username, String password, String authenticator) {
 		if(zoneName == null)
 			zoneName = SZoneConfig.getDefaultZoneName();
 	
 		boolean passwordAutoSynch = 
 			SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
+		boolean ignorePassword = 
+			SPropsUtil.getBoolean("portal.password.ignore", false);
+		boolean createUser = 
+			SPropsUtil.getBoolean("portal.user.auto.create", false);
 
 		// The functionality we need happens to be implemented in the 
 		// authentication manager. So we re-use it although this has nothing
 		// to do with authentication of the user.
 		try {
 			AuthenticationManagerUtil.authenticate(zoneName, username, password,
-				passwordAutoSynch, false, null);
+					createUser, passwordAutoSynch, ignorePassword, null, authenticator);
 		}
 		catch(UserDoesNotExistException e) {
 			// This means that the user doesn't exist in Aspen and the
