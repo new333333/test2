@@ -541,6 +541,7 @@ public class WebKeys {
     public static final String FOLDER_TOOLBAR="ssFolderToolbar";
     public static final String FOLDER_TYPE="ssFolderType";
     public static final String FOLDER_VIEW_TYPE="ssFolderViewType";
+    public static final String FOLDER_ACTION_VERTICAL_OVERRIDE="ssFolderActionVerticalOverride";
     public static final String FOOTER_TOOLBAR="ssFooterToolbar";
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
