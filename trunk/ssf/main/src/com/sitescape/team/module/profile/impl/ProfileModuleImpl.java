@@ -633,8 +633,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 	}
 	
-	// RW transaction
-	protected Object[] addUserOnlyFromPortal(String zoneName, String userName, String password, Map updates) {
+    //RW transaction
+	public User addUserFromPortal(String zoneName, String userName, String password, Map updates) {
 		if(updates == null)
 			updates = new HashMap();
 		
@@ -643,60 +643,42 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		// User can change it later if desired.
 		if(updates.get("lastName") == null)
 			updates.put("lastName", userName);
-
-		Binder top = getCoreDao().findTopWorkspace(zoneName);
-		ProfileBinder profiles = getProfileDao().getProfileBinder(top.getZoneId());
-		User user = new User();
-		user.setParentBinder(profiles);
-		user.setZoneId(top.getZoneId());
-		user.setName(userName);
-		user.setForeignName(userName);
-		if (password != null)
-			user.setPassword(password);
-		RequestContextUtil.setThreadContext(user);
-		// get entry def
-		getDefinitionModule().setDefaultEntryDefinition(user);
-		HistoryStamp stamp = new HistoryStamp(user);
-		user.setCreation(stamp);
-		user.setModification(stamp);
-		EntryBuilder.updateEntry(user, updates);
-		// save so we have an id to work with
-		getCoreDao().save(user);
 		
-		return new Object[] {user, profiles};
-	}
-	
-	// No transaction
-	protected void indexNewUser(User user, ProfileBinder profiles) {
-		// indexing needs the user
-		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager()
-				.getProcessor(
-						profiles,
-						profiles
-								.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-		processor.indexEntry(user);
-		// do now, with request context set
-		IndexSynchronizationManager.applyChanges();
-	}
-	
-    //No transaction
-	public User addUserFromPortal(String zoneName, String userName, String password, Map updates) {
+		// build user
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(zoneName, userName);
-
 		try {
-			Object[] obj = addUserOnlyFromPortal(zoneName, userName, password, updates);
-			
-			User user = (User) obj[0];
-			ProfileBinder profiles = (ProfileBinder) obj[1];
-			
+			Binder top = getCoreDao().findTopWorkspace(zoneName);
+			ProfileBinder profiles = getProfileDao().getProfileBinder(top.getZoneId());
+			User user = new User();
+			user.setParentBinder(profiles);
+			user.setZoneId(top.getZoneId());
+			user.setName(userName);
+			user.setForeignName(userName);
+			if (password != null)
+				user.setPassword(password);
+			RequestContextUtil.setThreadContext(user);
+			// get entry def
+			getDefinitionModule().setDefaultEntryDefinition(user);
+			HistoryStamp stamp = new HistoryStamp(user);
+			user.setCreation(stamp);
+			user.setModification(stamp);
+			EntryBuilder.updateEntry(user, updates);
+			// save so we have an id to work with
+			getCoreDao().save(user);
 			addUserWorkspace(user);
-			
-			indexNewUser(user, profiles);
-			
+
+			// indexing needs the user
+			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager()
+					.getProcessor(
+							profiles,
+							profiles
+									.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
+			processor.indexEntry(user);
+			// do now, with request context set
+			IndexSynchronizationManager.applyChanges();
 			return user;
-		}
-		finally {
+		} finally {
 			// leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);
 		}
