@@ -109,8 +109,10 @@
 <input type="radio"  name="hourType" id="hourType" value="repeat"   <c:if test="${schedule.repeatHours}">checked</c:if>>
 	</input>
    
-	<span class="ss_labelRight"><ssf:nlt tag="schedule.repeatinterval"/></span>
-   
+	<span class="ss_labelRight">
+	<ssf:nlt tag="schedule.repeathours">
+   	<ssf:param name="value" useBody="true">
+
 	<select name="hoursRepeat" id="hoursRepeat"<c:if test="${schedule.repeatHours}">value="${schedule.hours}"</c:if>>
 		<option <c:if test="${ssSchedule.hoursRepeat == '1'}">selected=selected</c:if> value="01">01
 		<option <c:if test="${ssSchedule.hoursRepeat == '2'}">selected=selected</c:if> value="02">02
@@ -120,6 +122,10 @@
 		<option <c:if test="${ssSchedule.hoursRepeat == '8'}">selected=selected</c:if> value="08">08
 		<option <c:if test="${ssSchedule.hoursRepeat == '12'}">selected=selected</c:if> value="12">12
 	</select>
+	
+	</ssf:param>
+	</ssf:nlt>
+	</span>
 
 <br/>
 <hr shade=noshade size=1/>
