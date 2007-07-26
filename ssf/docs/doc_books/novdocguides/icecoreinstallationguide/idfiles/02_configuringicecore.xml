@@ -20,7 +20,7 @@
 
  <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the ICEcore Administration Portlet </text> </target>
 
- <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the ICEcore Adminstration Portlet to Your Home Page:</text> </target>
+ <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the ICEcore Administration Portlet to Your Home Page:</text> </target>
 
  <target id="bantho8" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
 
@@ -128,7 +128,7 @@
 
  <target id="baptkyb" pid="b9vde7f" name="Step" level="3" number="2"> <text>Click Manage This Folder and select the Email Settings menu item.</text> </target>
 
- <target id="baptlti" pid="b9vde7f" name="Step" level="3" number="3"> <text>Type in the e-mail alias you recieved from your e-mail administrator in the Reiceiving Email From field.</text> </target>
+ <target id="baptlti" pid="b9vde7f" name="Step" level="3" number="3"> <text>Type in the e-mail alias you received from your e-mail administrator in the Receiving Email From field.</text> </target>
 
  <target id="bapto85" pid="b9vde7f" name="Step" level="3" number="4"> <text>Configure the e-mail Notification Schedule and add the users, groups, and any individual e-mail addresses you want to receive e-mail notifications, and then click Apply.</text> </target>
 
