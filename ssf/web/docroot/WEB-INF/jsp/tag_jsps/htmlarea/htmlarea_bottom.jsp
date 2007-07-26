@@ -13,5 +13,14 @@
 <% // htmlarea editor bottom
 %><%@ include file="/WEB-INF/jsp/common/include.jsp" 
 %></textarea>
-</div>
-
+</div><%--
+--%><c:if test="${!empty wikiLinkBinderId}"><%--
+   --%><div class="ss_editorHints"><%--
+   --%><ssf:nlt tag="editor.wikilink.tip"><%--
+       --%><ssf:param name="value" useBody="true"><%--
+           --%><img align="absmiddle" src="<html:imagesPath/>icons/wikilink.gif" alt="Wikilink" title="" /><%--
+       --%></ssf:param><%--   
+   --%></ssf:nlt>  <%--
+   --%><ssf:inlineHelp tag="ihelp.other.linksToEntries.newLinkText"/><%--
+   --%></div><%--
+--%></c:if>

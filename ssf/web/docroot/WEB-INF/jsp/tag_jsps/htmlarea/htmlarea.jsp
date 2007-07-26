@@ -13,20 +13,20 @@
 <% // htmlarea editor %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.lang.String" %>
-<c:set var="binderId" value="" /><%--
+<c:set var="wikiLinkBinderId" value="" scope="request"/><%--
 --%><c:if test="${!empty ssDefinitionEntry}"><%--
     --%><c:choose><%--
         --%><c:when test="${ssDefinitionEntry.entityType == 'folderEntry'}"><%--
-            --%><c:set var="binderId" value="${ssDefinitionEntry.parentFolder.id}" /><%--
+            --%><c:set var="wikiLinkBinderId" value="${ssDefinitionEntry.parentFolder.id}" scope="request" /><%--
         --%></c:when><%--
         --%><c:otherwise><%--
-            --%><c:set var="binderId" value="${ssDefinitionEntry.id}" /><%--
+            --%><c:set var="wikiLinkBinderId" value="${ssDefinitionEntry.id}" scope="request" /><%--
         --%></c:otherwise><%--
     --%></c:choose><%--
 --%></c:if><%--
 --%><c:if test="${empty ssDefinitionEntry}"><%--
     --%><c:if test="${!empty ssFolder}"><%--
-            --%><c:set var="binderId" value="${ssFolder.id}" /><%--
+            --%><c:set var="wikiLinkBinderId" value="${ssFolder.id}" scope="request" /><%--
     --%></c:if><%--
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
@@ -52,7 +52,7 @@ tinyMCE.init(
   theme_advanced_buttons1_add: "forecolor,backcolor",
   theme_advanced_buttons2_add: "pastetext,pasteword<%--
   --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
-  --%><c:if test="${!empty binderId}">,ss_wikilink</c:if>",
+  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if>",
   theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
@@ -71,7 +71,7 @@ var ss_wikiLinkUrl = "<ssf:url
     portletName="ss_forum" 
     action="__ajax_request">
 	  <ssf:param name="operation" value="wikilink_form" />
-	  <ssf:param name="binderId" value="${binderId}" />
+	  <ssf:param name="binderId" value="${wikiLinkBinderId}" />
     </ssf:url>";
 </script>
 <div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};
