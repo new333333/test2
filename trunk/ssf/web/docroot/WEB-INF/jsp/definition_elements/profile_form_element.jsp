@@ -16,6 +16,17 @@
 <jsp:useBean id="property_caption" type="String" scope="request" />
 <%@ page import="java.lang.reflect.Method" %>
 
+<c:set var="showElement" value="1"/>
+<c:if test="${ss_profile_entry_form == 'true'}">
+  <c:if test="${property_name == 'firstName' || 
+                property_name == 'middleName' || 
+                property_name == 'lastName' || 
+                property_name == 'emailAddress' || 
+                property_name == 'zonName'}">
+    <c:set var="showElement" value="0"/>
+  </c:if>
+</c:if>
+<c:if test="${showElement == '1'}">
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -46,3 +57,4 @@
 <%
 	}
 %>
+</c:if>

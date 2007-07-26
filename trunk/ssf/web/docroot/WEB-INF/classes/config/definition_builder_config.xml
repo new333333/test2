@@ -741,6 +741,11 @@
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="profile" value="profile">
+				<option name="profile" caption="__profile_form_standard" />
+				<option name="form" caption="__profile_form_simple" />
+			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="profileName" initial="true" />
@@ -776,20 +781,6 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
-	</item>
-	
-	<item name="profileTimeZone" caption="__preferred_timeZone" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
-		<properties>
-			<property name="name" caption="__data_name" type="text" value="timeZone" 
-			  readonly="true" unique="//item[@type='data']">
-				<help>ihelp.designers.timeZone_name</help>
-			</property>
-			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
-		</jsps>
 	</item>
 	
 	<item name="profileFirstName" caption="__firstName" type="data" 
@@ -933,7 +924,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_entry_graphic_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />

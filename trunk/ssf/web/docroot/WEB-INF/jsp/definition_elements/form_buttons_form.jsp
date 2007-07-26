@@ -10,8 +10,9 @@
  *
  */
 %>
-<% // 2 column table %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_profile_entry_form || not ss_profile_entry_form}">
+<% // 2 column table %>
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
@@ -39,3 +40,4 @@
 		}
 %>
 </div>
+</c:if>

@@ -16,6 +16,7 @@
 	String caption = (String) request.getAttribute("property_caption");
 	if (caption == null) {caption = "";}
 %>
+<c:if test="${empty ss_profile_entry_form || not ss_profile_entry_form}">
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><%= caption %></div>
 <input type="text" size="40" name="name" value="<c:out value="${ssDefinitionEntry.name}"/>"
@@ -27,3 +28,4 @@
 	</c:if>
 >
 </div>
+</c:if>
