@@ -4,9 +4,6 @@
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1">
     <properties/>
     <item name="profileEntryFormForm" caption="__form" id="2">
-      <properties>
-        <property name="name" value="form1"/>
-      </properties>
       <item name="profileName" caption="__profile_name" type="data" id="3">
         <properties>
           <property name="name" value="name"/>
@@ -102,6 +99,10 @@
           </properties>
         </item>
       </item>
+      <properties>
+        <property name="name" value="form1"/>
+        <property name="type" value="profile"/>
+      </properties>
     </item>
   </item>
   <item name="profileEntryView" caption="__profile_entry_view_definition" id="13">
