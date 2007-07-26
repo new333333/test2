@@ -360,6 +360,15 @@ public static final String[] monthNamesShort = {
 			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
 			if (viewType == null) viewType = "";
 		}
+
+		//If the Folder View is anything other than Table and if the Folder Action happens to be  
+		//vertical (view at the bottom), then we need to display the entry in the iframe view
+		if (!viewType.equals(Definition.VIEW_STYLE_TABLE)) {
+			String displayStyle = user.getDisplayStyle();
+			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+				model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
+			}
+		}
 		
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//In Blog style we only want to show this entry
