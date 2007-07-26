@@ -10,6 +10,8 @@
  *
  */
 %>
-<% //Timezone view %>
+<% // Profile photo %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" %>
+<c:if test="${empty ss_profile_entry_form || not ss_profile_entry_form}">
+<%@ include file="/WEB-INF/jsp/definition_elements/graphic_form.jsp" %>
+</c:if>
