@@ -84,14 +84,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  	}
  	
 	public User authenticate(String zoneName, String userName, String password,
-			boolean passwordAutoSynch, boolean ignorePassword, Map updates, 
-			String authenticatorName) 
+			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
+			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
 		try {
-			user = authenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword, authenticatorName);
-			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
-			
+			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			if (updates != null && !updates.isEmpty()) {
 				Map mods = new HashMap();
 				for (int i = 0; i<userModify.length; ++i) {
@@ -102,17 +100,18 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 				if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods);
 			}
+			if(authenticatorName != null)
+				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} 
 		catch (UserDoesNotExistException nu) {
-			boolean userCreate = 
-				SPropsUtil.getBoolean("portal.user.auto.create", false);
- 			if (userCreate) {
+ 			if (createUser) {
  				if(ignorePassword) {
  					// This password should be ignored. Use username as password instead.
  					password = userName;
  				}
  				user=getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
- 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+ 				if(authenticatorName != null)
+ 					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
  			else throw nu;
 		} 
@@ -122,6 +121,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		User user = doAuthenticate(zoneName, username, password, passwordAutoSynch, ignorePassword);
+		if(authenticatorName != null)
+			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+		return user;
+	}
+	
+	protected User doAuthenticate(String zoneName, String username, String password,
+				boolean passwordAutoSynch, boolean ignorePassword)
+			throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 
 		try {
@@ -167,7 +175,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
 		}
 		
-		getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+		if(authenticatorName != null)
+			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 
 		return user;
 	}

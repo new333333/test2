@@ -51,6 +51,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.PortalDetector;
 import com.sitescape.util.Validator;
 
 public class WebHelper {
@@ -779,14 +780,17 @@ public class WebHelper {
 	}
 	
 	private static String getRemoteUserName(PortletRequest request) {
-		// Important: Do not rely on getRemoteUser! 
-		// Starting with Liferay 4.3.0, this returns the user's internal id (long surrogate 
-		// value) rather than the user's login name (which they call screen name).
-		// It seems bad practice to use surrogate key for this purpose, and it prevents us
-		// to identify Aspen user based on the portal user name since Liferay's surrogate
-		// keys are meaningless in Aspen. Sigh...
-		
-		//return request.getRemoteUser();
-		return null;
+		if(PortalDetector.isLiferay()) {
+			// Important: If running under Liferay, do NOT rely on getRemoteUser!! 
+			// Starting with Liferay 4.3.0, this returns the user's internal id (long surrogate 
+			// value) rather than the user's login name (which they call screen name).
+			// It seems bad practice to use surrogate key for this purpose, and it prevents us
+			// to identify Aspen user based on the portal user name since Liferay's surrogate
+			// keys are meaningless in Aspen. Sigh...
+			return null;			
+		}
+		else {
+			return request.getRemoteUser();			
+		}
 	}
 }

@@ -56,13 +56,18 @@ public class LoginPostAction extends AbstractAction {
 			
 			//sync user attributes
 			Map updates = new HashMap();
-			updates.put("firstName", user.getFirstName());
-			updates.put("middleName", user.getMiddleName());
-			updates.put("lastName", user.getLastName());
-			updates.put("emailAddress", user.getEmailAddress());
-			updates.put("locale", user.getLocale());
-			updates.put("timeZone", user.getTimeZone());
-			updates.put("location", user.getLocation().getName());
+			if(user.getFirstName() != null)
+				updates.put("firstName", user.getFirstName());
+			if(user.getMiddleName() != null)
+				updates.put("middleName", user.getMiddleName());
+			if(user.getLastName() != null)
+				updates.put("lastName", user.getLastName());
+			if(user.getEmailAddress() != null)
+				updates.put("emailAddress", user.getEmailAddress());
+			if(user.getLocale() != null)
+				updates.put("locale", user.getLocale());
+			if(user.getTimeZone() != null)
+				updates.put("timeZone", user.getTimeZone());
 			// Due to a bug in Liferay, the following information we get directly
 			// from the user model object does not match the user attributes
 			// obtainable from the portal in a portable way (using

@@ -50,7 +50,7 @@ public class SiteScapeLoginModule extends UsernamePasswordLoginModule {
 			
 			// We use reflection to invoke the method later on.
 			synchMethod = SiteScapeBridgeUtil.getMethod
-			(CLASS_NAME, "synch", String.class, String.class, String.class);
+			(CLASS_NAME, "synch", String.class, String.class, String.class, String.class);
 		}
 		catch (Exception e) {
 			log.error("Error instantiating SiteScapeLoginModule: ", e);
@@ -70,7 +70,9 @@ public class SiteScapeLoginModule extends UsernamePasswordLoginModule {
 			String password = getPassword();
 						
 			try {
-				SiteScapeBridgeUtil.invoke(synchMethod, synchUser, null, username, password);
+				// Since this same login module is used for logins by both browser-based
+				// client (ssf) and WebDAV client (ssfs) we can't really distinguish between them... 
+				SiteScapeBridgeUtil.invoke(synchMethod, synchUser, null, username, password, "jbossportal");
 			}
 			catch(Exception e) {
 				log.warn("Failed to synchronize identity of user: " + getUsername(), e);
