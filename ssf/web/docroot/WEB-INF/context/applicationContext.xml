@@ -514,7 +514,7 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addUserOnlyFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addUserWorkspace">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addWorkspace">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
