@@ -42,7 +42,7 @@ var TinyMCE_ssWikiLinkPlugin = {
 				var template = new Array();
 
 				template['file'] = ss_wikiLinkUrl;
-				template['width'] = 450;
+				template['width'] = 550;
 				template['height'] = 300;
 
 				tinyMCE.openWindow(template, {editor_id : editor_id, inline : "yes"});
@@ -70,7 +70,7 @@ var TinyMCE_ssWikiLinkPlugin = {
 			return true;
 		}
 
-		tinyMCE.switchClass(editor_id + '_ss_wikilink', 'mceButtonDisabled');
+		tinyMCE.switchClass(editor_id + '_ss_wikilink', 'mceButtonNormal');
 
 		return true;
 	}

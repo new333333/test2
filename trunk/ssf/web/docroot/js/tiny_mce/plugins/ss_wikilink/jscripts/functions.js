@@ -76,6 +76,7 @@ function ss_loadLinkBinderId(binderId, type, obj) {
     ss_findEntriesBinderIdss_findLinkEntryForm_searchTitle = binderId;
 	dojo.byId("linkToFolderName").innerHTML = dojo.dom.textContent(obj);
 	dojo.html.toggleDisplay('folder_popup');
+	dojo.lfx.html.highlight("linkToFolderName", "#FFFF66", 1000).play();
 }
 
 function ss_loadLinkEntryId(entryId, obj) {

@@ -29,7 +29,7 @@
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
 <form>
-<ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(<ssf:nlt tag="wiki.link.currentfolder"/>)</span></b>
+<ssf:inlineHelp tag="ihelp.other.linksToEntries.explainTool"/> <ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(<ssf:nlt tag="wiki.link.currentfolder"/>)</span></b>
 <input type="hidden" name="binderId" id="binderId" size="5" value="${binderId}"/>
 
 <a href="javascript:;" onclick="ss_popup_folder();">[<ssf:nlt tag="button.change"/>]</a>
@@ -49,7 +49,7 @@
  <ssf:find formName="ss_findLinkPlaceForm" 
     formElement="searchTitle" 
     type="places"
-    width="140px" 
+    width="350px" 
     binderId="${binderId}"
     searchSubFolders="false"
     foldersOnly="true"
@@ -68,7 +68,7 @@
  <ssf:find formName="ss_findLinkEntryForm"
     formElement="searchTitle" 
     type="entries"
-    width="140px" 
+    width="350px" 
     binderId="${binderId}"
     searchSubFolders="false"
     singleItem="true"
