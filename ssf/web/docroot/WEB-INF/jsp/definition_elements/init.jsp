@@ -27,5 +27,6 @@
 --%><%@ page import="com.sitescape.team.domain.Event" %><%--
 --%><%@ page import="com.sitescape.team.domain.CustomAttribute" %><%--
 --%><%@ page import="com.sitescape.team.domain.User" %><%--
+--%><%@ page import="com.sitescape.team.util.NLT" %><%--
 --%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
 --%><%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
