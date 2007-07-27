@@ -574,6 +574,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
  		return result;
 	}
+	
+	public String getUserIds(SortedSet<User> users, String strSeparator) {
+		StringBuffer buf = new StringBuffer();
+		if (users == null) return "";
+		for (Iterator iter=users.iterator(); iter.hasNext();) {
+			User user = (User) iter.next();
+			Long lngUserId = user.getId();
+			buf.append(lngUserId.toString());
+			buf.append(strSeparator);
+		}
+		return buf.toString();
+	}
    
 	//RO transaction
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {

@@ -75,6 +75,8 @@ public interface ProfileModule {
 	public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, Map options);
     public SortedSet<User> getUsers(Collection<Long> userIds);
+    public String getUserIds(SortedSet<User> users, String strSeparator);
+    
 	/**
 	 * Return a collection of user ids  They are either in the principal list
 	 * or members of groups in the principal list.
