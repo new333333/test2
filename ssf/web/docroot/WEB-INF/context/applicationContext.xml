@@ -834,9 +834,6 @@ text/calendar											  ics
 	        <entry key="SiteScape:type=Module,name=rssModule">
 	          <ref local="rssModule"/>
 	        </entry>
-	        <entry key="SiteScape:type=Module,name=icalModule">
-	          <ref local="icalModule"/>
-	        </entry>
 			<entry key="SiteScape:type=Repository,name=simpleFileRepository">
 	          <ref local="simpleFileRepository"/>
 	        </entry>
