@@ -63,6 +63,7 @@
 		<th><ssf:nlt tag="task.status"/></th>
 		<th><ssf:nlt tag="task.assigned"/></th>
 		<th><ssf:nlt tag="task.done"/></th>		
+		<th><ssf:nlt tag="task.location"/></th>
 	</tr>
 
 <c:forEach var="entry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
@@ -109,7 +110,24 @@
 					entryId="${entry._docId}}" 
 					readOnly="true"/>
 			</c:if>
-		</td>		
+		</td>
+		<td class="ss_normalprint" width="20%">
+			<c:set var="title" value="parent folder not found"/>
+
+			<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
+			<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
+				<c:if test="${folder.id == entry._topFolderId}">
+					<c:set var="title" value="${folder}"/>
+				</c:if>
+			</c:forEach>
+			</c:if>
+
+			<c:set var="isDashboard" value="yes"/>
+
+    		<a href="javascript: ;"
+				onClick="return ss_gotoPermalink('${entry._topFolderId}', '${entry._topFolderId}', 'folder', '${ss_namespace}', 'yes');"
+				><span class="ss_bold">${title}</span></a>
+		</td>	
 	</tr>
 	</c:forEach>
 </table>
