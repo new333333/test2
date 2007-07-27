@@ -3,6 +3,7 @@
 <project name="jboss-portal" basedir=".">
 	<!-- This setting will override the value in the properties file -->
 	<property name="portal.type" value="jbossportal"/>
+	<property name="app.server.type" value="jboss-tomcat"/>
 
 	<import file="../build-common.xml" />
 	
