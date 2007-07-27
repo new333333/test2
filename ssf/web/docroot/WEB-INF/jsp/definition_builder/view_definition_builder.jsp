@@ -582,10 +582,9 @@ function ss_saveUserGroupResults(s) {
 </c:if>
 
 <span class="ss_titlebold">
-<a href="<portlet:actionURL windowState="maximized">
-	<portlet:param name="action" value="definition_builder" />
-	<portlet:param name="definition_type" value="<%= definitionType %>" />
-	</portlet:actionURL>">
+<a href="<portlet:actionURL windowState="maximized"><portlet:param 
+	name="action" value="definition_builder" /><portlet:param 
+	name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>">
 <ssf:nlt tag="definition.builder" text="Definition builder" />
 </a>
 <%
@@ -617,10 +616,10 @@ function ss_saveUserGroupResults(s) {
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
 			<div id="displaydiv0" style="display:inline; visibility:hidden;">
-			<form class="ss_form" action="<portlet:actionURL windowState="maximized">
-				<portlet:param name="action" value="definition_builder" />
-				<portlet:param name="definition_type" value="<%= definitionType %>" />
-				</portlet:actionURL>" method="post" name="definitionbuilder" id="definitionbuilder" 
+			<form class="ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
+				name="action" value="definition_builder" /><portlet:param 
+				name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>" 
+				method="post" name="definitionbuilder" id="definitionbuilder" 
 				onSubmit="setSubmitData(this)" style="display:inline;" >
 			<ssf:box>
 			  <ssf:param name="box_id" value="displaydivbox" />

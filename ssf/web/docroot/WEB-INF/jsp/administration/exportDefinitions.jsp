@@ -16,9 +16,9 @@
 
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style ss_form" action="<portlet:actionURL>
-			  <portlet:param name="action" value="export_definition"/>
-		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style ss_form" action="<portlet:actionURL><portlet:param 
+	name="action" value="export_definition"/></portlet:actionURL>" 
+	method="post" name="<portlet:namespace />fm">
 
 <br>
 <br>

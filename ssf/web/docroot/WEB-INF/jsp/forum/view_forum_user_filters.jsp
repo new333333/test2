@@ -44,11 +44,11 @@
 	
 		<form class="ss_compact ss_actions_bar_background" 
 		    name="ss_filterSelect" 
-			action="<portlet:actionURL windowState="maximized">
-				<portlet:param name="action" value="${action}"/>
-				<portlet:param name="binderId" value="${ssFolder.id}"/>
-				<portlet:param name="operation" value="select_filter"/>
-				</portlet:actionURL>" method="post" >
+			action="<portlet:actionURL windowState="maximized"><portlet:param 
+				name="action" value="${action}"/><portlet:param 
+				name="binderId" value="${ssFolder.id}"/><portlet:param 
+				name="operation" value="select_filter"/></portlet:actionURL>" 
+			method="post" >
 			
 			
 			<%
@@ -95,11 +95,10 @@
 	
 	<li>
 		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a href="<portlet:renderURL windowState="maximized">
-				<portlet:param name="action" value="build_filter"/>
-				<portlet:param name="binderId" value="${ssBinder.id}"/>
-				<portlet:param name="binderType" value="${ssBinder.entityType}"/>
-				</portlet:renderURL>"
+		<a href="<portlet:renderURL windowState="maximized"><portlet:param 
+			name="action" value="build_filter"/><portlet:param 
+			name="binderId" value="${ssBinder.id}"/><portlet:param 
+			name="binderType" value="${ssBinder.entityType}"/></portlet:renderURL>"
 		><ssf:nlt tag="Edit" text="Edit"/></a>
 		</c:if>
 		<c:if test="${ssConfigJspStyle == 'template'}">

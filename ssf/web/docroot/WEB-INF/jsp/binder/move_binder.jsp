@@ -46,12 +46,12 @@ function ${wsTreeName}_showId(id, obj, action) {
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <br/>
 <form class="ss_style ss_form" method="post" 
-		  action="<portlet:actionURL>
-		 <portlet:param name="action" value="modify_binder"/>		  
-		 <portlet:param name="operation" value="move"/>
-		 <portlet:param name="binderId" value="${ssBinder.id}"/>
-		 <portlet:param name="binderType" value="${ssBinder.entityType}"/>
-		 </portlet:actionURL>" name="<portlet:namespace />fm">
+		  action="<portlet:actionURL><portlet:param 
+		  name="action" value="modify_binder"/><portlet:param 
+		  name="operation" value="move"/><portlet:param 
+		  name="binderId" value="${ssBinder.id}"/><portlet:param 
+		  name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
+		  name="<portlet:namespace />fm">
 <br/>
 
 <span class="ss_bold"><ssf:nlt tag="move.selectDestination"/></span>

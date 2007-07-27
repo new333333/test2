@@ -37,13 +37,13 @@
 				<li>
 					<a href="javascript: ;" 
 					onclick="ss_removeSavedSearchQuery('<ssf:escapeJavaScript value="${query}"/>','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
-					<a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="advanced_search"/>
-					<portlet:param name="tabTitle" value="${query}"/>
-					<portlet:param name="newTab" value="1"/>
-					<portlet:param name="operation" value="ss_savedQuery"/>
-					<portlet:param name="ss_queryName" value="${query}"/>
-					</portlet:actionURL>">${query}</a>
+					<a href="<portlet:actionURL windowState="maximized" 
+						portletMode="view"><portlet:param 
+						name="action" value="advanced_search"/><portlet:param 
+						name="tabTitle" value="${query}"/><portlet:param 
+						name="newTab" value="1"/><portlet:param 
+						name="operation" value="ss_savedQuery"/><portlet:param 
+						name="ss_queryName" value="${query}"/></portlet:actionURL>">${query}</a>
 				</li>
 			</c:forEach>
 			

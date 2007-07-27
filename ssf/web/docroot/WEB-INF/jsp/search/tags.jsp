@@ -23,13 +23,13 @@
 				<p class="ss_tags_cloud">
 					<c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 						<span class="${tag.searchResultsRatingCSS}">
-						<a href="<portlet:actionURL windowState="maximized" portletMode="view">
-							<portlet:param name="action" value="advanced_search"/>
-							<portlet:param name="searchCommunityTags_hidden" value="${tag.ssTag}"/>
-							<portlet:param name="operation" value="ss_searchResults"/>
-							<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
-							<portlet:param name="newTab" value="1"/>
-							</portlet:actionURL>">${tag.ssTag}</a>
+						<a href="<portlet:actionURL windowState="maximized" 
+							portletMode="view"><portlet:param 
+							name="action" value="advanced_search"/><portlet:param 
+							name="searchCommunityTags_hidden" value="${tag.ssTag}"/><portlet:param 
+							name="operation" value="ss_searchResults"/><portlet:param 
+							name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
+							name="newTab" value="1"/></portlet:actionURL>">${tag.ssTag}</a>
 						</span>
 					</c:forEach>
 				</p>
@@ -37,13 +37,14 @@
 				<h5><ssf:nlt tag="tags.personal"/></h5>
 				<p class="ss_tags_cloud">
 					<c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
-						<span class="${tag.searchResultsRatingCSS}"><a href="<portlet:actionURL windowState="maximized" portletMode="view">
-							<portlet:param name="action" value="advanced_search"/>
-							<portlet:param name="searchPersonalTags_hidden" value="${tag.ssTag}"/>
-							<portlet:param name="operation" value="ss_searchResults"/>
-							<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
-							<portlet:param name="newTab" value="1"/>
-							</portlet:actionURL>">${tag.ssTag}</a></span>
+						<span class="${tag.searchResultsRatingCSS}"><a 
+							href="<portlet:actionURL windowState="maximized" 
+							portletMode="view"><portlet:param 
+							name="action" value="advanced_search"/><portlet:param 
+							name="searchPersonalTags_hidden" value="${tag.ssTag}"/><portlet:param 
+							name="operation" value="ss_searchResults"/><portlet:param 
+							name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
+							name="newTab" value="1"/></portlet:actionURL>">${tag.ssTag}</a></span>
 					</c:forEach>
 				</p>
 

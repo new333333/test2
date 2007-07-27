@@ -408,7 +408,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 }
 </script>
 <c:if test="${!empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
-  <a href="${ss_accessibleUrl}"><img 
+  <a href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
     src="<html:imagesPath/>pics/1pix.gif" /></a><%--
 		--%></c:if><%--

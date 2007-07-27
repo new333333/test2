@@ -19,8 +19,8 @@
 <form class="ss_style ss_form" 
 	action="<portlet:actionURL><portlet:param 
 		name="action" value="license_report"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
 	method="post" 
 	name="${formName}">
 <input type="hidden" name="ss_reportType" value="license"/>

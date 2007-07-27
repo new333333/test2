@@ -20,7 +20,8 @@
 <br/>
 <br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
-	  name="${ssNamespace}_btnForm" method="post"  action="<portlet:renderURL windowState="normal"/>">
+	  name="${ssNamespace}_btnForm" method="post" 
+	  action="<portlet:renderURL windowState="normal"/>">
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 	</form>
   </div>

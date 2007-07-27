@@ -126,10 +126,10 @@ function <portlet:namespace/>_onsub(obj) {
 <div class="ss_formBreak"/>
 
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL>
-		 <portlet:param name="action" value="manage_groups"/>
-		 <portlet:param name="binderId" value="${ssBinder.id}"/>
-		 </portlet:actionURL>" name="<portlet:namespace />fm">
+		  action="<portlet:actionURL><portlet:param 
+		  name="action" value="manage_groups"/><portlet:param 
+		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
+		  name="<portlet:namespace />fm">
 <div class="ss_buttonBarLeft">
 
 <form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" 

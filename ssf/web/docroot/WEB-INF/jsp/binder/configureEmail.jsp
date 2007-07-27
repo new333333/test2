@@ -67,10 +67,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
 
-    action="<portlet:actionURL>
-			<portlet:param name="action" value="config_email"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-		</portlet:actionURL>">
+    action="<portlet:actionURL><portlet:param 
+    	name="action" value="config_email"/><portlet:param 
+    	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 
 <br/>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">

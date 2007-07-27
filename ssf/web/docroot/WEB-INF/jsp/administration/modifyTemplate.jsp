@@ -32,8 +32,8 @@
 
 <c:if test="${ssOperation == 'modify_template'}">
 <form method="post" action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="modify_template"/><portlet:param 
+		name="action" value="configure_configuration"/><portlet:param 
+		name="operation" value="modify_template"/><portlet:param 
 		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
 
 <div class="ss_buttonBarRight">
@@ -89,8 +89,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" 
     id="<portlet:namespace/>fm" method="post" 
     action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="add"/></portlet:actionURL>" >
+		name="action" value="configure_configuration"/><portlet:param 
+		name="operation" value="add"/></portlet:actionURL>" >
 <input type="hidden" name="cfgType" value="-1"/>
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
@@ -119,9 +119,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </c:if>
 <c:if test="${cfgType == '-2'}">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL>
-		 <portlet:param name="action" value="configure_configuration"/>
-		 <portlet:param name="operation" value="add"/></portlet:actionURL>" name="<portlet:namespace />fm">
+		  action="<portlet:actionURL><portlet:param 
+		  name="action" value="configure_configuration"/><portlet:param 
+		  name="operation" value="add"/></portlet:actionURL>" 
+		  name="<portlet:namespace />fm">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.configure_cfg.import" /></span>
 <br>
@@ -165,8 +166,8 @@ function <portlet:namespace/>_onsub(obj) {
 }
 </script>
 <form method="post" action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="add"/></portlet:actionURL>" 
+		name="action" value="configure_configuration"/><portlet:param 
+		name="operation" value="add"/></portlet:actionURL>" 
 		>
 <input type="hidden" name="cfgType" value="${cfgType}"/>
 <div class="ss_buttonBarRight">

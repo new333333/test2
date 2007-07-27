@@ -91,34 +91,33 @@ function <portlet:namespace/>_getUnseenCounts() {
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td>
 	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
-	  <a href="<portlet:renderURL windowState="maximized">
-			<portlet:param name="action" value="view_folder_listing"/>
-			<portlet:param name="binderId" value="${binder.id}"/>
-		    </portlet:renderURL>"><span>${binder.title}</span></a>
+	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+	  	name="action" value="view_folder_listing"/><portlet:param 
+	  	name="binderId" value="${binder.id}"/></portlet:renderURL>"><span>${binder.title}</span></a>
 	  <c:if test="${binder.parentBinder.entityIdentifier.entityType == 'folder'}">
-	    <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized"><portlet:param 
+	    <a style="padding-left:20px;" 
+	    	href="<portlet:renderURL windowState="maximized"><portlet:param 
 			name="action" value="view_folder_listing"/><portlet:param 
 			name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>">
 			<span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	  <c:if test="${binder.parentBinder.entityIdentifier.entityType != 'folder'}">
-	    <a style="padding-left:20px;" href="<portlet:renderURL windowState="maximized">
-			<portlet:param name="action" value="view_ws_listing"/>
-			<portlet:param name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>">
+	    <a style="padding-left:20px;" 
+	    	href="<portlet:renderURL windowState="maximized"><portlet:param 
+	    	name="action" value="view_ws_listing"/><portlet:param 
+	    	name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>">
 			<span  class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'workspace'}">
-	  <a href="<portlet:renderURL windowState="maximized">
-			<portlet:param name="action" value="view_ws_listing"/>
-			<portlet:param name="binderId" value="${binder.id}"/>
-		    </portlet:renderURL>"><span>${binder.title}</span></a>
+	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+	  	name="action" value="view_ws_listing"/><portlet:param 
+	  	name="binderId" value="${binder.id}"/></portlet:renderURL>"><span>${binder.title}</span></a>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'profiles'}">
-	  <a href="<portlet:renderURL windowState="maximized">
-			<portlet:param name="action" value="view_profile_listing"/>
-			<portlet:param name="binderId" value="${binder.id}"/>
-		    </portlet:renderURL>"><span>${binder.title}</span></a>
+	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+	  	name="action" value="view_profile_listing"/><portlet:param 
+	  	name="binderId" value="${binder.id}"/></portlet:renderURL>"><span>${binder.title}</span></a>
 	</c:if>
   </td>
   </tr>

@@ -12,10 +12,10 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL>
-		 <portlet:param name="action" value="import_profiles"/>
-		 <portlet:param name="binderId" value="${ssBinder.id}"/>
-		 </portlet:actionURL>" name="<portlet:namespace />fm">
+		  action="<portlet:actionURL><portlet:param 
+		  name="action" value="import_profiles"/><portlet:param 
+		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
+		  name="<portlet:namespace />fm">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.import.profiles" /></span>
 <br>
