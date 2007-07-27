@@ -1140,7 +1140,12 @@ function ss_getWindowHeight() {
 }
 
 function ss_getBodyHeight() {
-    var h = self.document.body.scrollHeight;
+    var h;
+    if (window.innerHeight && window.scrollMaxY) {	
+		h = window.innerHeight + window.scrollMaxY;
+	} else {
+		h = self.document.body.scrollHeight;
+	}
     if (ss_getWindowHeight() > h) {
         h = ss_getWindowHeight();
     }
@@ -1819,16 +1824,17 @@ function ss_showLightbox(id, zIndex, opacity, className) {
 		lightBox = document.createElement("div");
         lightBox.setAttribute("id", id);
         lightBox.className = className;
+        lightBox.innerHTML = "&nbsp;";
         bodyObj.appendChild(lightBox);
 	}
     lightBox.style.visibility = "hidden";
     lightBox.className = className;
     lightBox.style.display = "block";
-    lightBox.style.top = 0;
-    lightBox.style.left = 0;
+    lightBox.style.top = "0px";
+    lightBox.style.left = "0px";
     dojo.html.setOpacity(lightBox, 0);
-    lightBox.style.width = ss_getBodyWidth();
-    lightBox.style.height = ss_getBodyHeight();
+    lightBox.style.width = ss_getBodyWidth() + "px";
+    lightBox.style.height = ss_getBodyHeight() + "px";
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
     dojo.lfx.html.fade(lightBox, {end:opacity}, 150).play();
@@ -3672,8 +3678,8 @@ function ss_centerPopupDiv(targetDiv, inContainer) {
 	    }
 		x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
 		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
-		targetDiv.style.left = x;
-		targetDiv.style.top = y;
+		targetDiv.style.left = x + "px";
+		targetDiv.style.top = y + "px";
 }
 
 function ss_setupPopupDiv(targetDiv) {
