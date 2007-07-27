@@ -37,10 +37,10 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <div style="margin:6px;">
 <h3><ssf:nlt tag="administration.configure_cfg" text="Templates"/></h3>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
-<form class="ss_style ss_form" name="<portlet:namespace/>add" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_configuration"/>
-			<portlet:param name="operation" value="add"/>
-		</portlet:actionURL>" >
+<form class="ss_style ss_form" name="<portlet:namespace/>add" method="post" 
+	action="<portlet:actionURL><portlet:param 
+	name="action" value="configure_configuration"/><portlet:param 
+	name="operation" value="add"/></portlet:actionURL>" >
 		
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
 	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder"/><br/>
@@ -54,10 +54,10 @@ function <%=cTreeName%>_showId(id, obj, action) {
 
 <br>
 <hr>
-<form class="ss_style ss_form" name="<portlet:namespace/>export" method="post" action="<portlet:renderURL>
-			<portlet:param name="action" value="configure_configuration"/>
-			<portlet:param name="operation" value="export"/>
-		</portlet:renderURL>" >
+<form class="ss_style ss_form" name="<portlet:namespace/>export" method="post" 
+	action="<portlet:renderURL><portlet:param 
+		name="action" value="configure_configuration"/><portlet:param 
+		name="operation" value="export"/></portlet:renderURL>" >
 <h3><ssf:nlt tag="administration.export.templates"/></h3>
 <br>
 	<input type="submit" class="ss_submit" name="exportBtn" value="<ssf:nlt tag="button.export" text="Export"/>">
@@ -109,10 +109,10 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <c:if test="${ssOperation == 'export'}">
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style ss_form" action="<portlet:actionURL>
-			  <portlet:param name="action" value="configure_configuration"/>
-				<portlet:param name="operation" value="export"/>
-			</portlet:actionURL>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style ss_form" action="<portlet:actionURL><portlet:param 
+	name="action" value="configure_configuration"/><portlet:param 
+	name="operation" value="export"/></portlet:actionURL>" 
+	method="post" name="<portlet:namespace />fm">
 
 <br>
 <br>
@@ -208,8 +208,7 @@ function ss_confirmDeleteConfig() {
 
 <div class="ss_formBreak" align="left"/>
 <form method="post" action="<portlet:renderURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		</portlet:renderURL>" >
+		name="action" value="configure_configuration"/></portlet:renderURL>" >
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
@@ -221,8 +220,8 @@ function ss_confirmDeleteConfig() {
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
 <form method="post" action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="${ssOperation}"/><portlet:param 
+		name="action" value="configure_configuration"/><portlet:param 
+		name="operation" value="${ssOperation}"/><portlet:param 
 		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
 
 <h3><ssf:nlt tag="administration.configure_cfg.existing"/></h3>

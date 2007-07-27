@@ -21,8 +21,8 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <script type="text/javascript">
 var ssReportURL="<portlet:actionURL><portlet:param 
 		name="action" value="activity_report"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";
 </script>
 
 <table class="ss_style" width="100%"><tr><td>

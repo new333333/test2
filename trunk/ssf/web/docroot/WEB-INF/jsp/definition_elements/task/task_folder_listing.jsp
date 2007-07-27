@@ -22,22 +22,16 @@
 		<tr>
 			<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="${action}"/>
-					<portlet:param name="operation" value="save_folder_sort_info"/>
-					<portlet:param name="binderId" value="${ssFolder.id}"/>
-					<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
-					<c:choose>
-					  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-					  	<portlet:param name="ssFolderSortDescend" value="true"/>
-					  </c:when>
-					  <c:otherwise>
-					  	<portlet:param name="ssFolderSortDescend" value="false"/>
-					  </c:otherwise>
-					</c:choose>
-					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
-				</portlet:actionURL>"
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+			    	name="action" value="${action}"/><portlet:param 
+			    	name="operation" value="save_folder_sort_info"/><portlet:param 
+			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    	name="ssFolderSortBy" value="_sortTitle"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><portlet:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
+			    	name="tabId" value="${tabId}"/><portlet:param 
+			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 			
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
@@ -66,22 +60,16 @@
 			</th>
 			<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="${action}"/>
-					<portlet:param name="operation" value="save_folder_sort_info"/>
-					<portlet:param name="binderId" value="${ssFolder.id}"/>
-					<portlet:param name="ssFolderSortBy" value="priority"/>
-					<c:choose>
-					  <c:when test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}">
-					  	<portlet:param name="ssFolderSortDescend" value="true"/>
-					  </c:when>
-					  <c:otherwise>
-					  	<portlet:param name="ssFolderSortDescend" value="false"/>
-					  </c:otherwise>
-					</c:choose>
-					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
-				</portlet:actionURL>"
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+			    	name="action" value="${action}"/><portlet:param 
+			    	name="operation" value="save_folder_sort_info"/><portlet:param 
+			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    	name="ssFolderSortBy" value="priority"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}"><portlet:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
+			    	name="tabId" value="${tabId}"/><portlet:param 
+			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}">
@@ -110,22 +98,16 @@
 			</th>
 			<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="${action}"/>
-					<portlet:param name="operation" value="save_folder_sort_info"/>
-					<portlet:param name="binderId" value="${ssFolder.id}"/>
-					<portlet:param name="ssFolderSortBy" value="start_end#EndDate"/>
-					<c:choose>
-					  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
-					  	<portlet:param name="ssFolderSortDescend" value="true"/>
-					  </c:when>
-					  <c:otherwise>
-					  	<portlet:param name="ssFolderSortDescend" value="false"/>
-					  </c:otherwise>
-					</c:choose>
-					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
-				</portlet:actionURL>"
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+			    	name="action" value="${action}"/><portlet:param 
+			    	name="operation" value="save_folder_sort_info"/><portlet:param 
+			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    	name="ssFolderSortBy" value="start_end#EndDate"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><portlet:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
+			    	name="tabId" value="${tabId}"/><portlet:param 
+			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
@@ -154,22 +136,16 @@
 			</th>
 			<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="${action}"/>
-					<portlet:param name="operation" value="save_folder_sort_info"/>
-					<portlet:param name="binderId" value="${ssFolder.id}"/>
-					<portlet:param name="ssFolderSortBy" value="status"/>
-					<c:choose>
-					  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
-					  	<portlet:param name="ssFolderSortDescend" value="true"/>
-					  </c:when>
-					  <c:otherwise>
-					  	<portlet:param name="ssFolderSortDescend" value="false"/>
-					  </c:otherwise>
-					</c:choose>
-					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
-				</portlet:actionURL>"
+				<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+					name="action" value="${action}"/><portlet:param 
+					name="operation" value="save_folder_sort_info"/><portlet:param 
+					name="binderId" value="${ssFolder.id}"/><portlet:param 
+					name="ssFolderSortBy" value="status"/><c:choose><c:when 
+					test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}"><portlet:param 
+					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
+					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
+					name="tabId" value="${tabId}"/><portlet:param 
+					name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
@@ -198,22 +174,16 @@
 			</th>
 			<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="${action}"/>
-					<portlet:param name="operation" value="save_folder_sort_info"/>
-					<portlet:param name="binderId" value="${ssFolder.id}"/>
-					<portlet:param name="ssFolderSortBy" value="assignment"/>
-					<c:choose>
-					  <c:when test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}">
-					  	<portlet:param name="ssFolderSortDescend" value="true"/>
-					  </c:when>
-					  <c:otherwise>
-					  	<portlet:param name="ssFolderSortDescend" value="false"/>
-					  </c:otherwise>
-					</c:choose>
-					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
-				</portlet:actionURL>"
+			    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+			    	name="action" value="${action}"/><portlet:param 
+			    	name="operation" value="save_folder_sort_info"/><portlet:param 
+			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    	name="ssFolderSortBy" value="assignment"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}"><portlet:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
+			    	name="tabId" value="${tabId}"/><portlet:param 
+			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}">
@@ -242,22 +212,16 @@
 			</th>
 			<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="${action}"/>
-					<portlet:param name="operation" value="save_folder_sort_info"/>
-					<portlet:param name="binderId" value="${ssFolder.id}"/>
-					<portlet:param name="ssFolderSortBy" value="completed"/>
-					<c:choose>
-					  <c:when test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}">
-					  	<portlet:param name="ssFolderSortDescend" value="true"/>
-					  </c:when>
-					  <c:otherwise>
-					  	<portlet:param name="ssFolderSortDescend" value="false"/>
-					  </c:otherwise>
-					</c:choose>
-					<portlet:param name="tabId" value="${tabId}"/>
-					<portlet:param name="ssTaskFilterType" value="${ssTaskFilterType}"/>
-				</portlet:actionURL>"
+				<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+					name="action" value="${action}"/><portlet:param 
+					name="operation" value="save_folder_sort_info"/><portlet:param 
+					name="binderId" value="${ssFolder.id}"/><portlet:param 
+					name="ssFolderSortBy" value="completed"/><c:choose><c:when 
+					test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}"><portlet:param 
+					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
+					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
+					name="tabId" value="${tabId}"/><portlet:param 
+					name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}">

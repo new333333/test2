@@ -10,22 +10,22 @@
  *
  */
 %>
-<form action="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="advanced_search"/>
-					<portlet:param name="tabTitle" value=""/>
-					<portlet:param name="newTab" value="1"/>
-					</portlet:actionURL>" method="post" id="advSearchForm">
+<form action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+		name="action" value="advanced_search"/><portlet:param 
+		name="tabTitle" value=""/><portlet:param 
+		name="newTab" value="1"/></portlet:actionURL>" method="post" id="advSearchForm">
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<h4><ssf:nlt tag="searchForm.quicksearch.Title"/></h4>
-				<a href="<portlet:actionURL windowState="maximized" portletMode="view">
-					<portlet:param name="action" value="advanced_search"/>
-					<portlet:param name="tabTitle" value=""/>
-					<portlet:param name="newTab" value="1"/>
-					<portlet:param name="searchText" value="${ss_filterMap.searchText}"/>
-					<portlet:param name="operation" value="ss_searchResults"/>
-					</portlet:actionURL>" class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
+				<a href="<portlet:actionURL windowState="maximized" 
+					portletMode="view"><portlet:param 
+					name="action" value="advanced_search"/><portlet:param 
+					name="tabTitle" value=""/><portlet:param 
+					name="newTab" value="1"/><portlet:param 
+					name="searchText" value="${ss_filterMap.searchText}"/><portlet:param 
+					name="operation" value="ss_searchResults"/></portlet:actionURL>" 
+					class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
 				<div class="ss_clear"></div>
 								
 				<table>

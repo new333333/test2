@@ -25,19 +25,18 @@
 		<ul>
 			<li>
 				<a class="gamma" 
-				  href="<portlet:renderURL windowState="maximized">
-				  	<portlet:param name="action" value="configure_forum" />
-				  	<portlet:param name="binderId" value="${ssBinder.id}" />
-					<portlet:param name="binderType" value="${ssBinder.entityType}"/>
-		    		</portlet:renderURL>">Configure</a>
+				  href="<portlet:renderURL windowState="maximized"><portlet:param 
+				  	name="action" value="configure_forum" /><portlet:param 
+				  	name="binderId" value="${ssBinder.id}" /><portlet:param 
+				  	name="binderType" value="${ssBinder.entityType}"/></portlet:renderURL>">Configure</a>
 			</li>
 			<li>
 				<a class="gamma" 
-				  href="<portlet:actionURL windowState="maximized">
-				  <portlet:param name="action" value="definition_builder" />
-				  	<portlet:param name="binderId" value="${ssBinder.id}"/>
-					<portlet:param name="binderType" value="${ssBinder.entityType}"/>
-		    		</portlet:actionURL>">Definition builder</a>
+				  href="<portlet:actionURL windowState="maximized"><portlet:param 
+				  	name="action" value="definition_builder" /><portlet:param 
+				  	name="binderId" value="${ssBinder.id}"/><portlet:param 
+				  	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>"
+				>Definition builder</a>
 			</li>
 		</ul>
 	</td>

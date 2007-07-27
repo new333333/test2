@@ -37,8 +37,8 @@
 <c:if test="${empty ssNavigationLinkTree[nextConfig.id]}">
 <a
   href="<portlet:renderURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param  name="binderId" value="${nextConfig.id}"/></portlet:renderURL>" >"
+		name="action" value="configure_configuration"/><portlet:param 
+		name="binderId" value="${nextConfig.id}"/></portlet:renderURL>" >"
   onClick="return(ss_navigation_goto(this.href));"
 >
 <c:if test="${empty nextConfig.templateTitle}" >
@@ -63,8 +63,8 @@
 <c:if test="${empty ssNavigationLinkTree[ssBinderConfig.id]}">
 <a class="ss_bold"
   href="<portlet:renderURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param  name="binderId" value="${nextConfig.id}"/></portlet:renderURL>" >"
+		name="action" value="configure_configuration"/><portlet:param 
+		name="binderId" value="${nextConfig.id}"/></portlet:renderURL>" >"
 
   onClick="return(ss_navigation_goto(this.href));"
 >
