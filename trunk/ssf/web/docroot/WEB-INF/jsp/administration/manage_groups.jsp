@@ -132,7 +132,11 @@ function <portlet:namespace/>_onsub(obj) {
 		 </portlet:actionURL>" name="<portlet:namespace />fm">
 <div class="ss_buttonBarLeft">
 
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" 
+	action="<portlet:renderURL windowState="normal" portletMode="view"></portlet:renderURL>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+	onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;"
+</form>
 </div>
 </form>
 </div>
