@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -152,12 +153,15 @@ public class ViewController  extends SAbstractController {
  				ids.add(user.getId());
  			}
  			//This is the portlet view; get the configured list of principals to show
- 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
+ 			SortedSet users = getProfileModule().getUsersFromPrincipals(ids);
+ 			model.put(WebKeys.USERS, users);
+ 			String strUsers = getProfileModule().getUserIds(users, LongIdUtil.DEFAULT_SEPARATOR);
  			//if we list groups, then we have issues when a user appears in multiple groups??
  			//how do we update the correct divs??
  			//so, explode the groups and just show members
   			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
-  			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
+  			//model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
+  			model.put(WebKeys.USER_LIST, strUsers);
   			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
 			Workspace binder = getWorkspaceModule().getWorkspace();
