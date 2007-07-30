@@ -1698,8 +1698,11 @@ public static final String[] monthNamesShort = {
 			
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "');return false;");
-			entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
-
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
+			} else {
+				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.taskImport"), "#", qualifiers);
+			}
 		}
 		
 		//Build the "Manage dashboard" toolbar

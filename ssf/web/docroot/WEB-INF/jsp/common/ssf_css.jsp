@@ -88,6 +88,14 @@ body.ss_style_body {
   background-color: transparent;
   color: ${ss_style_text_color};
 }
+
+.ss_style img {
+  border:0px none;
+}
+.ss_style ul li {
+  list-style:none;
+  list-style-image:<html:imagesPath/>pics/1pix.gif;
+}
   
 /* LINKS */
 .ss_style a {

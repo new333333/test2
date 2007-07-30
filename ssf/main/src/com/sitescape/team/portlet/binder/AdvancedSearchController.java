@@ -447,7 +447,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Iterator it = placesWithCounters.iterator();
 		while (it.hasNext()) {
 			Map place = (Map) it.next();
-			folderMap.put(((Binder)place.get(WebKeys.BINDER)).getId(),((Binder)place.get(WebKeys.BINDER)).getTitle());
+			Binder binder = (Binder)place.get(WebKeys.BINDER);
+			Binder parentBinder = binder.getParentBinder();
+			String parentBinderTitle = "";
+			if (parentBinder != null) parentBinderTitle = parentBinder.getTitle() + " // ";
+			folderMap.put(binder.getId(), parentBinderTitle + binder.getTitle());
 		}
 		return folderMap;
 	}
