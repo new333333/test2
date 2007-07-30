@@ -201,8 +201,9 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 	ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 	
-	// calendar
+	// calendar and tasks
 	ss_calendarTitleText = "<ssf:nlt tag="calendar.import.window.title"/>";
+	ss_calendarTitleText = "<ssf:nlt tag="task.import.window.title"/>";
 	
 	ss_AdvancedSearch = "<ssf:url 
 				adapter="false" 

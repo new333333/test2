@@ -37,7 +37,12 @@
 				<c:choose>
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 							<div class="ss_thumbnail">
-								<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
+								<c:if test="${entry._entryType != 'reply'}">
+								  <img alt="<ssf:nlt tag="alt.entry"/>" src="<html:imagesPath/>pics/entry_icon.gif"/>
+                                </c:if>
+								<c:if test="${entry._entryType == 'reply'}">
+								  <img alt="<ssf:nlt tag="alt.comment"/>" src="<html:imagesPath/>pics/entry_comment_icon.gif"/>
+                                </c:if>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -62,6 +67,9 @@
 												</c:if>
 											</ssf:param>
 										
+										    <c:if test="${entry._entryType == 'reply' && !empty entry._docNum}">
+										      ${entry._docNum}&nbsp;&nbsp;
+										    </c:if>
 										    <c:if test="${empty entry.title}">
 										    	(<ssf:nlt tag="entry.noTitle"/>)
 										    </c:if>
@@ -127,7 +135,7 @@
 				</c:when>
 		  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
 							<div class="ss_thumbnail">
-								<img <ssf:alt tag="alt.attachment"/> src="<html:imagesPath/>pics/attachment_icon.gif"/>
+								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_icon.gif"/>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -184,8 +192,7 @@
 									</a>
 								</p>
 								<c:if test="${!empty entry.binderTitle}">
-									<ssf:nlt tag="searchResult.label.binder" />: 
-									<p><a 
+									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
 									<c:if test="${isDashboard == 'yes'}">
 										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
 											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
@@ -207,7 +214,7 @@
 	
 				<c:when test="${entry._entityType == 'user' && entry._docType == 'entry'}">
 							<div class="ss_thumbnail">
-								<c:if test="${!empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
+								<c:if test="${!empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
 								  src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
 		    										<ssf:param name="entityType" value="${entry._entityType}"/>
 													<ssf:param name="fileId" value="${entry._fileID}"/>
@@ -215,7 +222,7 @@
 												    <ssf:param name="viewType" value="thumbnail"/>
 												    </ssf:url>" />
 								</c:if>
-								<c:if test="${empty entry._fileID}"><img <ssf:alt tag="alt.entry"/>
+								<c:if test="${empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
 								  src="<html:imagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
 							</div>
 							<div class="ss_entry">
@@ -282,7 +289,7 @@
 				
 				<c:when test="${entry._entityType == 'user' && entry._docType == 'attachment'}">
 							<div class="ss_thumbnail">
-								<img <ssf:alt tag="alt.attachment"/> src="<html:imagesPath/>pics/attachment_icon.gif"/>
+								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_icon.gif"/>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -342,7 +349,7 @@
 				<c:when test="${entry._entityType == 'group'}">
 							<div class="ss_thumbnail">
 								<c:if test="${empty entry._fileID}"><img 
-								<ssf:alt tag="alt.group"/> src="<html:imagesPath/>pics/group_icon.gif"/></c:if>
+								alt="<ssf:nlt tag="alt.group"/>" src="<html:imagesPath/>pics/group_icon.gif"/></c:if>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">

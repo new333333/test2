@@ -99,6 +99,40 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 %>
 </c:if>
+
+<c:if test="${ssDefinitionEntry.entityType == 'folderEntry' && !empty ssDefinitionEntry.parentEntry}">
+<c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
+<jsp:useBean id="parentEntry" type="java.lang.Object" />
+<%
+	Stack parentEntryTree = new Stack();
+	while (parentEntry != null) {
+		parentEntryTree.push(parentEntry);
+		parentEntry = ((FolderEntry)parentEntry).getParentEntry();
+	}
+	while (!parentEntryTree.empty()) {
+		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
+%>
+<c:set var="nextEntry" value="<%= nextEntry %>"/>
+<li style="float:left;">
+<a
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.parentBinder.id}" 
+  entryId="${parentEntry.id}" 
+  action="view_folder_entry"/>"
+  onClick="return(ss_navigation_goto(this.href));"
+>
+<c:if test="${empty nextEntry.title}" >
+--<ssf:nlt tag="entry.noTitle" />--
+</c:if>
+<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
+  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+</li>
+<li style="float:left; padding-top:2px;">&nbsp;&nbsp;//&nbsp;&nbsp;</li>
+<%
+	}
+%>
+</c:if>
+
 <li style="float:left;">
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <a class="ss_bold"
