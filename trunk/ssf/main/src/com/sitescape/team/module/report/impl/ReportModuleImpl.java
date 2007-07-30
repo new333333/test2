@@ -25,6 +25,7 @@ import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.LoginInfo;
@@ -168,17 +169,22 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	             {AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(),
 				  AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 	
-	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Binder binder) {
+	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Long binderId, String title, Long parentId) {
 		HashMap<String,Object> row = new HashMap<String,Object>();
-		row.put(ReportModule.BINDER_ID, binder.getId());
-		row.put(ReportModule.BINDER_TITLE, binder.getTitle());
-		if(binder.getParentBinder() != null) {
-			row.put(ReportModule.BINDER_PARENT, binder.getParentBinder().getId());
+		row.put(ReportModule.BINDER_ID, binderId);
+		row.put(ReportModule.BINDER_TITLE, title);
+		if(parentId != null) {
+			row.put(ReportModule.BINDER_PARENT, parentId);
 		}
 		report.add(row);
 		return row;
 	}
 	
+	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Binder binder) {
+		return addBlankRow(report, binder.getId(), binder.getTitle(),
+							binder.getParentBinder().getId());
+	}
+
 	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Binder binder, final boolean byUser, Long userId) {
 		HashMap<String,Object> row = addBlankRow(report, binder);
 		if(byUser && userId != null) {
@@ -417,6 +423,35 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			row.put(ReportModule.STATE, col[1]);
 			row.put(ReportModule.COUNT, col[2]);
 		}
+	}
+
+	
+	public List<Map<String,Object>> generateQuotaReport() {
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List auditTrail = null;
+				try {
+					ProjectionList proj = Projections.projectionList()
+									.add(Projections.groupProperty("owner.owningBinderId"))
+									.add(Projections.sum("fileItem.length"));
+					Criteria crit = session.createCriteria(FileAttachment.class)
+						.setProjection(proj);
+					auditTrail = crit.list();
+				} catch(Exception e) {
+					System.out.println("bah" +  e.getMessage());
+				}
+				return auditTrail;
+			}});
+		HashMap<String,Object> row = null;
+		for(Object o : result) {
+			Object[] col = (Object []) o;
+			row = addBlankRow(report, (Long) col[0], (String) "I don't know the title", (Long) new Long(-1));
+			row.put(ReportModule.SIZE, col[1]);
+		}
+
+		return report;
 	}
 
 	@SuppressWarnings("unchecked")
