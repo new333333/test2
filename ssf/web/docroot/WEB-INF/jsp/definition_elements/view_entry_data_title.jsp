@@ -22,6 +22,47 @@ if (displayStyle == null || displayStyle.equals("")) {
 %>
 
 <div class="ss_entryContent">
+
+<c:if test="${empty ss_title_breadcrumbs_seen && 
+                    ssDefinitionEntry.entityType == 'folderEntry' && 
+                    !empty ssDefinitionEntry.parentEntry}">
+<div style="padding-bottom:10px;">
+<c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
+<jsp:useBean id="parentEntry" type="java.lang.Object" />
+<%
+	Stack parentEntryTree = new Stack();
+	while (parentEntry != null) {
+		parentEntryTree.push(parentEntry);
+		parentEntry = ((FolderEntry)parentEntry).getParentEntry();
+	}
+	while (!parentEntryTree.empty()) {
+		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
+%>
+<c:set var="nextEntry" value="<%= nextEntry %>"/>
+<div style="padding-bottom:10px;">
+<span style="ss_fineprint ss_light">
+<a
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.parentBinder.id}" 
+  entryId="${nextEntry.id}" 
+  action="view_folder_entry"/>"
+>
+<c:if test="${!empty nextEntry.docNumber}">
+${nextEntry.docNumber}.
+</c:if>
+<c:if test="${empty nextEntry.title}" >
+--<ssf:nlt tag="entry.noTitle" />--
+</c:if>
+<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
+  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+</span>
+<br/>
+<%
+	}
+%>
+</div>
+</c:if>
+<c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
 <span class="ss_entryTitle">
 	<c:if test="${!empty ssDefinitionEntry.docNumber}">
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
