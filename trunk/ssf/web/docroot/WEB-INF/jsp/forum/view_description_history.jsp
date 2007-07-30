@@ -284,8 +284,8 @@ function dodiff()
 
 <div id ="diff" style="display:none">
 <h3 id="diff-header"><ssf:nlt tag="entry.comparison">
-  <ssf:param name="value" value="<span id='versionNumberA'></span>"/>
-  <ssf:param name="value" value="<span id='versionNumberB'></span>"/>
+  <ssf:param name="value" value="<span id=\"versionNumberA\">x</span>"/>
+  <ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
   </ssf:nlt>
 </h3>
 <h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
