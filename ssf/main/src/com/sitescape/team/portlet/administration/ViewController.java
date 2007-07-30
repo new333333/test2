@@ -101,6 +101,8 @@ public class ViewController extends  SAbstractController {
 
 		Map elements = new TreeMap();
 		Map designers = new TreeMap();
+		Map reports = new TreeMap();
+		
 		//Definition builders
 		Element designerElement;
 		Element element;
@@ -219,7 +221,6 @@ public class ViewController extends  SAbstractController {
 				Map.Entry me = (Map.Entry)iter.next();
 				designerElement.add((Element)me.getValue());
 			}
-			
 		}
 
 		//Ldap configuration
@@ -321,13 +322,14 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 			elements.put(element.attributeValue("title"), element);
 
+			//Reset all definitions
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.reload.definitions"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_CONFIRM);
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
@@ -364,43 +366,7 @@ public class ViewController extends  SAbstractController {
 			elements.put(element.attributeValue("title"), element);
 		}
 
-		//Report
-		if (getAdminModule().testAccess(AdminOperation.report)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.report.title.login"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.report.title.license"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
-		
-		//Credits
-		element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.credits"));
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_CREDITS);
-		url.setWindowState(WindowState.MAXIMIZED);
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-		elements.put(element.attributeValue("title"), element);
-		
+		//Manage license
 		if (getLicenseModule().testAccess(LicenseOperation.manageLicense)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.manage.license"));
@@ -413,6 +379,53 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 			elements.put(element.attributeValue("title"), element);
 		}
+
+		//Reports
+		Element reportElement;
+		reportElement = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+		reportElement.addAttribute("title", NLT.get("toolbar.reports"));
+		reportElement.addAttribute("image", "bullet");
+		reportElement.addAttribute("displayOnly", "true");
+		reportElement.addAttribute("id", String.valueOf(nextId++));
+
+		//Login report
+		if (getAdminModule().testAccess(AdminOperation.report)) {
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.report.title.login"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN_REPORT);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			reports.put(element.attributeValue("title"), element);
+
+			//License report
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.report.title.license"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			reports.put(element.attributeValue("title"), element);
+		}
+		
+		//Credits
+		element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.credits"));
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_CREDITS);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+		reports.put(element.attributeValue("title"), element);
+		
 		//Change logs
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
@@ -424,8 +437,17 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
+			reports.put(element.attributeValue("title"), element);
 		}
+		
+		if (!reports.isEmpty()) {
+			elements.put(reportElement.attributeValue("title"), reportElement);
+			for (Iterator iter=reports.entrySet().iterator(); iter.hasNext(); ) {
+				Map.Entry me = (Map.Entry)iter.next();
+				reportElement.add((Element)me.getValue());
+			}
+		}
+
 		for (Iterator iter=elements.entrySet().iterator(); iter.hasNext(); ) {
 			Map.Entry me = (Map.Entry)iter.next();
 			rootElement.add((Element)me.getValue());
