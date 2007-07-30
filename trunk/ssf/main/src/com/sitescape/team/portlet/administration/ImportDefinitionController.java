@@ -57,7 +57,9 @@ public class ImportDefinitionController extends  SAbstractController {
 			response.setRenderParameter("redirect", "true");
 		} else {
 			String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
-			if (WebKeys.OPERATION_RELOAD.equals(operation)) {
+			if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
+				response.setRenderParameters(formData);
+			} else if (WebKeys.OPERATION_RELOAD.equals(operation)) {
 				getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId());
 				response.setRenderParameter("redirect", "true");
 			} else {
@@ -71,6 +73,10 @@ public class ImportDefinitionController extends  SAbstractController {
 			
 		if (!Validator.isNull(request.getParameter("redirect"))) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
+		}
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
+		if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM);
 		}
 		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS);
 	}
