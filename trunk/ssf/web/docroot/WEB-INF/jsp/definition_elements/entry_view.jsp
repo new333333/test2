@@ -35,8 +35,11 @@
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 </td>
-<td valign="top"><a href="javascript: ss_helpSystem.run();"><img border="0"
-  <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a></td>
+<td valign="top" nowrap><a href="javascript: window.print();"><img border="0" class="ss_print_button"
+    alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+    src="<html:imagesPath/>pics/1pix.gif" /></a>&nbsp;&nbsp;<a
+    href="javascript: ss_helpSystem.run();"><img border="0"
+    <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a></td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="0" width="100%">

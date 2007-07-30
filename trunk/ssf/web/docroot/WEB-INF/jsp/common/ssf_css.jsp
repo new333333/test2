@@ -126,7 +126,7 @@ a.ss_download_link {
 	font-size: ${ss_style_font_finestprint};
 	background-image: url(<html:imagesPath/>icons/accessory_move_down.gif);
 	background-repeat: no-repeat;
-	background-position: left center;
+	: left center;
 	padding-left: 15px;
 	padding-right: 0px;
 	line-height: 11px;
@@ -444,7 +444,7 @@ div.ss_workflow {
 .ss_blockquote_watermark {
 	background-color: transparent;
 	background-image: url(<html:imagesPath/>pics/watermark_blockquote_blue.gif);
-    background-position: top left;
+    : top left;
     background-repeat: no-repeat;
     padding: 7px 6px 33px 20px;
 }
@@ -552,7 +552,7 @@ div.ss_iconed_label {
   display: inline;
   font-family: ${ss_style_title_font_family};
   background-repeat: no-repeat;
-  background-position: left center;
+  : left center;
   padding-left: 16px;
   padding-right: 12px;
   margin-left: 2px;
@@ -647,7 +647,7 @@ div.ss_popup_topleft {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  background-position: top left;
+  : top left;
   height: 24px;
   width: 40px;
   padding: 0px;
@@ -657,7 +657,7 @@ div.ss_popup_topcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  background-position: -50px top;
+  : -50px top;
   height: 24px;
   padding: 0px;
 }
@@ -667,7 +667,7 @@ div.ss_popup_topright {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  background-position: top right;
+  : top right;
   height: 24px;
   width: 40px;
   padding: 0px;
@@ -677,7 +677,7 @@ div.ss_popup_bottomleft {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: bottom left;
+  : bottom left;
   height: 10px;
   width: 40px;
   padding: 0px;
@@ -687,7 +687,7 @@ div.ss_popup_bottomcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: -50px bottom;
+  : -50px bottom;
   height: 10px;
   padding: 0px;
 }
@@ -696,7 +696,7 @@ div.ss_popup_bottomright {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  background-position: bottom right;
+  : bottom right;
   height: 10px;
   width: 40px;
   padding: 0px;
@@ -726,7 +726,7 @@ div.ss_popup_body {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_bg_blue.gif);
   background-repeat: repeat-y;
-  background-position: top right;
+  : top right;
   padding: 1px 5px 1px 5px;
 }
 
@@ -980,7 +980,7 @@ div.ss_blog_content_container1 {
 	margin-left: -190px;
 	float: right;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
-	background-position: left;
+	: left;
 }
 
 div.ss_blog_content_container2 {
@@ -991,7 +991,7 @@ div.ss_blog_sidebar_container {
 	float: left;
 	padding-right: 3px;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
-	background-position: left;
+	: left;
 }
 
 div.ss_blog_content {
@@ -1007,7 +1007,7 @@ div.ss_blog_content_container1 {
 	margin-right: -190px;
 	float: left;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
-	background-position: right;
+	: right;
 }
 
 div.ss_blog_content_container2 {
@@ -1018,7 +1018,7 @@ div.ss_blog_sidebar_container {
 	float: right;
 	padding-left: 5px;
 	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
-	background-position: right;
+	: right;
 }
 
 div.ss_blog_content {
@@ -2237,7 +2237,7 @@ img.ss_tabs_close {
 }
 
 a:hover img.ss_tabs_close {
-	background-position: left -9px;
+	: left -9px;
 }
 
 
@@ -2248,9 +2248,19 @@ img.ss_generic_close {
 }
 
 a:hover img.ss_generic_close {
-	background-position: left -9px;
+	: left -9px;
 }
 
+img.ss_print_button {
+	position:relative;
+    background:url(<html:imagesPath/>icons/printer.gif) no-repeat left -16px;
+    width:16px;
+    height: 16px;
+}
+
+a:hover img.ss_print_button {
+	: left 0px;
+}
 
 img.ss_accessory_modify {
 	position:relative;
@@ -2260,7 +2270,7 @@ img.ss_accessory_modify {
 }
 
 a:hover img.ss_accessory_modify {
-	background-position: left 0px;
+	: left 0px;
 }
 
 img.ss_accessory_delete {
@@ -2271,7 +2281,7 @@ img.ss_accessory_delete {
 }
 
 a:hover img.ss_accessory_delete {
-	background-position: left -9px;
+	: left -9px;
 }
 
 img.ss_dashboard_config_control {
@@ -2282,7 +2292,7 @@ img.ss_dashboard_config_control {
 }
 
 a:hover img.ss_dashboard_config_control {
-	background-position: left -18px;
+	: left -18px;
 }
 
 
@@ -3458,7 +3468,7 @@ a.ss_calDaySelectButtonActive img, a.ss_calDaySelectButtonActive:link img , a.ss
 }
 
 a.ss_calDaySelectButton:hover img {
-	background-position: left -24px; 
+	: left -24px; 
 }
 
 
@@ -3480,7 +3490,7 @@ a.ss_cal3DaysSelectButtonActive img, a.ss_cal3DaysSelectButtonActive:link img , 
 }
 
 a.ss_cal3DaysSelectButton:hover img {
-	background-position: left -24px; 
+	: left -24px; 
 }
 
 a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img {
@@ -3501,7 +3511,7 @@ a.ss_cal5DaysSelectButtonActive img, a.ss_cal5DaysSelectButtonActive:link img , 
 }
 
 a.ss_cal5DaysSelectButton:hover img {
-	background-position: left -24px; 
+	: left -24px; 
 }
 
 a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img {
@@ -3522,7 +3532,7 @@ a.ss_cal7DaysSelectButtonActive img, a.ss_cal7DaysSelectButtonActive:link img , 
 }
 
 a.ss_cal7DaysSelectButton:hover img {
-	background-position: left -24px; 
+	: left -24px; 
 }
 
 a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img {
@@ -3543,7 +3553,7 @@ a.ss_cal14DaysSelectButtonActive img, a.ss_cal14DaysSelectButtonActive:link img 
 }
 
 a.ss_cal14DaysSelectButton:hover img {
-	background-position: left -24px; 
+	: left -24px; 
 }
 
 a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
@@ -3564,7 +3574,7 @@ a.ss_calMonthSelectButtonActive img, a.ss_calMonthSelectButtonActive:link img , 
 }
 
 a.ss_calMonthSelectButton:hover img {
-	background-position: left -24px; 
+	: left -24px; 
 }
 
 a.ss_calDateDownButton img {
@@ -3581,7 +3591,7 @@ a.ss_calDateDownButton img, a.ss_calDateDownButton:link img , a.ss_calDateDownBu
 }
 
 a.ss_calDateDownButton:hover img {
-	background-position: left -28px; 
+	: left -28px; 
 }
 
 a.ss_calDateUpButton img {
@@ -3598,7 +3608,7 @@ a.ss_calDateUpButton img, a.ss_calDateUpButton:link img , a.ss_calDateUpButton:f
 }
 
 a.ss_calDateUpButton:hover img {
-	background-position: left -28px; 
+	: left -28px; 
 }
 
 
@@ -3616,7 +3626,7 @@ a.ss_calendarButton img, a.ss_calendarButton:link img , a.ss_calendarButton:focu
 }
 
 a.ss_calendarButton:hover img {
-	background-position: left -16px; 
+	: left -16px; 
 }
  
 
@@ -3712,21 +3722,21 @@ div.ss_profile_info_frame {
 div.ss_profile_photo_box_empty {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_person.gif);
-	background-position: center;
+	: center;
 	background-repeat: no-repeat;
 }
 
 div.ss_profile_info_box {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_info.gif);
-	background-position: center;
+	: center;
 	background-repeat: no-repeat;
 }
 
 div.ss_profile_contact_box {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.gif);
-	background-position: center;
+	: center;
 	background-repeat: no-repeat;
 }
 
@@ -4103,7 +4113,7 @@ a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img,
 }
 
 a.ss_searchButton:hover img {
-	background-position: left -17px; 
+	: left -17px; 
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
@@ -4634,7 +4644,7 @@ a.ss_taskStatus_s3_u img, a.ss_taskStatus_s3_u:link img , a.ss_taskStatus_s3_u:f
 }
 
 a.ss_taskStatus_s2_u:hover img, a.ss_taskStatus_s1_u:hover img, a.ss_taskStatus_s4_u:hover img, a.ss_taskStatus_s3_u:hover img {
-	background-position: left -21px; 
+	: left -21px; 
 }
 
 a.ss_taskPriority img, img.ss_taskPriority {
@@ -4669,7 +4679,7 @@ a.ss_taskPriority_p1_u img, a.ss_taskPriority_p1_u:link img , a.ss_taskPriority_
 }
 
 a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPriority_p3_u:hover img, a.ss_taskPriority_p2_u:hover img, a.ss_taskPriority_p1_u:hover img {
-	background-position: left -21px; 
+	: left -21px; 
 }
 
 .ss_task_completed {
