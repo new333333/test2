@@ -35,7 +35,9 @@ function <%=cTreeName%>_showId(id, obj, action) {
 </script>
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
-<h3><ssf:nlt tag="administration.configure_cfg" text="Templates"/></h3>
+<h3><ssf:nlt tag="administration.configure_configurations" /></h3>
+<br/>
+<br/>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
 <form class="ss_style ss_form" name="<portlet:namespace/>add" method="post" 
 	action="<portlet:actionURL><portlet:param 
@@ -44,16 +46,32 @@ function <%=cTreeName%>_showId(id, obj, action) {
 		
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
 	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder"/><br/>
-	 <input type="radio" name="cfgType" value="-1" ><ssf:nlt tag="administration.configure_cfg.clone"/> <ssf:inlineHelp tag="ihelp.designers.new_template"/><br/>
-	 <input type="radio" name="cfgType" value="-2" ><ssf:nlt tag="administration.configure_cfg.import"/> <ssf:inlineHelp tag="ihelp.designers.import_definitions"/><br/>
-	 <input type="radio" name="cfgType" value="-3" ><ssf:nlt tag="administration.configure_cfg.reload"/><br/>
-	<br/><br/>
+	 <input type="radio" name="cfgType" value="-1" ><ssf:nlt tag="administration.configure_cfg.clone"/> 
+	   <ssf:inlineHelp tag="ihelp.designers.new_template"/><br/>
+	<br/>
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 
 <br>
 <hr>
+<br/>
+<h3><ssf:nlt tag="administration.configure_cfg.import"/></h3>
+<form class="ss_style ss_form" name="<portlet:namespace/>import" method="post" 
+	action="<portlet:actionURL><portlet:param 
+	name="action" value="configure_configuration"/><portlet:param 
+	name="operation" value="add"/></portlet:actionURL>" >
+		
+	 <input type="radio" name="cfgType" value="-2" checked><ssf:nlt tag="administration.configure_cfg.import"/> <ssf:inlineHelp tag="ihelp.designers.import_definitions"/><br/>
+	 <input type="radio" name="cfgType" value="-3" ><ssf:nlt tag="administration.configure_cfg.reload"/><br/>
+	<br/>
+
+	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.ok"/>">
+</form>
+
+<br>
+<hr>
+<br/>
 <form class="ss_style ss_form" name="<portlet:namespace/>export" method="post" 
 	action="<portlet:renderURL><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
