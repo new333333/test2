@@ -39,7 +39,7 @@ public class DispatchServer extends GenericServlet {
 
 	private static final Log logger = LogFactory.getLog(DispatchServer.class);
 	
-	private static final String PORTAL_CC_DISPATCHER = "CCDispatcher";
+	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
 	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
 	
 	public void init(ServletConfig config) throws ServletException {
