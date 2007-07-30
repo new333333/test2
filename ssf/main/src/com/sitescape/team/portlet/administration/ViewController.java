@@ -412,6 +412,18 @@ public class ViewController extends  SAbstractController {
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
 			reports.put(element.attributeValue("title"), element);
+
+			// Disk usage report
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.report.title.quota"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_QUOTA_REPORT);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			reports.put(element.attributeValue("title"), element);
 		}
 		
 		//Credits

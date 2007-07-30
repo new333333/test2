@@ -27,6 +27,7 @@ public interface ReportModule {
 	public static final String AVERAGE = "average";
 	public static final String AVERAGE_TI = "average_ti";
 	public static final String COUNT = "count";
+	public static final String SIZE = "size";
 	
 	public void addAuditTrail(AuditTrail auditTrail);
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
@@ -43,6 +44,7 @@ public interface ReportModule {
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
+	public List<Map<String, Object>> generateQuotaReport();
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 }

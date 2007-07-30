@@ -67,6 +67,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.AVERAGE, "report.columns.average");
 		columnNames.put(ReportModule.AVERAGE_TI, "report.columns.average_ti");
 		columnNames.put(ReportModule.COUNT, "report.columns.count");
+		columnNames.put(ReportModule.SIZE, "report.columns.size");
 	}
 
 	static private boolean isUserColumn(String column) {
@@ -177,6 +178,11 @@ public class ReportDownloadController extends  SAbstractController {
 				report = getReportModule().generateActivityReport(binderId, entryId);
 				columns = new String[] {ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
+			} else if ("quota".equals(reportType)) {
+				hasUsers = false;
+				report = getReportModule().generateQuotaReport();
+				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
+						ReportModule.SIZE};
 			}
 			printReport(response.getWriter(), report, columns, hasUsers);
 			response.getWriter().flush();

@@ -209,6 +209,7 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
+	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_START_WORKFLOW="start_workflow";
@@ -811,6 +812,7 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
+    public static final String VIEW_QUOTA_REPORT="administration/quota_report";
     public static final String VIEW_REPORT="administration/report";
     public static final String VIEW_SEARCH="search/view";
     public static final String VIEW_SEARCH_EDIT="search/edit";
