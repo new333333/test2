@@ -23,7 +23,12 @@
   </c:if>
 </c:forEach>
 <option value="<c:out value="${property_name}"/>" 
-  <c:out value="${checked}"/>><c:out value="${property_caption}"/><ssf:displayConfiguration 
+  <c:out value="${checked}"/>
+  	<c:if test="${property_name == 'p3'}">
+  		selected="selected"
+  	</c:if>
+  >
+  <c:out value="${property_caption}"/><ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" /></option>
