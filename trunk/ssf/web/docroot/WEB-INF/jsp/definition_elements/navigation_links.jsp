@@ -117,7 +117,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <a
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 
-  entryId="${parentEntry.id}" 
+  entryId="${nextEntry.id}" 
   action="view_folder_entry"/>"
   onClick="return(ss_navigation_goto(this.href));"
 >
