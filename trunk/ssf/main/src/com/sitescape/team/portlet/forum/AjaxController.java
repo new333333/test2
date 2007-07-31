@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -111,6 +113,8 @@ import com.sitescape.util.Validator;
  *
  */
 public class AjaxController  extends SAbstractControllerRetry {
+	
+	static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");
 	
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
@@ -1101,6 +1105,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		//Build the search query
 		SearchFilter searchTermFilter = new SearchFilter();
 		
+		String newStr = searchText;
+		Matcher matcher = replacePtrn.matcher(newStr);
+		while (matcher.find()) {
+			newStr = matcher.replaceFirst(" ");
+			matcher = replacePtrn.matcher(newStr);
+		}
+		newStr = newStr.replaceAll(" \\*", "\\*");
+		
+	    searchText = newStr;
+	     
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));
 
