@@ -91,17 +91,16 @@ public class ConfigureRolesController extends  SAbstractController {
 				Object o = result.get(result.size() - 1);
 				if(o instanceof Function){
 					Function function = (Function) o;
-					StringBuilder string = new StringBuilder();
+					StringBuilder users = new StringBuilder();
 					
 					for(int i = 0; i < result.size() - 1; i++) {
 						Long binderId = ((WorkAreaFunctionMembership)result.get(i)).getWorkAreaId();
 						Binder binder = getBinderModule().getBinder(binderId);
 						if(binder != null) {
-							String ownerTitle = binder.getOwner().getTitle();
-							string.append(ownerTitle + ",");
+							users.append(binder.getPathName() + ",");
 						}
 					}
-					response.setRenderParameter(WebKeys.ROLE_USERS, string.toString());
+					response.setRenderParameter(WebKeys.ROLE_USERS, users.toString());
 					ns =  new NotSupportedException("errorcode.role.inuse", new Object[]{NLT.getDef(function.getName())});
 				}
 				else {
