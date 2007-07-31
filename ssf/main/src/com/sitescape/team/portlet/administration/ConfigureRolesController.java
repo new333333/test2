@@ -21,6 +21,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NotSupportedException;
@@ -56,6 +57,9 @@ public class ConfigureRolesController extends  SAbstractController {
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
 			} catch (IllegalArgumentException iae) {
 				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
+			}
+			catch (PortletRequestBindingException prbe) {
+				response.setRenderParameter(WebKeys.EXCEPTION, prbe.getLocalizedMessage());
 			}
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
