@@ -12,6 +12,10 @@
 %>
 <%@ page import="com.sitescape.team.ObjectKeys" %>
 
+<c:if test="${empty ss_namespace}">
+	<c:set var="ss_namespace" value="${renderResponse.namespace}" />
+</c:if>
+
 <c:if test="${empty isDashboard}">
 	<c:set var="isDashboard" value="no"/>
 </c:if>
@@ -50,9 +54,9 @@
 	
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -142,9 +146,9 @@
 									<h3 class="ss_entryTitle">
 											<ssf:menuLink 
 												displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-												entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-										    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-												namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+												entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+										    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+												namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
@@ -231,9 +235,9 @@
 	
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -296,9 +300,9 @@
 									<h3 class="ss_entryTitle">
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 											
 											<ssf:param name="url" useBody="true">
@@ -390,9 +394,9 @@
 									<h3 class="ss_entryTitle">
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -454,9 +458,9 @@
 									<h3 class="ss_entryTitle">
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -517,9 +521,9 @@
 									<h3 class="ss_entryTitle">
 										<ssf:menuLink 
 											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-									    	menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-											namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
+									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
+											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -579,8 +583,8 @@
 		</ul>
 		
 <c:if test="${isDashboard == 'no'}">
-	<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${componentId}" 
-		linkMenuObjIdx="${renderResponse.namespace}_${componentId}" 
-		namespace="${renderResponse.namespace}" dashboardType="${ssDashboard.scope}">
+	<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${componentId}" 
+		linkMenuObjIdx="${ss_namespace}_${componentId}" 
+		namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
 	</ssf:menuLink>		
 </c:if>
