@@ -21,6 +21,6 @@
            --%><img align="absmiddle" src="<html:imagesPath/>icons/wikilink.gif" alt="Wikilink" title="" /><%--
        --%></ssf:param><%--   
    --%></ssf:nlt>  <%--
-   --%><ssf:inlineHelp tag="ihelp.other.linksToEntries.newLinkText"/><%--
+   --%><ssf:inlineHelp jsp="workspaces_folders/entries/link_to_entry_markup"/><%--
    --%></div><%--
 --%></c:if>
