@@ -373,4 +373,7 @@ public class Validator {
 	public static final String replacePathCharacters(String str) {
 		return str.replaceAll(pathCharacterReplacementRegex, "-");
 	}
+	public static final String replaceDelimiter(String str) {
+		return str.replaceAll(",", "-");
+	}
 }
