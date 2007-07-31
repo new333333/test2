@@ -11,6 +11,9 @@
 package com.sitescape.team.util;
 import java.io.File;
 import java.io.IOException;
+
+import javax.servlet.ServletContext;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -20,6 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.web.context.ServletContextAware;
 
 import com.sitescape.team.SingletonViolationException;
 /**
@@ -32,13 +36,14 @@ import com.sitescape.team.SingletonViolationException;
  * @author Jong Kim
  *
  */
-public class SpringContextUtil implements ApplicationContextAware, InitializingBean {
+public class SpringContextUtil implements ApplicationContextAware, ServletContextAware, InitializingBean {
 	// This is a singleton class.
 	
 	private static SpringContextUtil sc; // singleton instance
 	protected String webRootName;
 	protected String webappRootDir;
 	protected ApplicationContext ac;
+	protected ServletContext servletContext;
 	
 	public SpringContextUtil() {
 		if(sc == null)
@@ -51,6 +56,10 @@ public class SpringContextUtil implements ApplicationContextAware, InitializingB
         this.ac = ac;
     } 
 
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
+    
 	public void afterPropertiesSet() throws Exception {
         File file = ac.getResource("").getFile();
 
@@ -87,7 +96,11 @@ public class SpringContextUtil implements ApplicationContextAware, InitializingB
     public static Object getBean(String name) {
         return getInstance().ac.getBean(name);
     }
-    
+
+	public static ServletContext getServletContext() {
+		return getInstance().servletContext;
+	}
+	
     /*
      * I don't want to expose this method unless it is absolutely necessary. 
     public static ApplicationContext getApplicationContext() {
