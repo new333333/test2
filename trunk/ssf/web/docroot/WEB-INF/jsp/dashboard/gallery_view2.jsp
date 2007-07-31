@@ -127,11 +127,17 @@
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
+	  <c:if test="${(empty ss_pageNumber || ss_pageNumber == 0) && ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount > ss_pageSize}">
+	    <span class="ss_light">&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/>&nbsp;&nbsp;&nbsp;</span>
+	  </c:if>
 	  <c:if test="${(ss_pageNumber * ss_pageSize + resultCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
 	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
+	  </c:if>
+	  <c:if test="${(ss_pageNumber * ss_pageSize + resultCount) >= ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+	    <span class="ss_light">&nbsp;&nbsp;<ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</span>
 	  </c:if>
     </td>
    </tr>
