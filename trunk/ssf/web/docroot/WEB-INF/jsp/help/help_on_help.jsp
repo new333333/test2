@@ -38,8 +38,6 @@
 
 <p><ssf:nlt tag="help.controlPanel.helpOnHelp.books.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.books.clickHere"/></p>
-
 </div>
 
 
