@@ -41,6 +41,7 @@ import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -250,7 +251,7 @@ public class ReportDownloadController extends  SAbstractController {
 				if(! isUserColumn(name)) {
 					if(row.containsKey(name)) {
 						if(row.get(name) instanceof Date) {
-							out.print("\"" + dateFormat.format((Date) row.get(name)) +"\"");
+							out.print("\"" + Validator.replaceDelimiter(dateFormat.format((Date) row.get(name))) +"\"");
 						} else {
 							out.print(row.get(name));
 						}
@@ -259,7 +260,8 @@ public class ReportDownloadController extends  SAbstractController {
 					Long userId = (Long) row.get(name);
 					Principal user = userMap.get(userId);
 					if(user != null) {
-						out.print(user.getTitle() + " (" + user.getName() + ")");
+						out.print(Validator.replaceDelimiter(user.getTitle()) + " (" 
+								+ Validator.replaceDelimiter(user.getName()) + ")");
 					}
 				}
 			}
