@@ -555,7 +555,8 @@ public class LocalLuceneSession implements LuceneSession {
 			*/
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: optimize took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: optimize took: " + (endTime - startTime) + " milliseconds");
 	}
 
 	public void close() {
@@ -839,7 +840,8 @@ public class LocalLuceneSession implements LuceneSession {
 		} catch (Exception e) {}
 		*/
 		long endTime = System.currentTimeMillis();
-		logger.info("LocalLucene: clearIndex took: " + (endTime - startTime) + " milliseconds");
+		if(debugEnabled)
+			logger.debug("LocalLucene: clearIndex took: " + (endTime - startTime) + " milliseconds");
 	}
 
 	private String getTastingText(Document doc) {
