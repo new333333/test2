@@ -882,6 +882,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         if (Validator.isNull(email)) {
         	//if posting exists for this binder, remove it
         	if (post == null) return;
+        	binder.setPosting(null);
         	getCoreDao().delete(post);
         	return;
         } else {
