@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
 <br/>
 
 <form class="ss_style ss_form" 
