@@ -119,6 +119,14 @@ public class BinderHelper {
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+				//if the the displayStyle has been set to vertical[view at bottom], it must be applied
+				//only to the table folder view. For all other folder views we need to use the iframe view.
+				if (displayDefinition != null && displayDefinition.equals(Definition.VIEW_STYLE_TABLE)) {
+					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_VERTICAL;
+				} else {
+					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
+				}
+				/*
 				if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_DEFAULT) 
 						|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_BLOG)
 						|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_PHOTO_ALBUM)
@@ -127,7 +135,7 @@ public class BinderHelper {
 					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 				} else {
 					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_VERTICAL;
-				}
+				}*/
 			} else {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			}
@@ -138,17 +146,26 @@ public class BinderHelper {
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+			//if the the displayStyle has been set to vertical[view at bottom], it must be applied
+			//only to the table folder view. For all other folder views we need to use the iframe view.
+			if (displayDefinition != null && displayDefinition.equals(Definition.VIEW_STYLE_TABLE)) {
+				viewListingJspName = WebKeys.VIEW_LISTING_VERTICAL;
+			} else {
+				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
+			}
+			/*
 			if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_DEFAULT) 
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_BLOG)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_PHOTO_ALBUM)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_CALENDAR)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_GUESTBOOK)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_WIKI)
+					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_FILE)
 					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_TASK))) {
 				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 			} else {
 				viewListingJspName = WebKeys.VIEW_LISTING_VERTICAL;
-			}
+			}*/
 		} else {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		}
