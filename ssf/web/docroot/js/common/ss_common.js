@@ -2926,6 +2926,8 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	
 	divObj.style.width = "360px";
 	divObj.style.height = "120px";
+	
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
 
 function ss_hideAddAttachmentBrowse(entryId, namespace) {
