@@ -52,7 +52,12 @@ public class ConfigureRolesController extends  SAbstractController {
 				}
 			}
 			try {
-				getAdminModule().addFunction(PortletRequestUtils.getStringParameter(request, "roleName"), operations);
+				String roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
+				if (!roleName.equals(""))
+					getAdminModule().addFunction(roleName, operations);
+				else
+					throw new IllegalArgumentException("Required string parameter"
+							+ " 'roleName' contains only whitespace");
 			} catch (FunctionExistsException ns) {
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
 			} catch (IllegalArgumentException iae) {
