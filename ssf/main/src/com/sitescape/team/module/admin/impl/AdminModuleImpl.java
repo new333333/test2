@@ -919,8 +919,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		checkAccess(AdminOperation.manageFunction);
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		List result = functionManager.deleteFunction(f);
-		result.add(f);
-		return result;
+		if(result != null) {
+			result.add(f);
+			return result;
+		}
+		else
+			return null;
     }
     public List<Function> getFunctions() {
 		//let anyone read them			
