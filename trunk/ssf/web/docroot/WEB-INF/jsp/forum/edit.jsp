@@ -16,7 +16,7 @@
 //treename must start with editForum
 String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
@@ -46,10 +46,10 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
-	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=false
+	if (self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum] && self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked) {
+		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked=false
 	} else {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked=true
 	}
 	return false
 }

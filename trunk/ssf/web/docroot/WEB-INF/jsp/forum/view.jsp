@@ -20,11 +20,11 @@
 
 <script type="text/javascript">
 var count = 0
-function <portlet:namespace/>_getUnseenCounts() {
+function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_getUnseenCounts() {
 	ss_setupStatusMessageDiv()
 	<c:forEach var="binder" items="${ssFolderList}">
 	  <c:if test="${binder.entityIdentifier.entityType == 'folder'}">
-		document.getElementById("<portlet:namespace/>_count_<c:out value="${binder.id}"/>").style.color = "silver";
+		document.getElementById("<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_count_<c:out value="${binder.id}"/>").style.color = "silver";
 	  </c:if>
 	</c:forEach>
 	var url = "<ssf:url 
@@ -35,7 +35,7 @@ function <portlet:namespace/>_getUnseenCounts() {
 		<ssf:param name="operation" value="unseen_counts" />
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addFormElements("<portlet:namespace/>_unseenCountForm")
+	ajaxRequest.addFormElements("<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_unseenCountForm")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preRequest);
 	ajaxRequest.setPostRequest(ss_postRequest);
@@ -73,7 +73,7 @@ function <portlet:namespace/>_getUnseenCounts() {
 <c:if test="${!empty ssFolderList}">
 <div style="padding:5px 0px;">
   <a class="ss_linkButton ss_bold ss_smallprint" 
-    href="javascript: ;" onClick="<portlet:namespace/>_getUnseenCounts();return false;"
+    href="javascript: ;" onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_getUnseenCounts();return false;"
     ><ssf:nlt tag="portlet.showUnread"/></a>
 </div>
 </c:if>
@@ -85,7 +85,7 @@ function <portlet:namespace/>_getUnseenCounts() {
   <tr>
   <td>
 	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
-      <span id="<portlet:namespace/>_count_<c:out value="${binder.id}"/>"><font color="silver">-</font></span>
+      <span id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_count_<c:out value="${binder.id}"/>"><font color="silver">-</font></span>
     </c:if>
   </td>
   <td>&nbsp;&nbsp;&nbsp;</td>
@@ -138,7 +138,7 @@ function <portlet:namespace/>_getUnseenCounts() {
 
 </div>
 </div>
-<form class="ss_portlet_style ss_form" id="<portlet:namespace/>_unseenCountForm" style="display:none;">
+<form class="ss_portlet_style ss_form" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_unseenCountForm" style="display:none;">
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
-<input type="hidden" name="ssNamespace" value="<portlet:namespace/>">
+<input type="hidden" name="ssNamespace" value="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
 </form>

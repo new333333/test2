@@ -25,7 +25,7 @@ if (displayStyle == null || displayStyle.equals("")) {
   <c:set var="hideDashboardControls" value="true"/>
 </c:if>
 <!-- Start of component -->
-<div id="<portlet:namespace/>_component_${ss_component_count}"
+<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_component_${ss_component_count}"
   <c:if test="${hideDashboardControls}">
     class="ss_content_window_compact" 
   </c:if>
@@ -40,7 +40,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <tr>
 <td valign="top"><div
   <c:if test="${hideDashboardControls}">
-	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
+	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
@@ -49,7 +49,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_title_bar"
   <c:if test="${hideDashboardControls}">
-	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
+	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
@@ -95,19 +95,19 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  ><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
-				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}', '<portlet:namespace/>'); return false;"
+				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_component_${ss_component_count}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_component2_${ss_component_count}', '${myId}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"
 				><img border="0" class="ss_accessory_delete" src="<html:imagesPath/>pics/1pix.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="#"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}', '<portlet:namespace/>');return false;"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${ss_component_count}', '${myId}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_hide.gif" 
 				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="#"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}', '<portlet:namespace/>');return false;"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${ss_component_count}', '${myId}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_show.gif" 
 				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
@@ -118,7 +118,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 </td>
 <td valign="top"><div
   <c:if test="${hideDashboardControls}">
-	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
+	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
@@ -128,12 +128,12 @@ if (displayStyle == null || displayStyle.equals("")) {
 <tr>
 <c:if test="${hideDashboardControls}">
 <script type="text/javascript">
-	<portlet:namespace/>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border7';
+	<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border7';
 </script>
 </c:if>
 <td 
   <c:if test="${hideDashboardControls}">
-    id="<portlet:namespace/>_dashboard_border_${ss_dashboard_border_count}"
+    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_${ss_dashboard_border_count}"
     <c:set var="ss_dashboard_border_count" scope="request" 
       value="${ss_dashboard_border_count + 1}"/>
   </c:if>
@@ -144,7 +144,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <td>
 	<div 
       <c:if test="${hideDashboardControls}">
-	    id="<portlet:namespace/>_dashboard_border_${ss_dashboard_border_count}"
+	    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_${ss_dashboard_border_count}"
 	      <c:set var="ss_dashboard_border_count" scope="request" 
 	         value="${ss_dashboard_border_count + 1}"/>
       </c:if>
@@ -156,7 +156,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 			   type="viewData" configuration="${ssDashboard}"
 			   initOnly="true" />
 <% // this is the div that will be replaced, don't remove setup from init phase %>
-		<div id="<portlet:namespace/>_dashboard_component_${ss_component_count}" 
+		<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${ss_component_count}" 
 		    align="left" style="margin:0px; 
 		    <c:if test="${!ss_dashboard_visible}">
 		      visibility:hidden; display:none;
@@ -172,12 +172,12 @@ if (displayStyle == null || displayStyle.equals("")) {
 </td>
 <c:if test="${hideDashboardControls}">
 <script type="text/javascript">
-	<portlet:namespace/>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border8';
+	<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border8';
 </script>
 </c:if>
 <td 
   <c:if test="${hideDashboardControls}">
-    id="<portlet:namespace/>_dashboard_border_${ss_dashboard_border_count}"
+    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_${ss_dashboard_border_count}"
     <c:set var="ss_dashboard_border_count" scope="request" 
        value="${ss_dashboard_border_count + 1}"/>
   </c:if>
@@ -189,7 +189,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <tr>
 <td colspan="3"><div class="ss_decor-round-corners-bottom3"
   <c:if test="${hideDashboardControls}">
-	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
+	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>

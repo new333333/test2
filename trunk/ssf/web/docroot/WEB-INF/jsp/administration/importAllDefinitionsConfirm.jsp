@@ -20,7 +20,7 @@
 		  action="<portlet:actionURL><portlet:param 
 		  name="action" value="import_definition"/><portlet:param 
 		  name="operation" value="reload"/></portlet:actionURL>" 
-		  name="<portlet:namespace />fm">
+		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <span>
 <ssf:nlt tag="administration.reload.definitions.warning"/>

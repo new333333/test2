@@ -14,23 +14,23 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
-var <portlet:namespace/>_savedIndex;
+var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex;
 
-function <portlet:namespace/>_showAliasDiv(index) {
+function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_showAliasDiv(index) {
 	
-	self.document.<portlet:namespace/>_modifyAliasFm.alias.value=eval('self.document.<portlet:namespace/>fm.alias' + index + '.value');
-	<portlet:namespace/>_savedIndex=index;
-	ss_showPopupDivCentered('<portlet:namespace/>_modifyAliasDiv');	
+	self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value=eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.alias' + index + '.value');
+	<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex=index;
+	ss_showPopupDivCentered('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv');	
 }
-function <portlet:namespace/>_modifyAlias() {
-	var param = eval('self.document.<portlet:namespace/>fm.alias' + <portlet:namespace/>_savedIndex);
-	param.value = self.document.<portlet:namespace/>_modifyAliasFm.alias.value;
-	var param = document.getElementById('aliasSpan' + <portlet:namespace/>_savedIndex);
-	param.innerHTML = self.document.<portlet:namespace/>_modifyAliasFm.alias.value;
+function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias() {
+	var param = eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.alias' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
+	param.value = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value;
+	var param = document.getElementById('aliasSpan' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
+	param.innerHTML = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value;
 }
 </script>
 <div class="ss_style ss_portlet">
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_posting_job"/></portlet:actionURL>">
 
@@ -66,7 +66,7 @@ function <portlet:namespace/>_modifyAlias() {
 </td><td>
 <span class="ss_normal" id="aliasSpan${status.index}" name="aliasSpan${status.index}">${alias.emailAddress}</span>
 </td><td>
-<input type="button" value="Edit" onClick="<portlet:namespace/>_showAliasDiv('${status.index}'); return false"/>
+<input type="button" value="Edit" onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_showAliasDiv('${status.index}'); return false"/>
 </td><td>
 <c:if test="${!empty alias.binder}">
 ${alias.binder.title}
@@ -81,18 +81,18 @@ ${alias.binder.title}
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 </form>
-<div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="<portlet:namespace/>_modifyAliasDiv" id="<portlet:namespace/>_modifyAliasDiv">
-<form class="ss_style ss_form" name="<portlet:namespace/>_modifyAliasFm" id="<portlet:namespace/>_modifyAliasFm"
-	onSubmit="<portlet:namespace/>_modifyAlias(); ss_cancelPopupDiv('<portlet:namespace/>_modifyAliasDiv'); return false;">
+<div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv">
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm"
+	onSubmit="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias(); ss_cancelPopupDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv'); return false;">
 <br/><br/>
 <span class="ss_labelRight"><ssf:nlt tag="incoming.modifyAlias"/></span>
  <input type="text" name="alias" id="alias" value="" size="32"/> 
 <br/><br/>
 <div class="ss_buttonBarLeft">
   <input type="submit" value="<ssf:nlt tag="button.ok"/>" 
-  onClick="<portlet:namespace/>_modifyAlias(); ss_cancelPopupDiv('<portlet:namespace/>_modifyAliasDiv'); return false;">
+  onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias(); ss_cancelPopupDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv'); return false;">
   <input type="submit" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('<portlet:namespace/>_modifyAliasDiv');return false;">  
+  onClick="ss_cancelPopupDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv');return false;">  
 </div>
 </form>
 </div>

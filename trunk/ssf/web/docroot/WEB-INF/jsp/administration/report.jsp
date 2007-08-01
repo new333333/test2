@@ -17,7 +17,7 @@
 <%
 String wsTreeName = "search_" + renderResponse.getNamespace();
 %>
-<c:set var="formName"><portlet:namespace />fm</c:set>
+<c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
 <script type="text/javascript">
 var ssReportURL="<portlet:actionURL><portlet:param 
 		name="action" value="activity_report"/><portlet:param 
@@ -34,7 +34,7 @@ var ssReportURL="<portlet:actionURL><portlet:param
   <div class="ss_buttonBarRight">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<portlet:namespace/>fm.action=ssReportURL; document.<portlet:namespace/>fm.submit()">
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssReportURL; document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.submit()">
   </div>
   <br/>
   <ssf:nlt tag="administration.report.dates"/>
@@ -80,7 +80,7 @@ var ssReportURL="<portlet:actionURL><portlet:param
   <div class="ss_buttonBarLeft">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<portlet:namespace/>fm.action=ssReportURL; document.<portlet:namespace/>fm.submit()">
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssReportURL; document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.submit()">
   </div>
 </form>
 <br>

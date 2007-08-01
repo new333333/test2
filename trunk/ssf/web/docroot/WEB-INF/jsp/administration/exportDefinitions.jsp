@@ -18,7 +18,7 @@
 
 <form class="ss_style ss_form" action="<portlet:actionURL><portlet:param 
 	name="action" value="export_definition"/></portlet:actionURL>" 
-	method="post" name="<portlet:namespace />fm">
+	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <br>
 <br>

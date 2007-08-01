@@ -50,7 +50,7 @@ self.window.resizeTo(width, height);
 <c:otherwise>
   
 <form class="ss_style ss_form" method="post" 
-  onSubmit="return ss_onSubmit(this);" name="<portlet:namespace />fm">
+  onSubmit="return ss_onSubmit(this);" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <span class="ss_bold"><ssf:nlt tag="sendMail.title"/></span>
 <table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="95%">

@@ -25,8 +25,8 @@
     <div class="ss_blog_content_container2">
 	  <div class="ss_blog_content">
 
-        <div id="ss_wikiEntryDiv<portlet:namespace/>">
-          <iframe id="ss_wikiIframe<portlet:namespace/>" name="ss_wikiIframe<portlet:namespace/>" style="width:100%; 
+        <div id="ss_wikiEntryDiv<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+          <iframe id="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="width:100%; 
     		display:block; position:relative;"
     		<c:if test="${empty ss_wikiHomepageEntryId}">
     		  src="<html:rootPath/>js/forum/null.html" 
@@ -45,7 +45,7 @@
 		    		actionUrl="true" />" 
     		</c:if>
     		height="95%" width="100%" 
-    		onLoad="ss_setWikiIframeSize<portlet:namespace/>();" frameBorder="0" >xxx</iframe>
+    		onLoad="ss_setWikiIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();" frameBorder="0" >xxx</iframe>
         </div>
       </div>
     </div>
@@ -80,7 +80,7 @@
 
         <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
 	    <c:if test="${ssConfigJspStyle != 'template'}">
-	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
+	    <form method="post" name="ss_findWikiPageForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	    	action="<portlet:actionURL 
 	                windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 

@@ -39,8 +39,8 @@ function ss_blog_sidebar_date_callback() {
 	url += "\&rn=" + rn++
 	self.location.href = url;
 }
-function ss_showBlogReplies<portlet:namespace/>(id, blogNamespace) {
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
+function ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, blogNamespace) {
+	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_' + id)
 	if (targetDiv != null) {
 		if (targetDiv.style.visibility == 'visible') {
 			targetDiv.style.visibility = 'hidden'
@@ -64,24 +64,24 @@ function ss_showBlogReplies<portlet:namespace/>(id, blogNamespace) {
 			}
 			
 			url += "\&rn=" + rn++
-			ss_fetch_url(url, ss_showBlogRepliesCallback<portlet:namespace/>, id);
+			ss_fetch_url(url, ss_showBlogRepliesCallback<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>, id);
 		}
 	}
 }
-function ss_showBlogRepliesCallback<portlet:namespace/>(s, id) {
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
+function ss_showBlogRepliesCallback<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(s, id) {
+	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_' + id)
 	if (targetDiv != null) targetDiv.innerHTML = s;
 }
 
-function ss_addBlogReply<portlet:namespace/>(obj, id) {
-	var showRepliesDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
+function ss_addBlogReply<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj, id) {
+	var showRepliesDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_' + id)
 	if (showRepliesDiv != null) {
 		if (showRepliesDiv.style.visibility == 'visible') {
 			//Hide the list of replies
-			ss_showBlogReplies<portlet:namespace/>(id)
+			ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id)
 		}
 	}
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
+	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_' + id)
 	if (targetDiv != null) {
 		if (targetDiv.style.visibility == 'visible') {
 			targetDiv.style.visibility = 'hidden'
@@ -91,30 +91,30 @@ function ss_addBlogReply<portlet:namespace/>(obj, id) {
 	}
 	targetDiv.style.visibility = 'visible';
 	targetDiv.style.display = 'block';
-	var iframeDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_iframe_' + id)
+	var iframeDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_' + id)
 	iframeDiv.src = obj.href;
 	iframeDiv.style.border = "1px solid #CCCCCC";
 }
 var ss_replyIframeOffset = 50;
-function ss_showBlogReplyIframe<portlet:namespace/>(obj, id) {
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
-	var iframeDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_iframe_' + id)
-	if (window.frames['<portlet:namespace/>ss_blog_add_reply_iframe_' + id] != null) {
-		eval("var iframeHeight = parseInt(window.<portlet:namespace/>ss_blog_add_reply_iframe_" + id + ".document.body.scrollHeight);")
+function ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj, id) {
+	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_' + id)
+	var iframeDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_' + id)
+	if (window.frames['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_' + id] != null) {
+		eval("var iframeHeight = parseInt(window.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_" + id + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_replyIframeOffset + "px"
 		}
 	}
 }
-function ss_hideBlogReplyIframe<portlet:namespace/>(id, count) {
-	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
+function ss_hideBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, count) {
+	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_' + id)
 	if (targetDiv != null) {
 		targetDiv.style.visibility = 'hidden'
 		targetDiv.style.display = 'none'
 	}
-	var replyCountObj = document.getElementById('<portlet:namespace/>ss_blog_reply_count_' + id)
+	var replyCountObj = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_reply_count_' + id)
 	if (replyCountObj != null) replyCountObj.innerHTML = count;
-	ss_showBlogReplies<portlet:namespace/>(id);
+	ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id);
 }
 </script>
 

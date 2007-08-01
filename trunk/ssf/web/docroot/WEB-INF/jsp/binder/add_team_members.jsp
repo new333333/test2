@@ -16,7 +16,7 @@
 <br/>
 
 <form class="ss_style ss_form" 
-  id="<portlet:namespace/>fm" 
+  id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
   method="post" onSubmit="return ss_onSubmit(this);">
 <span class="ss_titlebold"><ssf:nlt tag="toolbar.teams.addMember"/></span></br></br>
 

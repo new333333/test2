@@ -21,14 +21,14 @@ String wsTreeName = renderResponse.getNamespace();
 <c:out value="${ssBinder.title}" />
 <br/>
 </c:if>
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <br/>
 <span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
-	var r = self.document.<portlet:namespace />fm.topWorkspace;
+	var r = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.topWorkspace;
     for (var b = 0; b < r.length; b++) {
       if (r[b].value == forum) 	r[b].checked=true;
 	}

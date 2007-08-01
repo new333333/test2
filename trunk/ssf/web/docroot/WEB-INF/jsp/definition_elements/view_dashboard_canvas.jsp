@@ -48,7 +48,7 @@ request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 
 <script type="text/javascript">
 //Define the variables needed by the javascript routines
-var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_iframe_box_div';
 
 <c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
 	var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
@@ -233,7 +233,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
   
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig}">
-  <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
+  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
@@ -265,7 +265,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
   </div>
   </c:if>
   <c:if test="${!empty ssBinderConfig}">
-  <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
+  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
@@ -301,7 +301,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
 
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
-  <div id="<portlet:namespace/>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
+  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
 	<ul class="ss_dropdownmenu" 
 	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
 	  <li><a href="<portlet:renderURL><portlet:param 
@@ -326,7 +326,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
   </div>
 
  <!-- Start of dashboard canvas -->
-  <div id="<portlet:namespace/>_dashboardComponentCanvas"
+  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardComponentCanvas"
 	<c:if test="${ss_show_all_dashboard_components}">
 	  style="visibility:visible; display:block;"
 	</c:if>
@@ -342,7 +342,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
 		  </c:if>
 		</span>
 
-		<div id="<portlet:namespace/>_dashboard_toolbar_${ss_toolbar_count}"
+		<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_toolbar_${ss_toolbar_count}"
 		   style="visibility:hidden; display:none;">
 		  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 		</div>

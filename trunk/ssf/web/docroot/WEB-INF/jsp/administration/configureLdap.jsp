@@ -19,7 +19,7 @@
 <span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
 </c:if>
 
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
   action="<portlet:actionURL><portlet:param 
   name="action" value="configure_ldap"/></portlet:actionURL>">
 <div class="ss_buttonBarRight">

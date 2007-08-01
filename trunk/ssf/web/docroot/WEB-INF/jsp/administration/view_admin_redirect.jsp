@@ -24,7 +24,7 @@ setTimeout("self.location.replace('"+url_str+"')", timeout);
 </c:if>
 <c:if test="${!empty ssErrorList}">
 <form class="ss_style ss_form" action="<portlet:renderURL windowState="normal" portletMode="view"/>"
-		 method="post" name="<portlet:namespace />fm">
+		 method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 <br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>

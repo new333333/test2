@@ -13,7 +13,7 @@
 <%@ page import="java.util.ArrayList" %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="formName"><portlet:namespace />fm</c:set>
+<c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
 
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 

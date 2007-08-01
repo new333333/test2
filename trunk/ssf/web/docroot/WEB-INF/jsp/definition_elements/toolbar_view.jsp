@@ -49,7 +49,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
 --%><c:forEach var="toolbarMenu" items="${ss_toolbar}"><%--
     --%><c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}"><%--
-        --%><li id="parent_<%= menuTagDivId %><portlet:namespace/>"><%--
+        --%><li id="parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><%--
         
         --%><%-- BEGIN Helpspots for folder menus --%><%--
         
@@ -92,7 +92,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
             --%><c:when test="${empty toolbarMenu.value.qualifiers.disabled}"><%--
                 --%><a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <%--
-                --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');"><%--
+                --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"><%--
 
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                     --%><img border="0" <%--
@@ -123,7 +123,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
         --%></c:choose><%--
 
-        --%><div id="<%= menuTagDivId %><portlet:namespace/>" <%--
+        --%><div id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" <%--
         --%> class="${ss_toolbar_style}_submenu" style=""><%--
         --%><ul class="${ss_toolbar_style}_submenu"><%--
         --%><c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}"><%--

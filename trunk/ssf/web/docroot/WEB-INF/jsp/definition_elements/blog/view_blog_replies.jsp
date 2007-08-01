@@ -26,34 +26,34 @@
 
 <c:if test="${!empty ss_blog_reply_url}">
 <a href="${ss_blog_reply_url}" 
-  onClick="ss_addBlogReply<portlet:namespace/>(this, '${ssDefinitionEntry.id}');return false;"
+  onClick="ss_addBlogReply<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this, '${ssDefinitionEntry.id}');return false;"
   <ssf:title tag="title.add.comment" />
   >
 <div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
 </a>
 </c:if>
 
-<a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}', '<portlet:namespace/>');return false;"
+<a href="javascript: ;" onClick="ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
 <ssf:title tag="title.view.comments">
 	<ssf:param name="value" value="${ssDefinitionEntry.totalReplyCount}" />
 </ssf:title>
 >
 <div class="ss_iconed_label ss_view_something">
-<ssf:nlt tag="blog.viewComments"/> [<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
+<ssf:nlt tag="blog.viewComments"/> [<span id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
 </div>
 </a>
 
 </div>
 
 
-<div id="<portlet:namespace/>ss_blog_replies_${ssDefinitionEntry.id}" 
+<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;"></div>
-<div id="<portlet:namespace/>ss_blog_add_reply_${ssDefinitionEntry.id}" 
+<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;">
 <iframe <ssf:title tag="title.add.reply" />
-  id="<portlet:namespace/>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
-  name="<portlet:namespace/>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
-  onLoad="if (parent.ss_showBlogReplyIframe<portlet:namespace/>) parent.ss_showBlogReplyIframe<portlet:namespace/>(this, '${ssDefinitionEntry.id}');" 
+  id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
+  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
+  onLoad="if (parent.ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>) parent.ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this, '${ssDefinitionEntry.id}');" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>
 </c:if>

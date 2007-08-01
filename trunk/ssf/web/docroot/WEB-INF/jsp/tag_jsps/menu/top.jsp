@@ -57,4 +57,4 @@ String isAccessible = ParamUtil.get(request, "isAccessible", "false");
 	</c:if>
 </c:if>
 
-  id="<%= menuTagDivId %><portlet:namespace/>">
+  id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">

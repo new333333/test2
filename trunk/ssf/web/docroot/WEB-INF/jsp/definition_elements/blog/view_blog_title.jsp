@@ -105,7 +105,7 @@ offsetX="-5"
 </c:if>
 title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
 
-<a onclick=" ss_createPopupDiv(this, '<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;" 
+<a onclick=" ss_createPopupDiv(this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_subscription_entry${ssDefinitionEntry.id}');return false;" 
 	href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 

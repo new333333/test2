@@ -39,7 +39,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
-<form class="ss_style ss_form" name="<portlet:namespace/>add" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>add" method="post" 
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
 	name="operation" value="add"/></portlet:actionURL>" >
@@ -57,7 +57,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <hr>
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.import"/></h3>
-<form class="ss_style ss_form" name="<portlet:namespace/>import" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>import" method="post" 
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
 	name="operation" value="add"/></portlet:actionURL>" >
@@ -72,7 +72,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br>
 <hr>
 <br/>
-<form class="ss_style ss_form" name="<portlet:namespace/>export" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>export" method="post" 
 	action="<portlet:renderURL><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="export"/></portlet:renderURL>" >
@@ -130,7 +130,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <form class="ss_style ss_form" action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
 	name="operation" value="export"/></portlet:actionURL>" 
-	method="post" name="<portlet:namespace />fm">
+	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <br>
 <br>

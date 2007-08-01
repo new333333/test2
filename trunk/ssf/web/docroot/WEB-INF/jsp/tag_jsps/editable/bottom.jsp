@@ -29,7 +29,7 @@
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%><c:if test="${aclMap[entity.id]['modifyEntry']}"><%--
 	--%><div class="ss_editableTab"><a href="javascript:;"<%--
-    --%> onClick="ss_editablePopUp('${editUrl}', '<portlet:namespace/>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
+    --%> onClick="ss_editablePopUp('${editUrl}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> <ssf:title tag="title.edit.description" /><%--
     --%>><span class="ss_fineprint"><%--
     --%><ssHelpSpot helpId="workspaces_folders/entries/more_entry_tools" offsetX="-15"<%--

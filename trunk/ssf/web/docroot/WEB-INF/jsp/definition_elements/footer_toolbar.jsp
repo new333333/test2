@@ -173,15 +173,15 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 		
 	--%></div><%--
 
-	--%><div id="ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;"><%--
+	--%><div id="ss_div_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_border_light" style="visibility:hidden;display:none;"><%--
 		
 		--%><div align="right"><%--
-			--%><a onClick="ss_hideFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace />(); return false;"><img <%--
+			--%><a onClick="ss_hideFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(); return false;"><img <%--
 				--%> <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/><%--
 			--%></a><%--
 		--%></div><%--
 	
-		--%><iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>" name="ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>" height="80%" width="100%">xxx</iframe><%--
+		--%><iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="80%" width="100%">xxx</iframe><%--
 	
 	--%></div><%--
 
@@ -190,11 +190,11 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 --%></ssf:skipLink><%--
 
 --%><script type="text/javascript">
-var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "false"
+var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = "false"
 function getWindowBgColor() {
 	return "#ffffff";
 }
-function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
+function ss_showFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
  	var url = "<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
@@ -206,18 +206,18 @@ function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
 		<ssf:param name="library" value="${ssFolder.library}" />
     	</ssf:url>"
 
-	var divId = 'ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>';
+	var divId = 'ss_div_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>';
 	var divObj = document.getElementById(divId);
 	
-	var frameId = 'ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>';	
+	var frameId = 'ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>';	
 	var frameObj = document.getElementById(frameId);
 	
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
-	if (iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> == "false") {
+	if (iFrameFolderAttachmentInvokedOnce${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> == "false") {
 		frameObj.src = url;
-		iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "true";
+		iFrameFolderAttachmentInvokedOnce${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = "true";
 	}
 
 	divObj.style.width = "400px";
@@ -226,8 +226,8 @@ function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
 
-function ss_hideFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
-	var divId = 'ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>';
+function ss_hideFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+	var divId = 'ss_div_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>';
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "none";
 	ss_hideDiv(divId);

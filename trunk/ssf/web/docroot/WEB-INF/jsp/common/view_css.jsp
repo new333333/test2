@@ -322,16 +322,16 @@ var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseEntryUrl<portlet:namespace/> = ss_baseEntryUrl;
+var ss_baseEntryUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = ss_baseEntryUrl;
 	
 var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseBinderUrl<portlet:namespace/> = ss_baseBinderUrl;
+var ss_baseBinderUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = ss_baseBinderUrl;
 var ss_baseFileUrl = '<ssf:url webPath="viewFile" folderId="ssBinderIdPlaceHolder" 
    	entryId="ssEntryIdPlaceHolder" entityType="ssEntityTypePlaceHolder"></ssf:url>';
-var ss_baseFileUrl<portlet:namespace/> = ss_baseFileUrl;
+var ss_baseFileUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = ss_baseFileUrl;
 </ssf:ifnotadapter>
 </c:if>
 

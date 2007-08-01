@@ -19,7 +19,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript">
 //Check the Page Number Before Submission
-function ss_goToPage_<portlet:namespace/>(formObj) {
+function ss_goToPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(formObj) {
 	var strGoToPage = formObj.ssGoToPage.value;
 	var pageCount = <c:out value="${ssPageCount}"/>;
 	
@@ -42,19 +42,19 @@ function ss_goToPage_<portlet:namespace/>(formObj) {
 	return true;
 }
 
-function ss_submitPage_<portlet:namespace/>(formObj) {
-	return (ss_goToPage_<portlet:namespace/>(formObj));
+function ss_submitPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(formObj) {
+	return (ss_goToPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(formObj));
 }
 
-function ss_clickGoToPage_<portlet:namespace/>(strFormName) {
+function ss_clickGoToPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(strFormName) {
 	var formObj = document.getElementById(strFormName);
-	if (ss_goToPage_<portlet:namespace/>(formObj)) {
+	if (ss_goToPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(formObj)) {
 		formObj.submit();
 	}
 }
 
 //Change the number of entries to be displayed in a page
-function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountValue) {
+function ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(strFormName, pageCountValue) {
 	var formObj = document.getElementById(strFormName);
 	formObj.ssEntriesPerPage.value = pageCountValue;
 	formObj.submit();
@@ -84,7 +84,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				&nbsp;&nbsp;
 			</td>
 
-			<form name="ss_recordsPerPage_<portlet:namespace/>" id="ss_recordsPerPage_<portlet:namespace/>" method="post" 
+			<form name="ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" id="ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" method="post" 
 			    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="${action}"/><portlet:param 
 				name="binderId" value="${ssFolder.id}"/><portlet:param 
@@ -109,27 +109,27 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				
 					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
 					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;">
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '5');return false;">
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
 						</a>
 					</li>
 					<li>	
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '10');return false;">
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '10');return false;">
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
 						</a>
 					</li>
 					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '25');return false;">
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '25');return false;">
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
 						</a>
 					</li>
 					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '50');return false;">
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '50');return false;">
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
 						</a>
 					</li>
 					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '100');return false;">
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '100');return false;">
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 						</a>
 					</li>
@@ -139,27 +139,27 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				
 				<ssf:ifaccessible>
 
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;"
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '5');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
 					</a><br/>
 
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '10');return false;"
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '10');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>">
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
 					</a><br/>
 
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '25');return false;"
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '25');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>">
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
 					</a><br/>
 
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '50');return false;"
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '50');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>">
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
 					</a><br/>
 
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '100');return false;"
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_recordsPerPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '100');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>">
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 					</a><br/>
@@ -174,7 +174,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 
 			</form>
 			
-			<form name="ss_goToPageForm_<portlet:namespace/>" id="ss_goToPageForm_<portlet:namespace/>" method="post" 
+			<form name="ss_goToPageForm_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" id="ss_goToPageForm_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" method="post" 
 			    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="${action}"/><portlet:param 
 				name="binderId" value="${ssFolder.id}"/><portlet:param 
@@ -185,7 +185,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				name="day" value="${day}"/></c:if><c:if test="${!empty month}"><portlet:param 
 				name="month" value="${month}"/></c:if><c:if test="${!empty year}"><portlet:param 
 				name="year" value="${year}"/></c:if><portlet:param 
-				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<portlet:namespace/>(this))">
+				name="operation" value="save_folder_goto_page_info"/></portlet:actionURL>" onSubmit="return(ss_submitPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this))">
 			<td>
 				&nbsp;&nbsp;
 			<c:if test="${ssPageCount > '1.0'}">
@@ -199,7 +199,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			    <input name="ssGoToPage" id="ssGoToPage" size="1" type="text" class="form-text" />
 				<a class="ss_linkButton" href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
-				onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
+				onClick="ss_clickGoToPage_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('ss_goToPageForm_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"><ssf:nlt tag="button.go"/></a>
 			</c:if>
 				
 			</td>

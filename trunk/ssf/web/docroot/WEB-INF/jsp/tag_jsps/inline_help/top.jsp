@@ -27,10 +27,10 @@
   <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
-<a href="#" onClick="ss_showDiv('<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"
+<a href="#" onClick="ss_showDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"
 ><img border="0" alt="${alt}" src="<html:imagesPath/>pics/sym_s_help.gif"></a>
-<div id="<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
+<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
 <div align="right"><a href="#" 
-  onClick="ss_hideDivNone('<portlet:namespace/>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
+  onClick="ss_hideDivNone('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
   border="0" alt="<ssf:nlt tag="button.close"/>" 
   src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>

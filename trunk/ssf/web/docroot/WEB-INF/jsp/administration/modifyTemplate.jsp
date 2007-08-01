@@ -86,8 +86,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div class="ss_style ss_portlet">
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" 
-    id="<portlet:namespace/>fm" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
+    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
     action="<portlet:actionURL><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="add"/></portlet:actionURL>" >
@@ -122,7 +122,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 		  action="<portlet:actionURL><portlet:param 
 		  name="action" value="configure_configuration"/><portlet:param 
 		  name="operation" value="add"/></portlet:actionURL>" 
-		  name="<portlet:namespace />fm">
+		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.configure_cfg.import" /></span>
 <br>
@@ -157,7 +157,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 <script type="text/javascript">
 
-function <portlet:namespace/>_onsub(obj) {
+function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(obj) {
 	if (obj.title.value == '') {
 		alert('<ssf:nlt tag="general.required.title"/>');
 		return false;
@@ -171,7 +171,7 @@ function <portlet:namespace/>_onsub(obj) {
 		>
 <input type="hidden" name="cfgType" value="${cfgType}"/>
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<portlet:namespace/>_onsub(this.form))">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this.form))">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 <h2><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.add"/></span></h2>
@@ -192,7 +192,7 @@ function <portlet:namespace/>_onsub(obj) {
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<portlet:namespace/>_onsub(this.form))">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this.form))">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
