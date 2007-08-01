@@ -1642,29 +1642,24 @@ public static final String[] monthNamesShort = {
 				|| viewType.equals(Definition.VIEW_STYLE_TASK) 
 				|| viewType.equals(Definition.VIEW_STYLE_TABLE)
 				|| viewType.equals(Definition.VIEW_STYLE_CALENDAR)
+				|| viewType.equals(Definition.VIEW_STYLE_FILE)
 				|| viewType.equals(""))) {
 			//Only show these options if in the folder table style and not in accessible mode
 			entryToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
-
 			
-			//Do not display - Show entries at bottom for the Blog, Guestbook, Task and Search View
-			if (!viewType.equals(Definition.VIEW_STYLE_BLOG) && !viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)
-					 && !viewType.equals(Definition.VIEW_STYLE_TASK)
-					 && !viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
-					 && !viewType.equals(Definition.VIEW_STYLE_DEFAULT) 
-					 && !viewType.equals(Definition.VIEW_STYLE_CALENDAR) ) {
-			
-			//vertical
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
+			//Hemanth: Display Show entries at bottom folder action option only for the Table view
+			if (viewType.equals(Definition.VIEW_STYLE_TABLE)) {
+				//vertical
+				qualifiers = new HashMap();
+				if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
+				entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+						NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 			}
 			
 			//iframe
