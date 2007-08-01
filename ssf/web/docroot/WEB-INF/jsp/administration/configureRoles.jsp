@@ -91,7 +91,7 @@
 
 <br/>
 
-<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>rolesForm" method="post" 
 	action="<portlet:renderURL windowState="normal" portletMode="view"></portlet:renderURL>"/>
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"/>

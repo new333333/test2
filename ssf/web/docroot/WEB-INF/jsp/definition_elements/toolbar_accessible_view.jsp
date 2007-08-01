@@ -51,7 +51,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
-     <li id="parent_<%= menuTagDivId %><portlet:namespace/>">
+     <li id="parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
 
      <% // BEGIN Helpspots for folder menus %>
      <c:choose>
@@ -84,7 +84,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
      <c:choose>
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <ssf:title tag="title.showMenu"/> 
-	      onClick="ss_showAccessibleMenu('<%= menuTagDivId %><portlet:namespace/>');">
+	      onClick="ss_showAccessibleMenu('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');">
 	      <span>${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"
 	      > <img border="0" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/></c:if></span></a>
@@ -96,7 +96,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
         </c:otherwise>
 	 </c:choose>
 
-      <div id="<%= menuTagDivId %><portlet:namespace/>" style="visibility:hidden;display:none;white-space:nowrap;">
+      <div id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:hidden;display:none;white-space:nowrap;">
       
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
@@ -163,7 +163,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
        
        <div align="center" style="margin:10px 0px 0px 0px;">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <ssf:title tag="title.closeMenu"/> 
-	      onClick="ss_hideAccessibleMenu('<%= menuTagDivId %><portlet:namespace/>');">
+	      onClick="ss_hideAccessibleMenu('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');">
 	      <span><ssf:nlt tag="button.close"/></span></a>
        </div>
 

@@ -14,19 +14,19 @@
 <br>
 <br>
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
+  href="javascript:ss_selectAll('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'id_', true);"
 ><ssf:nlt tag="button.selectAll"/></a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
+  href="javascript:ss_selectAll('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'id_', false);"
 ><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <script type="text/javascript">
-function t_<portlet:namespace/>_tree_showId(forum, obj) {
-	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=false
+function t_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_tree_showId(forum, obj) {
+	if (self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum] && self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked) {
+		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked=false
 	} else {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked=true
 	}
 	return false
 }
@@ -47,11 +47,11 @@ function ss_selectAll(formName, prefix, newState) {
 
 <br>
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
+  href="javascript:ss_selectAll('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'id_', true);"
 ><ssf:nlt tag="button.selectAll"/></a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
+  href="javascript:ss_selectAll('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'id_', false);"
 ><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <br>

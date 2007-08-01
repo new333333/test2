@@ -32,8 +32,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:when test="${!empty ssWsDomTree}">
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" 
-    id="<portlet:namespace/>fm" method="post" 
+<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
+    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
     action="<portlet:actionURL><portlet:param 
     	name="action" value="config_email"/></portlet:actionURL>">
 <div class="ss_buttonBarRight">

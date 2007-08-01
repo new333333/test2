@@ -15,9 +15,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript">
-	var myTasks_<portlet:namespace/> = new ss_tasks ('ss_tasks_list_<portlet:namespace/>', '${ssFolder.id}', '<portlet:namespace/>');
+	var myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = new ss_tasks ('ss_tasks_list_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '${ssFolder.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 </script>
-<table class="ss_tasks_list" id="ss_tasks_list_<portlet:namespace/>">
+<table class="ss_tasks_list" id="ss_tasks_list_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
 	<thead>
 		<tr>
 			<th>
@@ -254,7 +254,7 @@
 		<c:forEach var="entry" items="${ssFolderEntries}" >
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<script type="text/javascript">
-				myTasks_<portlet:namespace/>.addTask({"id" : ${entry._docId},
+				myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.addTask({"id" : ${entry._docId},
 													"completed" : "${entry.completed}",
 													completedValues : {
 														<c:forEach var="completed" items="${entry.ssEntryDefinitionElementData['completed'].values}" varStatus="loopStatus">
@@ -266,7 +266,7 @@
 			
 			<tr>
 				<td class="ss_entryTitle ss_normalprint<c:if test="${entry.status == 's3' || entry.status == 's4'}"> ss_task_completed</c:if>" 
-					id="ss_tasks_<portlet:namespace/>_${entry._docId}_title">
+					id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_title">
 					<c:set var="isDashboard" value="yes"/>
 						<ssf:menuLink 
 							displayDiv="false" action="view_folder_entry" 
@@ -283,9 +283,9 @@
 							<c:out value="${entry.title}" escapeXml="false"/>
 						</ssf:menuLink>
 				</td>
-				<td class="ss_iconsContainer" id="ss_tasks_<portlet:namespace/>_${entry._docId}_priority">
+				<td class="ss_iconsContainer" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_priority">
 				<c:if test="${! empty entry.priority}">
-					<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_<portlet:namespace/>.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
+					<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
 				<td class="ss_due">
 					<c:choose>
 						<c:when test="${!empty entry['start_end#TimeZoneID']}">
@@ -302,7 +302,7 @@
 						</c:otherwise>
 					</c:choose>
 				</td>
-				<td class="ss_iconsContainer" id="ss_tasks_<portlet:namespace/>_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_<portlet:namespace/>.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
+				<td class="ss_iconsContainer" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
 				<td class="ss_assigned">
 					<ul>
 						<c:forEach var="assigned" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>">
@@ -310,7 +310,7 @@
 						</c:forEach>
 					</ul>
 				</td>
-				<td id="ss_tasks_<portlet:namespace/>_${entry._docId}_completed">
+				<td id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_completed">
 					<c:if test="${! empty entry.completed}">
 						<ssf:progressBar currentValue="${entry.completed}" 
 							valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 

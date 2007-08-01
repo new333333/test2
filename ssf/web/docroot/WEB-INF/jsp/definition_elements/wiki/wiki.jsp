@@ -23,7 +23,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 var ss_columnCount = 0;
 function ss_loadWikiEntry(obj,id) {
 	ss_highlightLineById('folderLine_' + id);
-	var iframeDiv = document.getElementById('ss_wikiIframe<portlet:namespace/>')
+	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
 	iframeDiv.src = obj.href;
 	return false;
 }
@@ -33,7 +33,7 @@ function ss_loadWikiEntryInParent(obj,id) {
 }
 
 //Routine called when "find wiki page" is clicked
-function ss_loadWikiEntryId<portlet:namespace/>(id) {
+function ss_loadWikiEntryId<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
 	var url = "<ssf:url     
 	    adapter="true" 
 	    portletName="ss_forum" 
@@ -42,16 +42,16 @@ function ss_loadWikiEntryId<portlet:namespace/>(id) {
 	    entryId="ss_entryIdPlaceholder" 
 	    actionUrl="true" />";
 	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
-	var iframeDiv = document.getElementById('ss_wikiIframe<portlet:namespace/>')
+	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
 	iframeDiv.src = url;
 }
 
 var ss_wikiIframeOffset = 60;
-function ss_setWikiIframeSize<portlet:namespace/>() {
-	var targetDiv = document.getElementById('ss_wikiEntryDiv<portlet:namespace/>')
-	var iframeDiv = document.getElementById('ss_wikiIframe<portlet:namespace/>')
-	if (window.frames['ss_wikiIframe<portlet:namespace/>'] != null) {
-		eval("var iframeHeight = parseInt(window.ss_wikiIframe<portlet:namespace/>.document.body.scrollHeight);")
+function ss_setWikiIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+	var targetDiv = document.getElementById('ss_wikiEntryDiv<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	if (window.frames['ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_wikiIframeOffset + "px"
 		}

@@ -22,8 +22,8 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <form class="ss_style ss_form" 
 	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
 	method="post" 
-	name="<portlet:namespace />fm"
-	id="<portlet:namespace />fm"
+	name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
+	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
 	onSubmit="return ss_submitIndexingForm();" >
 
 <div class="ss_buttonBarRight">
@@ -60,11 +60,11 @@ function ss_getOperationStatus()
 }
 
 function ss_submitIndexingForm() {
-	var formObj = document.forms['<portlet:namespace />fm'];
+	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
-		ss_submitFormViaAjax('<portlet:namespace />fm', 'ss_indexingDone');
+		ss_submitFormViaAjax('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'ss_indexingDone');
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 		return false;
 	} else {
@@ -77,7 +77,7 @@ function ss_submitIndexingForm() {
 function ss_indexingDone() {
 	if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
 	ss_buttonSelect('closeBtn');
-	var formObj = document.forms['<portlet:namespace />fm'];
+	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
 	formObj.btnClicked.value = 'closeBtn';
 	formObj.action = '<portlet:actionURL><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
 	formObj.submit();
@@ -88,14 +88,14 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 	var prefix = action+"_";
 	ss_createTreeCheckbox("<%= wsTreeName %>", prefix, forum);
 	var name = prefix + forum;
-	if (self.document.<portlet:namespace />fm[name] && self.document.<portlet:namespace />fm[name].checked) {
-		self.document.<portlet:namespace />fm[name].checked=false;
+	if (self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name] && self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name].checked) {
+		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name].checked=false;
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
 			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = false;
 		}
 	} else {
-		self.document.<portlet:namespace />fm[name].checked=true
+		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name].checked=true
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
 			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = true;

@@ -124,7 +124,7 @@
 		  </div>
 
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="photo.findPage"/></div>
-	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
+	    <form method="post" name="ss_findWikiPageForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	    	action="<portlet:actionURL 
 	                windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 

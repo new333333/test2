@@ -41,7 +41,7 @@
 <c:forEach var="selection" items="${selections}">
   <c:if test="${pictureCount == 0}">
 	<a href="#" onClick="ss_showThisImage(this);return false;"><img 
-	  align="middle" id="ss_profilePicture<portlet:namespace/>"
+	  align="middle" id="ss_profilePicture<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	  border="0" 
 	  src="<ssf:url 
 	    webPath="viewFile"
@@ -129,7 +129,7 @@
   <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
   <c:forEach var="selection" items="${selections}">
 	<div><a href="#" onClick="ss_showThisImage(this);return false;"
-	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture<portlet:namespace/>'); return false;">
+	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;">
 	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:url 
 	    webPath="viewFile"
 	    folderId="${ssDefinitionEntry.parentBinder.id}"

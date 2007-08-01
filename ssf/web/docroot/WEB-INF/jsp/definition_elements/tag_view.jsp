@@ -18,43 +18,43 @@
 </c:if>
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 <script type="text/javascript">
-function ss_showTags<portlet:namespace/>(divNumber, entityType, entryId) {
-	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';
+function ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
+	var divId = 'ss_tags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_' + parseInt(divNumber) + '_pane';
 	ss_moveDivToBody(divId);
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
 	divObj.style.zIndex = ssMenuZ;
-	var anchorObj = document.getElementById('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber));
-	ss_setObjectTop(divObj, (ss_getDivTop('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)) + 20) + "px");
-	var rightEdge = parseInt(ss_getDivLeft('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)));
+	var anchorObj = document.getElementById('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber));
+	ss_setObjectTop(divObj, (ss_getDivTop('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)) + 20) + "px");
+	var rightEdge = parseInt(ss_getDivLeft('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)));
 	var leftEdge = parseInt(rightEdge - ss_getObjectWidth(divObj));
 	if (leftEdge < 0) leftEdge = 0;
-	self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)) + ", left = " +leftEdge)
+	self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)) + ", left = " +leftEdge)
 	ss_setObjectLeft(divObj, leftEdge + "px")
 	ss_showDiv(divId);
 	
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
-function ss_hideTags<portlet:namespace/>(divNumber, entityType, entryId) {
-	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';
+function ss_hideTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
+	var divId = 'ss_tags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_' + parseInt(divNumber) + '_pane';
 	ss_hideDiv(divId);
 }
-function ss_addTag<portlet:namespace/>(divNumber, entityType, entryId) {
-	ss_modifyTags<portlet:namespace/>('add', '', divNumber, entityType, entryId);
+function ss_addTag<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
+	ss_modifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('add', '', divNumber, entityType, entryId);
 	
 }
-function ss_addTag2<portlet:namespace/>(id, divNumber, entityType, entryId) {
+function ss_addTag2<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, divNumber, entityType, entryId) {
 	alert(entryId)
-	document.forms['ss_modifyTagsForm<portlet:namespace/>_'+divNumber].communityTag.value = id;
-	ss_modifyTags<portlet:namespace/>('add', '', divNumber, entityType, entryId);
+	document.forms['ss_modifyTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+divNumber].communityTag.value = id;
+	ss_modifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('add', '', divNumber, entityType, entryId);
 }
 
-function ss_deleteTag<portlet:namespace/>(tagId, divNumber, entityType, entryId) {
-	ss_modifyTags<portlet:namespace/>('delete', tagId, divNumber, entityType, entryId);
+function ss_deleteTag<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(tagId, divNumber, entityType, entryId) {
+	ss_modifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('delete', tagId, divNumber, entityType, entryId);
 }
-function ss_modifyTags<portlet:namespace/>(operation2, tagId, divNumber, entityType, entryId) {
+function ss_modifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(operation2, tagId, divNumber, entityType, entryId) {
 	ss_setupStatusMessageDiv();
 	var tagToDelete = "";
 	if (operation2 == 'delete') tagToDelete = tagId;
@@ -68,27 +68,27 @@ function ss_modifyTags<portlet:namespace/>(operation2, tagId, divNumber, entityT
 		</ssf:url>";
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("operation2", operation2)
-	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
+	ajaxRequest.addKeyValue("namespace", "<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>")
 	ajaxRequest.addKeyValue("tagToDelete", tagToDelete)
 	ajaxRequest.addKeyValue("tagDivNumber", divNumber)
 	ajaxRequest.addKeyValue("entityId", entryId);
 	ajaxRequest.addKeyValue("entityType", entityType);
-	ajaxRequest.addFormElements("ss_modifyTagsForm<portlet:namespace/>_"+divNumber);
+	ajaxRequest.addFormElements("ss_modifyTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_"+divNumber);
 	ajaxRequest.setData("divNumber", divNumber);
 	ajaxRequest.setData("entityId", entryId);
 	ajaxRequest.setData("entityType", entityType);
 	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postModifyTags<portlet:namespace/>);
+	ajaxRequest.setPostRequest(ss_postModifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postModifyTags<portlet:namespace/>(obj) {
+function ss_postModifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
 	ss_debug("post: "+obj.getData("divNumber"))
-	ss_showTags<portlet:namespace/>(obj.getData("divNumber"), obj.getData("entityType"), obj.getData("entityId"));
+	ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj.getData("divNumber"), obj.getData("entityType"), obj.getData("entityId"));
 }
 </script>
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
@@ -114,13 +114,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
   		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
 	</ssf:ifaccessible>
 	<ssf:ifnotaccessible>
-		onClick="ss_showTags<portlet:namespace/>('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}'); return false;"
+		onClick="ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}'); return false;"
 	</ssf:ifnotaccessible>
 	<ssf:title tag="title.open.tag.menu" />
 ><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a></td>
 </tr>
 <tr><td colspan="2"></td><td>
-  <div id="ss_tags_anchor<portlet:namespace/>_${ss_tagDivNumber}">
+  <div id="ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ss_tagDivNumber}">
   </div>
 </td></tr>
 </tbody>

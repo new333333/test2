@@ -14,7 +14,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <form class="ss_style ss_form" action="<portlet:actionURL/>" 
-	method="post" name="<portlet:namespace />fm"
+	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
 	onSubmit="return ss_onSubmit(this);">
 <input type="hidden" name="componentName" value="guestbook"/>
 <table class="ss_style" width="100%"><tr><td>

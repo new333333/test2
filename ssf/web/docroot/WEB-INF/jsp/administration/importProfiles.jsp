@@ -15,7 +15,7 @@
 		  action="<portlet:actionURL><portlet:param 
 		  name="action" value="import_profiles"/><portlet:param 
 		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
-		  name="<portlet:namespace />fm">
+		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.import.profiles" /></span>
 <br>

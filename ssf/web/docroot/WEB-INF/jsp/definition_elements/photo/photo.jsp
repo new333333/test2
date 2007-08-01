@@ -27,7 +27,7 @@ function ss_loadEntry(obj,id) {
 }
 
 //Routine called when "find photo" is clicked
-function ss_loadPhotoEntryId<portlet:namespace/>(id) {
+function ss_loadPhotoEntryId<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
 	var url = "<ssf:url     
 	    adapter="true" 
 	    portletName="ss_forum" 
@@ -41,11 +41,11 @@ function ss_loadPhotoEntryId<portlet:namespace/>(id) {
 }
 
 var ss_photoIframeOffset = 20;
-function ss_setPhotoIframeSize<portlet:namespace/>() {
-	var targetDiv = document.getElementById('ss_photoEntryDiv<portlet:namespace/>')
-	var iframeDiv = document.getElementById('ss_photoIframe<portlet:namespace/>')
-	if (window.frames['ss_photoIframe<portlet:namespace/>'] != null) {
-		eval("var iframeHeight = parseInt(window.ss_photoIframe<portlet:namespace/>.document.body.scrollHeight);")
+function ss_setPhotoIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+	var targetDiv = document.getElementById('ss_photoEntryDiv<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	var iframeDiv = document.getElementById('ss_photoIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	if (window.frames['ss_photoIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_photoIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_photoIframeOffset + "px"
 		}

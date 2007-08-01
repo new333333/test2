@@ -45,7 +45,7 @@ function ${wsTreeName}_showId(id, obj, action) {
 	action="modify_folder_entry"
 	operation="move"
 	folderId="${ssBinder.id}"
-	entryId="${ssEntry.id}"/>" name="<portlet:namespace />fm">
+	entryId="${ssEntry.id}"/>" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 <br/>
 
 <span class="ss_bold"><ssf:nlt tag="move.selectDestination"/></span>

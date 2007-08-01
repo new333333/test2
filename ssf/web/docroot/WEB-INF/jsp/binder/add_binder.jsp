@@ -27,7 +27,7 @@ var ss_checkTitleUrl = "<ssf:url
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
 function ss_enableDisableFolderOptions(bindersCount) {
-	var formObj = self.document.getElementById('<portlet:namespace/>fm');
+	var formObj = self.document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm');
 	if (document.getElementById('folderConfigIdTitle') == null) return;
 	//If there are sub-binders to be added, turn off the folder selection list
 	if (bindersCount == 0) {
@@ -52,8 +52,8 @@ function ss_enableDisableFolderOptions(bindersCount) {
 <br/>
 
 <form class="ss_style ss_form" 
-  name="<portlet:namespace/>fm" 
-  id="<portlet:namespace/>fm" 
+  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
+  id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
   method="post" onSubmit="return ss_onSubmit(this);">
 <span class="ss_bold">
   <c:if test="${ssOperation == 'add_workspace'}">

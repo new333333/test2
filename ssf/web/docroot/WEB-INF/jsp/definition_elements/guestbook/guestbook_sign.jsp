@@ -16,13 +16,13 @@
 
 	<div style="text-align: right; margin: 5px; ">
 	<c:if test="${!empty addDefaultEntryURL}">
-		<a href="${addDefaultEntryURL}" onClick="ss_signGuestbook('<portlet:namespace/>', this);return false;"><span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span></a>
+		<a href="${addDefaultEntryURL}" onClick="ss_signGuestbook('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', this);return false;"><span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span></a>
 	</c:if>		
 	</div>
 
-<div id="<portlet:namespace/>_add_entry_from_iframe" style="display:none; visibility:hidden;">
-<iframe id="<portlet:namespace/>_new_guestbook_entry_iframe"
-  name="<portlet:namespace/>_new_guestbook_entry_iframe"
-  onLoad="ss_showSignGuestbookIframe('<portlet:namespace/>', this);" 
+<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_add_entry_from_iframe" style="display:none; visibility:hidden;">
+<iframe id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_new_guestbook_entry_iframe"
+  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_new_guestbook_entry_iframe"
+  onLoad="ss_showSignGuestbookIframe('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', this);" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>

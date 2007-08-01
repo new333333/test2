@@ -23,7 +23,7 @@
 <c:set var="prefix" value="<%= findUserFormName + "_" + findUserElementName %>" />
 <c:if test="${empty ss_find_user_support_stuff_loaded}">
 <script type="text/javascript">
-var ss_findUser_searchText_<portlet:namespace/> = ""
+var ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = ""
 var ss_findUser_pageNumber = 0;
 
 var ss_findUserSearchInProgress = 0;
@@ -38,7 +38,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	if (text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
 	ss_debug('ss_findUserSearch: '+text+', '+elementName+', '+findPlacesType+', '+ss_findUser_pageNumber)
 	ss_setupStatusMessageDiv()
-	//ss_moveDivToBody('ss_findUserNavBarDiv_<portlet:namespace/>');
+	//ss_moveDivToBody('ss_findUserNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 	//Are we already doing a search?
 	if (ss_findUserSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -57,7 +57,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	ss_findUserSearchLastText = text;
 	ss_findUserSearchLastfindPlacesType = findPlacesType;
  	//Save the text in case the user changes the search type
- 	ss_findUser_searchText_<portlet:namespace/> = text;
+ 	ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = text;
  	
  	//See if the user ended the string with a CR. If so, then try to launch.
  	if (text.match(/\n/)) {
@@ -66,7 +66,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 		var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			ss_findUserSelectItem<portlet:namespace/>(liObjs[0]);
+			ss_findUserSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(liObjs[0]);
 			return;
 		}
  	}
@@ -86,23 +86,23 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
-	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>");
+	ajaxRequest.addKeyValue("namespace", "<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>");
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preFindUserRequest);
-	ajaxRequest.setPostRequest(ss_postFindUserRequest<portlet:namespace/>);
+	ajaxRequest.setPostRequest(ss_postFindUserRequest<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postFindUserRequest<portlet:namespace/>(obj) {
-	ss_debug('ss_postFindUserRequest<portlet:namespace/>')
+function ss_postFindUserRequest<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
+	ss_debug('ss_postFindUserRequest<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
 	ss_findUserSearchInProgress = 0;
 
-	ss_showDiv('ss_findUserNavBarDiv_<portlet:namespace/>');
+	ss_showDiv('ss_findUserNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 		
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting == 1) {
@@ -111,7 +111,7 @@ function ss_postFindUserRequest<portlet:namespace/>(obj) {
 	}
 }
 //Routine called when item is clicked
-function ss_findUserSelectItem<portlet:namespace/>(obj) {
+function ss_findUserSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="view_ws_listing"/><portlet:param name="binderId" 
@@ -127,7 +127,7 @@ function ss_saveFindUserData_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findUserSelectItem<portlet:namespace/>(liObjs[0]);
+		ss_findUserSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(liObjs[0]);
 	}
 	return false;
 }
@@ -143,19 +143,19 @@ function ss_findUserNextPage() {
 
 <div style="margin:0px; padding:0px;">
 	<ssf:ifaccessible>
- 		<label for="ss_findUser_searchText_<portlet:namespace/>"><ssf:nlt tag="${accessibilityText}" /></label>
+ 		<label for="ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><ssf:nlt tag="${accessibilityText}" /></label>
  	</ssf:ifaccessible>
 
 	<textarea 
 	    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
-	    name="ss_findUser_searchText_<portlet:namespace/>" 
-	    id="ss_findUser_searchText_<portlet:namespace/>"
+	    name="ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+	    id="ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	    onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findPlacesType %>');"
-	    onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);">
+	    onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>\')', 200);">
 	</textarea>
 </div>
 
-<div id="ss_findUserNavBarDiv_<portlet:namespace/>"
+<div id="ss_findUserNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
     class="ss_typeToFindResults" style="visibility:hidden;">
     <ul id="available_<%= findUserElementName %>_${prefix}">
     </ul>

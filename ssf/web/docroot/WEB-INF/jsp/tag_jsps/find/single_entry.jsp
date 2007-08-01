@@ -54,7 +54,7 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 		ss_findEntries_pageNumberBefore = 0;
 	}
 	ss_setupStatusMessageDiv()
-	ss_moveDivToBody('ss_findEntriesNavBarDiv_<portlet:namespace/>');
+	ss_moveDivToBody('ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 	//Are we already doing a search?
 	if (ss_findEntriesSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -100,7 +100,7 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 		var ulObj = document.getElementById('available_<%= findEntriesElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			ss_findEntriesSelectItem<portlet:namespace/>(liObjs[0]);
+			ss_findEntriesSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(liObjs[0]);
 			return;
 		}
  	}
@@ -137,18 +137,18 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
 	ajaxRequest.addKeyValue("binderId", ss_findEntriesBinderId${prefix})
 	ajaxRequest.addKeyValue("searchSubFolders", "<%= findEntriesSearchSubFolders %>")
-	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
+	ajaxRequest.addKeyValue("namespace", "<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_prefindEntriesRequest);
-	ajaxRequest.setPostRequest(ss_postfindEntriesRequest<portlet:namespace/>);
+	ajaxRequest.setPostRequest(ss_postfindEntriesRequest<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setData("savedColor", savedColor)
 	ajaxRequest.setData("crFound", crFound)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postfindEntriesRequest<portlet:namespace/>(obj) {
-	ss_debug('ss_postfindEntriesRequest<portlet:namespace/>')
+function ss_postfindEntriesRequest<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
+	ss_debug('ss_postfindEntriesRequest<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
@@ -157,15 +157,15 @@ function ss_postfindEntriesRequest<portlet:namespace/>(obj) {
 	var ulObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 0) {
-		ss_hideDiv('ss_findEntriesNavBarDiv_<portlet:namespace/>');
+		ss_hideDiv('ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 		return;
 	}
 
-	var divObj = document.getElementById('ss_findEntriesNavBarDiv_<portlet:namespace/>');
-	ss_moveDivToBody('ss_findEntriesNavBarDiv_<portlet:namespace/>');
-	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findEntries_searchText_bottom_<portlet:namespace/>") + ss_findEntriesDivTopOffset))
-	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findEntries_searchText_bottom_<portlet:namespace/>")))
-	ss_showDivActivate('ss_findEntriesNavBarDiv_<portlet:namespace/>');
+	var divObj = document.getElementById('ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
+	ss_moveDivToBody('ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
+	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findEntries_searchText_bottom_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>") + ss_findEntriesDivTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findEntries_searchText_bottom_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>")))
+	ss_showDivActivate('ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 		
  	//Show this at full brightness
  	divObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
@@ -189,11 +189,11 @@ function ss_findEntriesSelectItem0_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findEntriesElementName %>_${prefix}');
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findEntriesSelectItem<portlet:namespace/>(liObjs[0])
+		ss_findEntriesSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(liObjs[0])
 	}
 }
 //Routine called when item is clicked
-function ss_findEntriesSelectItem<portlet:namespace/>(obj) {
+function ss_findEntriesSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url = "<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
@@ -214,7 +214,7 @@ function ss_findEntriesSelectItem<portlet:namespace/>(obj) {
 }
 
 //Routine called when item is clicked in accessible mode
-function ss_findEntriesSelectItemAccessible<portlet:namespace/>(obj, entryId) {
+function ss_findEntriesSelectItemAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj, entryId) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url = "<ssf:url adapter="false" portletName="ss_forum" 
 		    folderId="${ssFolder.id}" action="view_folder_entry" 
@@ -229,41 +229,41 @@ function ss_savefindEntriesData_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findEntriesElementName %>_${prefix}')
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findEntriesSelectItem<portlet:namespace/>(liObjs[0]);
+		ss_findEntriesSelectItem<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(liObjs[0]);
 	}
 	return false;
 }
 
-function ss_findEntriesNextPage<portlet:namespace/>() {
+function ss_findEntriesNextPage<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	ss_findEntries_pageNumberBefore = ss_findEntries_pageNumber;
 	ss_findEntries_pageNumber++;
 	setTimeout("ss_findEntriesSearch_${prefix}(ss_findEntriesSearchLastTextObjId, ss_findEntriesSearchLastElement, ss_findEntriesSearchLastfindEntriesType);", 100);
 }
 
-function ss_findEntriesPrevPage<portlet:namespace/>() {
+function ss_findEntriesPrevPage<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	ss_findEntries_pageNumberBefore = ss_findEntries_pageNumber;
 	ss_findEntries_pageNumber--;
 	if (ss_findEntries_pageNumber < 0) ss_findEntries_pageNumber = 0;
 	ss_findEntriesSearch_${prefix}(ss_findEntriesSearchLastTextObjId, ss_findEntriesSearchLastElement, ss_findEntriesSearchLastfindEntriesType);
 }
 
-function ss_findEntriesClose<portlet:namespace/>() {
+function ss_findEntriesClose<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	ss_findEntries_pageNumber = 0;
 	ss_findEntries_pageNumberBefore = 0;
-	document.getElementById('ss_findEntries_searchText_<portlet:namespace/>').focus();
+	document.getElementById('ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>').focus();
 }
 
-function ss_findEntriesBlurTextArea<portlet:namespace/>() {
+function ss_findEntriesBlurTextArea<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	if (!ss___findEntriesIsMouseOverList) {
-		setTimeout(function() { ss_hideDiv('ss_findEntriesNavBarDiv_<portlet:namespace/>') } , 200);
+		setTimeout(function() { ss_hideDiv('ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>') } , 200);
 	}
 }
 
-function ss_findEntriesMouseOverList<portlet:namespace/>() {
+function ss_findEntriesMouseOverList<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	ss___findEntriesIsMouseOverList = true;
 }
 
-function ss_findEntriesMouseOutList<portlet:namespace/>() {
+function ss_findEntriesMouseOutList<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	ss___findEntriesIsMouseOverList = false;
 }
 
@@ -276,7 +276,7 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
     var iframeObj = self.document.getElementById("ss_findEntriesIframe");
     var iframeDivObjParent = self.parent.document.getElementById("ss_findEntriesIframeDiv");
     var iframeObjParent = self.parent.document.getElementById("ss_findEntriesIframe");
-    var textObj = self.document.getElementById('ss_findEntries_searchText_<portlet:namespace/>');
+    var textObj = self.document.getElementById('ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
     if (iframeDivObjParent == null && iframeDivObj == null) {
 	    iframeDivObj = self.document.createElement("div");
 	    iframeDivObjParent = iframeDivObj;
@@ -294,7 +294,7 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
 	    closeDivObj.style.padding = "6px";
 	    iframeDivObj.appendChild(closeDivObj);
 	    var aObj = self.document.createElement("a");
-	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findEntriesIframeDiv');ss_findEntriesClose<portlet:namespace/>();");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_findEntriesIframeDiv');ss_findEntriesClose<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();");
 	    aObj.setAttribute("title", "<ssf:nlt tag="title.close.searchResults" />");
 	    aObj.style.border = "2px outset black";
 	    aObj.style.padding = "2px";
@@ -321,7 +321,7 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
 	url += "&pageNumber=" + ss_findEntries_pageNumber;
 	url += "&findType=" + findEntriesType;
 	url += "&listDivId=" + "available_"+elementName+"_${prefix}";
-	url += "&namespace=" + "<portlet:namespace/>";
+	url += "&namespace=" + "<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>";
 	
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
@@ -336,25 +336,25 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
 
 <div style="margin:0px; padding:0px;">
 	<ssf:ifaccessible>
- 		<label for="ss_findEntries_searchText_<portlet:namespace/>"><ssf:nlt tag="${accessibilityText}" /></label>
+ 		<label for="ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><ssf:nlt tag="${accessibilityText}" /></label>
  	</ssf:ifaccessible>
 
 	<textarea 
 	    class="ss_text" style="height:17px; width:<%= findEntriesElementWidth %>; overflow:hidden;" 
-	    name="ss_findEntries_searchText_<portlet:namespace/>" 
-	    id="ss_findEntries_searchText_<portlet:namespace/>"
+	    name="ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+	    id="ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	    onKeyUp="ss_findEntriesSearch_${prefix}(this.id, '<%= findEntriesElementName %>', '<%= findEntriesType %>');"
-	    onBlur="ss_findEntriesBlurTextArea<portlet:namespace/>();"
+	    onBlur="ss_findEntriesBlurTextArea<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();"
 	    <ssf:title tag="wiki.findPage" />
 	    <c:if test="${!empty label}">
 	    	title="${label}"
 	    </c:if>
     ></textarea></div>
-<div id="ss_findEntries_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
-<div id="ss_findEntriesNavBarDiv_<portlet:namespace/>"
+<div id="ss_findEntries_searchText_bottom_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="padding:0px; margin:0px;"></div>
+<div id="ss_findEntriesNavBarDiv_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
     class="ss_typeToFindResults" style="visibility:hidden;"
-    onmouseover="ss_findEntriesMouseOverList<portlet:namespace/>()"
-    onmouseout="ss_findEntriesMouseOutList<portlet:namespace/>()">
+    onmouseover="ss_findEntriesMouseOverList<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>()"
+    onmouseout="ss_findEntriesMouseOutList<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>()">
     <div id="available_<%= findEntriesElementName %>_${prefix}">
       <ul>
       </ul>

@@ -14,7 +14,7 @@
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<portlet:actionURL><portlet:param 
 		  name="action" value="import_definition"/></portlet:actionURL>" 
-		  name="<portlet:namespace />fm">
+		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.import.definitions" /></span>
 <br>
