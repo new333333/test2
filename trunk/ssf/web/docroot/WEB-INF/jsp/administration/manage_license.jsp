@@ -16,7 +16,69 @@
   <c:if test='${! empty ssLicenseException}'>
     <div class="error"><span class="error">${ssLicenseException}</span></div>
   </c:if>
-  <span><ssf:nlt tag="license.current"/></span>
+  
+  <c:if test="${!empty ssLicense}">
+  <span class="ss_largerprint ss_bold"><ssf:nlt tag="license.current"/></span>
+  
+  <div>
+    <br/>
+  <span><ssf:nlt tag="license.key.uid"/> ${ssLicenseKey}</span>
+    <br/>
+  <span><ssf:nlt tag="license.key.issued"/> ${ssLicenseIssued}</span>
+    <br/>
+  <span><ssf:nlt tag="license.key.issuer"/> ${ssLicenseIssuer}</span>
+    <br/>
+    <br/>
+  <span><ssf:nlt tag="license.product.id"/> ${ssLicenseProductID}</span>
+    <br/>
+  <span><ssf:nlt tag="license.product.title"/> ${ssLicenseProductTitle}</span>
+    <br/>
+  <span><ssf:nlt tag="license.product.version"/> ${ssLicenseProductVersion}</span>
+    <br/>
+    <br/>
+  <span><ssf:nlt tag="license.effective"/> ${ssLicenseEffective}</span>
+    <br/>
+    <br/>
+  <c:if test="${ssLicenseUsers < 0}">
+  <span><ssf:nlt tag="license.users.registered.unlimited"/></span>
+  </c:if>
+  <c:if test="${ssLicenseUsers >= 0}">
+  <span><ssf:nlt tag="license.users.registered"/> ${ssLicenseUsers}</span>
+  </c:if>
+    <br/>
+  <c:if test="${ssLicenseExternalUsers < 0}">
+  <span><ssf:nlt tag="license.users.external.unlimited"/></span>
+  </c:if>
+  <c:if test="${ssLicenseExternalUsers >= 0}">
+  <span><ssf:nlt tag="license.users.external"/> ${ssLicenseExternalUsers}</span>
+  </c:if>
+    <br/>
+    <br/>
+  <c:if test="${!empty ssLicenseOptionsList}">
+	<span><ssf:nlt tag="license.options"/><span>
+	 <br/>
+	<c:forEach var="option" items="${ssLicenseOptionsList}">
+ 	 <span style="padding-left:20px;">${option}</span>
+	 <br/>
+  	</c:forEach>
+  	<br/>
+  </c:if>
+  <c:if test="${!empty ssLicenseExternalAccessList}">
+	<span><ssf:nlt tag="license.externalaccess"/></span>
+	 <br/>
+	<c:forEach var="prop" items="${ssLicenseExternalAccessList}">
+ 	 <span style="padding-left:20px;">${prop}</span>
+	 <br/>
+  	</c:forEach>
+  	<br/>
+  </c:if>
+  <span><ssf:nlt tag="license.contact"/> ${ssLicenseContact}</span>
+    <br/>
+	<hr shade=noshade size=1/>
+	
+  </div>
+  </c:if>
+  
   <div class="ss_style">
     <div class="ss_license">
 	${ssLicense}
