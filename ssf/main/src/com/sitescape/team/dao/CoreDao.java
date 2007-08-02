@@ -60,6 +60,7 @@ public interface CoreDao {
 	public void evict(Object obj); 
 	public void executeUpdate(String update);
 	public boolean isDirty();
+	public void lock(Object obj);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List<Tag> loadAllTagsByEntity(EntityIdentifier entityId);

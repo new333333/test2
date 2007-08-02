@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.LockMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
@@ -97,6 +98,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public void refresh(Object obj) {
 		getSession().refresh(obj);
+	}
+	public void lock(Object obj) {
+		getSession().refresh(obj, LockMode.UPGRADE);
+		//getSession().lock(obj, LockMode.WRITE);
 	}
 	public void save(Object obj) {
         getHibernateTemplate().save(obj);
