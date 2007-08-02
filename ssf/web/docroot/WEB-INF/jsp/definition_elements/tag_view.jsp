@@ -94,17 +94,17 @@ function ss_postModifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadap
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:set var="ssEntry" value="${ssDefinitionEntry}" scope="request"/>
 <%
-boolean isIE = BrowserSniffer.is_ie(request);
+boolean isIEtag = BrowserSniffer.is_ie(request);
 %>
 <table cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
 <td valign="top" style="padding-right:2px;">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
-    <c:if test="<%= isIE %>">
+    <c:if test="<%= isIEtag %>">
        offsetY="-3" 
     </c:if>
-    <c:if test="<%= !isIE %>">
+    <c:if test="<%= !isIEtag %>">
        offsetY="-17" 
     </c:if>
      xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
@@ -117,15 +117,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		onClick="ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}'); return false;"
 	</ssf:ifnotaccessible>
 	<ssf:title tag="title.open.tag.menu" />
-><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a></td>
-</tr>
-<tr><td colspan="2"></td><td>
+><div class="ss_iconed_label ss_add_tag">&nbsp;</div></a>
   <div id="ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ss_tagDivNumber}">
   </div>
-</td></tr>
-</tbody>
-</table>
-
+</td>
+<td>
 <ssf:ifaccessible>
 	<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
 </ssf:ifaccessible>
@@ -134,6 +130,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssf:ifnotaccessible>
 
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
+</td></tr></tbody></table>
 
 <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
 	<ssf:ifaccessible>

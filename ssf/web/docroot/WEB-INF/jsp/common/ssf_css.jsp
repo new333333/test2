@@ -94,7 +94,7 @@ body.ss_style_body {
 }
 .ss_style ul li {
   list-style:none;
-  list-style-image:<html:imagesPath/>pics/1pix.gif;
+  list-style-image: url(<html:imagesPath/>pics/1pix.gif);
 }
   
 /* LINKS */
@@ -126,7 +126,7 @@ a.ss_download_link {
 	font-size: ${ss_style_font_finestprint};
 	background-image: url(<html:imagesPath/>icons/accessory_move_down.gif);
 	background-repeat: no-repeat;
-	: left center;
+    background-position:  left center;
 	padding-left: 15px;
 	padding-right: 0px;
 	line-height: 11px;
@@ -221,7 +221,7 @@ a.ss_download_link {
   }
 
 .ss_shadowbox {
-  background: #CCCCCC;
+  background-color: #CCCCCC;
   position: relative;
   top: 2px;
   left: 2px;
@@ -278,6 +278,7 @@ div.ss_replies div.ss_entryDescription {
 
 div.ss_style input[type="text"],
 div.ss_style textarea,
+div.ss_style select,
 div.ss_global_toolbar_quick input {
   background-color: #FFFFFF;
   background-image: none;
@@ -290,6 +291,7 @@ div.ss_style textarea {
   padding: 0px;
 }
 div.ss_style input[type="text"],
+div.ss_style select,
 div.ss_global_toolbar_quick input {
   padding: 1px;
 }
@@ -363,7 +365,9 @@ legend.ss_legend_bold {
   padding: 2px;
 }
 
-
+div.ss_editorHints {
+  font-size: ${ss_style_font_smallprint} !important; 
+}
 
 
 /* entry styles: common to entry views and entry forms */
@@ -378,10 +382,10 @@ legend.ss_legend_bold {
 .ss_entryContent {
   margin: 0px;
   padding: 2px;
-  background:inherit;
+  background-color:inherit;
   }
 .ss_entryContent table {
-  background:inherit;
+  background-color:inherit;
   }
 .ss_entrySignature {
   font-size: ${ss_style_font_smallprint};
@@ -444,7 +448,7 @@ div.ss_workflow {
 .ss_blockquote_watermark {
 	background-color: transparent;
 	background-image: url(<html:imagesPath/>pics/watermark_blockquote_blue.gif);
-    : top left;
+    background-position: top left;
     background-repeat: no-repeat;
     padding: 7px 6px 33px 20px;
 }
@@ -458,7 +462,7 @@ div.ss_blockquote_start p, div.ss_blockquote_watermark_content p {
 }
       
 table.ss_guestbook {
-	background: ${ss_entry_description_background_color};
+	background-color: ${ss_entry_description_background_color};
 	margin-bottom: 3px;
 	padding: 5px 0px 0px 5px;
 }
@@ -513,6 +517,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   border: 1px solid ${ss_linkbutton_outline_color};
   padding: 0px 6px 0px 6px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 
@@ -524,6 +529,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   border: 1px solid ${ss_linkbutton_outline_color};
   padding: 0px 6px 0px 6px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -552,7 +558,7 @@ div.ss_iconed_label {
   display: inline;
   font-family: ${ss_style_title_font_family};
   background-repeat: no-repeat;
-  : left center;
+  background-position: left center;
   padding-left: 16px;
   padding-right: 12px;
   margin-left: 2px;
@@ -613,7 +619,7 @@ div.ss_send_friend {
   border:1px solid black;
   margin:2px;
   padding:2px;
-  background-color:${ss_style_background_color};
+  background-color: ${ss_style_background_color_opaque};
   }
 .ss_popupMenuClose {
   width:100%;
@@ -626,7 +632,7 @@ div.ss_send_friend {
   border:1px solid black;
   margin:2px;
   padding:2px;
-  background-color:${ss_style_background_color};
+  background-color: ${ss_style_background_color_opaque};
   width: 150px;
 }
 
@@ -640,14 +646,14 @@ div.ss_send_friend {
 
 table.ss_popup {
 	position: relative;
-	background: transparent;
+	background-color: transparent;
 }
 
 div.ss_popup_topleft {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  : top left;
+  background-position: top left;
   height: 24px;
   width: 40px;
   padding: 0px;
@@ -657,7 +663,7 @@ div.ss_popup_topcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  : -50px top;
+  background-position: -50px top;
   height: 24px;
   padding: 0px;
 }
@@ -667,7 +673,7 @@ div.ss_popup_topright {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
-  : top right;
+  background-position: top right;
   height: 24px;
   width: 40px;
   padding: 0px;
@@ -677,7 +683,7 @@ div.ss_popup_bottomleft {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  : bottom left;
+  background-position: bottom left;
   height: 10px;
   width: 40px;
   padding: 0px;
@@ -687,7 +693,7 @@ div.ss_popup_bottomcenter {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  : -50px bottom;
+  background-position: -50px bottom;
   height: 10px;
   padding: 0px;
 }
@@ -696,7 +702,7 @@ div.ss_popup_bottomright {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
-  : bottom right;
+  background-position: bottom right;
   height: 10px;
   width: 40px;
   padding: 0px;
@@ -726,7 +732,7 @@ div.ss_popup_body {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_bg_blue.gif);
   background-repeat: repeat-y;
-  : top right;
+  background-position: top right;
   padding: 1px 5px 1px 5px;
 }
 
@@ -806,7 +812,7 @@ img.ss_help_cpanel_hide {
   visibility:hidden; 
   display:none; 
   border:1px solid black; 
-  background:#ffffff;
+  background-color: #ffffff;
 }
 
 .ss_lightBox {
@@ -920,13 +926,11 @@ DIV.ss_help_more_pages_section DIV.not_last_link {
 
 DIV.ss_help_more_pages_section DIV.no_next_page {
     padding: 2px 2px 2px 2px;
-    color: ${ss_help_panel_background_color};
 }
 
 DIV.ss_help_more_pages_section DIV.no_prev_page {
     padding: 2px 2px 2px 2px;
     margin-right: 8px;
-    color: ${ss_help_panel_background_color};
 }
 
 
@@ -963,71 +967,12 @@ DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
  
 }
 
-<c:set var="ss_sidebar_side" value="left" scope="request"/>
 
-div.ss_blog_content_container1 {
-	width: 100%;
-	background-repeat: repeat-y;
-}
-
-div.ss_blog_sidebar_container {
-	width: 180px;
-	background-repeat: repeat-y;
-}
-<c:if test="${ss_sidebar_side == 'left'}">
-
-div.ss_blog_content_container1 {
-	margin-left: -190px;
-	float: right;
-	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
-	: left;
-}
-
-div.ss_blog_content_container2 {
-	margin-left: 188px;
-}
-
-div.ss_blog_sidebar_container {
-	float: left;
-	padding-right: 3px;
-	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
-	: left;
-}
 
 div.ss_blog_content {
 	padding-bottom: 30px;
 	border-left: 1px solid ${ss_generic_border_color};
 }
-
-</c:if>
-
-<c:if test="${ss_sidebar_side == 'right'}">
-
-div.ss_blog_content_container1 {
-	margin-right: -190px;
-	float: left;
-	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
-	: right;
-}
-
-div.ss_blog_content_container2 {
-	margin-right: 188px;
-}
-
-div.ss_blog_sidebar_container {
-	float: right;
-	padding-left: 5px;
-	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
-	: right;
-}
-
-div.ss_blog_content {
-	padding-bottom: 30px;
-	border-right: 1px solid ${ss_generic_border_color};
-}
-
-
-</c:if>
 
 div.ss_blog_sidebar {
     margin-left: 5px;
@@ -1091,7 +1036,7 @@ table.ss_blog_title table {
 }
 
 div.ss_blog_title  {
-  background-color:${ss_blog_summary_title_background_color};
+  border-top: 2px solid ${ss_blog_summary_title_background_color};
   overflow: hidden;
   padding-top: 3px;
   padding-bottom: 3px;
@@ -1442,7 +1387,7 @@ table.ss_attachments_list td.ss_att_space {
 
 div.ss_folder_tags {
 	width: 100%;
-	margin-top: -12px;
+	margin-top: 0px;
 }
 
 .ss_tags {
@@ -1555,7 +1500,7 @@ div.ss_dashboardProtoDropTarget {
 .ss_dashboard_menu {
   position: absolute;
   visibility: hidden;
-  background-color: ${ss_style_background_color}; 
+  background-color: ${ss_style_background_color_opaque}; 
   color: ${ss_style_text_color};
   border: 1px ${ss_style_border_color} solid;
   padding: 0px;
@@ -1648,6 +1593,11 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   }
 
 /* Box styles */
+
+div.ss_box_top_rounded {
+	background-color: ${ss_style_background_color_opaque};
+}
+
 .ss_box_rounded {
 	background-color: ${ss_box_color};
 }
@@ -1832,7 +1782,7 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
 
 /* htmlarea overrides */
 .htmlarea { 
-    background: ${ss_form_element_color}; 
+    background-color: ${ss_form_element_color}; 
 }
 
 
@@ -1923,20 +1873,12 @@ a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
 
 /* global toolbar: */
 div.ss_global_toolbar_in_portlet {
-	background: #FFFFFF;
+	background-color: transparent;
 	height: auto;
 }
 div.ss_global_toolbar_maximized {
     position: relative;
-	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
-	height:45px;
 	padding-top:2px;
-	<c:if test="<%= isIE %>">
-		margin-bottom:2px;
-	</c:if>
-	<c:if test="<%= !isIE %>">
-		margin-bottom:4px;
-	</c:if>
 }
 
 div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global_toolbar_maximized div.ss_global_toolbar_favs,
@@ -1944,9 +1886,7 @@ div.ss_global_toolbar_maximized div.ss_global_toolbar_myteams,
  div.ss_global_toolbar_maximized div.ss_global_toolbar_divider, div.ss_global_toolbar_maximized div.ss_global_toolbar_quick,
  div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help,
  div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
-	float: left;
 	white-space: nowrap;
-	position: relative;
 }
 
 div.ss_global_toolbar_help {
@@ -1992,7 +1932,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_quic
 }
 
 div.ss_global_toolbar table {
-	background: transparent;
+	background-color: transparent;
 }
 div.ss_global_toolbar table tr.ss_row_txt td {
 	padding-top: 10px;
@@ -2009,14 +1949,14 @@ div.ss_global_toolbar table td {
 div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 	white-space: nowrap;
 	padding-left: 2px;
-	padding-right: 2px;
+	padding-right: 0px;
 }
 .ss_global_toolbar_portlet_box {
-	background: ${ss_toolbar4_background_color} !important;
+	background-color: ${ss_toolbar4_background_color} !important;
 }
 
 .ss_global_toolbar a span, .ss_global_toolbar div span {
-	background:transparent;
+	background-color:transparent;
 }
 
 
@@ -2029,23 +1969,44 @@ div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
-	position: relative;
-	width: 26px;
-	height: 26px;	
+	background-position: left 0px;
+	width: 49px;
+	height: 42px;	
+}
+
+.ss_global_toolbar_favs div:hover {
+	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
+	background-position: left -42px;
+	width: 49px;
+	height: 42px;	
 }
 
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
-	position: relative;
-	width: 26px;
-	height: 26px;	
+	background-position: left 0px;
+	width: 61px;
+	height: 42px;	
+}
+
+.ss_global_toolbar_myworkspace div:hover {
+	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
+	width: 61px;
+	height: 42px;
+	background-position: left -42px;
 }
 
 .ss_global_toolbar_myteams div {
 	background:url(<html:imagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
-	position: relative;
-	width: 26px;
-	height: 26px;	
+	background-position: left 0px;
+	width: 46px;
+	height: 42px;	
+}
+
+.ss_global_toolbar_myteams div:hover {
+	background:url(<html:imagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
+	background-position: left -42px;
+	width: 46px;
+	height: 42px;	
 }
 
 .ss_global_toolbar_favs_big div {
@@ -2077,30 +2038,30 @@ div.ss_global_toolbar_help {
 .ss_global_toolbar_accessible {
 	margin-top: 0px;
 	padding-left: 6px;
-	background: transparent;
+	background-color: transparent;
 }
 .ss_global_toolbar_accessible form {
-	background:transparent;
+	background-color:transparent;
 }
 .ss_global_toolbar_accessible a {
-    background:transparent;
+    background-color:transparent;
 }
 .ss_global_toolbar_accessible img {
-	background: transparent;
+	background-color: transparent;
 }
 .ss_global_toolbar_findUser {
 	margin-top: 0px;
-	background: transparent;
+	background-color: transparent;
 }
 .ss_global_toolbar_findUser form {
-	background:transparent;
+	background-color:transparent;
 }
 .ss_global_toolbar_findUser .form-text {
 	width:40px;
 }
 span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch {
 	color:#333333;
-	background: transparent;
+	background-color: transparent;
 	white-space: nowrap;
 }
 
@@ -2116,16 +2077,16 @@ div.ss_global_toolbar_findUser_text span {
 }
 .ss_global_toolbar_search {
 	margin-top: 0px;
-	background: transparent;
+	background-color: transparent;
 	vertical-align: bottom;
 }
 .ss_global_toolbar_search form {
-	background:transparent;
+	background-color:transparent;
 }
 
 .ss_global_toolbar_quick input {
 	width: 115px;
-	background: #FFFFFF;
+	background-color: #FFFFFF;
 	border: 1px solid #7F9DB9;
 }
 div.ss_global_toolbar_search_text {
@@ -2135,109 +2096,16 @@ div.ss_global_toolbar_search_text {
 	padding:0px !important;
 }
 div.ss_global_toolbar_search_text span {
-	background:inherit !important;
+	background-color:inherit !important;
 }
 
 
-/* tabs: */
-div.ss_tab_canvas {
-    position:relative;
-<c:if test="<%= isIE %>">
-    top:-3px;
-</c:if>
-<c:if test="<%= !isIE %>">
-    top:-2px;
-</c:if>
-    margin:0px;
-    padding:0px;
-    width:100%;
-    border-right: 1px ${ss_generic_border_color} solid;
-    border-left: 1px ${ss_generic_border_color} solid;
-    border-bottom: 1px ${ss_generic_border_color} solid;
-}
-div.ss_tabs {
-    position:relative;
-    left:14px; 
-    z-index:2;
-    width:100%;
-    margin-right:40px;
-}
-.ss_tabs_td, td.ss_tabs_td {
-	font-family: ${ss_style_title_font_family};
-	font-weight: bold;
-	font-size: 11px;
-	color:#5A3C68;
-	height:26px;
-	background:url(<html:imagesPath/>tabs/back1.jpg) repeat-x left top;
-	white-space: nowrap;
-	margin:0px;
-	padding:3px 0px 0px 0px;
-}
-.ss_tabs_td_active, td.ss_tabs_td_active {
-	font-family: ${ss_style_title_font_family};
-	font-weight: bold;
-	font-size:11px;
-	color:#666666;
-	height:28px;
-	background:url(<html:imagesPath/>tabs/back1_active.jpg) repeat-x left top;
-	margin:0px;
-	padding:3px 0px 0px 0px;
-}
-.ss_tabs_td_left_active {
-    background:url(<html:imagesPath/>tabs/back2_active.jpg) no-repeat left;
-    width:4px;
-    min-width:4px;
-}
-.ss_tabs_td_right_active {
-    background:url(<html:imagesPath/>tabs/back3_active.jpg) no-repeat right;
-    width:4px;
-    min-width:4px;
-}
-.ss_tabs_td_left {
-    background:url(<html:imagesPath/>tabs/back2.jpg) no-repeat left;
-    width:4px;
-    min-width:4px;
-}
-.ss_tabs_td_right {
-    background:url(<html:imagesPath/>tabs/back3.jpg) no-repeat right;
-    width:4px;
-    min-width:4px;
-}
-.ss_tabs_corner_l {
-  min-width:4px;
-  width:4px;
-}
-.ss_tabs_corner_r {
-  width:4px;
-  min-width:4px;
+td.ss_view_sidebar {
+    width: 200px;
 }
 
-.ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
-	text-decoration:underline;
-}
-
-img.ss_tabs_icon {
-	position:relative;
-	left: 0px;
-	vertical-align: middle;
-}
-
-img.ss_tabs_close2 {
-	position:relative;
-	vertical-align: middle;
-} 
-
-img.ss_tabs_close {
-	position:relative;
-	vertical-align: middle;
-    background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat left 0px;
-    width:9px;
-    height: 9px;
-
-}
-
-a:hover img.ss_tabs_close {
-	: left -9px;
+td.ss_view_info {
+	padding-left: 5px;
 }
 
 
@@ -2248,7 +2116,7 @@ img.ss_generic_close {
 }
 
 a:hover img.ss_generic_close {
-	: left -9px;
+    background-position:  left -9px;
 }
 
 img.ss_print_button {
@@ -2259,7 +2127,7 @@ img.ss_print_button {
 }
 
 a:hover img.ss_print_button {
-	: left 0px;
+    background-position:  left 0px;
 }
 
 img.ss_accessory_modify {
@@ -2270,7 +2138,7 @@ img.ss_accessory_modify {
 }
 
 a:hover img.ss_accessory_modify {
-	: left 0px;
+    background-position:  left 0px;
 }
 
 img.ss_accessory_delete {
@@ -2281,7 +2149,7 @@ img.ss_accessory_delete {
 }
 
 a:hover img.ss_accessory_delete {
-	: left -9px;
+    background-position:  left -9px;
 }
 
 img.ss_dashboard_config_control {
@@ -2292,13 +2160,12 @@ img.ss_dashboard_config_control {
 }
 
 a:hover img.ss_dashboard_config_control {
-	: left -18px;
+    background-position:  left -18px;
 }
 
 
 span.ss_tabs_title {
-	position:relative;
-    vertical-align: middle;
+	font-size: ${ss_style_font_smallprint};
 }
 
 /* breadcrumbs */
@@ -2312,18 +2179,38 @@ a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
 
+div.ss_sidebar_panel {
+	border: solid 1px ${ss_toolbar1_background_color};
+	padding-bottom: 8px;
+}
 
 /* titlebar */
+.ss_base_title_bar {
+	background-color: ${ss_toolbar1_background_color};
+    background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
+    background-repeat: repeat-x;
+	color: ${ss_dashcomp_header_bar_title_color};
+	font-size: 11px;
+	font-family: ${ss_style_title_font_family};
+	font-weight: bold;
+	height:14px;
+	margin:0px;
+	padding-bottom: 3px;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
-	background-repeat: repeat-x;
 	color: ${ss_dashcomp_header_bar_title_color};
 	height:16px;
 	margin:0px;
 	padding-bottom: 3px;
+	padding-left: 3px;
 }
+
 .ss_title_bar * {
-	background:transparent;
+	background-color: transparent;
 }
 .ss_title_bar_history_bar {
 	background:inherit;
@@ -2393,7 +2280,6 @@ a.ss_breadcrumb {
 /* actions: */
 
 .ss_actions_bar1 {
-	background-color: #DCE2BE;
 	font-weight: normal;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
@@ -2430,7 +2316,7 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
 	background-color: ${ss_toolbar4_background_color};
 	width: 100%;
-	height: 26px;
+	height: 18px;
 	padding: 0;
 	margin: 0;
 	border-collapse: collapse;
@@ -2451,19 +2337,15 @@ table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
 
 ul.ss_actions_bar1  {
     background-color: ${ss_toolbar1_background_color};
+	border-top: 1px solid #CCD2AE;
+	border-bottom: 1px solid #CCD2AE;
 }
 
 .ss_actions_bar {
-	<c:if test="<%= isIE %>">
-		width: 100%;
-	</c:if>
-	<c:if test="<%= !isIE %>">
-		width: 99.6%;
-	</c:if> 
 	list-style-type:none;	
 	margin: 0;
 	padding: 0 0 0 5px;
-	height: 23px;
+	height: 16px;
 }
 
 .ss_action_bar ul, .ss_actions_bar_submenu {
@@ -2472,12 +2354,8 @@ ul.ss_actions_bar1  {
 .ss_actions_bar li {
 	float:left;
 	display: inline;
-	border-top:    1px solid #999999;
-	border-left:   1px solid #999999;
-	border-bottom: 1px solid #999999;
-	border-right:  1px solid #999999;
 	background-color: inherit;
-	margin: 3px 3px 0 0;
+	margin: 0px 3px 0 0;
 }
 
 .ss_actions_bar li.ss_toolBarItem {
@@ -2498,15 +2376,14 @@ ul.ss_actions_bar1  {
 
 .ss_actions_bar li.ss_toolBarItem .ss_toolBarItemTxt {
 	float: left;
-	margin-top: 7px;
+	margin-top: 0px;
 }
 
 .ss_actions_bar li.ss_actions_bar_separator {
 	border-left: 1px dotted #FFFFFF;
 	border-right: 0;
 	border-top: 0;
-	border-bottom: 0;
-	height: 26px;
+	height: 16px;
 	margin: 0 5px 0 5px;
 	width: 0;
 	padding: 0;
@@ -2639,7 +2516,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 }
 
 .ss_actions_bar_submenu div {
-	background:none;
+	background: none;
 }
 
 .ss_actions_bar_filters {
@@ -2674,7 +2551,6 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 }
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {
-	border-top: 1px solid ${ss_generic_border_color};
 	border-bottom: 1px solid ${ss_generic_border_color};
 	width: 100%;
 	margin: 0px;
@@ -2727,12 +2603,12 @@ div.ss_utils_bar ul.ss_utils_bar li a span {
 }
 
 div.ss_utils_bar_submenu {
-	background:#ECECEC;
+	background-color: #ECECEC;
 	margin:0px;
 	padding:0px;
 	text-align:left;
 	position:absolute;
-	display: block;
+	display: none;
 	visibility: hidden;
 	z-index:500;
 	border: 1px solid #CCCCCC;
@@ -2741,7 +2617,7 @@ div.ss_utils_bar_submenu {
 
 ul.ss_utils_bar_submenu {
 	margin: 0px 5px 0px 5px;
-	background:#ECECEC;
+	background-color: #ECECEC;
 } 
 
 .ss_utils_bar_submenu li  {
@@ -2808,7 +2684,7 @@ div.ss_typeToFindResults {
 	border-left:   solid 1px ${ss_generic_border_color}; 
 	border-right:  solid 1px ${ss_generic_border_shadow_color}; 
 	border-bottom: solid 1px ${ss_generic_border_shadow_color}; 
-	background:${ss_style_background_color};
+	background-color: ${ss_style_background_color_opaque};
 	z-index:500;
 	text-align: left;
 }
@@ -3468,7 +3344,7 @@ a.ss_calDaySelectButtonActive img, a.ss_calDaySelectButtonActive:link img , a.ss
 }
 
 a.ss_calDaySelectButton:hover img {
-	: left -24px; 
+    background-position:  left -24px; 
 }
 
 
@@ -3490,7 +3366,7 @@ a.ss_cal3DaysSelectButtonActive img, a.ss_cal3DaysSelectButtonActive:link img , 
 }
 
 a.ss_cal3DaysSelectButton:hover img {
-	: left -24px; 
+    background-position:  left -24px; 
 }
 
 a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img {
@@ -3511,7 +3387,7 @@ a.ss_cal5DaysSelectButtonActive img, a.ss_cal5DaysSelectButtonActive:link img , 
 }
 
 a.ss_cal5DaysSelectButton:hover img {
-	: left -24px; 
+    background-position:  left -24px; 
 }
 
 a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img {
@@ -3532,7 +3408,7 @@ a.ss_cal7DaysSelectButtonActive img, a.ss_cal7DaysSelectButtonActive:link img , 
 }
 
 a.ss_cal7DaysSelectButton:hover img {
-	: left -24px; 
+    background-position:  left -24px; 
 }
 
 a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img {
@@ -3553,7 +3429,7 @@ a.ss_cal14DaysSelectButtonActive img, a.ss_cal14DaysSelectButtonActive:link img 
 }
 
 a.ss_cal14DaysSelectButton:hover img {
-	: left -24px; 
+    background-position:  left -24px; 
 }
 
 a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
@@ -3574,7 +3450,7 @@ a.ss_calMonthSelectButtonActive img, a.ss_calMonthSelectButtonActive:link img , 
 }
 
 a.ss_calMonthSelectButton:hover img {
-	: left -24px; 
+    background-position:  left -24px; 
 }
 
 a.ss_calDateDownButton img {
@@ -3591,7 +3467,7 @@ a.ss_calDateDownButton img, a.ss_calDateDownButton:link img , a.ss_calDateDownBu
 }
 
 a.ss_calDateDownButton:hover img {
-	: left -28px; 
+    background-position:  left -28px; 
 }
 
 a.ss_calDateUpButton img {
@@ -3608,7 +3484,7 @@ a.ss_calDateUpButton img, a.ss_calDateUpButton:link img , a.ss_calDateUpButton:f
 }
 
 a.ss_calDateUpButton:hover img {
-	: left -28px; 
+    background-position:  left -28px; 
 }
 
 
@@ -3626,7 +3502,7 @@ a.ss_calendarButton img, a.ss_calendarButton:link img , a.ss_calendarButton:focu
 }
 
 a.ss_calendarButton:hover img {
-	: left -16px; 
+    background-position:  left -16px; 
 }
  
 
@@ -3687,12 +3563,12 @@ div.ss_smallRBoxBody {
 
 
 div.ss_profileBox1 {
-  background: ${ss_profileBox1_background_color};
+  background-color: ${ss_profileBox1_background_color};
   font-family:${ss_style_folder_view_font_family};
 }
 
 div.ss_profileBox2 {
-  background: ${ss_replies_background_color};
+  background-color: ${ss_replies_background_color};
 /*  width: 230px; */
 }
 
@@ -3703,7 +3579,7 @@ div.ss_profile_box_title {
 }
 
 div.ss_profile_matte {
-  background: #FFFFFF;
+  background-color: #FFFFFF;
   padding: 5px;
 }
 div.ss_profile_picture_frame {
@@ -3722,21 +3598,21 @@ div.ss_profile_info_frame {
 div.ss_profile_photo_box_empty {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_person.gif);
-	: center;
+    background-position:  center;
 	background-repeat: no-repeat;
 }
 
 div.ss_profile_info_box {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_info.gif);
-	: center;
+    background-position:  center;
 	background-repeat: no-repeat;
 }
 
 div.ss_profile_contact_box {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.gif);
-	: center;
+    background-position:  center;
 	background-repeat: no-repeat;
 }
 
@@ -4023,12 +3899,6 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	border-right:1px solid #cccccc;
 	border-bottom:1px solid #cccccc;
 	position:relative;
-	<c:if test="<%= isIE %>">
-	    top:-3px;
-	</c:if>
-	<c:if test="<%= !isIE %>">
-	    top:-2px;
-	</c:if>
     margin: 0px;
     padding: 0px;
     width: 100%;
@@ -4113,7 +3983,7 @@ a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img,
 }
 
 a.ss_searchButton:hover img {
-	: left -17px; 
+    background-position:  left -17px; 
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
@@ -4160,7 +4030,7 @@ a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a
 	margin: 0px 0px -12px 0px;
 	padding: 3px 0px 3px 12px;
 	position:relative;
-	top:-18px;
+	top:-12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
 </c:if>
@@ -4205,12 +4075,11 @@ img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
 
 .ss_rating_box {
-	margin:0px 0px 24px 0px;
+	margin:0px 0px 10px 0px;
 	padding:0px;
-	width: 215px;
 }
 .ss_rating_box_title {
-	background: transparent url(<html:imagesPath/>pics/sidemenuhead.gif) no-repeat top left;
+	background-color: #AFC8E3;
 	margin:0px;
 	padding:0px 5px 0px 5px;
 	height: 16px;
@@ -4224,6 +4093,7 @@ img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 	background-color: #dbe6f2;
 }
 img.ss_toogler {float:right;}
+img.ss_toggler {float:right;}
 div.ss_rating_box_title h4 {float:left;margin:0px;}
 div.ss_rating_box_content table {width:200px; border-collapse: collapse; border-spacing: 0;}
 div.ss_rating_box_content th {border-bottom: 1px solid #afc8e3;text-align:left;}
@@ -4342,7 +4212,7 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 	display: none;
 	position: absolute;
 	z-index: 500;
-	background-color: ${ss_form_background_color};
+	background-color: ${ss_style_background_color_opaque};
 	border: 1px solid ${ss_form_border_color};
 	margin: 0;
 	padding: 6px;
@@ -4644,7 +4514,7 @@ a.ss_taskStatus_s3_u img, a.ss_taskStatus_s3_u:link img , a.ss_taskStatus_s3_u:f
 }
 
 a.ss_taskStatus_s2_u:hover img, a.ss_taskStatus_s1_u:hover img, a.ss_taskStatus_s4_u:hover img, a.ss_taskStatus_s3_u:hover img {
-	: left -21px; 
+    background-position:  left -21px; 
 }
 
 a.ss_taskPriority img, img.ss_taskPriority {
@@ -4679,7 +4549,7 @@ a.ss_taskPriority_p1_u img, a.ss_taskPriority_p1_u:link img , a.ss_taskPriority_
 }
 
 a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPriority_p3_u:hover img, a.ss_taskPriority_p2_u:hover img, a.ss_taskPriority_p1_u:hover img {
-	: left -21px; 
+    background-position:  left -21px; 
 }
 
 .ss_task_completed {
@@ -4691,10 +4561,16 @@ a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPri
 div.ssPageNavi {
 	margin: 0px;
 	padding-left: 15px;
+	padding-top: 2px;
+	padding-bottom: 4px;
+}
+
+div.ssPageNavi table td {
+    white-space: nowrap;
 }
 
 .ssPageNavi, .ssPageNavi table, .ssPageNavi td, .ssPageNavi div {
-	background-color: ${ss_page_nav_background_color};
+	background-color: transparent;
 }
 
 .ssPageNavi .ssVisibleEntryNumbers {
@@ -4748,8 +4624,8 @@ div.ssPageNavi {
 
 div.ss_results_pro_page {
 	position:relative;
-	top:2; 
-	margin:2px; 
+	top: 0px; 
+	margin:0px 2px; 
 	padding: 0px 2px 0px 2px;
 	border-top:solid #666666 1px; 
 	border-bottom:solid #666666 1px;  
@@ -4775,7 +4651,7 @@ div.ss_themeMenu {
   border:1px solid #333333;
   margin: 0px;
   padding: 10px 30px;
-  background-color:${ss_style_background_color};
+  background-color:${ss_style_background_color_opaque};
   text-align: left;
 }
 

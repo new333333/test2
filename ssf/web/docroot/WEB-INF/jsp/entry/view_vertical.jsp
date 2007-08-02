@@ -46,16 +46,28 @@
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_vertical.js"></script>
 
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+    <td valign="top" class="ss_view_sidebar">
+
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-	<div class="ss_clear"></div>
 
-	<div class="ss_tab_canvas">
-		<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-		<div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+	<% // Folder Sidebar %>
+
+    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+
+    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+        initOpen="true" sticky="true">
+        Coming soon!
+	</ssf:sidebarPanel>
+
+	</td>
+	<td valign="top" class="ss_view_info">
 
 		<% // Folder toolbar %>
 		<div class="ss_content_inner">
@@ -65,10 +77,6 @@
 		<div class="ss_content_inner">
 			<% // Navigation links %>
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-			<div align="right" class="ss_folder_tags">
-				<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
-			</div>
-
 
 			<div id="ss_folder">
 				<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -123,11 +131,13 @@
 		<input type="hidden" name="entry_height">
 		</form>
 
-	</div>
-</div>
-
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+
+	</td>
+	</tr>
+	</tbody>
+	</table>
 
 </div>
 </div>

@@ -43,6 +43,11 @@
 	</c:if>
 	</script>
 
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+    <td valign="top" style="width: 200px">
+
 
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
@@ -50,6 +55,21 @@
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 	<div class="ss_clear"></div>
+
+	<!-- Saved searches -->
+	<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
+								
+	<!-- Places rating - Moved to the new file -->
+	<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
+
+	<!-- People rating - Moved to the new file -->
+	<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
+
+	<!-- Tags -->
+	<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
+
+	</td>
+	<td class="ss_view_info" valign="top">
 
 	<div id="ss_tab_data_${ss_tabs.current_tab}">
 
@@ -60,26 +80,7 @@
 		
 			<div id="ss_tab_content">
 				
-				<table width="99%" cellpadding="0" cellspacing="0">
-					<% // used table couse of IE problem with positioning of div with margin-left: -x% attribute placed in a table %>
-					<tr>
-						<td id="ss_rankings" >
-							<div>
-								<!-- Saved searches -->
-								<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
-															
-								<!-- Places rating - Moved to the new file -->
-								<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
-						
-								<!-- People rating - Moved to the new file -->
-								<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
-						
-								<!-- Tags -->
-								<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
-							</div>
-						</td>
-						
-						<td id="ss_content_container">
+						<div id="ss_content_container">
 				
 							<div class="ss_searchContainer">
 								<div id="ss_content">
@@ -99,9 +100,7 @@
 									<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
 								</div>
 							</div>
-						</td>
-					</tr>
-				</table>			
+						</div>
 			</div>
 		</div>
 		
@@ -109,6 +108,10 @@
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 			
 	</div>
+	</td>
+	</tr>
+	</tbody>
+	</table>
 </div>
 
 <script type="text/javascript">

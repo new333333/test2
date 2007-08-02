@@ -334,6 +334,8 @@ public class WebKeys {
 	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
 	public static final String OPERATION_SHOW_HELP_CPANEL = "show_help_cpanel";
 	public static final String OPERATION_HIDE_HELP_CPANEL = "hide_help_cpanel";
+	public static final String OPERATION_SHOW_SIDEBAR_PANEL = "show_sidebar_panel";
+	public static final String OPERATION_HIDE_SIDEBAR_PANEL = "hide_sidebar_panel";
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";

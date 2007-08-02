@@ -26,11 +26,11 @@
 		renderRequest.setAttribute("ss_searchFilters", searchFilters);
 	}
 %>
-<span class="ss_toolBarItemTxt"><ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
+<div class="ss_style">
+<ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
   helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
   title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
-<ul>
-	<li>
+
 		<script type="text/javascript">
 			function ss_changeUserFilter(obj, filter) {
 			<c:if test="${ssConfigJspStyle != 'template'}">
@@ -42,7 +42,7 @@
 			}
 		</script>
 	
-		<form class="ss_compact ss_actions_bar_background" 
+		<form class="ss_style" style="display: inline;"  
 		    name="ss_filterSelect" 
 			action="<portlet:actionURL windowState="maximized"><portlet:param 
 				name="action" value="${action}"/><portlet:param 
@@ -57,43 +57,17 @@
 			//	}
 			%>
 
-			<ssf:menu title="<%= filterName %>" 
-			  titleId="ss_filterTitle" 
-			  titleClass="ss_compact"
-			  menuClass="ss_actions_bar_submenu"
-			  menuImage="pics/menudown.gif">
-			  
 			  <ssf:ifnotaccessible>
-					<ul class="ss_actions_bar2 ss_actions_bar_submenu ss_actions_bar_filters" style="width:250px;">
-					<li><a href="javascript: ;" 
-					  onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
-					>--<ssf:nlt tag="none" text="none"/>--</a></li>
+					<select name="select_filter"><a href="javascript: ;" 
+					<option value="">--<ssf:nlt tag="none" text="none"/>--</option>
 					<c:forEach var="filter" items="${ss_searchFilters}">
-					<li><a href="javascript: ;" 
-					  onClick="ss_changeUserFilter(this, '<c:out value="${filter.key}"/>');return false;"
-					><c:out value="${filter.key}"/></a></li>
+					<option value="${filter.key}"><c:out value="${filter.key}"/></option>
 					</c:forEach>
-					</ul>
+					</select>					
 			  </ssf:ifnotaccessible>
-			  
-			  <ssf:ifaccessible>
-
-				<a href="javascript: ;" onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;">--<ssf:nlt tag="none" text="none"/>--</a>
-
-				<c:forEach var="filter" items="${ss_searchFilters}">
-				<a href="javascript: ;" onClick="ss_changeUserFilter(this, '<c:out value="${filter.key}"/>');return false;"><c:out value="${filter.key}"/></a>
-				</c:forEach>
-			  
-			  </ssf:ifaccessible>
-				
-			</ssf:menu>
-			
+			 			
 		
-			<input type="hidden" name="select_filter">
 		</form>
-	</li>
-	
-	<li>
 		<c:if test="${ssConfigJspStyle != 'template'}">
 		<a href="<portlet:renderURL windowState="maximized"><portlet:param 
 			name="action" value="build_filter"/><portlet:param 
@@ -104,6 +78,4 @@
 		<c:if test="${ssConfigJspStyle == 'template'}">
 		<ssf:nlt tag="Edit" text="Edit"/>
 		</c:if>
-	</li>
-
-</ul>
+</div>

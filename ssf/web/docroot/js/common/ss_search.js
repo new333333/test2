@@ -310,19 +310,6 @@ function ss_search() {
 
 
 
-// TODO find the same method somewhere in common....
-function ss_showHide(objId){
-	var obj = document.getElementById(objId);
-	if (obj && obj.style) {
-		if (obj.style.visibility == "visible") {
-			obj.style.visibility="hidden";
-			obj.style.display="none";
-		} else {
-			obj.style.visibility="visible";
-			obj.style.display="block";
-		}
-	}
-}
 
 function ss_searchToggleFolders(objId, selection) {
 	var obj = document.getElementById(objId);
@@ -364,16 +351,7 @@ function ss_showHideDetails(ind){
 	ss_showHide("summary_"+ind);
 	ss_showHide("details_"+ind);
 }
-var ss_opendBoxTooglerSrc = ss_imagesPath + "pics/flip_down16H.gif";
-var ss_closedBoxTooglerSrc = ss_imagesPath + "pics/flip_up16H.gif";
-function ss_showHideRatingBox(id, imgObj) {
-	ss_showHide(id);
-	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
-		imgObj.src=ss_closedBoxTooglerSrc;
-	} else {
-		imgObj.src=ss_opendBoxTooglerSrc;
-	}
-}
+
 
 
 function ss_fillSearchMask(id, value) { 

@@ -53,37 +53,15 @@ function ss_setPhotoIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:if
 }
 
 </script>
-<div style="margin:0px;">
-
-<div align="right" class="ssPageNavi">
-<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-	<tr>
-		<td align="left" width="55%">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-		</td>
-		<td align="right" width="20%">
-			&nbsp;
-		</td>
-	</tr>
-</table>
-</div>
 
 <div class="ss_folder_border">
-
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-
 <% // Entry toolbar %>
 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 </ssf:toolbar>
-
-</ssf:toolbar>
-
 </div>
-</div>
+<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_photo_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
 </div>
