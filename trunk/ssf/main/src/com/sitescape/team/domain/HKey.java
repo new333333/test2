@@ -20,8 +20,7 @@ import com.sitescape.util.StringUtil;
 /**
  * @author Janet McCann
  * The first 15 characters of a sortKey are the B36 encoded folderId.  For entries this provides
- * sorting by folder, which should result in better lookups.  For folders the first 15 characters 
- * represent the topFolderId
+ * sorting by folder, which should result in better lookups.  
  */
 public class HKey {
     public static final  String B10_TO_36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
