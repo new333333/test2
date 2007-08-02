@@ -574,6 +574,15 @@ public class WebKeys {
     public static final String LICENSE_CONTACT="ssLicenseContact";
     public static final String LICENSE="ssLicense";
     public static final String LICENSE_EXCEPTION="ssLicenseException";
+    
+    public static final String LICENSE_ISSUER="ssLicenseIssuer";
+    public static final String LICENSE_PRODUCT_ID="ssLicenseProductID";
+    public static final String LICENSE_PRODUCT_TITLE="ssLicenseProductTitle";
+    public static final String LICENSE_PRODUCT_VERSION="ssLicenseProductVersion";
+    public static final String LICENSE_EXTERNAL_USERS="ssLicenseExternalUsers";
+    public static final String LICENSE_OPTIONS_LIST="ssLicenseOptionsList";
+    public static final String LICENSE_EXTERNAL_ACCESS_LIST="ssLicenseExternalAccessList";
+    
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
