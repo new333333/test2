@@ -330,7 +330,7 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
  	</ssf:ifaccessible>
 
 	<textarea 
-	    class="ss_text" style="height:17px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
+	    class="ss_text" style="height:14px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
 	    name="ss_findPlaces_searchText_${prefix}" 
 	    id="ss_findPlaces_searchText_${prefix}"
 	    onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"

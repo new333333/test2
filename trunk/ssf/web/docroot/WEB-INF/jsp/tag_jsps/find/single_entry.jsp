@@ -340,7 +340,7 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
  	</ssf:ifaccessible>
 
 	<textarea 
-	    class="ss_text" style="height:17px; width:<%= findEntriesElementWidth %>; overflow:hidden;" 
+	    class="ss_text" style="height:14px; width:<%= findEntriesElementWidth %>; overflow:hidden;" 
 	    name="ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
 	    id="ss_findEntries_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	    onKeyUp="ss_findEntriesSearch_${prefix}(this.id, '<%= findEntriesElementName %>', '<%= findEntriesType %>');"

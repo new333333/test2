@@ -23,21 +23,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="operation" value="subscribe"/></portlet:actionURL>";
 </script>
 <br>
-<div style="margin:0px;">
-
-<div align="right" class="ssPageNavi">
-	<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-		<tr>
-			<td align="left" width="55%">
-				<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-			</td>
-			<td align="right" width="20%">
-				&nbsp;
-			</td>
-		</tr>
-	</table>
-</div>
-
 <div class="ss_folder_border" style="position:relative; top:2; margin:0px; padding:2px 0px; 
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
@@ -45,16 +30,13 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-
 <% // Entry toolbar %>
 <c:if test="${!empty ssEntryToolbar}">
 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </c:if>
-
 </ssf:toolbar>
-
 </div>
-</div>
+<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_guestbook_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_listing.jsp" %>
 </div>

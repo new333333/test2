@@ -45,7 +45,7 @@
   -- ACCESS CONTROL TABLE
   --
 --%><c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/><%--
---%><c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_table_background_color_background" value="inherit" scope="request"/><%--
 --%><c:set var="ss_table_background_color_head" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_table_background_color_odd_row" value="#ECECEC" scope="request"/><%--
 --%><c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/><%--
@@ -54,15 +54,16 @@
   --
   -- BACKGROUND COLORS
   --
---%><c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/><%--
---%><c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
+--%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
+--%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--
 --%><%--
   --
   -- BLOG
   --
 --%><c:set var="ss_blog_summary_title_background_color" value="#AFC8E3" scope="request"/><%--
---%><c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_blog_content_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/><%--
 --%><c:set var="ss_blog_sidebar_box_outline" value="#AFC8E3" scope="request"/><%--	
 --%><%--
@@ -117,8 +118,8 @@
   --
   --FORMS
   --
---%><c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/><%--
---%><c:set var="ss_form_component_background_color" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_form_background_color" value="inherit" scope="request"/><%--
+--%><c:set var="ss_form_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_form_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/><%--
 --%><c:set var="ss_form_text_color" value="#333333" scope="request"/><%--
@@ -153,7 +154,7 @@
   -- HELP COLORS
   --
 --%><c:set var="ss_help_spot_background_color" value="#E8EFF7" scope="request"/><%--
---%><c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/><%--
+--%><c:set var="ss_help_panel_background_color" value="transparent" scope="request"/><%--
 --%><c:set var="ss_lightBox_background_color" value="#ECECEC" scope="request"/><%--	
 --%><%--
   --
@@ -195,7 +196,7 @@
   --
   -- PORTLET COLORS
   --
---%><c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_portlet_style_background_color" value="transparent" scope="request"/><%--
 --%><c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/><%-- 
 --%><%--
@@ -211,8 +212,8 @@
 --%><c:set var="ss_sliding_table_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_sliding_table_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_sliding_table_link_hover_color" value="#AEC8E3" scope="request"/><%--
---%><c:set var="ss_sliding_table_row0_background_color" value="#FFFFFF" scope="request"/><%--
---%><c:set var="ss_sliding_table_row1_background_color" value="#AEC8E3" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row0_background_color" value="#FDFDFD" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row1_background_color" value="#E7F3F9" scope="request"/><%--
 --%><%--
   --
   -- TAG
@@ -237,12 +238,12 @@
 --%><c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/><%--
 --%><c:set var="ss_toolbar_inactive" value="#999999" scope="request"/><%--
     
---%><c:set var="ss_toolbar1_background_color" value="#DEE7C6" scope="request"/><%--
+--%><c:set var="ss_toolbar1_background_color" value="#AFC8E3" scope="request"/><%--
 --%><c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
---%><c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/><%--
---%><c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/><%--
---%><c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/><%--
+--%><c:set var="ss_toolbar1_border_color" value="#33CC66" scope="request"/><%--
+--%><c:set var="ss_toolbar1_dropdown_menu_color" value="#AFC8E3" scope="request"/><%--
+--%><c:set var="ss_toolbar1_inactive" value="#AFC8E3" scope="request"/><%--
 
 --%><c:set var="ss_toolbar2_background_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/><%--

@@ -147,7 +147,7 @@ function ss_findUserNextPage() {
  	</ssf:ifaccessible>
 
 	<textarea 
-	    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
+	    class="ss_text" style="height:14px; width:<%= findUserElementWidth %>; overflow:hidden;" 
 	    name="ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
 	    id="ss_findUser_searchText_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
 	    onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findPlacesType %>');"

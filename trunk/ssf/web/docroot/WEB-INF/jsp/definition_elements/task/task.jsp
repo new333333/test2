@@ -24,7 +24,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </script>
 
-<div style="margin:0px;">
 
 <!-- STATISTIC -->
 <table class="ss_statisticTable"><tr>
@@ -48,37 +47,17 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </tr></table>
 <!-- STATISTIC-END -->
 
-<div align="right" class="ssPageNavi">
-	<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-		<tr>
-			<td align="left" width="55%">
-				<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-			</td>
-			<td align="right" width="20%">
-				&nbsp;
-			</td>
-		</tr>
-	</table>
-</div>
 
 <div class="ss_folder_border">
-
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-
 <% // Entry toolbar %>
 <c:if test="${!empty ssEntryToolbar}">
 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </c:if>
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 </ssf:toolbar>
-
-</ssf:toolbar>
-
 </div>
-</div>
+<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_task_folder_div">
 
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>

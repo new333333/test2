@@ -1089,6 +1089,39 @@
 	</tag>
 	
 	<tag>
+		<name>sidebarPanel</name>
+		<tag-class>com.sitescape.team.taglib.SidebarPanelTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>title</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>divClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>initOpen</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>sticky</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+	</tag>
+	
+	<tag>
 		<name>skipLink</name>
 		<tag-class>com.sitescape.team.taglib.SkipLinkTag</tag-class>
 		<body-content>JSP</body-content>

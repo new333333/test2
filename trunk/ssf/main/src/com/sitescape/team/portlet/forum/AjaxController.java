@@ -145,6 +145,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) {
 				ajaxShowHideHelpControlPanel(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
+					op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) {
+				ajaxShowHideSidebarPanel(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_UI_THEME)) {
 				ajaxSetUiTheme(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
@@ -743,6 +746,21 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) showHelpCPanel = Boolean.FALSE;
 		getProfileModule().setUserProperty(user.getId(), 
 					ObjectKeys.USER_PROPERTY_HELP_CPANEL_SHOW, showHelpCPanel);
+	}
+
+
+	private void ajaxShowHideSidebarPanel(ActionRequest request,
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String panelId = PortletRequestUtils.getStringParameter(request, "id", "");
+		if (panelId.length() > 50) {
+			panelId = panelId.substring(0,50);
+		} 
+		Boolean showPanel = Boolean.TRUE;
+		if (op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) showPanel = Boolean.FALSE;
+		getProfileModule().setUserProperty(user.getId(), 
+					ObjectKeys.USER_PROPERTY_SIDEBAR_PANEL_PREFIX + panelId, showPanel);
 	}
 
 	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
@@ -1814,6 +1832,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/help_panel", model);
 	}
 
+	
+	
 	private ModelAndView ajaxAddTab(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Tabs tabs = new Tabs(request);

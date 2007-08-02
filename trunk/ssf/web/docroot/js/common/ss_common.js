@@ -529,6 +529,59 @@ function ss_checkIfParentDivHidden(divId) {
     return false;
 }
 
+// TODO find the same method somewhere in common....
+function ss_showHide(objId){
+	var obj = document.getElementById(objId);
+	if (obj && obj.style) {
+		if (obj.style.visibility == "visible") {
+			obj.style.visibility="hidden";
+			obj.style.display="none";
+		} else {
+			obj.style.visibility="visible";
+			obj.style.display="block";
+		}
+	}
+}
+
+var ss_opendBoxTogglerSrc = ss_imagesPath + "pics/flip_down16H.gif";
+var ss_closedBoxTogglerSrc = ss_imagesPath + "pics/flip_up16H.gif";
+function ss_showHideRatingBox(id, imgObj) {
+	ss_showHide(id);
+	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
+		imgObj.src=ss_closedBoxTogglerSrc;
+	} else {
+		imgObj.src=ss_opendBoxTogglerSrc;
+	}
+}
+function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
+	var recordUrl;
+	ss_showHide(divId);
+	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
+		imgObj.src=ss_closedBoxTogglerSrc;
+		recordUrl = ss_hideSidebarPanelUrl
+	} else {
+		imgObj.src=ss_opendBoxTogglerSrc;
+		recordUrl = ss_showSidebarPanelUrl
+	}
+	if (sticky) {
+		recordUrl += "&id=" + id;
+		var bindArgs = {
+	    	url: recordUrl,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+			},
+			preventCache: true,				
+			mimetype: "text/xml",
+			method: "get"
+		};   
+		dojo.io.bind(bindArgs);
+	}
+}
+
+
+
 //Routine to set the opacity of a div
 //  (Note: this may not work if "width" is not explicitly set on the div)
 function ss_setOpacity(obj, opacity) {

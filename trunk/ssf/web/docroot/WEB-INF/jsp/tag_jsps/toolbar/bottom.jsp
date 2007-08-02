@@ -36,7 +36,6 @@
 </c:if>
 <c:if test="${!ss_toolbar_item}">
 </ul>
-<div class="ss_clear"></div>
 <!-- End of toolbar -->
 
 </c:if>

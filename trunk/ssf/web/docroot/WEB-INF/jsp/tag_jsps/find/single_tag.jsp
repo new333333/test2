@@ -45,7 +45,7 @@
  	</ssf:ifaccessible>
  	
 	<textarea 
-	    class="ss_text" style="height:17px; width:<%= findTagElementWidth %>; overflow:hidden;" 
+	    class="ss_text" style="height:14px; width:<%= findTagElementWidth %>; overflow:hidden;" 
 	    name="<%= findTagElementName %>" 
 	    id="ss_findTag_searchText_${prefix}"
 	    onKeyUp="ss_findTagSearch('${prefix}', this.id, '<%= findTagElementName %>', '<%= findTagType %>');"

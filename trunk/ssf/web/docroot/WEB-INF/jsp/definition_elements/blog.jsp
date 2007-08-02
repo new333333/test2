@@ -118,37 +118,16 @@ function ss_hideBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:i
 }
 </script>
 
-<div style="margin:0px;">
-
-<div align="left" class="ssPageNavi">
-<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-	<tr>
-		<td align="left" width="55%">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-		</td>
-		<td align="right" width="10px">
-			&nbsp;
-		</td>
-	</tr>
-</table>
-</div>
 
 <div class="ss_folder_border" style="position:relative; margin:0px; padding:2px 0px;">
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-
-<% // Entry toolbar %>
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+ <% // Entry toolbar %>
+ <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </ssf:toolbar>
-
-</ssf:toolbar>
-
 </div>
-</div>
+<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_blog_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>

@@ -35,43 +35,16 @@
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
 <div class="ss_folder">
-<br />
 
-<div style="margin:0px;">
-
-<div align="right" class="ssPageNavi">
-    
-<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-
-	<tr>
-		<td align="left" width="55%">
-			<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-		</td>
-
-		<td align="right" width="20%">&nbsp;
-		</td>
-	</tr>
-</table>
-
-</div>
 
 <div class="ss_folder_border">
-  
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar" >
-
 	<c:if test="${!empty ssEntryToolbar}">
 		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 	</c:if>
-
-	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
-		<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-	</ssf:toolbar>
 </ssf:toolbar>
-
-
-
 </div>
-</div>
+<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 

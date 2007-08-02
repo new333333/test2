@@ -40,6 +40,7 @@
 <% //ACCESS CONTROL TABLE %>
 	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
 	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
+    <c:set var="ss_table_background_color_background" value="inherit" scope="request"/>
 	<c:set var="ss_table_background_color_head" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_table_background_color_odd_row" value="#ECECEC" scope="request"/>
 	<c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
@@ -47,6 +48,7 @@
 	
 <% //BACKGROUND COLORS %>
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
+    <c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	

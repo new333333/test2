@@ -39,7 +39,7 @@
  	</ssf:ifaccessible>
 
 	<textarea 
-	    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
+	    class="ss_text" style="height:14px; width:<%= findUserElementWidth %>; overflow:hidden;" 
 	    name="<%= findUserElementName %>" 
 	    id="ss_findUser_searchText_${prefix}"
 	    onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"

@@ -33,21 +33,11 @@ if (displayStyle == null || displayStyle.equals("")) {
     class="ss_content_window" 
   </c:if>
 >
-<table cellspacing="0" cellpadding="0">
-<col width="8"/>
-<col width="100%"/>
-<col width="8"/>
+<table width="100%" cellspacing="0" cellpadding="0">
+
 <tr>
-<td valign="top"><div
-  <c:if test="${hideDashboardControls}">
-	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
-    style="visibility:hidden; display:none;"
-    <c:set var="ss_dashboard_control_count" scope="request" 
-       value="${ss_dashboard_control_count + 1}"/>
-  </c:if>
-><img border="0" <ssf:alt/> src="<html:imagesPath/>roundcorners3/corner1.jpg"></div></td>
 <td valign="top" class="ss_dashboard_dragHandle">
-  <div class="ss_title_bar"
+  <div class="ss_base_title_bar"
   <c:if test="${hideDashboardControls}">
 	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
@@ -116,31 +106,8 @@ if (displayStyle == null || displayStyle.equals("")) {
 	<strong>${ssDashboard.dashboard.components[ssComponentId].title}&nbsp;</strong>
   </div>
 </td>
-<td valign="top"><div
-  <c:if test="${hideDashboardControls}">
-	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
-    style="visibility:hidden; display:none;"
-    <c:set var="ss_dashboard_control_count" scope="request" 
-       value="${ss_dashboard_control_count + 1}"/>
-  </c:if>
-><img border="0" <ssf:alt/> src="<html:imagesPath/>roundcorners3/corner2.jpg"></div></td>
 </tr>
 <tr>
-<c:if test="${hideDashboardControls}">
-<script type="text/javascript">
-	<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border7';
-</script>
-</c:if>
-<td 
-  <c:if test="${hideDashboardControls}">
-    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_${ss_dashboard_border_count}"
-    <c:set var="ss_dashboard_border_count" scope="request" 
-      value="${ss_dashboard_border_count + 1}"/>
-  </c:if>
-  <c:if test="${!hideDashboardControls}">
-    class="ss_decor-border7"
-  </c:if>
-></td>
 <td>
 	<div 
       <c:if test="${hideDashboardControls}">
@@ -170,31 +137,6 @@ if (displayStyle == null || displayStyle.equals("")) {
     	</div>
 	</div>
 </td>
-<c:if test="${hideDashboardControls}">
-<script type="text/javascript">
-	<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border8';
-</script>
-</c:if>
-<td 
-  <c:if test="${hideDashboardControls}">
-    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_${ss_dashboard_border_count}"
-    <c:set var="ss_dashboard_border_count" scope="request" 
-       value="${ss_dashboard_border_count + 1}"/>
-  </c:if>
-  <c:if test="${!hideDashboardControls}">
-    class="ss_decor-border8"
-  </c:if>
-></td>
-</tr>
-<tr>
-<td colspan="3"><div class="ss_decor-round-corners-bottom3"
-  <c:if test="${hideDashboardControls}">
-	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
-    style="visibility:hidden; display:none;"
-    <c:set var="ss_dashboard_control_count" scope="request" 
-       value="${ss_dashboard_control_count + 1}"/>
-  </c:if>
-><div><div></div></div></div></td>
 </tr>
 </table>
 </div>

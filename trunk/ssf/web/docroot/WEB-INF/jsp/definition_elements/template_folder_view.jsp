@@ -57,20 +57,20 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 </script>
 <div id="ss_folder_table_parent" class="ss_folder">
 
-<div style="margin:0px;">
+<div class="ss_folder_border">
+<% // Add the toolbar with the navigation widgets, commands and filter %>
+<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+<% // Entry toolbar %>
+<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+</ssf:toolbar>
+</div>
 
-<div align="right" class="ssPageNavi">
-    
-<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
-
-	<tr>
-		<td align="left" width="55%">
-		
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-
-		</td>
-
-<td align="right" width="20%">
+<div align="left" class="ssPageNavi">
+ <table border="0" cellspacing="0px" cellpadding="0px">
+  <tr>
+	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
+    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
+    <td align="right" width="20%">
 <ssf:ifAccessAllowed  binder="${ssBinder}" operation="setProperty">
 		  <a href="<ssf:url
 			adapter="true" 
@@ -84,27 +84,12 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 		    <span class="ss_muted_label_small"><ssf:nlt tag="misc.configureColumns"/></span></a>
 </ssf:ifAccessAllowed>
 		</td>
-	</tr>
-</table>
-
+  </tr>
+ </table>
 </div>
-<div class="ss_folder_border">
-
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
 
 
-<% // Entry toolbar %>
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-</ssf:toolbar>
-
-</ssf:toolbar>
-
-</div>
-</div>
 <ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 
