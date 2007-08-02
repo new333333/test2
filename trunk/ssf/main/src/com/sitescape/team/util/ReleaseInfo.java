@@ -16,24 +16,24 @@ import java.util.Date;
 
 public class ReleaseInfo {
 
-	static String title = "SiteScape Team Workspace";
+	static String title = "ICEcore";
 	static String version;
 	static String buildNumber,buildDate;
 	
 	static {
-		if(SPropsUtil.getString("release.type").equals("plus"))
-			title += " Plus"; // Enterprise/Premium
+		if(SPropsUtil.getString("release.type").equalsIgnoreCase("enterprise"))
+			title += " Enterprise"; // Enterprise/Premium
 		else
-			title += " Core"; // Open Source version
+			title += ""; // Open Source version
 			
-		version = SPropsUtil.getString("release.version", "0.0.0");
+		version = SPropsUtil.getString("release.version", "0");
 		
 		buildNumber = SPropsUtil.getString("release.build.number", "0");
 		buildDate = SPropsUtil.getString("release.build.date", "");
 	}
 	
 	static final String releaseInfo = 
-		title + " " + version + " ( Build " + buildNumber + " / " + buildDate + ")";
+		title + " " + version + " (Build " + buildNumber + " / " + buildDate + ")";
 	
 	/**
 	 * Returns version number if official release or <code>0.0.0</code> if unofficial.
