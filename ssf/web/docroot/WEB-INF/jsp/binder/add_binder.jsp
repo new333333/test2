@@ -52,6 +52,10 @@ function ss_enableDisableFolderOptions(bindersCount) {
 <br/>
 
 <form class="ss_style ss_form" 
+  action="<portlet:actionURL><portlet:param 
+  		name="action" value="add_binder"/><portlet:param 
+  		name="binderId" value="${ssBinder.id}"/><portlet:param 
+  		name="operation" value="${ssOperation}"/></portlet:actionURL>"
   name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
   id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
   method="post" onSubmit="return ss_onSubmit(this);">
