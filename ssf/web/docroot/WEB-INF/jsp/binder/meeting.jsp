@@ -65,12 +65,12 @@
 		
 			<div>
 				<span>
-				<a class="ss_linkButton ss_bold ss_smallprint" href="#"
+				<a class="ss_linkButton ss_bold ss_smallprint" href="javascript:;"
 				  onClick="ss_startMeeting(ss_ostatus_start_meeting_url, 'startMeetingForm', this.parentNode);"
 				><ssf:nlt tag="meeting.start"/></a></span>
 
 				<span>
-				<a class="ss_linkButton ss_bold ss_smallprint" href="#"
+				<a class="ss_linkButton ss_bold ss_smallprint" href="javascript:;"
 				  onClick="ss_startMeeting(ss_ostatus_schedule_meeting_url, 'startMeetingForm', this.parentNode);"
 				><ssf:nlt tag="meeting.schedule"/></a></span>				
 			</div>

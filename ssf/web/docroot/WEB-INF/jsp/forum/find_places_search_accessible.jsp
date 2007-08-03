@@ -35,13 +35,13 @@
       <tr>
       <td width="150" nowrap="nowrap" style="white-space:nowrap;">
         <c:if test="${ss_pageNumber > 0}">
-          <a href="#" onClick="parent.ss_findPlacesPrevPage${ss_namespace}();return false;"
+          <a href="javascript:;" onClick="parent.ss_findPlacesPrevPage${ss_namespace}();return false;"
           ><ssf:nlt tag="general.Previous"/>...</a>
         </c:if>
         </td>
        <td nowrap="nowrap" style="white-space:nowrap;">
         <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-          <a href="#" onClick="parent.ss_findPlacesNextPage${ss_namespace}();return false;"
+          <a href="javascript:;" onClick="parent.ss_findPlacesNextPage${ss_namespace}();return false;"
           ><ssf:nlt tag="general.Next"/>...</a>
         </c:if>
        </td>

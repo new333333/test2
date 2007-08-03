@@ -358,7 +358,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <div id="ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
-    <a href="#" onClick="ss_hideDiv('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
@@ -384,7 +384,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <div id="ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
-    <a href="#" onClick="ss_hideDiv('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
@@ -402,7 +402,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <div id="ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
-    <a href="#" onClick="ss_hideDiv('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
@@ -424,7 +424,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 	<div id="ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_actions_bar2 ss_actions_bar_submenu" >
 		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
 		  <div align="right">
-		    <a href="#" onClick="ss_hideDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
 		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
 		    </a>
 		  </div>
@@ -495,7 +495,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
   style="position:absolute; display:none; width:300px; border:1px solid #000000; 
   margin-bottom:10px; padding:4px; background-color:#ffffff;">
   <div align="right">
-    <a href="#" onClick="ss_hideDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_operations${function.id}');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_operations${function.id}');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>

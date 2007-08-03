@@ -145,7 +145,7 @@
 	</c:if>
 </div>
 <div id="ss_filterSummary_switch">
-	<a href="#" class="ss_button" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');"><ssf:nlt tag="searchForm.advanced.showMyForm"/></a>
+	<a href="javascript:;" class="ss_button" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');"><ssf:nlt tag="searchForm.advanced.showMyForm"/></a>
 </div>
 <div class="ss_clear">
 </div>

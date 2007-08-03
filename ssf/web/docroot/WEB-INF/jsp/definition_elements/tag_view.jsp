@@ -164,7 +164,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
     <!-- input type="text" class="ss_text" name="personalTag" / -->
 <ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
     </td><td>
-      <a class="ss_linkButton" href="#" 
+      <a class="ss_linkButton" href="javascript:;" 
         onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
         <ssf:title tag="title.add.personal.tags" />
       ><ssf:nlt tag="button.add"/></a>
@@ -193,7 +193,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
     </td><td style="padding-left:4px;">
     
     <ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">  
-    <a class="ss_linkButton" href="#" 
+    <a class="ss_linkButton" href="javascript:;" 
       onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
       <ssf:title tag="title.add.community.tags" />
     ><ssf:nlt tag="button.add"/></a>
@@ -207,7 +207,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 
 <tr><td>
   <table class="ss_tag_pane_color" colspan="2"><tbody><tr><td>
-    <a class="ss_linkButton" href="#" title="<ssf:nlt tag="title.closeMenu" />"
+    <a class="ss_linkButton" href="javascript:;" title="<ssf:nlt tag="title.closeMenu" />"
       onClick="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
     ><ssf:nlt tag="button.close"/></a>
     </td></tr>

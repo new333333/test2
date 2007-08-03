@@ -64,7 +64,7 @@
 			</table>
 		</td>
 		<td align="right" width="30" valign="top">
-		<a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
+		<a href="javascript:;" onClick="ss_helpSystem.run();return false;"><img border="0" 
   		  src="<html:imagesPath/>icons/help.png" 
   		  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
 		</td>
