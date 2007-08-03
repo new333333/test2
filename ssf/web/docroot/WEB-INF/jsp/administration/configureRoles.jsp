@@ -43,7 +43,7 @@
 	name="action" value="configure_roles"/></portlet:actionURL>">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
-	<input type="text" class="ss_text" size="70" name="roleName"><br>
+	<input type="text" class="ss_text" size="70" name="roleName" maxlength="64"><br>
 		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<input type="checkbox" name="<c:out value="${operation.value}"/>">
