@@ -244,39 +244,53 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 
 <ssf:ifnotadapter>
 <div id="ss_portlet_content" class="ss_style ss_portlet">
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-<div class="ss_clear"></div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+    <td valign="top" class="ss_view_sidebar">
 
-<div class="ss_tab_canvas">
-<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-   <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+	<% // Navigation bar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
+	<% // Tabs %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+
+	<% // Folder Sidebar %>
+
+    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+
+
+    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+        initOpen="true" sticky="true">
+        Coming soon!
+	</ssf:sidebarPanel>
+
+	</td>
+	<td valign="top" class="ss_view_info">
+	    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 </ssf:ifnotadapter>
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}"
-  processThisItem="true" 
-  entry="${ssEntry}" />
+
+			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+			  configElement="${ssConfigElement}" 
+			  configJspStyle="${ssConfigJspStyle}"
+			  processThisItem="true" 
+			  entry="${ssEntry}" />
 
 <ssf:ifnotadapter>
-	</div>
+		
+		</div>
+		<% // Footer toolbar %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	</td>
+	</tr>
+	</tbody>
+	</table>
 </div>
 
 </ssf:ifnotadapter>
 
-<% // Footer toolbar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-
-<ssf:ifnotadapter>
-</div>
-</div>
-</div>
-</ssf:ifnotadapter>
 
 <%
 	//See if this is the Popup view
