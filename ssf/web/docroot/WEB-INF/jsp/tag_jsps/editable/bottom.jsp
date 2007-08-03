@@ -29,6 +29,8 @@
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%><c:if test="${aclMap[entity.id]['modifyEntry']}"><%--
 	--%><div class="ss_editableTab"><a href="javascript:;"<%--
+    --%> onMouseOver="ss_editableHighlight('over', this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
+    --%> onMouseOut="ss_editableHighlight('out', this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> onClick="ss_editablePopUp('${editUrl}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> <ssf:title tag="title.edit.description" /><%--
     --%>><span class="ss_fineprint"><%--
@@ -39,7 +41,7 @@
 	--%> title="<ssf:nlt tag="helpSpot.moreEntryTools"/>"></ssHelpSpot><%--
 	--%>[<ssf:nlt tag="Edit"/>]</span></a><%--
 	--%></div><%--
-	--%><c:set var="ss_editableDivIdNumber" value="${ss_editableDivIdNumber + 1}" scope="request"/><%--
 --%></c:if><%--
+--%><c:set var="ss_editableDivIdNumber" value="${ss_editableDivIdNumber + 1}" scope="request"/><%--
 --%></div><%--
 --%><div class="ss_clear"></div>

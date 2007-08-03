@@ -4959,6 +4959,15 @@ function ss_editablePopUp(url, sourceDivId) {
 	self.window.open(url, '_blank', 'width='+width+',height='+height+',directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');
 }
 
+function ss_editableHighlight(overOut, obj, divId) {
+	if (overOut == 'over') {
+		dojo.byId(divId).style.border = "dashed 1px #666666";
+	} else {
+		dojo.byId(divId).style.border = "solid 1px transparent";
+	}
+}
+
+
 function ss_submitParentForm(htmlObj) {
 	if (htmlObj.submit) {
 		htmlObj.submit();
