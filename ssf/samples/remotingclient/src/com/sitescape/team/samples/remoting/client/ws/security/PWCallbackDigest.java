@@ -42,7 +42,7 @@ public class PWCallbackDigest implements CallbackHandler {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
                 String id = pc.getIdentifer();
                 //System.out.println("Identifier [" + id + "]");
-                if ("administrator".equals(id)) {
+                if ("admin".equals(id)) {
                 	String clearPassword = "test";
                 	// Set the password to a digested value of "test". 
                 	// This digest has nothing to do with the internal digest performed 

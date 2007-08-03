@@ -104,8 +104,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.deletePrincipal(binderId, principalId);
 	}
 	*/
-	public String getWorkspaceTreeAsXML(long binderId, int levels) {
-		return this.facade.getWorkspaceTreeAsXML(binderId, levels);
+	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
+		return this.facade.getWorkspaceTreeAsXML(binderId, levels, page);
 	}
 	
 	public String getTeamMembersAsXML(long binderId) {

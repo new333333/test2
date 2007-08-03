@@ -82,7 +82,7 @@ public interface Facade {
 	 *  
 	 * @return XML representation of the workspace tree
 	 */
-	public String getWorkspaceTreeAsXML(long binderId, int levels);
+	public String getWorkspaceTreeAsXML(long binderId, int levels, String page);
 	
 	/**
 	 * Returns team members for the given binder as Principal entries in XML

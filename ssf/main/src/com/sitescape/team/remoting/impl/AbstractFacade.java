@@ -417,7 +417,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 
 	}
 	
-	public String getWorkspaceTreeAsXML(long binderId, int levels) {
+	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
 		com.sitescape.team.domain.Binder binder = null;
 		
 		if(binderId == -1) {
@@ -429,11 +429,11 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Document tree;
 		String treeKey = "";
 		if (binder instanceof Workspace) {
-			tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, treeKey), levels);
+			tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, treeKey, page), levels);
 		} 
 		else {
 			//com.sitescape.team.domain.Folder topFolder = ((com.sitescape.team.domain.Folder)binder).getTopFolder();
-			tree = getFolderModule().getDomFolderTree(binder.getId(), new WsDomTreeBuilder(binder, false, this, treeKey), levels);
+			tree = getFolderModule().getDomFolderTree(binder.getId(), new WsDomTreeBuilder(binder, false, this, treeKey, page), levels);
 			
 			//if (topFolder == null) topFolder = (com.sitescape.team.domain.Folder)binder;
 			//tree = getFolderModule().getDomFolderTree(topFolder.getId(), new WsDomTreeBuilder(topFolder, false, this, treeKey));

@@ -40,7 +40,7 @@ public class PWCallbackText implements CallbackHandler {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
                 String id = pc.getIdentifer();
                 //System.out.println("Identifier [" + id + "]");
-                if ("administrator".equals(id)) {
+                if ("admin".equals(id)) {
                 	String clearPassword = "test";
                 	//System.out.println("Client: Cleartext password is [" + clearPassword + "]");
         			pc.setPassword(clearPassword);

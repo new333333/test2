@@ -46,7 +46,7 @@ public class WSClient
 
 		try {
 			if(args[0].equals("printWorkspaceTree")) {
-				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2])});
+				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("printPrincipal")) {
 				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("printFolderEntries")) {
@@ -106,7 +106,7 @@ public class WSClient
 	
 	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "https://localhost:8443/ssf/ws/Facade";
+		String endpoint = "http://localhost:8080/ssf/ws/Facade";
 
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
@@ -125,7 +125,7 @@ public class WSClient
 		// the username in the WS deployment descriptor client_deploy.wsdd
 		// if the username is known at deployment time and does not change
 		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "administrator");
+		call.setProperty(WSHandlerConstants.USER, "admin");
 		
 		if(filename != null) {
 			DataHandler dhSource = new DataHandler(new FileDataSource(new File(filename)));
@@ -178,7 +178,7 @@ public class WSClient
 
 	private static void printUsage() {
 		System.out.println("Usage:");
-		System.out.println("printWorkspaceTree <workspace id> <depth>");
+		System.out.println("printWorkspaceTree <workspace id> <depth> [<page>]");
 		System.out.println("printPrincipal <binder id> <principal id>");
 		System.out.println("addFolder <parent binder id> <binder config id> <title>");
 		System.out.println("printFolderEntries <folder id>");
