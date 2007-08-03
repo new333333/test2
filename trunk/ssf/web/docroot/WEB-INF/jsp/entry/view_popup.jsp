@@ -27,7 +27,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="ss_view_info">
+    <td valign="top" class="ss_view_sidebar">
 
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
@@ -46,7 +46,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 	</ssf:sidebarPanel>
 
 	</td>
-	<td valign="top" class="ss_view_sidebar">
+	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
  			<% // Folder toolbar %>
   	      	<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
