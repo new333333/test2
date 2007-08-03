@@ -96,7 +96,11 @@ function ss_positionEntryDiv() {
     ss_setObjectWidth(wObj2, ss_entryWindowWidth);
     //ss_setObjectWidth(wObj3, ss_entryWindowWidth);
     
-    wObj1.style.background = ss_entryBackgroundColor;
+    //Trying to set the property to "inherit" or something that is not a actual color values
+    //causes JS to fail on IE so we are setting the background to a empty value, for the 
+    //parent property to be inherited by the child.
+    //wObj1.style.background = ss_entryBackgroundColor;
+    wObj1.style.background = "";
     wObj1.style.visibility = "visible";
 
     //Allow the entry section to grow to as large as needed to show the entry
