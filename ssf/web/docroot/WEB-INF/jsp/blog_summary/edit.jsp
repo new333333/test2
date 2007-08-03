@@ -15,7 +15,7 @@
 <c:set var="ss_dashboard_config_form_name" value="<%= renderResponse.getNamespace() + "searchfm" %>"/>
 
 <form method="post" class="ss_style ss_form"  name="${ss_dashboard_config_form_name}" id="${ss_dashboard_config_form_name}"
-	action="<portlet:actionURL/>"  onSubmit="return ss_onSubmit(this);">
+	action="<portlet:actionURL windowState="maximized"/>"  onSubmit="return ss_onSubmit(this);">
 
 <input type="hidden" name="componentName" value="blog"/>
 <%@ include file="/WEB-INF/jsp/dashboard/blog_config.jsp" %>

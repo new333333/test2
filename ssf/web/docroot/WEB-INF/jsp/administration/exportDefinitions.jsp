@@ -16,7 +16,7 @@
 
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style ss_form" action="<portlet:actionURL><portlet:param 
+<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="export_definition"/></portlet:actionURL>" 
 	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 

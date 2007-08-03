@@ -24,6 +24,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -69,6 +70,7 @@ import com.sitescape.util.Validator;
 public class WorkspaceTreeController extends SAbstractController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+		response.setWindowState(request.getWindowState());
         User user = RequestContextHolder.getRequestContext().getUser();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
@@ -83,7 +85,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
  		Map<String,Object> model = new HashMap<String,Object>();
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		if (request.getWindowState().equals(WindowState.NORMAL)) 
+			return BinderHelper.CommonPortletDispatch(this, request, response);
+
+		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 			
 		User user = RequestContextHolder.getRequestContext().getUser();
 		BinderHelper.setBinderPermaLink(this, request, response);

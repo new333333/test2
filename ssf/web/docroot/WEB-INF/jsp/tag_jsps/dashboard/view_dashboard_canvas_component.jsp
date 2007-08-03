@@ -49,7 +49,7 @@ if (displayStyle == null || displayStyle.equals("")) {
  <c:if test="${!empty ssBinder}">
     <form 
       method="post" 
-  	  action="<portlet:actionURL><portlet:param 
+  	  action="<portlet:actionURL windowState="maximized"><portlet:param 
   		name="action" value="modify_dashboard"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
      <c:set var="myId" value="binderId=${ssBinder.id}"/> 
@@ -57,7 +57,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <c:if test="${empty ssBinder}">
     <form 
       method="post" 
-  	  action="<portlet:actionURL><portlet:param 
+  	  action="<portlet:actionURL windowState="maximized"><portlet:param 
   	  	name="action" value="modify_dashboard_portlet"/><portlet:param 
   	  	name="dashboardId" value="${ssDashboardId}"/></portlet:actionURL>">
      <c:set var="myId" value="dashboardId=${ssDashboardId}"/> 

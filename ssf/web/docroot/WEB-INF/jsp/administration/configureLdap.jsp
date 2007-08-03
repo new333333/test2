@@ -20,7 +20,7 @@
 </c:if>
 
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
   name="action" value="configure_ldap"/></portlet:actionURL>">
 <div class="ss_buttonBarRight">
 <br/>

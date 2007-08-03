@@ -18,6 +18,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -37,10 +38,14 @@ public class ViewEntryController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
+		response.setWindowState(request.getWindowState());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
+		if (request.getWindowState().equals(WindowState.NORMAL)) 
+			return BinderHelper.CommonPortletDispatch(this, request, response);
+		
 		Map model = new HashMap();	
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				

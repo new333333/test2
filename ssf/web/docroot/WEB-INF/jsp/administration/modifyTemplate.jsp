@@ -31,7 +31,7 @@
 </c:if>
 
 <c:if test="${ssOperation == 'modify_template'}">
-<form method="post" action="<portlet:actionURL><portlet:param 
+<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="modify_template"/><portlet:param 
 		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
@@ -88,7 +88,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
     id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-    action="<portlet:actionURL><portlet:param 
+    action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="add"/></portlet:actionURL>" >
 <input type="hidden" name="cfgType" value="-1"/>
@@ -119,7 +119,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </c:if>
 <c:if test="${cfgType == '-2'}">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL><portlet:param 
+		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="configure_configuration"/><portlet:param 
 		  name="operation" value="add"/></portlet:actionURL>" 
 		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
@@ -165,7 +165,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	return true;
 }
 </script>
-<form method="post" action="<portlet:actionURL><portlet:param 
+<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="add"/></portlet:actionURL>" 
 		>

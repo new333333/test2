@@ -21,7 +21,10 @@ String wsTreeName = renderResponse.getNamespace();
 <c:out value="${ssBinder.title}" />
 <br/>
 </c:if>
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+<form class="ss_style ss_form" 
+ action="<portlet:actionURL windowState="maximized"/>" 
+ method="post" 
+ name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <br/>
 <span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>

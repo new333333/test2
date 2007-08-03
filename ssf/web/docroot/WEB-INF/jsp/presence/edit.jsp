@@ -23,7 +23,7 @@
     text="Buddies"/></legend>
  <form class="ss_style" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
   	name="action" value="configure"/></portlet:actionURL>">
 
 <%

@@ -21,7 +21,7 @@
 
 <div class="ss_form">
 <form class="ss_form" method="post" 
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
   	name="action" value="modify_dashboard"/><portlet:param 
   	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
   	name="${ssSearchFormForm}" id="${ssSearchFormForm}">
@@ -41,7 +41,7 @@
 <c:set var="ss_dashboard_config_form_name" value="${renderResponse.namespace}form1" scope="request"/>
 <form method="post" name="${ss_dashboard_config_form_name}" 
   id="${ss_dashboard_config_form_name}" 
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
   	name="action" value="modify_dashboard"/><portlet:param 
   	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>"
   onSubmit="return ss_onSubmit(this);">

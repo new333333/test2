@@ -12,7 +12,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL><portlet:param 
+		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="import_profiles"/><portlet:param 
 		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
 		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">

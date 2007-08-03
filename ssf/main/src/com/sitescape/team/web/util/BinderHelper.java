@@ -19,9 +19,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -32,11 +36,14 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -48,10 +55,12 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.AccessControlException;
@@ -71,6 +80,170 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.Validator;
 public class BinderHelper {
+	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
+	public static final String FORUM_PORTLET="ss_forum";
+	public static final String GALLERY_PORTLET="ss_gallery";
+	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
+	public static final String TASK_SUMMARY_PORTLET="ss_task";
+	public static final String PRESENCE_PORTLET="ss_presence";
+	public static final String SEARCH_PORTLET="ss_search";
+	public static final String TOOLBAR_PORTLET="ss_toolbar";
+	public static final String WIKI_PORTLET="ss_wiki";
+	public static final String WORKSPACE_PORTLET="ss_workspacetree";
+
+	static public ModelAndView CommonPortletDispatch(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) {
+ 		Map<String,Object> model = new HashMap<String,Object>();
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			//Signal that this is the initialization step
+			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
+			
+			PortletURL url;
+			//need action URL to set initialized flag in preferences
+			url = response.createActionURL();
+			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
+		}
+		
+		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
+		if (Validator.isNull(displayType)) {
+			displayType = getDisplayType(request);
+		}
+			
+        User user = RequestContextHolder.getRequestContext().getUser();
+		BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
+
+		if (FORUM_PORTLET.equals(displayType)) {
+		
+			//This is the portlet view; get the configured list of folders to show
+			String[] preferredBinderIds = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+
+			//Build the jsp bean (sorted by folder title)
+			List<Long> binderIds = new ArrayList<Long>();
+			for (int i = 0; i < preferredBinderIds.length; i++) {
+				binderIds.add(new Long(preferredBinderIds[i]));
+			}
+			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
+			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			return new ModelAndView(WebKeys.VIEW_FORUM, model);
+		} else if (WORKSPACE_PORTLET.equals(displayType)) {
+			String id = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
+			Workspace binder;
+			try {
+				binder = bs.getWorkspaceModule().getWorkspace(Long.valueOf(id));
+			} catch (Exception ex) {
+				binder = bs.getWorkspaceModule().getWorkspace();				
+			}
+			Document wsTree;
+			//when at the top, don't expand
+			if (request.getWindowState().equals(WindowState.NORMAL)) {
+				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 0);
+			} else {
+				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
+			}
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
+				
+		    return new ModelAndView("workspacetree/view", model);
+		    
+		} else if (PRESENCE_PORTLET.equals(displayType)) {
+ 			Set ids = new HashSet();		
+ 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
+ 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			if (ids.isEmpty()) {
+ 				//Initialize an empty presence list to have the current user as a buddy so there is always something to show
+ 				ids.add(user.getId());
+ 			}
+ 			//This is the portlet view; get the configured list of principals to show
+ 			SortedSet users = bs.getProfileModule().getUsersFromPrincipals(ids);
+ 			model.put(WebKeys.USERS, users);
+ 			String strUsers = bs.getProfileModule().getUserIds(users, LongIdUtil.DEFAULT_SEPARATOR);
+ 			//if we list groups, then we have issues when a user appears in multiple groups??
+ 			//how do we update the correct divs??
+ 			//so, explode the groups and just show members
+  			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+  			//model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
+  			model.put(WebKeys.USER_LIST, strUsers);
+  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
+		} else if (TOOLBAR_PORTLET.equals(displayType)) {
+			Workspace binder = bs.getWorkspaceModule().getWorkspace();
+			Document wsTree;
+			if (request.getWindowState().equals(WindowState.NORMAL)) {
+				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 1);
+			} else {
+				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
+			}
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
+ 			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
+		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
+		} else if (WIKI_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_WIKI);		
+		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_GUESTBOOK_SUMMARY);		
+		} else if (TASK_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_TASK_SUMMARY);		
+		} else if (SEARCH_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_SEARCH);		
+		} else if (GALLERY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_GALLERY);		
+		}
+
+		return null;
+	}
+	
+	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
+		String gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
+		if (gId != null) {
+			try {
+				DashboardPortlet d = (DashboardPortlet)bs.getDashboardModule().getDashboard(gId);
+				model.put(WebKeys.DASHBOARD_PORTLET, d);
+				Map userProperties = (Map) bs.getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
+				model.put(WebKeys.USER_PROPERTIES, userProperties);
+				if (request.getWindowState().equals(WindowState.MAXIMIZED))
+					model.put(WebKeys.PAGE_SIZE, "20");
+				else
+					model.put(WebKeys.PAGE_SIZE, "5");						
+				DashboardHelper.getDashboardMap(d, userProperties, model, false);
+				return new ModelAndView(view, model);		
+			} catch (NoObjectByTheIdException no) {}
+		}
+		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+		
+	}
+
+	public static String getDisplayType(PortletRequest request) {
+		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+		String pName = pConfig.getPortletName();
+		//For liferay we use instances and the name will be changed slightly
+		//That is why we check for the name with contains
+		if (pName.contains(ViewController.FORUM_PORTLET))
+			return ViewController.FORUM_PORTLET;
+		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
+			return ViewController.WORKSPACE_PORTLET;
+		else if (pName.contains(ViewController.PRESENCE_PORTLET))
+			return ViewController.PRESENCE_PORTLET;
+		else if (pName.contains(ViewController.BLOG_SUMMARY_PORTLET))
+			return ViewController.BLOG_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.GALLERY_PORTLET))
+			return ViewController.GALLERY_PORTLET;
+		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
+			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.TASK_SUMMARY_PORTLET))
+			return ViewController.TASK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.SEARCH_PORTLET))
+			return ViewController.SEARCH_PORTLET;
+		else if (pName.contains(ViewController.TOOLBAR_PORTLET))
+			return ViewController.TOOLBAR_PORTLET;
+		else if (pName.contains(ViewController.WIKI_PORTLET))
+			return ViewController.WIKI_PORTLET;
+		return null;
+
+	}
+
 	static public String getViewType(AllModulesInjected bs, Long binderId) {
 
 		User user = RequestContextHolder.getRequestContext().getUser();

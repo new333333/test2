@@ -21,7 +21,7 @@
 <br>
 
 <div class="ss_form">
-<form method="post" action="<portlet:actionURL><portlet:param 
+<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="modify_dashboard"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 <div class="ss_form ss_buttonBarRight">
@@ -71,7 +71,7 @@
 <span class="ss_bold"><ssf:nlt tag="dashboard.newTitle" /></span>
 <br/>
 <div class="ss_indent_medium">
-	  <form method="post" action="<portlet:actionURL><portlet:param 
+	  <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 	  	name="action" value="modify_dashboard"/><portlet:param 
 	  	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 		<input type="text" name="title" size="80"/><br/>

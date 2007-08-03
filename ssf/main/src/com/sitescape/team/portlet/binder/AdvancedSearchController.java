@@ -30,6 +30,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,9 +97,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// set form data for the render method
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
+		response.setWindowState(request.getWindowState());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		if (request.getWindowState().equals(WindowState.NORMAL)) 
+			return BinderHelper.CommonPortletDispatch(this, request, response);
+		
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
         
         // this is necessary for the breadcrumbs and places choose

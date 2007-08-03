@@ -19,6 +19,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
@@ -95,10 +96,13 @@ public class ListProfilesController extends   SAbstractController {
 			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 		}
 		response.setRenderParameters(request.getParameterMap());
-		
+		response.setWindowState(request.getWindowState());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		if (request.getWindowState().equals(WindowState.NORMAL)) 
+			return BinderHelper.CommonPortletDispatch(this, request, response);
+		
  		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		HashMap model = new HashMap();

@@ -15,7 +15,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
 <script type="text/javascript">
-var ssReportURL="<portlet:actionURL><portlet:param 
+var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="login_report"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";

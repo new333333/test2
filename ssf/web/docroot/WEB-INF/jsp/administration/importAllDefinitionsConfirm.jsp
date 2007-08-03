@@ -17,7 +17,7 @@
 <br>
 
 <form class="ss_style ss_form" method="post" 
-		  action="<portlet:actionURL><portlet:param 
+		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="import_definition"/><portlet:param 
 		  name="operation" value="reload"/></portlet:actionURL>" 
 		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">

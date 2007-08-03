@@ -41,6 +41,7 @@ import com.sitescape.team.web.tree.FolderConfigHelper;
 import com.sitescape.team.web.tree.SearchTreeHelper;
 import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -67,7 +68,7 @@ public class EditController extends SAbstractController {
 			String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
 			//	if not on form, must already be set.  
 			if (Validator.isNull(displayType)) { 
-				displayType = ViewController.getDisplayType(request);
+				displayType = BinderHelper.getDisplayType(request);
 				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 			}
 			if (ViewController.FORUM_PORTLET.equals(displayType)) {
@@ -144,7 +145,7 @@ public class EditController extends SAbstractController {
         Map model = new HashMap();
 		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
 		if (Validator.isNull(displayType)) {
-			displayType = ViewController.getDisplayType(request);
+			displayType = BinderHelper.getDisplayType(request);
 		}
 		if (ViewController.FORUM_PORTLET.equals(displayType)) {	
 	    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
