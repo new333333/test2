@@ -84,11 +84,11 @@
 		  </c:if>
 		title="${tab.title}" >
 <%
-	// Truncate long tab titles to 20 characters
-	int maxTitle = 20;
+	// Truncate long tab titles to 30 characters
+	int maxTitle = 30;
 
 	try {
-		maxTitle = SPropsUtil.getInt("tabs.max.title");
+		maxTitle = SPropsUtil.getInt("history.max.title");
 	} catch (PropertyNotFoundException e) {
 	}
 
