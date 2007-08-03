@@ -22,7 +22,7 @@
 </c:if>
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <c:if test="${ssUser.displayStyle != 'accessible'}" >
-  <a href="#" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
+  <a href="javascript:;" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
   ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
   </c:if>
@@ -51,7 +51,7 @@
 <TR>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <input type="hidden" name="roleIds" value="${function.id}"/>
-<TH class="ss_table_smheaders"><a href="#" 
+<TH class="ss_table_smheaders"><a href="javascript:;" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
 </span></a></TH>
@@ -145,7 +145,7 @@
 	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
-	    <a href="#" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
+	    <a href="javascript:;" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
 	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
@@ -159,7 +159,7 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><a href="#" 
+  <TH class="ss_table_smheaders"><a href="javascript:;" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
@@ -223,7 +223,7 @@
 	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
-	    <a href="#" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
+	    <a href="javascript:;" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
 	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
 	  </c:if>
@@ -236,7 +236,7 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><a href="#" 
+  <TH class="ss_table_smheaders"><a href="javascript:;" 
   onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
   <c:if test="${empty ssFunctionsAllowed[function.id]}">

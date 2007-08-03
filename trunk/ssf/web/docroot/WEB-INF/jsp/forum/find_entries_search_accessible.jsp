@@ -24,7 +24,7 @@
 		    <c:forEach var="entry" items="${ssEntries}">
 		      <c:set var="count" value="${count + 1}"/>
 		      <li id="<c:out value="ss_findEntries_id_${entry._docId}"/>"><a 
-		          href="#" onClick="parent.ss_findEntriesSelectItemAccessible${ss_namespace}(this.parentNode, '${entry._docId}');" 
+		          href="javascript:;" onClick="parent.ss_findEntriesSelectItemAccessible${ss_namespace}(this.parentNode, '${entry._docId}');" 
 			  	  <ssf:title tag="title.open.folderEntry">
 					<ssf:param name="value" value="${entry.title}" />
 			      </ssf:title>
@@ -37,13 +37,13 @@
 	      <tr>
 	      <td width="150" nowrap="nowrap" style="white-space:nowrap;">
             <c:if test="${ss_pageNumber > 0}">
-              <a href="#" onClick="parent.ss_findEntriesPrevPage${ss_namespace}();return false;" <ssf:title tag="title.prev.page.searchResults" />
+              <a href="javascript:;" onClick="parent.ss_findEntriesPrevPage${ss_namespace}();return false;" <ssf:title tag="title.prev.page.searchResults" />
               ><ssf:nlt tag="general.Previous"/>...</a>
             </c:if>
             </td>
            <td nowrap="nowrap" style="white-space:nowrap;">
             <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-              <a href="#" onClick="parent.ss_findEntriesNextPage${ss_namespace}();return false;" <ssf:title tag="title.next.page.searchResults" />
+              <a href="javascript:;" onClick="parent.ss_findEntriesNextPage${ss_namespace}();return false;" <ssf:title tag="title.next.page.searchResults" />
               ><ssf:nlt tag="general.Next"/>...</a>
             </c:if>
            </td>

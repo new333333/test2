@@ -52,7 +52,7 @@ function ss_setPageFormActionUrl2<ssf:ifadapter><portletadapter:namespace/></ssf
     <input type="submit" class="ss_linkButton" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
       onClick="ss_setPageFormActionUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ssAddEntryUrls[title.value]}');"/>
   </c:forEach>
-  <a href="#" style="padding-left: 10px;" class="ss_linkButton"
+  <a href="javascript:;" style="padding-left: 10px;" class="ss_linkButton"
     onClick="self.history.back();return false;"><ssf:nlt tag="button.cancel"/></a>
 </c:if>
 <c:if test="${count > 1}">
@@ -73,7 +73,7 @@ function ss_setPageFormActionUrl2<ssf:ifadapter><portletadapter:namespace/></ssf
   </td></tr></table>
   <br/>
   <br/>
-  <a href="#" style="padding-left: 10px;" class="ss_linkButton"
+  <a href="javascript:;" style="padding-left: 10px;" class="ss_linkButton"
     onClick="self.history.back();return false;"><ssf:nlt tag="button.cancel"/> </a>
 </c:if>
 </c:if>

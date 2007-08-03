@@ -10,7 +10,7 @@
 				<c:if test="${!filterDefinition}">
 					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:inlineHelp tag="ihelp.other.advanced_search" /></h4>
 				</c:if>
-				<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');" class="ss_advanced"><span id="ss_search_more_options_txt_${ssNamespace}"><ssf:nlt tag="searchForm.advanced.moreOptions"/></span></a>
+				<a href="javascript:;" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');" class="ss_advanced"><span id="ss_search_more_options_txt_${ssNamespace}"><ssf:nlt tag="searchForm.advanced.moreOptions"/></span></a>
 				<div class="ss_clear"></div>
 				<table>
 					<tr>
