@@ -391,7 +391,7 @@ div.ss_editorHints {
   font-size: ${ss_style_font_smallprint};
   }
 .ss_entryDescription {
-  padding-left: 14px;
+  padding-left: 24px;
   padding-right: 14px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -729,10 +729,10 @@ div.ss_popup_close {
   position: relative;
   background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
   background-repeat: no-repeat;
-  width: 10px;
-  height: 10px;
-  top: 7px;
-  left: 18px;
+  width: 12px;
+  height: 12px;
+  top: 6px;
+  left: 17px;
 }
 
 div.ss_popup_body {
