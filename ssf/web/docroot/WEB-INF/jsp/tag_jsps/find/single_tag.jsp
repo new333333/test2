@@ -41,7 +41,7 @@
 
 <div style="margin:0px; padding:0px;display:inline;">
 	<ssf:ifaccessible>
- 		<label for="ss_findTag_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+ 		<label for="ss_findTag_searchText_${prefix}">${label}</label>
  	</ssf:ifaccessible>
  	
 	<textarea 

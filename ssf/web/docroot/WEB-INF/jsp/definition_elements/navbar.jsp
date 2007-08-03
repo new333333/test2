@@ -102,16 +102,15 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized"
       	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
       	name="entryId" value="${ssUser.id}"/><portlet:param 
       	name="newTab" value="1"/></portlet:renderURL>"
-    ><img <ssf:alt tag="navigation.myWorkspace"/> src="<html:imagesPath/>icons/toolbar_myworkspace.gif"/></a>
-	    <div id="ss_navbarMyWorkspaceButton">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
-	    </div>
+    ><ssf:nlt tag="navigation.myWorkspace"/></a>
 	  </div>
 </ssf:ifaccessible>
+
+<ssf:ifnotaccessible>
 </td>
-
-
 <td>
+</ssf:ifnotaccessible>
+
 <!-- Favorites -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"
@@ -130,9 +129,25 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized"
     ></div>
 
 </ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<a href="javascript:;" onClick="ss_showFavoritesPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"
+	  title="<ssf:nlt tag="navigation.favorites"/>"
+    ><ssf:nlt tag="navigation.favorites"/></a>
+      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
+          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+	  </ssHelpSpot>
+    <div id="ss_navbar_favorites<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+      style="visibility:hidden;margin:0px;padding:0px;"
+    ></div>
+</ssf:ifaccessible>
+
+
+<ssf:ifnotaccessible>
 </td>
 
 <td>
+</ssf:ifnotaccessible>
+
 <!-- My Teams -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myteams" onClick="ss_placeOnScreen('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_myTeams', 'ss_navbarMyTeamsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 26, 26); ss_showMyTeams('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>','<ssf:url 
@@ -160,6 +175,8 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized"
 	<div class="ss_global_toolbar_accessible">
 	</div>
 </ssf:ifaccessible>
+
+
 </td>
 
 </tr>
@@ -262,9 +279,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <tr><td>
 <table><tbody><tr>
+<ssf:ifnotaccessible>
 <td>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span>
 </td>
+</ssf:ifnotaccessible>
 <td>
 	<!-- Find people -->
 <ssf:ifnotaccessible>
@@ -300,9 +319,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssf:ifaccessible>
 </td>
 <tr>
+<ssf:ifnotaccessible>
 <td>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span>
 </td>
+</ssf:ifnotaccessible>
 <td>
 	<!-- Find place -->
 <ssf:ifnotaccessible>
@@ -341,9 +362,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifaccessible>
 </td></tr>
-<tr><td>
+<tr>
+<ssf:ifnotaccessible>
+<td>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span>
-</td><td>
+</td>
+</ssf:ifnotaccessible>
+<td>
 		<!-- Find tag -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"

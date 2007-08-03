@@ -35,7 +35,7 @@
 <div class="ss_style_trans">
 <div style="margin:0px; padding:0px;">
 	<ssf:ifaccessible>
- 		<label for="ss_findUser_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+ 		<label for="ss_findUser_searchText_${prefix}">${label}</label>
  	</ssf:ifaccessible>
 
 	<textarea 

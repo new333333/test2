@@ -2037,7 +2037,6 @@ div.ss_global_toolbar_help {
 }
 .ss_global_toolbar_accessible {
 	margin-top: 0px;
-	padding-left: 6px;
 	background-color: transparent;
 }
 .ss_global_toolbar_accessible form {
@@ -2942,7 +2941,7 @@ div.ss_end_thumbnail_gallery {
 /* Accessible mode styles */
 .ss_treeIframeDiv {
 	position:absolute;
-	background-color:${ss_style_background_color};
+	background-color:${ss_style_background_color_opaque};
 }
 
 /* CSS document for table - author: rsmart 1.23.07 v02*/

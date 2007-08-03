@@ -21,53 +21,46 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer" style="display:block; margin:2;">
+<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer" style="display:block; margin:2px;">
 
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+ <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+ <% // Navigation bar %>
+ <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-<div class="ss_clear"></div>
+ <jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
-<div class="ss_tab_canvas">
-<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-  <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+ <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
 
-<% // Folder toolbar %>
-<div class="ss_content_inner">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
-</div>
+ <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+    initOpen="true" sticky="true">
+    Coming soon!
+ </ssf:sidebarPanel>
 
-<div class="ss_content_inner">
-<% // Navigation links %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-<br/>
-<div align="right" class="ss_folder_tags">
-<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
-</div>
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
+  <% // Folder toolbar %>
+ <div class="ss_content_inner">
+  <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
+ </div>
 
-</div>
+ <div class="ss_content_inner">
+ <% // Navigation links %>
+ <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
-<script type="text/javascript">
+ <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+     configElement="${ssConfigElement}" 
+     configJspStyle="${ssConfigJspStyle}" />
+
+ </div>
+
+ <script type="text/javascript">
 function ss_showForumEntryInIframe(url) {
     self.location.href = url;
     return false;
 }
-</script>
+ </script>
 
-	</div>
 </div>
 
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-
-</div>
-</div>
-
