@@ -11,9 +11,13 @@
 package com.sitescape.team.web.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -254,6 +258,57 @@ public class WebHelper {
 		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
 		File destFile = TempFileUtil.createTempFile(prefix);
 		file.transferTo(destFile);
+		return destFile.getName();
+	}
+	
+	/**
+	 * Returns a handle on the uploaded iCal file. This handle is guaranteed to be
+	 * valid only during the current server session. In other words, the handle
+	 * is not persistent and will be lost once the server shuts down.
+	 * It returns <code>null</code> if there is no uploaded file.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getFileHandleOnUploadedCalendarFile(ActionRequest request)
+		throws IOException {
+		Map fileMap = null;
+		if (request instanceof MultipartFileSupport)
+			fileMap = ((MultipartFileSupport) request).getFileMap();
+		if(fileMap == null || fileMap.size() == 0)
+			return null;
+		MultipartFile mpfile = (MultipartFile) fileMap.values().iterator().next();
+		String fileName = mpfile.getOriginalFilename();
+		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
+		
+		// Encode the original file name into the prefix.
+		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
+		
+		File destFile = TempFileUtil.createTempFile(prefix);
+		
+		BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
+		
+		while(breader.ready()) {
+			String line = breader.readLine();
+			
+			if(line.endsWith("=")) {
+				while(line.endsWith("=") && breader.ready()) {
+					String temp = line.substring(0, line.length() - 1);
+					bwriter.write(temp);
+					
+					line = breader.readLine();
+				}
+				bwriter.write(line);
+			}
+			else {	
+				bwriter.write(line);
+			}
+			bwriter.newLine();
+		}
+		
+		breader.close();
+		bwriter.close();
+		
 		return destFile.getName();
 	}
 	
