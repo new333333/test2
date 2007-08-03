@@ -2189,7 +2189,7 @@ div.ss_sidebar_panel {
 	background-color: ${ss_toolbar1_background_color};
     background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
     background-repeat: repeat-x;
-	color: ${ss_dashcomp_header_bar_title_color};
+	color: ${ss_panel_header_bar_title_color};
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
 	font-weight: bold;
@@ -2202,7 +2202,7 @@ div.ss_sidebar_panel {
 
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
-	color: ${ss_dashcomp_header_bar_title_color};
+	color: #333333;
 	height:16px;
 	margin:0px;
 	padding-bottom: 3px;
