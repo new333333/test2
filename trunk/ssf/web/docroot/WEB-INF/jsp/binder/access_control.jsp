@@ -266,7 +266,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_access_control"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
@@ -299,7 +299,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
   <br/><br/>
   <form class="ss_form" name="inheritanceForm" method="post" 
     onSubmit="return ss_onSubmit(this);"
-    action="<portlet:actionURL><portlet:param 
+    action="<portlet:actionURL windowState="maximized"><portlet:param 
   		name="action" value="configure_access_control"/><portlet:param 
   		name="binderType" value="${ssBinder.entityType}"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
@@ -479,7 +479,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <br/>
 
 <form class="ss_form" method="post" style="display:inline;" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_access_control"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">

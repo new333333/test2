@@ -33,7 +33,7 @@ function checkFilterForm(obj) {
 </script>
 
 <form name="filterData" id="filterData" method="post" 
-    action="<portlet:actionURL><portlet:param 
+    action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="build_filter"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/><portlet:param 
     	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 

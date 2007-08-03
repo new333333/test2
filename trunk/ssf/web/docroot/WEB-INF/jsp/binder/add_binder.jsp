@@ -52,7 +52,7 @@ function ss_enableDisableFolderOptions(bindersCount) {
 <br/>
 
 <form class="ss_style ss_form" 
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
   		name="action" value="add_binder"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/><portlet:param 
   		name="operation" value="${ssOperation}"/></portlet:actionURL>"

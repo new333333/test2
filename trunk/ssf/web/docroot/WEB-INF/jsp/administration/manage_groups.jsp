@@ -29,7 +29,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <br>
 <ssf:expandableArea title="<%= NLT.get("administration.add.group") %>">
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>" onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
 		
@@ -55,7 +55,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <br/>
 <div class="ss_indent_medium" id="ss_modifyGroups">
   <c:forEach var="group" items="${ss_groupList}">
-  	<a href="<portlet:actionURL><portlet:param 
+  	<a href="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="binderId" value="${ssBinder.id}"/><portlet:param 
 		name="entryId" value="${group._docId}"/><portlet:param 
 		name="action" value="manage_groups"/></portlet:actionURL>"
@@ -71,7 +71,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <br/>
 <br/>
 <form name="ss_groupForm" id="ss_groupForm" method="post"
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="entryId" value="${ssGroup.id}"/><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>"
@@ -126,7 +126,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <div class="ss_formBreak"/>
 
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL><portlet:param 
+		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="manage_groups"/><portlet:param 
 		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
 		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">

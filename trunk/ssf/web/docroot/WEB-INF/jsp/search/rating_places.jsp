@@ -28,7 +28,7 @@
 							</ssf:url>">${place.ssBinder.title}</a>
 			</c:when>
 			<c:otherwise>
-				<a href="<portlet:renderURL><portlet:param 
+				<a href="<portlet:renderURL windowState="maximized"><portlet:param 
 						name="action" value="view_folder_listing"/><portlet:param 
 						name="binderId" value="${place.ssBinder.id}"/><portlet:param 
 						name="binderType" value="${place.ssBinder.entityType}"/></portlet:renderURL>"

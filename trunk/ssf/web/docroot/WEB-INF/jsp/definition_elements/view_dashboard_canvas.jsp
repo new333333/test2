@@ -234,7 +234,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig}">
   <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
-    <form method="post" action="<portlet:actionURL><portlet:param 
+    <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 	  <div style="margin:10px;">
@@ -266,7 +266,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
   </c:if>
   <c:if test="${!empty ssBinderConfig}">
   <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
-    <form method="post" action="<portlet:actionURL><portlet:param 
+    <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
          <input type="hidden" name="_scope" value="binder"/>
@@ -304,19 +304,19 @@ function ss_showForumEntryInPopupWindow(definitionType) {
   <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
 	<ul class="ss_dropdownmenu" 
 	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-	  <li><a href="<portlet:renderURL><portlet:param 
+	  <li><a href="<portlet:renderURL windowState="maximized"><portlet:param 
 	  	    name="action" value="modify_dashboard"/><portlet:param 
 	  	    name="binderId" value="${ssBinder.id}"/><portlet:param 
 	  	    name="_scope" value="local"/><portlet:param 
 	  	    name="operation" value="set_dashboard_title"/></portlet:renderURL>"
 	      ><ssf:nlt tag="dashboard.setTitle"/></a></li>
-	  <li><a href="<portlet:actionURL><portlet:param 
+	  <li><a href="<portlet:actionURL windowState="maximized"><portlet:param 
 	  	name="action" value="modify_dashboard"/><portlet:param 
 	  	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	  	name="_scope" value="global"/></portlet:actionURL>"><ssf:nlt 
 	  	tag="dashboard.configure.global"/></a></li>
 	  <c:if test="${ssDashboard.sharedModificationAllowed}">
-	    <li><a href="<portlet:actionURL><portlet:param 
+	    <li><a href="<portlet:actionURL windowState="maximized"><portlet:param 
 	    	name="action" value="modify_dashboard"/><portlet:param 
 	    	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	    	name="_scope" value="binder"/></portlet:actionURL>"><ssf:nlt 

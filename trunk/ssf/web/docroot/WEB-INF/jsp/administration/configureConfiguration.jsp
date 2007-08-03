@@ -40,7 +40,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>add" method="post" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
 	name="operation" value="add"/></portlet:actionURL>" >
 		
@@ -58,7 +58,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.import"/></h3>
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>import" method="post" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
 	name="operation" value="add"/></portlet:actionURL>" >
 		
@@ -73,7 +73,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <hr>
 <br/>
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>export" method="post" 
-	action="<portlet:renderURL><portlet:param 
+	action="<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="export"/></portlet:renderURL>" >
 <h3><ssf:nlt tag="administration.export.templates"/></h3>
@@ -127,7 +127,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <c:if test="${ssOperation == 'export'}">
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style ss_form" action="<portlet:actionURL><portlet:param 
+<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
 	name="operation" value="export"/></portlet:actionURL>" 
 	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
@@ -237,7 +237,7 @@ function ss_confirmDeleteConfig() {
 <c:if test="${ssOperation == 'add_folder' or ssOperation == 'add_workspace'}">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
-<form method="post" action="<portlet:actionURL><portlet:param 
+<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="${ssOperation}"/><portlet:param 
 		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >

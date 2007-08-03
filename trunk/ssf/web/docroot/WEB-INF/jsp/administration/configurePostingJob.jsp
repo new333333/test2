@@ -31,7 +31,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 </script>
 <div class="ss_style ss_portlet">
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_posting_job"/></portlet:actionURL>">
 
 <table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">

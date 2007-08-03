@@ -16,7 +16,7 @@
 //treename must start with editForum
 String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"/>" method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">

@@ -51,7 +51,7 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
-	action="<portlet:actionURL><portlet:param 
+	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_definitions"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
@@ -91,7 +91,7 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 
 <form name="inheritanceForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL><portlet:param 
+  action="<portlet:actionURL windowState="maximized"><portlet:param 
   		name="action" value="configure_definitions"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/><portlet:param 
   		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
@@ -108,7 +108,7 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 </fieldset>
 <br>
 </c:if>
-<form method="post" action="<portlet:actionURL><portlet:param 
+<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_definitions"/><portlet:param 
 		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" >
