@@ -83,13 +83,17 @@
 	<c:set var="ss_calendar_today_background_color" value="#eeeeee" scope="request"/>
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 	
-<% //DASHBOARD COLORS %>
-    <c:set var="ss_dashcomp_header_bar_background" value="#CCCCCC" scope="request"/>
-    <c:set var="ss_dashcomp_header_bar_title_color" value="#333333" scope="request"/>
-    <c:set var="ss_dashcomp_header_bar_title_link_color" value="#666666" scope="request"/>
-    <c:set var="ss_dashboard_table_border_color" value="#888888" scope="request"/>
-    
-<% //ENTRIES	 %>
+<%--
+  --
+  -- SIDEBAR / ACCESSORY COLORS
+  --
+--%><c:set var="ss_panel_header_bar_title_color" value="#666666" scope="request"/><%--
+--%><c:set var="ss_dashboard_table_border_color" value="#888888" scope="request"/><%--
+--%><%--
+  --
+  -- ENTRIES
+  --
+--%>
 	<c:set var="ss_entry_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_entry_description_background_color" value="#EFEFEF" scope="request"/>
 	<c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
