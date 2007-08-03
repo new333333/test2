@@ -203,7 +203,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
                    offsetX="147" 
                  </c:if>
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-					<input name="searchText" type="text" /> 
+					<input name="searchText" style="width: 150px;" type="text" /> 
 					<a class="ss_searchButton" 
 					  href="javascript: document.ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.submit();" ><img 
 					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/1pix.gif" /></a>
