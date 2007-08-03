@@ -581,7 +581,9 @@ function ss_saveUserGroupResults(s) {
 <br/>
 </c:if>
 
-<span class="ss_titlebold">
+<table width="100%">
+<tr>
+<td><span class="ss_titlebold">
 <a href="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="definition_builder" /><portlet:param 
 	name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>">
@@ -596,6 +598,16 @@ function ss_saveUserGroupResults(s) {
 	}
 %>
 </span>
+</td>
+<td align="right">
+<form>
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
+  onClick="self.location.href='<portlet:renderURL windowState="normal"><portlet:param
+  name="action" value="view"/></portlet:renderURL>';return false;">
+</form>
+</td>
+</tr>
+</table>
 <br/>
 <br/>
 
