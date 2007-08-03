@@ -34,6 +34,7 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
         --%><c:if test="${!initOpen}"><html:imagesPath/>pics/flip_up16H.gif</c:if><%--
         --%>" onClick="ss_showHideSidebarBox('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${divId}', this, ${sticky}, '${divId}');" class="ss_toggler"/><%--
         --%><%= title %><%--
+        --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="200"/></div><%--
     --%></div><%--
 --%><div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--
