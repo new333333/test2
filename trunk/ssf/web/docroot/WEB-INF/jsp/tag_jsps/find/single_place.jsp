@@ -326,7 +326,7 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
 
 <div style="margin:0px; padding:0px;">
 	<ssf:ifaccessible>
- 		<label for="ss_findPlaces_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+ 		<label for="ss_findPlaces_searchText_${prefix}">${label}</label>
  	</ssf:ifaccessible>
 
 	<textarea 
