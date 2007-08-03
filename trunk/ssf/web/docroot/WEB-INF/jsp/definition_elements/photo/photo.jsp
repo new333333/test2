@@ -63,5 +63,6 @@ function ss_setPhotoIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:if
 </div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_photo_folder_div">
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
 </div>

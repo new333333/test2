@@ -37,11 +37,6 @@
         <property name="caption" value="__dashboard_canvas"/>
       </properties>
     </item>
-    <item name="descriptionView" caption="__description" id="8">
-      <properties>
-        <property name="caption" value="__description"/>
-      </properties>
-    </item>
     <item name="folderList" caption="__folder_listing" id="9">
       <properties/>
     </item>

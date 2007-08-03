@@ -88,8 +88,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
   </tr>
  </table>
 </div>
-
-
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 
