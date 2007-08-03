@@ -490,7 +490,12 @@ public class Tabs {
 		tabs.put(NEXT_TAB_ID, new Integer(nextTabId.intValue() + 1));
 		Map tab = new HashMap();
 		tab.put(TAB_ID, nextTabId);
-		tabList.add(tab);
+		// History list now puts new items at the top of the
+		// list and prunes off old stuff.
+		tabList.add(0,tab);
+		if (tabList.size() > 5) {
+			tabList.remove(5);
+		}
 		return nextTabId.intValue();
 	}
 	public int getCurrentTab() {
