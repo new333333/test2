@@ -17,7 +17,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="numTabs" value="0"/>
 <ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="true" sticky="true">
-<ul>
+<ul style="padding-top: 2px; padding-left: 5px;">
 <c:forEach var="tab" items="${ss_tabs.tablist}">
 <jsp:useBean id="tab" type="java.util.HashMap" />
   <c:set var="numTabs" value="${numTabs + 1}"/>
