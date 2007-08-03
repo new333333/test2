@@ -10,8 +10,6 @@
  */
 package com.sitescape.team.portlet.forum;
 
-import java.net.URLEncoder;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1479,7 +1477,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		// Get a handle on the uploaded file
 		List createdEntryIds = Collections.EMPTY_LIST;
-		String fileHandle = WebHelper.getFileHandleOnUploadedFile(request);
+		String fileHandle = WebHelper.getFileHandleOnUploadedCalendarFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
