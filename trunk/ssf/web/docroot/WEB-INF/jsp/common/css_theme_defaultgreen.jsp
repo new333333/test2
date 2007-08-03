@@ -52,7 +52,7 @@
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	
 <% //BLOG %>
-	<c:set var="ss_blog_summary_title_background_color" value="#DEE7C6" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#DFFFD5" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_blog_sidebar_box_outline" value="#BFCA8A" scope="request"/>
@@ -162,7 +162,7 @@
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/> 
 	
 <% //PROFILE COLORS	 %>
-	<c:set var="ss_profileBox1_background_color" value="#AABBAA" scope="request"/>
+	<c:set var="ss_profileBox1_background_color" value="#DFFFD5" scope="request"/>
 	
 	
 <% //SLIDING TABLE %>
@@ -190,11 +190,11 @@
     <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
     <c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
     
-	<c:set var="ss_toolbar1_background_color" value="#DEE7C6" scope="request"/>
+	<c:set var="ss_toolbar1_background_color" value="#DFFFD5" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
-	<c:set var="ss_toolbar1_dropdown_menu_color" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_toolbar1_dropdown_menu_color" value="#DFFFD5" scope="request"/>
 	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>
 
 
