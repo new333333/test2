@@ -94,6 +94,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_active_menulayer = '';
 	var ss_lastActive_menulayer = '';
 	var ss_activateMenuOffsetTop = 12;
+    var ss_activateMenuOffsetLeft = 26;
 	var ss_layerFlag = 0;
 	var ss_forum_maxBodyWindowHeight = 0;
 	var ss_divFadeInArray = new Array();
@@ -1274,7 +1275,7 @@ function ss_hideAccessibleMenu(divId) {
 //  This makes sure that the z-index will be on top of everything else (IE fix)
 function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, openStyle) {
 	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
-	if (!offsetLeft || offsetLeft == null || offsetLeft == 'undefined') {offsetLeft="0"}
+	if (!offsetLeft || offsetLeft == null || offsetLeft == 'undefined') {offsetLeft=ss_activateMenuOffsetLeft}
 	if (!offsetTop || offsetTop == null || offsetTop == 'undefined') {offsetTop=ss_activateMenuOffsetTop}
 	if (!openStyle || openStyle == null || openStyle == 'undefined') {openStyle=""}
 	var divObj = document.getElementById(divId);
