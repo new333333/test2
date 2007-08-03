@@ -391,11 +391,12 @@ div.ss_editorHints {
   font-size: ${ss_style_font_smallprint};
   }
 .ss_entryDescription {
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background-color: ${ss_entry_description_background_color};
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  background-color: inherit;
+  border: 1px transparent solid;
   font-size: 13px;
   color: ${ss_style_muted_foreground_color};
 }
@@ -404,14 +405,20 @@ div.ss_editorHints {
   margin-bottom: 10px;
 }
 
-.ss_editableTab {
-  background-color: ${ss_entry_description_background_color};
+div.ss_editableTab {
   float: right;
+  background-color: ${ss_style_background_color_opaque};
   margin-left: 5px;
+  margin-top: -4px;
   padding-bottom: 3px;
   padding-right: 5px;
   padding-left: 5px;
 }
+
+div.ss_editableTab a, div.ss_editableTab a:hover {
+  text-decoration: none;
+}
+
 
 div.ss_replies .ss_editableTab {
 	background-color: ${ss_replies_background_color};
@@ -2282,6 +2289,8 @@ div.ss_sidebar_panel {
 	font-weight: normal;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
+	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
+	background-repeat: repeat-x;
 }
 
 
@@ -2297,6 +2306,8 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 
 .ss_actions_bar2, table.ss_actions_bar2_pane {
 	background-color: ${ss_toolbar2_background_color};
+	background-image: url(<html:imagesPath/>pics/background_toolbar2.gif);
+	background-repeat: repeat-x;
 }
 
 .ss_actions_bar2 {
@@ -2338,6 +2349,7 @@ ul.ss_actions_bar1  {
     background-color: ${ss_toolbar1_background_color};
 	border-top: 1px solid #CCD2AE;
 	border-bottom: 1px solid #CCD2AE;
+	height: 25px;
 }
 
 .ss_actions_bar {
@@ -2353,7 +2365,6 @@ ul.ss_actions_bar1  {
 .ss_actions_bar li {
 	float:left;
 	display: inline;
-	background-color: inherit;
 	margin: 0px 3px 0 0;
 }
 
@@ -2425,7 +2436,11 @@ ul.ss_actions_bar1  {
 	color:#0000FF
 }
 
-.ss_actions_bar1 li a:hover {
+ul.ss_actions_bar1 li {
+	margin-top: 3px;
+}
+
+ul.ss_actions_bar1 li a:hover {
 	background-color: ${ss_style_header_bar_background};
 	text-decoration:none;
 }
