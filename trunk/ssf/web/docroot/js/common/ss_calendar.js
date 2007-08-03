@@ -114,16 +114,16 @@ function ss_calendar(prefix) {
 	
 		/* Presentation data */
 	    map: new Array(),
-	    setMap: function(pMap) { for (var i in pMap) { this.map[pMap[i].calsrc] = pMap[i]; } },
+	    setMap: function(pMap) { for (var i = 0; i < pMap.length; i++) { this.map[pMap[i].calsrc] = pMap[i]; } },
 	    binderCalendarMapping: new Array(),
 	    getCalendar: function(binderId) {
 	    	if (this.binderCalendarMapping[binderId]) {
 	    		return this.binderCalendarMapping[binderId];
 	    	} else {
 	    		// find first free calendar definition
-	    		for (var i in this.map) {
+	    		for (var i = 0; i < this.map.length; i++) {
 	    			var inUse = false;
-	    			for (var j in this.binderCalendarMapping) {
+	    			for (var j = 0; j < this.binderCalendarMapping.length; j++) {
 	    				if (this.binderCalendarMapping[j] == i) {
 	    					inUse = true;
 	    				}
@@ -775,7 +775,7 @@ function ss_calendar(prefix) {
 	
 	    resetGridHeight: function() {
 	        var maxEvents = 0;
-	        for (var i in this.allDayCount) {
+	        for (var i = 0; i < this.allDayCount.length; i++) {
 	            if (this.allDayCount[i] > maxEvents) { maxEvents = this.allDayCount[i]; }
 	        }
 	        if (isIE) {
@@ -941,7 +941,7 @@ function ss_calendar(prefix) {
 	    
 	            
 	    set: function(newEvents) {
-	        for (var i in newEvents) {
+	        for (var i = 0; i < newEvents.length; i++) {
 	            var nei = newEvents[i];
 	            
 	            // already loaded?
@@ -960,9 +960,9 @@ function ss_calendar(prefix) {
 	            
 	        }
 	
-			for (var i in this.order) {
+			for (var i = 0; i < this.order.length; i++) {
 				if (typeof this.order[i] != "undefined") {
-					for (var j in this.order[i]) {
+					for (var j = 0; j < this.order[i].length; j++) {
 						if (typeof this.order[i][j] != "undefined") {	
 		    				this.order[i][j].sort();
 		    			}
@@ -1092,7 +1092,7 @@ function ss_calendar(prefix) {
 				
 				if (typeof this.order[this.eventsTypes[this.eventsType]] != "undefined" &&
 					typeof this.order[this.eventsTypes[this.eventsType]][key] != "undefined") {
-					for (var i in this.order[this.eventsTypes[this.eventsType]][key]) {
+					for (var i = 0; i < this.order[this.eventsTypes[this.eventsType]][key].length; i++) {
 					           
 		            	var eid = this.order[this.eventsTypes[this.eventsType]][key][i].substr(5);
 		            	var e = this.eventData[eid];
@@ -1159,20 +1159,22 @@ function ss_calendar(prefix) {
 	    redrawMonth: function() {
 	        this.undrawEvents();
 	        
-	        for (var d in this.collisionM[this.eventsTypes[this.eventsType]]) {
-	            var grid = "ss_cal_monthGrid" + prefix;
-	                        
-	            var year = 1 * d.substring(0, 4);
-	            var month = 1 * d.substring(5, 7);
-	            var dayOfMonth = 1 * d.substring(8, d.length);
-	            var date = new Date(year, month, dayOfMonth);
-	
-				var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
-				if (monthViewInfo.startViewDate <= date && date <= monthViewInfo.endViewDate) {
-		           var dids = ss_cal_drawMonthEventBlock(grid, date, this.collisionM[this.eventsTypes[this.eventsType]][d].length, this.collisionM[this.eventsTypes[this.eventsType]][d]);
-		           while (dids.length) { this.monthGridEvents.push(dids.pop()); }
-	            }
-	        }
+	        if (this.eventsTypes[this.eventsType] && this.collisionM && this.collisionM[this.eventsTypes[this.eventsType]]) {
+		        for (var d = 0; d < this.collisionM[this.eventsTypes[this.eventsType]].length; d++) {
+		            var grid = "ss_cal_monthGrid" + prefix;
+		                        
+		            var year = 1 * d.substring(0, 4);
+		            var month = 1 * d.substring(5, 7);
+		            var dayOfMonth = 1 * d.substring(8, d.length);
+		            var date = new Date(year, month, dayOfMonth);
+		
+					var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
+					if (monthViewInfo.startViewDate <= date && date <= monthViewInfo.endViewDate) {
+			           var dids = ss_cal_drawMonthEventBlock(grid, date, this.collisionM[this.eventsTypes[this.eventsType]][d].length, this.collisionM[this.eventsTypes[this.eventsType]][d]);
+			           while (dids.length) { this.monthGridEvents.push(dids.pop()); }
+		            }
+		        }
+		    }
 	        
 	    },
 	

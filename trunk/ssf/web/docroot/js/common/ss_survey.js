@@ -279,7 +279,7 @@ ssSurvey.addToOnSubmit = function(surveyObj) {
 }
 
 ssSurvey.prepareSubmit = function(formObj) {
-	for (var i in ssCurrentFormSurveys) {
+	for (var i = 0; i < ssCurrentFormSurveys.length; i++) {
 		ssCurrentFormSurveys[i].prepareSubmit(formObj);
 	}
 }

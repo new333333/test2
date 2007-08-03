@@ -2777,7 +2777,8 @@ function ss_callDashboardEvent(componentId,
 		return false;
 	}
 
-	for (var i in ss_dashboardCallbacks[componentId][when]) {
+	for (var i = 0; i < ss_dashboardCallbacks[componentId][when].length; i++) {
+		alert('i='+i+', '+ss_dashboardCallbacks[componentId][when][i])
 		ss_dashboardCallbacks[componentId][when][i]();
 	}
 	
@@ -5271,8 +5272,6 @@ function ss_showSavedQueriesList(relObj, divId) {
 		//dojo.html.hide(divId);
 		return false;
 	}
-
-	
 	var bindArgs = {
     	url: url,
 		error: function(type, data, evt) {
@@ -5284,7 +5283,7 @@ function ss_showSavedQueriesList(relObj, divId) {
 			
 				
 				var txt = "<h1>" + ss_savedSearchTitle + "</h1><ul>";
-				for (var queryNo in data) {
+				for (var queryNo = 0; queryNo < data.length; queryNo++) {
 					txt += "<li><a href=\"" + ss_AdvancedSearch + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
 				}
 				txt += "</ul>";

@@ -125,7 +125,7 @@
 	
 		function displayTasks () {
 			clearTable();
-			for (var i in tasks) {
+			for (var i = 0; i < tasks.length; i++) {
 				displayTask(tasks[i]);
 			}
 		}
@@ -267,7 +267,7 @@
 			var tdObj = document.createElement('td');
 			var ulObj = document.createElement('ul');
 			tdObj.appendChild(ulObj);
-			for (var i in task.assigned) {
+			for (var i = 0; i < task.assigned.length; i++) {
 				var liObj = document.createElement('li');
 				liObj.appendChild(document.createTextNode(task.assigned[i]));
 				ulObj.appendChild(liObj);
@@ -279,7 +279,7 @@
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_status");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
-			for (var i in task.statuses) {
+			for (var i = 0; i < task.statuses.length; i++) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 				
@@ -320,7 +320,7 @@
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_priority");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
 				
-			for (var i in task.priorities) {
+			for (var i = 0; i < task.priorities.length; i++) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 		    
