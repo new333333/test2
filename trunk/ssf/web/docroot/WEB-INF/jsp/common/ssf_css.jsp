@@ -4078,23 +4078,12 @@ img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 	margin:0px 0px 10px 0px;
 	padding:0px;
 }
-.ss_rating_box_title {
-	background-color: #AFC8E3;
-	margin:0px;
-	padding:0px 5px 0px 5px;
-	height: 16px;
-}
 .ss_rating_box_content {
 	margin:0px;
 	padding: 6px;
-	border-left: 1px solid #cccccc;
-	border-right: 1px solid #cccccc;
-	border-bottom: 1px solid #cccccc;
-	background-color: #dbe6f2;
 }
 img.ss_toogler {float:right;}
 img.ss_toggler {float:right;}
-div.ss_rating_box_title h4 {float:left;margin:0px;}
 div.ss_rating_box_content table {width:200px; border-collapse: collapse; border-spacing: 0;}
 div.ss_rating_box_content th {border-bottom: 1px solid #afc8e3;text-align:left;}
 div.ss_rating_box_content td {text-align:left;}
