@@ -129,5 +129,6 @@ function ss_hideBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:i
 </div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_blog_folder_div">
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
