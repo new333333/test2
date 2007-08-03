@@ -213,9 +213,6 @@ function ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></s
 		
 		<td align="center" width="25%">
 
-		<table width="100%" border="0" cellspacing="0px" cellpadding="0px">
-		<tr>
-			<td width="10%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
 					
@@ -265,8 +262,8 @@ function ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></s
 							name="year" value="${year}"/></c:if></portlet:actionURL>" 
 							class="ssPageNumber" <ssf:title tag="title.goto.page.number"
 						><ssf:param name="value" value="${entryPage.ssPageDisplayValue}" /></ssf:title> >
-						<span><c:out value="${entryPage.ssPageDisplayValue}"/></span>
-						</a>
+						<span><c:out value="${entryPage.ssPageDisplayValue}"/></span><%--
+						--%></a>
 					</c:if>
 				</c:forEach>
 
@@ -292,9 +289,6 @@ function ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></s
 					</a>
 				  </c:otherwise>
 				</c:choose>
-			</td>
-		</tr>
-		</table>
 	</c:if>
 </c:if>
 
