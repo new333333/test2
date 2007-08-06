@@ -39,7 +39,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
-import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -494,37 +493,40 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         }
         return null;
     }
+    //no transaction by default     
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
-    	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-        checkAccess(parentWorkspace, WorkspaceOperation.addFolder);
-        Definition def = null;
-        if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-        }
-        
-        Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
-        return binder.getId();
-    }
  
-     public Long addWorkspace(Long parentWorkspaceId,String definitionId, InputDataAccessor inputData,
+    	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
+    	checkAccess(parentWorkspace, WorkspaceOperation.addFolder);
+    	Definition def = null;
+    	if (Validator.isNotNull(definitionId)) { 
+    		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+    	}
+    	        
+    	Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
+    	return binder.getId();
+   }
+ 
+    //no transaction by default
+    public Long addWorkspace(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
- 
+   		    
     	Definition def = null;
-        if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-        }
-        //allow users workspaces to be created for all users
+    	if (Validator.isNotNull(definitionId)) { 
+    		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+    	}
+    	//allow users workspaces to be created for all users
     	if (parentWorkspace.isReserved() && ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentWorkspace.getInternalId())) { 
     		if ((def == null) || (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
-                checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
+    			checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
     		}
     	} else {
-            checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
+    		checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
     	}
-        
-        return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
+    	
+    	return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
     }
  
 }

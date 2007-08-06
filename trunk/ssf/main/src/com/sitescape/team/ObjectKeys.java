@@ -77,6 +77,7 @@ public interface ObjectKeys {
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
 
+	
     //map keys returned from modules
     public static final String BINDER="binder";
     public static final String SEARCH_ENTRIES="search_entries";
@@ -206,7 +207,13 @@ public interface ObjectKeys {
     public static final String INPUT_FIELD_GROUP_MEMBERNAME="memberName";
     public static final String INPUT_FIELD_TAGS="_tags";
     public static final String INPUT_FIELD_ORDER_SUFFIX="__order";
-    //Reserved data field names
+	public static final String INPUT_FIELD_FUNCTIONMEMBERSHIPS="com.sitescape.team.workareaFunctionMemberships";
+	public static final String INPUT_FIELD_DEFINITIONS="com.sitescape.team.definitions";
+	public static final String INPUT_FIELD_WORKFLOWASSOCIATIONS="com.sitescape.team.workflows";
+	//Passed to processors to force a database lock.  Used to reduce optimistic lock exceptions
+	public static final String INPUT_OPTION_FORCE_LOCK="com.sitescape.team.options.lock";
+
+	//Reserved data field names
     public static final String FIELD_ID="id";
     public static final String FIELD_ZONE="zoneId";
     public static final String FIELD_INTERNALID="internalId";
@@ -230,7 +237,6 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_MIRRORED = "mirrored"; 
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath";
-
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";
     public static final String FIELD_USER_LASTNAME="lastName";

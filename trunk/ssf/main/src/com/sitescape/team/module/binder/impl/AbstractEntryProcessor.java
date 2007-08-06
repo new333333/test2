@@ -159,7 +159,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
-        		throw new WriteFilesException(filesErrors);
+        		throw new WriteFilesException(filesErrors, entry.getId());
         	}
         	else {
         		return entry;

@@ -76,6 +76,7 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.Retry;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -283,24 +284,23 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		}
 		return result;
 	}
-    //inside write transaction    
-    public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
+    //no transaction by default
+   public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	afCount.incrementAndGet();
-    	
-        Folder parentFolder = loadFolder(parentFolderId);
-        checkAccess(parentFolder, FolderOperation.addFolder);
-        Definition def = null;
-        if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-        } else {
-        	def = parentFolder.getEntryDef();
-        }
-        
-        Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
-        return binder.getId();
+		Folder parentFolder = loadFolder(parentFolderId);
+		checkAccess(parentFolder, FolderOperation.addFolder);
+		Definition def = null;
+		if (Validator.isNotNull(definitionId)) { 
+			def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+		} else {
+			def = parentFolder.getEntryDef();
+		}
+    			
+		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
+		return binder.getId();
     }
-    //no transaction    
+    //no transaction by default
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	aeCount.incrementAndGet();

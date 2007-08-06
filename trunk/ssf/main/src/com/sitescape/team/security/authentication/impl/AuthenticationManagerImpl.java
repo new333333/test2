@@ -30,6 +30,7 @@ import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.PasswordEncryptor;
 
 public class AuthenticationManagerImpl implements AuthenticationManager,InitializingBean {
@@ -88,7 +89,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
+		boolean hadSession = SessionUtil.sessionActive();
 		try {
+			if (!hadSession) SessionUtil.sessionStartup();	
 			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			if (updates != null && !updates.isEmpty()) {
 				Map mods = new HashMap();
@@ -114,16 +117,25 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
  			else throw nu;
-		} 
+		} finally {
+			if (!hadSession) SessionUtil.sessionStop();			
+		}
 		return user;
 	}
 
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
-		User user = doAuthenticate(zoneName, username, password, passwordAutoSynch, ignorePassword);
-		if(authenticatorName != null)
-			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+		User user=null;
+		boolean hadSession = SessionUtil.sessionActive();
+		try {
+			if (!hadSession) SessionUtil.sessionStartup();	
+			user = doAuthenticate(zoneName, username, password, passwordAutoSynch, ignorePassword);
+			if(authenticatorName != null)
+				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+		} finally {
+			if (!hadSession) SessionUtil.sessionStop();			
+		}
 		return user;
 	}
 	
@@ -163,21 +175,25 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public User authenticate(String zoneName, Long userId, String passwordDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
+		boolean hadSession = SessionUtil.sessionActive();
 		try {
+			if (!hadSession) SessionUtil.sessionStartup();	
 			user = getProfileDao().loadUser(userId, zoneName);
+			if(!passwordDigest.equals(user.getPasswordDigest())) {
+				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
+			}
+			
+			if(authenticatorName != null)
+				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+
 		}
 		catch(NoUserByTheIdException e) {
 			throw new UserDoesNotExistException("Authentication failed: Unrecognized user ["
 					+ zoneName + "," + userId + "]", e);
+		} finally {
+			if (!hadSession) SessionUtil.sessionStop();			
 		}
 		
-		if(!passwordDigest.equals(user.getPasswordDigest())) {
-			throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
-		}
-		
-		if(authenticatorName != null)
-			getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
-
 		return user;
 	}
 		

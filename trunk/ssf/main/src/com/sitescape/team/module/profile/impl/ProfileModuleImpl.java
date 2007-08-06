@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.SortedSet;
 
@@ -413,8 +414,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     private void addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
        ProfileCoreProcessor processor=loadProcessor(binder);
-   	   Map newEntries = new HashMap();
-   	   Map oldEntries = new HashMap();
+   	   Map newEntries = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+   	   Map oldEntries = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+   	   Map foundNames = new TreeMap(String.CASE_INSENSITIVE_ORDER);
    	   for (int j=0; j<elements.size();) {
    		   newEntries.clear();
    		   for (int k=j; k < elements.size() && k-j<100; ++k) {
@@ -424,7 +426,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					logger.error("Name attribute missing: " + e.toString());
 					continue;
 				}
-				newEntries.put(n, e);
+				if (foundNames.containsKey(n)) {
+					logger.error("Duplicate name found: " + n);
+				} else {
+					newEntries.put(n, e);
+					foundNames.put(n, Boolean.TRUE); //save as processed
+				}
 			}
 			j+= 100;
 			//make sure don't exist
@@ -444,19 +451,43 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					logger.debug("Principal exists: " + p.getName());
 			}
 			if (!newEntries.isEmpty() || !oldEntries.isEmpty()) {
-				processor.syncEntries(oldEntries);
+				try {
+					if (logger.isInfoEnabled()) {
+						logger.info("Updating principals:");
+						for (Iterator iter=oldEntries.keySet().iterator(); iter.hasNext();) {
+							logger.info("'" + iter.next() + "'");
+						}
+					}
+					processor.syncEntries(oldEntries);
+					//processor commits entries - so update indexnow
+					IndexSynchronizationManager.applyChanges();
+				} catch (Exception ex) {
+					IndexSynchronizationManager.discardChanges();
+					logger.error("Error updating principals:", ex);
+				}
 				//flush from cache
 				for (int i=0; i<exists.size(); ++i) getCoreDao().evict(exists.get(i));
 				//returns list of user objects
-				List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()));
-				//flush from cache
-				for (int i=0; i<addedEntries.size(); ++i) getCoreDao().evict(addedEntries.get(i));			
-				//processor commits entries - so update indexnow
-				IndexSynchronizationManager.applyChanges();
+				try {
+					if (logger.isInfoEnabled()) {
+						logger.info("Creating principals:");
+						for (Iterator iter=newEntries.keySet().iterator(); iter.hasNext();) {
+							logger.info("'" + iter.next() + "'");
+						}
+					}
+					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()));
+					//processor commits entries - so update indexnow
+					IndexSynchronizationManager.applyChanges();
+					//flush from cache
+					for (int i=0; i<addedEntries.size(); ++i) getCoreDao().evict(addedEntries.get(i));			
+				} catch (Exception ex) {
+					IndexSynchronizationManager.discardChanges();
+					logger.error("Error creating principals:", ex);
+				}
 			}
   	   }
     }
-    //RW transaction
+    //NO transaction
     public Workspace addUserWorkspace(User entry) throws AccessControlException {
         if (entry.getWorkspaceId() != null) {
         	try {
@@ -474,7 +505,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   				List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
 
   				if (!templates.isEmpty()) {
-  						//	pick the first
+  					//	pick the first
   					TemplateBinder template = (TemplateBinder)templates.get(0);
   					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), wsTitle, entry.getName());
   					ws = (Workspace)getCoreDao().loadBinder(wsId, entry.getZoneId());
@@ -482,25 +513,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   			}
   			if (ws == null) {
   				//just load a workspace without all the stuff underneath
+  				//processor handles transaction
   				Definition userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
   				ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
   				Map updates = new HashMap();
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
   				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
-        		       		
+        		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
   				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null);				
   			}
-  			if (ws != null) entry.setWorkspaceId(ws.getId());
    		} catch (WriteFilesException wf) {
-   			logger.error("Cannot create user workspace: ", wf);
-   			FilterControls fc = new FilterControls();
-   			fc.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, entry.getParentBinder());
-   			fc.add(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
-   			List results = getCoreDao().loadObjects(Workspace.class, fc);
-   			if (!results.isEmpty()) {
-   				ws = (Workspace)results.get(0);
-   				entry.setWorkspaceId(ws.getId());
-   			}
+   			logger.error("Error create user workspace: ", wf);
    			
    		} finally {
    			//	leave new context for indexing
@@ -645,7 +668,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 	}
 	
-    //RW transaction
+    //NO transaction
 	public User addUserFromPortal(String zoneName, String userName, String password, Map updates) {
 		if(updates == null)
 			updates = new HashMap();
@@ -658,36 +681,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		
 		// build user
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
-		RequestContextUtil.setThreadContext(zoneName, userName);
+		Binder top = getCoreDao().findTopWorkspace(zoneName);
+		RequestContextUtil.setThreadContext(getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getZoneId()));
 		try {
-			Binder top = getCoreDao().findTopWorkspace(zoneName);
 			ProfileBinder profiles = getProfileDao().getProfileBinder(top.getZoneId());
-			User user = new User();
-			user.setParentBinder(profiles);
-			user.setZoneId(top.getZoneId());
-			user.setName(userName);
-			user.setForeignName(userName);
-			if (password != null)
-				user.setPassword(password);
-			RequestContextUtil.setThreadContext(user);
-			// get entry def
-			getDefinitionModule().setDefaultEntryDefinition(user);
-			HistoryStamp stamp = new HistoryStamp(user);
-			user.setCreation(stamp);
-			user.setModification(stamp);
-			EntryBuilder.updateEntry(user, updates);
-			// save so we have an id to work with
-			getCoreDao().save(user);
-			addUserWorkspace(user);
-
 			// indexing needs the user
 			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager()
-					.getProcessor(
-							profiles,
-							profiles
-									.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-			processor.indexEntry(user);
-			// do now, with request context set
+					.getProcessor(profiles, profiles.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
+			Map newUpdates = new HashMap(updates);
+			newUpdates.put(ObjectKeys.FIELD_PRINCIPAL_NAME, userName);
+			if (Validator.isNotNull(password)) updates.put(ObjectKeys.FIELD_USER_PASSWORD, password);
+			//get default definition to use
+			Definition userDef = profiles.getDefaultEntryDef();		
+			if (userDef == null) userDef = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
+			List<InputDataAccessor>accessors = new ArrayList();
+			accessors.add(new MapInputData(newUpdates));
+			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors).get(0);
+			// flush user before adding workspace
+			IndexSynchronizationManager.applyChanges();
+			
+			addUserWorkspace(user);
+			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 			return user;
 		} finally {
@@ -696,17 +710,20 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 
-    //RW transaction
+    //No transaction
 	public void modifyUserFromPortal(User user, Map updates) {
 		if (updates == null)
 			return; // nothing to update with
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(user);
 		try {
+			//transaction handled in processor
 			//use processor to handle title changes
 			ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
 					user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
 			processor.syncEntry(user, new MapInputData(updates));
+			// flush user before adding workspace
+			IndexSynchronizationManager.applyChanges();
 			if (user.getWorkspaceId() == null) addUserWorkspace(user);
 
 			//do now, with request context set

@@ -5,7 +5,9 @@
   <class dynamic-update="true" lazy="true" table="SS_FolderEntries" name="com.sitescape.team.domain.FolderEntry">
     <cache usage="read-write"/>
     <id unsaved-value="null" name="id" type="long" node="@id">
-      <generator class="native"/>
+      <generator class="native">
+      	<param name="sequence">ss_folderentry_id_sequence</param>
+      </generator>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
 	<property name="deleted"/>

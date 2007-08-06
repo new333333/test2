@@ -11,13 +11,15 @@
 package com.sitescape.team.portlet.administration;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -29,13 +31,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.servlet.forum.ViewFileController;
-
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
@@ -48,12 +45,12 @@ public class ExportDefinitionController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		HashSet<String> uniqueFilenames = new HashSet<String>();
 		if (formData.containsKey("okBtn")) {
 			List errors = new ArrayList();
-			String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + "definitions" +
-				File.separator + RequestContextHolder.getRequestContext().getZoneName();
-			FileHelper.mkdirsIfNecessary(dirPath);
+			
+			File tempFile = TempFileUtil.createTempFile("exportDefinitions");
+			FileOutputStream fo = new FileOutputStream(tempFile);
+			ZipOutputStream zipOut = new ZipOutputStream(fo);
 			Iterator itFormData = formData.entrySet().iterator();
 			while (itFormData.hasNext()) {
 				Map.Entry me = (Map.Entry) itFormData.next();
@@ -67,27 +64,20 @@ public class ExportDefinitionController extends  SAbstractController {
 							if (Validator.isNull(name)) name = def.getTitle();
 							// explicity set encoding so their is not mistake.
 							//cannot guarentee default will be set to UTF-8
-							String filePath = dirPath + File.separator +  Validator.replacePathCharacters(name) + ".xml";
-							XmlFileUtil.writeFile(def.getDefinition(), filePath);
-							uniqueFilenames.add(filePath);
+							zipOut.putNextEntry(new ZipEntry(Validator.replacePathCharacters(name) + ".xml"));
+							XmlFileUtil.writeFile(def.getDefinition(), zipOut);
 						} catch (Exception ex) {
 							errors.add(ex.getLocalizedMessage());
 						}
 					}
 				}
 			}
-			
-			Document listOfFiles = ViewFileController.createFileListingForZipDownload("definitions.zip");
-			Element listOfFilesRoot = listOfFiles.getRootElement();
-			for(String path : uniqueFilenames) {
-				ViewFileController.addFileToList(listOfFiles, path);
-			}
-			File listOfFilesTempFile = TempFileUtil.createTempFile("exportDefinitions");
-			XmlFileUtil.writeFile(listOfFiles, listOfFilesTempFile.getAbsolutePath());
+			zipOut.finish();
+
 
 			response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
 					WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
-					listOfFilesTempFile.getName());
+					tempFile.getName() + "&" + WebKeys.URL_FILE_TITLE + "=definitions.zip");
 			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			response.setRenderParameter("redirect", "true");
 			

@@ -65,8 +65,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Folder folder = (Folder)binder;
     	FolderEntry fEntry = (FolderEntry)entry;
-    	getCoreDao().refresh(folder);
-    	folder.addEntry((FolderEntry)entry);
+    	//lock the parent binder = to reduce optimistic lock exceptions
+    	//this is needed to setup sortkey
+        getCoreDao().lock(binder);
+        folder.addEntry((FolderEntry)entry);
     	if (inputData.exists(ObjectKeys.INPUT_FIELD_POSTING_FROM)) {
     		fEntry.setPostedBy(inputData.getSingleValue(ObjectKeys.INPUT_FIELD_POSTING_FROM)); 
     	}
@@ -121,7 +123,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
         	if(filesErrors.getProblems().size() > 0) {
         		// 	At least one error occured during the operation. 
-        		throw new WriteFilesException(filesErrors);
+        		throw new WriteFilesException(filesErrors, entry.getId());
         	}
         	else {
         		return entry;
@@ -157,6 +159,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	//lock the top entry = to reduce optimistic lock exceptions
+    	//locking the top should handle all the children as a side effect
+    	//this is needed to setup sortkey and to set lastActivity,total Reply count on top Entry
+    	getCoreDao().lock(parent.isTop() ? parent : parent.getTopEntry());
         parent.addReply(entry);         
     	if (inputData.exists(ObjectKeys.INPUT_FIELD_POSTING_FROM)) {
     		entry.setPostedBy(inputData.getSingleValue(ObjectKeys.INPUT_FIELD_POSTING_FROM)); 

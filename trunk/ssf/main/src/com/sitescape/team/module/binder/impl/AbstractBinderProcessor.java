@@ -163,7 +163,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	
 	//***********************************************************************************************************	
-    //inside write transaction    
+    //no transaction    
     public Binder addBinder(final Binder parent, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
@@ -248,7 +248,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
-	    		throw new WriteFilesException(filesErrors);
+	    		throw new WriteFilesException(filesErrors, binder.getId());
 	    	}
 	    	else {
 	    		return binder;
@@ -311,13 +311,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setModification(binder.getCreation());
         binder.setLogVersion(Long.valueOf(1));
         binder.setOwner(user);
-    	//make sure we have the latest = to reduce optimistic lock exceptions
-        getCoreDao().refresh(parent);
-       	//Since parent collection is a list we can add the binder without an id
-    	parent.addBinder(binder);
- 
-// not implemented
-//      	getAclManager().doInherit(parent, (AclControlled) binder);
+
+        //update parent in a new session to reduce optimistic lock exceptions
+        //this will do a quick commit write to the database
+        if (Boolean.TRUE.equals(inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK))) {
+            getCoreDao().lock(parent);
+        } 
+        parent.addBinder(binder);
+        
+ 		// not implemented
+ 		//getAclManager().doInherit(parent, (AclControlled) binder);
 
         for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
         	Object obj = iter.next();
@@ -425,7 +428,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
    //inside write transaction    
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
-    	//create history - using timestamp and version from fillIn
+  		if (inputData.exists(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS)) {
+  			List<WorkAreaFunctionMembership> wfms = (List)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS);
+  			if (wfms != null && !wfms.isEmpty()) { 
+  				binder.setFunctionMembershipInherited(false);
+  		    	for (WorkAreaFunctionMembership fm: wfms) {
+  		    		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+  			       	membership.setZoneId(binder.getZoneId());
+  			       	membership.setWorkAreaId(binder.getWorkAreaId());
+  			       	membership.setWorkAreaType(binder.getWorkAreaType());
+  			       	membership.setFunctionId(fm.getFunctionId());
+  			       	membership.setMemberIds(new HashSet(fm.getMemberIds()));
+  			        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);	
+  		    	}
+  			}
+  		}
+ 		if (inputData.exists(ObjectKeys.INPUT_FIELD_DEFINITIONS)) {
+ 			List<Definition>defs = (List)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_DEFINITIONS);
+  			if (defs != null && !defs.isEmpty()) { 
+ 		    	binder.setDefinitionsInherited(false);
+ 		    	binder.setDefinitions(defs);
+ 		    	binder.setWorkflowAssociations((Map)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_WORKFLOWASSOCIATIONS));
+ 	    	}
+ 		}
+ 		//create history - using timestamp and version from fillIn
     	processChangeLog(binder, ChangeLog.ADDBINDER);
     	getReportModule().addAuditTrail(AuditType.add, binder);
     	
