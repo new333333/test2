@@ -104,7 +104,7 @@
 		     module due to class loader conflict. So we must remove that.
 		-->
 		<delete>
-			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar,mail.jar"/>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,commons-logging*.jar,portlet.jar,mail.jar"/> 
 		</delete>		
 	</target>		
 
