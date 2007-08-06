@@ -2352,6 +2352,11 @@ ul.ss_actions_bar1  {
 	height: 25px;
 }
 
+ul.ss_actions_bar1.ss_actions_bar_submenu {
+	height: auto;
+}
+
+
 .ss_actions_bar {
 	list-style-type:none;	
 	margin: 0;
