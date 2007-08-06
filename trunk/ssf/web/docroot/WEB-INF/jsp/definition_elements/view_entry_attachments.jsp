@@ -79,9 +79,9 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	
 	</c:if>
 	
-		<div id="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" width="1px" height="1px" name="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:hidden;display:none;">
+		<div id="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:visible;display:block; width:1px; height:1px;">
 			<div align="right">
-				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="100%" width="100%">xxx</iframe>
+				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="1" width="1">xxx</iframe>
 			</div>
 		</div>
 	</td>	

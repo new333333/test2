@@ -1918,8 +1918,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
-	padding-top: 7px;
-	padding-right: 3px;
+	padding-top: 3px;
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick {
