@@ -145,8 +145,8 @@ function showDisplayDiv() {
     var spacerTop = parseInt(ss_getDivTop('displaydiv_spacer'));
     var spacerBottom = parseInt(ss_getDivTop('displaydiv_spacer_bottom'));
     var divHeight = 0;
-    if (spacerTop < parseInt(self.document.body.scrollTop) + ss_scrollTopOffset) {
-    	divHeight = parseInt(self.document.body.scrollTop + ss_scrollTopOffset - spacerTop);
+    if (spacerTop < parseInt(ss_getScrollXY()[1]) + ss_scrollTopOffset) {
+    	divHeight = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset - spacerTop);
    	}
     ss_setObjectHeight(spacerObj, divHeight);
 }

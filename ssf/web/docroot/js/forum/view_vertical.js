@@ -178,7 +178,7 @@ function ss_divDrag(evt) {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
     		//IE requires fix-up if wndow is scrolled
-    		dObjTop += parseInt(self.document.body.scrollTop)
+    		dObjTop += parseInt(ss_getScrollXY()[1])
         }
 
 		//Set the new height of the folder table

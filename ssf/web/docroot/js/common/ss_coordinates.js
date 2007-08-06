@@ -103,8 +103,8 @@ ss_Coordinate.prototype.equals = function(that) {
 
 // returns true of this point is inside specified box
 ss_Coordinate.prototype.inside = function(northwest, southeast) {
-	var scrollLeft = parseInt(self.document.body.scrollLeft);
-	var scrollTop = parseInt(self.document.body.scrollTop);
+	var scrollLeft = parseInt(ss_getScrollXY()[0]);
+	var scrollTop = parseInt(ss_getScrollXY()[1]);
 	if ((this.x + scrollLeft >= northwest.x) && (this.x + scrollLeft <= southeast.x) &&
 		(this.y + scrollTop >= northwest.y) && (this.y + scrollTop <= southeast.y)) {
 		
