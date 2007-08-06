@@ -2789,7 +2789,6 @@ function ss_callDashboardEvent(componentId,
 	}
 
 	for (var i = 0; i < ss_dashboardCallbacks[componentId][when].length; i++) {
-		alert('i='+i+', '+ss_dashboardCallbacks[componentId][when][i])
 		ss_dashboardCallbacks[componentId][when][i]();
 	}
 	
@@ -3143,14 +3142,11 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 	
 	editClicked = "true";
 	
-	ss_showDiv(divId);
+	divObj.style.visibility = "visible";
 	frameObj.style.visibility = "visible";
 
 	frameObj.src = url;
-	
-	divObj.style.width = "1px";
-	divObj.style.height = "1px";
-}
+	}
 
 function ss_checkEditClicked(entryId, namespace) {
 	return editClicked;

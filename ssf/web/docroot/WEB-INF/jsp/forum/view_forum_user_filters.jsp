@@ -24,6 +24,7 @@
 		if (userFilter != null && !userFilter.equals("")) filterName = userFilter;
 		
 		renderRequest.setAttribute("ss_searchFilters", searchFilters);
+		renderRequest.setAttribute("currentFilter", filterName);
 	}
 %>
 <div class="ss_style">
@@ -58,15 +59,16 @@
 			%>
 
 			  <ssf:ifnotaccessible>
-					<select name="select_filter"><a href="javascript: ;" 
+					<select name="select_filter" onchange="ss_submitParentForm(this);">
 					<option value="">--<ssf:nlt tag="none" text="none"/>--</option>
 					<c:forEach var="filter" items="${ss_searchFilters}">
-					<option value="${filter.key}"><c:out value="${filter.key}"/></option>
+					<option value="${filter.key}"
+					<c:if test="${filter.key == currentFilter}"> selected="true"</c:if>					
+					><c:out value="${filter.key}"/></option>
 					</c:forEach>
 					</select>					
 			  </ssf:ifnotaccessible>
-			 			
-		
+			 				
 		</form>
 		<c:if test="${ssConfigJspStyle != 'template'}">
 		<a href="<portlet:renderURL windowState="maximized"><portlet:param 
