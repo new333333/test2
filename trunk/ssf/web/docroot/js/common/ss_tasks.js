@@ -4,13 +4,13 @@
 		
 		var tasksTable = document.getElementById(tableId);
 	
-		var tasks = new Array();
+		var tasks = new Object();
 		
 		var that = this;
 		
 		var namespace = namespace;
 		
-		var completedStatusDivs = new Array();
+		var completedStatusDivs = new Object();
 			
 		this.changeStatus = function ( entryId, newStatus) {
 			var url = ss_AjaxBaseUrl + "&operation=update_task";
@@ -105,7 +105,7 @@
 		}
 		
 		function clearTasks() {
-			tasks = new Array();
+			tasks = new Object();
 		}
 		
 		function addTasks(newTasks) {
@@ -125,7 +125,7 @@
 	
 		function displayTasks () {
 			clearTable();
-			for (var i = 0; i < tasks.length; i++) {
+			for (var i in tasks) {
 				displayTask(tasks[i]);
 			}
 		}
@@ -177,7 +177,7 @@
 				
 		function drawInteractiveChart(task, parent) {
 			if (!completedStatusDivs[task.id]) {
-				completedStatusDivs[task.id] = new Array();
+				completedStatusDivs[task.id] = new Object();
 			}
 			
 			var value = task.completed;
@@ -267,7 +267,7 @@
 			var tdObj = document.createElement('td');
 			var ulObj = document.createElement('ul');
 			tdObj.appendChild(ulObj);
-			for (var i = 0; i < task.assigned.length; i++) {
+			for (var i in task.assigned) {
 				var liObj = document.createElement('li');
 				liObj.appendChild(document.createTextNode(task.assigned[i]));
 				ulObj.appendChild(liObj);
@@ -279,7 +279,7 @@
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_status");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
-			for (var i = 0; i < task.statuses.length; i++) {
+			for (var i in task.statuses) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 				
@@ -320,7 +320,7 @@
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_priority");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
 				
-			for (var i = 0; i < task.priorities.length; i++) {
+			for (var i in task.priorities) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 		    
