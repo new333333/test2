@@ -53,7 +53,7 @@ function ss_showEntryInDiv(str) {
     if (autoScroll == "true") {
 	    var entryY = ss_getDivTop('ss_showentrydiv')
 	    var entryH = ss_getDivHeight('ss_showentrydiv')
-	    var bodyY = self.document.body.scrollTop
+	    var bodyY = ss_getScrollXY()[1]
 	    var windowH = ss_getWindowHeight()
 	    if (entryY >= bodyY) {
 	    	if (entryY >= parseInt(bodyY + windowH)) {
@@ -107,10 +107,10 @@ return
     var wObj1 = null
     wObj1 = self.document.getElementById('ss_showentrydiv')
     var top = parseInt(ss_getDivTop('showbutton'));
-    if (top < parseInt(self.document.body.scrollTop)) {top = parseInt(self.document.body.scrollTop + 4);} 
+    if (top < parseInt(ss_getScrollXY()[1])) {top = parseInt(ss_getScrollXY()[1] + 4);} 
     var left = parseInt(ss_getDivWidth('showbutton') - entryWindowWidth - 14);
     var width = parseInt(entryWindowWidth);
-    var height = parseInt(ss_getWindowHeight() + self.document.body.scrollTop - top );
+    var height = parseInt(ss_getWindowHeight() + ss_getScrollXY()[1] - top );
     ss_setObjectTop(wObj1, top)
     ss_setObjectLeft(wObj1, left);
     ss_setObjectWidth(wObj1, width);

@@ -78,14 +78,14 @@ function ss_positionEntryDiv() {
     	ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
     }
-	if (ss_entryWindowTop < parseInt(self.document.body.scrollTop)) {
-		ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
-	} else if (ss_entryWindowTop > parseInt(parseInt(self.document.body.scrollTop) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
+	if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1])) {
+		ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
+	} else if (ss_entryWindowTop > parseInt(parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
 		ss_entryWindowTop = ss_entryWindowTopOriginal;
-		if (ss_entryWindowTop < parseInt(self.document.body.scrollTop)) {
-			ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
-		} else if (ss_entryWindowTop > parseInt(parseInt(self.document.body.scrollTop) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
-			ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+		if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1])) {
+			ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
+		} else if (ss_entryWindowTop > parseInt(parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
+			ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
 		}
 	}
     if (ss_entryWindowLeft < 0) ss_entryWindowLeft = 0;
@@ -228,8 +228,8 @@ function ss_divDrag(evt) {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
     		//IE requires fix-up if window is scrolled
-    		dObjTop += parseInt(self.document.body.scrollTop)
-    		dObjLeft += parseInt(self.document.body.scrollLeft)
+    		dObjTop += parseInt(ss_getScrollXY()[1])
+    		dObjLeft += parseInt(ss_getScrollXY()[0])
         }
         ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
         if (dObjLeft <= 0) dObjLeft = 1;

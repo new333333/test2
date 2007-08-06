@@ -1224,6 +1224,23 @@ function ss_getBodyWidth() {
     return w
 }
 
+function ss_getScrollXY() {
+	var scrOfX = 0, scrOfY = 0;
+	if( typeof( window.pageYOffset ) == 'number' ) {
+		//Netscape compliant
+		scrOfY = window.pageYOffset;
+		scrOfX = window.pageXOffset;
+	} else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
+		//DOM compliant
+		scrOfY = document.body.scrollTop;
+		scrOfX = document.body.scrollLeft;
+	} else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
+		//IE6 standards compliant mode
+		scrOfY = document.documentElement.scrollTop;
+		scrOfX = document.documentElement.scrollLeft;
+	}
+	return [ scrOfX, scrOfY ];
+}
 function smoothScroll(x, y) {
 	smoothScrollInTime(x,y,10)
 }
@@ -1232,8 +1249,8 @@ function smoothScrollInTime(x, y, steps) {
     if (steps <= 1) {
 		window.scroll(x,y)
     } else {
-	    var bodyX = self.document.body.scrollLeft
-	    var bodyY = self.document.body.scrollTop
+	    var bodyX = ss_getScrollXY()[0]
+	    var bodyY = ss_getScrollXY()[1]
 	    if (bodyX < x) {
 	    	var newX = parseInt(bodyX + ((x - bodyX) / steps))
 	    } else {
@@ -1579,10 +1596,10 @@ function captureXY(e) {
         }
         return(true)
     } else {
-        //ss_mousePosX = event.x + self.document.body.scrollLeft
-        //ss_mousePosY = event.y + self.document.body.scrollTop
-        ss_mousePosX = event.clientX + self.document.body.scrollLeft;
-        ss_mousePosY = event.clientY + self.document.body.scrollTop;
+        //ss_mousePosX = event.x + ss_getScrollXY()[0]
+        //ss_mousePosY = event.y + ss_getScrollXY()[1]
+        ss_mousePosX = event.clientX + ss_getScrollXY()[0];
+        ss_mousePosY = event.clientY + ss_getScrollXY()[1];
         ss_mouseX = event.clientX;
         ss_mouseY = event.clientY;
         var imgObj = window.event.srcElement
@@ -3736,8 +3753,8 @@ function ss_centerPopupDiv(targetDiv, inContainer) {
 		} else {
 			var x = parseInt(ss_getWindowWidth() / 2);
 			var y = parseInt(ss_getWindowHeight() / 2);
-	    	var bodyX = self.document.body.scrollLeft
-	    	var bodyY = self.document.body.scrollTop
+	    	var bodyX = ss_getScrollXY()[0]
+	    	var bodyY = ss_getScrollXY()[1]
 	    }
 		x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
 		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
@@ -4058,7 +4075,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	    if (mousePosY != 0) {
 	        var divHt = parseInt(ss_getDivHeight(objId));
 	        var windowHt = parseInt(ss_getWindowHeight());
-	        var scrollHt = self.document.body.scrollTop;
+	        var scrollHt = ss_getScrollXY()[1];
 	        var diff = scrollHt + windowHt - mousePosY;
 	        if (divHt > 0) {
 	            if (diff <= divHt) {
