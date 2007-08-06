@@ -63,7 +63,13 @@
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
-        Coming soon!
+		<c:if test="${!empty ssSidebarWsTree}">
+		<ssf:tree treeName="sidebarWsTree" 
+		  treeDocument="${ssSidebarWsTree}" 
+		  highlightNode="${ssBinder.id}" 
+		  showIdRoutine="ss_tree_showId"
+		  rootOpen="true"/>
+		</c:if>
 	</ssf:sidebarPanel>
 
 	</td>

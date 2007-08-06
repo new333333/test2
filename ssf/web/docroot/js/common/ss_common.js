@@ -301,6 +301,16 @@ function ss_showPermalink(obj) {
 	}
 }
 
+//Routine to show a tree id
+function ss_tree_showId(id, obj, action) {
+	//Build a url to go to
+	var url = ss_baseBinderUrl;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	self.location.href = url;
+	return false;
+}
+
 //Routine to fetch a url in a iframe window (for accessibility mode)
 function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
     var iframeDivObj = self.document.getElementById("ss_reusableIframeDiv");
@@ -3429,6 +3439,25 @@ function ss_saveDragId(id) {
     return false;
 }
 
+//Routine to go to a binder when it is clicked
+// id can be a number or a string ending in "_1234" where 1234 is the id
+function ss_treeShowId(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	//Build a url to go to
+	var url = ss_treeShowIdUrl;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	//console.log(url);
+	self.location.href = url;
+	return false;
+}
+
 // Favorites Management
 
 var ss_deletedFavorites = new Array();
@@ -3450,7 +3479,7 @@ function ss_showFavoritesPane(namespace) {
     dojo.html.show(fObj);
     dojo.html.setVisibility(fObj, "visible");
     dojo.html.setOpacity(fObj,0);
-    dojo.lfx.html.fadeIn(fObj, 200).play();
+    dojo.lfx.html.fadeIn(fObj, 100).play();
 	ss_loadFavorites(namespace, ss_getFavoritesTreeUrl);
 }
 
@@ -3524,25 +3553,6 @@ function ss_saveFavorites(namespace) {
 		method: "post"
 	};   
 	dojo.io.bind(bindArgs);
-}
-
-//Routine to go to a binder when it is clicked
-// id can be a number or a string ending in "_1234" where 1234 is the id
-function ss_treeShowId(id, obj, action) {
-	var binderId = id;
-	//See if the id is formatted (e.g., "ss_favorites_xxx")
-	if (binderId.indexOf("_") >= 0) {
-		var binderData = id.substr(13).split("_");
-		binderId = binderData[binderData.length - 1];
-	}
-
-	//Build a url to go to
-	var url = ss_treeShowIdUrl;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	//console.log(url);
-	self.location.href = url;
-	return false;
 }
 
 function ss_addBinderToFavorites(namespace) {
@@ -5214,7 +5224,11 @@ function ss_showSavedQueriesList(relObj, divId) {
 				var divObj = document.getElementById(divId);
 			
 				
-				var txt = "<h1>" + ss_savedSearchTitle + "</h1><ul>";
+				var txt = '<div class="ss_popupMenuClose" align="right">';
+				txt += '<a href="javascript: ;" ';
+				txt += 'onClick="ss_hideDivNone(this.parentNode.parentNode.id);">'
+				txt += '<img src="' + ss_imagesPath + 'pics/sym_s_delete.gif" border="0"/></a></div>'
+				txt += "<h1>" + ss_savedSearchTitle + "</h1><ul>";
 				for (var queryNo = 0; queryNo < data.length; queryNo++) {
 					txt += "<li><a href=\"" + ss_AdvancedSearch + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
 				}
@@ -5223,6 +5237,7 @@ function ss_showSavedQueriesList(relObj, divId) {
 
 				ss_placeOnScreen(divId, relObj, 9, 9);
 				dojo.html.setDisplay(divId, "block");
+				dojo.html.setVisibility(divId, "visible");
 	            dojo.html.setOpacity(divId,0);
 	            dojo.lfx.html.fadeIn(divId, 200).play();
 			} catch (e) {alert(e)}

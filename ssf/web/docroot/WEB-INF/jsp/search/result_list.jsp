@@ -21,6 +21,10 @@
 </c:if>
 		<ul class="ss_searchResult">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
+		    <c:set var="entryBinderTitle" value="${entry.binderTitle}"/>
+		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}">
+		    	<c:set var="entryBinderTitle" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}"/>
+		    </c:if>
 		
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			
@@ -118,7 +122,7 @@
 									</a>
 									</p>
 								</c:if>
-								<c:if test="${!empty entry.binderTitle}">
+								<c:if test="${!empty entryBinderTitle}">
 									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
 									<c:if test="${isDashboard == 'yes'}">
 										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
@@ -132,7 +136,7 @@
 	    	  							</ssf:url>" 
 	    	  						</c:if>
 									class="ss_parentPointer">
-									${entry.binderTitle}
+									${entryBinderTitle}
 									</a></p>
 								</c:if>
 							</div>
@@ -195,7 +199,7 @@
 										<c:out value="${entry.title}"/>
 									</a>
 								</p>
-								<c:if test="${!empty entry.binderTitle}">
+								<c:if test="${!empty entryBinderTitle}">
 									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
 									<c:if test="${isDashboard == 'yes'}">
 										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
@@ -209,7 +213,7 @@
 	    	  							</ssf:url>" 
 	    	  						</c:if>
 									class="ss_parentPointer">
-									${entry.binderTitle}
+									${entryBinderTitle}
 									</a></p>
 								</c:if>
 								

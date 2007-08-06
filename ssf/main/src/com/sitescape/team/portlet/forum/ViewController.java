@@ -67,7 +67,7 @@ public class ViewController  extends SAbstractController {
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		}
 		response.setRenderParameters(request.getParameterMap());
-		response.setWindowState(request.getWindowState());
+		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

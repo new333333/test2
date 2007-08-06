@@ -38,7 +38,7 @@ public class ViewEntryController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
-		response.setWindowState(request.getWindowState());
+		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
