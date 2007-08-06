@@ -391,6 +391,25 @@ public class BinderHelper {
 		return (Map)accessControlMap.get(entity.getId());
 	}
 	
+	static public void buildWorkspaceTreeBean(AllModulesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
+		Binder workspaceBinder = binder;
+		Document tree = null;
+		try {
+			if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+				tree = bs.getWorkspaceModule().getDomWorkspaceTree(workspaceBinder.getId(), 
+						new WsDomTreeBuilder(null, true, bs, helper), 1);
+			} else if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+				tree = bs.getFolderModule().getDomFolderTree(workspaceBinder.getId(), 
+						new WsDomTreeBuilder(null, true, bs, helper), 1);
+			} else if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+				tree = bs.getWorkspaceModule().getDomWorkspaceTree(workspaceBinder.getId(), 
+						new WsDomTreeBuilder(null, true, bs, helper), 0);
+			}
+		} catch (AccessControlException ac) {}
+
+		model.put(WebKeys.SIDEBAR_WORKSPACE_TREE, tree);
+	}
+
 	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model) {
 		if (binder instanceof TemplateBinder)
 			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, new ConfigHelper(""));

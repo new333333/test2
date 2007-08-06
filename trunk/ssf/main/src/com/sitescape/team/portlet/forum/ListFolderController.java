@@ -262,7 +262,7 @@ public static final String[] monthNamesShort = {
 		}
 
 		response.setRenderParameters(request.getParameterMap());
-		response.setWindowState(request.getWindowState());
+		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -889,6 +889,13 @@ public static final String[] monthNamesShort = {
 		
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, folder, model);
+		Binder workspaceBinder = folder.getParentBinder();
+		if (folder.isTop()) {
+			workspaceBinder = folder.getParentBinder();
+		} else {
+			workspaceBinder = folder.getTopFolder().getParentBinder();
+		}
+		BinderHelper.buildWorkspaceTreeBean(this, workspaceBinder, model, null);
 		
 		String forumId = folderId.toString();
 		buildFolderToolbars(req, response, folder, forumId, model, viewType);

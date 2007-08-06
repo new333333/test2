@@ -70,7 +70,7 @@ import com.sitescape.util.Validator;
 public class WorkspaceTreeController extends SAbstractController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		response.setWindowState(request.getWindowState());
+		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
         User user = RequestContextHolder.getRequestContext().getUser();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
@@ -168,6 +168,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 			}
 			//Build the navigation beans
 			BinderHelper.buildNavigationLinkBeans(this, binder, model);
+			BinderHelper.buildWorkspaceTreeBean(this, binder, model, null);
+			
 			//See if this is a user workspace
 			if ((binder.getDefinitionType() != null) && 
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {

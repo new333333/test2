@@ -96,7 +96,7 @@ public class ListProfilesController extends   SAbstractController {
 			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 		}
 		response.setRenderParameters(request.getParameterMap());
-		response.setWindowState(request.getWindowState());
+		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

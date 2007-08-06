@@ -71,7 +71,7 @@ import com.sitescape.util.Validator;
 public class ViewEntryController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		response.setWindowState(request.getWindowState());
+		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
