@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.portlet.administration;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -48,16 +51,13 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
-import com.sitescape.team.servlet.forum.ViewFileController;
-import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.TemplateCopyHelper;
-import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
@@ -119,10 +119,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 			} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {
 				List errors = new ArrayList();
-				HashSet<String> uniqueFilenames = new HashSet<String>();
-				String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + "templates" +
-					File.separator + RequestContextHolder.getRequestContext().getZoneName();
-				FileHelper.mkdirsIfNecessary(dirPath);
+				File tempFile = TempFileUtil.createTempFile("exportTemplates");
+				FileOutputStream fo = new FileOutputStream(tempFile);
+				ZipOutputStream zipOut = new ZipOutputStream(fo);
 				Iterator itFormData = formData.entrySet().iterator();
 				while (itFormData.hasNext()) {
 					Map.Entry me = (Map.Entry) itFormData.next();
@@ -135,29 +134,21 @@ public class ConfigureConfigurationController extends  SAbstractController {
 								Document doc = getAdminModule().getTemplateAsXml(binder);
 								String name = binder.getName();
 								if (Validator.isNull(name)) name = binder.getTemplateTitle();
-								// explicity set encoding so their is no mistake.
-								//cannot guarentee default will be set to UTF-8
-								String filePath = dirPath + File.separator +  Validator.replacePathCharacters(name) + ".xml";
-								XmlFileUtil.writeFile(doc, filePath);
-								uniqueFilenames.add(filePath);
+								zipOut.putNextEntry(new ZipEntry(Validator.replacePathCharacters(name) + ".xml"));
+								XmlFileUtil.writeFile(doc, zipOut);
 							} catch (Exception ex) {
 								errors.add(ex.getLocalizedMessage()==null ? ex.getMessage() : ex.getLocalizedMessage());
 							}
 						}
 					}
 				}
-				
-				Document listOfFiles = ViewFileController.createFileListingForZipDownload("templates.zip");
-				for(String path : uniqueFilenames) {
-					ViewFileController.addFileToList(listOfFiles, path);
-				}
-				File listOfFilesTempFile = TempFileUtil.createTempFile("exportTemplates");
-				XmlFileUtil.writeFile(listOfFiles, listOfFilesTempFile.getAbsolutePath());
+				zipOut.finish();
+
 
 				if (errors.isEmpty()) {
 					response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
 							WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
-							listOfFilesTempFile.getName());
+							tempFile.getName()  + "&" + WebKeys.URL_FILE_TITLE + "=templates.zip");
 				} else {
 					response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 					response.setRenderParameter("redirect", "true");

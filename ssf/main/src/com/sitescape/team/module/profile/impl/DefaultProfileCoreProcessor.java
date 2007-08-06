@@ -93,6 +93,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	
 	}
     //*******************************************************************/
+    //inside write transaction    
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
     	Integer type = binder.getDefinitionType();
@@ -107,6 +108,22 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	}
    	
     }
+    //inside write transaction    
+    protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	Integer type = binder.getDefinitionType();
+    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
+    		Principal u = binder.getOwner();
+    		if (!(u instanceof User)) {
+    			u = getProfileDao().loadPrincipal(u.getId(), u.getZoneId(), false);
+    		}
+    		if (u instanceof User) {
+    			//do this here, since we have a transaction running
+    			u.setWorkspaceId(binder.getId());
+    		}
+    	}
+    	super.addBinder_postSave(parent, binder, inputData, entryData, ctx);
+    	
+    }
     //***********************************************************************************************************
             
     //inside write transaction
@@ -117,7 +134,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      }
     //inside write transaction
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
-    	//make user the owner so create_modify access works
+    	//make user the user is owner so create_modify access works
     	if (entry instanceof User) {
     		entry.getCreation().setPrincipal((User)entry);
     		entry.getModification().setPrincipal((User)entry);
@@ -443,27 +460,27 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    }
 		
 	}
-    protected Map syncNewEntries_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
+    protected Map syncNewEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
     	return addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
     }
-    protected Entry syncNewEntries_create(Definition def, Class clazz, Map ctx)  {
+    protected Entry syncNewEntry_create(Definition def, Class clazz, Map ctx)  {
     	return addEntry_create(def, clazz, ctx);
     }
-    protected void syncNewEntries_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void syncNewEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	addEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
-    protected void syncNewEntries_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void syncNewEntry_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 		addEntry_preSave(binder, entry, inputData, entryData, ctx);
 	}
-    protected void syncNewEntries_save(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void syncNewEntry_save(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 		//don't change owner - will do in bulk to save all these updates
 		addEntry_save(binder, entry, inputData, entryData, ctx);
 	}
-    protected void syncNewEntries_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    protected void syncNewEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 		//don't change owner - will do in bulk to save all these updates
 		super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
 	}
-    protected void syncNewEntries_startWorkflow(Entry entry, Map ctx) {
+    protected void syncNewEntry_startWorkflow(Entry entry, Map ctx) {
     	addEntry_startWorkflow(entry, ctx);
     }
    public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
@@ -476,23 +493,23 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
           			StringBuffer inList = new StringBuffer();
           			for (int i=0; i<inputAccessors.size(); ++i) {
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
-	        			Map entryDataAll = syncNewEntries_toEntryData(binder, definition, inputData, null, ctx);
+	        			Map entryDataAll = syncNewEntry_toEntryData(binder, definition, inputData, null, ctx);
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	   	        
-	        			Entry entry = syncNewEntries_create(definition, clazz, ctx);
+	        			Entry entry = syncNewEntry_create(definition, clazz, ctx);
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
-	        			syncNewEntries_fillIn(binder, entry, inputData, entryData, ctx);
+	        			syncNewEntry_fillIn(binder, entry, inputData, entryData, ctx);
 	                
-	        			syncNewEntries_preSave(binder, entry, inputData, entryData, ctx);    
+	        			syncNewEntry_preSave(binder, entry, inputData, entryData, ctx);    
 
-	        			syncNewEntries_save(binder, entry, inputData, entryData, ctx);      
+	        			syncNewEntry_save(binder, entry, inputData, entryData, ctx);      
 	       	    		inList.append(entry.getId().toString() + ",");
 	       	    	 	                
-	        			syncNewEntries_postSave(binder, entry, inputData, entryData, ctx);
+	        			syncNewEntry_postSave(binder, entry, inputData, entryData, ctx);
 	        		
 	        			newEntries.put(entry, inputData);
-	        			syncNewEntries_startWorkflow(entry, ctx);
+	        			syncNewEntry_startWorkflow(entry, ctx);
 	        			ctx.clear();
 	        		}
         			inList.deleteCharAt(inList.length()-1);

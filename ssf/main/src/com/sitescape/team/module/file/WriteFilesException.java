@@ -16,7 +16,12 @@ import java.io.PrintWriter;
 public class WriteFilesException extends Exception {
 	
 	private FilesErrors errors;
+	private Long entityId;
 	
+	public WriteFilesException(FilesErrors errors, Long entityId) {
+		this.errors = errors;
+		this.entityId = entityId;
+	}
 	public WriteFilesException(FilesErrors errors) {
 		this.errors = errors;
 	}
@@ -38,5 +43,8 @@ public class WriteFilesException extends Exception {
     //This is because springs DispatcherPortlet calls the logger.warn method with the exception
     public void printStackTrace(PrintWriter s) {
     	
+    }
+    public Long getEntityId() {
+    	return entityId;
     }
 }

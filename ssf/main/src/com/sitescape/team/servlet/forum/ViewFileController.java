@@ -10,21 +10,16 @@
  */
 package com.sitescape.team.servlet.forum;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,7 +31,6 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.TempFileUtil;
-import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.util.WebHelper;
@@ -255,32 +249,24 @@ public class ViewFileController extends SAbstractController {
 		byte[] buf = new byte[1024];
 		
 		try {
-			ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
-			Document listOfFiles = XmlFileUtil.readStream(TempFileUtil.openTempFile(fileId));
+			java.io.InputStream in = TempFileUtil.openTempFile(fileId);
 
-			String filename = listOfFiles.getRootElement().attributeValue("filename");
 			response.setContentType("application/zip");
 			response.setHeader("Cache-Control", "private");
 			response.setHeader("Pragma", "no-cache");
-			if(filename != null && filename != "") {
+			if (Validator.isNotNull(fileTitle)) {
 				String attachment = "attachment; ";
 				response.setHeader(
 						"Content-Disposition",
-						attachment + "filename=\"" + filename + "\"");
+						attachment + "filename=\"" + fileTitle + "\"");
 			}
-			for(Object o : listOfFiles.selectNodes("//file")) {
-				Element e = (Element) o;
-				String path = e.attributeValue("path");
-				zipOut.putNextEntry(new ZipEntry(path));
-				FileInputStream in = new FileInputStream(path);
-				while((n = in.read(buf, 0, buf.length)) > 0) {
-					zipOut.write(buf, 0, n);
-				}
-				in.close();
+			OutputStream out = response.getOutputStream();
+			while((n = in.read(buf, 0, buf.length)) > 0) {
+				out.write(buf, 0, n);
 			}
-			zipOut.finish();
-		}
-		catch(Exception e) {
+			in.close();
+			
+		} catch(Exception e) {
 			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 		}
 
@@ -290,18 +276,5 @@ public class ViewFileController extends SAbstractController {
 		catch(Exception ignore) {}
 	}
 	
-	public static Document createFileListingForZipDownload(String zipFileName)
-	{
-		Document listOfFiles = DocumentHelper.createDocument();
-		Element listOfFilesRoot = listOfFiles.addElement("root");
-		if(zipFileName != null) {
-			listOfFilesRoot.addAttribute("filename", zipFileName);
-		}
-		return listOfFiles;
-	}
-	
-	public static void addFileToList(Document listOfFiles, String path)
-	{
-		listOfFiles.getRootElement().addElement("file").addAttribute("path", path);
-	}
+
 }

@@ -193,9 +193,11 @@
 				<property name="configFiles">
 					<list>
 						<value>config/zone.cfg.xml</value>
+						<value>optional:config/zone-ext.cfg.xml</value>
 					</list>		
 				</property>
 				<property name="validating"><value>false</value></property>
+				<property name="styleSheet"><value>/WEB-INF/xslt/zone.cfg.xslt</value></property>
 			</bean>
 		</property>
 	</bean>
@@ -347,21 +349,12 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="authenticationManager" parent="baseTransactionProxy" depends-on="sPropsUtil">
-		<property name="transactionAttributes">
-			<props>
-				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
-			</props>
-		</property>
-			<property name="target">
-				<bean class="com.sitescape.team.security.authentication.impl.AuthenticationManagerImpl">
-					<property name="profileDao"><ref local="profileDao"/></property>						
-					<property name="coreDao"><ref local="coreDao"/></property>						
-					<property name="adminModule"><ref local="adminModule"/></property>						
-					<property name="profileModule"><ref local="profileModule"/></property>						
-					<property name="reportModule"><ref local="reportModule"/></property>						
-				</bean>
-			</property>				
+	<bean id="authenticationManager"  class="com.sitescape.team.security.authentication.impl.AuthenticationManagerImpl" depends-on="sPropsUtil">
+			<property name="profileDao"><ref local="profileDao"/></property>						
+			<property name="coreDao"><ref local="coreDao"/></property>						
+			<property name="adminModule"><ref local="adminModule"/></property>						
+			<property name="profileModule"><ref local="profileModule"/></property>						
+			<property name="reportModule"><ref local="reportModule"/></property>						
 	</bean>	
 	<!-- ============================ Document Pipeline =========================== -->
 	
@@ -441,6 +434,13 @@
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
+	<!-- addFolder, addWorkspace provide transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+			</props>
+		</property>
 	</bean>
 
 	<!--  Initialize the zone and checks dependencies -->
@@ -467,11 +467,15 @@
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
-		<!-- setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
+		<!-- addBinderFromTemplate, setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addDefaultTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addFunction">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -484,11 +488,10 @@
 
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
 		<property name="target"><ref bean="folderModuleTarget"/></property>
-		<!-- addEntry, addReply,addVote, modifyEntry provide transaction semantics at a finer
+		<!-- addEntry, addFolder, addReply,addVote, modifyEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addFolder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -510,17 +513,12 @@
 				<property name="binderModule"><ref local="binderModule"/></property>
 			</bean>
 		</property>
-		<!-- addUser, addGroup, addEntries, modifyEntry provide transaction semantics at a finer
+		<!-- addUser, addGroup, addEntries, modifyEntry, addUserFromPortal,modifyUserFromPortal, addUserWorkspace provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="addUserWorkspace">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="addWorkspace">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
-				<prop key="modifyUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>

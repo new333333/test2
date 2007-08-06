@@ -5,7 +5,9 @@
   <class dynamic-update="true" lazy="false" table="SS_Forums" dynamic-insert="false" name="com.sitescape.team.domain.Binder">
     <cache usage="read-write"/>
     <id unsaved-value="null" name="id" type="long" node="@id">
-      <generator class="native"/>
+      <generator class="native">
+      	<param name="sequence">ss_binder_id_sequence</param>
+      </generator>
     </id>
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
@@ -24,7 +26,7 @@
     </many-to-one>
     <many-to-one name="owner" access="field"/>
     <!-- exclude evict, refresh, delete-orphan-->    
-    <bag inverse="true" access="field" cascade="persist,merge,delete,save-update,replicate,lock" optimistic-lock="false" lazy="true" name="binders">
+    <bag inverse="true" access="field" cascade="persist,merge,delete,save-update,replicate" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.team.domain.Binder"/>

@@ -10,12 +10,13 @@
  */
 package com.sitescape.team.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 
 import org.apache.commons.logging.Log;
@@ -25,8 +26,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-
-import com.sitescape.team.domain.SSClobString;
 
 public class XmlFileUtil {
 	public static String FILE_ENCODING="UTF-8";
@@ -84,26 +83,30 @@ public class XmlFileUtil {
     }
     return document;
 }
+	public static void writeFile(Document doc, OutputStream out) 
+	throws Exception {
+		XMLWriter xOut=null;
+		//explicity set encoding so their is no mistake.
+		//cannot guarentee default will be set to UTF-8
+		OutputFormat fmt = OutputFormat.createPrettyPrint();
+		if (!FILE_ENCODING.equals(""))
+			fmt.setEncoding(FILE_ENCODING);
+   		xOut = new XMLWriter(out, fmt);
+   		xOut.write(doc);
+   		xOut.flush();
+				
+	}
 	public static void writeFile(Document doc, String path)
 		throws Exception {
 		FileOutputStream fOut = null;
-		XMLWriter xOut=null;
 		try {
-			//explicity set encoding so their is no mistake.
-			//cannot guarentee default will be set to UTF-8
 			fOut = new FileOutputStream(path);
-			OutputFormat fmt = OutputFormat.createPrettyPrint();
-			if (!FILE_ENCODING.equals(""))
-				fmt.setEncoding(FILE_ENCODING);
-    		xOut = new XMLWriter(fOut, fmt);
-    		xOut.write(doc);
-    		xOut.flush();
+			writeFile(doc, fOut);
 	    } catch (Exception ex) {
 	    	logger.error("Can't write XML file " + path + ":error is: " + ex.getLocalizedMessage());
 	    	throw(ex);
 	    } finally {
-	    	if (xOut != null) xOut.close();
-	    	else if (fOut != null) fOut.close();
+	    	if (fOut != null) fOut.close();
 	    }
 		
 	}

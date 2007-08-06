@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 
 import javax.mail.internet.InternetAddress;
 
+import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -75,6 +76,7 @@ import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.MailModule;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
@@ -786,102 +788,126 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//world read
 		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
-	
-	public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException {
-	    //after children are added, resolve relative selections
-		Binder binder = addBinderFromTemplateInternal(configId, parentBinderId, title, name);
-		//flush changes so we can use them to fix up dashboards
+	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
+	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
+	public Long addBinderFromTemplate(final Long configId, final Long parentBinderId, final String title, final String name) throws AccessControlException {
+		//The first add is independent of the others.  In this case the transaction is short 
+		//and managed by processors.  
+		
+		TemplateBinder cfg = (TemplateBinder)getCoreDao().loadBinder(configId, RequestContextHolder.getRequestContext().getZoneId());
+		Binder parent = getCoreDao().loadBinder(parentBinderId, RequestContextHolder.getRequestContext().getZoneId());
+		Map ctx = new HashMap();
+		//force a lock so contention on the sortKey is reduced
+		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+		final Binder top = addBinderFromTemplateInternal(cfg, parent, title, name, ctx);
+		//commit index, binder commited
 		IndexSynchronizationManager.applyChanges();
-		List<Binder>binders = new ArrayList();
-		binders.add(binder);
-		while (!binders.isEmpty()) {
-			Binder b = binders.remove(0);
-			binders.addAll(b.getBinders());
-			try {
-				EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
-				if (dashboard != null) {
-					DashboardHelper.resolveRelativeBinders(b, dashboard);
-				}
-			} catch (Exception ex) {
-				//at this point just log errors  index has already been updated
-				//if throw errors, rollback will take effect and must manualy remove from index
-				logger.error("Error adding dashboard " + ex.getLocalizedMessage());
-			}
-		}
-		return binder.getId();
+		//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
+		//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
+		getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        //need to reload incase addFolder/workspace used retry loop where session cache is flushed by exception
+	        TemplateBinder cfg = (TemplateBinder)getCoreDao().loadBinder(configId, RequestContextHolder.getRequestContext().getZoneId());
+ 			addBinderFinish(cfg, top);
+ 			return null;
+  	     }});
+
+		IndexSynchronizationManager.discardChanges();
+	 	//need to reindex binder tree, cause of copy Attributes code
+		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, top.getId().toString()));
+		//delete actual binder
+		IndexSynchronizationManager.deleteDocument(top.getIndexDocumentUid());
+	 	loadBinderProcessor(top).indexTree(top, null);
+	 	//flush changes so we can use them to fix up dashboards
+		IndexSynchronizationManager.applyChanges();
+	 	//after children are added, resolve relative selections
+		getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		List<Binder>binders = new ArrayList();
+        		binders.add(top);
+        		while (!binders.isEmpty()) {
+        			Binder b = binders.remove(0);
+        			binders.addAll(b.getBinders());
+        			try {
+        				EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
+        				if (dashboard != null) {
+        					DashboardHelper.resolveRelativeBinders(b, dashboard);
+        				}
+        			} catch (Exception ex) {
+        				//at this point just log errors  index has already been updated
+        				//	if throw errors, rollback will take effect and must manualy remove from index
+        				logger.error("Error adding dashboard " + ex.getLocalizedMessage());
+        			}
+        		}
+        		return null;
+	     }});
+
+		return top.getId();
 
 	}
-	protected Binder addBinderFromTemplateInternal(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException {
-    	//modules do the access checking
+	protected void addBinderFinish(TemplateBinder cfg, Binder binder) throws AccessControlException {
+		   Map props = cfg.getProperties();
+		   if (props != null) binder.setProperties(props);
+		   copyBinderAttributes(cfg, binder);
+		   //first flush updates, addBinder might do a refresh which overwrites changes
+		   getCoreDao().flush();
+		   List<TemplateBinder> children = cfg.getBinders();    
+		   for (TemplateBinder child: children) {
+			   Binder childBinder = addBinderFromTemplateInternal(child, binder, NLT.getDef(child.getTitle()), null, null);	
+			   addBinderFinish(child, childBinder);
+		   }
+
+	}
+
+	protected Binder addBinderFromTemplateInternal(TemplateBinder cfg, Binder parentBinder, String title, String name, Map ctx) throws AccessControlException {
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
-	   TemplateBinder cfg = (TemplateBinder)getCoreDao().loadBinder(configId, zoneId);
-	   Binder parentBinder = (Binder)getCoreDao().loadBinder(parentBinderId, zoneId);
 	   Binder binder;
 	   Definition def = cfg.getDefaultViewDef();
 	   if (def == null) {
 		   def = getDefinitionModule().addDefaultDefinition(cfg.getDefinitionType());
 	   }
-	    Map fileItems = new HashMap();
-	    Map entryData = new HashMap();
-		InputDataAccessor inputData = new MapInputData(entryData);
-		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTitle());
-		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
-		entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-		String description=null;
-		if (cfg.getDescription() != null) description = NLT.getDef(cfg.getDescription().getText());
-		if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
-		entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
-		entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
-		//if not null, use icon from template.  Otherwise try icon from definition when binder is created.
-		if (Validator.isNotNull(cfg.getIconName())) entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
-		if (Validator.isNotNull(name)) entryData.put(ObjectKeys.FIELD_BINDER_NAME, name);
-		//get binder created
-	   if (cfg.getDefinitionType() == Definition.WORKSPACE_VIEW) {
-   			binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinderId, def.getId(), inputData, fileItems), zoneId);
-	   } else if (cfg.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-  			binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinderId, def.getId(), inputData, fileItems), zoneId);
-	   } else {
-		   if (parentBinder instanceof Workspace)
-			   binder = getCoreDao().loadBinder(getWorkspaceModule().addFolder(parentBinderId, def.getId(), inputData, fileItems), zoneId);
-		   else
-			   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinderId, def.getId(), inputData, fileItems), zoneId);
-	   }
-	   Map props = cfg.getProperties();
-	   if (props != null) binder.setProperties(props);
-	   copyBinderAttributes(cfg, binder);
+	   Map fileItems = new HashMap();
+	   Map entryData = new HashMap();
+	   //pass lock option in
+	   if (ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_FORCE_LOCK)) entryData.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK));
+	   InputDataAccessor inputData = new MapInputData(entryData);
+	   if (Validator.isNull(title)) title = NLT.getDef(cfg.getTitle());
+	   if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
+	   entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
+	   String description=null;
+	   if (cfg.getDescription() != null) description = NLT.getDef(cfg.getDescription().getText());
+	   if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
+	   entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
+	   entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
+	   //if not null, use icon from template.  Otherwise try icon from definition when binder is created.
+	   if (Validator.isNotNull(cfg.getIconName())) entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
+	   if (Validator.isNotNull(name)) entryData.put(ObjectKeys.FIELD_BINDER_NAME, name);
 	   if (!cfg.isDefinitionsInherited()) {
-	    	binder.setDefinitionsInherited(false);
-	    	binder.setDefinitions(cfg.getDefinitions());
-	    	binder.setWorkflowAssociations(cfg.getWorkflowAssociations());
-    	}
-	    if (!cfg.isFunctionMembershipInherited()) {
-	    	binder.setFunctionMembershipInherited(false);
-	    	List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(cfg);
-	    	for (WorkAreaFunctionMembership fm: wfms) {
-	    		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-		       	membership.setZoneId(fm.getZoneId());
-		       	membership.setWorkAreaId(binder.getWorkAreaId());
-		       	membership.setWorkAreaType(binder.getWorkAreaType());
-		       	membership.setFunctionId(fm.getFunctionId());
-		       	membership.setMemberIds(new HashSet(fm.getMemberIds()));
-		        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-	    		
-	    	}	    	
-	    	getCoreDao().flush();
-	    	//need to reindex acls - since new shouldn't have any children
-	       	loadBinderProcessor(binder).indexFunctionMembership(binder, false);
-	    } else {
-	    	//	do child configs
-	    	//	first flush updates, addBinder does a refresh which overwrites changes
-	    	getCoreDao().flush();
-	    }
-	    List<TemplateBinder> children = cfg.getBinders();    
-	    for (TemplateBinder child: children) {
-	    	addBinderFromTemplateInternal(child.getId(), binder.getId(), NLT.getDef(child.getTitle()), null);	    	
-	    }
-	    return binder;
+		   entryData.put(ObjectKeys.INPUT_FIELD_DEFINITIONS, cfg.getDefinitions());
+		   entryData.put(ObjectKeys.INPUT_FIELD_WORKFLOWASSOCIATIONS, cfg.getWorkflowAssociations());
+	   }
+	   if (!cfg.isFunctionMembershipInherited()) {
+			entryData.put(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS, getWorkAreaFunctionMemberships(cfg));
+	   }	    	
+	   //get binder created
+	   try {
+		   if (cfg.getDefinitionType() == Definition.WORKSPACE_VIEW) {
+			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+		   } else if (cfg.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+		   } else {
+			   if (parentBinder instanceof Workspace)
+				   binder = getCoreDao().loadBinder(getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+			   else
+				   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+		   }
+	   } catch (WriteFilesException wf) {
+		   //don't fail, but log it
+  			logger.error("Error creating binder from template: ", wf);
+  			binder = getCoreDao().loadBinder(wf.getEntityId(), zoneId);
+	   }
+	   return binder;
 	}
-	
  
 	public void addFunction(String name, Set<WorkAreaOperation> operations) {
 		checkAccess(AdminOperation.manageFunction);
@@ -930,6 +956,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//let anyone read them			
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
+	//no transaction
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, Set<Long>> functionMemberships) {
 		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -996,7 +1023,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 
 
-     public void setWorkAreaOwner(final WorkArea workArea, final Long userId) {
+	//no transaction
+    public void setWorkAreaOwner(final WorkArea workArea, final Long userId) {
     	 checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	if (!workArea.getOwnerId().equals(userId)) {
     		getTransactionTemplate().execute(new TransactionCallback() {
@@ -1055,7 +1083,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    }
         return source;
 	}
-
+	//no transaction
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit) 
     throws AccessControlException {
     	checkAccess(workArea, AdminOperation.manageFunctionMembership);
