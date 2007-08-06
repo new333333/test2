@@ -1387,9 +1387,10 @@ public class BinderHelper {
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
+		String title = PortletRequestUtils.getStringParameter(request, "title", "--no title--");
 		String toList = PortletRequestUtils.getStringParameter(request, "_sendMail_toList", "");
 		String toTeam = PortletRequestUtils.getStringParameter(request, "_sendMail_toTeam", "");
-		String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "");
+		String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification");
 		String body = PortletRequestUtils.getStringParameter(request, "_sendMail_body", "");
 		String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
 		if (!toList.equals("") || !toTeam.equals("")) {
