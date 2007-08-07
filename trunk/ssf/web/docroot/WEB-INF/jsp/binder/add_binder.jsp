@@ -105,6 +105,9 @@ function ss_enableDisableFolderOptions(bindersCount) {
   </c:forEach>
 <br/>  
 </c:if>
+<c:if test="${empty ssBinderConfigs}">
+<input type="hidden" name="binderConfigId" value="${binderConfigId}">
+</c:if>
 </fieldset>
 </td></tr>
 

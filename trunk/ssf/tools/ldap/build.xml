@@ -37,6 +37,7 @@
   			fork="true"
   			dir="${basedir}"
   			failonerror="true">
+ 			<arg value="zone-ext.cfg.xml" />
   			<arg value="${create.dir}/loadprofiles.xml" />
   		</java>
  

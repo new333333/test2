@@ -415,7 +415,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     private void addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
        ProfileCoreProcessor processor=loadProcessor(binder);
    	   Map newEntries = new TreeMap(String.CASE_INSENSITIVE_ORDER);
-   	   Map oldEntries = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+   	   Map oldEntries = new HashMap();
    	   Map foundNames = new TreeMap(String.CASE_INSENSITIVE_ORDER);
    	   for (int j=0; j<elements.size();) {
    		   newEntries.clear();
@@ -434,6 +434,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				}
 			}
 			j+= 100;
+			if (newEntries.isEmpty()) continue;
 			//make sure don't exist
 			Map params = new HashMap();
 			params.put("plist", newEntries.keySet());
