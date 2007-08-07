@@ -4680,5 +4680,9 @@ div.ss_license_warning {
   font-size: ${ss_style_font_size}; 
 }
 
+.ss_radio_button_horizontal td {
+	padding-right:10px;
+}
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
