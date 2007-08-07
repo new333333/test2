@@ -18,13 +18,10 @@ public class LongIdUtil {
 	public static final String DEFAULT_SEPARATOR=" ";
 
 	public static Set<Long> getIdsAsLongSet(String []sIds) {
-		Set memberIds = new HashSet();
+		Set<Long> memberIds = new HashSet();
 		if (sIds != null) {
 			for (int i = 0; i < sIds.length; i++) {
-				String[] ids = sIds[i].split(DEFAULT_SEPARATOR);
-				for (int j = 0; j < ids.length; j++) {
-					if (ids[j].length() > 0) memberIds.add(Long.valueOf(ids[j]));
-				}
+				memberIds.addAll(getIdsAsLongSet(sIds[i], DEFAULT_SEPARATOR));
 			}
 		}
 		return memberIds;		
@@ -39,7 +36,7 @@ public class LongIdUtil {
 		String [] sIds = ids.split(separator);
 		for (int i = 0; i < sIds.length; i++) {
 			try  {
-				idSet.add(new Long(sIds[i]));
+				idSet.add(Long.parseLong(sIds[i].trim()));
 			} catch (Exception ex) {};
 		}
 		return idSet;
@@ -53,9 +50,9 @@ public class LongIdUtil {
 		String [] sIds = ids.split(separator);
 		for (int i = 0; i < sIds.length; i++) {
 			try  {
-				Long.parseLong(sIds[i]);
+				Long.parseLong(sIds[i].trim());
 				//continue if valid long
-				idSet.add(sIds[i]);
+				idSet.add(sIds[i].trim());
 			} catch (Exception ex) {};
 		}
 		return idSet;

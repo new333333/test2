@@ -11,27 +11,18 @@
 package com.sitescape.team.domain;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.sitescape.util.StringUtil;
 /**
  * Helper class to encapsalate state notifications
  * @author Janet McCann
  *
  */
 public class WfNotify {
-	private boolean creator;
 	private String subject="";
 	private String body="";
 	private boolean appendTitle;
 	private boolean appendBody;
 	private Set ids;
 	
-	public boolean isCreatorEnabled() {
-		return creator;
-	}
-	public void setCreatorEnabled(boolean creator) {
-		this.creator = creator;
-	}
 	public String getSubject() {
 		return subject;
 	}
