@@ -87,42 +87,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <%-- Subscribe, Ratings bar, visits --%>
 <c:if test="${empty ssDefinitionEntry.parentEntry}">
-<div style="height: 20px;">
-<div style="float:right; padding-top: 2px;">
-<a href="<ssf:url adapter="true" 
-		portletName="ss_forum" 
-	    action="send_entry_email"
-	    binderId="${ssDefinitionEntry.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.id}"/>" 
-  onClick="ss_openUrlInWindow(this, '_blank');return false;"
-  <ssf:title tag="title.send.entry.to.friends" />
-><div class="ss_iconed_label ss_send_friend"><ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
-<c:if test="<%= !isIE %>">
-offsetX="-25" offsetY="-15" 
-</c:if>
-<c:if test="<%= isIE %>">
-offsetX="-5"  
-</c:if>
-title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
-
-<a onclick=" ss_createPopupDiv(this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_subscription_entry${ssDefinitionEntry.id}');return false;" 
-	href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true">
-				<ssf:param name="operation" value="entry_subscribe" />
-				<ssf:param name="binderId" value="${ssDefinitionEntry.parentBinder.id}" />
-				<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
-				<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-				<ssf:param name="namespace" value="${renderResponse.namespace}" />
-		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>>
-		<div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div>
-</a>
-	
-</div>
-</div>
-
 <div style="padding-left: 6px">
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 </div>

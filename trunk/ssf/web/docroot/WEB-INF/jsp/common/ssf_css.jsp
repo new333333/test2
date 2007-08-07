@@ -593,11 +593,6 @@ div.ss_iconed_label a {
   width: 70%;
 }
 
-a:hover div.ss_iconed_label , a:visited:hover div.ss_iconed_label  {
-  font-size: 11px;
-  color: ${ss_style_muted_label_color};
-  text-decoration: underline;
-}
 
 div.ss_add_tag {
   background-image: url(<html:imagesPath/>icons/add_tag.gif);
@@ -2140,6 +2135,7 @@ img.ss_accessory_modify {
     background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left -16px;
     width:16px;
     height: 16px;
+    top: -1px;
 }
 
 a:hover img.ss_accessory_modify {
@@ -2149,8 +2145,9 @@ a:hover img.ss_accessory_modify {
 img.ss_accessory_delete {
 	position:relative;
     background:url(<html:imagesPath/>icons/accessory_delete.gif) no-repeat left 0px;
-    width:9px;
-    height: 9px;
+    width:12px;
+    height: 12px;
+    top: 1px;
 }
 
 a:hover img.ss_accessory_delete {
@@ -2288,10 +2285,16 @@ div.ss_sidebar_panel {
 	font-weight: normal;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
-	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
-	background-repeat: repeat-x;
 }
 
+td.ss_actions_bar1, div.ss_actions_bar1 {
+	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
+	background-repeat: repeat-x;
+	border-top: 1px solid ${ss_toolbar_border_color};
+	border-bottom: 1px solid ${ss_toolbar_border_color};
+	height: 25px;
+	white-space: nowrap;
+}
 
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
@@ -2345,9 +2348,6 @@ table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
 
 
 ul.ss_actions_bar1  {
-    background-color: ${ss_toolbar1_background_color};
-	border-top: 1px solid #CCD2AE;
-	border-bottom: 1px solid #CCD2AE;
 	height: 25px;
 }
 
@@ -2445,7 +2445,6 @@ ul.ss_actions_bar1 li {
 }
 
 ul.ss_actions_bar1 li a:hover {
-	background-color: ${ss_style_header_bar_background};
 	text-decoration:none;
 }
 

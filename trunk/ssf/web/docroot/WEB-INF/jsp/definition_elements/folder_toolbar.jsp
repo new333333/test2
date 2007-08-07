@@ -12,4 +12,17 @@
 %>
 <% // Folder level toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="ss_actions_bar1" align="right">
+<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+<td class="ss_actions_bar1">
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
+</td>
+<td class="ss_actions_bar1"  valign="middle" style="width: 50px; white-space: nowrap;">
+<a href="javascript: window.print();"><img border="0" 
+    class="ss_print_button"
+    alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+    src="<html:imagesPath/>pics/1pix.gif" /></a><a
+    href="javascript: ss_helpSystem.run();"><img border="0" style="margin-left: 10px;"
+    <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a></td>
+</tr></tbody></table>
+</div>

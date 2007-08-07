@@ -55,10 +55,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 	</td>
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
- 			<% // Folder toolbar %>
-  	      	<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
-
-			<% // Navigation links %>
+			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

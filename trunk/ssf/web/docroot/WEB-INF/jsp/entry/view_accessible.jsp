@@ -40,7 +40,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 
   <% // Folder toolbar %>
  <div class="ss_content_inner">
-  <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
+  <%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
  </div>
 
  <div class="ss_content_inner">

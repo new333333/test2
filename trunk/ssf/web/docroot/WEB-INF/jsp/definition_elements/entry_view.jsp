@@ -46,7 +46,6 @@
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td valign="top"><%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %></td>
-<td valign="top" align="right"><%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %></td>
 </tr>
 </table>
 
@@ -62,3 +61,5 @@
   entry="${ssDefinitionEntry}" />
   
 </div>
+
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
