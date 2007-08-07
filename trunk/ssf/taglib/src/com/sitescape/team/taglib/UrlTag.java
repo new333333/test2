@@ -23,7 +23,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 
 import javax.portlet.PortletURL;
 
@@ -83,12 +82,8 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			RenderRequest renderRequest = (RenderRequest) req.getAttribute("javax.portlet.request");
 			RenderResponse renderResponse = (RenderResponse) req.getAttribute("javax.portlet.response");
 			//If there is no request object, then this must be from an adaptor and not a portlet url
-			if (renderRequest == null || renderResponse == null) {
-				if(PortletAdapterUtil.isRunByAdapter(req))
-					this.adapter = true; // adapter
-				else
-					return SKIP_BODY; // servlet - forget about url, just return
-			}
+			if (renderRequest == null || renderResponse == null) this.adapter = true;
+
 			
 			//See if a url was specified
 			String ctxPath = req.getContextPath();
