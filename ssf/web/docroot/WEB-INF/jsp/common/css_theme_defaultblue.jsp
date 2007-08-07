@@ -232,7 +232,7 @@
 --%><c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/><%--
 --%><c:set var="ss_toolbar_text_color" value="#000000" scope="request"/><%--
 --%><c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
---%><c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/><%--
+--%><c:set var="ss_toolbar_border_color" value="#AFC8E3" scope="request"/><%--
 --%><c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/><%--
 --%><c:set var="ss_toolbar_inactive" value="#999999" scope="request"/><%--
     
