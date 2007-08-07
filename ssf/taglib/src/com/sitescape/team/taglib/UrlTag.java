@@ -26,6 +26,9 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 
 import javax.portlet.PortletURL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
@@ -36,6 +39,8 @@ import com.sitescape.util.Validator;
  *
  */
 public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
+	private static Log logger = LogFactory.getLog(UrlTag.class);
+
 	private String url;
 	private String action;
     private String binderId;
@@ -184,7 +189,18 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			return SKIP_BODY;
 		}
 	    catch(Exception e) {
-	        throw new JspException(e);
+	    	// Sometimes this tag is called from an error jsp page to render information
+	    	// about the previous error occured during the normal flow of control.
+	    	// Often in time, the state is such that the code in this method fails because
+	    	// an output stream or reader was previously obtained from the same request
+	    	// object by the code executing the normal flow. Throwing another error from
+	    	// this place is the last thing we want to do in that case, since it can 
+	    	// make the bad situation even uglier. For that reason, we don't want to 
+	    	// propogate the exception up the call stack. Instead, just log the error
+	    	// and return normally from here.  
+	        //throw new JspException(e);
+	        logger.warn(e.toString());
+	        return SKIP_BODY;
 	    }
 		finally {
 			setup();
