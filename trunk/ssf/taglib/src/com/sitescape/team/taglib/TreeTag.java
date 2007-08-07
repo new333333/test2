@@ -245,7 +245,9 @@ public class TreeTag extends TagSupport {
 				}
 				
 				if (this.startingId == null || this.startingId.equals("")) {
-					sb.append("<div class=\"ss_treeWidget\">\n");
+					sb.append("<div class=\"ss_treeWidget");
+					if (this.nowrap) sb.append(" ss_nowrap");
+					sb.append("\">\n");
 					
 					String mPrefix=this.multiSelectPrefix;
 					// hope it's not in use here because type attribute is now unknown
@@ -361,7 +363,6 @@ public class TreeTag extends TagSupport {
 				s_text += getBucketDisplay(Html.formatTo(e.attributeValue("tuple2")));
 			}
 			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
-			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
@@ -634,7 +635,6 @@ public class TreeTag extends TagSupport {
 			//Text
 			String s_text = Html.formatTo(e.attributeValue("title"));
 			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
-			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
 			String s_id = e.attributeValue("id", "");
