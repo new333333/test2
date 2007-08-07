@@ -132,7 +132,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		return rssPathName;
 	}
 
-	private void deleteRssIndex(Binder binder) {
+	public void deleteRssIndex(Binder binder) {
 
 		// See if the feed exists
 		String rssPathName = getRssPathName(binder);
