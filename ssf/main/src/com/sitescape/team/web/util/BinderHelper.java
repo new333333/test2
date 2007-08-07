@@ -329,6 +329,7 @@ public class BinderHelper {
 		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			PortletURL url = response.createRenderURL();
+			try {url.setWindowState(WindowState.MAXIMIZED);} catch(Exception e) {};
 			url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
