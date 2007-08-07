@@ -31,12 +31,21 @@
 		required = "";
 	}
 %>
+<c:set var="ss_radioButtonsLayout" value="${propertyValues_layout[0]}" scope="request"/>
 <div class="ss_entryContent">
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
+<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
+<table cellspacing="0" cellpadding="0" class="ss_radio_button_horizontal">
+<tr>
+</c:if>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
 <%
 	request.setAttribute("radioGroupName", orgRadioGroupName);
 %>
+<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
+</tr>
+</table>
+</c:if>
 </div>

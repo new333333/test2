@@ -16,10 +16,22 @@
 <c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == property_name}">
   <c:set var="checked" value="checked"/>
 </c:if>
+<c:if test="${empty ssDefinitionEntry.customAttributes[radioGroupName].value && property_selected}">
+  <c:set var="checked" value="checked"/>
+</c:if>
+<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
+<td>
+</c:if>
 <input type="radio" name="<c:out value="${radioGroupName}"/>" 
   value="<c:out value="${property_name}"/>" <c:out value="${checked}"/>
 />&nbsp;<span class="ss_bold"><c:out value="${property_caption}"/></span><ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
+<c:if test="${ss_radioButtonsLayout == 'horizontal'}">
+</td>
+</c:if>
+<c:if test="${ss_radioButtonsLayout != 'horizontal'}">
 <br/>
+</c:if>
+
