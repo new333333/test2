@@ -58,8 +58,6 @@ var ss_helpSystemUrl;
 var ss_addTabUrl;
 var ss_not_logged_in;
 var ss_rtc_not_configured;
-var ss_nlt_navigation_normal;
-var ss_nlt_navigation_maximize;
 var ss_confirmDeleteFolderText;
 var ss_confirmStartWorkflowText;
 var ss_confirmStopWorkflowText;
@@ -195,8 +193,6 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_rtc_not_configured = "<ssf:nlt tag="rtc.client.not.configured"/>";
 	
 	//Global toolbar text
-	ss_nlt_navigation_normal = "<ssf:nlt tag="navigation.normal"/>";
-	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
 	ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	ss_confirmStartWorkflowText = "<ssf:nlt tag="entry.confirmStartWorkflow"/>";
 	ss_confirmStopWorkflowText = "<ssf:nlt tag="entry.confirmStopWorkflow"/>";
