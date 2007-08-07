@@ -1645,6 +1645,13 @@ public static final String[] monthNamesShort = {
 			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		}
 		
+		//WebDav Permalink
+		qualifiers = new HashMap();
+		qualifiers.put("webdavUrl", webdavUrl);
+		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
+		footerToolbar.addToolbarMenu("webdavpermalink", NLT.get("toolbar.menu.webdavPermalink"), 
+				webdavUrl, qualifiers);
+		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
 				(viewType.equals(Definition.VIEW_STYLE_DEFAULT) 
