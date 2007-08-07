@@ -78,7 +78,8 @@ public class ExportDefinitionController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
 					WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
 					tempFile.getName() + "&" + WebKeys.URL_FILE_TITLE + "=definitions.zip");
-			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+			//jboss doesn't like zero length array
+			if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			response.setRenderParameter("redirect", "true");
 			
 		} else if (formData.containsKey("cancelBtn")) {
