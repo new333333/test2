@@ -57,7 +57,8 @@
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
 		  showIdRoutine="ss_tree_showId"
-		  rootOpen="true"/>
+		  rootOpen="true"
+		  nowrap="true"/>
 		</c:if>
 	</ssf:sidebarPanel>
 
