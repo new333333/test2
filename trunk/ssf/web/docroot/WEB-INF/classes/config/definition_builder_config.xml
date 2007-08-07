@@ -2289,6 +2289,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
@@ -2298,6 +2299,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
@@ -2307,6 +2309,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
@@ -2316,6 +2319,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
@@ -2325,6 +2329,7 @@
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
@@ -2364,6 +2369,7 @@
 	<item name="notifications" caption="__notifications">
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 			<property name="subjText" caption="__notification_subject_text" type="text" />
