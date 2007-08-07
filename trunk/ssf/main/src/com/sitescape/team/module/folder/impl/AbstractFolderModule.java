@@ -775,12 +775,16 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	// see if title exists for this folder
 		FilterControls filter = new FilterControls(ratingAttrs, cfValues);
      	double result = getCoreDao().averageColumn(Rating.class, "rating", filter);
-     	long count = getCoreDao().countObjects(Rating.class,filter);
      	AverageRating avg = entity.getAverageRating();
+     	long count;
      	if (avg == null) {
      		avg = new AverageRating();
      		entity.setAverageRating(avg);
+     		count = 1;
      	}
+     	else
+     		count = avg.getCount() + 1;
+     	
      	avg.setAverage(result);
    		avg.setCount(count);
  			
