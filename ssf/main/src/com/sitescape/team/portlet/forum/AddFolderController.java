@@ -155,6 +155,7 @@ public class AddFolderController extends SAbstractController {
 				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.FOLDER_CONFIGS, result);
+			model.put("binderConfigId", PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_CONFIG_ID, ""));
 		}
 	
 		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);

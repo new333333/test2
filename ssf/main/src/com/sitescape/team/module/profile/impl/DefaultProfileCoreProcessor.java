@@ -432,6 +432,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	 * is an InputDataAccessor of updates.  Only index entries that change
 	 */
 	public void syncEntries(final Map entries) {
+		if (entries.isEmpty()) return;
 	    
         // The following part requires update database transaction.
         Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
@@ -484,7 +485,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	addEntry_startWorkflow(entry, ctx);
     }
    public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
-		SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
+	   if (inputAccessors.isEmpty()) return new ArrayList();
+	   SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
 		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {

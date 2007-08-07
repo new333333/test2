@@ -42,12 +42,12 @@ import org.dom4j.io.XMLWriter;
 
 public class GenerateLdapList {
 	public static void main(String[] args) {
-		if ((args.length == 0) || (args.length > 2)) {
-			System.out.println("usage: java GenerateLdapList <outputFile [nogroups]>");
+		if ((args.length == 0) || (args.length > 3)) {
+			System.out.println("usage: java GenerateLdapList <configFile outputFile [nogroups]>");
 			return;
 		}
-		else if (args.length == 2) {
-			if (args[1].equalsIgnoreCase("nogroups")) {
+		else if (args.length == 3) {
+			if (args[2].equalsIgnoreCase("nogroups")) {
 				System.out.println("java GenerateCreateTablesUnconstrained " + args[0] + " " + args[1]);
 			} else {
 				System.out.println("usage: java GenerateLdapList <outputFile [nogroups]>");
@@ -57,20 +57,20 @@ public class GenerateLdapList {
 		} 
 		
 		try {
-			if (args.length == 1) {
-				doMain(args[0], true);
+			if (args.length == 2) {
+				doMain(args[0], args[1], true);
 			} else {
-				doMain(args[0],false);
+				doMain(args[0], args[1], false);
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public static void doMain(String outFile, boolean doGroups) throws Exception {
+	public static void doMain(String configFile, String outFile, boolean doGroups) throws Exception {
 		
 		ClassLoader cl = GenerateLdapList.class.getClassLoader();
-		URL inUrl = cl.getResource("zone.cfg.xml");
+		URL inUrl = cl.getResource(configFile);
 		Document document = null;
         SAXReader reader = new SAXReader();
         InputStreamReader fIn=null;
@@ -198,6 +198,12 @@ public class GenerateLdapList {
 			Element prop=group.addElement("property");
 			prop.addAttribute("name", "foreignName");
 			prop.addText(dn);
+			if (!groupAttributes.containsValue("name")) {
+				prop=group.addElement("property");
+				prop.addAttribute("name", "name");
+				prop.addText(dn);
+				
+			}
 			for (int i=0; i<memberAttributes.size(); i++) {
 				Attribute att = lAttrs.get((String)memberAttributes.get(i));
 				if (att == null) continue;
