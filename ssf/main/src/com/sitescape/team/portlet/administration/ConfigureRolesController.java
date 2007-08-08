@@ -81,7 +81,12 @@ public class ConfigureRolesController extends  SAbstractController {
 					operations.add(operation);
 				}
 			}
-			String roleName = PortletRequestUtils.getStringParameter(request, "roleName");
+			String roleName = null;
+			try {
+				roleName = PortletRequestUtils.getStringParameter(request, "roleName");
+			} catch (PortletRequestBindingException prbe) {
+				response.setRenderParameter(WebKeys.EXCEPTION, prbe.getLocalizedMessage());
+			}
 			if (!Validator.isNull(roleName)) {
 				updates.put("name", roleName);
 			}
@@ -90,6 +95,8 @@ public class ConfigureRolesController extends  SAbstractController {
 				getAdminModule().modifyFunction(functionId, updates);
 			} catch (FunctionExistsException ns) {
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+			} catch (IllegalArgumentException iae) {
+				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
 			}
 		} else if (formData.containsKey("deleteBtn")) {
 			//Get the function id from the form
