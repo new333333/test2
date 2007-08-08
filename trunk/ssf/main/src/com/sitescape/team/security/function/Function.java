@@ -71,8 +71,8 @@ public class Function {
             throw new IllegalArgumentException("Name must not be null");
         
         if(!StringUtils.isAlphanumericSpace(name.replaceAll("_", "").replaceAll("\\.", "")))
-            throw new IllegalArgumentException("Illegal function name [" + name +
-                    "]: It must consist of alphanumeric characters only");
+            throw new IllegalArgumentException("Role must contain only alphanumeric characters." +
+				" They include letters, numbers, spaces, underscores, and periods.");
         
         this.name = name;
     }
