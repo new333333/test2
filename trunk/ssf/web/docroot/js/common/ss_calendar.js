@@ -1143,7 +1143,7 @@ function ss_calendar(prefix) {
 			                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
 			                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
 			                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(date.getFullYear(), date.getMonth(), date.getDate()), -1, e.title, e.text,
-			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, continues);
+			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, continues, e);
 			            } else {
 			                var grid = "ss_cal_dayGridHour" + prefix;
 			                if (duration == 0) duration = 30;
@@ -1152,7 +1152,7 @@ function ss_calendar(prefix) {
 			                       this.collisionCount(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       this.collisionIndex(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       gridDay, start, duration, e.title, e.text,
-			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid);
+			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, false, e);
 			            }
 			            this.dayGridEvents.push(eid);
 					}
@@ -1443,18 +1443,7 @@ function ss_calendar(prefix) {
 	    gridControl.deleteCurrentEvent();
 	}
 	
-	function ss_cal_eventInfo(evt, eventId) {
-	    evt = (evt) ? evt : ((event) ? event : null);
-	    
-	    var event = ss_cal_Events.eventData[eventId];
-	    var viewHref = ss_viewEventUrl;
-		viewHref += "&entryId=" + event.entryId;
-		viewHref += "&binderId=" + event.binderId;
-	    ss_loadEntryUrl(viewHref, event.entryId);
-	}
-	
-	
-	function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, day, time, duration, title, text, boxColor, borderColor, eventId, continues) {
+	function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, day, time, duration, title, text, boxColor, borderColor, eventId, continues, event) {
 	    var container = dojo.byId(containerId);
 	    var dayOffsetSize = (1.0 / gridDays) * 100.0;
 	    var e;
@@ -1468,7 +1457,12 @@ function ss_calendar(prefix) {
 	    ebox.className = "ss_cal_eventBox";
 	
 	    if (eventId != "") {
-	        dojo.event.connect(ebox, "onmousedown", function(evt) { ss_cal_eventInfo(evt, eventId); evt.cancelBubble = true; });
+	        dojo.event.connect(ebox, "onmousedown", function(e) {
+	        	// prevent new events creation
+	        	if (!e) var e = window.event;
+				e.cancelBubble = true;
+				if (e.stopPropagation) e.stopPropagation();
+	        });
 	        dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
 	    }
 	
@@ -1495,7 +1489,17 @@ function ss_calendar(prefix) {
 	    e.style.borderColor = borderColor
 	    e.style.height = (((((duration <= 0) ? 30 : duration) / 60) * 42) - 4) + "px";
 	    var eHtml = "";
-	   	eHtml += '<a href="javascript: //">' + (title?title:'--no title--') + '</a>';
+	   	
+	   	if (event) {
+		   	var viewHref = ss_viewEventUrl;
+	    	viewHref += "&entryId=" + event.entryId;
+	    	viewHref += "&binderId=" + event.binderId;
+			eHtml += '<a href="'+viewHref+'" onClick="'+event.viewOnClick+' return false;">'+(event.title?event.title:'--no title--')+'</a>';
+	   	} else {
+	   		// new event creation
+			eHtml += '<a href="javascript: //">' + (title?title:'--no title--') + '</a>';
+	   	}
+	   	
 	    eHtml += "<br/>" + text;
 	    // ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?"<":"") +
 	    e.innerHTML =  eHtml; 
