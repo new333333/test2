@@ -48,17 +48,7 @@ public class DateHelper {
   */
     static public Date getDateFromInput(InputDataAccessor inputData, String id) 
     throws ConfigurationException {
-        return getDateFromInput (inputData, id, "0", true);
-    }
-    
-    /**
-     * Use to get all day events date.
-     * All days ivents have no time zone.
-     * 
-     */
-    static public Date getDateFromInput_IgnoreTimeZone(InputDataAccessor inputData, String id) 
-    throws ConfigurationException {
-        return getDateFromInput (inputData, id, "0", false);
+        return getDateFromInput (inputData, id, "0");
     }
     
 /*
@@ -66,14 +56,14 @@ public class DateHelper {
  * datepicker tag -- for example, to specify the start and end time on the same day.
  * In this case, the sequence number is passed in to select which timepicker tag is to be used.
  */
-    static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber, boolean applyTimeZone) 
+    static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber) 
     throws ConfigurationException {
         // date fields don't have a sequence number; time fields do
         String datePrefix = id + "_";
         String timePrefix = id + "_" + sequenceNumber + "_";
         
         if (isDojoWidgetDatePickerInUse(inputData, datePrefix)) {
-        	return getDateFromDojoWidgetInput (inputData, datePrefix, timePrefix, applyTimeZone);
+        	return getDateFromDojoWidgetInput (inputData, datePrefix, timePrefix);
         }
         
         
@@ -99,11 +89,7 @@ public class DateHelper {
             throw new ConfigurationException("errorcode.no.date.field", new String[]{"date."});
         }
         
-        GregorianCalendar cal = new GregorianCalendar();
-        if (!applyTimeZone) {
-        	cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        }
-        
+        GregorianCalendar cal = new GregorianCalendar(); 
         cal.setTimeInMillis(0);
         cal.set(Calendar.YEAR, Integer.parseInt(year));
         String month = inputData.getSingleValue(datePrefix + "month");
@@ -137,7 +123,7 @@ public class DateHelper {
             }
         }
         
-        if (applyTimeZone && inputData.exists(datePrefix + "timezoneid")) {
+        if (inputData.exists(datePrefix + "timezoneid")) {
             String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
             TimeZone tz = TimeZone.getTimeZone(tzs);
             cal.setTimeZone(tz);
@@ -146,7 +132,7 @@ public class DateHelper {
         return d;
     }
     
-    private static Date getDateFromDojoWidgetInput(InputDataAccessor inputData, String datePrefix, String timePrefix, boolean applyTimeZone) {
+    private static Date getDateFromDojoWidgetInput(InputDataAccessor inputData, String datePrefix, String timePrefix) {
     	
     	if (!inputData.exists(datePrefix + "fullDate") || 
     			"".equals(inputData.getSingleValue(datePrefix+"fullDate"))) {
@@ -154,7 +140,7 @@ public class DateHelper {
     	}
     	
         DateTimeZone dateTimeZone = null;
-        if (applyTimeZone && inputData.exists(datePrefix + "timezoneid")) {
+        if (inputData.exists(datePrefix + "timezoneid")) {
             String timeZoneString = inputData.getSingleValue(datePrefix + "timezoneid");
             if ("".equals(timeZoneString)) {
             	timeZoneString = DateTimeZone.UTC.getID();
