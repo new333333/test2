@@ -24,11 +24,6 @@
 <c:set var="required" value="<span class='required'>*</span>"/>
 </c:if>
 
-<c:set var="inline" value=""/>
-<c:if test='${! empty property_inline and property_inline}'>
-<c:set var="inline" value="style='display:inline;'"/>
-</c:if>
-
 <c:set var="count" value="1"/>
 <c:if test='${! empty property_number}'>
 <c:set var="count" value="${property_number}"/>

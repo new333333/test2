@@ -41,17 +41,17 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 			if (width == null || width.equals("")) {
 				width = "";
 			} else {
-				width = "size='"+width+"'";
+				width = "size=\""+width+"\"";
 			}
 		%>
 		<div class="ss_entryContent">
-		<div class="ss_labelAbove" id='${elementName}_label'><c:out value="${property_caption}"/></div>
+		<div class="ss_labelAbove" id="${property_name}_label"><c:out value="${property_caption}"/></div>
 <c:if test='${ssBinderMarker}'>
   <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 </c:if>
 		<input type="text" class="ss_text" name="title" id="title" <%= width %>
 <c:if test='${ssBinderMarker}'>
-	onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${elementName}_label', 'ss_titleCheck');"
+	onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
 </c:if>
 		 <c:if test="${empty ssDefinitionEntry.title}">
 		   value="<c:out value="${ssEntryTitle}"/>" />
