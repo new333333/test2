@@ -21,7 +21,7 @@
 <c:if test="${!empty ssException}">
 <font color="red">
 
-<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span>
+<span class="ss_largerprint"><c:out value="${ssException}"/></span>
 <br/>
 
 <c:if test="${!empty ssRoleUsers}">
