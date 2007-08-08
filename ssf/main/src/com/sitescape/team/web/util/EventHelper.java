@@ -59,15 +59,17 @@ public class EventHelper {
 
         Date start = inputData.getDateValue(startId);
         Date end = inputData.getDateValue(endId);
-        // for now, if either date in the range is missing, we return null Event
-        // (consider instead making a checked exception?)
-//        if (start == null || (hasDuration && end == null)) {
-        if (start == null) {
+        
+        if (start == null && end == null) {
             return null;
+        } else if (start == null && end != null) {
+        	DateTime startDt = new DateTime();
+        	start = startDt.plusMinutes(5).minusMinutes(startDt.getMinuteOfHour() % 5).withSecondOfMinute(0).withMillisOfSecond(0).toDate();
         }
         GregorianCalendar startc = new GregorianCalendar();
         startc.setTime(start);
         event.setDtStart(startc);
+        
         if (end != null) {
         	GregorianCalendar endc = new GregorianCalendar();
         	endc.setTime(end);
