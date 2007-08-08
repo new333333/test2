@@ -125,7 +125,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 
 <div class="ss_formBreak"/>
 
-<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
+<form class="ss_style ss_form" method="post"
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="manage_groups"/><portlet:param 
 		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 

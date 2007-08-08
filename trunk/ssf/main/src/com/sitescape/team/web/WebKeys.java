@@ -798,6 +798,7 @@ public class WebKeys {
     public static final String VIEW_GALLERY_EDIT="gallery/edit";
     public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
+    public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";

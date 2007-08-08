@@ -117,42 +117,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 
 </c:if>
-<c:if test="${cfgType == '-2'}">
-<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  name="action" value="configure_configuration"/><portlet:param 
-		  name="operation" value="add"/></portlet:actionURL>" 
-		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
-<div class="ss_style ss_portlet">
-<span class="ss_titlebold"><ssf:nlt tag="administration.configure_cfg.import" /></span>
-<br>
-<input type="hidden" name="cfgType" value="-2"/>
-<div class="ss_divider"></div>
-<br>
-<span class="ss_bold"><ssf:nlt tag="administration.selectFiles"/></span>
-<br>
-<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
-<tr><td>
-<input type="file" size="80" class="ss_text" name="template1" ><br>
-<input type="file" size="80" class="ss_text" name="template2" ><br>
-<input type="file" size="80" class="ss_text" name="template3" ><br>
-<input type="file" size="80" class="ss_text" name="template4" ><br>
-<input type="file" size="80" class="ss_text" name="template5" ><br>
-</td></tr></table>
-<div class="ss_divider"></div>
-
-<br/>
-<div class="ss_formBreak"/>
-
-<div class="ss_buttonBarLeft">
-
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
-</div>
-</div>
-</form>
-
-</c:if>
 <c:if test="${cfgType != '-1' and cfgType != '-2'}">
 
 <script type="text/javascript">
