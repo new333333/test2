@@ -50,7 +50,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 					    </ssf:fileurl>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
-					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
+					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					</c:if>
 					
 				    <ssf:title tag="title.open.file">
@@ -76,7 +76,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 					    </ssf:url>" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
-					    onClick="return ss_launchUrlInNewWindow(this, &quot;${selection.fileItem.name}&quot;);"
+					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					</c:if>
 
 				    <ssf:title tag="title.open.file">
@@ -167,7 +167,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    <ssf:param name="fileTime" value="${fileVersion.modification.date.time}"/>
 				    </ssf:url>"
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
-					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
+					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					</c:if>
 					
 				    <ssf:title tag="title.open.file.version">
