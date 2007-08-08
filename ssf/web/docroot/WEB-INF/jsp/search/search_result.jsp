@@ -74,7 +74,7 @@
 	<div id="ss_tab_data_${ss_tabs.current_tab}">
 
 		<div id="ss_tabs_container">
-			<div class="ss_actions_bar1"></div>
+			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 			<% // Breadcrumbs %>
 			<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 		
