@@ -987,7 +987,6 @@ div.ss_blog_sidebar {
 }
 
 div.ss_blog_sidebar_hole {
-	background-color: ${ss_entry_description_background_color};
 	margin-left: 8px;
 	margin-right: 9px;
 }
@@ -2184,6 +2183,8 @@ a.ss_breadcrumb {
 div.ss_sidebar_panel {
 	border: solid 1px ${ss_toolbar1_background_color};
 	padding-bottom: 8px;
+	width: 200px;
+	overflow: hidden;
 }
 
 /* titlebar */
