@@ -408,7 +408,7 @@ public class ListProfilesController extends   SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-			toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}
 		
 		//	The "Manage dashboard" menu
