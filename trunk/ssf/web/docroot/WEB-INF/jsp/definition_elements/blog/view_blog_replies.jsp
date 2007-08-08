@@ -20,7 +20,7 @@
 <c:set var="ssCommunityTags" value="${ssBlogEntries[ss_blog_docId].ssCommunityTags}" scope="request"/>
 
 
-<div style="padding-bottom: 14px;">
+<div style="padding-bottom: 14px; padding-left: 22px">
 <table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 <c:if test="${!empty ss_blog_reply_url}">
 <td valign="top" style="white-space: nowrap;">

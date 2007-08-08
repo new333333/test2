@@ -87,7 +87,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <%-- Subscribe, Ratings bar, visits --%>
 <c:if test="${empty ssDefinitionEntry.parentEntry}">
-<div style="padding-left: 6px">
+<div style="padding-left: 22px">
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 </div>
 
