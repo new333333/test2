@@ -22,8 +22,10 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
@@ -161,6 +163,12 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				//save identifier of tree helper to use on ajax callbacks
 				element.addAttribute("treeKey", helper.getTreeNameKey());
 			}
+			if(binder.getPosting() != null) {
+				PostingDef posting = binder.getPosting();
+				if(posting.isEnabled()) {
+					element.addAttribute("postingAddress", posting.getEmailAddress());
+				}
+			}
 			if ((type == DomTreeBuilder.TYPE_WORKSPACE)) {
 				Workspace ws = (Workspace)source;
 				String icon = ws.getIconName();
@@ -186,6 +194,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("permaLink", PermaLinkUtil.getURL(f));
+				element.addAttribute("rss", UrlUtil.getFeedURL(null, f.getId().toString()));
+				element.addAttribute("ical", com.sitescape.team.ical.util.UrlUtil.getICalURL(null, f.getId().toString(), null));
 			} else return null;
 		}
 		return element;

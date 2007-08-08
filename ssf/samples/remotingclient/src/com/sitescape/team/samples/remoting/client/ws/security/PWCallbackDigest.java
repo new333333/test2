@@ -43,7 +43,7 @@ public class PWCallbackDigest implements CallbackHandler {
                 String id = pc.getIdentifer();
                 //System.out.println("Identifier [" + id + "]");
                 if ("admin".equals(id)) {
-                	String clearPassword = "test";
+                	String clearPassword = "admin";
                 	// Set the password to a digested value of "test". 
                 	// This digest has nothing to do with the internal digest performed 
                 	// later by WS-Security framework. With Aspen, all passwords are 
