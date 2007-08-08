@@ -1572,6 +1572,10 @@ span.ss_tree_highlight {
   color: ${ss_tree_highlight_line_color};
 }
 
+div.ss_sidebar_panel div.ss_treeWidget span {
+    font-size: ${ss_style_font_smallprint};
+}
+
 a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
