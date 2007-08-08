@@ -57,17 +57,23 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <hr>
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.import"/></h3>
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>import" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
+<div class="ss_indent_medium">
+<ul class="ss_square">
+<li><a target="_blank" href="<ssf:url adapter="true" 
+			portletName="ss_administration" 
+			action="configure_configuration" 
+			actionUrl="true" ><ssf:param 
+		    name="operation" value="add"/><ssf:param 
+		    name="cfgType" value="-2"/></ssf:url>"><ssf:nlt tag="administration.configure_cfg.import"/></a> 
+<ssf:inlineHelp tag="ihelp.designers.import_definitions"/>
+</li>
+<li><a href="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_configuration"/><portlet:param 
-	name="operation" value="add"/></portlet:actionURL>" >
-		
-	 <input type="radio" name="cfgType" value="-2" checked><ssf:nlt tag="administration.configure_cfg.import"/> <ssf:inlineHelp tag="ihelp.designers.import_definitions"/><br/>
-	 <input type="radio" name="cfgType" value="-3" ><ssf:nlt tag="administration.configure_cfg.reload"/><br/>
-	<br/>
-
-	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.ok"/>">
-</form>
+	name="operation" value="add"/><portlet:param 
+	name="cfgType" value="-3"/></portlet:actionURL>"><ssf:nlt tag="administration.configure_cfg.reload"/></a> 
+</li>
+</ul>
+</div> 
 
 <br>
 <hr>
