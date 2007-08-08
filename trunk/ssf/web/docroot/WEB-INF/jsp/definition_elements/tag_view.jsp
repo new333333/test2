@@ -36,6 +36,7 @@ function ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><s
 	
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
 function ss_hideTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
 	var divId = 'ss_tags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_' + parseInt(divNumber) + '_pane';

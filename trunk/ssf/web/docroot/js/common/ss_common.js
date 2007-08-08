@@ -554,24 +554,22 @@ function ss_showHide(objId){
 	}
 }
 
-var ss_opendBoxTogglerSrc = ss_imagesPath + "pics/flip_down16H.gif";
-var ss_closedBoxTogglerSrc = ss_imagesPath + "pics/flip_up16H.gif";
 function ss_showHideRatingBox(id, imgObj) {
 	ss_showHide(id);
 	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
-		imgObj.src=ss_closedBoxTogglerSrc;
+		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
 	} else {
-		imgObj.src=ss_opendBoxTogglerSrc;
+		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
 	}
 }
 function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 	var recordUrl;
 	ss_showHide(divId);
 	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
-		imgObj.src=ss_closedBoxTogglerSrc;
+		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
 		recordUrl = ss_hideSidebarPanelUrl
 	} else {
-		imgObj.src=ss_opendBoxTogglerSrc;
+		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
 		recordUrl = ss_showSidebarPanelUrl
 	}
 	if (sticky) {
