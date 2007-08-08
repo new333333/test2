@@ -197,7 +197,7 @@ public class EventsViewHelper {
 					Event event = new Event();
 					event.setId(eventId);
 					if (timeZoneID != null) {
-						event.setTimeZone(DateTimeZone.forID(timeZoneID).toTimeZone());
+						event.setTimeZone(TimeZone.getTimeZone(timeZoneID));
 					}
 					Calendar startCal = Calendar.getInstance();
 					startCal.setTime(evStartDate);
