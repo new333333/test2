@@ -51,20 +51,20 @@ public class ConfigureRolesController extends  SAbstractController {
 					operations.add(operation);
 				}
 			}
+			String roleName = "";
 			try {
-				String roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
+				roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
 				if (!roleName.equals(""))
 					getAdminModule().addFunction(roleName, operations);
 				else
-					throw new IllegalArgumentException("Required string parameter"
-							+ " 'roleName' contains only whitespace");
+					throw new IllegalArgumentException("Role must have a name");
 			} catch (FunctionExistsException ns) {
-				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+				response.setRenderParameter(WebKeys.EXCEPTION, "Role [" + roleName + "] already exists.");
 			} catch (IllegalArgumentException iae) {
 				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
 			}
 			catch (PortletRequestBindingException prbe) {
-				response.setRenderParameter(WebKeys.EXCEPTION, prbe.getLocalizedMessage());
+				response.setRenderParameter(WebKeys.EXCEPTION, "Role must have a name.");
 			}
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
@@ -85,7 +85,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			try {
 				roleName = PortletRequestUtils.getStringParameter(request, "roleName");
 			} catch (PortletRequestBindingException prbe) {
-				response.setRenderParameter(WebKeys.EXCEPTION, prbe.getLocalizedMessage());
+				response.setRenderParameter(WebKeys.EXCEPTION, "Role must have a name.");
 			}
 			if (!Validator.isNull(roleName)) {
 				updates.put("name", roleName);
@@ -94,9 +94,10 @@ public class ConfigureRolesController extends  SAbstractController {
 			try {
 				getAdminModule().modifyFunction(functionId, updates);
 			} catch (FunctionExistsException ns) {
-				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+				response.setRenderParameter(WebKeys.EXCEPTION, "Role [" + roleName + "] already exists.");
 			} catch (IllegalArgumentException iae) {
-				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
+				response.setRenderParameter(WebKeys.EXCEPTION, "Role must contain only alphanumeric characters." +
+						" They include letters, numbers, spaces, underscores, and periods.");
 			}
 		} else if (formData.containsKey("deleteBtn")) {
 			//Get the function id from the form
