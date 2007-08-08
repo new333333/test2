@@ -399,7 +399,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
-			toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}
 
 		//If this is a user workspace, add the "Manage this profile" menu
