@@ -11,11 +11,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  name="action" value="import_profiles"/><portlet:param 
-		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
-		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+		  action="<ssf:url adapter="true" 
+			portletName="ss_administration" 
+			action="import_profiles" 
+			actionUrl="true" ><ssf:param 
+		    name="binderId" value="${ssBinder.id}"/></ssf:url>" >
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.import.profiles" /></span>
 <br>
@@ -38,8 +42,12 @@
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
 
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;"/>
+onClick="window.close();return false;"/>
 
 </div>
 </div>
 </form>
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>

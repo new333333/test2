@@ -41,6 +41,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
 import com.sitescape.team.module.license.LicenseModule.LicenseOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReleaseInfo;
 import com.sitescape.team.util.SPropsUtil;
@@ -102,6 +103,7 @@ public class ViewController extends  SAbstractController {
 		Map elements = new TreeMap();
 		Map designers = new TreeMap();
 		Map reports = new TreeMap();
+		AdaptedPortletURL adapterUrl;
 		
 		//Definition builders
 		Element designerElement;
@@ -301,11 +303,10 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("title", NLT.get("administration.import.profiles"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
+			element.addAttribute("target", "_blank");
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT);
+			element.addAttribute("url", adapterUrl.toString());
 			elements.put(element.attributeValue("title"), element);
 		}
 	
@@ -315,11 +316,10 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("title", NLT.get("administration.import.definitions"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
+			element.addAttribute("target", "_blank");
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
+			element.addAttribute("url", adapterUrl.toString());
 			elements.put(element.attributeValue("title"), element);
 
 			//Reset all definitions

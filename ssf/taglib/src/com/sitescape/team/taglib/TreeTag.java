@@ -345,6 +345,11 @@ public class TreeTag extends TagSupport {
 			if (!s_page.equals("")) {
 				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "''");
 			}
+			String s_target = e.attributeValue("target", "");
+			String targetField = "";
+			if (!s_target.equals("")) {
+				targetField = "target=\""+s_target+"\"";
+			}
 			String titleClass = "";
 			String s_showIdRoutine = showIdRoutine;
 			if (s_showIdRoutine.equals("")) s_showIdRoutine = this.treeName + "_showId";
@@ -470,7 +475,7 @@ public class TreeTag extends TagSupport {
 						} else {
 							classField = "class=\""+titleClass+"\"";
 						}
-						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
+						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
 						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
@@ -498,7 +503,7 @@ public class TreeTag extends TagSupport {
 						indentKey += "l";
 						String classField = "";
 						if (!className.equals("")) classField = "class=\""+className+"\"";
-						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
+						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
 						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
@@ -557,7 +562,7 @@ public class TreeTag extends TagSupport {
 					} else {
 						classField = titleClass;
 					}
-					jspOut.print("<a "+classField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
+					jspOut.print("<a "+classField+" "+targetField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
 					if (s_id != null && !s_id.equals("")) {
 						if (action.equals(""))
 							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
@@ -643,9 +648,13 @@ public class TreeTag extends TagSupport {
 			String s_parentId = e.attributeValue("parentId", "");
 			String s_tuple = e.attributeValue("pageTuple", "");
 			String s_page = e.attributeValue("page", "");
-
 			if (!s_page.equals("")) {
 				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "''");
+			}
+			String s_target = e.attributeValue("target", "");
+			String targetField = "";
+			if (!s_target.equals("")) {
+				targetField = "target=\""+s_target+"\"";
 			}
 			String titleClass = "class=\"ss_twSpan\"";
 			if (!s_binderId.equals("") && s_binderId.equals(this.highlightNode)) {
@@ -764,7 +773,7 @@ public class TreeTag extends TagSupport {
 			if (!displayOnly) {
 				String classField = "class=\"ss_twA\"";
 				if (!className.equals("")) classField = "class=\"ss_twA "+className+"\"";
-				jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
+				jspOut.print("<a "+classField+" "+targetField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
 					if (action.equals("")) {
 						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");

@@ -43,6 +43,9 @@
 	<bean id="teamController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TeamController" />	
 	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 		
+	<bean id="importDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
+	<bean id="importProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
+	<bean id="importTemplatesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
 	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
 	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LicenseReportController" />
 	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageLicenseController" />
@@ -99,6 +102,10 @@
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
 						<entry key="view_credits"><ref bean="creditsController"/></entry>
 
+						<entry key="import_definition"><ref bean="importDefinitionController"/></entry>
+						<entry key="import_profiles"><ref bean="importProfilesController"/></entry>
+						<entry key="import_templates"><ref bean="importTemplatesController"/></entry>
+						<entry key="import_template"><ref bean="importDefinitionController"/></entry>
 						<entry key="login_report"><ref bean="loginReportController"/></entry>
 						<entry key="license_report"><ref bean="licenseReportController"/></entry>
 						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>

@@ -381,7 +381,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 				}
 				model.put("cfgType", cfgType);
-				path = WebKeys.VIEW_MODIFY_TEMPLATE;
+				if (cfgType.equals("-2")) {
+					path = WebKeys.VIEW_IMPORT_TEMPLATE;
+				} else {
+					path = WebKeys.VIEW_MODIFY_TEMPLATE;
+				}
 		} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {
 			List<TemplateBinder> configs = getAdminModule().getTemplates();
 
