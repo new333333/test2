@@ -30,9 +30,7 @@
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
 		  src="<html:imagesPath/>icons/group.gif"/> 
-		  <ssf:nlt tag="teamMembersList.title">
-		  <ssf:param name="value" value="${ssBinder.title}"/>
-		  </ssf:nlt></span> 
+		  <span>${ssBinder.title}</span> 
     </div>
     <div>
 		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> 

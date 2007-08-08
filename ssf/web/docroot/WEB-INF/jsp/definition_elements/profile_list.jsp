@@ -49,9 +49,9 @@
  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 
 <ssf:slidingTableRow headerRow="true">
-  <ssf:slidingTableColumn width="30%">Title</ssf:slidingTableColumn>
-  <ssf:slidingTableColumn width="50%">Email</ssf:slidingTableColumn>
-  <ssf:slidingTableColumn width="20%">LoginName</ssf:slidingTableColumn>
+  <ssf:slidingTableColumn width="30%"><ssf:nlt tag="profile.element.title"/></ssf:slidingTableColumn>
+  <ssf:slidingTableColumn width="50%"><ssf:nlt tag="profile.element.emailAddress"/></ssf:slidingTableColumn>
+  <ssf:slidingTableColumn width="20%"><ssf:nlt tag="profile.element.name"/></ssf:slidingTableColumn>
 </ssf:slidingTableRow>
 
 <c:forEach var="entry" items="${ssEntries}" >

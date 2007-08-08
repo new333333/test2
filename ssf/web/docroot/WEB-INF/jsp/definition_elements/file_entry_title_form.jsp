@@ -17,22 +17,15 @@
 	String caption = (String) request.getAttribute("property_caption");
 	String width = (String) request.getAttribute("property_width");
 	String fileEntryTitleFormName = (String) request.getAttribute("formName");
-	String inline = (String) request.getAttribute("property_inline");
 	if (width == null || width.equals("")) {
 		width = "";
 	} else {
-		width = "size='"+width+"'";
+		width = "size=\""+width+"\"";
 	}
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
 		caption = caption;
-	}
-	if (inline == null) {inline = "block";}
-	if (inline.equals("true")) {
-		inline = "inline";
-	} else {
-		inline = "block";
 	}
 %>
 <div class="ss_entryContent">

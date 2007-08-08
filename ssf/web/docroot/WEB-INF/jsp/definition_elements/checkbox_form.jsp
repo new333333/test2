@@ -18,13 +18,6 @@
 	Element item = (Element) request.getAttribute("item");
 	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
-	String inline = (String) request.getAttribute("property_inline");
-	if (inline == null) {inline = "block";}
-	if (inline.equals("true")) {
-		inline = "inline";
-	} else {
-		inline = "block";
-	}
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
@@ -37,6 +30,6 @@
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
-<div style="display:<%= inline %>;">
+<div>
 <input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></input>
 </div>
