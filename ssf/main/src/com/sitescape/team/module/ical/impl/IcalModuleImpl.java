@@ -301,21 +301,6 @@ public class IcalModuleImpl implements IcalModule {
 		return event;
 	}
 
-	private static java.util.TimeZone getTimeZone(TzId tzid) {
-		if (tzid != null) {
-			DateTimeZone dateTimeZone = DateTimeZone.forID(tzid.getValue());
-			if (dateTimeZone != null) {
-				return dateTimeZone.toTimeZone();
-			}
-		}
-		
-		if (RequestContextHolder.getRequestContext().getUser() != null) {
-			return RequestContextHolder.getRequestContext().getUser().getTimeZone();
-		}
-		
-		return DateTimeZone.UTC.toTimeZone();
-	}
-
 	/**
 	 * parseEvents
 	 * 
