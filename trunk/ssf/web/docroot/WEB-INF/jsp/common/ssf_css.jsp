@@ -2295,7 +2295,7 @@ div.ss_sidebar_panel {
 	font-family: ${ss_style_title_font_family};
 }
 
-td.ss_actions_bar1, div.ss_actions_bar1 {
+div.ss_actions_bar1_pane {
 	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
 	background-repeat: repeat-x;
 	border-top: 1px solid ${ss_toolbar_border_color};
@@ -2378,6 +2378,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 	float:left;
 	display: inline;
 	margin: 0px 3px 0 0;
+	white-space: nowrap;
 }
 
 .ss_actions_bar li.ss_toolBarItem {
