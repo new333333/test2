@@ -382,6 +382,7 @@ div.ss_editorHints {
 .ss_entryContent {
   margin: 0px;
   padding: 2px;
+  padding-left: 22px;
   background-color:inherit;
   }
 .ss_entryContent table {
@@ -397,7 +398,7 @@ div.ss_editorHints {
   padding-bottom: 4px;
   background-color: inherit;
   border: 1px transparent solid;
-  font-size: 13px;
+  font-size: 12px;
   color: ${ss_style_muted_foreground_color};
 }
 .ss_entryDescription p {
@@ -1037,9 +1038,9 @@ table.ss_blog_title table {
 }
 
 div.ss_blog_title  {
-  border-top: 2px solid ${ss_blog_summary_title_background_color};
+  border-top: 1px solid #CCCCCC;
   overflow: hidden;
-  padding-top: 3px;
+  padding-top: 6px;
   padding-bottom: 3px;
   padding-left: 2px;
   padding-right: 5px;
@@ -2185,7 +2186,9 @@ a.ss_breadcrumb {
 }
 
 div.ss_sidebar_panel {
-	border: solid 1px ${ss_toolbar1_background_color};
+	border-left: solid 1px ${ss_toolbar1_background_color};
+	border-right: solid 1px ${ss_toolbar1_background_color};
+	border-bottom: solid .3px ${ss_toolbar1_background_color};
 	padding-bottom: 8px;
 	width: 200px;
 	overflow: hidden;
@@ -2508,10 +2511,10 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 	left:-26px;
  </c:if>
  <c:if test="<%= !isIE %>">
-	top:-14px;
-	left:-28px;
+	top:-8px;
+	left:-10px;
  </c:if>	
-	border:1px solid #907FA3;
+	border:1px solid #CCCCCC;
 	border-top:none;
 	padding: 4px 1px;
 }
@@ -4573,7 +4576,7 @@ div.ssPageNavi {
 	margin: 0px;
 	padding-left: 15px;
 	padding-top: 2px;
-	padding-bottom: 4px;
+	padding-bottom: 20px;
 }
 
 div.ssPageNavi table td {
@@ -4618,30 +4621,30 @@ div.ssPageNavi table td {
 }
 
 .ssPageNavi a.ssPageNumber:visited {
-	color: purple;
+	color: #CCCCCC;
 	text-decoration:underline;
 }
 
 .ssPageNavi .ss_actions_bar4 {
-	background-color: #E8EFF7;
+	background-color: #FFFFFF;
 	font-weight: normal;
-	font-size: 8px;
+	font-size: 10px;
 	font-family: ${ss_style_title_font_family};
 }
 
 .ssPageNavi .ss_results_pro_page, .ssPageNavi .ss_results_pro_page div, .ssPageNavi .ss_results_pro_page table {
-	background-color: #E8EFF7;
+	background-color: #FFFFFF;
 }
 
 div.ss_results_pro_page {
 	position:relative;
 	top: 0px; 
 	margin:0px 2px; 
-	padding: 0px 2px 0px 2px;
-	border-top:solid #666666 1px; 
-	border-bottom:solid #666666 1px;  
-	border-right:solid #666666 1px;  
-	border-left:solid #666666 1px;
+	padding: 1px 4px 1px 4px;
+	border-top:solid #CCCCCC 1px; 
+	border-bottom:solid #CCCCCC 1px;  
+	border-right:solid #CCCCCC 1px;  
+	border-left:solid #CCCCCC 1px;
 }
 #ss_operation_status {
 	width: 300px;
