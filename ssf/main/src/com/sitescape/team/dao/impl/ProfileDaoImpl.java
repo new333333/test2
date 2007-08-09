@@ -331,7 +331,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                public Object doInHibernate(Session session) throws HibernateException {
             	   //only returns active users
             	   User user = (User)session.getNamedQuery("find-User-Company")
-                        		.setString(ParameterNames.USER_NAME, userName)
+                        		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
                         		.setLong(ParameterNames.ZONE_ID, top.getId())
                         		.setCacheable(true)
                         		.uniqueResult();

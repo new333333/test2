@@ -283,10 +283,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        	if (Validator.isNotNull(name)) {
        		//remove blanks
           	name = name.trim();
-          	entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name);
+          	entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name.toLowerCase());
           	//setting the name - see if new entry and force foreign name to be same
        		if (Validator.isNull(((Principal)entry).getName())) {
-       			if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
+       			//preserve case on foreign name
+       			if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name); 
        		}
        	}
        	
