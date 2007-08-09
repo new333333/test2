@@ -783,7 +783,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
      		count = 1;
      	}
      	else
-     		count = avg.getCount() + 1;
+     		count = getCoreDao().countObjects(Rating.class,filter);
      	
      	avg.setAverage(result);
    		avg.setCount(count);
