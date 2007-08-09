@@ -16,6 +16,12 @@
 <br/>
 
 <form class="ss_style ss_form" 
+  action="<portlet:actionURL windowState="maximized" 
+	portletMode="view"><portlet:param 
+	name="action" value="modify_binder"/><portlet:param 
+	name="operation" value="delete"/><portlet:param 
+	name="binderId" value="${ssBinder.id}"/><portlet:param 
+	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>"
   name="ss_confirm_delete_mirrored_binder" 
   id="ss_confirm_delete_mirrored_binder"
   method="post">
