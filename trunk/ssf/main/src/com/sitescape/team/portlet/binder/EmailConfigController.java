@@ -43,6 +43,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
+		response.setRenderParameters(formData);
 		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (folderId != null) {
@@ -74,8 +75,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 						response.setRenderParameter(WebKeys.EXCEPTION, ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage());
 				}
 			}
-			response.setRenderParameters(formData);
-		} 
+		}
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
