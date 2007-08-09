@@ -59,6 +59,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </c:when>
 <c:otherwise>
 <span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>&nbsp;${ssBinder.title}</span><br/>
+<c:if test="${!empty ssException}">
+<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+</c:if>
 
 <c:set var="ss_breadcrumbsShowIdRoutine" value="<%= wsTreeName + "_showId"%>" scope="request" />
 <c:set var="ss_breadcrumbsTreeName" value="<%= wsTreeName %>" scope="request" />
