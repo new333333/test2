@@ -650,74 +650,25 @@ div.ss_send_friend {
 table.ss_popup {
 	position: relative;
 	background-color: transparent;
+	border: 1px solid ${ss_toolbar1_background_color};
 }
 
-div.ss_popup_topleft {
+div.ss_popup_top {
   position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
-  background-repeat: no-repeat;
-  background-position: top left;
-  height: 24px;
-  width: 40px;
-  padding: 0px;
-}
-
-div.ss_popup_topcenter {
-  position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
-  background-repeat: no-repeat;
-  background-position: -50px top;
-  height: 24px;
+  background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
+  background-repeat: repeat-x;
+  height: 14px;
   padding: 0px;
 }
 
 
-div.ss_popup_topright {
-  position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
-  background-repeat: no-repeat;
-  background-position: top right;
-  height: 24px;
-  width: 40px;
-  padding: 0px;
-}
-
-div.ss_popup_bottomleft {
-  position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
-  background-repeat: no-repeat;
-  background-position: bottom left;
-  height: 10px;
-  width: 40px;
-  padding: 0px;
-}
-
-div.ss_popup_bottomcenter {
-  position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
-  background-repeat: no-repeat;
-  background-position: -50px bottom;
-  height: 10px;
-  padding: 0px;
-}
-
-div.ss_popup_bottomright {
-  position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
-  background-repeat: no-repeat;
-  background-position: bottom right;
-  height: 10px;
-  width: 40px;
-  padding: 0px;
-}
 
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
-   font-size: ${ss_style_font_size};
+   font-size: 11px;
    font-weight: bold;
    color: ${ss_style_header_bar_title_color};
    position: relative;
-   padding-top: 3px;
    text-align: center;
 }
 
@@ -727,16 +678,14 @@ div.ss_popup_close {
   background-repeat: no-repeat;
   width: 12px;
   height: 12px;
-  top: 6px;
-  left: 17px;
+  top: 1px;
+  left: -1px;
 }
 
 div.ss_popup_body {
   position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_bg_blue.gif);
-  background-repeat: repeat-y;
-  background-position: top right;
-  padding: 1px 5px 1px 5px;
+  background-color: ${ss_toolbar4_background_color};
+  padding: 1px 5px 5px 5px;
 }
 
 
