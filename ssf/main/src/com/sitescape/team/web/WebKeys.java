@@ -30,6 +30,7 @@ public class WebKeys {
 	public static final String CALENDAR_CURRENT_EVENT_TYPE = "ssCurrentEventType";
 	public static final String CALENDAR_CURRENT_GRID_TYPE = "ssCurrentGridType";
 	public static final String CALENDAR_CURRENT_GRID_SIZE = "ssCurrentGridSize";
+	public static final String CALENDAR_CURRENT_DAY_VIEW_TYPE = "ssCurrentDayViewType";
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";

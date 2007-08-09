@@ -67,7 +67,7 @@ Date.shortTime = function(t) {
 }
 
 Date.getDayHeader = function(date) {
-	return Date.dayNamesShort[date.getDay()] + "-" + date.getDate() + "-" + date.getMonthNameShort();
+	return Date.dayNamesShort[date.getDay()] + " " + date.getDate() + "/" + (date.getMonth() + 1);
 }
 
 /* Ignores times.
@@ -212,23 +212,16 @@ function ss_calendar(prefix) {
 	    		ss_cal_Grid.activateGrid(grid);
 	    		ss_cal_Grid.showViewIcon();
 	    		ss_cal_Events.redrawAll();
-	    		
+	    			   
+	    		var stickyCalendarParams = {};
 	    		if (grid) {
-		    		var url = ss_stickyCalendarDisplaySettings;
-					url += "\&ssGridSize=" + ss_cal_Grid.gridSize;
-					url += "\&ssGridType=" + grid;
-					url += "\&randomNumber="+ss_random++;
-					dojo.io.bind({
-				    	url: url,
-						error: function(type, data, evt) {
-							alert(ss_not_logged_in);
-						},
-						load: function(type, data, evt) {},
-						mimetype: "text/json",
-						method: "get"
-					});
+	    			stickyCalendarParams.gridSize = ss_cal_Grid.gridSize;
+	    			stickyCalendarParams.grid = grid;
 	    		}
-	    		
+				if (date) {
+					stickyCalendarParams.date = date;
+				}
+	    		stickyCalendarOptions(stickyCalendarParams);
 	    		return;
 	    	}
 	
@@ -262,7 +255,6 @@ function ss_calendar(prefix) {
 					alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-					try {
 				    var loading = document.getElementById("ss_loading" + prefix);
 			    	if (loading) {
 			    		loading.parentNode.removeChild(loading);
@@ -298,8 +290,13 @@ function ss_calendar(prefix) {
 					ss_cal_Grid.showViewIcon();
 					
 					ss_cal_Events.setEventTypeByName(data.eventType);
+					
+					
+					if (data.dayViewType == "fullday") {
+						ss_cal_Grid.fullDayRedraw();
+					}
+					
 			        ss_cal_Events.redrawAll();
-					} catch (e) {alert(e);}
 				},
 							
 				mimetype: "text/json",
@@ -667,8 +664,8 @@ function ss_calendar(prefix) {
 	            }
 	        }
 	    },
-	
-	    fullDayGrid: function() {
+	    
+	    fullDayRedraw: function() {
 	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
 	        inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
 	        //outer.style.height = "1008px";
@@ -688,14 +685,20 @@ function ss_calendar(prefix) {
 	        		break;
 	        	}
 	        }
+	    },
+	
+	    fullDayGrid: function() {
+	    	this.fullDayRedraw();
 	        
 			ss_cal_Grid.activateGrid(ss_cal_Grid.currentType);
 	    	ss_cal_Events.redrawAll();
+	    	
+    		stickyCalendarOptions({dayViewType : "fullday"});
 	    },
 	
 	    workDayGrid: function() {
-	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
-	        inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
+	        var outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
+	        var inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
 	        //outer.style.height = "500px";
 	        //inner.style.top = "-255px";
 	        
@@ -712,7 +715,9 @@ function ss_calendar(prefix) {
 	        	}
 	        }
 			ss_cal_Grid.activateGrid(ss_cal_Grid.currentType); // couse of IE... 
-	    	ss_cal_Events.redrawAll();        
+	    	ss_cal_Events.redrawAll();
+	    	
+	    	stickyCalendarOptions({dayViewType : "workday"});
 	    },
 	    
 	    showViewIcon: function() {
@@ -1399,20 +1404,9 @@ function ss_calendar(prefix) {
 				this.eventsType = 0;
 			}
 	
-			var url = ss_stickyCalendarDisplaySettings;
-			url += "\&eventType=" + this.eventsTypes[this.eventsType];
-			url += "\&randomNumber="+ss_random++;
 			if (oldEventType != this.eventsType) {
-				dojo.io.bind({
-			    	url: url,
-					error: function(type, data, evt) {
-						alert(ss_not_logged_in);
-					},
-					load: function(type, data, evt) {},
-					mimetype: "text/json",
-					method: "get"
-				});
-				this.redrawAll();
+				stickyCalendarOptions({eventType : this.eventsTypes[this.eventsType]});
+				this.redrawAll();			
 			}
 	    }
 	    
@@ -1494,7 +1488,7 @@ function ss_calendar(prefix) {
 		   	var viewHref = ss_viewEventUrl;
 	    	viewHref += "&entryId=" + event.entryId;
 	    	viewHref += "&binderId=" + event.binderId;
-			eHtml += '<a href="'+viewHref+'" onClick="'+event.viewOnClick+' return false;">'+(event.title?event.title:'--no title--')+'</a>';
+			eHtml += '<a href="'+viewHref+'" onClick="try {' + event.viewOnClick + ';} catch(e) {return true;} return false;">'+(event.title?event.title:'--no title--')+'</a>';
 	   	} else {
 	   		// new event creation
 			eHtml += '<a href="javascript: //">' + (title?title:'--no title--') + '</a>';
@@ -1577,7 +1571,7 @@ function ss_calendar(prefix) {
 			var viewHref = ss_viewEventUrl;
 	    	viewHref += "&entryId=" + e.entryId;
 	    	viewHref += "&binderId=" + e.binderId;
-			ebox.innerHTML = '<a href="'+viewHref+'" onClick="'+e.viewOnClick+' return false;">'+(e.title?e.title:'--no title--')+'</a>';
+			ebox.innerHTML = '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + ';} catch(e) {return true;} return false;">'+(e.title?e.title:'--no title--')+'</a>';
 	        container.appendChild(ebox);
 	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        
 	    }
@@ -1604,6 +1598,42 @@ function ss_calendar(prefix) {
 	
 	
 	    return resultDisplayIds;
+	}
+	
+	function stickyCalendarOptions(options) {
+	 	if (!options) {
+	 		return;
+	 	}
+	 	var url = ss_stickyCalendarDisplaySettings;
+	 	
+		if (options.gridSize && options.grid) {
+			url += "\&ssGridSize=" + options.gridSize;
+			url += "\&ssGridType=" + options.grid;
+		}
+		
+		if (options.date) {
+			var m = options.date.getMonth() + 1
+			url += "\&year=" + options.date.getFullYear();
+			url += "\&month=" + m;
+			url += "\&dayOfMonth=" + options.date.getDate();
+		}
+		
+		if (options.dayViewType) {
+			url += "\&dayViewType=" + options.dayViewType;
+		}
+		
+		if (options.eventType) {
+			url += "\&eventType=" + options.eventType;
+		}
+		
+		dojo.io.bind({
+	    	url: url,
+			error: function(type, data, evt) {},
+			load: function(type, data, evt) {},
+			mimetype: "text/json",
+			preventCache: true,
+			method: "get"
+		});
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////////

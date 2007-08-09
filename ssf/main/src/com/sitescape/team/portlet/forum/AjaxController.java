@@ -1599,6 +1599,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 			EventsViewHelper.setCalendarGridType(portletSession, gridType);
 			EventsViewHelper.setCalendarGridSize(portletSession, gridSize);
 		}
+		
+		String dayViewType = PortletRequestUtils.getStringParameter(request, "dayViewType", "");
+		if (!"".equals(dayViewType)) {
+			EventsViewHelper.setCalendarDayViewType(portletSession, dayViewType);
+		}
+		
+		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
+		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
+		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
+		Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
+		currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
+		EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
