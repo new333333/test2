@@ -252,9 +252,9 @@ function ss_showForumEntryInPopupWindow(definitionType) {
            <br>
         </c:forEach>
         <br>
-	    <input class="ss_form" type="submit" name="add_wideTop" 
+	    <input class="ss_submit" type="submit" name="add_wideTop" 
 	      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	    <input class="ss_form" type="submit" name="cancel" 
+	    <input class="ss_submit" type="submit" name="cancel" 
 	      value="<ssf:nlt tag="button.cancel"/>" 
 	      onClick="ss_hideDashboardMenu(this);return false;">
 	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
@@ -270,7 +270,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
          <input type="hidden" name="_scope" value="binder"/>
- 	  <div style="margin:10px;">
+ 	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">
            <input type="radio" name="componentName" value="${component}">
@@ -278,9 +278,9 @@ function ss_showForumEntryInPopupWindow(definitionType) {
            <br>
         </c:forEach>
         <br>
-	    <input class="ss_form" type="submit" name="add_wideTop" 
+	    <input class="ss_submit" type="submit" name="add_wideTop" 
 	      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	    <input class="ss_form" type="submit" name="cancel" 
+	    <input class="ss_submit" type="submit" name="cancel" 
 	      value="<ssf:nlt tag="button.cancel"/>" 
 	      onClick="ss_hideDashboardMenu(this);return false;">
 	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
