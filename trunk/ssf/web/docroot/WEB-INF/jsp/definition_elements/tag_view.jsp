@@ -118,7 +118,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 		onClick="ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}'); return false;"
 	</ssf:ifnotaccessible>
 	<ssf:title tag="title.open.tag.menu" />
-><div class="ss_iconed_label ss_add_tag">Add tag</div></a>
+><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a>
   <div id="ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ss_tagDivNumber}">
   </div>
 </td>

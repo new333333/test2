@@ -186,6 +186,21 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 				action="view_folder_entry" 
 				actionUrl="true" />";
 
+<ssf:ifnotadapter>
+var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" 
+	portletMode="view"><portlet:param 
+	name="action" value="advanced_search"/><portlet:param 
+	name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
+	name="operation" value="ss_searchResults"/><portlet:param 
+	name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
+	name="newTab" value="1"/><portlet:param 
+	name="searchItemType" value="workspace"/><portlet:param 
+	name="searchItemType" value="folder"/><portlet:param 
+	name="searchItemType" value="user"/><portlet:param 
+	name="searchItemType" value="entry"/><portlet:param 
+	name="searchItemType" value="reply"/></portlet:actionURL>";
+</ssf:ifnotadapter>
+	
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 	
