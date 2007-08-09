@@ -141,6 +141,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	        throw new JspException(e);
 	    }
 		finally {
+			_bodyContent = null;
 			action = "";
 			adapter= Boolean.TRUE;
 			entryId = "";
