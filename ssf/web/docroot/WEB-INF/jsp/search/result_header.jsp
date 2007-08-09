@@ -35,7 +35,7 @@
 			</c:if>
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
-					<a href="javascript: // ; " <ssf:alt tag="general.previousPage"/> onclick="ss_goToSearchResultPage(${ss_pageNumber-1});">&lt;&lt;</a>
+					<a href="javascript: // ; " <ssf:alt tag="general.previousPage"/> onclick="ss_goToSearchResultPage(${ss_pageNumber-1});return false;">&lt;&lt;</a>
 				</c:if>
 				
 				<span class="ss_pageNumber">
@@ -46,7 +46,7 @@
 						<span class="ssCurrentPage">${page}</span>
 					</c:if>
 					<c:if test="${page != ss_pageNumber}">
-						<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${page});" 
+						<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${page});return false;" 
 							class="ssPageNumber">${page}</a>
 					</c:if>
 				</c:if>
@@ -55,7 +55,7 @@
 				</span>
 				
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
-					<a href="javascript:// ; " <ssf:alt tag="general.nextPage"/> onclick="ss_goToSearchResultPage(${ss_pageNumber+1});">&gt;&gt;</a>
+					<a href="javascript:// ; " <ssf:alt tag="general.nextPage"/> onclick="ss_goToSearchResultPage(${ss_pageNumber+1});return false;">&gt;&gt;</a>
 				</c:if>
 			</c:if>
 			<c:if test="${isDashboard == 'yes'}">
