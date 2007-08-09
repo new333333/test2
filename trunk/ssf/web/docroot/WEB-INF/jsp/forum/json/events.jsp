@@ -15,7 +15,9 @@
 <% // This is JSON type AJAX response  %>
 {
 
-eventType : "${ssCalendarViewBean.eventType}",
+eventType : "<ssf:escapeJavaScript value="${ssCalendarViewBean.eventType}"/>",
+
+dayViewType : "<ssf:escapeJavaScript value="${ssCalendarViewBean.dayViewType}"/>",
 
 dayNamesShort : [<%--
 --%><c:forEach var="d" items="${ssCalendarViewBean.dayHeaders}" varStatus="status"><%--
@@ -112,6 +114,6 @@ events : [<%--
 		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
 		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",
-			viewOnClick: "ss_loadEntry(this,'${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}'<c:if test="${!empty ssDashboardRequest}">, true</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
+			viewOnClick: "<c:if test="${ssDashboardRequest}">ss_setMenuLinkAparterURL(this.href);</c:if> ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]
 }

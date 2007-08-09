@@ -91,8 +91,6 @@ public class EventsViewHelper {
 	public static final String EVENT_TYPE_EVENT = "event";
 
 	public static final String EVENT_TYPE_DEFAULT = EVENT_TYPE_EVENT;
-	
-	
 
 	
 	public static final String GRID_DAY = "day";
@@ -100,6 +98,14 @@ public class EventsViewHelper {
 	public static final String GRID_MONTH = "month";
 	
 	public static final String GRID_DEFAULT = GRID_MONTH;
+	
+
+	public static final String DAY_VIEW_TYPE_WORK = "workday";
+	
+	public static final String DAY_VIEW_TYPE_FULL = "fullday";
+
+	public static final String DAY_VIEW_TYPE_DEFAULT = DAY_VIEW_TYPE_WORK;
+	
 	
 	public static void getEvents(Date currentDate,
 			CalendarViewRangeDates calendarViewRangeDates, Binder folder,
@@ -122,6 +128,7 @@ public class EventsViewHelper {
 		calendarViewBean.put("today", new Date());
 		calendarViewBean.put("events", events);
 		calendarViewBean.put("eventType", getCalendarDisplayEventType(portletSession));
+		calendarViewBean.put("dayViewType", getCalendarDayViewType(portletSession));
 		
 		
 		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
@@ -312,7 +319,9 @@ public class EventsViewHelper {
 		}
 		if (currentDate == null) {
 			currentDate = new Date();
-			portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, currentDate);	
+			if (portletSession != null) {
+				portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, currentDate);	
+			}
 		}
 		
 		return currentDate;
@@ -332,7 +341,9 @@ public class EventsViewHelper {
 		}
 		if (eventType == null) {
 			eventType = EVENT_TYPE_DEFAULT;
-			portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);	
+			if (portletSession != null) {
+				portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
+			}
 		}
 		
 		return eventType;
@@ -397,6 +408,29 @@ public class EventsViewHelper {
 		}
 		
 		return calendar.getTime();
+	}
+
+	public static String getCalendarDayViewType(PortletSession portletSession) {
+		String dayViewType = null;
+		if (portletSession != null) {
+			dayViewType = (String) portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE);
+		}
+		if (dayViewType == null) {
+			dayViewType = DAY_VIEW_TYPE_DEFAULT;
+			if (portletSession != null) {
+				portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType);
+			}
+		}
+		
+		return dayViewType;
+	}
+	
+	public static void setCalendarDayViewType(PortletSession portletSession, String dayViewType) {
+		if (dayViewType == null || !(dayViewType.equals(DAY_VIEW_TYPE_WORK) ||
+				dayViewType.equals(DAY_VIEW_TYPE_FULL))) {
+			dayViewType = DAY_VIEW_TYPE_DEFAULT;
+		}
+		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType);
 	}
 	
 }
