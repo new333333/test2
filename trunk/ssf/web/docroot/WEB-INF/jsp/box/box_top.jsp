@@ -112,7 +112,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
             background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
 		  ><span class="ss_box_small_icon" align="left" 
 		  style="cursor:w-resize; width:20px;"><img border="0" <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif" 
-		  style="margin:4px 20px;"></span></div></td>
+		  style="width: 20px; height: 12px;"></span></div></td>
 	  </c:if>
 
 	  <c:if test="<%= showMoveIcon %>">

@@ -1921,7 +1921,9 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick {
-	padding-top: 7px;
+	padding-top: 0px;
+	border-top: 1px dashed #DDDDDD;
+	margin-top: 4px
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_label_text {

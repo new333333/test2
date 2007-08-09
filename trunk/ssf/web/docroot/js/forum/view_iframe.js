@@ -211,10 +211,10 @@ function ss_divDrag(evt) {
 			dojo.html.setOpacity(lightBox, .1);
 		    lightBox.onclick = "ss_entryClearDrag();";
 		    lightBox.style.display = "block";
-		    lightBox.style.top = 0;
-		    lightBox.style.left = 0;
-		    lightBox.style.width = ss_getBodyWidth();
-		    lightBox.style.height = ss_getBodyHeight();
+		    lightBox.style.top = 0 + "px";
+		    lightBox.style.left = 0 + "px";
+		    lightBox.style.width = ss_getBodyWidth() + "px";
+		    lightBox.style.height = ss_getBodyHeight()  + "px";
 		    lightBox.style.zIndex = parseInt(ssDragEntryZ - 1);
 		    lightBox.style.visibility = "visible";			
         }
@@ -239,19 +239,19 @@ function ss_divDrag(evt) {
 	        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
 	        if (ss_entryWindowWidth >= ss_minEntryWindowWidth) {
 		        ss_entryWindowLeft = dObjLeft;
-		        ss_divDragObj.style.left = dObjLeft
+		        ss_divDragObj.style.left = dObjLeft + "px";
 		        ss_positionEntryDiv()
 		    }
 		} else if (ss_divDragMoveType == 'move') {
 	        ss_entryWindowTop = dObjTop;
 	        ss_entryWindowLeft = dObjLeft;
-	        ss_divDragObj.style.left = dObjLeft
-	        ss_divDragObj.style.top = dObjTop
+	        ss_divDragObj.style.left = dObjLeft  + "px";
+	        ss_divDragObj.style.top = dObjTop  + "px";
 	        ss_positionEntryDiv()
 		}
 	    var lightBox = document.getElementById('ss_entry_light_box')
-    	lightBox.style.width = ss_getBodyWidth();
-    	lightBox.style.height = ss_getBodyHeight();
+    	//lightBox.style.width = ss_getBodyWidth()  + "px";
+    	//lightBox.style.height = ss_getBodyHeight()  + "px";
 	    
         return false
     

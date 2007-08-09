@@ -23,7 +23,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 
 <div class="ss_entryContent">
 
-<table width="100%" border="0" valign="top" cellpadding="1" cellspacing="0">
+<table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
 	<td valign="top">
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 

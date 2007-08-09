@@ -343,8 +343,8 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
 	ss_showDiv("ss_reusableIframeDiv");
 	var x = dojo.html.getAbsolutePosition(anchorDivObj, true).x
 	var y = dojo.html.getAbsolutePosition(anchorDivObj, true).y
-    ss_setObjectTop(iframeDivObj, y + "px");
-    ss_setObjectLeft(iframeDivObj, x + "px");
+    ss_setObjectTop(iframeDivObj, y);
+    ss_setObjectLeft(iframeDivObj, x);
 	iframeObj.src = url;
 }
 
