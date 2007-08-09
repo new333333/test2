@@ -286,18 +286,17 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 			  entry="${ssEntry}" />
 
 <ssf:ifnotadapter>
-		
 		</div>
+</ssf:ifnotadapter>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+<ssf:ifnotadapter>
 	</td>
 	</tr>
 	</tbody>
 	</table>
 </div>
-
 </ssf:ifnotadapter>
-
 
 <%
 	//See if this is the Popup view
