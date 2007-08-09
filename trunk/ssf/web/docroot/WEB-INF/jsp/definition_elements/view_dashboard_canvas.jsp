@@ -237,7 +237,7 @@ function ss_showForumEntryInPopupWindow(definitionType) {
     <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
-	  <div style="margin:10px;">
+	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
         <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
         <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br>
