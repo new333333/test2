@@ -489,10 +489,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	   SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
-		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
+		Map<Principal, InputDataAccessor> newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
-          			StringBuffer inList = new StringBuffer();
+	           		StringBuffer inList = new StringBuffer();
           			for (int i=0; i<inputAccessors.size(); ++i) {
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
 	        			Map entryDataAll = syncNewEntry_toEntryData(binder, definition, inputData, null, ctx);
@@ -523,16 +523,21 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	                return newEntries;
 	        	}
 	        });
+		List<Long> ids = new ArrayList();
+		for (Principal p: newEntries.keySet()) {
+			ids.add(p.getId());
+			getCoreDao().evict(p);
+		}
+
+		//since we changed the creation/modification principal need reload
+		List<Principal> ps = getProfileDao().loadPrincipals(ids, binder.getZoneId(), false);
 		//we don't have any tags yet, so set to null to prevent database lookup 
 		ctx.put(ObjectKeys.INPUT_FIELD_TAGS, new ArrayList());
-	    for (Iterator i=newEntries.entrySet().iterator(); i.hasNext();) {
-	    	Map.Entry mEntry = (Map.Entry)i.next();
-	    	Entry entry = (Entry)mEntry.getKey();
-	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, ctx);
-	    }
+		for (Principal p:ps) {
+			addEntry_indexAdd(p.getParentBinder(), p, newEntries.get(p), null, ctx);
+		}
 		SimpleProfiler.stopProfiler("DefaultProfileCoreProcessor.syncNewEntries");
-	    return new ArrayList(newEntries.keySet()); 
+	    return ps; 
 		
 	}
 
