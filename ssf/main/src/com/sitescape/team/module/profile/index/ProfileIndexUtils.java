@@ -53,12 +53,16 @@ public class ProfileIndexUtils  {
     	if (Validator.isNotNull(user.getZonName())) {
     		Field docNumField = new Field(ZONNAME_FIELD, user.getZonName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
+    		Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
+           	doc.add(allText);
     	}
     }      
     public static void addEmail(Document doc, User user) {
     	if (Validator.isNotNull(user.getEmailAddress())) {
     		Field docNumField =  new Field(EMAIL_FIELD, user.getEmailAddress(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
+    		Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getEmailAddress(), Field.Store.NO, Field.Index.TOKENIZED);
+           	doc.add(allText);
     	}
     } 
     public static void addReservedId(Document doc, Principal principal) {
