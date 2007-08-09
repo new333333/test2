@@ -374,7 +374,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         if(reservation != null && !reservation.getPrincipal().equals(user))
         	throw new ReservedByAnotherUserException(entry);
         
-    	List<Attachment> delAtts = new ArrayList<Attachment>();
+    	Set<Attachment> delAtts = new HashSet<Attachment>();
     	if (deleteAttachments != null) {
     		for (String id: deleteAttachments) {
    				Attachment a = entry.getAttachment(id);
