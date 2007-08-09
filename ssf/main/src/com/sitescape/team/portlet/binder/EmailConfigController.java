@@ -30,7 +30,6 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.MailTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -54,10 +53,6 @@ public class EmailConfigController extends  AbstractBinderController  {
 				response.setRenderParameter("redirect", "true");
 			}
 		} else  {
-			if (formData.containsKey("alias")) {
-				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
-				getBinderModule().setPosting(folderId, alias);
-			}
 			//sub-folders don't have a schedule, use addresses to figure it out
 			if (formData.containsKey("addresses")) {
 				Set userList = new HashSet();
@@ -67,6 +62,17 @@ public class EmailConfigController extends  AbstractBinderController  {
 				getScheduleData(request, config);
 				getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
 				getBinderModule().setNotificationConfig(folderId, config);			
+			}
+			if (formData.containsKey("alias")) {
+				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
+				try {
+					getBinderModule().setPosting(folderId, alias);
+				} catch (Exception ne) {
+					if (ne.getCause() != null)
+						response.setRenderParameter(WebKeys.EXCEPTION, ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage());
+					else 
+						response.setRenderParameter(WebKeys.EXCEPTION, ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage());
+				}
 			}
 			response.setRenderParameters(formData);
 		} 
@@ -78,6 +84,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
 		Map model = new HashMap();
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		try {
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Folder folder = getFolderModule().getFolder(folderId);

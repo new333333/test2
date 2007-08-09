@@ -11,6 +11,7 @@
 package com.sitescape.team.portlet.administration;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,6 +36,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -84,24 +86,29 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					Long configId = getAdminModule().addTemplateFromBinder(binderId);
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				} else if (type == -2) {
-					int i=0;
-					Map errorMap = new HashMap();
-					while (++i>0) {
-						String data;
-						try {
-							data = PortletRequestUtils.getStringParameter(request, "template" + i);
-						} catch (Exception ex) {continue;}
-				    	if (data == null) break;
-				    	try {
-					    	StringReader fIn = new StringReader(data);
-				    		SAXReader xIn = new SAXReader();
-				    		Document doc = xIn.read(fIn);   
-				    		fIn.close();
-				    		getAdminModule().addTemplate(doc);
-				    	} catch (Exception fe) {
-//				    		errorMap.put(entry.getKey(), fe.getLocalizedMessage());	
-				    		logger.error(fe.getLocalizedMessage(), fe);
-				    	}
+					if (request instanceof MultipartFileSupport) {
+						int i=0;
+						Map fileMap = ((MultipartFileSupport) request).getFileMap();
+						if (fileMap != null) {
+							List errors = new ArrayList();
+							while (++i>0) {
+								MultipartFile myFile=null;
+								try {
+									myFile = (MultipartFile)fileMap.get("template" + i);
+									if (myFile == null) break;
+									if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
+									SAXReader xIn = new SAXReader();
+									InputStream fIn = myFile.getInputStream();
+									Document doc = xIn.read(fIn);   
+									fIn.close();
+									getAdminModule().addTemplate(doc);
+								} catch (Exception fe) {
+									errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+								}
+							}
+							if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+						}
+						
 					}
 					response.setRenderParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_ADD);
 					response.setRenderParameter("cfgType", "-2");
@@ -273,9 +280,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
 		if (!Validator.isNull(request.getParameter("redirect"))) {
-			String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
-			model.put(WebKeys.ERROR_LIST, errors);
 			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
 		}

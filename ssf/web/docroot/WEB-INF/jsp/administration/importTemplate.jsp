@@ -18,7 +18,16 @@
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
-
+<c:if test="${!empty ssErrorList}">
+<span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
+<br/>
+<br/>
+<ul>
+<c:forEach var="err" items="${ssErrorList}">
+	<li>${err}</li>
+</c:forEach>
+</ul>
+</c:if>
 <c:if test="${ssOperation == 'add'}">
 <c:if test="${cfgType == '-2'}">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 

@@ -14,6 +14,16 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
+<c:if test="${!empty ssErrorList}">
+<span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
+<br/>
+<br/>
+<ul>
+<c:forEach var="err" items="${ssErrorList}">
+	<li>${err}</li>
+</c:forEach>
+</ul>
+</c:if>
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" 
 			portletName="ss_administration" 

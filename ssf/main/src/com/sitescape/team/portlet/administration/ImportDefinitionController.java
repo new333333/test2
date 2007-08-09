@@ -10,8 +10,11 @@
  */
 package com.sitescape.team.portlet.administration;
 
+import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -21,9 +24,11 @@ import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -32,27 +37,28 @@ public class ImportDefinitionController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {
 			int i=0;
-			Map errorMap = new HashMap();
-			while (++i>0) {
-				String data;
-				try {
-					data = PortletRequestUtils.getStringParameter(request, "definition" + i);
-				} catch (Exception ex) {continue;}
-		    	if (data == null) break;
-		    	try {
-			    	StringReader fIn = new StringReader(data);
-		    		SAXReader xIn = new SAXReader();
-		    		Document doc = xIn.read(fIn);   
-		    		fIn.close();
-		    		getDefinitionModule().addDefinition(doc, true);
-		    	} catch (Exception fe) {
-//		    		errorMap.put(entry.getKey(), fe.getLocalizedMessage());	
-		    		logger.error(fe.getLocalizedMessage(), fe);
-		    	}
+			Map fileMap = ((MultipartFileSupport) request).getFileMap();
+			if (fileMap != null) {
+				List errors = new ArrayList();
+				while (++i>0) {
+					MultipartFile myFile=null;
+					try {
+						myFile = (MultipartFile)fileMap.get("definition" + i);
+						if (myFile == null) break;
+						if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
+						SAXReader xIn = new SAXReader();
+						InputStream fIn = myFile.getInputStream();
+						Document doc = xIn.read(fIn);   
+						fIn.close();
+						getDefinitionModule().addDefinition(doc, true);
+					} catch (Exception fe) {
+						errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+					}
+				}
+				if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			}
-		
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else {
@@ -74,11 +80,15 @@ public class ImportDefinitionController extends  SAbstractController {
 		if (!Validator.isNull(request.getParameter("redirect"))) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
+
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM);
 		}
-		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS);
+		Map model = new HashMap();
+		model.put(WebKeys.ERROR_LIST, request.getParameterValues(WebKeys.ERROR_LIST));
+
+		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS, model);
 	}
 
 }
