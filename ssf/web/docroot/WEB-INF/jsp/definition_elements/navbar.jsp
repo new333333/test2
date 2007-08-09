@@ -45,23 +45,6 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
   <br/>
 <!-- End of debug window -->
 </c:if>
-<script type="text/javascript">
-
-// global variable for tag search
-var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" 
-	portletMode="view"><portlet:param 
-	name="action" value="advanced_search"/><portlet:param 
-	name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
-	name="operation" value="ss_searchResults"/><portlet:param 
-	name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-	name="newTab" value="1"/><portlet:param 
-	name="searchItemType" value="workspace"/><portlet:param 
-	name="searchItemType" value="folder"/><portlet:param 
-	name="searchItemType" value="user"/><portlet:param 
-	name="searchItemType" value="entry"/><portlet:param 
-	name="searchItemType" value="reply"/></portlet:actionURL>";
-	
-</script>
 
 <!-- Start of global toolbar - MAXIMIZED PORTAL WINDOW MODE -->
 <c:if test="${ss_navbar_style != 'portlet'}">

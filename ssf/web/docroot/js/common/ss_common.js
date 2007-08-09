@@ -1201,6 +1201,7 @@ function ss_getWindowHeight() {
 	return myHeight;
 }
 
+
 function ss_getBodyHeight() {
     var h;
     if (window.innerHeight && window.scrollMaxY) {	
@@ -5383,4 +5384,17 @@ function ss_checkTypeOfLink(linkObj) {
 
 function ss_buddyPhotoLoadError (imgObj, src) {
 	imgObj.src = src;
+}
+
+function ss_tagSearchObj(obj) {
+    var tag = dojo.dom.textContent(obj);
+	var searchUrl = "";
+   	try { searchUrl = ss_tagSearchResultUrl; } catch(e) {}
+	if (searchUrl == "") { try { searchUrl = self.parent.ss_tagSearchResultUrl } catch(e) {} }
+	if (searchUrl == "") { try { searchUrl = self.opener.ss_tagSearchResultUrl } catch(e) {} }
+	var url = ss_replaceSubStrAll(searchUrl, 'ss_tagPlaceHolder', tag);
+	if (ss_openUrlInPortlet(url)) {
+		self.location.href = url;
+	}
+	return false;
 }
