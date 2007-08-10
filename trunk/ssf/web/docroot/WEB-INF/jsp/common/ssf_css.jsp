@@ -288,7 +288,7 @@ div.ss_global_toolbar_quick input {
   border: solid 1px #CCCCCC;
 }
 div.ss_style textarea {
-  padding: 0px;
+  padding: 0px 1px 0px 2px;
 }
 div.ss_style input[type="text"],
 div.ss_style select,
@@ -669,6 +669,7 @@ div.ss_popup_title {
    color: ${ss_style_header_bar_title_color};
    position: relative;
    text-align: center;
+   top: -2px;
 }
 
 div.ss_popup_close {

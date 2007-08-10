@@ -19,11 +19,6 @@
 </ssf:ifaccessible>
 
 <div class="ss_indent_medium">
-<ssf:ifnotaccessible>
-<div class="ss_popupMenuClose" align="right"><a 
-  href="javascript: ;" onClick="ss_hideDivNone(this.parentNode.parentNode.parentNode.id);"><img
-  src="<html:imagesPath/>pics/sym_s_delete.gif" border="0"/></a></div>
-</ssf:ifnotaccessible>
 <c:forEach var="binder" items="${ss_myTeams}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
