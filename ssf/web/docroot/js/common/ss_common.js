@@ -3697,6 +3697,57 @@ function ss_hideFavoritesPane(namespace) {
 	ss_hideDivFadeOut('ss_favorites_pane'+namespace, 20);
 }
 
+
+
+function ss_showMyTeamsPane(namespace, url) {
+	ss_setupStatusMessageDiv()
+	var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
+	ss_moveObjectToBody(fObj);
+	fObj.style.zIndex = ssMenuZ;
+	fObj.style.visibility = "visible";
+	ss_setOpacity(fObj, 100)
+	//fObj.style.display = "none";
+	fObj.style.display = "block";
+	var w = ss_getObjectWidth(fObj)
+	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
+	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
+	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
+    dojo.html.show(fObj);
+    dojo.html.setVisibility(fObj, "visible");
+    dojo.html.setOpacity(fObj,0);
+    dojo.lfx.html.fadeIn(fObj, 100).play();
+	ss_loadMyTeams(namespace, url);
+}
+
+function ss_loadMyTeams(namespace, url) {
+	var postArgs = new Array();
+	postArgs["IEcacheBuster"] = Math.random();
+	var bindArgs = {
+    	url: url,
+		content: postArgs,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+  		  try {
+			ss_hideDiv("ss_myteams_loading" + namespace);
+			var d = dojo.byId("ss_myteams_list" + namespace);
+			d.innerHTML = data;
+	      } catch (e) {alert(e);}
+		},
+		preventCache: true,				
+		mimetype: "text/html",
+		method: "post"
+	};   
+	dojo.io.bind(bindArgs);
+}
+
+function ss_hideMyTeamsPane(namespace) {
+	ss_hideDivFadeOut('ss_myteams_pane'+namespace, 20);
+}
+
+
+
 //
 //         Routine to show/hide portal
 //
@@ -5344,31 +5395,6 @@ function ss_cancelUITheme() {
 }
 
 
-function ss_showMyTeams(namespace, url, loading) {
-	url += "\&rn=" + ss_random++;
-	
-	if (ss_userDisplayStyle == "accessible") {
-		ss_fetchUrlInIframe(url, namespace + "ss_myTeams", 300, 400)
-		return
-	}
-	
-	var targetDiv = document.getElementById(namespace+'ss_myTeams')
-	if (targetDiv != null) {
-		if (targetDiv.style.visibility == 'visible') {
-			targetDiv.style.visibility = 'hidden'
-			targetDiv.style.display = 'none'
-		} else {
-			targetDiv.innerHTML = loading + "<br/>";
-			targetDiv.style.visibility = 'visible';
-			targetDiv.style.display = 'block';
-			ss_fetch_url(url, ss_showMyTeamsCallback, namespace);
-		}
-	}
-}
-function ss_showMyTeamsCallback(s, namespace) {
-	var targetDiv = document.getElementById(namespace + 'ss_myTeams')
-	if (targetDiv != null) targetDiv.innerHTML = s;
-}
 //Hemanth: This method will be called by the links that get created in tiny MCE
 //Refer to link.js insertLink() method.
 function ss_checkTypeOfLink(linkObj) {

@@ -133,14 +133,14 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 <!-- My Teams -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_myteams" onClick="ss_placeOnScreen('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_myTeams', 'ss_navbarMyTeamsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 26, 26); ss_showMyTeams('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>','<ssf:url 
+	<div class="ss_global_toolbar_myteams" onClick="ss_showMyTeamsPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
     	action="__ajax_request" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="show_my_teams" />
 		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
-    	</ssf:url>', '<ssf:nlt tag="Loading"/>');return false;"
+    	</ssf:url>');return false;"
 	  title="<ssf:nlt tag="navigation.myTeams"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
@@ -151,7 +151,8 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 	    </div>
 	  </ssHelpSpot>
 	</div>
-	<div class="ss_navbarPopupPane" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_myTeams"></div>
+	<div id="ss_navbar_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	      style="visibility:hidden;margin:0px;padding:0px;"></div>
 
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
@@ -685,16 +686,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
   title="<ssf:nlt tag="helpSpot.myTeams"/>"
   offsetX="-11" offsetY="2" xAlignment="center">
 <div style="padding-top:5px; padding-bottom: 5px;">
-<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeams('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>','<ssf:url 
+<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeamsPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
     	action="__ajax_request" 
     	actionUrl="true" >
 		<ssf:param name="operation" value="show_my_teams" />
 		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
-    	</ssf:url>', '<ssf:nlt tag="Loading"/>');return false;">
+    	</ssf:url>');return false;">
   <ssf:nlt tag="navigation.myTeams"/> <img src="<html:imagesPath/>pics/menudown.gif"/>
 </a>
+<div id="ss_navbar_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	      style="visibility:hidden;margin:0px;padding:0px;"></div>
 <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_myTeams"></div>
 </div>
 </ssHelpSpot>
@@ -827,6 +830,20 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 </div>
 
+<!-- End of favorites pane -->
+<!-- Start of myteams pane -->
+<div class="ss_style_trans" id="ss_myteams_pane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+  style="position:absolute; visibility:hidden;">
+<ssf:popupPane width="250px" titleTag="navigation.myTeams"
+      closeScript="ss_hideMyTeamsPane('${renderResponse.namespace}');return false;">
+<div style="padding: 5px 10px 5px 10px;">
+  <div class="ss_style_trans" id="ss_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" align="left">
+	  <div style="float: right;" id="ss_myteams_loading<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><ssf:nlt tag="Loading"/></div>
+	  <div id="ss_myteams_list<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">&nbsp;</div>
+  </div>
+</div>
+</ssf:popupPane>
+</div>
 <!-- End of favorites pane -->
 <c:if test="${ss_navbar_style != 'portlet'}">
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
