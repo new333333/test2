@@ -12,12 +12,12 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.teamMember</property>
-    <property name="members">-2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
     <property name="functionName">__role.binderAdmin</property>
     <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.teamMember</property>
+    <property name="members">-2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
     <property name="functionName">__role.participant</property>
@@ -33,23 +33,8 @@
     <layout name="wide_top">
       <property name="scope">binder</property>
       <property name="visible">true</property>
-      <property name="id">binder_1</property>
-    </layout>
-    <layout name="wide_top">
-      <property name="scope">binder</property>
-      <property name="visible">true</property>
       <property name="id">binder_0</property>
     </layout>
-    <component name="binder_1">
-      <property name="displayStyle">none</property>
-      <property name="title"></property>
-      <data>
-        <property name="rootOpen"><![CDATA[true]]></property>
-        <property name="start"><![CDATA[this]]></property>
-      </data>
-      <property name="roles"></property>
-      <property name="name">workspaceTree</property>
-    </component>
     <component name="binder_0">
       <property name="displayStyle">border</property>
       <property name="title"></property>
