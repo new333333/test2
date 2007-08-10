@@ -257,11 +257,16 @@ div.ss_replies div.ss_entryDescription {
 	background-color: ${ss_replies_background_color};
 }
 
-.ss_style_color, .ss_style_color table, .ss_style form {
+.ss_style_color,.ss_style_color table, .ss_style form {
   color: ${ss_style_text_color};
   background-color: ${ss_style_background_color};
+ 
   }
-    
+.ss_style_color {
+	border-left: solid 1px ${ss_blog_sidebar_box_outline};
+	border-right: solid ${ss_blog_sidebar_box_outline};
+	border-bottom:solid ${ss_blog_sidebar_box_outline};
+}
 .ss_form_color {
   color: ${ss_form_text_color};
   background-color: ${ss_form_background_color};
@@ -923,7 +928,7 @@ DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
 
 div.ss_blog_content {
 	padding-bottom: 30px;
-	border-left: 1px solid ${ss_generic_border_color};
+
 }
 
 div.ss_blog_sidebar {
@@ -2122,7 +2127,7 @@ a:hover img.ss_dashboard_config_control {
 
 
 span.ss_tabs_title {
-	font-size: ${ss_style_font_smallprint};
+	font-size: ${ss_style_font_smallprint}!important;
 }
 
 /* breadcrumbs */
@@ -3967,11 +3972,23 @@ a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:ac
 	text-decoration:underline;
 	margin:0px 0px 0px 6px;
 }
-a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a.ss_parentPointer:active {
-	color: #0000ff;
+a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:active {
+	color: #333333;
 	text-decoration:underline;
 	margin:0px 0px 0px 0px;
+	}
+a.ss_parentPointer:hover{
+	color: #0000ff;
+	text-decoration:underline;
 }
+a.ss_parentPointer:visited, a.ss_parentPointer:hover, {
+	color: purple;
+	text-decoration:underline;
+	}	
+a.ss_parentPointer:visited, a.ss_parentPointer:hover, {
+	color: #0000ff;
+	text-decoration:underline;
+	}
 
 .ss_searchResult {
 	margin: 0px;
@@ -4037,9 +4054,14 @@ div.ss_entry_folderListView {
 h3.ss_entryTitle {
    /* float:left;margin:0px; */
 }
-h3.ss_entryTitle a:link, h3.ss_entryTitle a:hover, h3.ss_entryTitle a:visited, h3.ss_entryTitle a:active, h3.ss_entryTitle a {
-	color: #0000FF;
-	text-decoration:underline;
+ h3.ss_entryTitle a {
+	color: #333333;
+}
+h3.ss_entryTitle a:hover,h3.ss_entryTitle a:link, h3.ss_entryTitle a:active, !important {
+	color:#0000FF;
+}
+h3.ss_entryTitle a:visited {
+	color:  purple;
 }
 div.ss_more {text-align:right;}
 div.ss_entryDetails {  padding:6px;}
@@ -4063,7 +4085,7 @@ img.ss_toggler {float:right;}
 div.ss_rating_box_content table {width:200px; border-collapse: collapse; border-spacing: 0;}
 div.ss_rating_box_content th {border-bottom: 1px solid #afc8e3;text-align:left;}
 div.ss_rating_box_content td {text-align:left;}
-div.ss_rating_box_content td.ss_star {padding-left:10px;}
+div.ss_rating_box_content td.ss_star {padding-left:5px;}
 div.ss_rating_box_content h5 {margin:0px; border-bottom: 1px solid #afc8e3; }
 div.ss_rating_box_content p {margin:6px 0px 12px 0px; }
 
