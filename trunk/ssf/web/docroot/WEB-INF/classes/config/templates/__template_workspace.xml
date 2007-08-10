@@ -10,28 +10,13 @@
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
-  <property name="teamMembers"/>
+  <property name="inheritTeamMembers">true</property>
   <definition name="_workspace" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005"/>
   <dashboard>
     <property name="nextComponentId">2</property>
     <property name="showComponents">true</property>
     <property name="version">1</property>
-    <property name="title"><![CDATA[]]></property>
+    <property name="title"/>
     <property name="includeBinderTitle">false</property>
-    <layout name="wide_top">
-      <property name="scope">binder</property>
-      <property name="visible">true</property>
-      <property name="id">binder_0</property>
-    </layout>
-    <component name="binder_0">
-      <property name="displayStyle">none</property>
-      <property name="title"></property>
-      <data>
-        <property name="rootOpen"><![CDATA[true]]></property>
-        <property name="start"><![CDATA[this]]></property>
-      </data>
-      <property name="roles"></property>
-      <property name="name">workspaceTree</property>
-    </component>
   </dashboard>
 </template>
