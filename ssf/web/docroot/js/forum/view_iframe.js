@@ -15,10 +15,12 @@ var ss_minEntryWindowHeight = 300;
 var ss_entryWindowHeight = ss_minEntryWindowHeight;
 var ss_scrollbarWidth = 30;
 var ss_entryDivTopDelta = 25;
+var ss_entryClickPositionDelta = 15;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
 var ss_nextUrl = ""
 var ss_entryHeightHighWaterMark = 0
+var ss_entryLastScrollTop = 0
 	//ss_debug("init: "+ss_entryWindowLeft)
 
 function ss_setEntryDivHeight() {
@@ -116,9 +118,27 @@ function ss_positionEntryDiv() {
 				ss_setObjectHeight(wObj1, entryHeight);
 				ss_setObjectHeight(wObj3, entryHeight);
 			}
+			if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
+				//See if the entry runs off the bottom of the screen and should be moved up some
+				if (ss_entryWindowTop + entryHeight > parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight())) {
+					//Try to move the div up so it can be completely seen
+					ss_entryWindowTop = parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - entryHeight - ss_entryDivTopDelta - ss_entryDivBottomDelta;
+					//But not higher than where the last click was
+					if (ss_entryWindowTop < ss_getClickPositionY() + ss_entryClickPositionDelta) 
+						ss_entryWindowTop = ss_getClickPositionY() + ss_entryClickPositionDelta;
+				}
+				if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset)) {
+					ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
+				}
+				if (ss_entryWindowTop < parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta)) {
+					//If it got moved too high, reset it to the minimum
+					ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta)
+				}
+	    		ss_setObjectTop(wObj1, ss_entryWindowTop)
+	    	}
 		}
 	} catch(e) {}
-
+	ss_entryLastScrollTop = ss_getScrollXY()[1];
 }
 
 function ss_hideEntryDiv() {
