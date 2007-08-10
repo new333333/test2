@@ -12,9 +12,4 @@
 %>
 </div></div></td>
 </tr>
-<tr>
- <td width="40"><div class="ss_popup_bottomleft"></div></td>
- <td width="100%"><div class="ss_popup_bottomcenter"></div></td>
- <td width="40"><div class="ss_popup_bottomright"></div></td>
-</tr>
 </tbody></table>

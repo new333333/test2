@@ -563,7 +563,6 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 }
 
 div.ss_iconed_label {
-  display: inline;
   font-family: ${ss_style_title_font_family};
   background-repeat: no-repeat;
   background-position: left center;
@@ -685,7 +684,7 @@ div.ss_popup_close {
 div.ss_popup_body {
   position: relative;
   background-color: ${ss_toolbar4_background_color};
-  padding: 1px 5px 5px 5px;
+  padding: 1px 5px 5px 10px;
 }
 
 
@@ -747,7 +746,7 @@ img.ss_help_cpanel_show {
 	width: 16px;
 	height: 16px;
 	position: relative;
-	top: 3px;
+	vertical-align: middle;
 }
 
 img.ss_help_cpanel_hide {
@@ -756,7 +755,7 @@ img.ss_help_cpanel_hide {
 	width: 16px;
 	height: 16px;
 	position: relative;
-	top: 3px;
+	vertical-align: middle;
 }
 	
 

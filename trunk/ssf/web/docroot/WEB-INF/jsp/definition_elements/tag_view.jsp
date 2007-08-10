@@ -27,8 +27,8 @@ function ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><s
 	divObj.style.zIndex = ssMenuZ;
 	var anchorObj = document.getElementById('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber));
 	ss_setObjectTop(divObj, (ss_getDivTop('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)) + 20) + "px");
-	var rightEdge = parseInt(ss_getDivLeft('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)));
-	var leftEdge = parseInt(rightEdge - ss_getObjectWidth(divObj));
+	var leftEdge = parseInt(ss_getDivLeft('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber))) + 10;
+	var rightEdge = parseInt(leftEdge + ss_getObjectWidth(divObj));
 	if (leftEdge < 0) leftEdge = 0;
 	self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)) + ", left = " +leftEdge)
 	ss_setObjectLeft(divObj, leftEdge + "px")
@@ -97,7 +97,7 @@ function ss_postModifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadap
 <%
 boolean isIEtag = BrowserSniffer.is_ie(request);
 %>
-<table cellspacing="0" cellpadding="0">
+<table class="ss_style" cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
 <td valign="top" style="padding-right:2px;">
@@ -122,7 +122,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
   <div id="ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ss_tagDivNumber}">
   </div>
 </td>
-<td>
+<td width="100%">
 <ssf:ifaccessible>
 	<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
 </ssf:ifaccessible>
