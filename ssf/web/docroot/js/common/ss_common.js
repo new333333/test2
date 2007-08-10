@@ -93,8 +93,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_spannedAreasList = new Array();
 	var ss_active_menulayer = '';
 	var ss_lastActive_menulayer = '';
-	var ss_activateMenuOffsetTop = 12;
-    var ss_activateMenuOffsetLeft = 26;
+	var ss_activateMenuOffsetTop = 0;
+    var ss_activateMenuOffsetLeft = 0;
 	var ss_layerFlag = 0;
 	var ss_forum_maxBodyWindowHeight = 0;
 	var ss_divFadeInArray = new Array();
@@ -1350,15 +1350,19 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var maxWidth = 0;
     var divWidth = 0;
 
+	document.getElementById(divId).style.display = "block";
+
     if (ss_isNSN6 || ss_isMoz5) {
         // need to bump layer an extra bit to the right to avoid horiz scrollbar
-        divWidth = parseInt(self.document.getElementById(divId).offsetWidth) + 25;
+        divWidth = parseInt(document.getElementById(divId).offsetWidth) + 20;
         maxWidth = parseInt(window.innerWidth);
     } else {
-        divWidth = parseInt(self.document.all[divId].clientWidth) + 25;
+        divWidth = parseInt(document.all[divId].clientWidth) + 20;
         maxWidth = parseInt(document.body.scrollWidth);
     }
 
+	//console.log(divId, " dw ", divWidth, " mw ", maxWidth);
+	
     if (x + divWidth > maxWidth) {
         x = maxWidth - divWidth;
     } 

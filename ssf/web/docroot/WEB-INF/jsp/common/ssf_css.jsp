@@ -2456,7 +2456,6 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 }
 
 .ss_actions_bar_submenu {
-	position:absolute;
  <c:if test="<%= isIE %>">
 	top:-12px;
 	left:-26px;
