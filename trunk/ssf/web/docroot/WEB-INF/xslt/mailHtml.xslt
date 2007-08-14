@@ -47,7 +47,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'ChangedOne'"/>
 </xsl:call-template>
-<a><xsl:attribute name="href"><xsl:value-of select="topFolder/@href"/></xsl:attribute>
+&nbsp;<a><xsl:attribute name="href"><xsl:value-of select="topFolder/@href"/></xsl:attribute>
 <xsl:value-of select="topFolder/@title"/>
 </a>
 </xsl:if>
@@ -56,7 +56,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'ChangedMany'"/>
 </xsl:call-template>
-<a><xsl:attribute name="href"><xsl:value-of select="topFolder/@href"/></xsl:attribute>
+&nbsp;<a><xsl:attribute name="href"><xsl:value-of select="topFolder/@href"/></xsl:attribute>
 <xsl:value-of select="topFolder/@title"/>
 </a>
 </xsl:if>
