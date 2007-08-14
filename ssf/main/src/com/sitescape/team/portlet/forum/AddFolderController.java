@@ -37,6 +37,8 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WorkspaceConfigHelper;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 /**
  * @author Janet McCann
@@ -124,6 +126,11 @@ public class AddFolderController extends SAbstractController {
 		model.put(WebKeys.OPERATION, operation);
 		model.put(WebKeys.USER_PRINCIPAL, user);
 
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, binder, model, new WorkspaceConfigHelper());
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		model.put(WebKeys.ENTRY, binder);
+		
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
