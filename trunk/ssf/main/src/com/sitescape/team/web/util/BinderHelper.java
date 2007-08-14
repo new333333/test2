@@ -245,11 +245,15 @@ public class BinderHelper {
 	}
 
 	static public String getViewType(AllModulesInjected bs, Long binderId) {
+		//does read check
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		return getViewType(bs, binder);
+	}
+	static public String getViewType(AllModulesInjected bs, Binder binder) {
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = bs.getBinderModule().getBinder(binderId);
 		
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId); 
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId()); 
 		String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		Definition displayDef = binder.getDefaultViewDef();
 		if (Validator.isNotNull(displayDefId)) {

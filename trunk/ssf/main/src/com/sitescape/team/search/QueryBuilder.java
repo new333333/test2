@@ -11,7 +11,7 @@
 package com.sitescape.team.search;
 
 import java.net.URL;
-import java.util.Date;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +25,6 @@ import org.dom4j.io.SAXReader;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.LanguageTaster;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.util.SPropsUtil;
 
 public class QueryBuilder {
@@ -80,7 +79,10 @@ public class QueryBuilder {
 
 	private static final String DEFAULT = LanguageTaster.DEFAULT;
 	
-	
+	private static final String TEAM_PREFIX=BasicIndexUtils.TEAM_ACL_FIELD + ":";
+	private static final String FOLDER_PREFIX=BasicIndexUtils.FOLDER_ACL_FIELD + ":";
+	private static final String ENTRY_PREFIX=BasicIndexUtils.ENTRY_ACL_FIELD + ":";
+	private static final String ENTRY_ALL=ENTRY_PREFIX+BasicIndexUtils.READ_ACL_ALL;
 
 	private Set principalIds;
 
@@ -328,63 +330,68 @@ public class QueryBuilder {
 
 
 	private String getAclClause() {
-
-		String qString = "";
+		//KEEP IN SYNC WITH ACCESSUTILS.CHECKACCESS 
+		
 		//if this is the super user, then don't add any acl controls.
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
-		if (user.isSuper())
-			return qString;
-
+		if (user.isSuper()) return "";
+		StringBuffer qString = new StringBuffer();
 		
 		/*
-		 * if !widen, then acl query is: (folderACL:1,2,3 AND entryAcl:all,1,2,3)
+		 * if widen(the default), then acl query is:
+		 * access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3) OR
+		 * access to entry (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3)) 
 		 * 
-		 * else ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
+		 * if !widen, then acl query is: 
+		 * access to folder (((folderAcl:1,2,3) OR (folderAcl:team and teamAcl:1,2,3)) AND
+		 * access to entry ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
+		 * 
+		 *  
 		 */
 		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
 		// folderAcl:1,2,3...
-		qString += "(((";
-		boolean first = true;
-		for (Iterator i = principalIds.iterator(); i.hasNext();) {
-			if (!first) {
-				qString += " OR";
-			}
-			qString += " " + BasicIndexUtils.FOLDER_ACL_FIELD + ":" + i.next();
-			first = false;
-		}
-		qString += ") AND ";
 		if (widen) {
 			// entryAcl:all
-			qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
-					+ BasicIndexUtils.READ_ACL_ALL + " ))";
-			qString += " OR (";
-			// OR entryAcl:1,2,3
-			first = true;
-			for (Iterator i = principalIds.iterator(); i.hasNext();) {
-				if (!first) {
-					qString += " OR";
-				}
-				qString += " " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
-						+ i.next();
-				first = false;
-			}
-			qString += ")";
+			qString.append("(");
+			qString.append("(" + ENTRY_ALL  + " AND "); //(entryAcl:all AND
+			qString.append("(" + idField(principalIds, FOLDER_PREFIX)+ "))"); //(folderAcl:1 OR folderAcl:2))
+			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
+								FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " +
+								"(" + idField(principalIds, TEAM_PREFIX) + "))");								
+			qString.append(" OR (" + idField(principalIds, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
+			qString.append(" OR (" + ENTRY_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
+								"(" + idField(principalIds, TEAM_PREFIX) + "))");
+			qString.append(")");
 		} else {
-
-			qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
-					+ BasicIndexUtils.READ_ACL_ALL;
-			for (Iterator i = principalIds.iterator(); i.hasNext();) {
-
-				qString += " OR " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
-						+ i.next();
-			}
-			qString += "))";
+			qString.append("(");
+			qString.append("((" + idField(principalIds, FOLDER_PREFIX) + ")"); //((folderAcl:1 OR folderAcl:2)
+			qString.append(" OR ");
+			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
+					"(" + idField(principalIds, TEAM_PREFIX) + "))");
+			qString.append(") AND (");												//) AND (
+			qString.append("(" + ENTRY_ALL + " OR " +						//(entryAcl:all OR entryAcl:1 OR entryAcl:2)
+						idField(principalIds, ENTRY_PREFIX) + ")");
+			qString.append(" OR ");
+			qString.append("("  + ENTRY_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
+					"(" + idField(principalIds, TEAM_PREFIX) + "))");
+			qString.append("))");
 		}
-		qString += ")";
-		return qString;
+		return qString.toString();
 	}
-
+	private String idField(Collection<Long>ids, String prefix) {
+		StringBuffer buf = new StringBuffer("");
+		boolean first = true;
+		for (Long id:ids) {
+			if (!first) {
+				buf.append(" OR ");
+			}
+			buf.append(prefix + id);
+			first = false;
+		}
+		return buf.toString();
+		
+	}
 	public void test() {
 		Document document = null;
 		SAXReader reader = new SAXReader();

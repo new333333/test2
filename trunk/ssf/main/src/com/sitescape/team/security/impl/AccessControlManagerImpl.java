@@ -71,28 +71,20 @@ public class AccessControlManagerImpl implements AccessControlManager {
 		return licenseManager;
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
-    	//need to use this work areas owner, even if inheriting
-    	return getWorkAreaAccessControl(workArea, workArea, workAreaOperation);
-    }
-
-    protected Set getWorkAreaAccessControl(WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-        if(workArea.isFunctionMembershipInherited()) {
+         if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
             if(parentWorkArea == null)
                 return new HashSet();  //possible for templates
             else
-                return getWorkAreaAccessControl(workAreaStart, parentWorkArea, workAreaOperation);
+                return getWorkAreaAccessControl(parentWorkArea, workAreaOperation);
         }
         else {
 	        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         	List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, workAreaOperation);
-	        //replaces reserved ownerId with workArea owner
-           	Set ids = new HashSet();
+          	Set ids = new HashSet();
             for (WorkAreaFunctionMembership wfm:wfms) {
             	ids.addAll(wfm.getMemberIds());
         	}
-        	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(workAreaStart.getOwnerId());
-        	if (ids.remove(ObjectKeys.TEAM_MEMBER_ID)) ids.addAll(workAreaStart.getTeamMemberIds());
 	        return ids;
 	        
         }    	

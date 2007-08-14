@@ -29,6 +29,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 
@@ -70,7 +71,12 @@ public class ViewPermalinkController  extends SAbstractController {
 			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
 			} else {
-				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+				try {
+					getBinderModule().getBinder(new Long(binderId));
+					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+				} catch (AccessControlException ac) {
+					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");					
+				}
 			}
 		}
 		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {

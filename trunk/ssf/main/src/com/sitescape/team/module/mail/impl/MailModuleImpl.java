@@ -250,9 +250,21 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			if (Validator.isNull(hostName)) {
 				hostName = session.getProperty("mail.host");
 			}
-			int port = Integer.parseInt(session.getProperty(prefix + "port"));
-			if (Validator.isNull(session.getProperty(prefix + "port"))) {
-				port = Integer.parseInt(session.getProperty("mail.port"));
+			
+			Integer port = null;
+			try {
+				if (Validator.isNull(session.getProperty(prefix + "port"))) {
+					port = Integer.parseInt(session.getProperty("mail.port"));
+				} else {
+					port = Integer.parseInt(session.getProperty(prefix + "port"));
+				}
+			} catch (Exception ex) {
+				logger.error("Error reading posting port", ex);
+			}
+			if (port == null) {
+				if ("imap".equalsIgnoreCase(storeProtocol)) {
+					port = 143;
+				} else port = 110;
 			}
 			auth = session.getProperty(prefix + "auth");
 			if (Validator.isNull(auth)) 
