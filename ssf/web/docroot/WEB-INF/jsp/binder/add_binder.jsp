@@ -18,6 +18,19 @@
 	String workspaceId = com.sitescape.team.ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
 %>
 <c:set var="ss_workspaceId" value="<%= workspaceId %>"/>
+<c:set var="ss_workspaceConfigId" value="<%= ObjectKeys.DEFAULT_WORKSPACE_CONFIG %>"/>
+<c:set var="ss_teamWorkspaceConfigId" value="<%= ObjectKeys.DEFAULT_TEAM_WORKSPACE_CONFIG %>"/>
+
+<c:set var="ss_stdConfigId_desc" value="<%= ObjectKeys.DEFAULT_FOLDER_CONFIG %>"/>
+<c:set var="ss_stdConfigId_blog" value="<%= ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG %>"/>
+<c:set var="ss_stdConfigId_wiki" value="<%= ObjectKeys.DEFAULT_FOLDER_WIKI_CONFIG %>"/>
+<c:set var="ss_stdConfigId_cal" value="<%= ObjectKeys.DEFAULT_FOLDER_CALENDAR_CONFIG %>"/>
+<c:set var="ss_stdConfigId_guest" value="<%= ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG %>"/>
+<c:set var="ss_stdConfigId_photo" value="<%= ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG %>"/>
+<c:set var="ss_stdConfigId_file" value="<%= ObjectKeys.DEFAULT_FOLDER_LIBRARY_CONFIG %>"/>
+<c:set var="ss_stdConfigId_task" value="<%= ObjectKeys.DEFAULT_FOLDER_TASK_CONFIG %>"/>
+<c:set var="ss_stdConfigId_mile" value="<%= ObjectKeys.DEFAULT_FOLDER_MILESTONE_CONFIG %>"/>
+<c:set var="ss_stdConfigId_survey" value="<%= ObjectKeys.DEFAULT_FOLDER_SURVEY_CONFIG %>"/>
 
 <script type="text/javascript">
 var ss_teamWorkspaceInternalId = '<%= ObjectKeys.DEFAULT_TEAM_WORKSPACE_CONFIG %>';
@@ -54,12 +67,17 @@ var ss_addBinderConfigInternalIds = new Object();
 ss_binderConfigSubfolderCount['${config.id}'] = ${config.binderCount};
 ss_addBinderConfigInternalIds['${config.id}'] = "${config.internalId}";
 </c:forEach>
+<c:if test="${empty ssBinderConfigs}">
+ss_binderConfigSubfolderCount['${binderConfigId}'] = 0;
+ss_addBinderConfigInternalIds['${binderConfigId}'] = ss_teamWorkspaceInternalId;
+</c:if>
 
 function ss_showAddBinderOptions() {
 	var formObj = self.document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm');
 	if (document.getElementById('folderConfigIdTitle') == null) return;
 	
 	//If there are sub-binders to be added, turn off the folder selection list
+	//alert(formObj['binderConfigId'].length + ', '+ formObj['binderConfigId'].value)
 	for (var i = 0; i < formObj['binderConfigId'].length; i++) {
 		var configId = formObj['binderConfigId'][i].value
 		if (formObj['binderConfigId'][i].checked) {
@@ -119,15 +137,15 @@ function ss_showAddBinderOptions() {
   method="post" onSubmit="return ss_onSubmit(this);">
 <span class="ss_bold">
   <c:if test="${ssOperation == 'add_workspace'}">
-<ssf:nlt tag="binder.add.workspace.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
+<ssf:nlt tag="toolbar.menu.addWorkspace"><ssf:param name="value" value="${ssBinder.pathName}"/>
 </ssf:nlt>
 </c:if>
 <c:if test="${ssOperation == 'add_folder'}">
-<ssf:nlt tag="binder.add.folder.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
+<ssf:nlt tag="toolbar.menu.addFolder"><ssf:param name="value" value="${ssBinder.pathName}"/>
 </ssf:nlt>
 </c:if>
 <c:if test="${ssOperation == 'add_team_workspace'}">
-<ssf:nlt tag="binder.add.team.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
+<ssf:nlt tag="toolbar.menu.addWorkspace"><ssf:param name="value" value="${ssBinder.pathName}"/>
 </ssf:nlt>
 </c:if>
 
@@ -137,8 +155,6 @@ function ss_showAddBinderOptions() {
 <tr><td>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="workspace.location" /></legend>
-    <span class="ss_bold"><ssf:nlt tag="workspace.selectLocation"/>:</span>
-    <br/>
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdAddBinder${renderResponse.namespace}" 
   scope="request" />
@@ -166,13 +182,43 @@ function ss_showAddBinderOptions() {
       <c:if test="${status.first}"><c:set var="checkedConfig" value="${config.id}"/></c:if>
       <c:if test="${config.internalId == ss_workspaceId}"><c:set var="checkedConfig" value="${config.id}"/></c:if>
   </c:forEach>
-  <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span> <ssf:inlineHelp tag="ihelp.other.select_template"/>
+  <span class="ss_bold"><ssf:nlt tag="general.type.workspace"/></span>
   <br/>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+    <c:if test="${config.internalId == ss_workspaceConfigId}">
+	  <input type="radio" name="binderConfigId" value="${config.id}" 
+	  <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
+	  onClick="ss_showAddBinderOptions()"
+	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;
+	  <span class="ss_smallprint ss_light">
+	    <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
+	  </span><br/>
+	</c:if>
+  </c:forEach>
+  
+  <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+    <c:if test="${config.internalId == ss_teamWorkspaceConfigId}">
+	  <input type="radio" name="binderConfigId" value="${config.id}" 
+	  <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
+	  onClick="ss_showAddBinderOptions()"
+	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;
+	  <span class="ss_smallprint ss_light">
+	    <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
+	  </span><br/>
+	</c:if>
+  </c:forEach>
+<br/>
+
+  <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+    <c:if test="${config.internalId != ss_workspaceConfigId && config.internalId != ss_teamWorkspaceConfigId}">
       <input type="radio" name="binderConfigId" value="${config.id}" 
       <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
       onClick="ss_showAddBinderOptions()"
-      ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;
+      <span class="ss_smallprint ss_light">
+        <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
+      </span><br/>
+    </c:if>
   </c:forEach>
 <br/>  
 </c:if>
@@ -222,13 +268,57 @@ function ss_showAddBinderOptions() {
   <legend class="ss_legend"><ssf:nlt tag="workspace.folders" /></legend>
   <span id="folderConfigIdTitle" class="ss_bold"><ssf:nlt tag="binder.add.binder.select.folders"/></span> 
   <br/>
+  <div class="ss_indent_medium">
+  <span class="ss_light"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span>
+  <br/>
+  <div class="ss_indent_medium">
   <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
+   <c:if test="${config.internalId == ss_stdConfigId_desc || 
+                 config.internalId == ss_stdConfigId_blog ||  
+                 config.internalId == ss_stdConfigId_wiki ||  
+                 config.internalId == ss_stdConfigId_cal ||  
+                 config.internalId == ss_stdConfigId_guest ||  
+                 config.internalId == ss_stdConfigId_photo ||  
+                 config.internalId == ss_stdConfigId_file ||  
+                 config.internalId == ss_stdConfigId_task ||  
+                 config.internalId == ss_stdConfigId_mile ||  
+                 config.internalId == ss_stdConfigId_survey}">
     <c:if test="${!empty config.id && !empty config.templateTitle}">
       <input type="checkbox" name="folderConfigId_${config.id}" /> 
       <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
-      ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span><br/>
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;
+      <span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span><br/>
     </c:if>
+   </c:if>
   </c:forEach>
+  </div>
+  </div>
+  <br/>
+  <div class="ss_indent_medium">
+  <span class="ss_light"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span>
+  <br/>
+  <div class="ss_indent_medium">
+  <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
+   <c:if test="${config.internalId != ss_stdConfigId_desc && 
+                 config.internalId != ss_stdConfigId_blog &&  
+                 config.internalId != ss_stdConfigId_wiki &&  
+                 config.internalId != ss_stdConfigId_cal &&  
+                 config.internalId != ss_stdConfigId_guest &&  
+                 config.internalId != ss_stdConfigId_photo &&  
+                 config.internalId != ss_stdConfigId_file &&  
+                 config.internalId != ss_stdConfigId_task &&  
+                 config.internalId != ss_stdConfigId_mile &&  
+                 config.internalId != ss_stdConfigId_survey}">
+    <c:if test="${!empty config.id && !empty config.templateTitle}">
+      <input type="checkbox" name="folderConfigId_${config.id}" /> 
+      <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;
+      <span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span><br/>
+    </c:if>
+   </c:if>
+  </c:forEach>
+  </div>
+  </div>
 <br/>  
 </fieldset>
 </div>
