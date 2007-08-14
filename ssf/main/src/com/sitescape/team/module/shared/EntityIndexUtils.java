@@ -126,7 +126,6 @@ public class EntityIndexUtils {
     
     
     // Defines field values
-    public static final String READ_ACL_ALL = "all";
     public static final String DEFAULT_NOTITLE_TITLE = "---";
         
     public static void addTitle(Document doc, DefinableEntity entry) {
@@ -502,31 +501,40 @@ public class EntityIndexUtils {
 		doc.add(new Field(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.TOKENIZED));
    	
     }
-    public static String getBinderAccess(Binder binder) {
+    // Get ids for folder read access.  Replace owner with binder owner.  Leave team member indicator in place
+    public static String getFolderAclString(Binder binder) {
 		Set binderIds = AccessUtils.getReadAccessIds(binder);
-		if (!binderIds.isEmpty()) {
-			return LongIdUtil.getIdsAsString(binderIds);
-		} 
-		return BasicIndexUtils.READ_ACL_ALL;
+		if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
+   		String ids = LongIdUtil.getIdsAsString(binderIds);
+       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
+        return ids;
     }
+    
     public static void addReadAccess(Document doc, Binder binder) {
     	//set entryAcl to all
 		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
 		//get real binder access
-		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getBinderAccess(binder), Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
+		//get team members
+		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
     }
     
     public static void addReadAccess(org.dom4j.Element parent, Binder binder) {
 		//add binder access
     	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
-   		acl.setText(getBinderAccess(binder));
+   		acl.setText(getFolderAclString(binder));
     	//set entryAcl to all
 		acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
  		acl.setText(BasicIndexUtils.READ_ACL_ALL);
+ 	   	//set team
+		acl = parent.addElement(BasicIndexUtils.TEAM_ACL_FIELD);
+ 		acl.setText(binder.getTeamMemberString());
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
 		//get principals given read access 
      	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
+     	//replace owner indicator, but leave team member alone
+     	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(wEntry.getOwnerId());
      	// I'm not sure if putting together a long string value is more
      	// 	efficient than processing multiple short strings... We will see.
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
@@ -534,8 +542,7 @@ public class EntityIndexUtils {
    			//add all => folder check
    			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
    		}
-   		return pIds.toString();
-   	
+   		return pIds.toString().replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
     }
     public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry) {
 		// Add ACL field. We only need to index ACLs for read access.
@@ -544,7 +551,9 @@ public class EntityIndexUtils {
        		// Add the Entry_ACL field
        		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
        		//add binder access
-    		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getBinderAccess(binder), Field.Store.NO, Field.Index.TOKENIZED));
+    		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
+    		//get team members
+    		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
 
     	} else {
     		addReadAccess(doc, binder);
@@ -556,12 +565,14 @@ public class EntityIndexUtils {
   		//add binder access
    		if (entry instanceof WorkflowSupport) {
    		   	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
-   	   		acl.setText(getBinderAccess(binder));
+   	   		acl.setText(getFolderAclString(binder));
    	   		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
        		acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
        		acl.setText(getWfEntryAccess(wEntry));
- 
+    		acl = parent.addElement(BasicIndexUtils.TEAM_ACL_FIELD);
+     		acl.setText(binder.getTeamMemberString());
+
     	} else {
      		addReadAccess(parent, binder);
     	}

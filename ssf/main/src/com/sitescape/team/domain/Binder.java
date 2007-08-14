@@ -360,7 +360,14 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	return LongIdUtil.getIdsAsLongSet(members);
     	
     }
-    public void setTeamMemberIds(Set memberIds) {
+    public String getTeamMemberString() {
+    	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
+    	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
+    	if (members == null) return "";
+    	return members;
+    	
+    }
+     public void setTeamMemberIds(Set memberIds) {
     	//setting inherited flag handled separate
     	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
     	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));

@@ -56,6 +56,7 @@ import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -1126,12 +1127,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //not really meant to be overridden, but here to share code
     public void indexFunctionMembership(Binder binder, boolean cascade) {
-    	updateIndexAcl(binder, cascade, false);
-    }
-    public void indexTeamMembership(Binder binder, boolean cascade) {
-       	updateIndexAcl(binder, cascade, true);    	  
-    }
-    protected void updateIndexAcl(Binder binder, boolean cascade, boolean teamCheck) {
     	List<Binder> binders = new ArrayList();
     	binders.add(binder);
     	
@@ -1140,16 +1135,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		while (!candidates.isEmpty()) {
     			Binder c = candidates.get(0);
     			candidates.remove(0);
-       			if (teamCheck && c.isTeamMembershipInherited()) {
-    				binders.add(c);
-    				candidates.addAll(c.getBinders());
-       			} else if (!teamCheck && c.isFunctionMembershipInherited()) {
+       			if (c.isFunctionMembershipInherited()) {
     				binders.add(c);
     				candidates.addAll(c.getBinders());
     			}
     			// limit list to 100 or index will be locked
     			if (binders.size() >= 100) {
-    				updateIndexAcl(binders);
+    				updateIndexFolderAcl(binders);
     				if (binders.get(0).equals(binder)) binders.remove(0);
     				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
     				binders.clear();
@@ -1159,16 +1151,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	
     	//finish list
     	if (!binders.isEmpty()) {
-    		updateIndexAcl(binders);
+    		updateIndexFolderAcl(binders);
     	}
     }
-    protected void updateIndexAcl(List<Binder> binders) {
+ 
+    protected void updateIndexFolderAcl(List<Binder> binders) {
     	ArrayList<Query> updateQueries = new ArrayList();
     	ArrayList<String> updateIds = new ArrayList();
 		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index with this new 
 		// Acl list.
-		//find descendent binders with the same owner team membership and re-index together
+		//find descendent binders with the same owner and re-index together
 		//the owner  may be part of the acl set, so cannot always share
 		while (!binders.isEmpty()) {
 			Binder top = binders.get(0);
@@ -1177,9 +1170,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			ids.add(top.getId());
 			List<Binder> others = new ArrayList(binders);
 			for (Binder b:others) {
-				//have same owner and team membership have same acl
-				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId()) &&
-						top.getTeamMemberIds().equals(b.getTeamMemberIds())) {
+				//have same owner  same acl				
+				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId())) {
 					binders.remove(b);
 					ids.add(b.getId());
 				}
@@ -1190,7 +1182,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	QueryBuilder qb = new QueryBuilder(null);
 			// add this query and list of ids to the lists we'll pass to updateDocs.
 			updateQueries.add(qb.buildQuery(qTree, true).getQuery());
-			updateIds.add(EntityIndexUtils.getBinderAccess(top));
+			updateIds.add(EntityIndexUtils.getFolderAclString(top));
 		}
 		
     	if (updateQueries.size() > 0) {
@@ -1205,6 +1197,54 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     		
     }
+    public void indexTeamMembership(Binder binder, boolean cascade) {
+       	List<Binder> binders = new ArrayList();
+    	binders.add(binder);
+    	
+    	if (cascade) {
+    		List<Binder>candidates = new ArrayList(binder.getBinders());
+    		while (!candidates.isEmpty()) {
+    			Binder c = candidates.get(0);
+    			candidates.remove(0);
+       			if (c.isTeamMembershipInherited()) {
+    				binders.add(c);
+    				candidates.addAll(c.getBinders());
+       			} 
+    			// limit list to 100 or index will be locked
+    			if (binders.size() >= 100) {
+    				updateIndexTeamAcl(binders);
+    				if (binders.get(0).equals(binder)) binders.remove(0);
+    				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
+    				binders.clear();
+    			}
+    		}
+    	};
+    	
+    	//finish list
+   		updateIndexTeamAcl(binders);
+   }
+    protected void updateIndexTeamAcl(List<Binder> binders) {
+    	if (binders.isEmpty()) return;
+		// Now, create a query which can be used by the index update method to modify all the
+		// entries, replies, attachments, and binders(workspaces) in the index with this new 
+		// team list.
+		List ids = new ArrayList();
+		for (Binder b:binders) {
+			ids.add(b.getId());
+		}
+		org.dom4j.Document qTree = buildQueryforUpdate(ids);
+		//don't need to add access check to update of acls
+		//access to entries is not required to update the team acl
+		QueryBuilder qb = new QueryBuilder(null);
+		// add this query and list of ids to the lists we'll pass to updateDocs.
+   		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+   		try {
+   			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), BasicIndexUtils.TEAM_ACL_FIELD, binders.get(0).getTeamMemberString());
+   		} finally {
+   			luceneSession.close();
+    	}    		
+    }   
+ 
 	private static org.dom4j.Document buildQueryforUpdate(List<Long> binderIds) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);

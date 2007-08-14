@@ -80,11 +80,16 @@ public class AccessUtils  {
 	 * @param userIds - List of String ids
 	 * @return
 	 */
-	public static boolean checkAccess(Element parent, Set<String> userIds) {			
-		/*
-		 * if !widen, then acl query is: (folderACL:1,2,3 AND entryAcl:all,1,2,3)
+	public static boolean checkAccess(Element parent, Set<String> userIds) {	
+		//KEEP IN SYNC WITH QUERYBUILDER.GETACLCLAUSE 
+
+		/* if widen(the default), then acl query is:
+		 * access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3) OR
+		 * access to entry (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3)) 
 		 * 
-		 * else ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
+		 * if !widen, then acl query is: 
+		 * access to folder (((folderAcl:1,2,3) OR (folderAcl:team and teamAcl:1,2,3)) AND
+		 * access to entry ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
 		 */
 		Element acl = (Element)parent.selectSingleNode(BasicIndexUtils.FOLDER_ACL_FIELD);
 		String folderAcl = null;
@@ -97,38 +102,82 @@ public class AccessUtils  {
 		if (acl != null) entryAcl = acl.getText();
 		if (Validator.isNull(entryAcl)) entryAcl = BasicIndexUtils.READ_ACL_ALL;
 		String []entryAclArray = entryAcl.split(" ");
+
+		acl = (Element)parent.selectSingleNode(BasicIndexUtils.TEAM_ACL_FIELD);   	
+		String teamAcl=null;
+		if (acl != null) teamAcl = acl.getText();
+		if (Validator.isNull(teamAcl)) teamAcl = "";
+		String []teamAclArray = teamAcl.split(" ");
 		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
 		if (widen) {
-			//((folderAcl:1 2 3 AND entryAcl:all) OR (entryAcl:1 2 3))
+			/* access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3)
+			 * access to entry  OR (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3))
+			 * */ 
 			if (entryAcl.equals(BasicIndexUtils.READ_ACL_ALL)) {
-				//check folder for match
+				//(entryAcl:all and folderAcl:1,2,3)
 				for (int i=0; i<folderAclArray.length; ++i) {
 					if (userIds.contains(folderAclArray[i])) return true;
 				}
-				return false;				
-			} else {
-				//check entry for match
-				for (int i=0; i<entryAclArray.length; ++i) {
-					if (userIds.contains(entryAclArray[i])) return true;
-				}
-				return false;
+				//(entryAcl:all and folderAcl:team and teamAcl:1,2,3)
+				if (folderAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+					for (int i=0; i<teamAclArray.length; ++i) {
+						if (userIds.contains(teamAclArray[i])) return true;
+					}
+				}				
+			} 
+			
+			//OR check entry for match
+			//(entryAcl:1,2,3)
+			for (int i=0; i<entryAclArray.length; ++i) {
+				if (userIds.contains(entryAclArray[i])) return true;
 			}
+			//(entryAcl:team AND teamAcl:1,2,3))
+			if (entryAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+				for (int i=0; i<teamAclArray.length; ++i) {
+					if (userIds.contains(teamAclArray[i])) return true;
+				}
+			}				
+			return false;
+			
 		} else {
 			//(folderACL:1,2,3 AND entryAcl:all,1,2,3)
 			//check folder for match
+			/* access to folder (((folderAcl:1,2,3) OR (folderAcl:team and teamAcl:1,2,3)) 
+			 * access to entry AND ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
+			 * */
 			boolean found = false;
+			//(folderAcl:1,2,3)
 			for (int i=0; i<folderAclArray.length; ++i) {
 				if (userIds.contains(folderAclArray[i])) {
 					found = true;
 					break;
 				}
 			}
+			if (!found) {
+				//folderAcl:team and teamAcl:1,2,3
+				if (folderAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+					for (int i=0; i<teamAclArray.length; ++i) {
+						if (userIds.contains(teamAclArray[i])){
+							found =true;
+							break;
+						}
+					}
+				}
+			}
 			//done if didn't pass folderAcl
 			if (!found) return false;				
-			//check entry for match
+			//check entry for match ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
+			//(entryAcl:all,1,2,3)
+			if (entryAcl.equals(BasicIndexUtils.READ_ACL_ALL)) return true;
 			for (int i=0; i<entryAclArray.length; ++i) {
 				if (userIds.contains(entryAclArray[i])) return true;
 			}
+			//(entryAcl:team and teamAcl:1,2,3)
+			if (entryAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+				for (int i=0; i<teamAclArray.length; ++i) {
+					if (userIds.contains(teamAclArray[i])) return true;
+				}
+			}							
 			return false;
 				
 		}
@@ -158,7 +207,7 @@ public class AccessUtils  {
 		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
  			//just check entry acl, ignore binder
  			try {
- 				checkAccess(user, entry, WfAcl.AccessType.read);
+ 				checkAccess(user, binder, entry, WfAcl.AccessType.read);
  			} catch (AccessControlException ex) {
  				if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) { 		
  					readCheck(user, binder, (Entry)entry);
@@ -172,12 +221,14 @@ public class AccessUtils  {
  			//	see if binder default is enough
  			if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) return;
  			//This basically AND's the binder and entry, since we already passed the binder
- 			checkAccess(user, entry, WfAcl.AccessType.read);
+ 			checkAccess(user, binder, entry, WfAcl.AccessType.read);
   		}
 	}
     
-    private static void checkAccess(User user, WorkflowSupport entry, WfAcl.AccessType type) {
-         Set allowedIds = entry.getStateMembers(type);
+    private static void checkAccess(User user, Binder binder, WorkflowSupport entry, WfAcl.AccessType type) {
+        Set allowedIds = entry.getStateMembers(type);
+        if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
+     	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
         if (testAccess(user, allowedIds)) return;
         throw new AclAccessControlException(user.getName(), type.toString());
     }
@@ -212,7 +263,7 @@ public class AccessUtils  {
  			//just check entry acl, ignore binder
  			try {
  				//check explicit users
- 				checkAccess(user, entry, WfAcl.AccessType.write);
+ 				checkAccess(user, binder, entry, WfAcl.AccessType.write);
  			} catch (AccessControlException ex) {
  				if (entry.isWorkAreaAccess(WfAcl.AccessType.write)) { 		
  					modifyCheck(user, binder, (Entry)entry);
@@ -232,7 +283,7 @@ public class AccessUtils  {
  			//see if pass binder READ test
  			readCheck(user, binder, (Entry)entry);
  			//This basically AND's the binder and entry, since we already passed the binder
- 			checkAccess(user, entry, WfAcl.AccessType.write);
+ 			checkAccess(user, binder, entry, WfAcl.AccessType.write);
   		}
     }
 
@@ -263,7 +314,7 @@ public class AccessUtils  {
  			//just check entry acl, ignore binder
  			try {
  				//check explicit users
- 				checkAccess(user, entry, WfAcl.AccessType.delete);
+ 				checkAccess(user, binder, entry, WfAcl.AccessType.delete);
  			} catch (AccessControlException ex) {
  				if (entry.isWorkAreaAccess(WfAcl.AccessType.delete)) { 		
  					deleteCheck(user, binder, (Entry)entry);
@@ -283,7 +334,7 @@ public class AccessUtils  {
  			//see if pass binder READ test
  			readCheck(user, binder, (Entry)entry);
  			//This basically AND's the binder and entry, since we already passed the binder
- 			checkAccess(user, entry, WfAcl.AccessType.delete);
+ 			checkAccess(user, binder, entry, WfAcl.AccessType.delete);
   		}
      }
      public static void overrideReserveEntryCheck(Entry entry) {

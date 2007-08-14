@@ -138,16 +138,17 @@ public class ViewEntryController extends  SAbstractController {
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Map formData = request.getParameterMap();
 				
-		String viewType = BinderHelper.getViewType(this, folderId);
-		
-		String viewPath = BinderHelper.getViewListingJsp(this, viewType);
 		Map model = new HashMap();
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		
+ 		//BinderHelper.getViewType requires read access to the binder.  
+ 		//This causes access errors when have access to an entry but not the binder which happens
+ 		//when you are following an email permalink link
+ 		//setup default value for reload case = viewType shouldn't matter
+ 		String viewPath=WebKeys.VIEW_LISTING_IFRAME;
 		//Build the reload url
 		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
@@ -159,7 +160,7 @@ public class ViewEntryController extends  SAbstractController {
 			if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 				model.clear();
 				model.put(WebKeys.RELOAD_URL_FORCED, adapterUrl.toString());			
-				return new ModelAndView(viewPath, model);
+				return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
 			} 
 		} else {
 			PortletURL reloadUrl = response.createRenderURL();
@@ -172,7 +173,7 @@ public class ViewEntryController extends  SAbstractController {
 			if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 				model.clear();
 				model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-				return new ModelAndView(viewPath, model);
+				return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
 			} 
 		}
 	
@@ -206,6 +207,8 @@ public class ViewEntryController extends  SAbstractController {
 					throw nf;
 				}
 			}
+			String viewType = BinderHelper.getViewType(this, fe.getParentBinder());			
+			viewPath = BinderHelper.getViewListingJsp(this, viewType);
 			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
 			setRepliesAccessControl(model, fe);
 
@@ -723,7 +726,7 @@ public class ViewEntryController extends  SAbstractController {
 				WorkflowState ws = (WorkflowState)iter.next();
 				//store the UI caption for each state
 				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
-//				See if user can transition out of this state
+				//See if user can transition out of this state
 				if (getFolderModule().testTransitionOutStateAllowed(reply, ws.getTokenId())) {
 					//get all manual transitions
 					Map trans = getFolderModule().getManualTransitions(reply, ws.getTokenId());

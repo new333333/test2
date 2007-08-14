@@ -151,9 +151,8 @@ public class WorkflowUtils {
 				result.setUseDefault(GetterUtil.getBoolean(value, true));
 			} else if ("userGroupAccess".equals(name)) {
 				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value, ","));
-//			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-// This would require us to reindex all entries in a folder and sub-folders when team membership changed.
-//    			result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
+			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+    			result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
 			} else if ("condition".equals(name)) {
 		    	if (entity.getEntryDef() != null) {
 		    		Element element = (Element)prop.selectSingleNode("./workflowEntryDataUserList[@definitionId='" +

@@ -50,6 +50,7 @@ public class BasicIndexUtils {
     public static final String READ_ACL_FIELD = "_readAcl";
     public static final String ENTRY_ACL_FIELD = "_entryAcl";
     public static final String FOLDER_ACL_FIELD = "_folderAcl";
+    public static final String TEAM_ACL_FIELD = "_teamAcl";  //team members used with folder and entry acl
     public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
 //    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
     public static final String TAG_FIELD = "_tagField";
@@ -61,6 +62,7 @@ public class BasicIndexUtils {
     
     // Defines field values
     public static final String READ_ACL_ALL = "all";
+    public static final String READ_ACL_TEAM = "team";
     public static final String TAG = "TAG";
     public static final String TAG_ACL_PRE = "ACL";
     public static final String GROUP_ANY = "any";
