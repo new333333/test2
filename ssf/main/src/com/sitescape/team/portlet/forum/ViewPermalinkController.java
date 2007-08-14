@@ -29,6 +29,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 
 /**
@@ -48,6 +49,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
+		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		
 		if (!binderId.equals("")) url = url.replaceAll(WebKeys.URL_BINDER_ID_PLACE_HOLDER, binderId);
@@ -70,6 +72,13 @@ public class ViewPermalinkController  extends SAbstractController {
 			} else {
 				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
 			}
+		}
+		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {
+			url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
+				"&" + WebKeys.URL_BINDER_ID + "=" + binderId +
+				"&" + WebKeys.URL_ENTITY_TYPE + "=" + entityType;
+			if (!entryId.equals("")) url += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
+			url += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
 		}
  		
 		model.put(WebKeys.PERMALINK, url);
