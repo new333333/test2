@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -26,10 +27,12 @@ import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.AuditTrail.AuditType;
@@ -181,7 +184,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Binder binder) {
-		return addBlankRow(report, binder.getId(), binder.getTitle(),
+		return addBlankRow(report, binder.getId(), binder.getPathName(),
 							binder.getParentBinder().getId());
 	}
 
@@ -425,30 +428,71 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 
+	private void accumulateValue(Map<String, Long> map, String key, Long value)
+	{
+		long val = 0;
+		if(map.containsKey(key)) {
+			val = map.get(key).longValue();
+		}
+		val += value.longValue();
+		map.put(key, new Long(val));
+	}
 	
 	public List<Map<String,Object>> generateQuotaReport() {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
-		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+		List sizes = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
-				List auditTrail = null;
+				List l = null;
 				try {
 					ProjectionList proj = Projections.projectionList()
-									.add(Projections.groupProperty("owner.owningBinderId"))
-									.add(Projections.sum("fileItem.length"));
-					Criteria crit = session.createCriteria(FileAttachment.class)
+									.add(Projections.groupProperty("owner.owningBinderKey"))
+									.add(Projections.sum("fileItem.length"))
+					.add(Projections.groupProperty("owner.owningBinderId"));
+					Criteria crit = session.createCriteria(VersionAttachment.class)
 						.setProjection(proj);
-					auditTrail = crit.list();
+					l = crit.list();
 				} catch(Exception e) {
 					System.out.println("bah" +  e.getMessage());
 				}
-				return auditTrail;
+				return l;
 			}});
-		HashMap<String,Object> row = null;
-		for(Object o : result) {
+
+		TreeMap<String, Long> distributedSizes = new TreeMap<String, Long>();
+		for(Object o : sizes) {
 			Object[] col = (Object []) o;
-			row = addBlankRow(report, (Long) col[0], (String) "I don't know the title", (Long) new Long(-1));
-			row.put(ReportModule.SIZE, col[1]);
+			accumulateValue(distributedSizes, (String) col[0], (Long) col[1]);
+			HKey key = new HKey((String) col[0]);
+			for(String k : key.getAncestorKeys()) {
+				accumulateValue(distributedSizes, k, (Long) col[1]);
+			}
+		}
+
+		List binders = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List l = null;
+				try {
+					l = session.createCriteria(Binder.class)
+						.addOrder(Order.asc("binderKey.sortKey"))
+						.add(Restrictions.ne("type", "template"))
+						.list();
+				} catch(Exception e) {
+					System.out.println("bah" +  e.getMessage());
+				}
+				return l;
+			}});
+
+		for(Object o : binders) {
+			Binder b = (Binder) o;
+			HashMap<String,Object> row = new HashMap<String,Object>();
+			row.put(ReportModule.BINDER_ID, b.getId());
+			row.put(ReportModule.BINDER_TITLE, b.getPathName());
+			if(distributedSizes.containsKey(b.getBinderKey().getSortKey())) {
+				row.put(ReportModule.SIZE, distributedSizes.get(b.getBinderKey().getSortKey()));
+			} else {
+				row.put(ReportModule.SIZE, new Long(0));				
+			}
+			report.add(row);
 		}
 
 		return report;
