@@ -763,7 +763,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		//Have the entity, you can rate it
 		EntityIdentifier id = entity.getEntityIdentifier();
 		//update entity average
-     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
 	    User user = RequestContextHolder.getRequestContext().getUser();
        	Rating rating = getProfileDao().loadRating(user.getId(), id);
 		if (rating == null) {
@@ -772,21 +771,16 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		} 
 		//set user rating
 		rating.setRating(value);
-    	// see if title exists for this folder
-		FilterControls filter = new FilterControls(ratingAttrs, cfValues);
-     	double result = getCoreDao().averageColumn(Rating.class, "rating", filter);
+		List<Object[]> results = getCoreDao().loadObjects("select count(*), avg(x.rating) from x in class " + Rating.class.getName() + " where x.id.entityId=" +
+				id.getEntityId() + " and x.id.entityType=" + id.getEntityType().getValue() +" and not x.rating is null", null);
      	AverageRating avg = entity.getAverageRating();
-     	long count;
      	if (avg == null) {
      		avg = new AverageRating();
      		entity.setAverageRating(avg);
-     		count = 1;
      	}
-     	else
-     		count = getCoreDao().countObjects(Rating.class,filter);
-     	
-     	avg.setAverage(result);
-   		avg.setCount(count);
+      	Object[] row = results.get(0);
+     	avg.setAverage((Double)row[1]);
+   		avg.setCount((Long)row[0]);
  			
 	}
     //inside write transaction    
