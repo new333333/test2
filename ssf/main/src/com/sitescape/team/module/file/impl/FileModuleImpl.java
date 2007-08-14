@@ -434,6 +434,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		try
 		{
+			urlFileName = (new File(urlFileName)).getName();  // Prevent ../ filename hacks
 			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, urlFileName);
 			FileCopyUtils.copy(is, out);
 		}
