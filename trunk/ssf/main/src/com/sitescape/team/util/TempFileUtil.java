@@ -192,6 +192,11 @@ public class TempFileUtil {
 	 */
 	public static InputStream openTempFile(String fileHandle) throws UncheckedIOException {
 		try {
+			// Use only the filename, eliminating any attempts to use paths to get out of
+			//   the temp directory
+			File junk = new File(fileHandle);
+			fileHandle = junk.getName();
+			
 			return new FileInputStream(new File(getTempFileDirPath(), fileHandle));
 		} catch(IOException e) {
 			throw new UncheckedIOException(e);
