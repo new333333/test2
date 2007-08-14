@@ -21,6 +21,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.GetterUtil;
@@ -90,5 +91,16 @@ public class DefinitionUtils {
 		"&entityType=folderEntry" +
 		"&" + WebKeys.URL_ENTRY_ID + "=" + fEntry.getId().toString() +
 		"&" + WebKeys.URL_FILE_ID + "=" + att.getId(); 
+   }
+
+   public static String getViewPermalinkURL(FolderEntry fEntry, FileAttachment att)
+   {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, fEntry.getParentFolder().getId().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, fEntry.getId().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, fEntry.getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_FILE_ID, att.getId().toString());
+		return adapterUrl.toString();
    }
 }

@@ -104,7 +104,8 @@
       ><span 
       >--<ssf:nlt tag="entry.noTitle"/>--</span
       ></c:if><span id="folderLine_${fileEntry._docId}"
-      ><c:out value="${fileEntry.title}"/></span><br/>
+      ><c:out value="${fileEntry.title}"/></span><c:if test="${!empty fileEntry._desc}"
+      ><hr width="80%" align="left"/></c:if>
     <span >${fileEntry._desc}</span>
   </div>
 </c:forEach>

@@ -38,7 +38,7 @@ public class NotifyBuilderAttachments extends AbstractNotifyBuilder {
 		    			notifyDef.addAttachment(att);
 		    		else if (entity instanceof FolderEntry) {
 		    			FolderEntry fEntry = (FolderEntry)entity;
-		    			String webUrl = DefinitionUtils.getViewURL(fEntry, att); 
+		    			String webUrl = DefinitionUtils.getViewPermalinkURL(fEntry, att); 
 		    			value.addAttribute("href", webUrl);
 		    		}
 		    	}

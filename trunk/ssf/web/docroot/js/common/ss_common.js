@@ -485,7 +485,7 @@ function ss_showHoverOver(parentObj, divName) {
 	divObj.style.zIndex = '500';
 	var x = dojo.html.getAbsolutePosition(parentObj, true).x
 	var y = dojo.html.getAbsolutePosition(parentObj, true).y
-	ss_setObjectTop(divObj, parseInt(parseInt(y) + ss_getObjectHeight(parentObj)) + "px")
+	ss_setObjectTop(divObj, parseInt(parseInt(y) + dojo.html.getContentBoxHeight(parentObj)) + "px")
 	ss_setObjectLeft(divObj, x + "px")
 }
 function ss_hideHoverOver(parentObj, divName) {
@@ -1078,23 +1078,11 @@ function ss_getImageLeft(imageName) {
 }
 
 function ss_getObjectWidth(obj) {
-    if (ss_isNSN6 || ss_isMoz5) {
-        return parseInt(obj.offsetWidth)
-    } else if (ss_isNSN) {
-        return parseInt(obj.clip.width)
-    } else {
-        return parseInt(obj.clientWidth)
-    }
+    return dojo.html.getContentBoxWidth(obj)
 }
 
 function ss_getObjectHeight(obj) {
-    if (ss_isNSN6 || ss_isMoz5) {
-        return parseInt(obj.offsetHeight)
-    } else if (ss_isNSN) {
-        return parseInt(obj.clip.height)
-    } else {
-        return parseInt(obj.clientHeight)
-    }
+	return dojo.html.getContentBoxHeight(obj)
 }
 
 function ss_getObjectLeft(obj) {
@@ -1118,23 +1106,11 @@ function ss_getObjectTop(obj) {
 }
 
 function ss_getObjectLeftAbs(obj) {
-    var left = 0
-    var parentObj = obj
-    while (parentObj.offsetParent && parentObj.offsetParent != '') {
-        left += parentObj.offsetParent.offsetLeft
-        parentObj = parentObj.offsetParent
-    }
-    return left
+	return dojo.html.getAbsolutePosition(obj, true).x
 }
 
 function ss_getObjectTopAbs(obj) {
-    var top = 0
-    var parentObj = obj
-    while (parentObj.offsetParent && parentObj.offsetParent != '') {
-        top += parentObj.offsetParent.offsetTop
-        parentObj = parentObj.offsetParent
-    }
-    return top
+    return dojo.html.getAbsolutePosition(obj, true).y
 }
 
 function ss_setObjectWidth(obj, width) {

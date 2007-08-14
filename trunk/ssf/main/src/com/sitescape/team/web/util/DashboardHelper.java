@@ -573,12 +573,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
         	beans.put(id, idData);
     	}
     	Document tree = null;
-    	String idString = (String)data.get(Workspace_topId);
+    	String idString = "";
+    	if (data.containsKey(Workspace_topId)) idString = (String)data.get(Workspace_topId);
 		Long topId = null;
 		try {
-			topId = Long.valueOf(idString);
+			if (!idString.equals("")) topId = Long.valueOf(idString);
 		} catch (Exception ex) {};
-       	String startPoint = (String)data.get("start");
+       	String startPoint = "";
+       	if (data.containsKey("start")) startPoint = (String)data.get("start");
    		if (!(binder instanceof TemplateBinder)) {
    	       	Workspace topWs = null;
    			if ("this".equals(startPoint)) {
