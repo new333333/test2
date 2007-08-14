@@ -182,8 +182,7 @@ public class ReportDownloadController extends  SAbstractController {
 			} else if ("quota".equals(reportType)) {
 				hasUsers = false;
 				report = getReportModule().generateQuotaReport();
-				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
-						ReportModule.SIZE};
+				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_TITLE, ReportModule.SIZE};
 			}
 			printReport(response.getWriter(), report, columns, hasUsers);
 			response.getWriter().flush();
