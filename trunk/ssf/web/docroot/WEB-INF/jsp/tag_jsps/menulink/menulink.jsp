@@ -69,7 +69,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
 	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
 <% } else if ( useBinderFunction.equals("no") && dashboardType.equals("portlet") ) { %>
-	onClick="return ss_loadEntryFromMenuSearchPortlet(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');" 
+	onClick="return ss_loadEntryFromMenuSearchPortlet(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= namespace %>');" 
 <% } else if (useBinderFunction.equals("yes")) { %>
 	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
