@@ -149,35 +149,8 @@ public class ViewEntryController extends  SAbstractController {
  		//when you are following an email permalink link
  		//setup default value for reload case = viewType shouldn't matter
  		String viewPath=WebKeys.VIEW_LISTING_IFRAME;
-		//Build the reload url
-		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			adapterUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
-			model.put(WebKeys.RELOAD_URL, adapterUrl.toString());
-			if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
-				model.clear();
-				model.put(WebKeys.RELOAD_URL_FORCED, adapterUrl.toString());			
-				return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
-			} 
-		} else {
-			PortletURL reloadUrl = response.createRenderURL();
-			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
-			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
-			model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
-			if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
-				model.clear();
-				model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-				return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
-			} 
-		}
-	
-		FolderEntry fe = null;
+
+ 		FolderEntry fe = null;
 		try {
 			if (Validator.isNull(entryId)) {
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
@@ -207,6 +180,35 @@ public class ViewEntryController extends  SAbstractController {
 					throw nf;
 				}
 			}
+
+			//Build the reload url (after getting the entryId from the title if necessary)
+			if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				adapterUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+				model.put(WebKeys.RELOAD_URL, adapterUrl.toString());
+				if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
+					model.clear();
+					model.put(WebKeys.RELOAD_URL_FORCED, adapterUrl.toString());			
+					return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
+				} 
+			} else {
+				PortletURL reloadUrl = response.createRenderURL();
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+				reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+				model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+				if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
+					model.clear();
+					model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
+					return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
+				} 
+			}
+
 			String viewType = BinderHelper.getViewType(this, fe.getParentBinder());			
 			viewPath = BinderHelper.getViewListingJsp(this, viewType);
 			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
