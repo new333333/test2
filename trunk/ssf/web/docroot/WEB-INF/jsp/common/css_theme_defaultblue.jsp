@@ -55,6 +55,8 @@
   -- BACKGROUND COLORS
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
+-%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel_featured" value="#EAF7DD" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--
@@ -75,6 +77,7 @@
 --%><c:set var="ss_style_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_gray_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_light_color" value="#999999" scope="request"/><%--
+--%><c:set var="ss_style_border_color_dark_hue" value="#AFC8E3" scope="request"/><%--
 --%><%--
   --
   -- BOX
@@ -189,7 +192,7 @@
   --
 --%><c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_muted_label_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_style_muted_tag_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_style_muted_tag_color" value="#33465F" scope="request"/><%--
 --%><%--
   --
   -- PORTLET COLORS
@@ -276,7 +279,7 @@
   --
   -- TREE
   --
---%><c:set var="ss_tree_highlight_line_color" value="#999966" scope="request"/><%--
+--%><c:set var="ss_tree_highlight_line_color" value="#84C763" scope="request"/><%--
 --%><%--
   --
   -- ??
