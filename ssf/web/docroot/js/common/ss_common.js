@@ -3180,7 +3180,7 @@ function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
 	self.location.href = obj.href;
 }
 
-function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
+function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard, namespace) {
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 
 	var url = ss_dashboardViewEntryUrl;
@@ -3212,8 +3212,63 @@ function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityTy
 		}
 	}
 
-	self.location.href = url;
+	ss_showPortletEntryInIframe(obj.href, entityType, namespace);
+
+	//self.location.href = url;
 	return false;
+}
+
+function ss_showPortletEntryInIframe(url, entityType, namespace) {
+	//Close a pre-existing div, this may be some div that is showing up from someother portlet
+	if (ss_selectedDiv != null) {
+    	ss_selectedDiv.style.visibility = "hidden";
+    	ss_selectedDiv.style.display = "none";
+	    ss_showSpannedAreas();
+	}
+
+	var portletOverlayDiv = document.getElementById(namespace + "_portlet_overlay_div");
+	var portletOverlayInnerDiv = document.getElementById(namespace + "_portlet_overlay_inner_div");
+	var portletOverlayInnerIframe = document.getElementById(namespace + "_portlet_overlay_inner_iframe");
+	ss_box_iframe_name = namespace + "_portlet_overlay_inner_iframe";
+	ss_selectedIframeForm = namespace + "_ss_saveEntryWidthForm";
+	ss_selectedPortletNamespace = namespace;
+	
+	if (portletOverlayDiv == null || portletOverlayDiv == null || portletOverlayDiv == null) {
+		alert("Not able to identify the overlay to display");
+		return false;
+	}
+	
+	ss_selectedDiv = portletOverlayDiv;
+	ss_selectedInternalDiv = portletOverlayInnerDiv;
+	ss_selectedIframe = portletOverlayInnerIframe;
+
+    var wObj = ss_selectedIframe;
+    var wObj1 = ss_selectedDiv;
+     
+	if (wObj1 == null){
+		checkLinkAndCallPopup(url, entityType);
+		return true;
+	}
+	
+    ss_hideSpannedAreas();
+    wObj1.style.display = "block";
+    wObj1.style.zIndex = ssEntryZ;
+    wObj1.style.visibility = "visible";
+
+    if (wObj.src && wObj.src == url) {
+    	ss_nextUrl = url
+    	wObj.src = ss_forumRefreshUrl;
+    } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
+    	wObj.src = ss_forumRefreshUrl;
+    } else {
+    	wObj.src = url
+    }
+
+	//if (self.ss_positionEntryDiv) ss_positionEntryDiv();
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+
+    return false;
 }
 
 function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard, isFile) {
@@ -3262,6 +3317,8 @@ function ss_setMenuGeneratedURLs(linkMenu, binderId, entryId, entityType, namesp
 	
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 	linkMenuObj.menuLinkNonAdapterURL = nonAdapterUrl;
+	linkMenuObj.namespace = namespace;
+	
 	if (url) linkMenuObj.menuLinkURL = url;
 }
 
@@ -4156,6 +4213,7 @@ function ss_linkMenuObj() {
 	this.menuLinkURL;
 	
 	this.menuLinkNonAdapterURL;
+	this.namespace;
 	
 	this.type_folderEntry = 'folderEntry';
 	this.type_folder = 'folder';
@@ -4257,7 +4315,8 @@ function ss_linkMenuObj() {
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'none';
 					if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) {
-						if ( (dashboardType && dashboardType == 'portlet') || this.fileUrl != "") {
+						//if ( (dashboardType && dashboardType == 'portlet') || this.fileUrl != "") {
+						if (this.fileUrl != "") {
 							//do nothing
 						} else {
 							menuLinkObj.style.display = 'block';

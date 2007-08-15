@@ -90,5 +90,13 @@ function ss_showForumEntryInPopupWindowForPortlet(definitionType) {
 	
     self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
     return false;
-}		
+}
+
+function ss_loadEntry(obj, id, binderId, entityType, isDashboard, selMenuObj) {
+	ss_showPortletEntryInIframe(obj.href, entityType, selMenuObj.namespace);
+}
 </script>
+
+<!-- portlet iframe div -->
+<%@ include file="/WEB-INF/jsp/entry/view_portlet_iframe_div.jsp" %>
+<!-- portlet iframe div -->	
