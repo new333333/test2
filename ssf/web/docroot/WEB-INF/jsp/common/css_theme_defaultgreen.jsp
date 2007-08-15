@@ -63,6 +63,7 @@
 	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
     <c:set var="ss_style_gray_color" value="#333333" scope="request"/>
     <c:set var="ss_style_light_color" value="#999999" scope="request"/>
+    <c:set var="ss_style_border_color_dark_hue" value="#84C763" scope="request"/>
 	
 <% //BOX	 %>
 	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>

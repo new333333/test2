@@ -47,11 +47,13 @@
 	<c:set var="ss_table_background_color_row_hover" value="#AAAAAA" scope="request"/>
 	
 <% //BACKGROUND COLORS %>
-	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
-    <c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/>
-	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
-	
+<c:set var="ss_style_background_color" value="inherit" scope="request"/>
+<c:set var="ss_style_background_color_side_panel" value="#EEEEEE" scope="request"/>
+<c:set var="ss_style_background_color_side_panel_featured" value="#DDE5EF" scope="request"/>
+<c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/>
+<c:set var="ss_style_component_background_color" value="inherit" scope="request"/>
+<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
+
 <% //BLOG %>
 	<c:set var="ss_blog_summary_title_background_color" value="#ECECEC" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
@@ -60,10 +62,11 @@
 	
 <% //BORDER COLORS %>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
-	<c:set var="ss_style_border_color_light" value="#CCCCCC" scope="request"/>
+	<c:set var="ss_style_border_color_light" value="#A4A4A4" scope="request"/>
 	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
     <c:set var="ss_style_gray_color" value="#333333" scope="request"/>
     <c:set var="ss_style_light_color" value="#999999" scope="request"/>
+    <c:set var="ss_style_border_color_dark_hue" value="#999999" scope="request"/>
 	
 <% //BOX	 %>
 	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
@@ -184,7 +187,7 @@
     <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
     <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
     <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-    <c:set var="ss_toolbar_border_color" value="#555555" scope="request"/>
+    <c:set var="ss_toolbar_border_color" value="#CCCCCC" scope="request"/>
     <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
     <c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
     
