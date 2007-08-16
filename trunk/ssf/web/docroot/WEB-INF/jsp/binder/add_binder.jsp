@@ -33,6 +33,7 @@
 <c:set var="ss_stdConfigId_survey" value="<%= ObjectKeys.DEFAULT_FOLDER_SURVEY_CONFIG %>"/>
 
 <script type="text/javascript">
+var ss_addBinderOperation = "${ssOperation}";
 var ss_teamWorkspaceInternalId = '<%= ObjectKeys.DEFAULT_TEAM_WORKSPACE_CONFIG %>';
 var ss_checkTitleUrl = "<ssf:url 
 	adapter="true" 
@@ -76,48 +77,57 @@ function ss_showAddBinderOptions() {
 	var formObj = self.document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm');
 	if (document.getElementById('folderConfigIdTitle') == null) return;
 	
+	var configId = "";
+	if (typeof(formObj['binderConfigId'].length) != "undefined") {
+		for (var i = 0; i < formObj['binderConfigId'].length; i++) {
+			if (formObj['binderConfigId'][i].checked) {
+				configId = formObj['binderConfigId'][i].value
+			}
+		}
+	} else if (typeof(formObj['binderConfigId'].value) != "undefined") {
+		configId = formObj['binderConfigId'].value;
+	}
 	//If there are sub-binders to be added, turn off the folder selection list
-	//alert(formObj['binderConfigId'].length + ', '+ formObj['binderConfigId'].value)
-	for (var i = 0; i < formObj['binderConfigId'].length; i++) {
-		var configId = formObj['binderConfigId'][i].value
-		if (formObj['binderConfigId'][i].checked) {
-			//Turn on or off the ability to add folders
-			if (ss_binderConfigSubfolderCount[configId] > 0) {
-			    document.getElementById('folderConfigIdTitle').className = "ss_light"
-			    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
-		          <c:if test="${!empty config.id && !empty config.templateTitle}">
-			        formObj['folderConfigId_${config.id}'].checked = false;
-			        formObj['folderConfigId_${config.id}'].disabled = true;
-			        document.getElementById('folderConfigIdTitle_${config.id}').className = "ss_light"
-			      </c:if>
-			    </c:forEach>
-			    document.getElementById('ss_addBinderAddFoldersDiv').style.display = "none"
-			} else {
-			    document.getElementById('folderConfigIdTitle').className = "ss_bold"
-			    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
-		          <c:if test="${!empty config.id && !empty config.templateTitle}">
-			        formObj['folderConfigId_${config.id}'].checked = false;
-			        formObj['folderConfigId_${config.id}'].disabled = false;
-			        document.getElementById('folderConfigIdTitle_${config.id}').className = ""
-			      </c:if>
-			    </c:forEach>
-			    document.getElementById('ss_addBinderAddFoldersDiv').style.display = "block"
-			}
-			//Turn on/off the add team members box
-			if (ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId) {
-				document.getElementById('ss_addBinderAddTeamMemebersDiv').style.display = "block";
-				formObj['inheritBtnNo'].value = 'inheritBtnNo'
-			} else {
-				document.getElementById('ss_addBinderAddTeamMemebersDiv').style.display = "none";
-				formObj['inheritBtnNo'].value = 'inheritBtnYes'
-			}
-			//Turn on/off announce div
-			var ss_teamMembersListEmpty = "${empty ssBinder.teamMemberIds}";
-			if (ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId || ss_teamMembersListEmpty == 'false') {
-				document.getElementById('ss_addBinderAnnounceDiv').style.display = "block";
-			} else {
-				document.getElementById('ss_addBinderAnnounceDiv').style.display = "none";
-			}
+	if (configId != "") {
+		//Turn on or off the ability to add folders
+		if (ss_binderConfigSubfolderCount[configId] > 0) {
+		    document.getElementById('folderConfigIdTitle').className = "ss_light"
+		    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
+	          <c:if test="${!empty config.id && !empty config.templateTitle}">
+		        formObj['folderConfigId_${config.id}'].checked = false;
+		        formObj['folderConfigId_${config.id}'].disabled = true;
+		        document.getElementById('folderConfigIdTitle_${config.id}').className = "ss_light"
+		      </c:if>
+		    </c:forEach>
+		    document.getElementById('ss_addBinderAddFoldersDiv').style.display = "none"
+		} else {
+		    document.getElementById('folderConfigIdTitle').className = "ss_bold"
+		    <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
+	          <c:if test="${!empty config.id && !empty config.templateTitle}">
+		        formObj['folderConfigId_${config.id}'].checked = false;
+		        formObj['folderConfigId_${config.id}'].disabled = false;
+		        document.getElementById('folderConfigIdTitle_${config.id}').className = ""
+		      </c:if>
+		    </c:forEach>
+		    document.getElementById('ss_addBinderAddFoldersDiv').style.display = "block"
+		}
+		//Turn on/off the add team members box
+		if (ss_addBinderOperation == 'add_team_workspace' ||
+				ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId) {
+			document.getElementById('ss_addBinderAddTeamMemebersDiv').style.display = "block";
+			formObj['inheritBtnNo'].value = 'inheritBtnNo'
+		} else {
+			document.getElementById('ss_addBinderAddTeamMemebersDiv').style.display = "none";
+			formObj['inheritBtnNo'].value = 'inheritBtnYes'
+		}
+		//Turn on/off announce div
+		var ss_teamMembersListEmpty = "${empty ssBinder.teamMemberIds}";
+		if (ss_addBinderOperation == 'add_team_workspace' || 
+				ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId || 
+				ss_teamMembersListEmpty == 'false') {
+			document.getElementById('ss_addBinderAnnounceDiv').style.display = "block";
+		} else {
+			document.getElementById('ss_addBinderAnnounceDiv').style.display = "none";
 		}
 	}
 }
@@ -137,16 +147,14 @@ function ss_showAddBinderOptions() {
   method="post" onSubmit="return ss_onSubmit(this);">
 <span class="ss_bold">
   <c:if test="${ssOperation == 'add_workspace'}">
-<ssf:nlt tag="toolbar.menu.addWorkspace"><ssf:param name="value" value="${ssBinder.pathName}"/>
-</ssf:nlt>
+<ssf:nlt tag="toolbar.menu.addWorkspace"/>
 </c:if>
 <c:if test="${ssOperation == 'add_folder'}">
 <ssf:nlt tag="toolbar.menu.addFolder"><ssf:param name="value" value="${ssBinder.pathName}"/>
 </ssf:nlt>
 </c:if>
 <c:if test="${ssOperation == 'add_team_workspace'}">
-<ssf:nlt tag="toolbar.menu.addWorkspace"><ssf:param name="value" value="${ssBinder.pathName}"/>
-</ssf:nlt>
+<ssf:nlt tag="team.addTeam"/>
 </c:if>
 
 </span></br></br>
@@ -227,7 +235,13 @@ function ss_showAddBinderOptions() {
 <br/>  
 </c:if>
 <c:if test="${empty ssBinderConfigs}">
-<input type="hidden" name="binderConfigId" value="${binderConfigId}">
+<input type="hidden" name="binderConfigId" value="${binderConfigId}"/>
+<ssf:nlt tag="__template_team_workspace" checkIfTag="true"/>
+<br/>
+<span class="ss_smallprint ss_light">
+  <ssf:nlt tag="__template_team_workspace_description" checkIfTag="true"/>
+</span>
+<br/>
 </c:if>
 </fieldset>
 </td></tr>
