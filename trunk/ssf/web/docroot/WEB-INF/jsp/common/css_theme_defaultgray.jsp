@@ -53,6 +53,7 @@
 <c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/>
 <c:set var="ss_style_component_background_color" value="inherit" scope="request"/>
 <c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
+<c:set var="ss_blog_footer_color" value="#EAF7DD" scope="request"/>
 
 <% //BLOG %>
 	<c:set var="ss_blog_summary_title_background_color" value="#ECECEC" scope="request"/>

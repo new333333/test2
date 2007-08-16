@@ -48,14 +48,17 @@
 <% //BACKGROUND COLORS %>
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_background_color_side_panel" value="#EAF7DD" scope="request"/>
+	<c:set var="ss_style_background_color_side_panel_featured" value="#E9EDF3" scope="request"/>
     <c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/>
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
-	
+	<c:set var="ss_blog_footer_color" value="#EAF7DD" scope="request"/>
+
 <% //BLOG %>
-	<c:set var="ss_blog_summary_title_background_color" value="#DFFFD5" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#ADD6AD" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_blog_sidebar_box_outline" value="#BFCA8A" scope="request"/>
+	<c:set var="ss_blog_sidebar_box_outline" value="#ADD6AD" scope="request"/>
 	
 <% //BORDER COLORS %>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
@@ -63,7 +66,7 @@
 	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
     <c:set var="ss_style_gray_color" value="#333333" scope="request"/>
     <c:set var="ss_style_light_color" value="#999999" scope="request"/>
-    <c:set var="ss_style_border_color_dark_hue" value="#84C763" scope="request"/>
+    <c:set var="ss_style_border_color_dark_hue" value="#ADD6AD" scope="request"/>
 	
 <% //BOX	 %>
 	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
@@ -82,6 +85,10 @@
 <% //CALENDAR %>
 	<c:set var="ss_calendar_today_background_color" value="#ffe8ff" scope="request"/>
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
+	
+<%	 //MENU %>
+	<c:set var="background_light" value="#E9EDF3" scope="request"/>
+	
 	
 
 <%--
@@ -187,15 +194,15 @@
     <c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
     <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
     <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-    <c:set var="ss_toolbar_border_color" value="#33CC66" scope="request"/>
+    <c:set var="ss_toolbar_border_color" value="#ADD6AD" scope="request"/>
     <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
     <c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
     
-	<c:set var="ss_toolbar1_background_color" value="#DFFFD5" scope="request"/>
+	<c:set var="ss_toolbar1_background_color" value="#ADD6AD" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar1_border_color" value="#3366CC" scope="request"/>
-	<c:set var="ss_toolbar1_dropdown_menu_color" value="#DFFFD5" scope="request"/>
+	<c:set var="ss_toolbar1_dropdown_menu_color" value="#ADD6AD" scope="request"/>
 	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>
 
 
@@ -206,7 +213,7 @@
 	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
 	<c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/>
 
-	<c:set var="ss_toolbar4_background_color" value="#DBF2E6" scope="request"/>
+	<c:set var="ss_toolbar4_background_color" value="#E9EDF3" scope="request"/>
 	<c:set var="ss_toolbar4_text_color" value="#666666" scope="request"/>
 	<c:set var="ss_toolbar4_link_hover_color" value="#E8F7EF" scope="request"/>
 	<c:set var="ss_toolbar4_border_color" value="#DBF2E6" scope="request"/>

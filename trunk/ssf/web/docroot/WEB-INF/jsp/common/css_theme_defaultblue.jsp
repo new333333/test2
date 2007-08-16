@@ -67,7 +67,8 @@
 --%><c:set var="ss_blog_summary_title_background_color" value="#AFC8E3" scope="request"/><%--
 --%><c:set var="ss_blog_content_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/><%--
---%><c:set var="ss_blog_sidebar_box_outline" value="#AFC8E3" scope="request"/><%--	
+--%><c:set var="ss_blog_sidebar_box_outline" value="#AFC8E3" scope="request"/><%--
+--%><c:set var="ss_blog_footer_color" value="#E9EDF3" scope="request"/><%--	
 --%><%--
   --
   -- BORDER COLORS

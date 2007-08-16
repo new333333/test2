@@ -585,7 +585,11 @@ div.ss_iconed_label a {
   font-weight: bold;
   color: ${ss_style_muted_label_color};
 }
-
+div.ss_iconed_label hover {
+  font-size: 11px;
+  font-weight: bold;
+  color: ${ss_style_muted_label_color};
+}
 .ss_muted_label_small {
   font-size: 11px;
   color: ${ss_style_muted_label_color};
@@ -1013,7 +1017,13 @@ div.ss_header_bar_timestamp {
 	float: right;
 	position: relative;
 }
-
+.ss_blog_footer {
+	background-color:${ss_blog_footer_color};
+	padding-bottom: 5px; 
+	padding-top: 4px;
+	padding-left: 22px
+}
+	
 div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
 	color: ${ss_style_metadata_color};
 }
@@ -2430,17 +2440,17 @@ ul.ss_actions_bar1 li a:hover {
 }
 
 .ss_actions_bar2 li a:hover {
-	background-color: #AFC8E3;
+	background-color: ${ss_style_background_color_side_panel};
 	text-decoration:none;
 }
 
 .ss_actions_bar3 li a:hover {
-	background-color: #AFC8E3;
+	background-color: ${ss_style_background_color_side_panel};
 	text-decoration:none;
 }
 
 div.ss_actions_bar_submenu {
-	background-color: inherit;
+	background-color: ${ss_style_background_color_side_panel};
 	margin:0px;
 	padding:0px;
 	text-align:left;
@@ -2469,11 +2479,20 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 }
 
 div.ss_actions_bar_submenu ul.ss_actions_bar3 {
-  background-color: #AFC8E3;
+  background-color: ${ss_toolbar1_background_color};
   background-image: none;
   opacity: 0.95;
  <c:if test="<%= isIE %>">
   filter: alpha(opacity=95);
+ </c:if>
+}
+
+div.ss_actions_bar_submenu ul.ss_actions_bar4 {
+  background-color: ${ss_toolbar1_background_color};
+  background-image: none;
+  opacity: 0.95;
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=75);
  </c:if>
 }
 
@@ -2486,9 +2505,9 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 	top:-8px;
 	left:-10px;
  </c:if>	
-	border:1px solid #AFC8E3;
+	border:1px solid ${ss_toolbar1_background_color};
 	border-top:none;
-	padding: 4px 1px;
+	padding: 1px 1px;
 }
 
 .ss_actions_bar_submenu li  {
