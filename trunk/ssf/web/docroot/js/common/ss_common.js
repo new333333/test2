@@ -3211,8 +3211,12 @@ function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityTy
 			restoreImages(id);
 		}
 	}
-
-	ss_showPortletEntryInIframe(obj.href, entityType, namespace);
+	
+	if (ss_displayStyle && ss_displayStyle == "popup") {
+		ss_showForumEntryInPopupWindowForPortlet(entityType);
+	} else {
+		ss_showPortletEntryInIframe(obj.href, entityType, namespace);	
+	}
 
 	//self.location.href = url;
 	return false;
