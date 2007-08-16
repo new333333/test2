@@ -55,7 +55,7 @@
   -- BACKGROUND COLORS
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
--%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
 --%><c:set var="ss_style_background_color_side_panel_featured" value="#EAF7DD" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--

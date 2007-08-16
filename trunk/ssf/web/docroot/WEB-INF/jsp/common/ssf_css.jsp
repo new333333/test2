@@ -2154,18 +2154,10 @@ div.ss_sidebar_panel {
 	padding-bottom: 0px;
 	width: 200px;
 	overflow: hidden;
-	background-color: #E9EDF3;
-}
-div.ss_sidebar_panel {
-	border-left: solid 1px ${ss_toolbar1_background_color};
-	border-right: solid 1px ${ss_toolbar1_background_color};
-	border-bottom: solid .3px ${ss_toolbar1_background_color};
-	padding-bottom: 0px;
-	width: 200px;
-	overflow: hidden;
 	background-color: ${ss_style_background_color_side_panel};
 	}
-div.ss_sidebar_panel_featured{
+
+div.ss_sidebar_panel_featured {
 	border-left: solid 1px ${ss_toolbar1_background_color};
 	border-right: solid 1px ${ss_toolbar1_background_color};
 	border-bottom: solid .3px ${ss_toolbar1_background_color};
@@ -2288,10 +2280,10 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
 	height: 26px;
-	padding: 0;
-	margin: 0;
+	padding: 0px;
+	margin: 0px;
 	border-collapse: collapse;
-	border-spacing: 0;
+	border-spacing: 0px;
 }
 
 .ss_actions_bar2, table.ss_actions_bar2_pane {
@@ -2317,10 +2309,10 @@ table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
 	background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 	width: 100%;
 	height: 18px;
-	padding: 0;
-	margin: 0;
+	padding: 0px;
+	margin: 0px;
 	border-collapse: collapse;
-	border-spacing: 2;
+	border-spacing: 2px;
 }
 
 .ss_actions_bar4, table.ss_actions_bar4_pane {
@@ -2542,7 +2534,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 .ss_actions_bar2 li:hover, .ss_actions_bar1 a:hover {
 background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 }
-}
+
 
 .ss_actions_bar3 li:hover, .ss_actions_bar1 a:hover {
 background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
@@ -4002,18 +3994,18 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
 	text-decoration:underline;
 	margin:0px 0px 0px 0px;
 	}
-a.ss_parentPointer:hover{
+a.ss_parentPointer:hover {
 	color: #0000ff;
 	text-decoration:underline;
 }
-a.ss_parentPointer:visited, a.ss_parentPointer:hover, {
+a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: purple;
 	text-decoration:underline;
-	}	
-a.ss_parentPointer:visited, a.ss_parentPointer:hover, {
+}	
+a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: #0000ff;
 	text-decoration:underline;
-	}
+}
 
 .ss_searchResult {
 	margin: 0px;
@@ -4079,12 +4071,14 @@ div.ss_entry_folderListView {
 h3.ss_entryTitle {
    /* float:left;margin:0px; */
 }
- h3.ss_entryTitle a {
+h3.ss_entryTitle a {
 	color: #333333;
 }
-h3.ss_entryTitle a:hover,h3.ss_entryTitle a:link, h3.ss_entryTitle a:active, !important {
-	color:#0000FF;
+
+h3.ss_entryTitle a:hover,h3.ss_entryTitle a:link, h3.ss_entryTitle a:active {
+	color:#0000FF !important;
 }
+
 h3.ss_entryTitle a:visited {
 	color:  purple;
 }
@@ -4108,7 +4102,7 @@ img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 }
 img.ss_toogler {float:right;}
 img.ss_toggler {float:right;}
-div.ss_rating_box_content table {width:200px; border-collapse: collapse; border-spacing: 0;}
+div.ss_rating_box_content table {width:200px; border-collapse: collapse; border-spacing: 0px;}
 div.ss_rating_box_content th {border-bottom: 1px solid #afc8e3;text-align:left; font-size: 11px;}
 div.ss_rating_box_content td {text-align:left;font-size: 11px;}
 div.ss_rating_box_content td.ss_star {padding-left:5px;}
@@ -4309,8 +4303,8 @@ div.ss_chartContainer div.ss_total, div.ss_chartContainer table.ss_total {
 	height: 15px;
 }
 div.ss_chartContainer table.ss_total {
-	border-spacing: 0;
-	padding:0;
+	border-spacing: 0px;
+	padding:0px;
 	border-collapse: collapse;	
 }
 
@@ -4336,8 +4330,8 @@ table.ss_statisticTable td {vertical-align:top;}
 table.ss_statisticContainer {
 	margin: 3px 0px 3px 6px;
 	padding:0px;
-	border-spacing: 0;
-	padding:0;
+	border-spacing: 0px;
+	padding:0px;
 	border-collapse: collapse;	
 	border:0px;
 }
@@ -4345,9 +4339,9 @@ table.ss_statisticContainer td {
 	font-size: ${ss_style_font_finestprint};
 	white-space: nowrap;
 	padding: 0px;
-	border-spacing: 0;
+	border-spacing: 0px;
 	border-collapse: collapse;	
-	border:0;
+	border:0px;
 }
 div.statistic0, td.statistic0 {background-color:#EF5612;}
 div.statistic1, td.statistic1 {background-color:#EC9112;}
