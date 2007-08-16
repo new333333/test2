@@ -4303,7 +4303,6 @@ function ss_linkMenuObj() {
 				
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'none';
-					//if (this.binderDefinitionType == this.type_folder) menuLinkObj.style.display = 'block';
 					if (this.fileUrl && this.fileUrl != "") 
 						menuLinkObj.style.display = 'block';
 				}

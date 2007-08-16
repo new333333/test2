@@ -343,6 +343,7 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 }
 var ss_js_files_loaded = 1;
 
+<c:if test="${empty ss_portletType || ss_portletType != 'ss_portletTypeAdmin'}">
 <c:if test="${empty ss_notAdapter}">
 <ssf:ifnotadapter>
 var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
@@ -361,6 +362,7 @@ var ss_baseFileUrl = '<ssf:url webPath="viewFile" folderId="ssBinderIdPlaceHolde
    	entryId="ssEntryIdPlaceHolder" entityType="ssEntityTypePlaceHolder"></ssf:url>';
 var ss_baseFileUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = ss_baseFileUrl;
 </ssf:ifnotadapter>
+</c:if>
 </c:if>
 
 var ss_fallBackPermaLinkURL = "<ssf:url adapter="true" portletName="ss_forum" action="view_permalink">
