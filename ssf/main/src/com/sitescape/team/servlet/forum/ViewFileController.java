@@ -82,8 +82,9 @@ public class ViewFileController extends SAbstractController {
 			EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
 			if (entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace) ||
 					entityType.equals(EntityIdentifier.EntityType.profiles)) {
-				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-				entity = getBinderModule().getBinder(binderId);
+				//the entry is the binder
+				if (entryId == null) entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				entity = getBinderModule().getBinder(entryId);
 				parent = (Binder) entity;
 			} else if (entryId != null) {
 				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
