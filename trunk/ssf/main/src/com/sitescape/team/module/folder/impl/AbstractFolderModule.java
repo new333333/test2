@@ -535,7 +535,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	        	Map unseenCounts = new HashMap();
 		        Date modifyDate = new Date();
 		        for (int i = 0; i < hits.length(); i++) {
-					String folderIdString = hits.doc(i).getField(IndexUtils.TOP_FOLDERID_FIELD).stringValue();
+					String folderIdString = hits.doc(i).getField(EntityIndexUtils.BINDER_ID_FIELD).stringValue();
 					String entryIdString = hits.doc(i).getField(EntityIndexUtils.DOCID_FIELD).stringValue();
 					Long entryId = null;
 					if (entryIdString != null && !entryIdString.equals("")) {
@@ -576,11 +576,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	while (itFolders.hasNext()) {
     		Folder folder = (Folder) itFolders.next();
         	field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,IndexUtils.TOP_FOLDERID_FIELD);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
         	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	Folder topFolder = folder.getTopFolder();
-        	if (topFolder == null) topFolder = folder;
-    		child.setText(topFolder.getId().toString());
+    		child.setText(folder.getId().toString());
     	}
     	//choose only entries/ not replies
     	field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);

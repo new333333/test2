@@ -184,42 +184,46 @@ function ss_showAddBinderOptions() {
   </c:forEach>
   <span class="ss_bold"><ssf:nlt tag="general.type.workspace"/></span>
   <br/>
+  <table>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
     <c:if test="${config.internalId == ss_workspaceConfigId}">
-	  <input type="radio" name="binderConfigId" value="${config.id}" 
+	  <tr><td valign="top"><input type="radio" name="binderConfigId" value="${config.id}" 
 	  <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
 	  onClick="ss_showAddBinderOptions()"
-	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;
-	  <span class="ss_smallprint ss_light">
+	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
+	  <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
 	    <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
-	  </span><br/>
+	  </span></td>
+	  </tr>
 	</c:if>
   </c:forEach>
   
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
     <c:if test="${config.internalId == ss_teamWorkspaceConfigId}">
-	  <input type="radio" name="binderConfigId" value="${config.id}" 
+	  <tr><td valign="top"><input type="radio" name="binderConfigId" value="${config.id}" 
 	  <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
 	  onClick="ss_showAddBinderOptions()"
-	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;
-	  <span class="ss_smallprint ss_light">
+	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
+	  <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
 	    <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
-	  </span><br/>
+	  </span></td>
+	  </tr>
 	</c:if>
   </c:forEach>
-<br/>
 
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
     <c:if test="${config.internalId != ss_workspaceConfigId && config.internalId != ss_teamWorkspaceConfigId}">
-      <input type="radio" name="binderConfigId" value="${config.id}" 
+      <tr><td valign="top" nowrap><input type="radio" name="binderConfigId" value="${config.id}" 
       <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
       onClick="ss_showAddBinderOptions()"
-      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;
-      <span class="ss_smallprint ss_light">
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
         <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
-      </span><br/>
+      </span></td>
+      </tr>
     </c:if>
   </c:forEach>
+</table>
 <br/>  
 </c:if>
 <c:if test="${empty ssBinderConfigs}">
@@ -272,6 +276,7 @@ function ss_showAddBinderOptions() {
   <span class="ss_light"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span>
   <br/>
   <div class="ss_indent_medium">
+  <table>
   <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
    <c:if test="${config.internalId == ss_stdConfigId_desc || 
                  config.internalId == ss_stdConfigId_blog ||  
@@ -284,13 +289,15 @@ function ss_showAddBinderOptions() {
                  config.internalId == ss_stdConfigId_mile ||  
                  config.internalId == ss_stdConfigId_survey}">
     <c:if test="${!empty config.id && !empty config.templateTitle}">
-      <input type="checkbox" name="folderConfigId_${config.id}" /> 
+      <tr><td valign="top" nowrap><input type="checkbox" name="folderConfigId_${config.id}" /> 
       <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
-      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;
-      <span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span><br/>
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;</td>
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span></td>
+      </tr>
     </c:if>
    </c:if>
   </c:forEach>
+  </table>
   </div>
   </div>
   <br/>
@@ -298,6 +305,7 @@ function ss_showAddBinderOptions() {
   <span class="ss_light"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span>
   <br/>
   <div class="ss_indent_medium">
+  <table>
   <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
    <c:if test="${config.internalId != ss_stdConfigId_desc && 
                  config.internalId != ss_stdConfigId_blog &&  
@@ -310,13 +318,15 @@ function ss_showAddBinderOptions() {
                  config.internalId != ss_stdConfigId_mile &&  
                  config.internalId != ss_stdConfigId_survey}">
     <c:if test="${!empty config.id && !empty config.templateTitle}">
-      <input type="checkbox" name="folderConfigId_${config.id}" /> 
+      <tr><td valign="top" nowrap><input type="checkbox" name="folderConfigId_${config.id}" /> 
       <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
-      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;
-      <span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span><br/>
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;</td>
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span></td>
+      </tr>
     </c:if>
    </c:if>
   </c:forEach>
+  </table>
   </div>
   </div>
 <br/>  

@@ -823,6 +823,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 		response.setContentType("text/xml");
 		
+		model.put(WebKeys.LIST_UNSEEN_COUNTS_BINDER_IDS, folderIds);
 		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
 		model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
 		return new ModelAndView("forum/unseen_counts", model);

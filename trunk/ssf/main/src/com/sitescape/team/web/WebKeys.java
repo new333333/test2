@@ -587,6 +587,7 @@ public class WebKeys {
     public static final String LICENSE_EXTERNAL_ACCESS_LIST="ssLicenseExternalAccessList";
     
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
+    public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";

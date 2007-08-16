@@ -19,7 +19,11 @@ function ${treeName}_showId(forum, obj) {
 	var formObj = ss_getContainingForm(obj);
 	var r = formObj.data_topId;
     for (var b = 0; b < r.length; b++) {
-      if (r[b].value == forum) 	r[b].checked=true;
+      if (r[b].value == forum) 	{
+      	r[b].checked=true;
+      } else {
+      	r[b].checked=false;
+      }
 	}
 	ss_clearSingleSelect('${treeName}');
 	
