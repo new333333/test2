@@ -866,14 +866,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
 		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-		Set <Long> folderIds = null;
+		Set <Long> folderIds = new HashSet();
 		if (data.get(SearchFormSavedFolderIdList) instanceof String) 
 			folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
 		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, folderIds);
 
 		boolean doSearch = true;		
 		Collection folders=null;
-		if (folderIds != null) {
+		if (folderIds != null && !folderIds.isEmpty()) {
 			folders = getBinderModule().getBinders(folderIds);		//may include have templates		
 			idData.put(WebKeys.FOLDER_LIST, folders);
 		}
