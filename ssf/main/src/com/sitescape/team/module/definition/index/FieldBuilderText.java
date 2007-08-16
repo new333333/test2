@@ -54,9 +54,13 @@ public class FieldBuilderText extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field allTextField = BasicIndexUtils.allTextField(val);
            	Field textField = new Field(makeFieldName(dataElemName), val, Field.Store.YES, Field.Index.TOKENIZED); 
-            return new Field[] {allTextField, textField};
+           	if (!fieldsOnly) {
+               	Field allTextField = BasicIndexUtils.allTextField(val);
+               	return new Field[] {allTextField, textField};
+           	} else {
+               	return new Field[] {textField};
+           	}
         }
     }
 }

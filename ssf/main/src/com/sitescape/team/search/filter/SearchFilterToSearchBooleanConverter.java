@@ -646,8 +646,9 @@ public class SearchFilterToSearchBooleanConverter {
 				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_USER);
 			} else if (itemType.equals("attachment")) {
 				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
-				addEntityType(subAnd, EntityType.folderEntry.name());
-				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
+//				addEntityType(subAnd, EntityType.folderEntry.name());
+//				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
+//Everything has attachments
 				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ATTACHMENT);
 			} else if (itemType.equals("entry")) {
 				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);

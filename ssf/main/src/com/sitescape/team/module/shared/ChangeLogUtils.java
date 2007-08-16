@@ -35,9 +35,9 @@ public class ChangeLogUtils {
 	public static Element buildLog(ChangeLog changes, DefinableEntity entry) {
 		Element element = changes.getEntityRoot();
 		if (entry instanceof Binder)
-			EntityIndexUtils.addReadAccess(element, (Binder)entry);
+			EntityIndexUtils.addReadAccess(element, (Binder)entry, true);
 		else
-			EntityIndexUtils.addReadAccess(element, entry.getParentBinder(), entry);
+			EntityIndexUtils.addReadAccess(element, entry.getParentBinder(), entry, true);
 		
 		if (entry.getCreation() != null)
 			entry.getCreation().addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);

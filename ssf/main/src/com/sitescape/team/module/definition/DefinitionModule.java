@@ -29,7 +29,7 @@ import com.sitescape.team.security.AccessControlException;
  *
  */
 public interface DefinitionModule {
-
+	public static String INDEX_FIELDS_ONLY="com.sitescape.team.module.definition.indexFieldsOnly";
 	public enum DefinitionOperation {
 		manageDefinition,
 	}
@@ -80,7 +80,7 @@ public interface DefinitionModule {
 
   	public boolean testAccess(int type, DefinitionOperation operation);
 	
-  	public void walkDefinition(DefinableEntity entry, DefinitionModule.DefinitionVisitor visitor);
+  	public void walkDefinition(DefinableEntity entry, DefinitionModule.DefinitionVisitor visitor, Map args);
 	
   	interface DefinitionVisitor
   	{

@@ -508,7 +508,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			public String getFlagElementName() { return "webService"; }
 		};
 		
-		getDefinitionModule().walkDefinition(entry, visitor);
+		getDefinitionModule().walkDefinition(entry, visitor, null);
 		
 	}
 }

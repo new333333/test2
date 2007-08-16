@@ -1143,40 +1143,35 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
-        
-    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+        boolean fieldsOnly = false;
+    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, fieldsOnly);
     	
-    	// Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ENTRY);
+        // Add creation-date and modification date from entry
+    	// Not in common part, cause files use different dates
+        EntityIndexUtils.addCreation(indexDoc, entry.getCreation(), fieldsOnly);
+        EntityIndexUtils.addModification(indexDoc, entry.getModification(), fieldsOnly);
+ 
+        // Add document type
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ENTRY, fieldsOnly);
                 
         // Add the events - special indexing for calendar view
-        EntityIndexUtils.addEvents(indexDoc, entry);
+        EntityIndexUtils.addEvents(indexDoc, entry, fieldsOnly);
         
         // Add the tags for this entry
         if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entry.getEntityIdentifier());
-        EntityIndexUtils.addTags(indexDoc, entry, tags);
-        
-        // Add the workflows
-        EntityIndexUtils.addWorkflow(indexDoc, entry);
-        
-        // Add attached file ids
-        EntityIndexUtils.addAttachedFileIds(indexDoc, entry);
+        EntityIndexUtils.addTags(indexDoc, entry, tags, fieldsOnly);
+                
+        // Add attached files to entry only
+        EntityIndexUtils.addAttachedFileIds(indexDoc, entry, fieldsOnly);
         
         return indexDoc;
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, List tags) {
-   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui, tags);
-        // Add the workflows - different for files
-        EntityIndexUtils.addWorkflow(indexDoc, entry);
-   		fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
-   		// Add attached file id
-        EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);
-        EntityIndexUtils.addFileAttachmentModificationDate(indexDoc, fa);
-        EntityIndexUtils.addFileAttachmentCreationDate(indexDoc, fa);
-        
-        
-   		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
+    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+    	//do common part first. Indexing a file overrides some values
+    	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
+   		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
    		return indexDoc;
  
     }
@@ -1191,14 +1186,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param entry
      */
     protected void fillInIndexDocWithCommonPartFromEntry(org.apache.lucene.document.Document indexDoc, 
-    		Binder binder, Entry entry) {
-      	EntityIndexUtils.addEntryType(indexDoc, entry);       
+    		Binder binder, Entry entry, boolean fieldsOnly) {
+      	EntityIndexUtils.addEntryType(indexDoc, entry, fieldsOnly);       
         // Add ACL field. We only need to index ACLs for read access.
-   		EntityIndexUtils.addReadAccess(indexDoc, binder, entry);
+   		EntityIndexUtils.addReadAccess(indexDoc, binder, entry, fieldsOnly);
       		
-        EntityIndexUtils.addParentBinder(indexDoc, entry);
+        EntityIndexUtils.addParentBinder(indexDoc, entry, fieldsOnly);
 
-        fillInIndexDocWithCommonPart(indexDoc, binder, entry);
+        // Add the workflows if any
+        EntityIndexUtils.addWorkflow(indexDoc, entry, fieldsOnly);
+        fillInIndexDocWithCommonPart(indexDoc, binder, entry, fieldsOnly);
     }
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);

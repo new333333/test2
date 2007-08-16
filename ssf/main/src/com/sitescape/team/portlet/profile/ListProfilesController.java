@@ -387,14 +387,14 @@ public class ListProfilesController extends   SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
 			//Modify
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
-			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), adapterUrl.toString(), qualifiers);
 		}
 		//if no menu items were added, remove the empty menu
 		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");

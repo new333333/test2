@@ -94,12 +94,12 @@ public class BasicIndexUtils {
         return uid.substring(uid.indexOf(UID_DELIM) + 1);
     }
     
-    public static void addUid(Document doc, String uid) {
+    public static void addUid(Document doc, String uid, boolean fieldsOnly) {
         doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.UN_TOKENIZED));    
         doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.UN_TOKENIZED));
     }
     
-    public static void addDocType(Document doc, String docType) {
+    public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
         doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.UN_TOKENIZED));
     }
     

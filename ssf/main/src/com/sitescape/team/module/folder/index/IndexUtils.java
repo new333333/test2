@@ -11,10 +11,6 @@
 package com.sitescape.team.module.folder.index;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -41,7 +37,7 @@ public class IndexUtils  {
     public static final String TOTALREPLYCOUNT_FIELD = "_totalReplyCount";
       
     //only index for top leve; entries
-    public static void addLastActivityDate(Document doc, FolderEntry entry) {
+    public static void addLastActivityDate(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	// Add modification-date field
     	if (entry.getLastActivity() != null ) {
     		Date modDate = entry.getLastActivity();
@@ -62,22 +58,22 @@ public class IndexUtils  {
     } 
 
 
-    public static void addDocNumber(Document doc, FolderEntry entry) {
+    public static void addDocNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(DOCNUMBER_FIELD, entry.getDocNumber(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }    
-    public static void addTotalReplyCount(Document doc, FolderEntry entry) {
+    public static void addTotalReplyCount(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field countNumField = new Field(TOTALREPLYCOUNT_FIELD, Integer.toString(entry.getTotalReplyCount()), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(countNumField);
     }    
-    public static void addSortNumber(Document doc, FolderEntry entry) {
+    public static void addSortNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(SORTNUMBER_FIELD, entry.getHKey().getSortKey(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     } 
-    public static void addFolderId(Document doc, Folder folder) {
+    public static void addFolderId(Document doc, Folder folder, boolean fieldsOnly) {
         
     	//Add the top folder id to the document in the index
         Folder topFolder = folder.getTopFolder();
@@ -86,7 +82,7 @@ public class IndexUtils  {
         doc.add(topFolderField);
     }   
     
-    public static void addReservedByPrincipalId(Document doc, FolderEntry entry) {
+    public static void addReservedByPrincipalId(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the reserver
         if (entry.getReservation() != null && entry.getReservation().getPrincipal() != null) {
         	Field reservedByIdField = new Field(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);

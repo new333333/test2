@@ -1668,7 +1668,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return;
     }
 
-	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor) {
+	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args) {
 		SimpleProfiler.startProfiler("DefinitionModuleImpl.walkDefinition");
 		//access check not needed = assumed okay from entry
         Definition def = entry.getEntryDef();
@@ -1701,8 +1701,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                     	}
 
                     	if (flagElem != null) {
-                        	 Map args = getOptionalArgs(flagElem);
-                        	 visitor.visit(nextItem, flagElem, args);
+                        	 Map oArgs = getOptionalArgs(flagElem);
+                        	 //add in caller supplied arguments
+                        	 if (args != null) oArgs.putAll(args);
+                        	 visitor.visit(nextItem, flagElem, oArgs);
                         }
                     }
                 }

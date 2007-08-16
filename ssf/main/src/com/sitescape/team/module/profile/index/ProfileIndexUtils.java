@@ -11,14 +11,12 @@
 package com.sitescape.team.module.profile.index;
 
 
-import java.util.Iterator;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.Validator;
 /**
@@ -39,33 +37,37 @@ public class ProfileIndexUtils  {
 //    public static final String MEMBEROF_FIELD="_memberOf";
     
     
-    public static void addName(Document doc, User user) {
+    public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(LOGINNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }    
-    public static void addName(Document doc, Group user) {
+    public static void addName(Document doc, Group user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(GROUPNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }      
-    public static void addZonName(Document doc, User user) {
+    public static void addZonName(Document doc, User user, boolean fieldsOnly) {
     	if (Validator.isNotNull(user.getZonName())) {
     		Field docNumField = new Field(ZONNAME_FIELD, user.getZonName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
-    		Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
-           	doc.add(allText);
+    		if (!fieldsOnly) {
+    			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
+    			doc.add(allText);
+    		}
     	}
     }      
-    public static void addEmail(Document doc, User user) {
+    public static void addEmail(Document doc, User user, boolean fieldsOnly) {
     	if (Validator.isNotNull(user.getEmailAddress())) {
     		Field docNumField =  new Field(EMAIL_FIELD, user.getEmailAddress(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
-    		Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getEmailAddress(), Field.Store.NO, Field.Index.TOKENIZED);
-           	doc.add(allText);
+    		if (!fieldsOnly) {
+    			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getEmailAddress(), Field.Store.NO, Field.Index.TOKENIZED);
+               	doc.add(allText);
+    		}
     	}
     } 
-    public static void addReservedId(Document doc, Principal principal) {
+    public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
     		Field docNumField =  new Field(RESERVEDID_FIELD, principal.getInternalId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);

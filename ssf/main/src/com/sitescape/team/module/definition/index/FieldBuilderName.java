@@ -10,8 +10,8 @@
  */
 package com.sitescape.team.module.definition.index;
 
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.Field;
 
@@ -32,13 +32,14 @@ public class FieldBuilderName extends AbstractFieldBuilder {
             return new Field[0];
          }
          else {
-	         Field allTextField = BasicIndexUtils.allTextField(val);
-	
-	         Field nameField = new Field(EntityIndexUtils.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 
-	            
+ 	         Field nameField = new Field(EntityIndexUtils.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 	            
 	         Field name1Field = new Field(EntityIndexUtils.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.UN_TOKENIZED);
-	        
-	         return new Field[] {allTextField, nameField, name1Field};
+	         if (!fieldsOnly) {
+		         Field allTextField = BasicIndexUtils.allTextField(val);
+	        	 return new Field[] {allTextField, nameField, name1Field};
+	         } else {
+	        	 return new Field[] {nameField, name1Field};	        	 
+	         }
          }
     }
 

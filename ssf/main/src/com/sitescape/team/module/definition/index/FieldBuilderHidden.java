@@ -34,9 +34,13 @@ public class FieldBuilderHidden extends AbstractFieldBuilder {
         if (val == null) {
             return new Field[0];
         }
-        Field allTextField = BasicIndexUtils.allTextField(val);
-        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.TOKENIZED);
-        return new Field[] {allTextField, field};
+         Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.TOKENIZED);
+        if (!fieldsOnly) {
+            Field allTextField = BasicIndexUtils.allTextField(val);
+        	return new Field[] {allTextField, field};
+        } else {
+        	return new Field[] {field};
+        }
     }
 
 }

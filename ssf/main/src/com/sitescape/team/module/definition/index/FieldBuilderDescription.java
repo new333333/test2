@@ -38,14 +38,21 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         if(text == null || text.length() == 0)
             return new Field[0];
             
-        Field allTextField = BasicIndexUtils.allTextField(text);
         //only real description field is stored as a field
         if ("description".equals(dataElemName)) {
         	Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
-            return new Field[] {allTextField, descField};
-        } else {
-            return new Field[] {allTextField};
+         	if (fieldsOnly) {
+         		return new Field[] {descField};
+         	} else {
+        		Field allTextField = BasicIndexUtils.allTextField(text);
+         		return new Field[] {allTextField, descField};
+         	}
+        } else if (!fieldsOnly){
+         	Field allTextField = BasicIndexUtils.allTextField(text);
+         	return new Field[] {allTextField};
+       } else {
+    	   return new Field[0];
        }
-     }
+    }
 
 }
