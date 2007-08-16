@@ -398,7 +398,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				Field.Store.YES, Field.Index.UN_TOKENIZED);
 		doc.add(rssItemField);
 		// add same acls(folder and entry) as search engine uses
-		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry);
+		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry, true);
 
 		return doc;
 

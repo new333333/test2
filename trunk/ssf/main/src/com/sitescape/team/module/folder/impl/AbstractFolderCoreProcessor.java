@@ -574,19 +574,19 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        
         // Add Doc number
-        IndexUtils.addDocNumber(indexDoc, fEntry);
+        IndexUtils.addDocNumber(indexDoc, fEntry, false);
 
         // Add sortable Doc number
-        IndexUtils.addSortNumber(indexDoc, fEntry);
+        IndexUtils.addSortNumber(indexDoc, fEntry, false);
         // Add ReservedBy Principal Id
-       	IndexUtils.addReservedByPrincipalId(indexDoc, fEntry);
+       	IndexUtils.addReservedByPrincipalId(indexDoc, fEntry, false);
          // Add the folder Id
-        IndexUtils.addFolderId(indexDoc, (Folder)binder);
+        IndexUtils.addFolderId(indexDoc, (Folder)binder, false);
         //add last activity for top entries
       	//add total reply count for top entries
         if (fEntry.isTop()) {
-        	IndexUtils.addLastActivityDate(indexDoc, fEntry);
-           	IndexUtils.addTotalReplyCount(indexDoc, fEntry);
+        	IndexUtils.addLastActivityDate(indexDoc, fEntry, false);
+           	IndexUtils.addTotalReplyCount(indexDoc, fEntry, false);
         }
         
         return indexDoc;

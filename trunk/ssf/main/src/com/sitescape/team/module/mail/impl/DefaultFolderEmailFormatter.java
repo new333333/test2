@@ -482,7 +482,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			public String getFlagElementName() { return "notify"; }
 		};
 
-		definitionModule.walkDefinition(entry, visitor);	
+		definitionModule.walkDefinition(entry, visitor, null);	
 	}
 	// get cached template.  If not cached yet,load it
 	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {
@@ -508,7 +508,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			trans.setParameter("TOC", Boolean.valueOf(oneEntry).toString());
 			trans.transform(new DocumentSource(document), result);
 		} catch (Exception ex) {
-			return ex.getLocalizedMessage();
+			return ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage();
 		}
 		return result.getWriter().toString();
 	}
@@ -680,9 +680,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					
 				}
 			} catch (Exception ex) {
-				logger.error("Cannot post the message from: " + from + "Error: " + ex.getLocalizedMessage());
+				logger.error("Cannot post the message from: " + from + "Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 				//if fails and from self, don't reply or we will get it back
-				errors.add(postError(pDef, msgs[i], from, ex.getLocalizedMessage()));
+				errors.add(postError(pDef, msgs[i], from, (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage())));
 			}
 		}
 		return errors;
@@ -799,7 +799,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			try {
 				part.getInputStream().read(results);
 			} catch (MessagingException me) {
-				throw new IOException(me.getLocalizedMessage());
+				throw new IOException(me.getLocalizedMessage()==null? me.getMessage():me.getLocalizedMessage());
 			}
 			return results;
 		}
@@ -816,7 +816,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			try {
 				return part.getInputStream();
 			} catch (MessagingException me) {
-				throw new IOException(me.getLocalizedMessage());
+				throw new IOException(me.getLocalizedMessage()==null? me.getMessage():me.getLocalizedMessage());
 			}
 		}
 		
@@ -866,7 +866,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			}
 			catch (Exception ex) {
 				logger.error("Could not transfer to file", ex);
-				throw new IOException("Could not transfer to file: " + ex.getLocalizedMessage());
+				throw new IOException("Could not transfer to file: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 			}
 		}
 	}

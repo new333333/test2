@@ -357,14 +357,14 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	
 		if (entry instanceof User) {
 			User user = (User)entry;
-			ProfileIndexUtils.addName(indexDoc, user);
-			ProfileIndexUtils.addEmail(indexDoc, user);
-			ProfileIndexUtils.addZonName(indexDoc, user);
+			ProfileIndexUtils.addName(indexDoc, user, false);
+			ProfileIndexUtils.addEmail(indexDoc, user, false);
+			ProfileIndexUtils.addZonName(indexDoc, user, false);
 //			ProfileIndexUtils.addMemberOf(indexDoc, user);
 		} else {
-	        ProfileIndexUtils.addName(indexDoc, (Group)entry);	
+	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 		}
-        ProfileIndexUtils.addReservedId(indexDoc, (Principal)entry);	
+        ProfileIndexUtils.addReservedId(indexDoc, (Principal)entry, false);	
 		
        return indexDoc;
     }

@@ -56,7 +56,6 @@ import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -102,7 +101,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	implements BinderProcessor {
 	public static  String[] docTypes = new String[] {BasicIndexUtils.DOC_TYPE_BINDER, BasicIndexUtils.DOC_TYPE_ENTRY,BasicIndexUtils.DOC_TYPE_ATTACHMENT};
     protected DefinitionModule definitionModule;
-
+    protected static Map fieldsOnlyIndexArgs = new HashMap();
+    static {
+    	fieldsOnlyIndexArgs.put(DefinitionModule.INDEX_FIELDS_ONLY, Boolean.TRUE);
+	}
  
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -1403,10 +1405,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
-        		indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui, tags);
-           		// Register the index document for indexing.
-        		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
-           		IndexSynchronizationManager.addDocument(indexDoc);
+           		IndexSynchronizationManager.addDocument(buildIndexDocumentFromBinderFile(binder, fa, fui, tags));
            	} catch (Exception ex) {
         		logger.error("Error index file for binder " + binder + " attachment" + fa + " " + ex.getLocalizedMessage());
         	}
@@ -1415,43 +1414,53 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinder(Binder binder, List tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+        boolean fieldsOnly = false;
+    	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, false);
+        // Add creation-date and modification date from binder
+    	// Not in common part, cause files use different dates
+        EntityIndexUtils.addCreation(indexDoc, binder.getCreation(), fieldsOnly);
+        EntityIndexUtils.addModification(indexDoc, binder.getModification(), fieldsOnly);
         
-    	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
-    	//index parentBinder - used to locate sub-binders - attachments shouldn't need this
-        EntityIndexUtils.addParentBinder(indexDoc, binder);
+        //index parentBinder - used to locate sub-binders - attachments shouldn't need this
+        EntityIndexUtils.addParentBinder(indexDoc, binder, fieldsOnly);
 
     	// Add search document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_BINDER);
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_BINDER, fieldsOnly);
         //used to answer what teams am I a member of
-       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, binder.getTeamMemberIds());
+       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, binder.getTeamMemberIds(), fieldsOnly);
 
         // Add the events
-        EntityIndexUtils.addEvents(indexDoc, binder);
+        EntityIndexUtils.addEvents(indexDoc, binder, fieldsOnly);
         
         // Add the tags for this binder
         if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
-        EntityIndexUtils.addTags(indexDoc, binder, tags);
-        
+        EntityIndexUtils.addTags(indexDoc, binder, tags, fieldsOnly);
+ 
+        // Add attached files to binder only
+        EntityIndexUtils.addAttachedFileIds(indexDoc, binder, fieldsOnly);
+       
         return indexDoc;
     }   
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinderFile
 		(Binder binder, FileAttachment fa, FileUploadItem fui, List tags) {
-   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, binder, fa, fui, tags);
-   	    fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
+       	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
+       	//do common part first.  Indexing a file will remove some of the items
+       	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
+         	
+  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags);
        	return indexDoc;
      }
 
     /**
-     * 
+     * This should be done last.  The indexing of a file will remove override some fields
      * @param binder
      * @param entry
      * @param fa This is non-null.
      * @param fui This may be null. 
      * @return
      */
-    protected org.apache.lucene.document.Document buildIndexDocumentFromFile
-    	(Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, List tags) {
-    	byte[] bbuf = null;
+    protected void buildIndexDocumentFromFile
+    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, List tags) {
     	ITextConverterManager textConverterManager = null;
     	TextConverter converter = null;
 		String text = "";
@@ -1472,41 +1481,37 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			logger.error(e);
 		}
 			
-    	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	
     	// Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT, true);
         
-        // Add UID of attachment file (FUID)
-        EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);
+        // Add file info
+        EntityIndexUtils.addFileAttachment(indexDoc, fa, true);
         
-        // Add the filename
-        EntityIndexUtils.addFileAttachmentName(indexDoc, fa.getFileItem().getName());        
+        // Add creation-date from entity
+        EntityIndexUtils.addCreation(indexDoc, entity.getCreation(), true);
+        // Add modification-date from file
+        EntityIndexUtils.addModification(indexDoc, fa.getModification(), true);
         
-        if(text != null)
-        	BasicIndexUtils.addFileContents(indexDoc, text);
-        
-        // TBD Add the filetype and Extension
-        //EntryIndexUtils.addFileType(indexDoc,tempFile);
-
-        EntityIndexUtils.addFileExtension(indexDoc, fa.getFileItem().getName());
-        EntityIndexUtils.addFileUnique(indexDoc, fa.isCurrentlyLocked());
+        if(text != null) BasicIndexUtils.addFileContents(indexDoc, text);
         
         // Add the tags for this entry
         if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entity.getEntityIdentifier());
-        EntityIndexUtils.addTags(indexDoc, entity, tags);
+        EntityIndexUtils.addTags(indexDoc, entity, tags, true);
+        
+        //needs to be last item cause removes extraneous alltext fields
+   		EntityIndexUtils.addFileAttachmentAllText(indexDoc);
    
-        return indexDoc;
     }
     
     //add common fields from binder for binder and its attachments
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
-    		Binder binder) {
-    	EntityIndexUtils.addReadAccess(indexDoc, binder);
+    		Binder binder, boolean fieldsOnly) {
+    	EntityIndexUtils.addReadAccess(indexDoc, binder, fieldsOnly);
 
-    	EntityIndexUtils.addNormTitle(indexDoc, binder);
+    	EntityIndexUtils.addNormTitle(indexDoc, binder, fieldsOnly);
     	
-    	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
+    	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder, fieldsOnly);
     }
 
     /**
@@ -1519,48 +1524,34 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param entry
      */
     protected void fillInIndexDocWithCommonPart(final org.apache.lucene.document.Document indexDoc, 
-    		Binder binder, final DefinableEntity entity) {
+    		Binder binder, final DefinableEntity entity, final boolean fieldsOnly) {
         // Add uid
-        BasicIndexUtils.addUid(indexDoc, entity.getIndexDocumentUid());
-
-        // Add creation-date
-        EntityIndexUtils.addCreationDate(indexDoc, entity);
-        
-        // Add modification-date
-        EntityIndexUtils.addModificationDate(indexDoc,entity);
-        
-        // Add creator id
-        EntityIndexUtils.addCreationPrincipalId(indexDoc,entity);
-        
-        // Add Modification Principal Id
-        EntityIndexUtils.addModificationPrincipalId(indexDoc,entity);
-        
+        BasicIndexUtils.addUid(indexDoc, entity.getIndexDocumentUid(), fieldsOnly);
+                
         // Add Doc Id
-        EntityIndexUtils.addDocId(indexDoc, entity);
+        EntityIndexUtils.addDocId(indexDoc, entity, fieldsOnly);
         
         // Add Doc title
-        EntityIndexUtils.addTitle(indexDoc, entity);
+        EntityIndexUtils.addTitle(indexDoc, entity, fieldsOnly);
         
         //Add Rating
-        EntityIndexUtils.addRating(indexDoc, entity);
+        EntityIndexUtils.addRating(indexDoc, entity, fieldsOnly);
         
         // Add EntityType
-        EntityIndexUtils.addEntityType(indexDoc, entity);
+        EntityIndexUtils.addEntityType(indexDoc, entity, fieldsOnly);
         
         // Add DefinitionType
-        EntityIndexUtils.addDefinitionType(indexDoc, entity);
+        EntityIndexUtils.addDefinitionType(indexDoc, entity, fieldsOnly);
  
         // Add command definition
-        EntityIndexUtils.addCommandDefinition(indexDoc, entity); 
+        EntityIndexUtils.addCommandDefinition(indexDoc, entity, fieldsOnly);
        
         // Add definition family
-        EntityIndexUtils.addFamily(indexDoc, entity); 
+        EntityIndexUtils.addFamily(indexDoc, entity, fieldsOnly);
        
         // Add ancestry 
-        EntityIndexUtils.addAncestry(indexDoc, entity);
+        EntityIndexUtils.addAncestry(indexDoc, entity, fieldsOnly);
         
-        // Add attached file ids
-        //EntityIndexUtils.addAttachedFileIds(indexDoc, entity);
  
         // Add data fields driven by the entry's definition object. 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
@@ -1581,7 +1572,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
 			public String getFlagElementName() { return "index"; }
 		};
-        getDefinitionModule().walkDefinition(entity, visitor);
+		if (!fieldsOnly) {
+			getDefinitionModule().walkDefinition(entity, visitor, null);
+		} else {
+			getDefinitionModule().walkDefinition(entity, visitor, fieldsOnlyIndexArgs);			
+		}
         
     }
     	

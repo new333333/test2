@@ -38,6 +38,8 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
@@ -128,25 +130,28 @@ public class EntityIndexUtils {
     // Defines field values
     public static final String DEFAULT_NOTITLE_TITLE = "---";
         
-    public static void addTitle(Document doc, DefinableEntity entry) {
+    public static void addTitle(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the title field
     	if (entry.getTitle() != null) {
     		String title = entry.getTitle();
     		title = title.trim();
             
             if(title.length() > 0) {
-    	        Field allTextField = BasicIndexUtils.allTextField(title);
-    	        Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.TOKENIZED);
+            	if (!fieldsOnly) {
+            		Field allTextField = BasicIndexUtils.allTextField(title);
+            		doc.add(allTextField);
+            	}
+            	Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.TOKENIZED);
     	        Field sortTitleField = new Field(EntityIndexUtils.SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	        Field title1Field = new Field(EntityIndexUtils.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	        doc.add(titleField);
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
-                doc.add(allTextField);
-                if (entry.getEntityType().equals(EntityType.folder) || entry.getEntityType().equals(EntityType.workspace) || entry.getEntityType().equals(EntityType.profiles)) {
+                if (entry instanceof Binder) {
+                	Binder binder = (Binder)entry;
                 	//Special case: user workspaces and top workspace don't show parent folder 
                 	String extendedTitle = title;
-                	if (entry.getParentBinder() != null && !entry.getParentBinder().getEntityType().equals(EntityType.profiles)) {
+                	if (!binder.isRoot() && !binder.getParentBinder().getEntityType().equals(EntityType.profiles)) {
                 		extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
                 	} 
                 	
@@ -158,7 +163,7 @@ public class EntityIndexUtils {
     }
     
     	        
-    public static void addNormTitle(Document doc, Binder entry) {
+    public static void addNormTitle(Document doc, Binder entry, boolean fieldsOnly) {
 		// Add the title field
 		String normTitle = "";
 		if (entry.getTitle() != null) {
@@ -179,7 +184,7 @@ public class EntityIndexUtils {
 		}
 	}  	        
     	        
-   public static void addRating(Document doc, DefinableEntity entry) {
+   public static void addRating(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//rating may not exist or not be supported
     	try {
         	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
@@ -187,20 +192,20 @@ public class EntityIndexUtils {
         } catch (Exception ex) {};
    	
     }
-    public static void addEntityType(Document doc, DefinableEntity entry) {
+    public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
       	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(eField);
     }
-    public static void addDefinitionType(Document doc, DefinableEntity entry) {
+    public static void addDefinitionType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	Integer definitionType = entry.getDefinitionType();
     	if (definitionType == null) definitionType = 0;
       	Field eField = new Field(DEFINITION_TYPE_FIELD, definitionType.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(eField);
     }
-    public static void addEntryType(Document doc, DefinableEntity entry) {
+    public static void addEntryType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {
-	        if (((FolderEntry)entry).getTopEntry() == null || ((FolderEntry)entry).getTopEntry() == entry) {
+	        if (((FolderEntry)entry).isTop()) {
 	        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_ENTRY, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryTypeField);
 	        } else {
@@ -225,101 +230,72 @@ public class EntityIndexUtils {
     		doc.add(entryTypeField);
     	} 
    }
-    
-    public static void addCreationDate(Document doc, DefinableEntity entry) {
-        // Add creation-date field
-    	if (entry.getCreation() != null) {
-    		Date creationDate = entry.getCreation().getDate();
-            Field creationDateField = new Field(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationDateField);
-            // index the YYYYMMDD string
-            String dayString = formatDayString(creationDate);
-            Field creationDayField = new Field(CREATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationDayField);
-            // index the YYYYMM string
-            String yearMonthString = dayString.substring(0,6);
-            Field creationYearMonthField = new Field(CREATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationYearMonthField);
-            // index the YYYY string
-            String yearString = dayString.substring(0,4);
-            Field creationYearField = new Field(CREATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationYearField);
+    public static void addCreation(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
+    	if (stamp == null) return;
+    	Date creationDate = stamp.getDate();
+    	Principal principal = stamp.getPrincipal();
+    	if (creationDate != null) {		
+    		Field creationDateField = new Field(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(creationDateField);
+    		//index the YYYYMMDD string
+    		String dayString = formatDayString(creationDate);
+    		Field creationDayField = new Field(CREATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(creationDayField);
+    		// index the YYYYMM string
+    		String yearMonthString = dayString.substring(0,6);
+    		Field creationYearMonthField = new Field(CREATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(creationYearMonthField);
+    		// index the YYYY string
+    		String yearString = dayString.substring(0,4);
+    		Field creationYearField = new Field(CREATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(creationYearField);
     	}
-        
-    }
-    
-    public static void addModificationDate(Document doc, DefinableEntity entry) {
-    	// Add modification-date field
-    	if (entry.getModification() != null ) {
-    		Date modDate = entry.getModification().getDate();
-        	Field modificationDateField = new Field(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        	doc.add(modificationDateField);        
-            // index the YYYYMMDD string
-            String dayString = formatDayString(modDate);
-            Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(modificationDayField);
-            // index the YYYYMM string
-            String yearMonthString = dayString.substring(0,6);
-            Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(modificationYearMonthField);
-            // index the YYYY string
-            String yearString = dayString.substring(0,4);
-            Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(modificationYearField);   	
+    	//Add the id of the creator (no, not that one...)
+    	if (principal != null) {
+            Field creationIdField = new Field(CREATORID_FIELD, principal.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationIdField);
+            Field creationNameField = new Field(CREATOR_NAME_FIELD, principal.getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationNameField);
+            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.TOKENIZED);
+            doc.add(creationTitleField);
+            Field creationSortTitleField = new Field(SORT_CREATOR_TITLE_FIELD, principal.getTitle().toString().toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationSortTitleField);
         }
     }
-
-    public static void addFileAttachmentModificationDate(Document indexDoc, FileAttachment fa)  {
-    	// Add modification-date field
-    	if (fa.getModification() != null ) {
-    		Date modDate = fa.getModification().getDate();
-        	Field modificationDateField = new Field(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        	indexDoc.removeField(MODIFICATION_DATE_FIELD);
-        	indexDoc.add(modificationDateField);        
-            // index the YYYYMMDD string
-            String dayString = formatDayString(modDate);
-            Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            indexDoc.removeField(MODIFICATION_DAY_FIELD);
-            indexDoc.add(modificationDayField);
-            // index the YYYYMM string
-            String yearMonthString = dayString.substring(0,6);
-            Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            indexDoc.removeField(MODIFICATION_YEAR_MONTH_FIELD);
-            indexDoc.add(modificationYearMonthField);
-            // index the YYYY string
-            String yearString = dayString.substring(0,4);
-            Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            indexDoc.removeField(MODIFICATION_YEAR_FIELD);
-            indexDoc.add(modificationYearField);   	
-        }
-    }
-    
-    public static void addFileAttachmentCreationDate(Document indexDoc, FileAttachment fa) {
-    	// Add modification-date field
-    	if (fa.getCreation() != null ) {
-    		Date cDate = fa.getCreation().getDate();
-        	Field creationDateField = new Field(CREATION_DATE_FIELD, DateTools.dateToString(cDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        	indexDoc.removeField(CREATION_DATE_FIELD);
-        	indexDoc.add(creationDateField);        
-            // index the YYYYMMDD string
-            String dayString = formatDayString(cDate);
-            Field creationDayField = new Field(CREATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            indexDoc.removeField(CREATION_DAY_FIELD);
-            indexDoc.add(creationDayField);
-            // index the YYYYMM string
-            String yearMonthString = dayString.substring(0,6);
-            Field creationYearMonthField = new Field(CREATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            indexDoc.removeField(CREATION_YEAR_MONTH_FIELD);
-            indexDoc.add(creationYearMonthField);
-            // index the YYYY string
-            String yearString = dayString.substring(0,4);
-            Field creationYearField = new Field(CREATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            indexDoc.removeField(CREATION_YEAR_FIELD);
-            indexDoc.add(creationYearField);   	
-        }
-    }
-    
-    public static void addWorkflow(Document doc, DefinableEntity entry) {
+    public static void addModification(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
+    	if (stamp == null) return;
+    	Date modDate = stamp.getDate();
+    	Principal principal = stamp.getPrincipal();
+     	if (modDate != null) {
+     	
+     		// Add modification-date field
+     		Field modificationDateField = new Field(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
+     		doc.add(modificationDateField);        
+     		// index the YYYYMMDD string
+     		String dayString = formatDayString(modDate);
+     		Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+     		doc.add(modificationDayField);
+     		// index the YYYYMM string
+     		String yearMonthString = dayString.substring(0,6);
+     		Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+     		doc.add(modificationYearMonthField);
+     		// index the YYYY string
+     		String yearString = dayString.substring(0,4);
+     		Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+     		doc.add(modificationYearField);
+     	}
+       	//Add the id of the modifier 
+        if (principal != null) {
+        	Field modificationIdField = new Field(MODIFICATIONID_FIELD, principal.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(modificationIdField);
+            Field modificationNameField = new Field(MODIFICATION_NAME_FIELD, principal.getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(modificationNameField);
+            Field modificationTitleField = new Field(MODIFICATION_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(modificationTitleField);
+        }   
+   } 
+     
+    public static void addWorkflow(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	// Add the workflow fields
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
@@ -356,7 +332,7 @@ public class EntityIndexUtils {
 	 * @param doc
 	 * @param entry
 	 */
-    public static void addEvents(Document doc, DefinableEntity entry) {
+    public static void addEvents(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	int count = 0;
 		Map customAttrs = entry.getCustomAttributes();
 		Set keyset = customAttrs.keySet();
@@ -418,22 +394,15 @@ public class EntityIndexUtils {
 
 		return new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 	}
-	
-	public static void addAttachedFileIds(Document doc, DefinableEntity entry) {
-		Collection<FileAttachment> atts = entry.getFileAttachments();
-        for (FileAttachment fa : atts) {
-        	appendFileAttachmentUid(doc, fa);
-        }
-    }
         
-    public static void addCommandDefinition(Document doc, DefinableEntity entry) {
+    public static void addCommandDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getEntryDef() != null) {
         	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(cdefField);
         }
     }
         
-    public static void addFamily(Document doc, DefinableEntity entry) {
+    public static void addFamily(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getEntryDef() != null) {
         	org.dom4j.Document def = entry.getEntryDef().getDefinition();
         	String family = DefinitionHelper.findFamily(def);
@@ -444,39 +413,14 @@ public class EntityIndexUtils {
         }
     }
 
-    public static void addCreationPrincipalId(Document doc, DefinableEntity entry) {
-    	//Add the id of the creator (no, not that one...)
-        if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
-        	Field creationIdField = new Field(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationIdField);
-            Field creationNameField = new Field(CREATOR_NAME_FIELD, entry.getCreation().getPrincipal().getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationNameField);
-            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, entry.getCreation().getPrincipal().getTitle().toString(), Field.Store.YES, Field.Index.TOKENIZED);
-            doc.add(creationTitleField);
-            Field creationSortTitleField = new Field(SORT_CREATOR_TITLE_FIELD, entry.getCreation().getPrincipal().getTitle().toString().toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(creationSortTitleField);
-        }
-    }   
 
-    public static void addModificationPrincipalId(Document doc, DefinableEntity entry) {
-    	//Add the id of the creator (no, not that one...)
-        if (entry.getModification() != null && entry.getModification().getPrincipal() != null) {
-        	Field modificationIdField = new Field(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        	doc.add(modificationIdField);
-        	Field modificationNameField = new Field(MODIFICATION_NAME_FIELD, entry.getModification().getPrincipal().getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        	doc.add(modificationNameField);
-        	Field modificationTitleField = new Field(MODIFICATION_TITLE_FIELD, entry.getModification().getPrincipal().getTitle().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        	doc.add(modificationTitleField);
-        }
-    }   
-
-     public static void addDocId(Document doc, DefinableEntity entry) {
+     public static void addDocId(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docIdField = new Field(DOCID_FIELD, entry.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docIdField);
     }
 
-    public static void addParentBinder(Document doc, DefinableEntity entry) {
+    public static void addParentBinder(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	Field binderIdField;
     	if (entry instanceof Binder) {
     		if (entry.getParentBinder() == null) return;
@@ -496,7 +440,7 @@ public class EntityIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
-    public static void addTeamMembership(Document doc, Set<Long> ids) {
+    public static void addTeamMembership(Document doc, Set<Long> ids, boolean fieldsOnly) {
     	if ((ids == null) || ids.isEmpty()) return;
 		doc.add(new Field(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.TOKENIZED));
    	
@@ -510,7 +454,7 @@ public class EntityIndexUtils {
         return ids;
     }
     
-    public static void addReadAccess(Document doc, Binder binder) {
+    public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
     	//set entryAcl to all
 		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
 		//get real binder access
@@ -519,7 +463,7 @@ public class EntityIndexUtils {
 		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
     }
     
-    public static void addReadAccess(org.dom4j.Element parent, Binder binder) {
+    public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly) {
 		//add binder access
     	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
    		acl.setText(getFolderAclString(binder));
@@ -544,7 +488,7 @@ public class EntityIndexUtils {
    		}
    		return pIds.toString().replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
     }
-    public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry) {
+    public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
 		// Add ACL field. We only need to index ACLs for read access.
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
@@ -556,11 +500,11 @@ public class EntityIndexUtils {
     		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
 
     	} else {
-    		addReadAccess(doc, binder);
+    		addReadAccess(doc, binder, fieldsOnly);
     	}
 	}
     //This is used to store the "read" acls in a document that is not a search document
-    public static void addReadAccess(org.dom4j.Element parent, Binder binder, DefinableEntity entry) {
+    public static void addReadAccess(org.dom4j.Element parent, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
 		// Add ACL field. We only need to index ACLs for read access.
   		//add binder access
    		if (entry instanceof WorkflowSupport) {
@@ -574,11 +518,11 @@ public class EntityIndexUtils {
      		acl.setText(binder.getTeamMemberString());
 
     	} else {
-     		addReadAccess(parent, binder);
+     		addReadAccess(parent, binder, fieldsOnly);
     	}
 	}
  
-    public static void addTags(Document doc, DefinableEntity entry, List allTags) {
+    public static void addTags(Document doc, DefinableEntity entry, List allTags, boolean fieldsOnly) {
     	String indexableTags = "";
     	String aclTags = "";
     	String tag = "";
@@ -623,26 +567,16 @@ public class EntityIndexUtils {
     	Field tagField = new Field(BasicIndexUtils.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.TOKENIZED);
     	doc.add(tagField);
     	
-    	tagField = BasicIndexUtils.allTextField(indexableTags);
-    	doc.add(tagField);
+    	if (!fieldsOnly) {
+    		tagField = BasicIndexUtils.allTextField(indexableTags);
+    		doc.add(tagField);
+    	}
     	
     	tagField = new Field(BasicIndexUtils.ACL_TAG_FIELD, aclTags, Field.Store.YES, Field.Index.TOKENIZED);
     	doc.add(tagField);
     }
 	
-    public static void addFileAttachmentName(Document doc,String filename) {
-      	Field fileNameField = new Field(FILENAME_FIELD, filename, Field.Store.YES, Field.Index.UN_TOKENIZED);
-       	doc.add(fileNameField);
-       	fileNameField = BasicIndexUtils.allTextField(filename);
-    	doc.add(fileNameField);
-    }
-    
-    public static void addFileExtension(Document doc,String fileName) {
-      	Field fileExtField = new Field(FILE_EXT_FIELD, getFileExtension(fileName), Field.Store.YES, Field.Index.UN_TOKENIZED);
-       	doc.add(fileExtField);   	
-    }
-
-    public static void addFileType(Document doc, File textfile) {
+    public static void addFileType(Document doc, File textfile, boolean fieldsOnly) {
     	org.dom4j.Document document = null;
        	if ((textfile == null) || textfile.length() <= 0) return;
     	// open the file with an xml reader
@@ -676,20 +610,22 @@ public class EntityIndexUtils {
 
         return extension;
     }
-    
-    public static void addFileAttachmentUid(Document doc, FileAttachment fa) {
-    	doc.removeFields(FILE_ID_FIELD);
-    	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	doc.add(fileIDField); 
-    	doc.removeFields(FILE_SIZE_FIELD);
-    	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	doc.add(fileSizeField); 
-    	doc.removeFields(FILE_TIME_FIELD);
-    	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	doc.add(fileTimeField); 
-    }
-
-    public static void appendFileAttachmentUid(Document doc, FileAttachment fa) {
+    //Used to index info about a file with its owner
+	public static void addAttachedFileIds(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+		Collection<FileAttachment> atts = entry.getFileAttachments();
+        for (FileAttachment fa : atts) {
+        	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(fileIDField); 
+        	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(fileSizeField); 
+        	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(fileTimeField); 
+        	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(fileNameField);
+        }
+    }    
+    //Used to index the file.  Only want info about this file, so remove extraneous stuff
+    public static void addFileAttachment(Document doc, FileAttachment fa, boolean fieldsOnly) {
     	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
     	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -698,6 +634,10 @@ public class EntityIndexUtils {
     	doc.add(fileTimeField); 
       	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(fileNameField);
+       	Field fileExtField = new Field(FILE_EXT_FIELD, getFileExtension(fa.getFileItem().getName()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	doc.add(fileExtField);   	
+       	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	doc.add(uniqueField);     	
     }
     
     // in the _allText field for this attachment, just add the contents of
@@ -718,12 +658,8 @@ public class EntityIndexUtils {
        	doc.add(allText);
        	return doc;
     }
-    public static void addFileUnique(Document doc, boolean unique) {
-       	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(unique), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	doc.add(uniqueField);     	
-    }
 
-    public static void addAncestry(Document doc, DefinableEntity entry) {
+    public static void addAncestry(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	
     	Binder parentBinder = entry.getParentBinder();
     	

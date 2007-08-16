@@ -11,7 +11,6 @@
 package com.sitescape.team.module.definition.index;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +18,7 @@ import org.apache.lucene.document.Field;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
 
@@ -27,10 +27,12 @@ import com.sitescape.team.util.ObjectPropertyNotFoundException;
  * @author Jong Kim
  */
 public abstract class AbstractFieldBuilder implements FieldBuilder {
-
+	protected Boolean fieldsOnly;
     
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entity, dataElemName);
+       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
+        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
         
         if(dataElemValue != null)
             return build(dataElemName, dataElemValue, args);
