@@ -38,9 +38,19 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	ajaxRequest.addFormElements("<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_unseenCountForm")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preRequest);
-	ajaxRequest.setPostRequest(ss_postRequest);
+	ajaxRequest.setPostRequest(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_getUnseenCountsReturn);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
+}
+function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_getUnseenCountsReturn() {
+	// alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		if (obj.getData('timeout') != "timeout") {
+			//This call wasn't made from a timeout. So, give error message
+			ss_showNotLoggedInMsg();
+		}
+	}
 }
 
 
@@ -84,9 +94,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
   <tr>
   <td>
-	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
       <span id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_count_<c:out value="${binder.id}"/>"><font color="silver">-</font></span>
-    </c:if>
   </td>
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td>
@@ -127,6 +135,8 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
   %>
 </c:forEach>
 </table>
+<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_note">
+</div>
 <div align="right">
   <a class="ss_linkButton" 
     href="<portlet:renderURL 

@@ -574,13 +574,21 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
     	Document tree = null;
     	String idString = "";
-    	if (data.containsKey(Workspace_topId)) idString = (String)data.get(Workspace_topId);
+    	if (data.containsKey(Workspace_topId) && data.get(Workspace_topId) instanceof String) {
+    		idString = (String)data.get(Workspace_topId);
+    	} else if (data.containsKey(Workspace_topId) && data.get(Workspace_topId) instanceof List) {
+    		idString = (String)((List)data.get(Workspace_topId)).get(0);
+    	}
 		Long topId = null;
 		try {
 			if (!idString.equals("")) topId = Long.valueOf(idString);
 		} catch (Exception ex) {};
        	String startPoint = "";
-       	if (data.containsKey("start")) startPoint = (String)data.get("start");
+       	if (data.containsKey("start") && data.get("start") instanceof String) {
+       		startPoint = (String)data.get("start");
+       	} else if (data.containsKey("start") && data.get("start") instanceof List) {
+       		startPoint = (String)((List)data.get("start")).get(0);
+       	}
    		if (!(binder instanceof TemplateBinder)) {
    	       	Workspace topWs = null;
    			if ("this".equals(startPoint)) {
@@ -752,7 +760,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
 		
 		Collection folders=null;
-		Set <Long> folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		Set <Long> folderIds = null;
+		try {
+			folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		} catch(Exception e) {}
 		if (!folderIds.isEmpty()) {
 			folders = getBinderModule().getBinders(folderIds);		//may have templates		
 			idData.put(WebKeys.FOLDER_LIST, folders);
@@ -765,7 +776,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 		}
 
-    	if (data.get(AssignedTo) != null) {
+    	if (data.get(AssignedTo) != null && data.get(AssignedTo) instanceof String) {
     		String userId = (String)data.get(AssignedTo);
     		String userTitle = null;
     		if (SearchFilterKeys.CurrentUserId.equals(userId)) {
@@ -855,7 +866,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
 		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-		Set <Long> folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		Set <Long> folderIds = null;
+		if (data.get(SearchFormSavedFolderIdList) instanceof String) 
+			folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
 		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, folderIds);
 
 		boolean doSearch = true;		
@@ -1054,7 +1067,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY.equals(cName)) {
 					
 					//multi-select	
-					Set <String> folderIds = LongIdUtil.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
+					Set <String> folderIds = new HashSet();
+					if (originalComponentData.get(SearchFormSavedFolderIdList) instanceof String)
+						folderIds = LongIdUtil.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
 
 					//add first
 					//Get the folderIds out of the formData
@@ -1205,12 +1220,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			Map cMap = (Map)me.getValue();
 			if (cMap == null) continue;
 			Map data = (Map)cMap.get(Dashboard.DATA);
-			if (data.containsKey(ChooseType)) {
+			if (data.containsKey(ChooseType) && data.get(ChooseType) instanceof String) {
 				String viewType = (String)data.get(ChooseType);
 				data.remove(ChooseType);
 				String id = getInstance().resolveBinder(binder, viewType);
 				if (Validator.isNotNull(id)) {
-					String savedIds = (String)data.get(DashboardHelper.SearchFormSavedFolderIdList);
+					String savedIds = "";
+					if (data.get(DashboardHelper.SearchFormSavedFolderIdList) instanceof String) 
+						savedIds = (String)data.get(DashboardHelper.SearchFormSavedFolderIdList);
 					Set<String> folderIds = LongIdUtil.getIdsAsStringSet(savedIds);
 					folderIds.add(id);
 					SearchFilter searchFilter = new SearchFilter();

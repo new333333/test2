@@ -18,10 +18,33 @@
 
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
+	<c:set var="ss_showUnseenNote" value="0"/>
+	<c:forEach var="folderId" items="${ss_unseenCountsBinderIds}">
+	  <c:set var="folderIdFound" value="0"/>
+	  <c:forEach var="entry" items="${ss_unseenCounts}">
+	    <c:if test="${entry.key.id == folderId}">
+	      <c:set var="folderIdFound" value="1"/>
+	    </c:if>
+	  </c:forEach>
+	  <c:if test="${folderIdFound == '0'}">
+	    <taconite-replace contextNodeID="${ssNamespace}_count_${folderId}" 
+	    parseInBrowser="true"><span id="${ssNamespace}_count_${folderId}" 
+	    >*</span></taconite-replace>
+	    <c:set var="ss_showUnseenNote" value="1"/>
+	  </c:if>
+	</c:forEach>
+	
 	<c:forEach var="entry" items="${ss_unseenCounts}">
 	<taconite-replace contextNodeID="${ssNamespace}_count_${entry.key.id}" 
 	parseInBrowser="true"><span id="${ssNamespace}_count_${entry.key.id}" 
 	>${entry.value}</span></taconite-replace>
 	</c:forEach>
+	<c:if test="${ss_showUnseenNote == '1'}">
+	  <taconite-replace contextNodeID="${ssNamespace}_note" parseInBrowser="true">
+	    <div id="${ssNamespace}_note" class="ss_indent_large">
+	    <span>* <ssf:nlt tag="unseen.foldersOnly"/></span>
+	    </div>
+	  </taconite-replace>
+	</c:if>
 </c:if>
 </taconite-root>

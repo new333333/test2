@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template type="8" internalId="402883c1129b1f8101129b28bc620005">
-	<attribute name="templateTitle" type="string"><![CDATA[__project_management]]></attribute>
-	<attribute name="templateDescription" type="description"><![CDATA[Project Management Template]]></attribute>
-	<attribute name="title" type="string"><![CDATA[__project_management]]></attribute>
+	<attribute name="templateTitle" type="string"><![CDATA[__template_project_management_workspace]]></attribute>
+	<attribute name="templateDescription" type="description"><![CDATA[__template_project_management_workspace_description]]></attribute>
+	<attribute name="title" type="string"><![CDATA[__template_project_management_workspace]]></attribute>
 	<attribute name="description" type="description"><![CDATA[]]></attribute>
 	<attribute name="iconName" type="string">/icons/workspace.gif</attribute>
 	<property name="library">false</property>
