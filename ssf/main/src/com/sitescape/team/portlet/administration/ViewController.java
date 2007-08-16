@@ -72,9 +72,10 @@ public class ViewController extends  SAbstractController {
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 		//Put in the product name
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
+ 		model.put(WebKeys.PORTLET_TYPE, WebKeys.PORTLET_TYPE_ADMIN);
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
-		if (0 == 1 && Validator.isNull(ss_initialized)) {
+		if (Validator.isNull(ss_initialized)) {
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
 			

@@ -606,6 +606,8 @@ public class WebKeys {
     public static final String PEOPLE_RESULTCOUNT="ssPeopleResultCount";
     public static final String PERMALINK="ssPermalink";
     public static final String PERSONAL_TAGS="ssPersonalTags";
+	public static final String PORTLET_TYPE = "ss_portletType";
+	public static final String PORTLET_TYPE_ADMIN = "ss_portletTypeAdmin";
     public static final String POSTINGS="ssPostings";
     public static final String PREFIX="ssPrefix";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
