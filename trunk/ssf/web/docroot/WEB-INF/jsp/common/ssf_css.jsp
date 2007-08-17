@@ -4704,5 +4704,32 @@ div.ss_license_warning {
 	padding-right:10px;
 }
 
+table.ssMeetingRecords {
+	text-align: left;
+	empty-cells: show;
+	width: 100%;
+	margin: 10px 0 10px 0;
+}
+
+table.ssMeetingRecords th {
+	padding: 5px 0 5px 5px;
+	border-top: 1px solid ${ss_style_border_color};
+	border-bottom: 1px solid ${ss_style_border_color};
+	background-color: #dbe6f2;
+}
+
+table.ssMeetingRecords td {
+	padding: 2px 0 2px 10px;
+	border-bottom: 1px solid ${ss_style_border_color};
+}
+
+table.ssMeetingRecords .ssDocuments td {
+	padding-top: 10px;
+}
+
+table.ssMeetingRecords .ssHeader {
+	font-weight: bold;
+}
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

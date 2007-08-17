@@ -79,12 +79,18 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	
 	</c:if>
 	
+	<% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) */ %>
+	<a class="" title="<ssf:nlt tag="attachMeeting.attachResults"/>" href="javascript: ;" onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"
+	  ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_meeting.gif"/></a>
+	<div style="display: none; " id="ss_status_message"></div>
+	
 		<div id="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:visible;display:block; width:1px; height:1px;">
 			<div align="right">
 				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="1" width="1">xxx</iframe>
 			</div>
 		</div>
-	</td>	
+		
+	</td>
 </tr>
 <tr>
 	<td style="padding-left: 30px;" colspan="2" align="left" width="100%">
@@ -104,6 +110,15 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 						<iframe <ssf:title tag="entry.AttachFilesByWebBrowse" /> frameborder="0" scrolling="no" id="ss_iframe_browse${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
 							name="ss_iframe_browse${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
 							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" height="75%" width="100%">xxx</iframe>
+					</div>
+					
+					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="display: none; padding: 5px; " class="ss_border_light">
+						<div align="right">
+						<a onClick="ss_hideAddAttachmentMeetingRecords('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"><img 
+						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
+						</div>
+						<div id="ss_div_attach_meeting_records_content${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+						</div>
 					</div>
 	</td>	
 </tr>

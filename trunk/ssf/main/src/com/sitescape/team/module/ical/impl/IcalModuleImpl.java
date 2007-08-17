@@ -37,6 +37,7 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
+import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TimeZone;
@@ -68,6 +69,7 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Status;
+import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
 
@@ -76,6 +78,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.joda.time.DateTimeZone;
+import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -86,6 +89,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -161,7 +165,7 @@ public class IcalModuleImpl implements IcalModule {
 			}
 			for(Object comp : cal.getComponents("VEVENT")) {
 				VEvent eventComponent = (VEvent) comp;
-				
+
 				event = parseEvent(eventComponent.getStartDate(), eventComponent.getEndDate(), null, 
 									eventComponent.getDuration(), (RRule) eventComponent.getProperty("RRULE"),
 									eventComponent.getRecurrenceId(), timeZones);
@@ -234,16 +238,14 @@ public class IcalModuleImpl implements IcalModule {
 		}
 		event.setDtStart(startCal);
 		
-		TzId tzId = (TzId)start.getParameter(Parameter.TZID);
-		if (tzId != null) {
-			TimeZone tz = timeZones.get(tzId.getValue());
-			event.setTimeZone(tz);
-		} // else - all days event
+		event.setAllDaysEvent(isAllDaysEvent(start));
 		
 		if(end != null) {
 			java.util.Date endDate = end.getDate();
 			if (end.getParameter(Value.DATE.getName()) != null) {
-				endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
+				// only date (no time) so it's all days event
+				// intern we store the date of last event's day - so get one day before
+	 			endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
 			}
 			GregorianCalendar endCal = new GregorianCalendar();
 			endCal.setTime(endDate);
@@ -251,6 +253,8 @@ public class IcalModuleImpl implements IcalModule {
 		} else if (due != null) {
 			java.util.Date endDate = due.getDate();
 			if (due.getParameter(Value.DATE.getName()) != null) {
+				// only date (no time) so it's all days event
+				// intern we store the date of last event's day - so get one day before
 				endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
 			}
 			GregorianCalendar endCal = new GregorianCalendar();
@@ -299,6 +303,12 @@ public class IcalModuleImpl implements IcalModule {
 			}
 		}
 		return event;
+	}
+
+	private boolean isAllDaysEvent(DtStart start) {
+		return (start.getParameter(Parameter.TZID) != null) || 
+				(start.getParameter(Parameter.TZID) == null && 
+					start.getParameter(Value.DATE.getName()) == null);
 	}
 
 	/**
@@ -449,8 +459,7 @@ public class IcalModuleImpl implements IcalModule {
 		// Calendar without any components can not exists
 		// so put time zone
 		if (calendar.getComponents().isEmpty()) {
-			TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-			TimeZone timeZone = getTimeZone(null, registry, defaultTimeZoneId);
+			TimeZone timeZone = getTimeZone(null, defaultTimeZoneId);
 				
 			calendar.getComponents().add(timeZone.getVTimeZone());
 		}
@@ -509,13 +518,10 @@ public class IcalModuleImpl implements IcalModule {
 
 	private void addEventToICalendar(Calendar calendar, DefinableEntity entry,
 			Event event, String defaultTimeZoneId, ComponentType componentType) {
-		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance()
-				.createRegistry();
 		// there is probably a bug in iCal4j or in Java: for some time zones
 		// the date after setting the time zone is wrong, it means: the other
 		// time offset is supplied as it should be...
-		TimeZone timeZone = getTimeZone(event.getTimeZone(), registry,
-				defaultTimeZoneId);
+		TimeZone timeZone = getTimeZone(event.getTimeZone(), defaultTimeZoneId);
 		if (timeZone != null) {
 			VTimeZone tz = timeZone.getVTimeZone();
 			if (!calendar.getComponents(Component.VTIMEZONE).contains(tz)) {
@@ -777,6 +783,7 @@ public class IcalModuleImpl implements IcalModule {
 			vEvent = new VEvent(start, duration, entry.getTitle());
 			vEvent.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE_TIME);
+			vEvent.getProperties().add(Transp.OPAQUE);
 		} else {
 			Date start = new Date(event.getDtStart().getTime());
 			Date end = (Date)start.clone();
@@ -788,7 +795,15 @@ public class IcalModuleImpl implements IcalModule {
 			vEvent.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE);
 			vEvent.getProperties().getProperty(Property.DTEND)
-					.getParameters().add(Value.DATE);			
+					.getParameters().add(Value.DATE);
+			
+			// one day events mark as TRANSPARENT
+			// An 'event on a day' - anniversaries and birthdays
+			if ((new YearMonthDay(start)).equals((new YearMonthDay(end)).minusDays(1))) {
+				vEvent.getProperties().add(Transp.TRANSPARENT);
+			} else {
+				vEvent.getProperties().add(Transp.OPAQUE);
+			}
 		}
 
 		setComponentDescription(vEvent, entry.getDescription().getText());
@@ -801,22 +816,35 @@ public class IcalModuleImpl implements IcalModule {
 		return vEvent;
 	}
 
-	private TimeZone getTimeZone(java.util.TimeZone timeZone,
-			TimeZoneRegistry registry, String defaultTimeZone) {
+	public static TimeZone getTimeZone(java.util.TimeZone timeZone, String defaultTimeZone) {
+		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+		
 		TimeZone iCalTimeZone= null;
+		
+		// get current user time zone
+		User user = RequestContextHolder.getRequestContext().getUser();
+		// use jodatime to convert 3-characters zone ids to ical names 
+		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(user.getTimeZone());
+		if (dateTimeZone != null) {
+			iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
+		}
+		
+		
 		if (timeZone != null) {
-			DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+			// use jodatime to convert 3-characters zone ids to ical names 
+			dateTimeZone = DateTimeZone.forTimeZone(timeZone);
 			if (dateTimeZone != null) {
 				iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
 			}
 		}
-		if (iCalTimeZone == null) {
+		
+		if (iCalTimeZone == null && defaultTimeZone != null) {
 			iCalTimeZone = registry.getTimeZone(defaultTimeZone);
 		}
 		return iCalTimeZone;
 	}
 
-	private void addRecurrences(CalendarComponent component, Event event) {
+	public static void addRecurrences(CalendarComponent component, Event event) {
 		if (event.getFrequency() == Event.NO_RECURRENCE) {
 			return;
 		}
@@ -929,7 +957,7 @@ public class IcalModuleImpl implements IcalModule {
 			component.getProperties().add(rrule);
 
 		} catch (ParseException e) {
-			logger.error("Error by creating RRule by iCal export. ", e);
+			//logger.error("Error by creating RRule by iCal export. ", e);
 			return;
 		}
 	}

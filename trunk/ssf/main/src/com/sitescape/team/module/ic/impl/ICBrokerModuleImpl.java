@@ -12,13 +12,19 @@ package com.sitescape.team.module.ic.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.xmlrpc.*;
+import org.joda.time.DateTime;
+import org.joda.time.YearMonthDay;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -28,6 +34,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
+import com.sitescape.team.module.ic.RecordType;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
@@ -35,6 +42,7 @@ import com.sitescape.team.web.WebKeys;
 
 public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		ICBrokerModule, ICBrokerModuleImplMBean, InitializingBean, DisposableBean {
+	
 	private final static String AUTHENTICATE_USER = "addressbk.authenticate_user";
 
 	private final static String FIND_USERS = "addressbk.find_users_by_screenname";
@@ -52,6 +60,16 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	private final static String MOD_USER = "addressbk.update_contact";
 
 	private final static String ADD_MEETING = "controller.add_meeting_param";
+	
+	
+	private final static String GET_RECORDING_LIST = "addressbk.get_recording_list";
+	
+	private final static String GET_DOC_LIST = "addressbk.get_doc_list";
+	
+	private final static String FIND_MEETINGS_BY_HOST = "schedule.find_meetings_by_host";
+	
+	private final static String REMOVE_RECORDINGS = "addressbk.remove_recordings";
+		
 
 	private String sessionId = "";
 
@@ -69,6 +87,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	protected String jabberDomain;
 
 	protected String defaultCommunityId;
+	
 	protected boolean enable = false;
 
 	private String[] zonFieldSet = { "username", "directoryid", "profileid",
@@ -216,12 +235,33 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		// afterPropertiesSet.
 		// Do any other cleanup stuff as necessary.
 	}
-
-	private Object findScreenName(String screenname) throws ICException {
-
-		if (sessionId.length() <= 0) {
-			getSessionId();
+	
+	private String findUserIdByScreenName(String screenname) throws ICException {
+		if (!isEnabled()) {
+			return null;
 		}
+		
+		String userId = null;
+		
+		getSessionId();
+
+		Vector result = (Vector)findUserByScreenName(screenname);
+		
+		if (result == null || result.get(0) == null || 
+				((Vector)result.get(0)).get(0) == null ||
+				((Vector)((Vector)result.get(0)).get(0)).get(1) == null) {
+			return userId;
+		}
+		
+		// the result is buried 4 deep (vectors within vectors)
+		userId = (String) ((Vector) ((Vector) ((Vector)result).get(0))
+				.get(0)).get(1);
+		
+		return userId;
+	}
+
+	private Object findUserByScreenName(String screenname) throws ICException {
+		getSessionId();
 
 		// Build our parameter list.
 		Vector users = new Vector();
@@ -246,7 +286,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 	public boolean getScreenNameExists(String screenname) throws ICException {
 		if (!isEnabled()) return false;
-		Object result = findScreenName(screenname);
+		Object result = findUserByScreenName(screenname);
 		// System.out.println("Object is " + result);
 		// the result is buried 4 deep (vectors within vectors)
 	
@@ -260,8 +300,9 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	private void getSessionId() throws ICException {
-		if (sessionId.length() > 0)
+		if (sessionId.length() > 0) {
 			return;
+		}
 
 		List result = null;
 		// Build our parameter list.
@@ -315,19 +356,14 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	public Vector fetchContact(String screenname) throws ICException {
 		if (!isEnabled()) return null;
 		Object result = null;
-		String userId = "";
-		if (sessionId.length() <= 0) {
-			getSessionId();
-		}
-
-		result = findScreenName(screenname);
 		
-		// the result is buried 4 deep (vectors within vectors)
-		userId = (String) ((Vector) ((Vector) ((Vector) (result)).get(0))
-				.get(0)).get(1);
+		getSessionId();
 
-		if (userId.length() == 0)
+		String userId = findUserIdByScreenName(screenname);
+
+		if (userId == null) {
 			return null;
+		}
 
 		// Build our parameter list.
 		Vector fields = new Vector();
@@ -354,21 +390,14 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	public int deleteUser(String screenname) throws ICException {
 		if (!isEnabled()) return 0;
 		Object result = null;
-		String userId = "";
 
-		if (sessionId.length() <= 0) {
-			getSessionId();
-		}
+		getSessionId();
 
-		result = findScreenName(screenname);
-		// System.out.println("Object is " + result);
-		// the result is buried 4 deep (vectors within vectors)
+		String userId = findUserIdByScreenName(screenname);
 
-		userId = (String) ((Vector) ((Vector) ((Vector) (result)).get(0))
-				.get(0)).get(1);
-
-		if (userId.length() == 0)
+		if (userId == null) {
 			return 0;
+		}
 
 		Vector params = new Vector();
 		params.addElement(sessionId);
@@ -503,63 +532,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 		return true;
 	}
-
-	public String addMeeting(Set participantsLongIds, String title,
-			String description, String message, String password,
-			int scheduleTime, String forumToken, int[] meetingType) throws ICException {
-		if (!isEnabled()) return null;
-
-		// HashMap participant = null;
-		// String[] participantFields = { "zonScreenName", "displayName",
-		// "phone",
-		// "email", "imType", "imScreenName", "moderator" };
-
-		getSessionId();
-
-		/*
-		 * Each participants list element consists of: screenName displayName
-		 * phone email IM system (int: 0=none, 1=aol, 2=yahoo, 3=msn) IM
-		 * screenName moderator (int: 0=normal, 1=moderator)
-		 */
-		Vector params = new Vector();
-		params.addElement(sessionId);
-
-		Vector participantArray = getMeetingParticipants(participantsLongIds);
-		// Vector part = new Vector();
-		//
-		// for (int i = 0; i < participants.size(); i++) {
-		// participant = (HashMap) participants.get(i);
-		// for (int j = 0; j < participantFields.length; j++) {
-		// part.addElement(participant.get(participantFields[j]));
-		// }
-		// participantArray.addElement(part);
-		//
-		// }
-		params.addElement(participantArray);
-		params.addElement(title);
-		params.addElement(description);
-		params.addElement(message);
-		params.addElement(password);
-		params.addElement(new Integer(scheduleTime));
-		params.addElement(forumToken);
-		params.addElement(new Integer(meetingType[0]));
-		params.addElement(new Integer(meetingType[1]));
-		params.addElement(new Integer(meetingType[2]));
-
-		List result = null;
-		try {
-			result = (List) server.execute(ADD_MEETING, params);
-			if (result.get(0) != null && ((Integer) result.get(0)).equals(0)) {
-				return (String) result.get(1);
-			}
-			throw new ICException((Integer) result.get(0));
-		} catch (XmlRpcException e) {
-			throw new ICException(e);
-		} catch (IOException e) {
-			throw new ICException(e);
-		}
-	}
-
+	
 	public String addMeeting(Set memberIds, Binder binder,
 			Entry entry, String password, int scheduleTime, String forumToken,
 			int[] meetingType)
@@ -570,8 +543,6 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 						entry), password, scheduleTime, forumToken,
 						meetingType);
 	}
-	
-	
 
 	private String getMeetingTitle(Binder binder, Entry entry) {
 		if (entry != null || binder != null) {
@@ -625,9 +596,9 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		List users = getCoreDao().loadObjects(userIds, User.class,
 				user.getZoneId());
 
-		// * Each participants list element consists of: screenName displayName
-		// * phone email IM system (int: 0=none, 1=aol, 2=yahoo, 3=msn) IM
-		// * screenName moderator (int: 0=normal, 1=moderator)
+		// Each participants list element consists of: screenName displayName
+		// phone email IM system (int: 0=none, 1=aol, 2=yahoo, 3=msn) IM
+		// screenName moderator (int: 0=normal, 1=moderator)
 
 		Iterator userIt = users.iterator();
 		while (userIt.hasNext()) {
@@ -647,4 +618,242 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		return participants;
 	}
 
+	public String addMeeting(Set participantsLongIds, String title,
+			String description, String message, String password,
+			int scheduleTime, String forumToken, int[] meetingType) throws ICException {
+		if (!isEnabled()) return null;
+
+		// HashMap participant = null;
+		// String[] participantFields = { "zonScreenName", "displayName",
+		// "phone",
+		// "email", "imType", "imScreenName", "moderator" };
+
+		getSessionId();
+
+		/*
+		 * Each participants list element consists of: screenName displayName
+		 * phone email IM system (int: 0=none, 1=aol, 2=yahoo, 3=msn) IM
+		 * screenName moderator (int: 0=normal, 1=moderator)
+		 */
+		Vector params = new Vector();
+		params.addElement(sessionId);
+
+		Vector participantArray = getMeetingParticipants(participantsLongIds);
+		params.addElement(participantArray);
+		params.addElement(title);
+		params.addElement(description);
+		params.addElement(message);
+		params.addElement(password);
+		params.addElement(new Integer(scheduleTime));
+		params.addElement(forumToken);
+		params.addElement(new Integer(meetingType[0]));
+		params.addElement(new Integer(meetingType[1]));
+		params.addElement(new Integer(meetingType[2]));
+
+		List result = null;
+		try {
+			result = (List) server.execute(ADD_MEETING, params);
+			if (result.get(0) != null && ((Integer) result.get(0)).equals(0)) {
+				return (String) result.get(1);
+			}
+			throw new ICException((Integer) result.get(0));
+		} catch (XmlRpcException e) {
+			throw new ICException(e);
+		} catch (IOException e) {
+			throw new ICException(e);
+		}
+	}
+	
+	public Map getMeetingRecords(String meetingId) throws ICException {
+		Map<String, Map<String, List>> records = new HashMap();
+		
+		if (!isEnabled()) {
+			return records;
+		}
+
+		getSessionId();
+
+		Vector params = new Vector();
+		params.addElement(meetingId);
+
+		try {
+			List result = (List) server.execute(GET_RECORDING_LIST, params);
+			if (result.get(0) != null && result.get(0) != null) {
+				Iterator<List> recordsIt = ((List)result.get(0)).iterator();
+				while (recordsIt.hasNext()) {
+					List record = recordsIt.next();
+					String recordDate = (String)record.get(0);
+					int recordType = Integer.parseInt((String)record.get(1));
+					
+					if (records.get(recordDate) == null) {
+						Map<String, List> recordsByType = new HashMap();
+						RecordType[] values = RecordType.values();
+						for (int i = 0; i < values.length; i++) {
+							recordsByType.put(values[i].name(), new ArrayList());
+						}
+						
+						records.put(recordDate, recordsByType);
+					}
+					records.get(recordDate).get(RecordType.getByNumber(recordType).name()).add(record);
+				}
+			} else {
+				throw new ICException((Integer) result.get(0));
+			}
+		} catch (XmlRpcException e) {
+			throw new ICException(e);
+		} catch (IOException e) {
+			throw new ICException(e);
+		}
+	
+		return records;
+	}
+	
+	public List getDocumentList(String meetingId) throws ICException {
+		List documents = new ArrayList();
+		
+		if (!isEnabled()) {
+			return documents;
+		}
+		
+		getSessionId();
+
+		Vector params = new Vector();
+		params.addElement(meetingId);
+
+		try {
+			List result = (List) server.execute(GET_DOC_LIST, params);
+			if (result.get(0) != null && result.get(0) != null) {
+				Iterator<List> documentsIt = ((List)result.get(0)).iterator();
+				while (documentsIt.hasNext()) {
+					List document = documentsIt.next();
+					String docId = (String)document.get(0);
+					
+					// I don't know what does it mean, copied from SSF implementation, no spec.
+					if (docId.length() >= 17 && docId.substring(0, 17).equals("%5eTempoUpload%5e")) {
+						continue;
+					}
+				
+					documents.add(document);
+				}
+				
+			} else {
+				throw new ICException((Integer) result.get(0));
+			}
+		} catch (XmlRpcException e) {
+			throw new ICException(e);
+		} catch (IOException e) {
+			throw new ICException(e);
+		}
+	
+		return documents;
+	}
+	
+	public List findUserMeetings(String screenName) throws ICException {
+		List meetings = new ArrayList();
+		
+		if (!isEnabled()) {
+			return meetings;
+		}
+		
+		String userId = findUserIdByScreenName(screenName);
+		if (userId == null) {
+			return meetings;
+		}
+		
+		Vector params = new Vector();
+		params.addElement(sessionId);
+		params.addElement(userId);
+
+		List result = null;
+		try {
+			result = (List) server.execute(FIND_MEETINGS_BY_HOST, params);
+			if (result.get(0) != null) {
+				meetings = (List)result.get(0);
+			} else {
+				throw new ICException((Integer) result.get(0));
+			}
+		} catch (XmlRpcException e) {
+			throw new ICException(e);
+		} catch (IOException e) {
+			throw new ICException(e);
+		}
+		
+	
+		return meetings;
+	}
+	
+	public Map getUserMeetingAttachments(String screenName, int held) throws ICException {
+		Map meetingAttachments = new HashMap();
+		Iterator<List> meetings = findUserMeetings(screenName).iterator();
+		while (meetings.hasNext()) {
+			List meeting = meetings.next();
+			String meetingId = (String)meeting.get(0);
+			Map records = getMeetingRecords(meetingId);
+			if (held > 0) {
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd-HH-mm-ss");
+				YearMonthDay range = (new YearMonthDay()).minusDays(held);
+				Iterator<Map.Entry<String, Map<String, List>>> it = records.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry<String, Map<String, List>> entry = it.next();
+					String id = entry.getKey();
+					Map<String, List> record = entry.getValue();
+					
+					YearMonthDay recordDate = fmt.parseDateTime(id.substring(id.indexOf("-") + 1, id.length())).toYearMonthDay();
+					if (recordDate.isBefore(range)) {
+						it.remove();
+						continue;
+					}
+					
+					if (record.get(RecordType.audio.name()).isEmpty() && 
+							record.get(RecordType.flash.name()).isEmpty() && 
+							record.get(RecordType.chat.name()).isEmpty()) {
+						it.remove();
+					}
+				}
+			}
+			
+			List docs = getDocumentList(meetingId);
+			
+			Iterator<List> docsIt = docs.iterator();
+			while (docsIt.hasNext()) {
+				List document = docsIt.next();
+				String docId = (String)document.get(0);	
+				if (docId.indexOf("/") > -1) {
+					docsIt.remove();
+				}
+			}
+			
+			Map rpd = new HashMap();
+			rpd.put("records", records);
+			rpd.put("docs", docs);
+			
+			meetingAttachments.put(meeting, rpd);
+		}
+		return meetingAttachments;
+	}
+	
+	public boolean removeRecordings(String meetingId, String recordingURL) throws ICException {
+		if (!isEnabled()) {
+			return false;
+		}
+	
+		Vector params = new Vector();
+		params.addElement(meetingId);
+		params.addElement(recordingURL);
+
+		try {
+			List result = (List) server.execute(REMOVE_RECORDINGS, params);
+			return true;
+		} catch (XmlRpcException e) {
+			throw new ICException(e);
+		} catch (IOException e) {
+			throw new ICException(e);
+		}
+	}
+
+	public String getBASE64AuthorizationToken() {
+		return new sun.misc.BASE64Encoder().encode ((getAdminId() + ":" + getAdminPasswd()).getBytes());
+	}
+	
+	
 }

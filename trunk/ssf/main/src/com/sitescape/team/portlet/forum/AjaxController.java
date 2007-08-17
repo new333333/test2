@@ -10,6 +10,11 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +37,10 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -67,8 +76,11 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
+import com.sitescape.team.module.ic.DocumentDownload;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
+import com.sitescape.team.module.ic.RecordType;
+import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
@@ -87,10 +99,13 @@ import com.sitescape.team.survey.Question;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.survey.SurveyModel;
 import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TagUtil;
+import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -170,6 +185,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxRemoveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
 				ajaxVoteSurvey(request, response);
+			} else if (op.equals(WebKeys.OPERATION_ATTACHE_MEETING_RECORDS)) {
+				ajaxAttacheMeetingRecords(request, response);
 			}
 		}
 	}
@@ -398,6 +415,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxUploadICalendarFileStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_CHANGE_LOG_ENTRY_FORM)) {
 			return ajaxGetChangeLogEntryForm(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_MEETING_RECORDS)) {
+			return ajaxGetMeetingRecords(request, response);
 		}
 		
 		return ajaxReturn(request, response);
@@ -2580,4 +2599,248 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 		return new ModelAndView("binder/find_place_ajax_return", model);
 	}
+	
+	private ModelAndView ajaxGetMeetingRecords(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String recordsDivId = PortletRequestUtils.getStringParameter(request, "recordsDivId");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX);
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		int held = PortletRequestUtils.getIntParameter(request, "ssHeld", -1);
+		
+		model.put(WebKeys.RECORDS_DIV_ID, recordsDivId);
+		model.put(WebKeys.URL_BINDER_ID, binderId);
+		model.put(WebKeys.URL_ENTRY_ID, entryId);
+		model.put(WebKeys.NAMING_PREFIX, namespace);
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		if (held == -1) {
+			if (portletSession.getAttribute("ssMeetingRecordsHeld") != null) {
+				held = (Integer)portletSession.getAttribute("ssMeetingRecordsHeld");
+			}
+		}
+		if (held == -1) {
+			held = 31;
+		}
+		portletSession.setAttribute("ssMeetingRecordsHeld", held);
+		
+		
+		Map meetingAttachments = getIcBrokerModule().getUserMeetingAttachments(user.getZonName(), held);
+	
+		model.put("ss_meeting_records", meetingAttachments);
+		model.put("ssHeld", held);
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/meeting_records_return", model);
+	}
+	
+	private void ajaxAttacheMeetingRecords(ActionRequest request, ActionResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		Map formData = request.getParameterMap();
+		
+		
+		List meetingRecordIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, "ssMeetingRecordId"));
+		List meetingDocumentIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, "ssMeetingDocumentId"));
+		
+		// sort documents and records by meeting id
+		Map<String, Map<String, Object>> attachmentIds = new HashMap();
+		Iterator<String> meetingDocumentIdsIt = meetingDocumentIds.iterator();
+		while (meetingDocumentIdsIt.hasNext()) {
+			String meetingDocumentId = meetingDocumentIdsIt.next();
+			if (meetingDocumentId.indexOf("/") == -1) {
+				continue;
+			}
+			String meetingId = meetingDocumentId.substring(0, meetingDocumentId.indexOf("/"));
+			String documentId = meetingDocumentId.substring(meetingDocumentId.indexOf("/") + 1);
+			if (attachmentIds.get(meetingId) == null) {
+				attachmentIds.put(meetingId, new HashMap());
+				attachmentIds.get(meetingId).put("docs", new ArrayList());
+				attachmentIds.get(meetingId).put("records", new HashMap());
+				((Map)attachmentIds.get(meetingId).get("records")).put("add", new ArrayList());
+				((Map)attachmentIds.get(meetingId).get("records")).put("addAndDelete", new ArrayList());
+			}
+			((List)attachmentIds.get(meetingId).get("docs")).add(documentId);
+		}
+		
+		Iterator<String> meetingRecordIdsIt = meetingRecordIds.iterator();
+		while (meetingRecordIdsIt.hasNext()) {
+			String meetingRecordId = meetingRecordIdsIt.next();
+			String meetingRecordOperation = PortletRequestUtils.getStringParameter(request, "ssMeetingRecordsOperation" + meetingRecordId, "");
+			if (!"".equals(meetingRecordOperation)) {
+				String meetingId = meetingRecordId.substring(0, meetingRecordId.indexOf("-"));
+				if (attachmentIds.get(meetingId) == null) {
+					attachmentIds.put(meetingId, new HashMap());
+					attachmentIds.get(meetingId).put("docs", new ArrayList());
+					attachmentIds.get(meetingId).put("records", new HashMap());
+					((Map)attachmentIds.get(meetingId).get("records")).put("add", new ArrayList());
+					((Map)attachmentIds.get(meetingId).get("records")).put("addAndDelete", new ArrayList());
+				}
+				((List)((Map)attachmentIds.get(meetingId).get("records")).get(meetingRecordOperation)).add(meetingRecordId);
+			}
+		}
+		
+		List<DocumentDownload> documents = new ArrayList();
+		
+		Iterator<Map.Entry<String, Map<String, Object>>> attachmentIdsIt = attachmentIds.entrySet().iterator();
+		while (attachmentIdsIt.hasNext()) {
+			Map.Entry<String, Map<String, Object>> meetingAttachments = attachmentIdsIt.next();
+			String meetingId = meetingAttachments.getKey();
+			Map<String, Object> recordsAndDocs = meetingAttachments.getValue();
+			List docIds  = (List)recordsAndDocs.get("docs");
+			List addRecords = (List)((Map)recordsAndDocs.get("records")).get("add");
+			List addAndDeleteRecords = (List)((Map)recordsAndDocs.get("records")).get("addAndDelete");
+			
+			Map meetingRecords = getIcBrokerModule().getMeetingRecords(meetingId);
+			List meetingDocs = getIcBrokerModule().getDocumentList(meetingId);
+			
+			// list add records
+			Iterator<String> addRecordsIt = addRecords.iterator();
+			while (addRecordsIt.hasNext()) {
+				String recordId = addRecordsIt.next();
+				Map recordsToAddAsMap = (Map)meetingRecords.get(recordId);
+				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "add", (List)recordsToAddAsMap.get(RecordType.flash.name())));
+				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "add", (List)recordsToAddAsMap.get(RecordType.audio.name())));
+				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "add", (List)recordsToAddAsMap.get(RecordType.chat.name())));
+			}
+			
+			// list addAndDelete records
+			Iterator<String> addAndDeleteRecordsIt = addAndDeleteRecords.iterator();
+			while (addAndDeleteRecordsIt.hasNext()) {
+				String recordId = addAndDeleteRecordsIt.next();
+				Map recordsToAddAndDeleteAsMap = (Map)meetingRecords.get(recordId);
+				
+				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "addAndDelete", (List)recordsToAddAndDeleteAsMap.get(RecordType.flash.name())));
+				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "addAndDelete", (List)recordsToAddAndDeleteAsMap.get(RecordType.audio.name())));
+				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "addAndDelete", (List)recordsToAddAndDeleteAsMap.get(RecordType.chat.name())));
+			}
+			
+            // Prune originals if merged version exists
+			//
+			// Zon meeting archiver stores original files as
+			//   foo.jpg
+			// Any markup is then applied and the file is called
+			//   foo.jpg.merged
+			//
+			// If no markup has occurred, only the bare jpg file is
+			// there.  So we walk through the array looking for merged
+			// files and removing the original from the list to retrieve.
+			List docsToRemove = new ArrayList();
+			Iterator<List> meetingDocsIt = meetingDocs.iterator();
+			while (meetingDocsIt.hasNext()) {
+				List<String> doc = meetingDocsIt.next();
+				String docId = doc.get(0);
+				if (docId.endsWith(".merged")) {
+					docsToRemove.add(docId.substring(0, docId.length() - 7));
+				}
+			}
+			
+			// collect documents list
+			meetingDocsIt = meetingDocs.iterator();
+			while (meetingDocsIt.hasNext()) {
+				List<String> doc = meetingDocsIt.next();
+				String docId = doc.get(0);
+				if (docsToRemove.contains(docId)) {
+					continue;
+				}
+				
+				String shortId = docId;
+				if (docId.indexOf("/") > -1) {
+					shortId = docId.substring(0, docId.indexOf("/"));
+				}
+				if (docIds.contains(shortId) && 
+						(docId.endsWith(".jpg") || 
+						docId.endsWith(".jpg.merged") || 
+						docId.endsWith(".gif"))) {
+					documents.add(DocumentDownload.fromDocument(meetingId, doc));
+				}
+			}
+		}
+		
+		Map fileMap = new HashMap();
+		int fileCounter = 1;
+		Iterator<DocumentDownload> documentsIt = documents.iterator();
+		while (documentsIt.hasNext()) {
+			DocumentDownload doc = documentsIt.next();
+			if (doc.getType() != null && doc.getType().equals(RecordType.flash)) {
+				doc.setUrl(doc.getUrl().substring(0, doc.getUrl().lastIndexOf("/") + 1) + "movie.zip");
+			}
+			
+			HttpClient httpClient = new HttpClient();
+			GetMethod getMethod = new GetMethod(doc.getUrl());
+			getMethod.setRequestHeader("Authorization", "Basic " + getIcBrokerModule().getBASE64AuthorizationToken());			
+			try{
+
+		          //execute the method
+		          int statusCode =
+		                 httpClient.executeMethod(getMethod);
+
+		          if (statusCode != 200) {
+		        	  continue;
+		          }
+
+		          //get the resonse as an InputStream
+		          InputStream in =
+		                 getMethod.getResponseBodyAsStream();
+
+		          String prefix = "";
+		          String orginalFileName = "";
+		          if (doc.getType() == null) {
+		        	  prefix = doc.getId().substring(doc.getId().indexOf("/") + 1, doc.getId().length());
+		        	  if (prefix.endsWith(".merged")) {
+		        		  prefix = prefix.substring(0, prefix.indexOf(".merged"));
+		        	  }
+		        	  orginalFileName = doc.getMeetingId() + " " + prefix;
+		        	  prefix += "_";
+		          } else if (doc.getType().equals(RecordType.flash)) {
+		        	  prefix = doc.getMeetingId() + "_movie.zip_";
+		        	  orginalFileName = doc.getMeetingId() + " movie.zip";
+		          } else if (doc.getType().equals(RecordType.audio)) {
+		        	  prefix = doc.getMeetingId() + "_audio.mp3_";
+		        	  orginalFileName = doc.getMeetingId() + " audio.mp3";
+		          } else if (doc.getType().equals(RecordType.chat)) {
+			       	  prefix = doc.getMeetingId() + "_chat.txt_";
+			       	  orginalFileName = doc.getMeetingId() + " chat.txt";
+			      } else {
+			    	  continue;
+			      }
+		          
+		          File file = TempFileUtil.createTempFileWithContent(prefix, in);
+		          fileMap.put("ss_attachFile" + fileCounter++, new SimpleMultipartFile(orginalFileName, TempFileUtil.openTempFile(file.getName())));
+
+		          in.close();
+
+			} catch(HttpException e){
+				logger.error(e);
+			} catch(IOException e){
+				logger.error(e);
+			} finally{
+				//release the connection
+				getMethod.releaseConnection();
+			}
+		}
+		
+		String strFilesErrors = "";
+		try {
+			getFolderModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, new HashSet(), null);
+		} catch (WriteFilesException wf) {
+			strFilesErrors = wf.toString();
+		}
+		
+		if ("".equals(strFilesErrors)) {
+			documentsIt = documents.iterator();
+			while (documentsIt.hasNext()) {
+				DocumentDownload doc = documentsIt.next();
+		          if (doc.getOperation() != null && doc.getOperation().equals("addAndDelete")) {
+		        	  getIcBrokerModule().removeRecordings(doc.getMeetingId(), doc.getOrginalUrl());
+		          }
+			}
+		}
+		
+	}
+	
+	
 }

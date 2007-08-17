@@ -2968,6 +2968,7 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	//alert("Inside ss_showAddAttachmentBrowse...");
 
 	ss_hideAddAttachmentDropbox(entryId, namespace);
+	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
 	
 	setURLInIFrame(binderId, entryId, namespace);
 	
@@ -3058,7 +3059,7 @@ function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
 
 function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	ss_hideAddAttachmentBrowse(entryId, namespace);
-
+	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
 	var url = ss_baseAjaxRequest;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
@@ -3082,6 +3083,67 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	divObj.style.height = "100px";
 
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+}
+
+function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
+	//alert("Inside ss_showAddAttachmentBrowse...");
+
+	ss_hideAddAttachmentDropbox(entryId, namespace);
+	ss_hideAddAttachmentBrowse(entryId, namespace);
+	
+	var divId = 'ss_div_attach_meeting_records' + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	ss_showDiv(divId);
+	
+	var contentDivId = 'ss_div_attach_meeting_records_content' + entryId + namespace;
+	var contentDivObj = document.getElementById(divId);
+	ss_toggleAjaxLoadingIndicator(contentDivId);
+
+	// contentDivObj.style.height = "120px";
+	
+	var url = ss_musterUrl;
+	url = ss_replaceSubStr(url, "ss_operation_place_holder",  "get_meeting_records");
+	url += "\&recordsDivId=" + contentDivId;
+	url += "\&binderId=" + binderId;
+	url += "\&entryId=" + entryId;
+	if (held) {
+		url += "\&ssHeld=" + held;
+	}
+	url += "\&ssNamespace=" + namespace;
+	url += "\&randomNumber="+ss_random++;
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.sendRequest();  //Send the request
+	
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+}
+
+function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
+	var divId = 'ss_div_attach_meeting_records' + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}
+
+function ss_attacheMeetingRecords(formId, binderId, entryId, namespace) {
+	var url = ss_musterUrl;
+	url = ss_replaceSubStr(url, "ss_operation_place_holder",  "attache_meeting_records");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addFormElements(formId);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.setData("binderId", binderId);
+	ajaxRequest.setData("entryId", entryId);
+	ajaxRequest.setData("namespace", namespace);
+	ajaxRequest.setPostRequest(ss_hideAddAttachmentMeetingRecordsAndAJAXCall);	
+	ajaxRequest.sendRequest();
+	ss_toggleAjaxLoadingIndicator(formId, true);
+}
+
+function ss_hideAddAttachmentMeetingRecordsAndAJAXCall(obj) {
+	var binderId = obj.getData("binderId");
+	var entryId = obj.getData("entryId");
+	var namespace = obj.getData("namespace");
+	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
+	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
 
 function escapeAppletFileURL(s) {
@@ -4970,7 +5032,7 @@ function ss_toggleAjaxLoadingIndicator(obj, append) {
 	if (!divObj) return;
 			
 	var imgObj = document.createElement("img");
-	imgObj.setAttribute("src", "/ssf/images/pics/ajax-loader.gif");
+	imgObj.setAttribute("src", ss_imagesPath + "pics/ajax-loader.gif");
 	imgObj.setAttribute("border", "0");
 	imgObj.setAttribute("style" , "vertical-align: middle; ");
 
@@ -5306,9 +5368,8 @@ function ss_stopSpinner()
 dojo.require("dojo.html.iframe");
 
 function ss_showSavedQueriesList(relObj, divId) {
-	var url = ss_AjaxBaseUrl;
-	url += "&operation=list_saved_queries";
-	url += "&randomNumber="+ss_random++;
+	var url = ss_musterUrl;
+	url = ss_replaceSubStr(url, "ss_operation_place_holder",  "list_saved_queries");
 	if (dojo.html.isDisplayed(divId)) {
 		dojo.lfx.html.fadeHide(divId, 100).play();
 		//dojo.html.hide(divId);

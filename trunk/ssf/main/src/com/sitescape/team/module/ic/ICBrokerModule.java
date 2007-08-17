@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.module.ic;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -39,6 +41,23 @@ public interface ICBrokerModule {
 
 	public String addMeeting(Set memberIds, Binder binder,
 			Entry entry, String password, int scheduleTime, String forumToken, int[] meetingType) throws ICException;
+	
+	public Map getMeetingRecords(String meetingId) throws ICException;
+	
+	public List getDocumentList(String meetingId) throws ICException;
+	
+	public List findUserMeetings(String screenName) throws ICException;
+	
+	/**
+	 * 
+	 * @param held - <code>-1</code> - none 
+	 */
+	public Map getUserMeetingAttachments(String screenName, int held) throws ICException;
+	
+	public boolean removeRecordings(String meetingId, String recordingURL) throws ICException;
+		
 	public boolean isEnabled();
 
+	public String getBASE64AuthorizationToken();
+	
 }
