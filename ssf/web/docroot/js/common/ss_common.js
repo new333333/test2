@@ -3325,7 +3325,7 @@ function ss_showPortletEntryInIframe(url, entityType, namespace) {
     	wObj.src = url
     }
 
-	//if (self.ss_positionEntryDiv) ss_positionEntryDiv();
+	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 
