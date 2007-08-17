@@ -161,6 +161,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) {
 				ajaxShowHideSidebarPanel(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SHOW_BUSINESS_CARD) || 
+					op.equals(WebKeys.OPERATION_HIDE_BUSINESS_CARD)) {
+				ajaxShowHideBusinessCard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_UI_THEME)) {
 				ajaxSetUiTheme(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
@@ -779,6 +782,23 @@ public class AjaxController  extends SAbstractControllerRetry {
 		getProfileModule().setUserProperty(user.getId(), 
 					ObjectKeys.USER_PROPERTY_SIDEBAR_PANEL_PREFIX + panelId, showPanel);
 	}
+
+	
+	private void ajaxShowHideBusinessCard(ActionRequest request,
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String opScope = PortletRequestUtils.getStringParameter(request, "scope", "");
+		String scope = "mine";
+		if (opScope.equals("other")) {
+			scope = "other";
+		}
+		Boolean showBC = Boolean.TRUE;
+		if (op.equals(WebKeys.OPERATION_HIDE_BUSINESS_CARD)) showBC = Boolean.FALSE;
+		getProfileModule().setUserProperty(user.getId(), 
+					ObjectKeys.USER_PROPERTY_BUSINESS_CARD_PREFIX + scope, showBC);
+	}
+
 
 	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
 			ActionResponse response) throws Exception {

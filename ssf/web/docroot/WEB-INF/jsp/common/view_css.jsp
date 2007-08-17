@@ -55,7 +55,6 @@ var ss_defaultStyleSheet;
 var ss_forumCssUrl;
 var ss_forumColorsCssUrl;
 var ss_helpSystemUrl;
-var ss_addTabUrl;
 var ss_not_logged_in;
 var ss_rtc_not_configured;
 var ss_confirmDeleteFolderText;
@@ -133,39 +132,22 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		<ssf:param name="operation" value="show_sidebar_panel" />
 		</ssf:url>";
 
+	ss_hideBusinessCardUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="hide_business_card" />
+		</ssf:url>";
 
+	ss_showBusinessCardUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="show_business_card" />
+		</ssf:url>";
 	
-	
-	ss_addTabUrl = "<ssf:url 
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="add_tab" />
-		<ssf:param name="binderId" value="ss_binderid_place_holder" />
-		<ssf:param name="entryId" value="ss_entryid_place_holder" />
-		<ssf:param name="tabId" value="ss_tabid_place_holder" />
-		<ssf:param name="type" value="ss_tab_type_place_holder" />
-		</ssf:url>";
-
-	ss_deleteTabUrl = "<ssf:url 
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="delete_tab" />
-		<ssf:param name="tabId" value="ss_tabid_place_holder" />
-		</ssf:url>";
-
-	ss_setCurrentTabUrl = "<ssf:url 
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="set_current_tab" />
-		<ssf:param name="tabId" value="ss_tabid_place_holder" />
-		</ssf:url>";
-
 	ss_musterUrl = "<ssf:url 
 		adapter="true" 
 		portletName="ss_forum" 

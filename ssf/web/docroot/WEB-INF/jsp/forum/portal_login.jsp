@@ -13,8 +13,8 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
-<html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
 <head>
 <c:set var="ss_notAdapter" value="1" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>

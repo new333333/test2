@@ -187,7 +187,7 @@ function getTimeMilliseconds(formName, id) {
 
 </script>
 
-<table class="ss_style" border="0" cellpadding="0" cellspacing="1">
+<table class="ss_style" border="0" cellpadding="0" style="border-spacing: 1px;">
  <tr>
   <td class="content" align="center">
 <select name="${prefix}_hour" size="1" id="${prefix}_hour"

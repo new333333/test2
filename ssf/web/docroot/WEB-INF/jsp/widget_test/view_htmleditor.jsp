@@ -65,7 +65,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 	<table cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table align=center border="0" cellpadding="3" cellspacing="3">
+			<table align=center border="0" cellpadding="3"  style="border-spacing: 3px;"">
 			<tr>
 				<td>
 					First editor:

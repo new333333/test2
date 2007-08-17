@@ -22,7 +22,7 @@
    <input type="radio"  name="schedType" id="schedType" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
    <span class="ss_labelRight"><ssf:nlt tag="schedule.weekly"/></span>
    <br/>
-   <table class="ss_style" border="0" cellpadding="0" cellspacing="2">
+   <table class="ss_style" border="0" cellpadding="0" style="border-spacing: 2px;">
 	  <tr><td >&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	<td ><label>
 	<input type="checkbox"  name="onday_sun" id="onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/><br/>

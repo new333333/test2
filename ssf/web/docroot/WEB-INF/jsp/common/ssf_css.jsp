@@ -262,6 +262,11 @@ div.ss_replies div.ss_entryDescription {
   background-color: ${ss_style_background_color};
  
   }
+
+.ss_content_rule {
+	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
+}
+
 .ss_style_color {
 	border-left: solid 1px ${ss_style_border_color_dark_hue};
 	border-right: solid 1px ${ss_style_border_color_dark_hue};
@@ -309,7 +314,10 @@ div.ss_global_toolbar_quick input {
   padding: 0px;
   font-size: ${ss_style_font_normalprint};
   font-family: ${ss_style_folder_view_font_family};  
-  }
+  border-style: solid;
+  border-width: 1px;
+  border-color: ${ss_style_text_field_border_color};
+}
 
 
 .ss_form input.ss_text { 
@@ -803,13 +811,18 @@ DIV.ss_help_style P {
 DIV.ss_help_style UL LI {
     margin-top: 3px;
     margin-bottom: 6px;
-    margin-left: 10px;
+    margin-left: 25px;
+    list-style-type: square;
+    list-style-position: outside;
+    list-style-image: none;
 }
 
 DIV.ss_help_style OL LI {
     margin-top: 3px;
     margin-bottom: 6px;
-    margin-left: 0px;
+    margin-left: 25px;
+    list-style-position: outside;
+    list-style-type: decimal;
 }
 
 DIV.ss_help_style LI P {
@@ -1761,7 +1774,7 @@ div.ss_box_top_rounded {
 
 
 /* -------------------Skins-------------------- */
-.ss_content_outer {
+div.ss_content_outer {
     position: relative;
 	padding-bottom:20px;
 	margin-top:1px;
@@ -1787,6 +1800,14 @@ div.ss_box_top_rounded {
 	height:1px;
 	font-size:0px;
 }
+
+
+div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_body table, table.ss_popup {
+	border-collapse: separate;
+	border-spacing: 0px;
+}
+
+
 /* round corners: */
 
 .ss_decor-border5{
@@ -2078,6 +2099,7 @@ div.ss_global_toolbar_search_text span {
 
 td.ss_view_sidebar {
     width: 200px;
+    background-color: ${ss_style_background_color_side_panel};
 }
 
 td.ss_view_info {
@@ -3619,7 +3641,7 @@ div.ss_profile_photo_box_empty {
 	background-repeat: no-repeat;
 }
 
-div.ss_profile_info_box {
+td.ss_profile_info_box {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_info.gif);
     background-position:  center;
