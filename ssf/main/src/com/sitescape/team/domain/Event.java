@@ -48,20 +48,32 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import net.fortuna.ical4j.model.Dur;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.Transp;
+
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 
+import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
 import com.sitescape.team.ObjectKeys;
+import com.sun.star.beans.GetDirectPropertyTolerantResult;
 
 /**
  * <code>Recurrence</code> represents a recurring interval of time. It
@@ -251,6 +263,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	protected String name;
 	
+	// used only as flag: 
+	// null - all day(s) event
+	// not null - NOT all day(s) event
 	protected TimeZone timeZone;
 	
 
@@ -2929,6 +2944,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			// see if untils match
 			if (getCount() == -1) {
 				if (!getUntil().equals(newEvent.getUntil())) {
+					setCount(0);// getCount() == -1 means count == -1 OR count == 0, reset it
 					setUntil(newEvent.getUntil());
 					changed = true;
 				}
@@ -3083,157 +3099,66 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * 				second one is end date
 	 */
 	public List getAllRecurrenceDates() {
-		if (!this.isAllDayEvent()) {
-			Event eventClone = (Event)this.clone();
-			eventClone.convertToSavedTimeZone();
-			return eventClone.getAllRecurrenceDatesWithCurrentTimeZone();
-		} else {
-			// all day events (without duration) have no time zone
-			return getAllRecurrenceDatesWithCurrentTimeZone();	
-		}
-	}
-
-	/**
-	 * Gets a list of all recurrences until <code>until</code> date (or <code>count</code>).
-	 * 
-	 * If we do not reach <code>count</code> recurrences before we reach
-	 * <code>max_count_time</code>, or before we have tried
-	 * <code>max_count_loops</code> candidate start times, set
-	 * <code>until</code> to <code>max_count_time</code>.
-
-	 * @return "all" recurrences list. each list element is a 2-element long table, first table element is start date, 
-	 * 				second one is end date
-	 */
-	protected List getAllRecurrenceDatesWithCurrentTimeZone() {
-		boolean debug = false;
 		List result = new ArrayList();
-
-		int starts_found = 0;
-		int intCount = count != 0 ? count : max_count_loops;
 		
-		int loops;
-
-		Calendar candidate;
-
-		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < 100000
-				&& candidate.getTime().getTime() < max_count_time; loops++, candidate
-				.add(Calendar.SECOND, 1)) {
-			long oldCandidateTime = candidate.getTime().getTime();
-			candidate = internalGetCandidateStartTime(candidate, true, debug);
-			
-			if (candidate == null) {
-				if (debug) {
-					System.err.println("No next candidate start");
-				}
-				break;
+		VEvent vEvent = null;
+		if (!isAllDayEvent()) {
+			net.fortuna.ical4j.model.DateTime start = new net.fortuna.ical4j.model.DateTime(getDtStart().getTime());
+			if (timeZone != null) {
+				// it's enough to set always GMT
+				start.setTimeZone(IcalModuleImpl.getTimeZone(getTimeZone(), "GMT"));
 			}
 
-			if (candidate.getTime().getTime() < oldCandidateTime) {
-				throw new IllegalStateException(
-						"Internal error: candidate < old candidate");
+			Dur duration = null;
+			if (getDuration().getWeeks() > 0) {
+				duration = new Dur(getDuration().getWeeks());
+			} else {
+				duration = new Dur(getDuration().getDays(), getDuration().getHours(), getDuration()
+						.getMinutes(), getDuration().getSeconds());
 			}
-
-			if (candidateIsInRecurrence(candidate, debug)) {
-				Calendar tempEnd = (Calendar) candidate.clone();
-				tempEnd.setTime(new Date(candidate.getTime().getTime()
-						+ duration.getInterval()));
-				
-				result.add(new Calendar[] { candidate, tempEnd });
-				
-				starts_found++;
-				if (starts_found == intCount) {
-					break;
-				}
-			}
-		}		
-		
-		if (result.isEmpty()) {
-			result.add(new Calendar[] { getDtStart(), getDtEnd() });
-		}
-
-		return result;
-	}
-	
-	/**
-	 * Gets the list of all event recurrence days. All dates are calculated in given time zone.
-	 * 
-	 * @return list of Calendar object instances 
-	 */
-	public List getAllEventDays() {
-		if (!this.isAllDayEvent()) {
-			Event eventClone = (Event)this.clone();
-			eventClone.convertToSavedTimeZone();
-			return eventClone.getAllEventDaysWithCurrentTimeZone();
+			vEvent = new VEvent(start, duration, "");
+			vEvent.getProperties().getProperty(Property.DTSTART)
+					.getParameters().add(Value.DATE_TIME);
 		} else {
-			// all day events (without duration) have no time zone
-			return getAllEventDaysWithCurrentTimeZone();
+			net.fortuna.ical4j.model.Date start = new net.fortuna.ical4j.model.Date(getDtStart().getTime());
+			net.fortuna.ical4j.model.Date end = (net.fortuna.ical4j.model.Date)start.clone();
+			if (getDtEnd() != null) {
+				end = new net.fortuna.ical4j.model.Date(getDtEnd().getTime());
+			}
+			end = new net.fortuna.ical4j.model.Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
+			vEvent = new VEvent(start, end, "");
+			vEvent.getProperties().getProperty(Property.DTSTART)
+					.getParameters().add(Value.DATE);
+			vEvent.getProperties().getProperty(Property.DTEND)
+					.getParameters().add(Value.DATE);
 		}
-	}
-	
-	protected List getAllEventDaysWithCurrentTimeZone() {
-		boolean debug = false;
-		List result = new ArrayList();
-
-		int starts_found = 0;
-		int loops;
 		
-		int intCount = count != 0 ? count : max_count_loops;
-
-		Calendar candidate;
-
-		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < 100000
-				&& candidate.getTime().getTime() < max_count_time; loops++, candidate.add(Calendar.SECOND, 1)) {
-			long oldCandidateTime = candidate.getTime().getTime();
-			
-			candidate = internalGetCandidateStartTime(candidate, true, debug);
-			
-			if (candidate == null) {
-				if (debug) {
-					System.err.println("No next candidate start");
-				}
-				break;
-			}
-
-			if (candidate.getTime().getTime() < oldCandidateTime) {
-				throw new IllegalStateException(
-						"Internal error: candidate < old candidate");
-			}
-
-			if (candidateIsInRecurrence(candidate, debug)) {
-				Calendar tempEnd = (Calendar) candidate.clone();
-				tempEnd.setTime(new Date(candidate.getTime().getTime()
-						+ duration.getInterval()));
-				
-				List datesBetween = getAllDatesBetween(candidate, tempEnd);
-				result.addAll(datesBetween);
-				candidate = (Calendar)((Calendar)datesBetween.get(datesBetween.size() - 1)).clone();
-				
-				starts_found++;
-				if (starts_found == intCount) {
-					break;
-				}
-			}
-			
-		}		
+		vEvent.getProperties().add(Transp.OPAQUE); // to be sure getConsumedTime works correctly
 		
-		if (result.isEmpty()) {
-			result.addAll(getAllDatesBetween(getDtStart(), getDtEnd()));
+		IcalModuleImpl.addRecurrences(vEvent, this);
+		
+		PeriodList periods = vEvent.getConsumedTime(new net.fortuna.ical4j.model.Date(getDtStart().getTime().getTime()-1), new net.fortuna.ical4j.model.Date(max_count_time), false);
+		
+		Iterator it = periods.iterator();
+		while (it.hasNext()) {
+			Period period = (Period)it.next();
+			
+			Calendar start = new GregorianCalendar();
+			start.setTime(period.getStart());
+			
+			Calendar end = new GregorianCalendar();
+			end.setTime(period.getEnd());
+			if (isAllDayEvent()) {
+				end.setTime(new org.joda.time.DateTime(period.getEnd()).minusDays(1).toDate());
+			}
+			
+			result.add(new Calendar[] { start, end }); 
 		}
-
+		
 		return result;
 	}
 
-	/**
-	 * Convert all intern keeped dates to given time zone.
-	 * 
-	 * @param timeZone
-	 */
-	private void convertToSavedTimeZone() {
-		this.dtStart = CalendarHelper.convertToTimeZone(this.dtStart, timeZone);
-		this.until = CalendarHelper.convertToTimeZone(this.until, timeZone);
-	}
-
-	private List getAllDatesBetween(Calendar start, Calendar end) {
+	private static List getAllDatesBetween(Calendar start, Calendar end) {
 		List result = new ArrayList();
 		
 		Calendar date = (Calendar)start.clone();
@@ -3253,6 +3178,30 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		YearMonthDay start = new DateTime(getDtStart()).toYearMonthDay();
 		YearMonthDay end = new DateTime(getDtEnd()).toYearMonthDay();
 		return (start).equals(end);
+	}
+
+	public static List getEventDaysFromRecurrencesDates(List recurencesDates) {
+		List result = new ArrayList();
+		
+		if (recurencesDates == null) {
+			return result;
+		}
+		
+		Iterator it = recurencesDates.iterator();
+		while (it.hasNext()) {
+			Calendar[] eventDates = (Calendar[]) it.next();
+			result.addAll(getAllDatesBetween(eventDates[0], eventDates[1]));
+		}
+		
+		return result;
+	}
+
+	public void setAllDaysEvent(boolean allDaysEvent) {
+		if (allDaysEvent) {
+			setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+		} else {
+			setTimeZone(null);
+		}
 	}
 
 }

@@ -1692,9 +1692,8 @@ var ss_calendar_import = {
 	},
 	
 	uploadFile : function () {
-		var url = ss_AjaxBaseUrl;
-		url += "\&operation=uploadICalendarFile";
-		url += "\&randomNumber="+ss_random++;
+		var url = ss_musterUrl;
+		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "uploadICalendarFile");
 		dojo.debug("uploadFile");
 		dojo.io.bind({
 	    	url: url,
