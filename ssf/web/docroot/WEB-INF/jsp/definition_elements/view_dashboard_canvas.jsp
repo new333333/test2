@@ -160,7 +160,7 @@ function ss_showForumEntryInIframe_Overlay(url, entityType) {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
      
 	if (wObj1 == null){
-		checkLinkAndCallPopup(url, entityType);
+		ss_checkLinkAndCallPopup(url, entityType);
 		return true;
 	}
 	
@@ -187,7 +187,7 @@ function ss_showForumEntryInIframe_Overlay(url, entityType) {
     return false;
 }
 
-function checkLinkAndCallPopup(url, entityType) {
+function ss_checkLinkAndCallPopup(url, entityType) {
 	if (menuLinkAdapterURL && menuLinkAdapterURL == "") {
 		menuLinkAdapterURL = url;
 	} else {

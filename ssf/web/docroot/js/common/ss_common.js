@@ -3224,7 +3224,7 @@ function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityTy
 
 function ss_showPortletEntryInIframe(url, entityType, namespace) {
 	//Close a pre-existing div, this may be some div that is showing up from someother portlet
-	if (ss_selectedDiv != null) {
+	if (typeof(ss_selectedDiv) != "undefined" && ss_selectedDiv != null) {
     	ss_selectedDiv.style.visibility = "hidden";
     	ss_selectedDiv.style.display = "none";
 	    ss_showSpannedAreas();
@@ -3236,11 +3236,6 @@ function ss_showPortletEntryInIframe(url, entityType, namespace) {
 	ss_box_iframe_name = namespace + "_portlet_overlay_inner_iframe";
 	ss_selectedIframeForm = namespace + "_ss_saveEntryWidthForm";
 	ss_selectedPortletNamespace = namespace;
-	
-	if (portletOverlayDiv == null || portletOverlayDiv == null || portletOverlayDiv == null) {
-		alert("Not able to identify the overlay to display");
-		return false;
-	}
 	
 	ss_selectedDiv = portletOverlayDiv;
 	ss_selectedInternalDiv = portletOverlayInnerDiv;
