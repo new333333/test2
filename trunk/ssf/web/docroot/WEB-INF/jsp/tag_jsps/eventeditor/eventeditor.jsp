@@ -42,13 +42,13 @@
 <script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
 <c:set var="prefix" value="${evid}" />
 
-<c:set var="timeZoneID" value="GMT"/>
-<c:if test="${!empty initEvent.timeZone}">
-	<c:set var="timeZoneID" value="${initEvent.timeZone.ID}" />
-</c:if>
-<c:if test="${empty initEvent}">
-	<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
-</c:if>
+<%
+	// Tests:
+	// - create event
+	// - event created in time zone 1 and updated into time zone 2
+	// - event imported in time zone 1 and updated into time zone 2
+%>
+<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
 
 <table class="ss_style">
 	<tr>

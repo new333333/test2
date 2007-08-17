@@ -346,14 +346,16 @@ public class EntityIndexUtils {
 			if (att.getValueType() == CustomAttribute.EVENT) {
 				// set the event name to event + count
 				Event event = (Event)att.getValue();
-				entryEventsDates.addAll(event.getAllEventDays());
+				List recurencesDates = event.getAllRecurrenceDates();
+				List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
+				entryEventsDates.addAll(allEventDays);
 								
 				if (att.getValue() != null) {
 					doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 					count++;
 				}
-				doc.add(getRecurrenceDatesField(event));
+				doc.add(getRecurrenceDatesField(event, recurencesDates));
 			}
 		}
 		
@@ -379,9 +381,9 @@ public class EntityIndexUtils {
 		return new Field(EVENT_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.TOKENIZED);
 	}
 	
-	private static Field getRecurrenceDatesField(Event event) {
+	private static Field getRecurrenceDatesField(Event event, List recurencesDates) {
 		StringBuilder sb = new StringBuilder();
-		Iterator it = event.getAllRecurrenceDates().iterator();
+		Iterator it = recurencesDates.iterator();
 		while (it.hasNext()) {
 			Calendar[] eventDates = (Calendar[]) it.next();
 			sb.append(DateTools.dateToString(eventDates[0].getTime(), DateTools.Resolution.MINUTE));
