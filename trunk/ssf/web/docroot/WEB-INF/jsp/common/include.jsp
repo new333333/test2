@@ -32,7 +32,8 @@ if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() 
 	--%><c:if test="${empty ssf_support_files_loaded}"><%--
 	    --%><c:set var="ssf_support_files_loaded_flag" value="1"/><%--
 	    --%><c:if test="${empty ssf_snippet}"><%--
-	        --%><html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable"><%--
+            --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><%--
+	        --%><html><%--
 	        --%><head><%--
 	    --%></c:if><%--
 	--%></c:if><%--

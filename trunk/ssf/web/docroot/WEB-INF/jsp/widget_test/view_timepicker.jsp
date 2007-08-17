@@ -82,7 +82,7 @@ This test page shows timepickers for the current date and an unspecified date.
 	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr>
 		<td>
-			<table class="ss_style" align=center border="0" cellpadding="3" cellspacing="3">
+			<table class="ss_style" align=center border="0" cellpadding="3"  style="border-spacing: 3px;"">
 			<tr>
 				<td>
 					First timepicker:<br>

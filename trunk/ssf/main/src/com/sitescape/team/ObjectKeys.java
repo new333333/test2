@@ -192,6 +192,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
     public static final String USER_PROPERTY_SAVED_SEARCH_QUERIES="userSearchQueries";
     public static final String USER_PROPERTY_SIDEBAR_PANEL_PREFIX="sidebarPanelShow_";
+    public static final String USER_PROPERTY_BUSINESS_CARD_PREFIX="businessCardShow_";
 
     
     //workflow definition names

@@ -35,7 +35,7 @@
 </table>
 */
 %>
-<table cellspacing="10px" cellpadding="10px" width="100%">
+<table cellpadding="10px" width="100%" style="border-spacing: 10px;">
 
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 

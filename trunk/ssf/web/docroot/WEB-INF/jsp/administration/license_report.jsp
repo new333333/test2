@@ -85,7 +85,7 @@ Current user count: ${currentUser}
 <p class="ss_bold">
 Usage History
 </p>
-<table cellspacing="2"><tbody>
+<table syle="border-spacing: 2px;"><tbody>
 <tr>
 <th>Date</th><th>Registered</th><th>External</th><th>Check</th>
 </tr>

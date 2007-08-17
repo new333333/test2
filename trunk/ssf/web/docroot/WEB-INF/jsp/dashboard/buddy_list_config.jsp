@@ -18,7 +18,7 @@
 	<fieldset class="ss_fieldset">
 		<legend class="ss_legend"><ssf:nlt tag="presence.configure.buddies" text="Buddies"/></legend>
 
-		<table cellspacing="10px" cellpadding="10px" width="100%">
+		<table cellpadding="10px" width="100%" style="border-spacing: 10px;">
 			<tr>
 				<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 				<td valign="top">

@@ -567,10 +567,10 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 	ss_showHide(divId);
 	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
 		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
-		recordUrl = ss_hideSidebarPanelUrl
+		recordUrl = ss_hideSidebarPanelUrl;
 	} else {
 		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
-		recordUrl = ss_showSidebarPanelUrl
+		recordUrl = ss_showSidebarPanelUrl;
 	}
 	if (sticky) {
 		recordUrl += "&id=" + id;
@@ -589,6 +589,31 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 	}
 }
 
+
+function ss_showHideBusinessCard(op, scope) {
+	if (op == "show") {
+		dojo.html.hide("ss_smallBusinessCard");
+		dojo.html.show("ss_largeBusinessCard");
+		recordUrl = ss_showBusinessCardUrl;
+	} else {
+		dojo.html.hide("ss_largeBusinessCard");
+		dojo.html.show("ss_smallBusinessCard");
+		recordUrl = ss_hideBusinessCardUrl;
+	}
+	recordUrl += "&scope=" + scope;
+	var bindArgs = {
+    	url: recordUrl,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+		},
+		preventCache: true,				
+		mimetype: "text/xml",
+		method: "get"
+	};   
+	dojo.io.bind(bindArgs);
+}
 
 
 //Routine to set the opacity of a div
@@ -4106,9 +4131,9 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	if (divId == '') {
     m += '<div style="position: relative; opacity: 0.95; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
-        m += '<table class="ss_style ss_graymenu ss_nowrap" border="0" cellspacing="0" cellpadding="3">';
+        m += '<table class="ss_style ss_graymenu ss_nowrap" border="0" style="border-spacing: 3px 1px;">';
 	} else {
-        m += '<table class="ss_nowrap ss_transparent" border="0" cellspacing="0" cellpadding="3">';
+        m += '<table class="ss_nowrap ss_transparent" border="0" style="border-spacing: 3px 1px;">';
     }
 
     m += '<tr>';

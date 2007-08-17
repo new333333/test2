@@ -144,7 +144,7 @@ function ss_userListInterceptCR(e) {
 </script>
 <c:set var="ss_user_list_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
-<table class="ss_style" cellspacing="2px" cellpadding="5px">
+<table class="ss_style" cellpadding="5px" style="border-spacing: 2px";>
 <tr>
 <td valign="top">
 <div>

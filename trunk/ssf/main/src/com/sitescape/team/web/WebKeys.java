@@ -337,6 +337,8 @@ public class WebKeys {
 	public static final String OPERATION_HIDE_HELP_CPANEL = "hide_help_cpanel";
 	public static final String OPERATION_SHOW_SIDEBAR_PANEL = "show_sidebar_panel";
 	public static final String OPERATION_HIDE_SIDEBAR_PANEL = "hide_sidebar_panel";
+	public static final String OPERATION_SHOW_BUSINESS_CARD = "show_business_card";
+	public static final String OPERATION_HIDE_BUSINESS_CARD = "hide_business_card";
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
@@ -630,6 +632,8 @@ public class WebKeys {
     public static final String PROFILE_CONFIG_DEFINITION="ssProfileConfigDefinition";
     public static final String PROFILE_CONFIG_JSP_STYLE="ssProfileConfigJspStyle";
     public static final String PROFILE_CONFIG_ENTRY="ssProfileConfigEntry";
+    public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
+    public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
     public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_BINDER_DEFINITIONS="ssPublicBinderDefinitions";
     public static final String PUBLIC_BINDER_ENTRY_DEFINITIONS="ssPublicBinderEntryDefinitions";
