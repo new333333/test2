@@ -83,15 +83,6 @@
           <property name="required" value="false"/>
         </properties>
       </item>
-      <item name="text" caption="__text" type="data" category="commonEntryData" id="29">
-        <properties>
-          <property name="name" value="duration"/>
-          <property name="caption" value="__task_planned_duration"/>
-          <property name="width" value="50"/>
-          <property name="inline" value="true"/>
-          <property name="required" value="false"/>
-        </properties>
-      </item>
       <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="30">
         <properties>
           <property name="name" value="status"/>
@@ -277,12 +268,6 @@
       <properties>
         <property name="name" value="assignment"/>
         <property name="caption" value="__task_assigned_to"/>
-      </properties>
-    </item>
-    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="50" formItem="text">
-      <properties>
-        <property name="name" value="duration"/>
-        <property name="caption" value="__task_planned_duration"/>
       </properties>
     </item>
     <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="51" formItem="selectbox">
