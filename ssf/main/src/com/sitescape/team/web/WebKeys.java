@@ -361,6 +361,10 @@ public class WebKeys {
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
+	
+	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
+	
+	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
@@ -636,6 +640,7 @@ public class WebKeys {
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
+    public static final String RECORDS_DIV_ID="ss_recordsDivId";
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String RELOAD_URL_FORCED="ssReloadUrl";
     public static final String REPLY_BLOG_URL="replyBlogUrl";

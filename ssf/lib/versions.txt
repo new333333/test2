@@ -27,6 +27,7 @@ iCal4j 1.0-beta2
 Jackrabbit API 1.3
 Jackrabbit JCR COmmons 1.3
 Jackrabbit Core 1.3
+Jakarta Taglibs Standard 1.1
 Jaxen 1.1-beta-7
 JAXRPC 1.1
 JBoss App Server 4.2.1.GA jbosssx.jar
