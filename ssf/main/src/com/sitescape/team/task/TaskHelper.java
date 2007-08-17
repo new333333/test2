@@ -158,14 +158,17 @@ public class TaskHelper {
 			DateTime dateTime = (new DateTime(userTimeZone)).toDateMidnight().toDateTime();
 			dateTime.withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
+			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		} else if (filterType.equals(FilterType.WEEK)) {
 			DateTime dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusWeeks(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
+			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		} else if (filterType.equals(FilterType.MONTH)) {
 			DateTime dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusMonths(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
+			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		}
 		
 		return searchFilter;
