@@ -125,7 +125,7 @@
 	
 		function displayTasks () {
 			clearTable();
-			for (var i in tasks) {
+			for (var i = 0; i < tasks.length; i++) {
 				displayTask(tasks[i]);
 			}
 		}
@@ -267,7 +267,7 @@
 			var tdObj = document.createElement('td');
 			var ulObj = document.createElement('ul');
 			tdObj.appendChild(ulObj);
-			for (var i in task.assigned) {
+			for (var i = 0; i < task.assigned.length; i++) {
 				var liObj = document.createElement('li');
 				liObj.appendChild(document.createTextNode(task.assigned[i]));
 				ulObj.appendChild(liObj);
@@ -279,7 +279,7 @@
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_status");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
-			for (var i in task.statuses) {
+			for (var i = 0; i < task.statuses.length; i++) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 				
@@ -319,8 +319,8 @@
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_priority");
 			dojo.html.setClass(tdObj, "ss_iconsContainer");
-				
-			for (var i in task.priorities) {
+			
+			for (var i = 0; i < task.priorities.length; i++) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 		    
@@ -330,13 +330,11 @@
 					dojo.html.setClass(hrefObj, "ss_taskPriority");			
 				}
 				
-			    function declareChangePriority(obj, taskId, newPriority) {		
+				dojo.event.connect(hrefObj, "onclick", function(obj, taskId, newPriority) {
 					return function() {
 						obj.changePriority(taskId, newPriority);
-					}
-				}
-				var callChangePriority = declareChangePriority(that, task.id, task.priorities[i].key);
-				dojo.event.connect(hrefObj, "onclick", callChangePriority);
+					}					
+				} (that, task.id, task.priorities[i].key));
 				
 				var imgObj= document.createElement('img');
 				
@@ -377,13 +375,12 @@
 			var hrefObj = document.createElement('a');
 			hrefObj.href = "javascript: // ;";
 		    
-		    function declareViewTask(obj, taskId) {		
+			var callViewTask = declareViewTask(that, task.id);
+			dojo.event.connect(hrefObj, "onclick", function(obj, taskId){
 				return function() {
 					obj.viewTask(taskId);
-				}
-			}
-			var callViewTask = declareViewTask(that, task.id);
-			dojo.event.connect(hrefObj, "onclick", callViewTask);
+				}				
+			}(that, task.id));
 			
 			if (!task.title || task.title == "") {
 				task.title = ss_noEntryTitleLabel;
