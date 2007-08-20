@@ -57,6 +57,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.BINDER_PARENT, "report.columns.parent");
 		columnNames.put(ReportModule.BINDER_TITLE, "report.columns.title");
 		columnNames.put(ReportModule.USER_ID, "report.columns.user");
+		columnNames.put(ReportModule.USER_TITLE, "report.columns.user");
 		columnNames.put(AuditTrail.AuditType.add.name(), "report.columns.add");
 		columnNames.put(AuditTrail.AuditType.view.name(), "report.columns.view");
 		columnNames.put(AuditTrail.AuditType.modify.name(), "report.columns.modify");
@@ -180,9 +181,24 @@ public class ReportDownloadController extends  SAbstractController {
 				columns = new String[] {ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("quota".equals(reportType)) {
-				hasUsers = false;
-				report = getReportModule().generateQuotaReport();
-				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_TITLE, ReportModule.SIZE};
+				String quotaOption = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_QUOTA_OPTION);
+				Long threshold = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_QUOTA_THRESHOLD);
+				ReportModule.QuotaOption option = ReportModule.QuotaOption.valueOf(quotaOption);
+				report = getReportModule().generateQuotaReport(option, threshold);
+				switch(option) {
+				case UsersOnly:
+					hasUsers = true;
+					columns = new String[] {ReportModule.USER_ID, ReportModule.SIZE};
+					break;
+				case WorkspacesOnly:
+					hasUsers = false;
+					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_TITLE, ReportModule.SIZE};
+					break;
+				case UsersAndWorkspaces:
+					hasUsers = true;
+					columns = new String[] {ReportModule.USER_ID, ReportModule.BINDER_TITLE, ReportModule.SIZE};
+					break;
+				}
 			}
 			printReport(response.getWriter(), report, columns, hasUsers);
 			response.getWriter().flush();

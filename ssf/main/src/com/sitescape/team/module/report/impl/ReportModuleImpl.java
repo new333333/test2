@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -428,7 +429,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 
-	private void accumulateValue(Map<String, Long> map, String key, Long value)
+	private void accumulateValue(Map<QKey, Long> map, QKey key, Long value)
 	{
 		long val = 0;
 		if(map.containsKey(key)) {
@@ -438,7 +439,46 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		map.put(key, new Long(val));
 	}
 	
-	public List<Map<String,Object>> generateQuotaReport() {
+	private class QKey implements Comparable<QKey> {
+		public String binderKey;
+		public Long userId;
+		
+		public QKey(String binderKey, Long userId) {
+			this.binderKey = binderKey;
+			this.userId = userId;
+		}
+		public boolean equals(Object o) {
+			if(o instanceof QKey) {
+				QKey other = (QKey) o;
+				return this.binderKey == other.binderKey &&
+					this.userId == other.userId;
+			}
+			return false;
+		}
+		
+		public int hashCode() {
+			int code = 0;
+			if(binderKey != null) {
+				code += binderKey.hashCode();
+			}
+			if(userId != null) {
+				code += userId.hashCode();
+			}
+			return code;
+		}
+		
+		public int compareTo(QKey other) {
+			int res = 0;
+			if(userId != null) {
+				res = userId.compareTo(other.userId);
+			}
+			if(res == 0 && binderKey != null) {
+				res = binderKey.compareTo(other.binderKey);
+			}
+			return res;
+		}
+	}
+	public List<Map<String,Object>> generateQuotaReport(final QuotaOption option, Long threshold) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
 		List sizes = (List)getHibernateTemplate().execute(new HibernateCallback() {
@@ -446,53 +486,84 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				List l = null;
 				try {
 					ProjectionList proj = Projections.projectionList()
-									.add(Projections.groupProperty("owner.owningBinderKey"))
-									.add(Projections.sum("fileItem.length"))
-					.add(Projections.groupProperty("owner.owningBinderId"));
+									.add(Projections.sum("fileItem.length"));
+					if(option != QuotaOption.UsersOnly) {
+						proj.add(Projections.groupProperty("owner.owningBinderKey"));
+					}
+					if(option != QuotaOption.WorkspacesOnly) {
+						proj.add(Projections.groupProperty("creation.principal.id"));
+					}
 					Criteria crit = session.createCriteria(VersionAttachment.class)
 						.setProjection(proj);
 					l = crit.list();
 				} catch(Exception e) {
-					System.out.println("bah" +  e.getMessage());
+					System.out.println("Unable to query for attachments: " +  e.getMessage());
 				}
 				return l;
 			}});
 
-		TreeMap<String, Long> distributedSizes = new TreeMap<String, Long>();
+		TreeMap<QKey, Long> distributedSizes = new TreeMap<QKey, Long>();
 		for(Object o : sizes) {
 			Object[] col = (Object []) o;
-			accumulateValue(distributedSizes, (String) col[0], (Long) col[1]);
-			HKey key = new HKey((String) col[0]);
-			for(String k : key.getAncestorKeys()) {
-				accumulateValue(distributedSizes, k, (Long) col[1]);
+			Long size = (Long) col[0];
+			int index = 1;
+			String binderKey = null;
+			Long userId = null;
+			if(option != QuotaOption.UsersOnly) {
+				binderKey = (String) col[index++];
+			}
+			if(option != QuotaOption.WorkspacesOnly) {
+				userId = (Long) col[index++];
+			}
+			QKey mapKey = new QKey(binderKey, userId);
+			accumulateValue(distributedSizes, mapKey, size);
+			if(option != QuotaOption.UsersOnly) {
+				HKey key = new HKey(binderKey);
+				for(String k : key.getAncestorKeys()) {
+					mapKey = new QKey(k, userId);
+					accumulateValue(distributedSizes, mapKey, size);
+				}
 			}
 		}
 
-		List binders = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				List l = null;
-				try {
-					l = session.createCriteria(Binder.class)
+		List binders = null;
+		HashMap<String, Binder> binderMap = new HashMap<String, Binder>();
+		if(option != QuotaOption.UsersOnly) {
+			binders = (List)getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+					List l = null;
+					try {
+						l = session.createCriteria(Binder.class)
 						.addOrder(Order.asc("binderKey.sortKey"))
 						.add(Restrictions.ne("type", "template"))
 						.list();
-				} catch(Exception e) {
-					System.out.println("bah" +  e.getMessage());
-				}
-				return l;
-			}});
-
-		for(Object o : binders) {
-			Binder b = (Binder) o;
-			HashMap<String,Object> row = new HashMap<String,Object>();
-			row.put(ReportModule.BINDER_ID, b.getId());
-			row.put(ReportModule.BINDER_TITLE, b.getPathName());
-			if(distributedSizes.containsKey(b.getBinderKey().getSortKey())) {
-				row.put(ReportModule.SIZE, distributedSizes.get(b.getBinderKey().getSortKey()));
-			} else {
-				row.put(ReportModule.SIZE, new Long(0));				
+					} catch(Exception e) {
+						System.out.println("Unable to load binder information" +  e.getMessage());
+					}
+					return l;
+				}});
+			for(Object o : binders) {
+				Binder b = (Binder) o;
+				binderMap.put(b.getBinderKey().getSortKey(), b);
 			}
-			report.add(row);
+		}
+
+		long thresholdBytes = threshold.longValue() * 1024 * 1024;
+		for(QKey k : distributedSizes.keySet()) {
+			Long size = distributedSizes.get(k);
+			if(size.longValue() > thresholdBytes) {
+				HashMap<String,Object> row = new HashMap<String,Object>();
+				if(option != QuotaOption.UsersOnly) {
+					Binder b = binderMap.get(k.binderKey);
+					row.put(ReportModule.BINDER_ID, b.getId());
+					row.put(ReportModule.BINDER_TITLE, b.getPathName());
+				}
+				if(option != QuotaOption.WorkspacesOnly) {
+					row.put(ReportModule.USER_ID, k.userId);
+				}
+				row.put(ReportModule.SIZE, size);
+				report.add(row);
+			}
 		}
 
 		return report;
