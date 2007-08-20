@@ -419,6 +419,21 @@ div.ss_editorHints {
   margin-bottom: 10px;
 }
 
+
+div.ss_entryDescription ul li {
+    margin: 2px 0px 0px 25px;
+    list-style-type: square;
+    list-style-position: outside;
+    list-style-image: none;
+}
+
+div.ss_entryDescription ol li {
+    margin: 2px 0px 0px 25px;
+    list-style-position: outside;
+    list-style-type: decimal;
+}
+
+
 div.ss_editableTab {
   float: right;
   background-color: ${ss_style_background_color_opaque};
@@ -808,7 +823,7 @@ DIV.ss_help_style P {
     margin-bottom: 10px;
 }
 
-DIV.ss_help_style UL LI {
+div.ss_help_style ul li {
     margin-top: 3px;
     margin-bottom: 6px;
     margin-left: 25px;
@@ -817,7 +832,7 @@ DIV.ss_help_style UL LI {
     list-style-image: none;
 }
 
-DIV.ss_help_style OL LI {
+div.ss_help_style ol li {
     margin-top: 3px;
     margin-bottom: 6px;
     margin-left: 25px;
