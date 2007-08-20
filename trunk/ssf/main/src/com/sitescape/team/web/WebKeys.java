@@ -122,6 +122,8 @@ public class WebKeys {
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_PAGE_SIZE="pageSize";
+    public static final String URL_QUOTA_OPTION="ssQuotaOption";
+    public static final String URL_QUOTA_THRESHOLD="ssQuotaThreshold";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
