@@ -171,14 +171,14 @@
 			    	name="action" value="${action}"/><portlet:param 
 			    	name="operation" value="save_folder_sort_info"/><portlet:param 
 			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
-			    	name="ssFolderSortBy" value="start_end#EndDate"/><c:choose><c:when 
-			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><portlet:param 
+			    	name="ssFolderSortBy" value="due_date"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
 			    	name="tabId" value="${tabId}"/></portlet:actionURL>"
 				
 				<c:choose>
-				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+				  <c:when test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
 				  	<ssf:title tag="title.sort.by.column.desc">
 				  		<ssf:param name="value" value="<%= NLT.get("milestone.dueDate") %>" />
 				  	</ssf:title>
@@ -192,10 +192,10 @@
 				 >
 </c:if>
 			      <div class="ss_title_menu"><ssf:nlt tag="milestone.dueDate"/> </div>
-			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
+			    	<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
-					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+					<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
