@@ -120,8 +120,9 @@ public class SearchUtils {
     			descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
     	}
     	int sortType = SortField.AUTO;
-    	if (sortBy.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD) || sortBy.equals(IndexUtils.LASTACTIVITY_FIELD)) 
+    	if (isDateField(sortBy)) {
     		sortType = SortField.STRING;
+    	}
     	
     	fields[0] = new SortField(sortBy, sortType, descend);
     	return fields;
