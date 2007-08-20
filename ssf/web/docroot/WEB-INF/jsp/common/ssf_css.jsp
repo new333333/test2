@@ -976,8 +976,8 @@ div.ss_blog_sidebar {
 }
 
 div.ss_blog_sidebar_hole {
-	margin-left: 8px;
-	margin-right: 9px;
+	margin-left: 18px;
+	margin-right: 0px;
 }
 
 div.ss_blog_sidebar_box {
