@@ -11,6 +11,7 @@ import org.springframework.util.FileCopyUtils;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
@@ -19,10 +20,19 @@ import com.sitescape.team.util.SPropsUtil;
 public abstract class Converter<T>
 {
 	protected FileStore cacheFileStore;
+	private FileModule fileModule;
+	
 	public Converter() {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 	}
 	
+	protected FileModule getFileModule() {
+		return fileModule;
+	}
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+
 	/*
 	 * The vendor-specific subclasses (like TextStellentConverter, etc) will implement this method,
 	 *   which does the actual file-to-file conversion.  Intermediate classes (like TextConverter) just
@@ -77,7 +87,7 @@ public abstract class Converter<T>
 			if(!parentDir.exists())
 				parentDir.mkdirs();
 
-			is = RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, relativeFilePath, fa.getHighestVersion().getVersionName());
+			is = getFileModule().readFile(binder, entry, fa);
 			copyOfOriginalFile = cacheFileStore.getFile(filePath);
 			fos = new FileOutputStream(copyOfOriginalFile);
 			FileCopyUtils.copy(is, fos);

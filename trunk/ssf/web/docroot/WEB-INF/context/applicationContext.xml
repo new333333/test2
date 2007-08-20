@@ -288,23 +288,27 @@
 	</bean>	
 	
 	<!-- ============================== Document Converter ============================ -->
+
+	<bean id="converterCommon" abstract="true">
+        <property name="fileModule"><ref local="fileModule"/></property>
+    </bean>
 	
 	<!--  OpenOffice converter for 'view file as HTML' functionality
 			% C:\Program Files\OpenOffice.org 2.0\program\soffice.exe "-accept=socket,port=8100;urp;"
 	 -->
-    <bean id="htmlOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.HtmlOpenOfficeConverter">
+    <bean id="htmlOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.HtmlOpenOfficeConverter" parent="converterCommon">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
     
-    <bean id="textOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">
+    <bean id="textOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter" parent="converterCommon">
 		<property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
         <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov</value></property>
     </bean>
     
-    <bean id="imageOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.ImageOpenOfficeConverter">
+    <bean id="imageOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.ImageOpenOfficeConverter" parent="converterCommon">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
@@ -356,38 +360,6 @@
 			<property name="profileModule"><ref local="profileModule"/></property>						
 			<property name="reportModule"><ref local="reportModule"/></property>						
 	</bean>	
-	<!-- ============================ Document Pipeline =========================== -->
-	
-	<bean id="docPipeline" class="com.sitescape.team.pipeline.impl.SynchronousPipeline">
-		<!-- Do not share same instances -->
-		<property name="conduitFactories">
-			<list>
-				<!--<bean class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>
-				<bean class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>-->
-			</list>
-		</property>
-		<!-- Do not share same instances -->
-		<property name="docHandlers">
-			<list>
-				<!--<bean class="com.sitescape.team.pipeline.impl.NullDocHandler">
-					<property name="name"><value>First Handler</value></property>
-				</bean>
-				<bean class="com.sitescape.team.pipeline.impl.NullDocHandler">
-					<property name="name"><value>Second Handler</value></property>
-				</bean>
-				<bean class="com.sitescape.team.pipeline.impl.NullDocHandler">
-					<property name="name"><value>Third Handler</value></property>
-				</bean>-->
-				<bean class="com.sitescape.team.docconverter.pipeline.DocConverterHandler">
-					<property name="name"><value>Doc Converter</value></property>
-					<property name="textConverter"><ref bean="textConverter"/></property>
-					<property name="timeout"><value>20000</value></property>
-				</bean>
-			</list>
-		</property>
-	</bean>
-	
-	<!--<bean id="BasicConduitFactory" class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>-->
 	
 	<bean id="stringCheckUtil" class = "com.sitescape.team.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
 	</bean>	
@@ -423,7 +395,6 @@
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="fileModule"><ref local="fileModule"/></property>
-		<property name="pipeline"><ref local="docPipeline"/></property>
 		<property name="reportModule"><ref local="reportModule"/></property>
 		<property name="rssModule"><ref local="rssModule"/></property>
 	</bean>

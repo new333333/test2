@@ -39,9 +39,6 @@
 	</bean>
 	<!-- ============================== Document Converter ============================ -->
 
-    <bean id="textConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">
-    </bean>
-    
 	<!-- View file as HTML manager implementation -->
     <bean id="htmlConverterManager" class="com.sitescape.team.docconverter.impl.HtmlConverterManagerImpl">
     	<!-- Options 1=OpenOffice conversion implementation -->
