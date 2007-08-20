@@ -158,10 +158,13 @@ public class WebdavRepositorySession implements RepositorySession {
 	public InputStream readVersioned(Binder binder, DefinableEntity entity, String relativeFilePath, 
 			String versionName) throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String versionResourcePath = getVersionResourcePath(wdr, binder, entity, 
-					relativeFilePath, versionName);			
+			String resourcePath;
+			if(versionName != null)			
+				resourcePath = getVersionResourcePath(wdr, binder, entity, relativeFilePath, versionName);
+			else
+				resourcePath = getFileResourcePath(binder, entity, relativeFilePath);
 			
-			return wdr.getMethodData(versionResourcePath);
+			return wdr.getMethodData(resourcePath);
 		} catch (IOException e) {
 			wdr.logError(logger);
 			throw new UncheckedIOException(e);

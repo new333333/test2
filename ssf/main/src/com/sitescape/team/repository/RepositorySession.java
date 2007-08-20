@@ -159,7 +159,8 @@ public interface RepositorySession {
 			
 	/**
 	 * Reads the content of the specified version of the file resource from
-	 * the repository.
+	 * the repository. If <code>versionName</code> is null, reads the latest
+	 * content of the file.
 	 * <p>
 	 * This method can only be called on a versioned file. 
 	 */
@@ -170,6 +171,7 @@ public interface RepositorySession {
 	/**
 	 * Returns an <code>InputStream</code> from which to read the content of
 	 * the specified version of the file resource from the repository.
+	 * If <code>versionName</code> is null, reads the latest content of the file.
 	 * The caller is responsible for closing the stream after use. 
 	 * <p>
 	 * This method can only be called on a versioned file.
@@ -179,7 +181,7 @@ public interface RepositorySession {
 	 * @param entity
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
-	 * @param versionName the name of the version
+	 * @param versionName the name of the version or null
 	 * @throws RepositoryServiceException thrown if the specified version does
 	 * not exist, or if some other error occurs
 	 */
