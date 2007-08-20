@@ -327,7 +327,7 @@ public class WebHelper {
 		int fileNameLength = Integer.parseInt(fileHandle.substring(0, idx));
 		String fileName = fileHandle.substring(idx+1, idx+1+fileNameLength);
 		
-		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
+		File file = TempFileUtil.getTempFileByName(fileHandle);
 		
 		SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file, true);
 		
@@ -349,9 +349,8 @@ public class WebHelper {
 	
 	public static void readFileHandleContent(String fileHandle, OutputStream out)
 		throws IOException {
-		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
 
-		FileCopyUtils.copy(new BufferedInputStream(new FileInputStream(file)), out);
+		FileCopyUtils.copy(new BufferedInputStream(TempFileUtil.openTempFile(fileHandle)), out);
 	}
 	
 	/**
@@ -361,7 +360,7 @@ public class WebHelper {
 	 * @param fileHandle
 	 */
 	public static void releaseFileHandle(String fileHandle) {
-		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
+		File file = TempFileUtil.getTempFileByName(fileHandle);
 
 		file.delete();
 	}

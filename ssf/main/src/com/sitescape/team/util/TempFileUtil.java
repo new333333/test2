@@ -20,6 +20,7 @@ import java.io.InputStream;
 import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.context.request.RequestContextHolder;
 
 public class TempFileUtil {
 	
@@ -103,17 +104,20 @@ public class TempFileUtil {
 		return createTempFileWithContent(prefix, null, fileDir, true, content);
 	}
 	
-	public static File getTempFileDir() {
-		return new File(getTempFileDirPath());
+	private static File getTempFileDir() {
+		return new File(getTempFileDirPath(RequestContextHolder.getRequestContext().getUserId()));
 	}
 	
-	public static String getTempFileDirPath() {
+	private static String getTempFileDirPath() {
 		String filePath = SPropsUtil.getString("temp.dir", "");
 		if(filePath.equals(""))
 			filePath = System.getProperty("java.io.tmpdir");
 		return filePath;
 	}
 	
+	private static String getTempFileDirPath(Long userId) {
+		return getTempFileDirPath() + "/" + userId.toString();
+	}
 	private static String getPrefix(Class caller) {
 		String name = caller.getSimpleName();
 		if(name.length() < 3) // very unlikely scenario
@@ -192,17 +196,20 @@ public class TempFileUtil {
 	 */
 	public static InputStream openTempFile(String fileHandle) throws UncheckedIOException {
 		try {
-			// Use only the filename, eliminating any attempts to use paths to get out of
-			//   the temp directory
-			File junk = new File(fileHandle);
-			fileHandle = junk.getName();
-			
-			return new FileInputStream(new File(getTempFileDirPath(), fileHandle));
+			return new FileInputStream(getTempFileByName(fileHandle));
 		} catch(IOException e) {
 			throw new UncheckedIOException(e);
 		}
 	}
 	
+	public static File getTempFileByName(String fileHandle) {
+		File junk = new File(fileHandle);
+		fileHandle = junk.getName();
+
+		return new File(getTempFileDirPath(RequestContextHolder.getRequestContext().getUserId()),
+				fileHandle);
+	}
+
 	public static void main(String[] args) {
 		System.out.println(new File("").getAbsolutePath());
 	}
