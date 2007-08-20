@@ -62,7 +62,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			Binder binder = getBinderModule().getBinder(new Long(binderId));
 			entityType = binder.getEntityType().name();
 		}
-		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString())) {
+		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || entityType.equals(EntityIdentifier.EntityType.user.toString())) {
 			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_ws_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {
 			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
