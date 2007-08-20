@@ -210,16 +210,13 @@
 											
 											<ssf:param name="url" useBody="true">
 												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-														binderId="${entry._binderId}" entryId="${entry._docId}">
-														<ssf:param name="entityType" value="${entry._entityType}" />
-														<ssf:param name="newTab" value="1"/>
-													</ssf:url>
+													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+													action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
 												</c:if>
 												
 												<c:if test="${empty isDashboard || isDashboard == 'no'}">
 													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-						      						action="view_folder_entry" entryId="${entry._docId}" actionUrl="false" />
+						      						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
 												</c:if>
 											</ssf:param>
 										
