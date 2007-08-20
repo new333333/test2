@@ -107,10 +107,10 @@
 <c:forEach var="element" items="${propertyValues__elements}">
  <c:if test="${element != 'name' && element != 'title'}">
  <tr>
-  <td align="right">
+  <td valign="top" align="right">
    <span class="ss_light"><ssf:nlt tag="profile.element.${element}"/></span>
   </td>
-  <td>
+  <td valign="top" align="left">
    <c:if test="${!empty ssDefinitionEntry[element]}">
     <span class="ss_bold">
     <c:if test="${element == 'emailAddress'}">
