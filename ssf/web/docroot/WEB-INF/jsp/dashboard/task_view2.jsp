@@ -112,21 +112,23 @@
 			</c:if>
 		</td>
 		<td class="ss_normalprint" width="20%">
-			<c:set var="title" value="parent folder not found"/>
+			<c:set var="title" value=""/>
 
 			<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
-			<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
-				<c:if test="${folder.id == entry._topFolderId}">
-					<c:set var="title" value="${folder}"/>
-				</c:if>
-			</c:forEach>
+				<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
+					<c:if test="${folder.id == entry._binderId}">
+						<c:set var="title" value="${folder}"/>
+					</c:if>
+				</c:forEach>
 			</c:if>
-
 			<c:set var="isDashboard" value="yes"/>
 
-    		<a href="javascript: ;"
-				onClick="return ss_gotoPermalink('${entry._topFolderId}', '${entry._topFolderId}', 'folder', '${ss_namespace}', 'yes');"
-				><span class="ss_bold">${title}</span></a>
+			<c:if test="${!empty title}">
+	    		<a href="javascript: ;"
+					onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+					><span class="ss_bold">${title}</span></a>
+			</c:if>
+				
 		</td>	
 	</tr>
 	</c:forEach>
