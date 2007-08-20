@@ -158,12 +158,26 @@ if (!ss_onLoadRoutineLoaded) {
 }
 
 //Routine to go to a permalink without actually using the permalink
-function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
+function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, useParentOrOpener) {
 
 	var url = ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab);
 	if (url == "") return true;
 
-	self.location.href = url;
+	if (typeof useParentOrOpener !== "undefined" && 
+			useParentOrOpener) {
+		if (self.opener) {
+			self.opener.location.href = url;
+			if (self != self.opener) {
+				self.window.close();
+			}
+		} else if (self.parent) {
+			self.parent.location.href = url;		
+		} else {
+			self.location.href = url;
+		}
+	} else {
+		self.location.href = url;
+	}
 	return false;
 }
 
