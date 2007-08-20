@@ -18,24 +18,26 @@ dojo.widget.defineWidget(
 				
 		onValueChanged: function(/*Date*/dateObj) {
 			this.getWidgets();
-
-			var diff;
-			if (this.startDateWidget && this.endDateWidget) {
-				diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
-				if (diff > 0) {
-					this.endDateWidget.setValue(this.startDateWidget.getValue());
-				}				
-			}
-			
-			if (this.startDateWidget && this.endDateWidget) {
-				diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
-				if (this.startTimeWidget && this.endTimeWidget && diff == 0) {
-					if (dojo.date.compare(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.widget.TimePicker.util.fromRfcDateTime(this.endTimeWidget.getTime()), dojo.date.compareTypes.TIME) > 0) {
-						this.endTimeWidget.setTime(dojo.date.add(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.date.dateParts.MINUTE, 30));
+			try {
+				var diff;
+				if (this.startDateWidget && this.endDateWidget) {
+					diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
+					if (diff > 0) {
+						this.endDateWidget.setValue(this.startDateWidget.getValue());
+					}				
+				}
+				
+				if (this.startDateWidget && this.endDateWidget) {
+					diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
+					if (this.startTimeWidget && this.endTimeWidget && diff == 0) {
+						if (dojo.date.compare(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.widget.TimePicker.util.fromRfcDateTime(this.endTimeWidget.getTime()), dojo.date.compareTypes.TIME) > 0) {
+							this.endTimeWidget.setTime(dojo.date.add(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.date.dateParts.MINUTE, 30));
+						}
 					}
 				}
-			}
-		
+			} catch (e) {
+				// it's notpossible to adjust dates, ignore it (probably date is empty)
+			}		
 		},
 		
 		getWidgets: function() {
