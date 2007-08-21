@@ -16,6 +16,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -137,6 +138,11 @@ public class ModifyBinderController extends AbstractBinderController {
 			model.put(WebKeys.BINDER, binder);
 			Workspace ws = getWorkspaceModule().getTopWorkspace();
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			Element top = (Element)wsTree.getRootElement();
+			if (top != null) {
+				//cannot move to top
+				top.addAttribute("displayOnly", "true");
+			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			path = WebKeys.VIEW_MOVE_BINDER;
 		} else if (op.equals(WebKeys.OPERATION_DELETE)) {
