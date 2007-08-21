@@ -8,7 +8,7 @@ if (!window.ssSurvey) {
 		
 		var surveyContainerId = surveyContainerId;
 	
-		var ss_questionsArray = new Object();
+		var ss_questionsArray = new Array();
 		
 		var ss_questionsCounter = 0;
 	
@@ -53,7 +53,7 @@ if (!window.ssSurvey) {
 
 		function ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers) {
 			if (!ss_questionsArray[ss_questionsCounter] || ss_questionsArray[ss_questionsCounter] == 'undefined') {
-				ss_questionsArray[ss_questionsCounter] = new Object();
+				ss_questionsArray[ss_questionsCounter] = new Array();
 			}
 			ss_questionsArray[ss_questionsCounter].type=type;
 		
@@ -168,7 +168,7 @@ if (!window.ssSurvey) {
 		}
 		
 		this.prepareSubmit = function(obj) {
-			var ss_toSend = new Object();
+			var ss_toSend = new Array();
 			var ind = 0;
 			var aCounter = 0;
 			var content;
@@ -184,7 +184,7 @@ if (!window.ssSurvey) {
 						ss_toSend[ind].index = questionIndexInput.value;
 					}
 					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
-						ss_toSend[ind].answers = new Object();
+						ss_toSend[ind].answers = new Array();
 						aCounter = 0;
 						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
 							if (dojo.byId("question"+i+"answer"+j)) {
