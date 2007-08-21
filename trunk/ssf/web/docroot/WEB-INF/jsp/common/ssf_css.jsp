@@ -1266,6 +1266,12 @@ table.ss_mouseOverInfo {
   color:#999999; 
 }
 
+
+li.ss_menu_item_highlighted {
+  font-weight: bold;
+  border: 1px solid #666666;
+}
+
 .ss_entry_toolbar {
   display:inline;
   background-color: ${ss_toolbar_background_color};
@@ -2399,7 +2405,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 .ss_actions_bar li {
 	float:left;
 	display: inline;
-	margin: 0px 0 3px 0;
+	margin: 0px 0px 0px 0px;
 	white-space: nowrap;
 }
 
