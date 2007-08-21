@@ -227,7 +227,7 @@
 --%><c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
 --%><c:set var="ss_toolbar_border_color" value="#AFAFAF" scope="request"/><%--
     
---%><c:set var="ss_toolbar1_background_color" value="#AFAFAF" scope="request"/><%--
+--%><c:set var="ss_toolbar1_background_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
 --%><c:set var="ss_toolbar1_dropdown_menu_color" value="#AFAFAF" scope="request"/><%--
 
