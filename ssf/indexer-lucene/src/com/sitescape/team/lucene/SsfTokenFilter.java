@@ -25,13 +25,19 @@ import org.apache.lucene.analysis.TokenStream;
  */
 public class SsfTokenFilter extends TokenFilter
 {
-  private Token _alternateToken;
+  private Token _lowercaseToken;
+  
+  // Lucene allows the same field to be added multiple times to a document.  When 
+  // this happens, we need to separate the fields so a phrase search won't match 
+  // the end of the first concatenated to the beginning of the second. Simply going 
+  // to add an empty location before each new field.
+  private boolean _newField;
   
   public SsfTokenFilter(TokenStream input)
   {
     super(input);
-  
-    _alternateToken = null;
+    _newField = true;
+    _lowercaseToken = null;
   }
 
   /**
@@ -43,13 +49,13 @@ public class SsfTokenFilter extends TokenFilter
     Token t;
     
     // If an alternate version exists...
-    if (_alternateToken != null)
+    if (_lowercaseToken != null)
     {
       // We'll return it.
-      t = _alternateToken;
+      t = _lowercaseToken;
       
       // And signal that we've already returned it.
-      _alternateToken = null;
+      _lowercaseToken = null;
 
       return t;
     }
@@ -64,19 +70,25 @@ public class SsfTokenFilter extends TokenFilter
       return null;
     }
 
-//    System.out.println("Token: " + token.termText() + " startOffset: " + token.startOffset() + " positionIncrement: " + token.getPositionIncrement());
 
-    // See if the current token needs an alternate.
-    _alternateToken = getAlternateToken(token);
+    // get a lowercase version
+    _lowercaseToken = getLowercaseToken(token);
     
-    // But return the original for now.
+    if (_newField)
+    {
+    	token.setPositionIncrement(2);
+    	
+    	// Done for this field
+    	_newField = false;
+    }
+    // Return the original.
     return token;
   }
 
-  // Get an alternate version of a token, if necessary.
+  // Get a lowercase instance of a token
   // @param token Token to process
-  // @return lowercase version of <tt>token</tt>, or <tt>null</tt> if <tt>token</tt> has not uppercase characters. 
-  private Token getAlternateToken(Token token)
+  // @return lowercase version of <tt>token</tt>, or <tt>null</tt> if <tt>token</tt> has no uppercase chars. 
+  private Token getLowercaseToken(Token token)
   {
     Token newToken;
     String term = token.termText();
