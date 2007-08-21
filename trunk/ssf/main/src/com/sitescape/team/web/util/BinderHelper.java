@@ -1096,6 +1096,7 @@ public class BinderHelper {
 		}
 		public String getTreeNameKey() {return null;}
 		public String getPage() {return page;}
+		public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 		
 	}
 	public static void buildAccessControlRoleBeans(AllModulesInjected bs, Map model) {

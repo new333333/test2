@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.web.tree;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Workspace;
@@ -48,5 +50,6 @@ public class TemplateCopyHelper implements DomTreeHelper {
 	//each name must be unqiue
 	public String getTreeNameKey() {return "templateCopy";}
 	public String getPage() {return "";}
+	public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 			
 }

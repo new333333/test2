@@ -10,7 +10,7 @@
  */
 package com.sitescape.team.web.tree;
 import com.sitescape.team.util.AllModulesInjected;
-
+import org.dom4j.Element;
 public interface DomTreeHelper {
 	public boolean supportsType(int type, Object source);
 	
@@ -20,5 +20,5 @@ public interface DomTreeHelper {
 	public String getTreeNameKey();
 	public String getPage();
 	public boolean hasChildren(AllModulesInjected bs, Object source, int type);
-
+	public void customize(AllModulesInjected bs, Object source, int type, Element element);
 }

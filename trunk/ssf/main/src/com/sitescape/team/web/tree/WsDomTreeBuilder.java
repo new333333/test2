@@ -22,59 +22,36 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.Validator;
 
 public class WsDomTreeBuilder implements DomTreeBuilder {
 	static protected Log logger = LogFactory.getLog(WsDomTreeBuilder.class);
-	static DomTreeHelper defaultHelper = new WsTreeHelper();
+	static DomTreeHelper defaultHelper = new WsActionTreeHelper();
 	static Map actionMapper = new HashMap();
 
 	Binder bottom;
 	boolean check;
 	AllModulesInjected bs;
 	DomTreeHelper helper = defaultHelper;
-	String page;
+	String page="";
 	List tuple;
 			
-	public boolean supportsType(int type, Object source) {
-		return helper.supportsType(type, source);
-	}
 
-	
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs) {
-		this.bottom = bottom;
-		this.check = checkChildren;
-		this.bs = bs;
-	}
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
-			DomTreeHelper helper) {
-		this.bottom = bottom;
-		this.check = checkChildren;
-		this.bs = bs;
+	private void initHelper(DomTreeHelper helper) {
 		//register helper if not already done
 		if (helper == null) return;
 		synchronized (actionMapper) {
 			actionMapper.put(helper.getTreeNameKey(), helper.getClass().getName());
 		}
 		this.helper = helper;
+		
 	}
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
-			String key) {
-		String page = "";
-		this.bottom = bottom;
-		this.check = checkChildren;
-		this.bs = bs;
-		this.page = "";
-		if (Validator.isNull(key)) return;
+	private void initHelper(String key) {
+    	if (Validator.isNull(key)) return;
 		String processorClassName;
 		synchronized (actionMapper) {
 			processorClassName = (String)actionMapper.get(key);
@@ -82,17 +59,45 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
         Class processorClass;
         try {
             processorClass = ReflectHelper.classForName(processorClassName);
-            helper = (DomTreeHelper)processorClass.newInstance();
+            this.helper = ((DomTreeHelper)processorClass.newInstance());
         } catch (Exception e) {
         	logger.error("DomTree missing processor: " + key);
         }
 	}
-	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
-			String key, String page) {
+
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs) {
 		this.bottom = bottom;
 		this.check = checkChildren;
 		this.bs = bs;
+	}
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
+			DomTreeHelper helper) {
+		this(bottom, checkChildren, bs);
+		initHelper(helper);
+	}
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
+			String key) {
+		this(bottom, checkChildren, bs);
+		initHelper(key);
+	}
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
+			String key, String page) {
+		this(bottom, checkChildren, bs);
+		initHelper(key);
+		initPage(page);
+	}
+
+	public WsDomTreeBuilder(Binder bottom, boolean checkChildren, AllModulesInjected bs,
+			DomTreeHelper helper, String page) {
+		this(bottom, checkChildren, bs);
+		initHelper(helper);
+		initPage(page);
+		
+	}
+
+	private void initPage(String page) {
 		this.page = page;
+		if (Validator.isNull(page)) return;
     	String tuple1 = "";
     	String tuple2 = "";
 		int i = page.indexOf(DomTreeBuilder.PAGE_DELIMITER);
@@ -105,20 +110,10 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
     		i += DomTreeBuilder.PAGE_DELIMITER.length();
     		tuple2 = tuple.substring(i, tuple.length());
     	}
-    	this.tuple = new ArrayList(Arrays.asList(tuple1, tuple2));
-
-    	if (Validator.isNull(key)) return;
-		String processorClassName;
-		synchronized (actionMapper) {
-			processorClassName = (String)actionMapper.get(key);
-		}
-        Class processorClass;
-        try {
-            processorClass = ReflectHelper.classForName(processorClassName);
-            helper = (DomTreeHelper)processorClass.newInstance();
-        } catch (Exception e) {
-        	logger.error("DomTree missing processor: " + key);
-        }
+    	this.tuple = new ArrayList(Arrays.asList(tuple1, tuple2));		
+	}
+	public boolean supportsType(int type, Object source) {
+		return helper.supportsType(type, source);
 	}
 	public Element setupDomElement(int type, Object source, Element element) {
 		if (!helper.supportsType(type, source)) return null;
@@ -163,12 +158,6 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				//save identifier of tree helper to use on ajax callbacks
 				element.addAttribute("treeKey", helper.getTreeNameKey());
 			}
-			if(binder.getPosting() != null) {
-				PostingDef posting = binder.getPosting();
-				if(posting.isEnabled()) {
-					element.addAttribute("postingAddress", posting.getEmailAddress());
-				}
-			}
 			if ((type == DomTreeBuilder.TYPE_WORKSPACE)) {
 				Workspace ws = (Workspace)source;
 				String icon = ws.getIconName();
@@ -194,10 +183,10 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("permaLink", PermaLinkUtil.getURL(f));
-				element.addAttribute("rss", UrlUtil.getFeedURL(null, f.getId().toString()));
-				element.addAttribute("ical", com.sitescape.team.ical.util.UrlUtil.getICalURL(null, f.getId().toString(), null));
 			} else return null;
 		}
+		//add any extra attributes
+		helper.customize(bs, source, type, element);
 		return element;
 	}
 	
@@ -215,25 +204,4 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 		return this.tuple;
 	}
 	
-	protected static class WsTreeHelper implements DomTreeHelper {
-		public boolean supportsType(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
-			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
-			if (type == DomTreeBuilder.TYPE_SKIPLIST) {return true;}
-			return false;
-		}
-		public boolean hasChildren(AllModulesInjected bs, Object source, int type) {
-			return ((Binder)source).getBinderCount() > 0;
-		}
-	
-		public String getAction(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_FOLDER) return WebKeys.ACTION_VIEW_FOLDER_LISTING;
-			else if (source instanceof ProfileBinder) return WebKeys.ACTION_VIEW_PROFILE_LISTING;
-			return WebKeys.ACTION_VIEW_WS_LISTING;
-		}
-		public String getURL(int type, Object source){return "";}
-		public String getDisplayOnly(int type, Object source) {return "false";}
-		public String getTreeNameKey() {return null;};
-		public String getPage() {return "";}
-	}
 }	
