@@ -83,23 +83,23 @@ if (displayStyle == null || displayStyle.equals("")) {
 				<li><a href="javascript:;" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
 				  ><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
-				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
+				    title="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="javascript:;"
 				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_component_${ss_component_count}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_component2_${ss_component_count}', '${myId}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"
 				><img border="0" class="ss_accessory_delete" src="<html:imagesPath/>pics/1pix.gif" 
-				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
+				  title="<ssf:nlt tag="button.delete"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="javascript:;"
 				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${ss_component_count}', '${myId}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_hide.gif" 
-				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
+				  title="<ssf:nlt tag="button.hide"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="javascript:;"
 				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${ss_component_count}', '${myId}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_show.gif" 
-				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
+				  title="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
 			</ul>
 	</form>

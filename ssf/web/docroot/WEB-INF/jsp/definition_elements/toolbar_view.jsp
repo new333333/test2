@@ -97,13 +97,13 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                     --%><img border="0" <%--
                     --%> src="<html:imagesPath/>icons/${toolbarMenu.value.qualifiers.icon}" <%--
-                    --%> alt="${toolbarMenu.value.title}" ><%--
+                    --%> title="${toolbarMenu.value.title}" ><%--
                 --%></c:if><%--
 
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.iconclass}"><%--
                     --%><img border="0" <%--
                     --%> src="<html:imagesPath/>pics/1pix.gif" class="${toolbarMenu.value.qualifiers.iconclass}" <%--
-                    --%> alt="${toolbarMenu.value.title}" ><%--
+                    --%> title="${toolbarMenu.value.title}" ><%--
                 --%></c:if><%--
 
                 --%><c:if test="${empty toolbarMenu.value.qualifiers.icon && empty toolbarMenu.value.qualifiers.iconclass}"><%--
@@ -111,7 +111,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%></c:if><%--
 
                 --%><c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"><%--
-                    --%><img border="0" <ssf:alt tag="alt.showMenu"/><%--
+                    --%><img border="0" title="<ssf:nlt tag="alt.showMenu"/>"<%--
                     --%> src="<html:imagesPath/>pics/menudown.gif"/><%--
                 --%></c:if><%--
                 --%></span></a><%--
@@ -278,7 +278,13 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
         
             --%><c:when test="${!empty toolbarMenu.value.url}"><%--
                 --%><c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}"><%--
-                    --%><li><a href="${toolbarMenu.value.url}"<%--
+	                --%><c:if test="${!empty toolbarMenu.value.qualifiers.highlight}"><%--
+						--%><li class="ss_menu_item_highlighted"><%--
+	                --%></c:if><%--
+	                --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
+						--%><li><%--
+	                --%></c:if><%--
+                    --%><a href="${toolbarMenu.value.url}"<%--
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.folder}"><%--
                         --%><%
 							if (BrowserSniffer.is_ie(request)) {
@@ -332,7 +338,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                         --%><img border="0" <%--
                         --%> src="<html:imagesPath/>icons/<c:out value="${toolbarMenu.value.qualifiers.icon}" />" <%--
-                        --%> alt="<c:out value="${toolbarMenu.value.title}" />" ><%--
+                        --%> title="<c:out value="${toolbarMenu.value.title}" />" ><%--
                     --%></c:if><%--
                     --%><c:if test="${empty toolbarMenu.value.qualifiers.icon}"><%--
                         --%><c:out value="${toolbarMenu.value.title}" /><%--
