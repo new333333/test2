@@ -101,6 +101,7 @@ public class NLT implements ApplicationContextAware {
 	
 	private String getMessageWithDefault(String tag, Object[] args, String defaultMessage, Locale locale) {
     	String translation = "";
+    	if (tag == null || tag.equals("")) return defaultMessage;
     	try {
     		translation = getApplicationContext().getMessage(tag, args, locale);
     	} catch (NoSuchMessageException e) {
