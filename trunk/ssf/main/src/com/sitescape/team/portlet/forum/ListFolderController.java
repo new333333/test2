@@ -1936,13 +1936,17 @@ public static final String[] monthNamesShort = {
 			folderEntries = new HashMap();
 		}
 
+		Map<String, Map> cacheEntryDef = new HashMap();
     	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
     	if (items != null) {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
 	    		String entryDefId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
-	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entryDefId));
+	    		if (cacheEntryDef.get(entryDefId) == null) {
+	    			cacheEntryDef.put(entryDefId, getDefinitionModule().getEntryDefinitionElements(entryDefId));
+	    		}
+	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
 	    	}
     	}
 		
