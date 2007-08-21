@@ -2879,6 +2879,11 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	    callbackRoutine = ss_showComponentCallback;
 	    imgObj.src = ss_componentSrcHide;
 	    imgObj.alt = ss_componentAltHide;
+		var targetDiv = document.getElementById(divId);
+		if (targetDiv) {
+			borderDiv = targetDiv.parentNode;
+			if (borderDiv.className == 'ss_content_window_content_off') borderDiv.className = 'ss_content_window_content';
+		}
 	    ss_callDashboardEvent(componentId, "onBeforeShow");
 	} else if (imgObj.src.match(/accessory_hide.gif/)) {
 		url += "\&operation=hide_component";
@@ -2891,7 +2896,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			targetDiv.style.visibility = "hidden";
 			targetDiv.style.display = "none";
 			borderDiv = targetDiv.parentNode;
-			if (borderDiv.className == 'ss_content_window_content') borderDiv.className = '';
+			if (borderDiv.className == 'ss_content_window_content') borderDiv.className = 'ss_content_window_content_off';
 			//Signal that the layout changed 
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}

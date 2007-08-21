@@ -1471,8 +1471,7 @@ ul.ss_dropdownmenu li {
   height:18px;
 }
 table.ss_dashboardTable_off {
-  border-top:1px solid #ffffff;	
-  border-left:1px solid #ffffff;	
+	border: 1px solid transparent;
 }
 td.ss_dashboardTable_off {
   border-right:1px solid #ffffff;	
@@ -1817,7 +1816,17 @@ div.ss_content_outer {
 }
 .ss_content_window_content {
 	padding:4px 10px;
+	border-left: 1px solid ${ss_style_border_color_dark_hue};
+	border-right: 1px solid ${ss_style_border_color_dark_hue};
+	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
+	border-top: none;
 }
+
+.ss_content_window_content_off {
+	padding: 0px;
+	border: 0px none;
+}
+
 .ss_clear {
 	clear:both;
 	height:1px;
@@ -2274,12 +2283,13 @@ div.ss_sidebar_panel_featured {
 .ss_title_bar_icons {
 	float:right;
 	margin:0px;
-	padding:2px 0px 2px 10px;
+	padding:1px 0px 0px 10px;
 	cursor:auto;
 }
 .ss_title_bar_icons li {
 	float:left;
 	margin-right:6px;
+	height: 16px;
 }
 
 /* title menu: */
@@ -4107,7 +4117,6 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	margin: 0px 0px -12px 0px;
 	padding: 3px 0px 3px 12px;
 	position:relative;
-	top:-12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
 </c:if>
