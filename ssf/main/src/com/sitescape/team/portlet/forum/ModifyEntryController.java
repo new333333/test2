@@ -23,14 +23,21 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.task.TaskHelper;
@@ -112,8 +119,28 @@ public class ModifyEntryController extends SAbstractController {
 				BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
 				
 				setupReloadOpener(response, folderId, entryId);
-				//flag reload of folder listing
-				//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+				
+				//See what type of view the folder is using
+				Binder binder = null;
+				try {
+					binder = getBinderModule().getBinder(folderId);
+				} catch(NoBinderByTheIdException e) {}
+				if (binder != null) {
+			        User user = RequestContextHolder.getRequestContext().getUser();
+			        UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), folderId);
+					Map model = new HashMap();
+					DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+					String viewType = "";
+					Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+					if (configElement != null) {
+						viewType = DefinitionUtils.getPropertyValue(configElement, "type");
+						if (viewType == null) viewType = "";
+					}
+					if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+						//In calendar view, we want to refresh the folder, too
+						setupReloadOpenerParent(response, folderId, entryId);
+					}
+				}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
 				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
@@ -144,6 +171,12 @@ public class ModifyEntryController extends SAbstractController {
 	private void setupReloadOpener(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+	}
+	private void setupReloadOpenerParent(ActionResponse response, Long folderId, Long entryId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER_PARENT);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 	}
