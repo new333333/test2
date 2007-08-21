@@ -31,7 +31,7 @@
 <!-- oddities -->
 <!ENTITY thrdmrk "*">
 <!ENTITY mdash "-">
-<!ENTITY conf_prod_name "Zon">
+<!ENTITY conf_prod_name "ICEcore Conference">
 
 <!-- ============================================================= -->
 <!--                    yast desktop entities                      -->
