@@ -115,10 +115,11 @@ if (displayStyle == null || displayStyle.equals("")) {
 	      <c:set var="ss_dashboard_border_count" scope="request" 
 	         value="${ss_dashboard_border_count + 1}"/>
       </c:if>
+      <c:set var="accessoryStyle" value="ss_content_window_content_off" />
       <c:if test="${!hideDashboardControls && ss_dashboard_visible}">
-        class="ss_content_window_content"
+        <c:set var="accessoryStyle" value="ss_content_window_content" />
       </c:if>
-    >
+      class="${accessoryStyle}">
 			<ssf:dashboard id="${ss_dashboard_id}"
 			   type="viewData" configuration="${ssDashboard}"
 			   initOnly="true" />
