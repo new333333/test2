@@ -12,6 +12,7 @@
 %>
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.Date" %>
 
 <c:choose>
 	<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
@@ -22,15 +23,40 @@
 	</c:when>	
 	<c:otherwise>
 		<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
+		
+		<%	
+			boolean overdue = false;
+			if (ssEntry.getEvents() != null && !ssEntry.getEvents().isEmpty()) {
+				overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)((com.sitescape.team.domain.Event)ssEntry.getEvents().iterator().next()).getDtEnd().getTime());
+			}
+			
+		%>
+		<c:set var="overdue" value="<%= overdue %>"/>
+
+		
 		<% // This is JSON type AJAX response  %>
 		{
 			"title" : "<ssf:escapeJavaScript value="${ssEntry.title}" />",
 	  		"id" : "${ssEntry.id}",
 	  		"dueDate" : "<c:forEach var="event" items="${ssEntry.events}" varStatus="loopStatus"><%--
-							--%><c:if test="${loopStatus.first}"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-						      value="${event.dtEnd.time}" type="both" 
-							  dateStyle="medium" timeStyle="short" /></c:if><%--
+							--%><c:if test="${loopStatus.first}"><%--
+							  --%><c:choose><%--
+									--%><c:when test="${!empty event.timeZone}"><%--
+										--%><fmt:formatDate 
+												timeZone="${ssUser.timeZone.ID}"
+												value="${event.dtEnd.time}" type="both" 
+												dateStyle="short" timeStyle="short" /><%--					
+									--%></c:when><%--
+									--%><c:otherwise><%--
+										--%><fmt:formatDate 
+												timeZone="GMT"
+												value="${event.dtEnd.time}" type="date" 
+												dateStyle="short"/><%--
+									--%></c:otherwise><%--
+								--%></c:choose><%--
+							  --%></c:if><%--
 						--%></c:forEach>",
+			"overdue" : ${overdue},
 			"status" : <c:forEach var="status" items="${ssEntry.customAttributes['status'].valueSet}" varStatus="loopStatus">
 							<c:if test="${loopStatus.first}">"<ssf:escapeJavaScript value="${status}" />"</c:if>
 						</c:forEach>,

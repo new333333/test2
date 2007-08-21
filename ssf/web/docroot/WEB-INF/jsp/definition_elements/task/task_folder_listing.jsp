@@ -16,6 +16,7 @@
 
 <script type="text/javascript">
 	var myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = new ss_tasks ('ss_tasks_list_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '${ssFolder.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
+	ss_tasks.overdueLabel = "<ssf:nlt tag="milestone.overdue"/>";
 </script>
 <table class="ss_tasks_list" id="ss_tasks_list_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
 	<thead>
@@ -253,6 +254,15 @@
 	<tbody>
 		<c:forEach var="entry" items="${ssFolderEntries}" >
 			<jsp:useBean id="entry" type="java.util.HashMap" />
+			
+			<%
+				boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
+			%>
+			<c:set var="overdue" value="<%= overdue %>"/>
+			<c:if test="${entry.status == 's3' || entry.status == 's4'}">
+				<c:set var="overdue" value="false" />
+			</c:if>
+			
 			<script type="text/javascript">
 				myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.addTask({"id" : ${entry._docId},
 													"completed" : "${entry.completed}",
@@ -286,7 +296,7 @@
 				<td class="ss_iconsContainer" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_priority">
 				<c:if test="${! empty entry.priority}">
 					<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
-				<td class="ss_due">
+				<td class="ss_due<c:if test="${overdue}"> ss_overdue</c:if>" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_due">
 					<c:choose>
 						<c:when test="${!empty entry['start_end#TimeZoneID']}">
 							<fmt:formatDate 
@@ -301,6 +311,9 @@
 									dateStyle="short"/>
 						</c:otherwise>
 					</c:choose>
+					<c:if test="${overdue}">
+						<ssf:nlt tag="milestone.overdue"/>
+					</c:if>
 				</td>
 				<td class="ss_iconsContainer" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
 				<td class="ss_assigned">
