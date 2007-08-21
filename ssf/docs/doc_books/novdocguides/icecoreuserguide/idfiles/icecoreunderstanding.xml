@@ -50,7 +50,7 @@
 
  <target id="banmwr9" pid="bamolyw" name="Sect2" level="2" number="1.2.3"> <text>Viewing a Workspace or Folder</text> </target>
 
- <target id="banmwra" pid="bamolyw" name="Sect2" level="2" number="1.2.4"> <text>Using Tabs</text> </target>
+ <target id="banmwra" pid="bamolyw" name="Sect2" level="2" number="1.2.4"> <text>Navigation</text> </target>
 
  <target id="banmwrb" pid="bamolyw" name="Sect2" level="2" number="1.2.5"> <text>Returning to the Portal Page</text> </target>
 
