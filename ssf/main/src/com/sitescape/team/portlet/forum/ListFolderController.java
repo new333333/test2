@@ -1294,29 +1294,50 @@ public static final String[] monthNamesShort = {
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
 			if (getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
-				int count = 1;
-				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
-				qualifiers = new HashMap();
-				qualifiers.put("popup", new Boolean(true));
-				//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-				//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-					Definition def = (Definition) defaultEntryDefinitions.get(i);
+
+				if (defaultEntryDefinitions.size() > 1) {
+					int count = 1;
+					entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
+					qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+					//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+					for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+						Definition def = (Definition) defaultEntryDefinitions.get(i);
+						adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+						String title = NLT.getDef(def.getTitle());
+						if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+							title = title + " (" + String.valueOf(count++) + ")";
+						}
+						entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+						if (i == 0) {
+							adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+							adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+							model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+						}
+					}
+				} else {
+					// Only one option
+					Definition def = (Definition) defaultEntryDefinitions.get(0);
 					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.getDef(def.getTitle());
-					if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-						title = title + " (" + String.valueOf(count++) + ")";
-					}
-					entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-					if (i == 0) {
-						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-					}
+					String title = NLT.get("toolbar.new") + ": " + NLT.getDef(def.getTitle());
+					qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					qualifiers.put("highlight", new Boolean(true));
+					entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
+
+					adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+					adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+
 				}
+
 			}
 		}
 		//The "Administration" menu
