@@ -48,7 +48,7 @@
 --%><c:set var="ss_table_background_color_background" value="inherit" scope="request"/><%--
 --%><c:set var="ss_table_background_color_head" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_table_background_color_odd_row" value="#ECECEC" scope="request"/><%--
---%><c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_table_background_color_even_row" value="#FFFFE8" scope="request"/><%--
 --%><c:set var="ss_table_background_color_row_hover" value="#FFFFAA" scope="request"/><%--
 --%><%--
   --
@@ -56,7 +56,7 @@
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
---%><c:set var="ss_style_background_color_side_panel_featured" value="#EAF7DD" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel_featured" value="#DEE7C6" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--
@@ -66,7 +66,6 @@
   --
 --%><c:set var="ss_blog_summary_title_background_color" value="#AFC8E3" scope="request"/><%--
 --%><c:set var="ss_blog_content_background_color" value="inherit" scope="request"/><%--
---%><c:set var="ss_blog_sidebar_background_color" value="#CECECE" scope="request"/><%--
 --%><c:set var="ss_blog_sidebar_box_outline" value="#AFC8E3" scope="request"/><%--
 --%><c:set var="ss_blog_footer_color" value="#E9EDF3" scope="request"/><%--	
 --%><%--
@@ -84,25 +83,19 @@
   -- BOX
   --
 --%><c:set var="ss_box_color" value="#CCCCCC" scope="request"/><%--
---%><c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/><%--
---%><c:set var="ss_box_title_color" value="#009999" scope="request"/><%--
---%><c:set var="ss_box_title_text_color" value="#993333" scope="request"/><%--
+--%><c:set var="ss_box_canvas_color" value="#FFFFAA" scope="request"/><%--
 --%><%--
   --
   -- BUTTON
   --
 --%><c:set var="ss_linkbutton_background_color" value="#DBE6F2" scope="request"/><%--
 --%><c:set var="ss_linkbutton_outline_color" value="#AFC8E3" scope="request"/><%--
---%><c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_linkbutton_border_color_in" value="#BFCA8A" scope="request"/><%--
---%><c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/><%--	
 --%><%--
   --
   -- CALENDAR
   --
 --%><c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/><%--
---%><c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/><%--
 --%><%--
   --
   -- SIDEBAR / ACCESSORY COLORS
@@ -114,8 +107,7 @@
   -- ENTRIES
   --
 --%><c:set var="ss_entry_border_color" value="#CCCCCC" scope="request"/><%--
---%><c:set var="ss_entry_description_background_color" value="#E8EFF7" scope="request"/><%--
---%><c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/><%--
+--%><c:set var="ss_entry_description_background_color" value="#E9EDF3" scope="request"/><%--
 --%><%--
   --
   --FORMS
@@ -123,13 +115,12 @@
 --%><c:set var="ss_form_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_form_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_form_border_color" value="#CCCCCC" scope="request"/><%--
---%><c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/><%--
 --%><c:set var="ss_form_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_form_gray_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_form_element_color" value="#ECECEC" scope="request"/><%--
 --%><c:set var="ss_form_element_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/><%--
---%><c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/><%-- 
+--%><c:set var="ss_style_text_field_background_color" value="#F0E0C0" scope="request"/><%-- 
 --%><c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/><%--
 --%><%--
   --
@@ -141,11 +132,10 @@
   --
   -- GALLERY
   --
---%><c:set var="ss_gallery_background_color" value="#F0F0F0" scope="request"/><%--
+--%><c:set var="ss_gallery_background_color" value="#ECECEC" scope="request"/><%--
 --%><c:set var="ss_gallery_image_background_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_gallery_anchor_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_gallery_anchor_hover_color" value="#003782" scope="request"/><%--
---%><c:set var="ss_gallery_rule_color" value="#CCCCCC" scope="request"/><%--
 --%><%--
   --
   -- GUESTBOOK
@@ -155,7 +145,7 @@
   --
   -- HELP COLORS
   --
---%><c:set var="ss_help_spot_background_color" value="#E8EFF7" scope="request"/><%--
+--%><c:set var="ss_help_spot_background_color" value="#E9EDF3" scope="request"/><%--
 --%><c:set var="ss_help_panel_background_color" value="transparent" scope="request"/><%--
 --%><c:set var="ss_lightBox_background_color" value="#ECECEC" scope="request"/><%--	
 --%><%--
@@ -176,7 +166,7 @@
   --
 --%><c:set var="ss_style_link_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_link_visited_color" value="#333333" scope="request"/><%--	
---%><c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/><%-- 	
+--%><c:set var="ss_style_link_hover_color" value="#003782" scope="request"/><%-- 	
 --%><%--
   --
   -- LOGO ICECORE COLORS
@@ -193,7 +183,7 @@
   --
 --%><c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_muted_label_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_style_muted_tag_color" value="#33465F" scope="request"/><%--
+--%><c:set var="ss_style_muted_tag_color" value="#003782" scope="request"/><%--
 --%><%--
   --
   -- PORTLET COLORS
@@ -210,17 +200,16 @@
 
   -- SLIDING TABLE
   --
---%><c:set var="ss_sliding_table_background_color" value="#FFFFFF" scope="request"/><%--
 --%><c:set var="ss_sliding_table_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_sliding_table_text_color" value="#333333" scope="request"/><%--
---%><c:set var="ss_sliding_table_link_hover_color" value="#AEC8E3" scope="request"/><%--
---%><c:set var="ss_sliding_table_row0_background_color" value="#FDFDFD" scope="request"/><%--
---%><c:set var="ss_sliding_table_row1_background_color" value="#E7F3F9" scope="request"/><%--
+--%><c:set var="ss_sliding_table_link_hover_color" value="#AFC8E3" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row0_background_color" value="#FAFAFA" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row1_background_color" value="#E9EDF3" scope="request"/><%--
 --%><%--
   --
   -- TAG
   --
---%><c:set var="ss_tag_color" value="#999966" scope="request"/><%--
+--%><c:set var="ss_tag_color" value="#003782" scope="request"/><%--
 --%><c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/><%--
 --%><%--
   --
@@ -233,44 +222,29 @@
   --
   -- TOOLBARs
   --
---%><c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/><%--
---%><c:set var="ss_toolbar_text_color" value="#000000" scope="request"/><%--
+--%><c:set var="ss_toolbar_background_color" value="#CCCCCC" scope="request"/><%--
+--%><c:set var="ss_toolbar_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
 --%><c:set var="ss_toolbar_border_color" value="#AFC8E3" scope="request"/><%--
---%><c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_toolbar_inactive" value="#999999" scope="request"/><%--
     
 --%><c:set var="ss_toolbar1_background_color" value="#AFC8E3" scope="request"/><%--
---%><c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
---%><c:set var="ss_toolbar1_border_color" value="#33CC66" scope="request"/><%--
 --%><c:set var="ss_toolbar1_dropdown_menu_color" value="#AFC8E3" scope="request"/><%--
---%><c:set var="ss_toolbar1_inactive" value="#AFC8E3" scope="request"/><%--
 
 --%><c:set var="ss_toolbar2_background_color" value="#CCCCCC" scope="request"/><%--
---%><c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
---%><c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/><%--
---%><c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_toolbar2_inactive" value="#999999" scope="request"/><%--
 
 --%><c:set var="ss_toolbar4_background_color" value="#DBE6F2" scope="request"/><%--
---%><c:set var="ss_toolbar4_text_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_toolbar4_link_hover_color" value="#E8EFF7" scope="request"/><%--
---%><c:set var="ss_toolbar4_border_color" value="#DBE6F2" scope="request"/><%--
---%><c:set var="ss_toolbar4_dropdown_menu_color" value="#DBE6F2" scope="request"/><%--
---%><c:set var="ss_toolbar4_inactive" value="#333333" scope="request"/><%--
 	
 --%><c:set var="ss_folder_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_folder_line_highlight_color" value="#CCCCCC" scope="request"/><%--	
 
---%><c:set var="ss_page_nav_background_color" value="#DEE7C6" scope="request"/><%--	
 --%><%--
   --
   -- REPLYS
   --
 --%><c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/><%--
---%><c:set var="edit_text_color" value="#3333FF" scope="request"/><%--
+--%><c:set var="edit_text_color" value="#003782" scope="request"/><%--
 --%><%--
   --
   -- TITLE
@@ -287,9 +261,4 @@
   --
 --%><c:set var="ss_generic_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_generic_border_shadow_color" value="#666666" scope="request"/><%--
---%><%--
-  --
-  -- ??
-  --
---%><c:set var="ss_style_drop_highlight" value="#FFFFFF" scope="request"/><%--
---%><c:set var="ss_style_drop_shadow" value="#666666" scope="request"/>
+--%>
