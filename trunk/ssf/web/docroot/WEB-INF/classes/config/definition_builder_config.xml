@@ -712,7 +712,7 @@
 		
 		<options>
 			<option name="profileEntryForm" initial="true" />
-			<option name="profileEntryView" initial="true" />
+			<option name="profileEntryView" />
 			<option name="profileEntryBusinessCard" initial="true" />
 			<option name="profileEntryMiniBusinessCard" initial="true" />			
 		</options>
@@ -931,7 +931,7 @@
 	</item>
 
 <!-- Profile entry view-->
-	<item name="profileEntryView" caption="__profile_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+	<item name="profileEntryView" caption="__profile_entry_view_definition" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
