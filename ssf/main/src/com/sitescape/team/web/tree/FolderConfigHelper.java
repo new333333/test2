@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.web.tree;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -42,5 +44,6 @@ public class FolderConfigHelper implements DomTreeHelper {
 	//each name must be unqiue
 	public String getTreeNameKey() {return "editForum";}
 	public String getPage() {return "";}
+	public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 			
 }

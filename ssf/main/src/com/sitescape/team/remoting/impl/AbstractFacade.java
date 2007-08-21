@@ -11,12 +11,7 @@
 package com.sitescape.team.remoting.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringBufferInputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,27 +41,22 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.index.IndexUtils;
-import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.remoting.Facade;
-import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
-import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
-import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
-import com.sitescape.util.FileUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -427,13 +417,12 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 
 		Document tree;
-		String treeKey = "";
 		if (binder instanceof Workspace) {
-			tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, treeKey, page), levels);
+			tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, new WebSvcTreeHelper(), page), levels);
 		} 
 		else {
 			//com.sitescape.team.domain.Folder topFolder = ((com.sitescape.team.domain.Folder)binder).getTopFolder();
-			tree = getFolderModule().getDomFolderTree(binder.getId(), new WsDomTreeBuilder(binder, false, this, treeKey, page), levels);
+			tree = getFolderModule().getDomFolderTree(binder.getId(), new WsDomTreeBuilder(binder, false, this, new WebSvcTreeHelper(), page), levels);
 			
 			//if (topFolder == null) topFolder = (com.sitescape.team.domain.Folder)binder;
 			//tree = getFolderModule().getDomFolderTree(topFolder.getId(), new WsDomTreeBuilder(topFolder, false, this, treeKey));

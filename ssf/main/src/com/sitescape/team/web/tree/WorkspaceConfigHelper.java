@@ -10,8 +10,9 @@
  */
 package com.sitescape.team.web.tree;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.AllModulesInjected;
 
 public class WorkspaceConfigHelper implements DomTreeHelper {
@@ -36,5 +37,6 @@ public class WorkspaceConfigHelper implements DomTreeHelper {
 	//each name must be unqiue
 	public String getTreeNameKey() {return "editWs";}
 	public String getPage() {return "";}
+	public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 
 }

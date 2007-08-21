@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.web.tree;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.web.WebKeys;
@@ -36,5 +38,6 @@ public class MailTreeHelper implements DomTreeHelper {
 	//each name must be unqiue
 	public String getTreeNameKey() {return "email";}
 	public String getPage() {return "";}
+	public void customize(AllModulesInjected bs, Object source, int type, Element element) {};
 }
 
