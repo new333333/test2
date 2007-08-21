@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `7/26/2007 1:43:15 PM'>
+   <String `8/20/2007 3:20:50 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2127,14 +2127,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `clickaddateamws_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddcontent_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2246,14 +2238,6 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `righthandcorner_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
    <String `selectemailsettings_a.png'>
    <Char Tab> 
    <String `1'>
@@ -2271,14 +2255,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `selectworkspacefolders_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `signin_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2330,6 +2306,12 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `clickaddcontent_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `clickcloseaddgroup.png'>
   > # end of ParaLine
  > # end of Para
@@ -2361,6 +2343,18 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `managemenus_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `righthandcorner_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `signin_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2670,39 +2664,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 52%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaddcontent_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1045245'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaddcontent_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 28%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3164,39 +3125,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `righthandcorner_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1044445'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `righthandcorner_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 27%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `selectemailsettings_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -3291,39 +3219,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 62%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `signin_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1043009'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `signin_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
