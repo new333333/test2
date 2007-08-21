@@ -107,7 +107,7 @@ body.ss_style_body {
 }
 .ss_style a:hover {
   color: ${ss_style_link_hover_color};
-  text-decoration:underline;
+  text-decoration: none;
 }
 .ss_title_link {
   text-decoration:underline;
@@ -2342,7 +2342,6 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 }
 
 .ss_actions_bar2, table.ss_actions_bar2_pane {
-	background-color: ${ss_toolbar2_background_color};
 	background-image: url(<html:imagesPath/>pics/background_toolbar2.gif);
 	background-repeat: repeat-x;
 }
@@ -2362,16 +2361,22 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 
 table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
 	background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
+	background-repeat: repeat-x;
+	width: 100%;
+	height: 18px;
+	padding: 0px;
+	margin: 0px;
+
+}
+
+.ss_actions_bar4, table.ss_actions_bar4_pane {
+background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 	width: 100%;
 	height: 18px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;
-	border-spacing: 2px;
-}
-
-.ss_actions_bar4, table.ss_actions_bar4_pane {
-
+	border-spacing: 0px;
 }
 
 .ss_actions_bar4 {
@@ -2394,7 +2399,6 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 
 .ss_actions_bar {
 	list-style-type:none;	
-	margin: 0;
 	padding: 0 0 0 5px;
 	height: 18px;
 }
@@ -2485,7 +2489,7 @@ ul.ss_actions_bar1 li a:hover {
 }
 
 .ss_actions_bar2 li a:hover {
-	background-color: ${ss_style_background_color_side_panel};
+	background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 	text-decoration:none;
 }
 
@@ -2557,7 +2561,6 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 
 .ss_actions_bar_submenu li  {
 	float:none;
-	border-bottom:1px solid ${ss_table_background_color_even_row};
 	border-right-style:none;
     line-height:18px;
 }
