@@ -56,7 +56,7 @@
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_background_color_side_panel" value="#EAF7DD" scope="request"/><%--
---%><c:set var="ss_style_background_color_side_panel_featured" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel_featured" value="#DBE6F2" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--
@@ -152,14 +152,14 @@
   --
   -- HEADER COLORS
   --
---%><c:set var="ss_style_header_bar_background" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_style_header_bar_background" value="#DBE6F2" scope="request"/><%--
 --%><c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/><%--	
 --%><%--
   --
   -- ICON LABEL COLORS
   --
---%><c:set var="ss_style_header_bar_background" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_style_header_bar_background" value="#DBE6F2" scope="request"/><%--
 --%><%--
   --
   -- LINK COLORS
