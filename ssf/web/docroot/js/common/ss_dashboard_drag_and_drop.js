@@ -18,6 +18,41 @@ dojo.provide("dojo.dnd.ss_dashboard_object");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.dnd.DragAndDrop");
 
+dojo.lang.extend(dojo.dnd.HtmlDragManager, {
+	/**
+	* Get the DOM element that is meant to drag.
+	* Loop through the parent nodes of the event target until
+	* the element is found that was created as a DragSource and 
+	* return it.
+	*
+	* @param event object The event for which to get the drag source.
+	*/
+	getDragSource: function(e){
+		var tn = e.target;
+		if(tn === dojo.body()){ return; }
+		var ss_dashboard_component_found = 0;
+		while((tn)){
+			if (tn.className && tn.className.indexOf('ss_dashboard_component') != -1) {
+				ss_dashboard_component_found = 1;
+				break;
+			}
+			tn = tn.parentNode;
+			if((!tn)||(tn === dojo.body())){ break; }
+		}
+		tn = e.target;
+		var ta = dojo.html.getAttribute(tn, this.dsPrefix);
+		while((!ta)&&(tn)){
+			tn = tn.parentNode;
+			if((!tn)||(tn === dojo.body())){ return; }
+			ta = dojo.html.getAttribute(tn, this.dsPrefix);
+		}
+		//Don't enable drag for ss_dashboard_components if not on the drag handle
+		if (e.target.className.indexOf('ss_dashboard_component_dragger') == -1 && 
+			ss_dashboard_component_found) return;
+		return this.dragSources[ta];
+	}
+});
+
 dojo.dnd.ss_dashboard_source = function(node, type){
 	node = dojo.byId(node);
 	this.dragObjects = [];
@@ -82,7 +117,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_source, {
 	*/
 	onSelected: function() {
 		//Make dragging start immediately
-		dojo.dnd.dragManager.threshold = 0
+		dojo.dnd.dragManager.threshold = 3
 		for (var i=0; i<this.dragObjects.length; i++) {
 			dojo.dnd.dragManager.selectedSources.push(new dojo.dnd.ss_dashboard_source(this.dragObjects[i]));
 		}

@@ -36,8 +36,7 @@ function ss_saveChangeLogEntryId(id) {
 <c:if test="${!empty ssBinderId}">
 <form class="ss_portlet_style ss_form" style="background-color: #eeeeee;"
   id="change_logEntryForm" 
-  name="change_logEntryForm" method="post" 
-  action="<portlet:renderURL windowState="maximized"/>">
+  name="change_logEntryForm" method="post" >
 
   <div id="ss_changeLogEntryForm" style="background-color: #eeeeee;">
 	 <ssf:find formName="change_logEntryForm" 

@@ -2648,7 +2648,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		portletSession.setAttribute("ssMeetingRecordsHeld", held);
 		
 		
-		Map meetingAttachments = getIcBrokerModule().getUserMeetingAttachments(user.getZonName(), held);
+		Map meetingAttachments = new HashMap();
+		try {
+			meetingAttachments = getIcBrokerModule().getUserMeetingAttachments(user.getZonName(), held);
+		} catch(ICException e) {
+			logger.warn("Cannot communicate with Zon meeting server: " + e.getLocalizedMessage());
+		}
 	
 		model.put("ss_meeting_records", meetingAttachments);
 		model.put("ssHeld", held);

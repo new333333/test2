@@ -1451,6 +1451,8 @@ ul.ss_dropdownmenu li {
 
 .ss_dashboard_component {
 }
+.ss_dashboard_component_dragger {
+}
 .ss_dashboard_component_title {
 }
 .ss_dashboard_dragHandle {

@@ -37,7 +37,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 
 <tr>
 <td valign="top" class="ss_dashboard_dragHandle">
-  <div class="ss_base_title_bar"
+  <div class="ss_base_title_bar ss_dashboard_component_dragger"
   <c:if test="${hideDashboardControls}">
 	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
