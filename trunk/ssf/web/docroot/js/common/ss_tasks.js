@@ -167,12 +167,17 @@
 			var oldCompletedTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_completed");
 			var newCompletedTD = createCompletedTD(task);
 			oldCompletedTD.parentNode.replaceChild(newCompletedTD, oldCompletedTD);	
-			
+try {
+			var oldDueTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_due");
+			var newDueTD = createDueDateTD(task);
+			oldDueTD.parentNode.replaceChild(newDueTD, oldDueTD);	
+						
 			if (task.status == "s3" || task.status == "s4") {
 				dojo.html.addClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			} else {
 				dojo.html.removeClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			}
+} catch (e) {alert(e);}			
 		}
 				
 		function drawInteractiveChart(task, parent) {
@@ -358,13 +363,15 @@
 		
 		function createDueDateTD(task) {
 			var tdObj = document.createElement('td');
-			if (task.status == "s3" || task.status == "s4") {
-				dojo.html.setClass(tdObj, "ss_task_completed");
+			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_due");
+			var txt = task.dueDate;
+			if (task.overdue && (task.status != "s3" && task.status != "s4")) {
+				dojo.html.addClass(tdObj, "ss_overdue");
+				txt += ss_tasks.overdueLabel ? " " + ss_tasks.overdueLabel : "";
 			}
-			
-			tdObj.appendChild(document.createTextNode(task.dueDate));
+			tdObj.appendChild(document.createTextNode(txt));
 			return tdObj;
-		}
+		}		
 		
 		function createTitleTD(task) {
 			var tdObj = document.createElement('td');
@@ -381,6 +388,7 @@
 					obj.viewTask(taskId);
 				}				
 			}(that, task.id));
+			
 			
 			if (!task.title || task.title == "") {
 				task.title = ss_noEntryTitleLabel;
