@@ -203,6 +203,7 @@ public class WebKeys {
 	public static final String ACTION_LOGIN_REPORT="login_report";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
+	public static final String ACTION_RELOAD_OPENER_PARENT="reload_opener_parent";
 	public static final String ACTION_APPLET_RESPONSE="applet_response";
 	public static final String ACTION_RELOAD_PARENT="reload_parent";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";

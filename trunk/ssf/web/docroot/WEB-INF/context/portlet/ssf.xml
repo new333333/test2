@@ -70,6 +70,7 @@
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
 						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
+						<entry key="reload_opener_parent"><ref bean="reloadOpenerController"/></entry>
 						<entry key="advanced_search"><ref bean="advancedSearchController"/></entry>
 												
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>

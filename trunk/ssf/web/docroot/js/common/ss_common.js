@@ -383,6 +383,37 @@ function ss_cancelButtonCloseWindow() {
 	}
 }
 
+function ss_reloadOpenerParent(fallBackUrl) {
+	//Are we at the top window?
+	if (self.opener) {
+		try {
+			if (self.opener.window != self.opener.top) {
+				if (self.opener.parent && self.opener.parent.ss_reloadUrl && self.opener.parent.ss_reloadUrl != "") {
+					self.opener.parent.location.replace(self.opener.parent.ss_reloadUrl);
+					setTimeout('self.window.close();', 200)
+					return false;
+				} else {
+					self.opener.parent.location.href = fallBackUrl;
+					setTimeout('self.window.close();', 200)
+					return false;
+				}
+			}
+			if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
+				self.opener.location.replace(self.opener.ss_reloadUrl);
+				setTimeout('self.window.close();', 200)
+			} else {
+				self.opener.location.href = fallBackUrl;
+				setTimeout('self.window.close();', 200)
+			}
+		} catch (e) {
+			ss_reloadOpener(fallBackUrl);
+		}
+	} else {
+		ss_reloadOpener(fallBackUrl);
+	}
+	return false;
+}
+
 function ss_reloadOpener(fallBackUrl) {
 	//Are we at the top window?
 	if (self.window != self.top) {
