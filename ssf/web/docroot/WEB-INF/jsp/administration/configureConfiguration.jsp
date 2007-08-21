@@ -90,30 +90,30 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <hr>
 <br>
 <h3><ssf:nlt tag="administration.configure_cfg.existing" text="Currently defined templates"/> <ssf:inlineHelp tag="ihelp.designers.current_templates"/></h3>
-<span class="labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span>
+<div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span></div>
 <ul class="ss_square">
 <c:forEach var="bconfig" items="${ssBinderConfigs}">
 <jsp:useBean id="bconfig" type="com.sitescape.team.domain.TemplateBinder"/>
 	<c:if test="${bconfig.reserved}">
-	<li><a href="" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
+	<li><a class="ss_bold ss_style ss_title_link" href="" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty bconfig.templateDescription.text}">
-		(<c:out value="<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>" escapeXml="false" />)
+		- <c:out value="<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
 		</c:if>
 		</li>
 	</c:if>
 
 </c:forEach>
 </ul>
-<span class="labelLeft"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span>
+<div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span></div>
 <ul class="ss_square">
 <c:forEach var="cconfig" items="${ssBinderConfigs}">
 <jsp:useBean id="cconfig" type="com.sitescape.team.domain.TemplateBinder"/>
 	<c:if test="${!cconfig.reserved}">
-	<li><a href="" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
+	<li><a class="ss_bold ss_style ss_title_link" href="" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty cconfig.templateDescription.text}">
-		(<c:out value="<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>" escapeXml="false" />)
+		- <c:out value="<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
 		</c:if>
 	</li>
 	</c:if>
