@@ -68,7 +68,7 @@
 
  <target id="basc4i1" pid="b9rtisc" name="GlossEntry" level="1"> <text>instant message (IM)</text> </target>
 
- <target id="basc024" pid="b9rtisc" name="GlossEntry" level="1"> <text>LifeRay (a)</text> </target>
+ <target id="basc024" pid="b9rtisc" name="GlossEntry" level="1"> <text>Liferay (a)</text> </target>
 
  <target id="basc3mt" pid="b9rtisc" name="GlossEntry" level="1"> <text>meeting</text> </target>
 
