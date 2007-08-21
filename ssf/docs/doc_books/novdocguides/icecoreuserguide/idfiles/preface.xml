@@ -10,6 +10,8 @@
 
  <target id="b9yxnfv" pid="preface" name="BridgeHead" level="1"> <text>Conventions</text> </target>
 
+ <target name="InformalTable" level="1"> <text>What you see</text> </target>
+
  <target id="b9yxhs9" pid="preface" name="row" level="2"> <text>What you see</text> </target>
 
  <target id="b9yxhsa" pid="preface" name="row" level="2"> <text>Click the Add a team workspace button.</text> </target>
