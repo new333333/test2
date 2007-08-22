@@ -13,12 +13,37 @@
 <% //User_list view %>
 <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="userlist_entry" type="com.sitescape.team.domain.Entry" />
-<div class="ss_entryContent">
 
+<c:if test="${empty ss_element_display_style}">
+<div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 <ul class="ss_nobullet">
 <c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name)) %>" >
-<li><c:out value="${selection.title}" escapeXml="false"/></span></li>
+<li><ssf:showUser user="${selection}" /></li>
 </c:forEach>
 </ul>
 </div>
+</c:if>
+
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <span class="ss_light"><c:out value="${property_caption}" /></span>
+  </td>
+  <td valign="top" align="left">
+	<ul class="ss_nobullet">
+	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name)) %>" >
+ 	 <li><ssf:showUser user="${selection}" /></li>
+	</c:forEach>
+  </td>
+</tr>
+</c:if>
+
+
+
+
+
+
+
+
