@@ -101,6 +101,7 @@ body.ss_style_body {
 .ss_style a {
   color: ${ss_style_link_color};
   text-decoration: none;
+  outline: none;
 }
 .ss_style a:visited {
   color: ${ss_style_link_visited_color};
