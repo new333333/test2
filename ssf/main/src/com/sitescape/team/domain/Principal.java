@@ -141,7 +141,7 @@ public abstract class Principal extends Entry  {
         this.emailAddress = emailAddress;
     }
     /**
-     * @hibernate.property length="64"
+     * @hibernate.property length="128"
      * @return Returns the loginName.
      */
     public String getName() {
@@ -161,7 +161,7 @@ public abstract class Principal extends Entry  {
        	return getName();		
     }
     /**
-     * @hibernate.property length="256"
+     * @hibernate.property length="128"
      * @return
      */
     public String getForeignName() {
