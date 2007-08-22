@@ -4131,15 +4131,15 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	padding: 0px 24px 0px 0px;
 }
 
-div.ss_thumbnail {float: left; width:62px; text-align:center;}
-div.ss_thumbnail img {width:50px;height:50px;padding:0px; margin:0px;}
+div.ss_thumbnail {float: left; width:24px; text-align:center;}
+div.ss_thumbnail img {width:24px;height:24px;padding:0px; margin:0px;}
 div.ss_entry {
 	float: left;
-	width: 340px;
+	width: 600px;
 }
 div.ss_entry p {
 	margin-top:    2px;
-	margin-bottom: 6px;
+	margin-bottom: 2px;
 }
 div.ss_entry_folderListView {
 	float: left;
@@ -4169,7 +4169,7 @@ img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
 
 .ss_rating_box {
-	margin:0px 0px 10px 0px;
+	margin:0px 0px 4px 0px;
 	padding:0px;
 }
 .ss_rating_box_content {
