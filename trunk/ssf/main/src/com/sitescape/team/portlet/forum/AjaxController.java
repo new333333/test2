@@ -2260,59 +2260,79 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			List binderIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, WebKeys.URL_BINDER_IDS));
-			Boolean isDashboardRequest = PortletRequestUtils.getBooleanParameter(request, "ssDashboardRequest", false);
-			model.put("ssDashboardRequest", isDashboardRequest);
+			model.put(WebKeys.URL_DASHBOARD_REQUEST, PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_DASHBOARD_REQUEST, false));
 			Binder binder = getBinderModule().getBinder(binderId);
 			
-			int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
-			int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
-			int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
-			
-			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-			
-			Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
-			currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
-			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-			EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
-			
-			String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
-			Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
-			model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, gridType));
-			model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, gridSize));
-			
-			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
-
-			Map folderEntries = new HashMap();
 			Map options = new HashMap();
-			
-			User user = RequestContextHolder.getRequestContext().getUser();
-			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-			options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
-			
-			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-	       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
-	       	
-	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+			boolean eventsByEntry = PortletRequestUtils.getBooleanParameter(request, "ssEntryEvents", false);
+			if (eventsByEntry) {
+				// get events by entry
+				Long entryId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 
-	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
-
-	       	List entries;
-			if (binder instanceof Folder || binder instanceof Workspace) {
-				Document searchFilter = SearchFiltersBuilder.buildFolderListQuery(request, binderIds);
-				Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
-				entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+				options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
 				
-				// folderEntries = getFolderModule().getEntries(binderId, options);
-				// entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+		       	List entries;
+				if (binder instanceof Folder || binder instanceof Workspace) {
+					Document searchFilter = SearchFiltersBuilder.buildGetEntryQuery(request, entryId);
+					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				} else {
+					//a template
+					entries = new ArrayList();
+				}
+				
+				EventsViewHelper.getEntryEvents(binder, entries, model, response, WebHelper.getRequiredPortletSession(request));
+
 			} else {
-				//a template
-				entries = new ArrayList();
-			}
+				// get events by date
 			
-			EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response, portletSession);
+				int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
+				int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
+				int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
+				
+				PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+				
+				Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
+				currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
+				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+				EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
+				
+				String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
+				Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
+				model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, gridType));
+				model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, gridSize));
+				
+				CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
+	
+				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
+		       	
+		        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+	
+		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+			
+				User user = RequestContextHolder.getRequestContext().getUser();
+				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+				options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+				
+				
+		       	List entries;
+				if (binder instanceof Folder || binder instanceof Workspace) {
+					Document searchFilter = SearchFiltersBuilder.buildFolderListQuery(request, binderIds);
+					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				} else {
+					//a template
+					entries = new ArrayList();
+				}
+				
+				EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response, portletSession);
+			}
 		} else {
 			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);
 		}

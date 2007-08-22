@@ -73,5 +73,9 @@
 								ss_moveDivToBody("infoBox2${prefix}");
 							});
 						});
+	if (!window.ssScope) { ssScope = {}; };
+		ssScope.refreshView = function (entryId) {
+		ss_calendar_${prefix}.refreshEntryEvents(entryId);
+	}
 
 </script>

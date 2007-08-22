@@ -106,6 +106,16 @@ public class EventsViewHelper {
 
 	public static final String DAY_VIEW_TYPE_DEFAULT = DAY_VIEW_TYPE_WORK;
 	
+	public static void getEntryEvents( Binder folder,
+			List entrylist, Map model, RenderResponse response, PortletSession portletSession) {
+
+		List events = EventsViewHelper.getCalendarEvents(entrylist,	null);
+		
+		Map calendarViewBean = new HashMap();
+		calendarViewBean.put("events", events);
+		
+		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
+	}
 	
 	public static void getEvents(Date currentDate,
 			CalendarViewRangeDates calendarViewRangeDates, Binder folder,
@@ -150,7 +160,7 @@ public class EventsViewHelper {
 			
 			// Add the creation date as an event
 			Date creationDate = (Date) entry.get(EntityIndexUtils.CREATION_DATE_FIELD);
-			if (viewRangeDates.dateInView(creationDate)) {
+			if (viewRangeDates == null || viewRangeDates.dateInView(creationDate)) {
 				result.add(getEventBean(
 						createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, (String)entry.get(EntityIndexUtils.DOCID_FIELD)), 
 						entry, EVENT_TYPE_CREATION));
@@ -158,7 +168,7 @@ public class EventsViewHelper {
 
 			// Add the activity date as an event
 			Date lastActivityDate = (Date) entry.get(IndexUtils.LASTACTIVITY_FIELD);
-			if (viewRangeDates.dateInView(lastActivityDate)) {
+			if (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate)) {
 				result.add(getEventBean(
 						createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, (String)entry.get(EntityIndexUtils.DOCID_FIELD)), 
 						entry, EVENT_TYPE_ACTIVITY));
@@ -223,7 +233,7 @@ public class EventsViewHelper {
 					
 					// in results we have only entries with events in view range but some entries can have
 					// events out of view, so we have to test each event date
-					if (viewRangeDates.periodInView(evStartDate.getTime(), evEndDate.getTime())) {
+					if (viewRangeDates == null || viewRangeDates.periodInView(evStartDate.getTime(), evEndDate.getTime())) {
 						events.add(getEventBean(event, entry, EVENT_TYPE_EVENT));
 					}
 				}

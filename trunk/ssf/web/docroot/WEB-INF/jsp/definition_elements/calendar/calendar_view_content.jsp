@@ -41,7 +41,10 @@
 		}
 		
 		ss_calendar_${prefix} = new ss_calendar("${prefix}");
-		
+		if (!window.ssScope) { ssScope = {}; };
+		ssScope.refreshView = function (entryId) {
+			ss_calendar_${prefix}.refreshEntryEvents(entryId);
+		}
 	</script>
 </c:if>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_nav_bar.jsp" %>

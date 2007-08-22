@@ -138,7 +138,7 @@ public class ModifyEntryController extends SAbstractController {
 					}
 					if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 						//In calendar view, we want to refresh the folder, too
-						setupReloadOpenerParent(response, folderId, entryId);
+//						setupReloadOpenerParent(response, folderId, entryId);
 					}
 				}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {

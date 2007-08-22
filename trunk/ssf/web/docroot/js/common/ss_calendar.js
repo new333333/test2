@@ -204,6 +204,29 @@ function ss_calendar(prefix) {
 			this.loadEventsByDate();
 	    },
 	    
+	    loadEntryEvents : function (entryId) {
+	    	var url = window["ss_findEventsUrl" + prefix];
+
+			url += "\&ssEntryEvents=true";
+			url += "\&entryId=" + entryId;
+			var bindArgs = {
+		    	url: url,
+				error: function(type, data, evt) {
+					alert(ss_not_logged_in);
+				},
+				load: function(type, data, evt) {
+					try {
+					ss_cal_Events.set(data.events);
+			        ss_cal_Events.redrawAll();
+					} catch (e){alert(e);}
+				},
+				mimetype: "text/json",
+				preventCache: true,
+				method: "get"
+			};
+			dojo.io.bind(bindArgs);	    	
+	    },
+	    
 	    loadEventsByDate : function (grid, date, requiredDay) {
 		   	if (date && ss_cal_CalData.getMonthViewInfo(date) &&
 		   		(!requiredDay || ss_cal_CalData.getMonthViewInfo(requiredDay))) {
@@ -244,7 +267,6 @@ function ss_calendar(prefix) {
 				url += "\&month=" + m;
 				url += "\&dayOfMonth=" + dateToLoad.getDate();
 			}
-			url += "\&randomNumber="+ss_random++;	
 			if (grid) {
 				url += "\&ssGridSize=" + ss_cal_Grid.gridSize;
 				url += "\&ssGridType=" + grid;
@@ -300,6 +322,7 @@ function ss_calendar(prefix) {
 				},
 							
 				mimetype: "text/json",
+				preventCache: true,
 				method: "get"
 			};
 			dojo.io.bind(bindArgs);
@@ -940,6 +963,7 @@ function ss_calendar(prefix) {
 	    displayId: 0,
 	    
 	    eventData: new Array(),
+	    eventIdsByEntryId: new Array(),
 	    
 	    collisions: new Array(),
 	    collisionI: new Array(),
@@ -947,8 +971,7 @@ function ss_calendar(prefix) {
 	    order: new Array(),// eventType -> date(YYYY/MM/DD) -> events key
 	    
 	    monthGridEvents: new Array(),
-	    dayGridEvents: new Array(),
-	    
+	    dayGridEvents: new Object(),
 	            
 	    set: function(newEvents) {
 	        for (var i in newEvents) {	        
@@ -963,13 +986,41 @@ function ss_calendar(prefix) {
 	            nei.endDate = new Date(nei.endDate.year, nei.endDate.month - 1, nei.endDate.dayOfMonth, nei.endDate.hour, nei.endDate.minutes);
 	
 	           	this.eventData[nei.eventId] = nei;
+	            if (typeof this.eventIdsByEntryId[nei.entryId] == "undefined") {
+	            	this.eventIdsByEntryId[nei.entryId] = new Array();
+	            }
+	            this.eventIdsByEntryId[nei.entryId].push(nei.eventId);
 	            
 	            this.setupDayDisplayRules(nei);
 	            this.setupMonthDisplayRules(nei);
 	            this.sortEvent(nei);
-	            
 	        }
 	
+			this.reorderEvent();
+	    },
+	    
+	    removeEntryEvents: function(entryId) {
+	    	if (!this.eventIdsByEntryId[entryId]) {
+	    		return false;
+	    	}
+	    	for (var i = 0; i < this.eventIdsByEntryId[entryId].length; i++) {
+	    		this.removeEvent(this.eventData[this.eventIdsByEntryId[entryId][i]]);
+	    		delete this.eventData[this.eventIdsByEntryId[entryId][i]];
+	    	}
+	    	this.reorderEvent();
+			//ss_cal_Events.redrawAll();
+	    },
+	    
+	    removeEvent: function(event) {
+	    	if (!event) {
+	    		return;
+	    	}
+			this.removeDayDisplayRules(event);
+        	this.removeMonthDisplayRules(event);
+        	this.unsortEvent(event);
+	    },
+	    
+		reorderEvent: function() {
 			for (i in this.order) {
 	            if (i == 'indexOf') continue;
 				if (typeof this.order[i] != "undefined") {
@@ -980,7 +1031,7 @@ function ss_calendar(prefix) {
 		    			}
 		    		}
 	    		}
-	        }
+	        }	    	
 	    },
 	
 	    incrCollision: function(eventType, t) {
@@ -994,6 +1045,17 @@ function ss_calendar(prefix) {
 	        return this.collisions[eventType][t];
 	    },
 	    
+		decrCollision: function(eventType, t) {
+	        if (typeof this.collisions[eventType] == "undefined") { 
+	        	return 0;
+	        }
+	        if (typeof this.collisions[eventType][t] == "undefined") { 
+	        	return 0; 
+	        }
+	        this.collisions[eventType][t]--;
+	        return this.collisions[eventType][t];
+	    },
+	    
 	    setupDayDisplayRules: function(event) {
 	    	var date = event.startDate;
 	    	
@@ -1001,6 +1063,17 @@ function ss_calendar(prefix) {
 	    	date = date.addDays(1);
 	    	while (date.daysTillDate(event.endDate) >= 0) {
 	    		this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/0");
+	    		date = date.addDays(1);
+	    	}
+	    },
+	    
+	    removeDayDisplayRules: function(event) {
+	    	var date = event.startDate;
+	    	
+	    	this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/" + date.getHours());
+	    	date = date.addDays(1);
+	    	while (date.daysTillDate(event.endDate) >= 0) {
+	    		this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/0");
 	    		date = date.addDays(1);
 	    	}
 	    },
@@ -1022,6 +1095,25 @@ function ss_calendar(prefix) {
 				date = date.addDays(1);
 	    	}
 	    },
+	    
+	    removeMonthDisplayRules: function(event) {
+	        var date = event.startDate;
+	    	while (date.daysTillDate(event.endDate) >= 0) {
+				var key = date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate();
+		        this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
+		        if (typeof this.collisionM[event.eventType] != "undefined") { 
+			        if (typeof this.collisionM[event.eventType][key] != "undefined") {
+			        	for (var i = 0; i < this.collisionM[event.eventType][key].length; i++) {
+			        		if (this.collisionM[event.eventType][key][i] == event.eventId) {
+			        			this.collisionM[event.eventType][key].splice(i, 1);
+			        		}
+			        	}
+			        }
+		        }
+
+				date = date.addDays(1);
+	    	}
+	    },	    
 	
 	    collisionCount: function(eventType, year, month, dayOfMonth, start) {
 	        return this.collisions[eventType][year + "/" + month + "/" + dayOfMonth + "/" + Math.floor(start)];
@@ -1061,6 +1153,39 @@ function ss_calendar(prefix) {
 	    	}
 	    },    
 	    
+		unsortEvent: function(event) {
+	    	if (typeof this.order[event.eventType] == "undefined") {
+	    		return;
+	    	}
+	    	
+	    	var date = event.startDate;
+	    	var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+	    	if (typeof this.order[event.eventType][key] == "undefined") {
+	    		return;
+	    	}
+	    	
+	    	for (var i = 0; i < this.order[event.eventType][key].length; i++) {
+	    		var value = (Math.floor(event.start * 10) + 1011) + "/" + event.eventId;
+	    		if (this.order[event.eventType][key][i] == value) {
+	    			this.order[event.eventType][key].splice(i, 1);
+	    		}
+	    	}
+	    	
+	    	date = date.addDays(1);
+	    	while (date.daysTillDate(event.endDate) >= 0) {
+	    		key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+	    		if (typeof this.order[event.eventType][key] != "undefined") {
+	    			for (var i = 0; i < this.order[event.eventType][key].length; i++) {
+			    		var value = (0 + 1011) + "/" + event.eventId;
+			    		if (this.order[event.eventType][key][i] == value) {
+			    			this.order[event.eventType][key].splice(i, 1);
+			    		}
+			    	}
+	    		}  
+				date = date.addDays(1);
+	    	}
+	    },
+	    
 	    undrawEvents: function() {
 	        this.undrawMonthEvents();
 	        this.undrawDayEvents();
@@ -1073,17 +1198,15 @@ function ss_calendar(prefix) {
 	    },
 	
 	    undrawDayEvents: function() {
-			while (this.dayGridEvents.length) {
-				var eventId = this.dayGridEvents.pop();
-				var event = this.eventData[eventId];
-				
-				while (event.displayIds.length) {
-					var displayId = event.displayIds.pop();
+	        for (var eventId in this.dayGridEvents) {
+	        	var eventDisplayIds = this.dayGridEvents[eventId];
+				while (eventDisplayIds.length) {
+					var displayId = eventDisplayIds.pop();
 					if (displayId) {
 		            	dojo.dom.removeNode(dojo.byId("calevt" + prefix + displayId).parentNode);
 		           	}
-	            }
-	        }	
+	            }	        	
+	        }
 	    },
 	    
 	    fullWithZeros: function (c) {
@@ -1142,24 +1265,25 @@ function ss_calendar(prefix) {
 							continues = this.CONTINUES_LEFT;
 						}
 								
-					
+						var eventDisplayId;
 			            if (e.eventType == "event" && e.allDay) {
 			                var grid = "ss_cal_dayGridAllDay" + prefix;
-			                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
-			                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
+			                eventDisplayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
 			                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(date.getFullYear(), date.getMonth(), date.getDate()), -1, e.title, e.text,
 			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, continues, e);
 			            } else {
 			                var grid = "ss_cal_dayGridHour" + prefix;
 			                if (duration == 0) duration = 30;
-			                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
-			                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
+			                eventDisplayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
 			                       this.collisionCount(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       this.collisionIndex(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       gridDay, start, duration, e.title, e.text,
 			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, false, e);
 			            }
-			            this.dayGridEvents.push(eid);
+			            if (!this.dayGridEvents[eid]) {
+			            	this.dayGridEvents[eid] = new Array();
+			            }
+			            this.dayGridEvents[eid][gridDay] = eventDisplayId;
 					}
 				}
 			
@@ -1208,7 +1332,7 @@ function ss_calendar(prefix) {
 	            //console.log("requestHover", eventId);
 	            this.hoverTimer = setTimeout(function(){ss_cal_Events.displayHover(eventId, gridDay);}, 1000);
 	            var e = this.eventData[eventId];
-	            var n = dojo.byId("calevt" + prefix + e.displayIds[gridDay]).parentNode;
+	            var n = dojo.byId("calevt" + prefix + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).parentNode;
 	            n.onmouseout = function() { ss_cal_Events.cancelHover(true)};
 	        }
 	    },
@@ -1235,7 +1359,7 @@ function ss_calendar(prefix) {
 	        //console.log("display?", eventId, this.hoverEventId);
 	        if (this.overEventId == eventId + "-" + gridDay) {
 	            var e = this.eventData[eventId];
-	            var n = dojo.byId("calevt" + prefix + e.displayIds[gridDay]).parentNode;
+	            var n = dojo.byId("calevt" + prefix + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).parentNode;
 	            //console.log("Hover: " + eventId);
 	            this.hoverEventId = eventId + "-" + gridDay;
 	
@@ -1243,7 +1367,7 @@ function ss_calendar(prefix) {
 	            var ebox = dojo.html.abs(n);
 	            var eboxm = dojo.html.getBorderBox(n);
 	            hb.style.visibility = "visible";
-	            hb.innerHTML = dojo.byId("calevt" + prefix + e.displayIds[gridDay]).innerHTML;
+	            hb.innerHTML = dojo.byId("calevt" + prefix + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).innerHTML;
 	            hb.style.backgroundColor = ss_cal_CalData.box(e.binderId);
 	            hb.style.borderColor = ss_cal_CalData.border(e.binderId);
 	            dojo.html.setOpacity(hb,0);
@@ -1416,6 +1540,19 @@ function ss_calendar(prefix) {
 		ss_cal_CalData.loadInitial();
 	}
 	
+	this.removeEntryEvents = function (entryId) {
+		ss_cal_Events.removeEntryEvents(entryId);		
+	}
+	
+	this.loadEntryEvents = function(entryId) {
+		ss_cal_CalData.loadEntryEvents(entryId);
+	}
+	
+	this.refreshEntryEvents = function(entryId) {
+		setTimeout(function(){
+			ss_cal_Events.removeEntryEvents(entryId);
+			ss_cal_CalData.loadEntryEvents(entryId);}, 2000);
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1640,6 +1777,7 @@ function ss_calendar(prefix) {
 
 	this.ss_cal_Events = ss_cal_Events;
 	this.ss_cal_Grid = ss_cal_Grid;
+	
 
 }
 
