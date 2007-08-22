@@ -49,7 +49,13 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
 --%><c:forEach var="toolbarMenu" items="${ss_toolbar}"><%--
     --%><c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}"><%--
-        --%><li id="parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><%--
+        --%><c:if test="${!empty toolbarMenu.value.qualifiers.highlight}"><%--
+			--%><li class="ss_menu_item_highlighted" <%--
+        --%></c:if><%--
+        --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
+			--%><li <%--
+        --%></c:if><%--
+        --%>id="parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><%--
         
         --%><%-- BEGIN Helpspots for folder menus --%><%--
         
