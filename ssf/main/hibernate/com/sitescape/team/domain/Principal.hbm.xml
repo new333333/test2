@@ -32,7 +32,7 @@
     <property name="zoneId"/>
 	<property name="logVersion"/>
     <property name="emailAddress" length="256"/>
-    <property name="name" length="64"/>
+    <property name="name" length="128"/>
     <property name="foreignName" length="128" />
 	<property name="theme" length="64"/>
 <properties name="nameKey" unique="true" update="false" insert="false">
