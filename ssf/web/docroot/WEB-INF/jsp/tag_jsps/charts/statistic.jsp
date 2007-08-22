@@ -19,6 +19,7 @@
 	Map percentStatistic = (Map) request.getAttribute("percentStatistic"); 
 	String statisticLabel = (String) request.getAttribute("statisticLabel"); 
 	Boolean showLabel = (Boolean) request.getAttribute("showLabel");
+	Boolean labelAll = (Boolean) request.getAttribute("labelAll");
 	Boolean showLegend = (Boolean) request.getAttribute("showLegend");
 	String barStyle = (String) request.getAttribute("barStyle"); 
 %>
@@ -26,11 +27,12 @@
 <c:set var="showLegend" value="<%= showLegend%>" scope="request"/>
 <c:set var="showLabel" value="<%= showLabel%>" scope="request"/>
 <c:set var="barStyle" value="<%= barStyle%>" scope="request"/>
+<c:set var="labelAll" value="<%= labelAll%>" scope="request"/>
 
 <c:if test="${!empty percentStatistic}">
 	
 	<c:if test="${showLabel}">
-		<h5 class="ss_statisticLabel"><ssf:nlt tag="<%=statisticLabel%>"/>:</h5>
+		<h5 class="ss_statisticLabel"><ssf:nlt tag="<%=statisticLabel%>"/><c:if test="${labelAll}"> (<ssf:nlt tag="alt.viewAll"/>)</c:if>:</h5>
 	</c:if>
 	
 	<table class="ss_statisticContainer ${barStyle}"><tr>
