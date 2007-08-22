@@ -49,6 +49,7 @@ public class StatisticTag extends BodyTagSupport {
 	private Map statistic;
 	private String style = ColoredBar;
 	private Boolean showLabel = true;
+	private Boolean labelAll = false;
 	private Boolean showLegend = true;
 	
 	public int doStartTag() {
@@ -104,6 +105,7 @@ public class StatisticTag extends BodyTagSupport {
 			}
 			httpReq.setAttribute("showLabel", this.showLabel);
 			httpReq.setAttribute("showLegend", this.showLegend);
+			httpReq.setAttribute("labelAll", this.labelAll);
 			httpReq.setAttribute("barStyle", this.style);
 			
 			String jsp = "/WEB-INF/jsp/tag_jsps/charts/statistic.jsp";
@@ -117,6 +119,11 @@ public class StatisticTag extends BodyTagSupport {
 			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
+			this.statistic = null;
+			this.style = ColoredBar;
+			this.showLabel = true;
+			this.labelAll = false;
+			this.showLegend = true;
 		}
 		return EVAL_PAGE;		
 	}
@@ -135,5 +142,9 @@ public class StatisticTag extends BodyTagSupport {
 	
 	public void setShowLegend(Boolean showLegend) {
 		this.showLegend = showLegend;
+	}
+
+	public void setLabelAll(Boolean labelAll) {
+		this.labelAll = labelAll;
 	}
 }

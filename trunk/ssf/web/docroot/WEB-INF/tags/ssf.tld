@@ -315,6 +315,12 @@
 			<type>boolean</type>
 		</attribute>
 		<attribute>
+			<name>labelAll</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
 			<name>showLegend</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

@@ -24,10 +24,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </script>
 
-
-<!-- STATISTIC -->
 <table class="ss_statisticTable"><tr>
-
 <c:if test="${!empty ssBinder &&
 				!empty ssBinder.customAttributes['statistics'] && 
 				!empty ssBinder.customAttributes['statistics'].value && 
@@ -35,17 +32,16 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 	<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
 		<c:if test="${!empty definition.value}">
 			<c:if test="${!empty definition.value.priority}">
-				<td><ssf:drawStatistic statistic="${definition.value.priority}" style="coloredBar" showLabel="true" showLegend="true"/></td>
+				<td><ssf:drawStatistic statistic="${definition.value.priority}" style="coloredBar" showLabel="true" showLegend="true" labelAll="true"/></td>
 			</c:if>
 
 			<c:if test="${!empty definition.value.status}">
-				<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true"/></td>
+				<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true" labelAll="true"/></td>
 			</c:if>
 		</c:if>
 	</c:forEach>
 </c:if>
 </tr></table>
-<!-- STATISTIC-END -->
 
 
 <div class="ss_folder_border">
