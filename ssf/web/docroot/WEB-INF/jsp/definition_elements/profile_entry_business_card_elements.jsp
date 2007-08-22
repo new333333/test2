@@ -36,9 +36,9 @@
         <c:set var="showBusinessCard" value="yes"/>
     </c:if>
 </c:if>
-<div class="ss_content_rule" style="margin-bottom: 10px; margin-top: 5px;" align="right">
-<a href="javascript:;" onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');">[+]</a>
-<a href="javascript:;" onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');">[-]</a>
+<div class="ss_content_rule" style="margin-bottom: 10px; margin-top: 5px; padding-right: 5px;" align="right">
+<a href="javascript:;" onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');"><img border="0" src="<html:imagesPath/>icons/profile_bizcard_full.gif"/></a>
+<a href="javascript:;" onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');"><img border="0" src="<html:imagesPath/>icons/profile_bizcard_small.gif"/></a>
 </div>
 <c:if test="${showBusinessCard == 'no'}"><div id="ss_largeBusinessCard" style="display:none;"></c:if>
 <c:if test="${showBusinessCard == 'yes'}"><div id="ss_largeBusinessCard" style="display:block;"></c:if>
