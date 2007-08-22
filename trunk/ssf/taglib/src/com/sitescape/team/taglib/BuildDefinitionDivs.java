@@ -891,7 +891,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br/>\n");
 						}
 					
-						String eType = sourceRoot.attributeValue("definitionType");
+						String eType = rootConfigElement.attributeValue("definitionType");
 						List definitions;
 						if (!Validator.isNull(eType)) {
 							int t = Integer.parseInt(eType);

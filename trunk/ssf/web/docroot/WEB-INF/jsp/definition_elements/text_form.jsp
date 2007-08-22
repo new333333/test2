@@ -26,8 +26,17 @@
 	} else {
 		caption = "<span class=\"ss_bold\">"+caption+"</span><br/>";
 	}
+	String required = (String) request.getAttribute("property_required");
+	Boolean req = Boolean.parseBoolean(required);
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
 %>
-<div ><%= caption %>
+<div class="ss_entryContent">
+<div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
 <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> 
  value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
 </div>

@@ -39,7 +39,8 @@
 		required = "";
 	}
 %>
-<span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
+<div class="ss_entryContent">
+<div class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></div>
 <div id="<%= elementName %>_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
 <div id="<%= elementName %>_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
 <c:choose>
@@ -57,4 +58,5 @@
          required="<%= req %>"
          hasDuration="<%= hasDur %>"
          hasRecurrence="<%= hasRecur %>" />
+</div>
 </div>

@@ -30,6 +30,6 @@
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
-<div>
+<div class="ss_entryContent">
 <input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></input>
 </div>
