@@ -56,7 +56,7 @@
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
---%><c:set var="ss_style_background_color_side_panel_featured" value="#DEE7C6" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel_featured" value="#EAF7DD" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--
@@ -135,7 +135,7 @@
 --%><c:set var="ss_gallery_background_color" value="#ECECEC" scope="request"/><%--
 --%><c:set var="ss_gallery_image_background_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_gallery_anchor_color" value="#333333" scope="request"/><%--
---%><c:set var="ss_gallery_anchor_hover_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_gallery_anchor_hover_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- GUESTBOOK
@@ -152,21 +152,21 @@
   --
   -- HEADER COLORS
   --
---%><c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/><%--
+--%><c:set var="ss_style_header_bar_background" value="#EAF7DD" scope="request"/><%--
 --%><c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/><%--	
 --%><%--
   --
   -- ICON LABEL COLORS
   --
---%><c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/><%--
+--%><c:set var="ss_style_header_bar_background" value="#EAF7DD" scope="request"/><%--
 --%><%--
   --
   -- LINK COLORS
   --
 --%><c:set var="ss_style_link_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_link_visited_color" value="#333333" scope="request"/><%--	
---%><c:set var="ss_style_link_hover_color" value="#003782" scope="request"/><%-- 	
+--%><c:set var="ss_style_link_hover_color" value="#0000FC" scope="request"/><%-- 	
 --%><%--
   --
   -- LOGO ICECORE COLORS
@@ -183,7 +183,7 @@
   --
 --%><c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_muted_label_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_style_muted_tag_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_style_muted_tag_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- PORTLET COLORS
@@ -209,7 +209,7 @@
   --
   -- TAG
   --
---%><c:set var="ss_tag_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_tag_color" value="#0000FC" scope="request"/><%--
 --%><c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/><%--
 --%><%--
   --
@@ -244,17 +244,17 @@
   -- REPLYS
   --
 --%><c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/><%--
---%><c:set var="edit_text_color" value="#003782" scope="request"/><%--
+--%><c:set var="edit_text_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- TITLE
   --
---%><c:set var="ss_title_line_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_title_line_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- TREE
   --
---%><c:set var="ss_tree_highlight_line_color" value="#84C763" scope="request"/><%--
+--%><c:set var="ss_tree_highlight_line_color" value="#996699" scope="request"/><%--
 --%><%--
   --
   -- ??
