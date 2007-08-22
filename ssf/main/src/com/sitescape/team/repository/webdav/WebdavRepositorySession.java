@@ -143,9 +143,10 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 
 	public void readVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName, OutputStream out) 
+			String relativeFilePath, String versionName, 
+			String latestVersionName, OutputStream out) 
 	throws RepositoryServiceException, UncheckedIOException {
-		InputStream is = readVersioned(binder, entity, relativeFilePath, versionName);
+		InputStream is = readVersioned(binder, entity, relativeFilePath, versionName, latestVersionName);
 		
 		try {
 			FileCopyUtils.copy(is, out);
@@ -155,8 +156,9 @@ public class WebdavRepositorySession implements RepositorySession {
 		}		
 	}
 	
-	public InputStream readVersioned(Binder binder, DefinableEntity entity, String relativeFilePath, 
-			String versionName) throws RepositoryServiceException, UncheckedIOException {
+	public InputStream readVersioned(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName, String latestVersionName) 
+		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath;
 			if(versionName != null)			

@@ -159,19 +159,30 @@ public interface RepositorySession {
 			
 	/**
 	 * Reads the content of the specified version of the file resource from
-	 * the repository. If <code>versionName</code> is null, reads the latest
-	 * content of the file.
+	 * the repository if <code>versionName</code> is not null. In this case,
+	 * <code>latestVersionName</code> is irrelevant and ignored.
+	 * <p>
+	 * If <code>versionName</code> is null, reads the latest content of the file.
+	 * In this case, underlying repository implementations can choose to utilize 
+	 * the optional <code>latestVersionName</code> if specified.
 	 * <p>
 	 * This method can only be called on a versioned file. 
 	 */
 	public void readVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName, OutputStream out) 
+			String relativeFilePath, String versionName, 
+			String latestVersionName, OutputStream out) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
 	 * Returns an <code>InputStream</code> from which to read the content of
-	 * the specified version of the file resource from the repository.
+	 * the specified version of the file resource from the repository if
+	 * <code>versionName</code> is not null. In this case, <code>latestVersionName</code> 
+	 * is irrelevant and ignored.
+	 * <p>
 	 * If <code>versionName</code> is null, reads the latest content of the file.
+	 * In this case, underlying repository implementations can choose to utilize 
+	 * the optional <code>latestVersionName</code> if specified.
+	 * <p>
 	 * The caller is responsible for closing the stream after use. 
 	 * <p>
 	 * This method can only be called on a versioned file.
@@ -182,11 +193,12 @@ public interface RepositorySession {
 	 * @param relativeFilePath A pathname of the file relative to the entity. This may
 	 * simply be the name of the file. 
 	 * @param versionName the name of the version or null
+	 * @param latestVersionName the name of the latest version or null
 	 * @throws RepositoryServiceException thrown if the specified version does
 	 * not exist, or if some other error occurs
 	 */
 	public InputStream readVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName) 
+			String relativeFilePath, String versionName, String latestVersionName) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	/**
