@@ -42,6 +42,7 @@ public interface AdminModule {
 		manageTemplate,
 		report,
 		manageFunctionMembership,
+		manageErrorLogs
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
