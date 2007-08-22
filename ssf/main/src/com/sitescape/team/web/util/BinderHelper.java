@@ -1403,7 +1403,6 @@ public class BinderHelper {
 			FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
 			Set entrySet = new HashSet();
 			entrySet.add(entry);
-			String[] userIds = toList.trim().split(" ");
 			Set users = new HashSet();
 			users.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("_sendMail_toList")));
 			
