@@ -13,6 +13,7 @@
 <% // Subscribe to entry on submit %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssConfigJspStyle != 'mail'}">
+<div class="ss_entryContent">
 <div style="padding:15px 0px 4px 0px;">
 <ssf:expandableArea title="${property_caption}">
 <div class="ss_entryContent ss_indent_medium">
@@ -40,5 +41,6 @@
   </table>
 </div>
 </ssf:expandableArea>
+</div>
 </div>
 </c:if>

@@ -162,8 +162,6 @@
 				<option name="file" caption="__family_file" />
 				<help>ihelp.other.definition_family</help>
 			</property>
-			<property name="icon" caption="__icons.entry" type="iconList" path="icons.entry" 
-				default="/icons/page.png" />
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
 		</properties>
 		
