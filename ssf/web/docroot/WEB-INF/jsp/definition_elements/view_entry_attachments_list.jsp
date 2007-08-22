@@ -25,6 +25,17 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <tbody>
 <c:set var="selectionCount" value="0"/>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
+  <jsp:useBean id="selection" type="com.sitescape.team.domain.FileAttachment" />
+<%
+	String fn = selection.getFileItem().getName();
+	String ext = "";
+	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
+	boolean editInPlaceSupported = false;
+%>
+  <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
+<%  editInPlaceSupported = true;  %>
+  </ssf:ifSupportsEditInPlace>
+
   <c:set var="selectionCount" value="${selectionCount + 1}"/>
   <c:set var="versionCount" value="0"/>
   <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
@@ -39,6 +50,101 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   </c:if>
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
+
+<%
+	if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
+%>
+		<td valign="top" width="80" rowspan="${thumbRowSpan}">
+		  <div class="ss_thumbnail_gallery ss_thumbnail_small"> 
+			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
+				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
+					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
+						binder="${ssDefinitionEntry.parentBinder}"
+						entity="${ssDefinitionEntry}"
+						fileAttachment="${selection}"/>" 
+						onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
+						    '${ssDefinitionEntry.id}', 
+						    '${ss_namespace_attach}', 
+						    '<%= operatingSystem %>', 
+							'${selection.id}');
+							return false;"
+				    	<ssf:title tag="title.open.file">
+					      <ssf:param name="value" value="${selection.fileItem.name}" />
+				    	</ssf:title>
+					><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
+					  src="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="viewType" value="thumbnail"/>
+					    </ssf:url>"/></a>
+				</ssf:isFileEditorConfiguredForOS>
+			</ssf:editorTypeToUseForEditInPlace>
+			
+			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
+				<a href="<ssf:ssfsInternalAttachmentUrl 
+						binder="${ssDefinitionEntry.parentBinder}"
+						entity="${ssDefinitionEntry}"
+						fileAttachment="${selection}"/>"
+				><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
+					  src="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="viewType" value="thumbnail"/>
+					    </ssf:url>"/></a>
+			</ssf:editorTypeToUseForEditInPlace>
+
+		  </div>
+		</td>
+		<td class="ss_att_title" width="25%">
+			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
+				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
+					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
+						binder="${ssDefinitionEntry.parentBinder}"
+						entity="${ssDefinitionEntry}"
+						fileAttachment="${selection}"/>" 
+						onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
+						    '${ssDefinitionEntry.id}', 
+						    '${ss_namespace_attach}', 
+						    '<%= operatingSystem %>', 
+							'${selection.id}');
+							return false;"
+				    	<ssf:title tag="title.open.file">
+					      <ssf:param name="value" value="${selection.fileItem.name}" />
+				    	</ssf:title>
+					><c:out value="${selection.fileItem.name} "/></a>
+				</ssf:isFileEditorConfiguredForOS>
+			</ssf:editorTypeToUseForEditInPlace>
+			
+			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
+				<a href="<ssf:ssfsInternalAttachmentUrl 
+						binder="${ssDefinitionEntry.parentBinder}"
+						entity="${ssDefinitionEntry}"
+						fileAttachment="${selection}"/>"
+				><c:out value="${selection.fileItem.name} "/></a>
+			</ssf:editorTypeToUseForEditInPlace>
+
+			<c:if test="${!empty selection.fileLock}">
+			  <br/>
+			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
+	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
+			  </ssf:nlt></span>
+			</c:if>
+		</td>
+<%
+	}
+
+	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
+	    //Thie is IE and a ppt file; use the edit app to launch powerpoint because of bug in IE and/or powerpoint
+%>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}"><div class="ss_thumbnail_gallery ss_thumbnail_small"> 
 		<a style="text-decoration: none;" href="<ssf:fileurl 
 					    webPath="viewFile"
@@ -91,6 +197,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			  </ssf:nlt></span>
 			</c:if>
 		</td>
+<%
+	}
+%>
+
 		<td class="ss_att_meta" width="10%"></td>
 		<td class="ss_att_meta">
 		<ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">

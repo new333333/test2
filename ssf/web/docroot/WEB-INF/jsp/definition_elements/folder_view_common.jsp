@@ -431,6 +431,14 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
  <c:if test="${!empty ssFolderColumns['download']}">
   <ssf:slidingTableColumn>
     <c:if test="${hasFile2 && oneFile2}">
+<%
+	String fn = "";
+	if (entry1.containsKey("_fileName")) fn = (String) entry1.get("_fileName");
+	String ext = "";
+	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
+	if (!isIECheck || !ext.equals(".ppt")) {
+		//Don't show ppt file urls for IE. Powerpoint 2007 doesn't work with these urls
+%>
       <a href="<ssf:url 
 	    webPath="viewFile"
 	    folderId="${entry1._binderId}"
@@ -441,6 +449,9 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	    </ssf:url>"  class="ss_download_link"
 		onClick="return ss_openUrlInWindow(this, '_blank');"
 	  ><span><ssf:nlt tag="entry.download"/></span></a>
+<%
+	}
+%>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
