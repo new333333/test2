@@ -13,21 +13,21 @@
 <%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
 
 <script>
-function reloadFolderFromApplet${ssBinderId}${ss_namespace}()
-{
+function reloadFolderFromApplet${ssBinderId}${ss_namespace}() {
 	//parent.ss_hideAddAttachmentDropboxAndAJAXCall${ssBinderId}${ss_namespace}();
 }
 
-function ss_hideFolderDropTarget${ssBinderId}${ss_namespace}()
-{
+function ss_hideFolderDropTarget${ssBinderId}${ss_namespace}(strErrorMessage) {
+	if (strErrorMessage != "") {
+		alert(strErrorMessage);
+	}
 	if (self.parent) {
 		self.parent.location.reload(true);
 		self.parent.focus();
 	}
 }
 
-function getFolderAppletBgColor${ssBinderId}${ss_namespace}()
-{
+function getFolderAppletBgColor${ssBinderId}${ss_namespace}() {
 	return "#ffffff";
 }
 
@@ -162,6 +162,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "fileLoadingInProgress" value="ss_startLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileLoadingEnded" value="ss_endLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
+			    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
 			<c:if test="<%= !isIE %>">
 			</applet>
