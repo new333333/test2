@@ -268,7 +268,7 @@ public class PostFiles extends Thread {
                  continue;
               }
               filename = f.getName();
-              
+             
               //Hemanth: 06/13/2007 - Used for Applet specific code in AbstractEntryProcessor.createNewEntryWithAttachmentAndTitle
               //writeFile(localFilePath, out, boundary, topFrame, topDir, "filesFromApplet"+(i+1));
               writeFile(localFilePath, out, boundary, topFrame, topDir, strFileName+(i+1));
@@ -289,13 +289,39 @@ public class PostFiles extends Thread {
             displayResponse(topFrame, conn);
 
         } catch (java.lang.OutOfMemoryError oome) {
-          String jsfunc = new String("memoryError");
+        	//Hemanth: right now we cannot put the string to be translated into the messages.properties file
+        	//once we are ready to put message strings into messages.properties file, we can put the error message
+        	//into the messages.properties file and use it from there. Until then, we will use the hardcoded
+        	//error messages mentioned below.
+        	String strErrorMessage = "There is a problem with the file being uploaded. \nPlease check to see if file size is large.";
+        	System.out.println("Error Uploading File: Out of Memory Error: "+ oome + "\n" + strErrorMessage);
+        	reportErrorMessage(topFrame, conn, strErrorMessage);
         } catch (Exception e) {
-        	System.out.println("Exception e: "+e);
-            displayResponse(topFrame, conn);
+        	System.out.println("Error Uploading File: Exception: "+e);
+        	reportErrorMessage(topFrame, conn, e.toString());
         }
     }
-
+    
+    public void reportErrorMessage(TopFrame topFrame, HttpURLConnection conn, String strError) {
+		try {
+			topFrame.dataSink.changeIcon(topFrame.dataSink.StaticGif);
+            topFrame.dataSink.fileLoadingEnded();
+			
+			String reloadFunction = topFrame.getParameter("reloadFunctionName");
+			String uploadErrorMessage = topFrame.getParameter("uploadErrorMessage");
+			if (reloadFunction == null || strError == null) return;
+			JSObject win = JSObject.getWindow(topFrame);
+			String args[] = {uploadErrorMessage + " : \n" + strError};
+			Object foo = win.call(reloadFunction,args);
+		} catch (Exception e) { 
+			System.out.println("reportErrorMessage: e " + e);
+		}
+        finally {
+        	conn.disconnect();
+        	conn = null;
+        }
+    }
+    
     /**
      * The web server is going to sendback an html page which contains the
      * results of the upload. This routine pulls it down, and displays it, and
@@ -349,6 +375,8 @@ public class PostFiles extends Thread {
 					url = url.trim();
 				}
 				//url = url.substring(4);
+				topFrame.dataSink.changeIcon(topFrame.dataSink.StaticGif);
+	            topFrame.dataSink.fileLoadingEnded();
 				try {
 					String reloadFunction = topFrame.getParameter("reloadFunctionName");
 					if (reloadFunction.equals(null)) return;
