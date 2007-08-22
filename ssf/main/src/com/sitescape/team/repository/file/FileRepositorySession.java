@@ -735,6 +735,18 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	private String newVersionName() {
+		// Although we use timestamp (in ms) as version name, and have a couple
+		// of methods that sort files by those values, we really do NOT rely 
+		// on the timestamp values to determine the order of the versions.
+		// That would be wrong thing to do, since when running in a clustered
+		// environment, we can not assume that all participating nodes have
+		// their clocks perfectly synchronized each other. 
+		// For that reason, the system depends on the metadata kept on the 
+		// application side outside of repository, specifically version number 
+		// to version name mappings, to determine the actual version order.
+		// So it is important to understand that, when customer sees the files
+		// stored on the file system, they must NOT assume that the order of
+		// the timestamp values reflects the order of the versions. 
 		return String.valueOf(System.currentTimeMillis());
 	}
 	
