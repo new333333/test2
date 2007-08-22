@@ -171,9 +171,10 @@ public class JCRRepositorySession implements RepositorySession {
 
 
 	public void readVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName, OutputStream out) 
+			String relativeFilePath, String versionName, 
+			String latestVersionName, OutputStream out) 
 	throws RepositoryServiceException, UncheckedIOException {
-		InputStream is = readVersioned(binder, entity, relativeFilePath, versionName);
+		InputStream is = readVersioned(binder, entity, relativeFilePath, versionName, latestVersionName);
 		
 		try {
 			FileCopyUtils.copy(is, out);
@@ -184,7 +185,7 @@ public class JCRRepositorySession implements RepositorySession {
 	}
 	
 	public InputStream readVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName) 
+			String relativeFilePath, String versionName, String latestVersionName) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return readFileAsStream(binder, entity, relativeFilePath, versionName);
@@ -663,7 +664,7 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 		
 		public java.io.InputStream getInputStream() throws java.io.IOException {
-			return readVersioned(binder, entity, relativeFilePath, versionName);
+			return readVersioned(binder, entity, relativeFilePath, versionName, null);
 		}
 		
 		public java.io.OutputStream getOutputStream() throws java.io.IOException {

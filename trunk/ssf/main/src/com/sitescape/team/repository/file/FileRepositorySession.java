@@ -274,7 +274,8 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	public void readVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName, OutputStream out) 
+			String relativeFilePath, String versionName, 
+			String latestVersionName, OutputStream out) 
 		throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
@@ -283,7 +284,7 @@ public class FileRepositorySession implements RepositorySession {
 			if(versionName != null)
 				file = getVersionFile(binder, entry, relativeFilePath, versionName);
 			else
-				file = getLatestFile(binder, entry, relativeFilePath);
+				file = getLatestFile(binder, entry, relativeFilePath, latestVersionName);
 			readFile(file, out);
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
@@ -297,7 +298,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public InputStream readVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName) 
+			String relativeFilePath, String versionName, String latestVersionName) 
 		throws RepositoryServiceException, UncheckedIOException {
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		
@@ -306,7 +307,7 @@ public class FileRepositorySession implements RepositorySession {
 			if(versionName != null)
 				file = getVersionFile(binder, entry, relativeFilePath, versionName);
 			else
-				file = getLatestFile(binder, entry, relativeFilePath);
+				file = getLatestFile(binder, entry, relativeFilePath, latestVersionName);
 			
 			try {
 				return new BufferedInputStream(new FileInputStream(file));
@@ -839,18 +840,22 @@ public class FileRepositorySession implements RepositorySession {
 	 * @param relativeFilePath
 	 * @return
 	 */
-	private File getLatestFile(Binder binder, DefinableEntity entry, String relativeFilePath) {
+	private File getLatestFile(Binder binder, DefinableEntity entry, 
+			String relativeFilePath, String latestVersionName) {
 		File workingFile = getWorkingFile(binder, entry, relativeFilePath);
 		
 		if(workingFile.exists()) {
 			return workingFile;
+		}
+		else if(latestVersionName != null) {
+			return getVersionFile(binder, entry, relativeFilePath, latestVersionName);			
 		}
 		else {
 			File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
 			if(latestVersionFile != null)
 				return latestVersionFile;
 			else
-				throw new RepositoryServiceException("The specified file does not exist");
+				throw new RepositoryServiceException("The specified file does not exist");			
 		}
 	}
 }

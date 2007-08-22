@@ -160,25 +160,26 @@ public class RepositoryUtil {
 	}
 
 	public static void readVersioned(String repositoryName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath, String versionName, OutputStream out)
+			DefinableEntity entry, String relativeFilePath, String versionName, 
+			String latestVersionName, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
-			session.readVersioned(binder, entry, relativeFilePath, versionName, out);
+			session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName, out);
 		} finally {
 			session.close();
 		}
 	}
 
 	public static InputStream readVersioned(String repositoryName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath, String versionName)
+			DefinableEntity entry, String relativeFilePath, String versionName, String latestVersionName)
 			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		InputStream in = null;
 		try {
-			in = session.readVersioned(binder, entry, relativeFilePath, versionName);
+			in = session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName);
 			return new SessionWrappedInputStream(in, session);
 		} finally {
 			if(in == null)

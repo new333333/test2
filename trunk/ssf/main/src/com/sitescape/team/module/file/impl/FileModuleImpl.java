@@ -317,6 +317,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		String versionName = null;
+		String latestVersionName = null;
 		
 		if(fa instanceof VersionAttachment) {
 			versionName = ((VersionAttachment) fa).getVersionName();
@@ -324,14 +325,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		else {
 			if(fa.getFileLock() == null)
 				versionName = fa.getHighestVersion().getVersionName();
+			else
+				latestVersionName = fa.getHighestVersion().getVersionName();
 		}
 		
 		RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
-				fa.getFileItem().getName(), versionName, out);			
+				fa.getFileItem().getName(), versionName, latestVersionName, out);			
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
 		String versionName = null;
+		String latestVersionName = null;
 		
 		if(fa instanceof VersionAttachment) {
 			versionName = ((VersionAttachment) fa).getVersionName();
@@ -339,10 +343,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		else {
 			if(fa.getFileLock() == null)
 				versionName = fa.getHighestVersion().getVersionName();
+			else
+				latestVersionName = fa.getHighestVersion().getVersionName();
 		}
 		
 		return RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
-				fa.getFileItem().getName(), versionName);
+				fa.getFileItem().getName(), versionName, latestVersionName);
 	}
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
