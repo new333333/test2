@@ -1407,8 +1407,10 @@ public class BinderHelper {
 			Set users = new HashSet();
 			users.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("_sendMail_toList")));
 			
-			Set teamMemberIds = entry.getParentFolder().getTeamMemberIds();
-			if (!teamMemberIds.isEmpty()) users.addAll(teamMemberIds);
+			if (!toTeam.equals("")) {
+				Set teamMemberIds = entry.getParentFolder().getTeamMemberIds();
+				if (!teamMemberIds.isEmpty()) users.addAll(teamMemberIds);
+			}
 			
 			String messageBody = "<a href=\"";
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
