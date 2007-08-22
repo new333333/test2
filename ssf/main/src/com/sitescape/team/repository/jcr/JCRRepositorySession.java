@@ -594,9 +594,16 @@ public class JCRRepositorySession implements RepositorySession {
 			String relativeFilePath) throws RepositoryException {
 		Node contentNode = getFileContentNode(binder, entity, relativeFilePath);
 		
-		Version version = contentNode.checkin();
+		if(contentNode.isCheckedOut()) {
+			// currently checked out
+			Version version = contentNode.checkin();
 		
-		return version.getName();
+			return version.getName();
+		}
+		else {
+			// not checked out
+			return null;
+		}
 	}
 	
 	private long getFileContentLength(Binder binder, DefinableEntity entity, 

@@ -1803,32 +1803,40 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		if(tryCheckin) {
 			String versionName = session.checkin(binder, entity, relativeFilePath);
-			VersionAttachment va = fa.findFileVersion(versionName);
-			if(va == null) {
-				// The checkin method above returned a version name that we don't
-				// know about, which means that it must have created a new version
-				// of the file.
-				// Note: Never compare the returned version name against the highest
-				// version alone in our metadata. It is not guaranteed to work always.
-				// Instead, we must check the name against all versions. This is due
-				// to the possibility (extremely unlikely but nevertheless theoretically
-				// possible) of version out-of-orderness between the metadata side
-				// and the repository side. For example, it is possible that V1 in 
-				// metadata points to v2 in the repository, while V2 in metadata
-				// points to v1 in the repository. This can happen when you have two
-				// threads (or two nodes in a cluster) try to create a new version
-				// of the same file exactly at the same time. Because the updates
-				// to the db metadata and to the repository metadata are not 
-				// transactionally atomic, two concurrent requests can in theory
-				// result in such intertwined scenario. Consequently the notion of 
-				// highest version may not necessarily agree between the application
-				// side and the repository side. Therefore it is important to check
-				// the returned version name against all versions.
-				Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
-						relativeFilePath, versionName));
-				updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null);
-				metadataDirty = true;
-			}   					
+			if(versionName != null) {
+				// The repository says it created a new version. Although repository
+				// wouldn't lie, we still need to check to make sure that we do not
+				// end up in a situation where two metadata rows point to the same
+				// version in the repository based on the reality that the operations
+				// on the repository and the metadata are not performed in a truly
+				// atomic manner due to lack of such transactional support (Paranoic?)
+				VersionAttachment va = fa.findFileVersion(versionName);
+				if(va == null) {
+					// The checkin method above returned a version name that we don't
+					// know about, which means that it must have created a new version
+					// of the file.
+					// Note: Never compare the returned version name against the highest
+					// version alone in our metadata. It is not guaranteed to work always.
+					// Instead, we must check the name against all versions. This is due
+					// to the possibility (extremely unlikely but nevertheless theoretically
+					// possible) of version out-of-orderness between the metadata side
+					// and the repository side. For example, it is possible that V1 in 
+					// metadata points to v2 in the repository, while V2 in metadata
+					// points to v1 in the repository. This can happen when you have two
+					// threads (or two nodes in a cluster) try to create a new version
+					// of the same file exactly at the same time. Because the updates
+					// to the db metadata and to the repository metadata are not 
+					// transactionally atomic, two concurrent requests can in theory
+					// result in such intertwined scenario. Consequently the notion of 
+					// highest version may not necessarily agree between the application
+					// side and the repository side. Therefore it is important to check
+					// the returned version name against all versions.
+					Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
+							relativeFilePath, versionName));
+					updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null);
+					metadataDirty = true;
+				}  
+			}
 		}
 		
 		lock.setDirty(Boolean.FALSE);
