@@ -453,6 +453,19 @@ public class ViewController extends  SAbstractController {
 			reports.put(element.attributeValue("title"), element);
 		}
 		
+		//Roles configuration
+		if (getAdminModule().testAccess(AdminOperation.manageErrorLogs)) {
+			element = DocumentHelper.createElement("child");
+			element.addAttribute("title", NLT.get("administration.system_error_logs"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ADMIN_ACTION_GET_LOG_FILES);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+		}
 		if (!reports.isEmpty()) {
 			elements.put(reportElement.attributeValue("title"), reportElement);
 			for (Iterator iter=reports.entrySet().iterator(); iter.hasNext(); ) {

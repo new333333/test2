@@ -229,6 +229,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			case manageFunction:
 			case managePosting:
 			case manageTemplate:
+			case manageErrorLogs:
   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    				break;
 			case report:
