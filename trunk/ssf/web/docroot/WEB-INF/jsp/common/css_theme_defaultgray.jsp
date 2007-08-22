@@ -135,7 +135,7 @@
 --%><c:set var="ss_gallery_background_color" value="#ECECEC" scope="request"/><%--
 --%><c:set var="ss_gallery_image_background_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_gallery_anchor_color" value="#333333" scope="request"/><%--
---%><c:set var="ss_gallery_anchor_hover_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_gallery_anchor_hover_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- GUESTBOOK
@@ -166,7 +166,7 @@
   --
 --%><c:set var="ss_style_link_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_link_visited_color" value="#333333" scope="request"/><%--	
---%><c:set var="ss_style_link_hover_color" value="#003782" scope="request"/><%-- 	
+--%><c:set var="ss_style_link_hover_color" value="#0000FC" scope="request"/><%-- 	
 --%><%--
   --
   -- LOGO ICECORE COLORS
@@ -183,7 +183,7 @@
   --
 --%><c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_muted_label_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_style_muted_tag_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_style_muted_tag_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- PORTLET COLORS
@@ -209,7 +209,7 @@
   --
   -- TAG
   --
---%><c:set var="ss_tag_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_tag_color" value="#0000FC" scope="request"/><%--
 --%><c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/><%--
 --%><%--
   --
@@ -227,7 +227,7 @@
 --%><c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
 --%><c:set var="ss_toolbar_border_color" value="#AFAFAF" scope="request"/><%--
     
---%><c:set var="ss_toolbar1_background_color" value="#CCCCCC" scope="request"/><%--
+--%><c:set var="ss_toolbar1_background_color" value="#AFAFAF" scope="request"/><%--
 --%><c:set var="ss_toolbar1_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/><%--
 --%><c:set var="ss_toolbar1_dropdown_menu_color" value="#AFAFAF" scope="request"/><%--
 
@@ -244,17 +244,17 @@
   -- REPLYS
   --
 --%><c:set var="ss_replies_background_color" value="#DDDDDD" scope="request"/><%--
---%><c:set var="edit_text_color" value="#003782" scope="request"/><%--
+--%><c:set var="edit_text_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- TITLE
   --
---%><c:set var="ss_title_line_color" value="#003782" scope="request"/><%--
+--%><c:set var="ss_title_line_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- TREE
   --
---%><c:set var="ss_tree_highlight_line_color" value="#777777" scope="request"/><%--
+--%><c:set var="ss_tree_highlight_line_color" value="#996699" scope="request"/><%--
 --%><%--
   --
   -- ??
