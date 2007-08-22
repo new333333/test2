@@ -5597,3 +5597,7 @@ function ss_tagSearchObj(obj) {
 	}
 	return false;
 }
+
+function ss_scrollOuter() {
+	window.scrollTo(0,0);
+}
