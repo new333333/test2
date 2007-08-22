@@ -247,16 +247,13 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 		Vector result = (Vector)findUserByScreenName(screenname);
 		
-		if (result == null || result.get(0) == null || 
-				((Vector)result.get(0)).get(0) == null ||
-				((Vector)((Vector)result.get(0)).get(0)).get(1) == null) {
-			return userId;
-		}
-		
 		// the result is buried 4 deep (vectors within vectors)
+		try {
 		userId = (String) ((Vector) ((Vector) ((Vector)result).get(0))
 				.get(0)).get(1);
-		
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// leave userId null
+		}
 		return userId;
 	}
 
