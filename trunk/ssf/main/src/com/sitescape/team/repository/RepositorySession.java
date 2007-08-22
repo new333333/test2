@@ -292,16 +292,15 @@ public interface RepositorySession {
 	 * version created. It is illegal to call this method on an unversioned 
 	 * resource.
 	 * <p>
-	 * If the resource is already checked in, this method has no effect but
-	 * returns the name of the current (latest) checked-in version of the 
-	 * resource. 
+	 * If the resource is already checked in, this method has no effect and
+	 * returns <code>null</code>.
 	 * 
 	 * @param session
 	 * @param binder
 	 * @param entity
 	 * @param relativeFilePath A pathname of the file relative to the entity. 
 	 * This may simply be the name of the file. 
-	 * @return the name of the new version
+	 * @return the name of the new version or null
 	 * @throws RepositoryServiceException
 	 */
 	public String checkin(Binder binder, DefinableEntity entity, 

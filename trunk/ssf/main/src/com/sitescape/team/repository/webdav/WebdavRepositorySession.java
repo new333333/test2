@@ -263,8 +263,6 @@ public class WebdavRepositorySession implements RepositorySession {
 		try {
 			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 			String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr, resourcePath);
-			String versionResourcePath = null;
-			String versionName = null;
 			if(checkedInVersionResourcePath == null || checkedInVersionResourcePath.length() == 0) {
 				// The resource is currently checked out. 
 				String location = wdr.checkin(resourcePath);
@@ -274,18 +272,17 @@ public class WebdavRepositorySession implements RepositorySession {
 				
 				String newVersionResourcePath = locationURLToResourcePath(location);
 				
-				versionResourcePath = newVersionResourcePath;
+				String versionName = getVersionName(wdr, newVersionResourcePath);
+				
+				if(versionName == null || versionName.length() == 0)
+					throw new RepositoryServiceException("Failed to get version name for [" + newVersionResourcePath + "]");
+				
+				return versionName;
 			}
 			else {
 				// The resource is currently checked in. 
-				versionResourcePath = checkedInVersionResourcePath;
+				return null;
 			}			
-			versionName = getVersionName(wdr, versionResourcePath);
-			
-			if(versionName == null || versionName.length() == 0)
-				throw new RepositoryServiceException("Failed to get version name for [" + versionResourcePath + "]");
-			
-			return versionName;
 		} catch (IOException e) {
 			wdr.logError(logger);
 			throw new UncheckedIOException(e);

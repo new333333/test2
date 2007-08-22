@@ -363,8 +363,8 @@ public class FileRepositorySession implements RepositorySession {
 					// point of view (as strange it may sound) due to the potentially 
 					// possible out-of-orderness between the db's metadata and the
 					// repository's metadata. However, since a file is only checked out
-					// to be replaced with a new content, it should not really matter
-					// too much which version we use as the basis for initial state. 
+					// to be immediately replaced with a new content, it should not 
+					// really matter which version we use as the basis for initial state. 
 					File latestVersionFile = getLatestVersionFile(binder, entry, relativeFilePath);
 					
 					if(latestVersionFile != null) {
@@ -427,8 +427,7 @@ public class FileRepositorySession implements RepositorySession {
 	        	return createVersionFileFromTemporaryFile(binder, entry, relativeFilePath, workingFile);
 			}	
 			else { // It is already checked in.
-				// Return this repository's notion of the latest version of this file.
-				return getLatestVersionName(binder, entry, relativeFilePath);
+				return null;
 			}
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
