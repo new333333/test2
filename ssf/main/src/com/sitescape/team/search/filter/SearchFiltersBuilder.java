@@ -33,5 +33,20 @@ public class SearchFiltersBuilder {
 
 		return searchFilter.getFilter();
 	}
+	
+	public static Document buildGetEntryQuery(PortletRequest request,
+			Long entryId) {
+		SearchFilter searchFilter = new SearchFilter();
+
+		String filterName = PortletRequestUtils.getStringParameter(request,
+				SearchFilterKeys.FilterNameField, "");
+		searchFilter.addFilterName(filterName);
+
+		if (entryId != null) {
+			searchFilter.addEntryId(entryId.toString());
+		}
+		
+		return searchFilter.getFilter();
+	}
 
 }

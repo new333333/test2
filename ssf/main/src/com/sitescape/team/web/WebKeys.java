@@ -149,6 +149,7 @@ public class WebKeys {
 	public static final String URL_TASK_PRIORITY="ssTaskPriority";
 	public static final String URL_TASK_STATUS="ssTaskStatus";
 	public static final String URL_TASK_COMPLETED="ssTaskCompleted";
+	public static final String URL_DASHBOARD_REQUEST="ssDashboardRequest";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
