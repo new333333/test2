@@ -823,7 +823,7 @@ DIV.ss_help_style P {
     margin-bottom: 10px;
 }
 
-div.ss_help_style ul li {
+div.ss_help_style ul li, ul.ss_square li {
     margin-top: 3px;
     margin-bottom: 6px;
     margin-left: 25px;
