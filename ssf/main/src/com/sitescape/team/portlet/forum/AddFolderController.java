@@ -60,7 +60,7 @@ public class AddFolderController extends SAbstractController {
 			//Now process the rest of the form
 			if (newBinder != null) {
 				//See if there are any team members specified
-				if (formData.containsKey("inheritBtnNo")) {
+				if (formData.containsKey("inheritFromParent") && formData.get("inheritFromParent").equals("no")) {
 					//Save the inheritance state
 					getBinderModule().setTeamMembershipInherited(newId, false);
 				} else {
