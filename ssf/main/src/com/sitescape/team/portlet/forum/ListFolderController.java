@@ -1289,6 +1289,7 @@ public static final String[] monthNamesShort = {
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
+		Map dropdownQualifiers;
 		//	The "Add entry" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
@@ -1297,7 +1298,9 @@ public static final String[] monthNamesShort = {
 
 				if (defaultEntryDefinitions.size() > 1) {
 					int count = 1;
-					entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
+					dropdownQualifiers = new HashMap();
+					dropdownQualifiers.put("highlight", new Boolean(true));
+					entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"), "", dropdownQualifiers);
 					qualifiers = new HashMap();
 					qualifiers.put("popup", new Boolean(true));
 					//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
