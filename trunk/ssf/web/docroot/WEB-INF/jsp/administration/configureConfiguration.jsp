@@ -189,45 +189,71 @@ function ss_confirmDeleteConfig() {
 
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-<div class="ss_clear"></div>
-<div class="ss_tab_canvas">
-     <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
-				
-<% // Folder toolbar %>
-<div class="ss_content_inner">
-<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar2 ss_actions_bar"/>
-</div>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+    <td valign="top" class="ss_view_sidebar">
 
-<div class="ss_content_inner">
-<% // Navigation links %>
-<c:if test="${!empty ssNavigationLinkTree}">
-<c:set var="ss_breadcrumbsShowIdRoutine" value="<%= cTreeName + "_showId"%>" scope="request" />
-<c:set var="ss_breadcrumbsTreeName"  value="<%=cTreeName%>" scope="request" />
+	<% // Navigation bar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<div class="ss_content_inner">
-<%@ include file="/WEB-INF/jsp/administration/config_navigation_links.jsp" %>
-</div>
-</c:if>
-<br/>
-<% // Show the workspace according to its definition %>
-<c:if test="${ssBinder.entityType == 'workspace'}">
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  processThisItem="true"
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}"
-  entry="${ssBinder}" />
-</c:if>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
-  </c:if>
+	<% // Tabs %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
-</div>
-</div>
-</div>
+	<% // Folder Sidebar %>
+
+    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+
+    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+        initOpen="true" sticky="true">
+		<c:if test="${!empty ssSidebarWsTree}">
+		<ssf:tree treeName="sidebarWsTree" 
+		  treeDocument="${ssSidebarWsTree}" 
+		  highlightNode="${ssBinder.id}" 
+		  showIdRoutine="ss_tree_showId"
+		  rootOpen="true"
+		  nowrap="true"/>
+		</c:if>
+	</ssf:sidebarPanel>
+
+	</div>
+
+
+	</td>
+	<td valign="top" class="ss_view_info">
+
+	<% // Folder toolbar %>
+	<div class="ss_content_inner">
+	<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar2 ss_actions_bar"/>
+	</div>
+	
+	<div class="ss_content_inner">
+	<% // Navigation links %>
+	<c:if test="${!empty ssNavigationLinkTree}">
+	<c:set var="ss_breadcrumbsShowIdRoutine" value="<%= cTreeName + "_showId"%>" scope="request" />
+	<c:set var="ss_breadcrumbsTreeName"  value="<%=cTreeName%>" scope="request" />
+	
+	<div class="ss_content_inner">
+	<%@ include file="/WEB-INF/jsp/administration/config_navigation_links.jsp" %>
+	</div>
+	</c:if>
+	<br/>
+	<% // Show the workspace according to its definition %>
+	<c:if test="${ssBinder.entityType == 'workspace'}">
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  processThisItem="true"
+	  configElement="${ssConfigElement}" 
+	  configJspStyle="${ssConfigJspStyle}"
+	  entry="${ssBinder}" />
+	</c:if>
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${ssConfigElement}" 
+	  configJspStyle="${ssConfigJspStyle}" />
+	  </c:if>
+	</td>
+	</tr></tbody></table>
+
 </div>
 
 <div class="ss_formBreak" align="left"/>
