@@ -2370,17 +2370,8 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	font-family: ${ss_style_title_font_family};
 }
 
-table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
-	background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
-	background-repeat: repeat-x;
-	width: 100%;
-	height: 20px;
-	padding: 0px;
-	margin: 0px;
 
-}
-
-.ss_actions_bar4, table.ss_actions_bar4_pane {
+table.ss_actions_bar4_pane {
     background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 	background-repeat: repeat-x;
 	width: 100%;
@@ -2413,12 +2404,13 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 	list-style-type:none;	
 	padding: 0 0 0 5px;
 	height: 20px;
+	margin: 0px;
 }
 
 .ss_action_bar ul, .ss_actions_bar_submenu {
 	list-style-type: none;
 }
-.ss_actions_bar li {
+ul.ss_actions_bar li {
 	float:left;
 	display: inline;
 	margin: 0px 0px 0px 0px;
@@ -2561,6 +2553,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
  <c:if test="<%= isIE %>">
   filter: alpha(opacity=75);
  </c:if>
+ margin: 0px;
 }
 
 .ss_actions_bar_submenu {
