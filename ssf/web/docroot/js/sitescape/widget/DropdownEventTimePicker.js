@@ -19,7 +19,8 @@ dojo.widget.defineWidget(
 		onValueChanged: function(/*Date*/dateObj) {
 			this.getWidgets();
 			try {			
-				if (this.startDateWidget && this.endDateWidget && this.startTimeWidget && this.endTimeWidget) {
+				if (this.startDateWidget && this.endDateWidget && this.startTimeWidget && this.endTimeWidget &&
+					this.endDateWidget.getDate()) {
 					var diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
 					if (diff == 0) {
 						if (dojo.date.compare(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.widget.TimePicker.util.fromRfcDateTime(this.endTimeWidget.getTime()), dojo.date.compareTypes.TIME) > 0) {
@@ -28,7 +29,7 @@ dojo.widget.defineWidget(
 					}
 				}
 			} catch (e) {
-				// it's notpossible to adjust dates, ignore it (probably date is empty)
+				// it's not possible to adjust dates, ignore it (probably date is empty)
 			}	
 		},
 		
