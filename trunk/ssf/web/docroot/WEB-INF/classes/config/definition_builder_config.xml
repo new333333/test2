@@ -1564,7 +1564,7 @@
 	
 	<item name="date_time" caption="__date_time" type="data" category="commonEntryData">
 		<properties>
-			<property name="name" caption="__data_time_name" type="text" 
+			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data_time']">
 				<help>ihelp.designers.data_name</help>
 			</property>
