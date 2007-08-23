@@ -19,12 +19,19 @@
 		<property name="max_fetch_depth">0</property>
 		<property name="cache.use_query_cache">true</property>
 		<property name="statement_cache.size">20</property>
+		<!-- By default, the JDBC batch size is set to zero to workaround for a hanging bug
+		     in the Oracle driver. If you are not using Oracle database, you will want to
+		     set this property to non-zero value (20 is recommended) to improve performance.  -->
 		<property name="jdbc.batch_size">0</property>
 		<property name="jdbc.use_scrollable_resultset">true</property>
 		<property name="bytecode.use_reflection_optimizer">true</property>
-		<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
-		<property name="cache.provider_configuration_file_resource_path">/config/ehcache.xml</property>
-		<!-- Set the following two properties to false when running under production since it affects performance -->
+		<property name="cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</property>
+		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
+ 		<property name="cache.use_query_cache">true</property>
+ 		<property name="cache.use_second_level_cache">true</property>
+ 		<property name="cache.use_minimal_puts">true</property>
+ 		<property name="cache.use_structured_entries">false</property>
+ 		<!-- Do not set the following property to true on a production system since it significantly affects performance -->
 		<property name="show_sql">false</property>
 		<property name="hibernate.generate_statistics">false</property>
  		<property name="hibernate.hbm2ddl.auto">update</property>
