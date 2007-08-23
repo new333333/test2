@@ -146,17 +146,14 @@ public class TaskHelper {
 	public static SearchFilter buildSearchFilter(FilterType filterType) {
 		SearchFilter searchFilter = new SearchFilter(true);
 		
+		DateTimeZone userTimeZone = DateTimeZone.forTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+		
 		if (filterType.equals(FilterType.CLOSED)) {
 			searchFilter.addTaskStatuses(new String[] {"s3", "s4"});
 		} else if (filterType.equals(FilterType.ACTIVE)) {
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
-		}
-		
-		DateTimeZone userTimeZone = DateTimeZone.forTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-		
-		if (filterType.equals(FilterType.DAY)) {
-			DateTime dateTime = (new DateTime(userTimeZone)).toDateMidnight().toDateTime();
-			dateTime.withZone(DateTimeZone.forID("GMT"));
+		} else if (filterType.equals(FilterType.DAY)) {
+			DateTime dateTime = (new DateTime(userTimeZone)).plusDays(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
 		} else if (filterType.equals(FilterType.WEEK)) {
