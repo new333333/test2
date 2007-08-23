@@ -43,10 +43,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 
 <% // Then include the navigation widgets for this view %>
 <c:set var="prefix" value="${renderResponse.namespace}" />
-<table class="ss_actions_bar2_pane">
-	<tr>
-		<td>
-
 			<% // Add the toolbar with the navigation widgets, commands and filter %>
 			<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
 			
@@ -66,9 +62,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 				</ssf:ifnotaccessible>
 
 			</ssf:toolbar>
-		</td>
-	</tr>
-</table>
 
 <script type="text/javascript">
 

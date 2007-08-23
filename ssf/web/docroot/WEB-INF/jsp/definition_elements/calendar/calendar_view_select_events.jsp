@@ -1,6 +1,7 @@
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
-	<form>
+<div class="ss_style">
+	<form style="display: inline;">
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
@@ -12,9 +13,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
           offsetY="-15" 
         </c:if>
 	    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>"></ssHelpSpot>
-		<input type="checkbox" id="ss_calendarEventsTypeChoose${prefix}" onclick="ss_calendar_${prefix}.ss_cal_Events.changeEventType();"><label for="ss_calendarEventsTypeChoose${prefix}"><ssf:nlt tag="folder.calendar.show.all.entries.by" />:</label>
+		<input style="margin: 0px" type="checkbox" id="ss_calendarEventsTypeChoose${prefix}" onclick="ss_calendar_${prefix}.ss_cal_Events.changeEventType();"><label for="ss_calendarEventsTypeChoose${prefix}">&nbsp;<ssf:nlt tag="folder.calendar.show.all.entries.by" />:</label>
 		<select id="ss_calendarEventsTypeSelect${prefix}" onclick="ss_calendar_${prefix}.ss_cal_Events.changeEventType();">
 			<option value="creation"><ssf:nlt tag="calendar.viewType.creation"/></option>
 			<option value="activity"><ssf:nlt tag="calendar.viewType.activity"/></option>
 		</select>
 	</form>
+</div>
