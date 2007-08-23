@@ -72,6 +72,10 @@ import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.sitescape.team.ObjectExistsException;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
@@ -106,6 +110,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public void setBinderModule(BinderModule binderModule) {
     	this.binderModule = binderModule;
     }
+	private TransactionTemplate transactionTemplate;
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
@@ -367,6 +378,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        Element root = doc.getRootElement();
        List defList = root.selectNodes("/profiles/user");
        Map userLists = new HashMap();
+       List<String> deleteNames = new ArrayList();
 	   Definition defaultUserDef = binder.getDefaultEntryDef();		
 	   if (defaultUserDef == null) {
 		   User temp = new User();
@@ -379,6 +391,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        for (int i=0; i<defList.size(); ++i) {
     	   //get default definition to use
     	   Element user = (Element)defList.get(i);
+    	   if ("delete".equals(user.attributeValue("operation"))) {
+    		   Element nameEle = (Element)user.selectSingleNode("./attribute[@name='" + ObjectKeys.XTAG_PRINCIPAL_NAME + "']");
+    		   if (nameEle == null) continue;
+    		   String name = nameEle.getTextTrim();
+    		   if (Validator.isNotNull(name)) deleteNames.add(name.toLowerCase());
+    		   continue;
+    	   }
     	   String defId = user.attributeValue("entryDef");
     	   Definition userDef=null;
     	   if (!Validator.isNull(defId)) {
@@ -398,19 +417,70 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     		   userL.add(user);
     	   }
        }
-   	   //add entries in groups of 100
+       //delete users first
+       if (!deleteNames.isEmpty()) {
+    	   Map params = new HashMap();
+    	   params.put("plist", deleteNames);
+    	   params.put("zoneId", binder.getZoneId());
+    	   List<Principal> deleteUsers = getCoreDao().loadObjects("from com.sitescape.team.domain.User where zoneId=:zoneId and name in (:plist)", params);
+    	   if (!deleteUsers.isEmpty()) {
+    		   deleteEntries(binder, deleteUsers);
+    	   }
+       }
+    		   //add entries grouped by definitionId
        for (Iterator iter=userLists.entrySet().iterator(); iter.hasNext();) {
     	   Map.Entry me = (Map.Entry)iter.next();
     	   List users = (List)me.getValue();
     	   Definition userDef = (Definition)me.getKey();
     	   addEntries(users, User.class, binder, userDef); 
     	}
+       
        defList = root.selectNodes("/profiles/group");
-   	   
+       deleteNames.clear();
+       List groupList = new ArrayList();
+       for (int i=0; i<defList.size(); ++i) {
+    	   //get default definition to use
+    	   Element group = (Element)defList.get(i);
+    	   if ("delete".equals(group.attributeValue("operation"))) {
+    		   Element nameEle = (Element)group.selectSingleNode("./attribute[@name='" + ObjectKeys.XTAG_PRINCIPAL_NAME + "']");
+    		   if (nameEle == null) continue;
+    		   String name = nameEle.getTextTrim();
+    		   if (Validator.isNotNull(name)) deleteNames.add(name.toLowerCase());
+    		   continue;
+    	   }
+    	   groupList.add(group);
+        }
+       //delete groups first
+       if (!deleteNames.isEmpty()) {
+    	   Map params = new HashMap();
+    	   params.put("plist", deleteNames);
+    	   params.put("zoneId", binder.getZoneId());
+    	   List<Principal> deleteGroups = getCoreDao().loadObjects("from com.sitescape.team.domain.Group where zoneId=:zoneId and name in (:plist)", params);
+    	   if (!deleteGroups.isEmpty()) {
+    		   deleteEntries(binder, deleteGroups);
+    	   }
+       }
+
 	   Group temp = new Group();
 	   getDefinitionModule().setDefaultEntryDefinition(temp);
 	   Definition defaultGroupDef = temp.getEntryDef();
-   	   addEntries(defList, Group.class, binder, defaultGroupDef);  	   
+   	   addEntries(groupList, Group.class, binder, defaultGroupDef);  	   
+    }
+  	//no transaction
+    private void deleteEntries(final ProfileBinder binder, final Collection<Principal> entries) {
+		getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		   try {
+        			   for (Principal p:entries) {
+        				   deleteEntry(binder.getId(), p.getId(), true);
+        			   }
+        		   } catch  (AccessControlException ac) {
+        			   //can't do one, can't do any
+        			   logger.error(ac.getLocalizedMessage());
+        		   }
+			return null;
+	     }});
+
     }
     private void addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
        ProfileCoreProcessor processor=loadProcessor(binder);

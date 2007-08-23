@@ -482,6 +482,7 @@
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
 				<property name="adminModule"><ref local="adminModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<!-- addUser, addGroup, addEntries, modifyEntry, addUserFromPortal,modifyUserFromPortal, addUserWorkspace provide transaction semantics at a finer
