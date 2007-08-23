@@ -85,41 +85,32 @@ public class EmailConfigController extends  AbstractBinderController  {
 		}
 		Map model = new HashMap();
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
-		try {
-			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-			Folder folder = getFolderModule().getFolder(folderId);
-			model.put(WebKeys.BINDER, folder);
-			model.put(WebKeys.DEFINITION_ENTRY, folder);
-			//	Build the navigation beans
-			BinderHelper.buildNavigationLinkBeans(this, folder, model, new MailTreeHelper());
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		Folder folder = getFolderModule().getFolder(folderId);
+		model.put(WebKeys.BINDER, folder);
+		model.put(WebKeys.DEFINITION_ENTRY, folder);
+		//	Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, folder, model, new MailTreeHelper());
 
-			if (folder.isTop()) {
-				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
-				model.put(WebKeys.SCHEDULE_INFO, config);
-				model.put(WebKeys.SCHEDULE, config.getSchedule());
-				List defaultDistribution = folder.getNotificationDef().getDistribution();
-				Set gList = new HashSet();
-				Set uList = new HashSet();
-				for (int i=0; i<defaultDistribution.size(); ++i) {
-					Principal id = ((Principal)defaultDistribution.get(i));
-					if (id.getEntityType().name().equals(EntityType.group.name()))
-					 		gList.add(id); 
-					else uList.add(id);
-				}
-	
-				model.put(WebKeys.USERS, uList);
-				model.put(WebKeys.GROUPS, gList); 
+		if (folder.isTop()) {
+			ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
+			model.put(WebKeys.SCHEDULE_INFO, config);
+			model.put(WebKeys.SCHEDULE, config.getSchedule());
+			List defaultDistribution = folder.getNotificationDef().getDistribution();
+			Set gList = new HashSet();
+			Set uList = new HashSet();
+			for (int i=0; i<defaultDistribution.size(); ++i) {
+				Principal id = ((Principal)defaultDistribution.get(i));
+				if (id.getEntityType().name().equals(EntityType.group.name()))
+				 		gList.add(id); 
+				else uList.add(id);
 			}
-			model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
-			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
-		} catch (Exception e) {
-			//assume not selected yet - first time through from admin menu
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new WsDomTreeBuilder(null, true, this, new MailTreeHelper()),1);
-			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
-			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
-			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);
+
+			model.put(WebKeys.USERS, uList);
+			model.put(WebKeys.GROUPS, gList); 
 		}
+		model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
+		return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
 			
 		
 	}
