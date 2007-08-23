@@ -199,7 +199,7 @@ public class GenerateLdapList {
 			prop.addAttribute("name", "foreignName");
 			prop.addText(dn);
 			if (!groupAttributes.containsValue("name")) {
-				prop=group.addElement("property");
+				prop=group.addElement("attribute");
 				prop.addAttribute("name", "name");
 				prop.addText(dn);
 				
