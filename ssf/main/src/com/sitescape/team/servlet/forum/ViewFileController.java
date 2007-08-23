@@ -225,6 +225,7 @@ public class ViewFileController extends SAbstractController {
 					}
 				} else {
 					try {
+						response.setHeader("Content-Length", String.valueOf(fa.getFileItem().getLength()));
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
 					}
 					catch(Exception e) {
