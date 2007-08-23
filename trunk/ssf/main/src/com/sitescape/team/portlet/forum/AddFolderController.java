@@ -60,7 +60,7 @@ public class AddFolderController extends SAbstractController {
 			//Now process the rest of the form
 			if (newBinder != null) {
 				//See if there are any team members specified
-				if (formData.containsKey("inheritFromParent") && formData.get("inheritFromParent").equals("no")) {
+				if (PortletRequestUtils.getStringParameter(request, "inheritFromParent", "").equals("no")) {
 					//Save the inheritance state
 					getBinderModule().setTeamMembershipInherited(newId, false);
 				} else {
@@ -130,7 +130,12 @@ public class AddFolderController extends SAbstractController {
 		BinderHelper.buildNavigationLinkBeans(this, binder, model, new WorkspaceConfigHelper());
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
-		
+
+		//Set the default the team members to the current user
+		Set memberIds = new HashSet();
+		memberIds.add(user.getId());
+		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
+
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
