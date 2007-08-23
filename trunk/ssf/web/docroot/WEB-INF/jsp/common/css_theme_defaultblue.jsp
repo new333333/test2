@@ -56,7 +56,7 @@
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
---%><c:set var="ss_style_background_color_side_panel_featured" value="#EAF7DD" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel_featured" value="#DDF0DD" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--
@@ -152,14 +152,14 @@
   --
   -- HEADER COLORS
   --
---%><c:set var="ss_style_header_bar_background" value="#EAF7DD" scope="request"/><%--
+--%><c:set var="ss_style_header_bar_background" value="#DDF0DD" scope="request"/><%--
 --%><c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/><%--	
 --%><%--
   --
   -- ICON LABEL COLORS
   --
---%><c:set var="ss_style_header_bar_background" value="#EAF7DD" scope="request"/><%--
+--%><c:set var="ss_style_header_bar_background" value="#DDF0DD" scope="request"/><%--
 --%><%--
   --
   -- LINK COLORS
@@ -244,12 +244,11 @@
   -- REPLYS
   --
 --%><c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/><%--
---%><c:set var="edit_text_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- TITLE
   --
---%><c:set var="ss_title_line_color" value="#0000FC" scope="request"/><%--
+--%><c:set var="ss_title_line_color" value="#5388C4" scope="request"/><%--
 --%><%--
   --
   -- TREE

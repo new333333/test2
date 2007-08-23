@@ -71,7 +71,7 @@
 			 				
 		</form>
 		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a href="<portlet:renderURL windowState="maximized"><portlet:param 
+		<a class="ss_actions_bar_inline" href="<portlet:renderURL windowState="maximized"><portlet:param 
 			name="action" value="build_filter"/><portlet:param 
 			name="binderId" value="${ssBinder.id}"/><portlet:param 
 			name="binderType" value="${ssBinder.entityType}"/></portlet:renderURL>"

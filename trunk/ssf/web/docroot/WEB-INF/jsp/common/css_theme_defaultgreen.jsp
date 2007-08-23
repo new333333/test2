@@ -244,12 +244,11 @@
   -- REPLYS
   --
 --%><c:set var="ss_replies_background_color" value="#DDF0DD" scope="request"/><%--
---%><c:set var="edit_text_color" value="#0000FC" scope="request"/><%--
 --%><%--
   --
   -- TITLE
   --
---%><c:set var="ss_title_line_color" value="#0000FC" scope="request"/><%--
+--%><c:set var="ss_title_line_color" value="#5388C4" scope="request"/><%--
 --%><%--
   --
   -- TREE

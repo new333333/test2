@@ -724,7 +724,7 @@ div.ss_popup_body {
 
 
 .ss_edit_button {
-	color:${edit_text_color};
+	color:${ss_style_link_hover_color};
 }
 
 /* Help system */
@@ -2374,16 +2374,17 @@ table.ss_actions_bar4_pane, table.ss_actions_bar4_pane td {
 	background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 	background-repeat: repeat-x;
 	width: 100%;
-	height: 18px;
+	height: 20px;
 	padding: 0px;
 	margin: 0px;
 
 }
 
 .ss_actions_bar4, table.ss_actions_bar4_pane {
-background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
+    background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
+	background-repeat: repeat-x;
 	width: 100%;
-	height: 18px;
+	height: 20px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;
@@ -2411,7 +2412,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 .ss_actions_bar {
 	list-style-type:none;	
 	padding: 0 0 0 5px;
-	height: 18px;
+	height: 20px;
 }
 
 .ss_action_bar ul, .ss_actions_bar_submenu {
@@ -2471,6 +2472,12 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
 	color:${ss_style_text_color} !important;
 	display:block;
+	padding:0px 7px;
+}
+
+.ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
+	color:${ss_style_text_color} !important;
+	display: inline;
 	padding:0px 7px;
 }
 
