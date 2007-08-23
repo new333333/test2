@@ -39,6 +39,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 
+import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.NLT;
 
 import com.sitescape.team.util.LongIdUtil;
@@ -695,7 +696,8 @@ public class BuildDefinitionDivs extends TagSupport {
 					}
 					String propertyValue0 = "";
 					if (propertyValues.size() > 0) propertyValue0 = (String) propertyValues.get(0);
-					String propertyValueDefault = propertyConfig.attributeValue("default", "");
+					String propertyValueDefault = RepositoryUtil.getDefaultRepositoryName();
+					if (propertyValueDefault.equals("")) propertyConfig.attributeValue("default", "");
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
