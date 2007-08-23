@@ -62,6 +62,7 @@ OpenFile Applet
 	    <PARAM NAME = "checkEditClicked" VALUE="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
 	    <PARAM NAME = "resetEditClicked" VALUE="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
 	    <PARAM NAME = "operatingSystem" VALUE="${ssOSInfo}"/>
+	    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
 	<c:if test="<%= !isIE %>">
 	</applet>
 	</c:if>

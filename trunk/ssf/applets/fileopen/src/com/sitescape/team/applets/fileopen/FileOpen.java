@@ -48,6 +48,7 @@ public class FileOpen extends JApplet implements Runnable {
     String strFileName = "";
     String strEditorTypes = "";
     String strOperatingSystem = "";
+    String uploadErrorMessage = "";
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -57,11 +58,12 @@ public class FileOpen extends JApplet implements Runnable {
     ////////////////////////////////////////////////////////////////////////
     public void run () {
     	fileOpen = this;
+		strFileName = getParameter(fileToOpen);
+		strEditorTypes = getParameter(editorType);
+		strOperatingSystem = getParameter(operatingSystem);
+		uploadErrorMessage = getParameter("uploadErrorMessage");
+		if (uploadErrorMessage == null || uploadErrorMessage.equals("")) uploadErrorMessage = "Error";
     	try {
-			strFileName = getParameter(fileToOpen);
-			strEditorTypes = getParameter(editorType);
-			strOperatingSystem = getParameter(operatingSystem);
-			
 			boolean ifEditIsClicked = checkEditClicked();
 			resetEditClicked();
 			String [] strEditorType = strEditorTypes.split(",");
@@ -89,7 +91,9 @@ public class FileOpen extends JApplet implements Runnable {
                             command[2] = strEditorType[i] + " '"+strURL+"'";
                             //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2]);
                         } else {
-                        	System.out.println("Operating System " + strOperatingSystem + " not Handled!");
+                        	String strOSErrMessage = "Operating System " + strOperatingSystem + " not Handled!"; 
+                        	System.out.println(uploadErrorMessage + ":\n " + strOSErrMessage);
+                        	makeJSAlertCall(uploadErrorMessage + ":\n" + strOSErrMessage);
                         	return;
                         }
                         
@@ -99,24 +103,37 @@ public class FileOpen extends JApplet implements Runnable {
                         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
                         // read the output from the command
+                        String strOutputFromCommand = "";
                         String s = null;
                         while ((s = stdInput.readLine()) != null) {
-                            System.out.println("o/p: " + s);
+                        	strOutputFromCommand += s;
                         }
-
+                        if (!strOutputFromCommand.equals("")) {
+                        	System.out.println(uploadErrorMessage + ": Output From Commmand:\n " + strOutputFromCommand);
+                        	makeJSAlertCall(uploadErrorMessage + ": Output From Commmand:\n " + strOutputFromCommand);
+                        }
+                        
+                        String strErrorFromCommand = "";
+                        s = null;
                         // read any errors from the attempted command
-                        System.out.println("Here is the standard error of the command (if any):\n");
                         
 	                    while ((s = stdError.readLine()) != null) {
-	                    	blnEditorErrorEncountered = true;
-	                        System.out.println("Error: " + s);
+	                    	if (!blnEditorErrorEncountered) blnEditorErrorEncountered = true;
+	                    	strErrorFromCommand += s;
 	                    }
+	                    
+                        if (!strErrorFromCommand.equals("")) {
+                        	System.out.println(uploadErrorMessage + ": Error From Commmand:\n " + strErrorFromCommand);
+                        	makeJSAlertCall(uploadErrorMessage + ": Error From Commmand:\n " + strErrorFromCommand);
+                        }
             		}
                 	catch(IOException ioe) {
-                		System.out.println("IO Err: "+ioe);
+                    	System.out.println(uploadErrorMessage + ": \n " + ioe.toString());
+                    	makeJSAlertCall(uploadErrorMessage + ": \n" + ioe.toString());
                 	}
                 	catch(Exception e) {
-                		System.out.println("Err: "+e);
+                    	System.out.println(uploadErrorMessage + ": \n " + e.toString());
+                    	makeJSAlertCall(uploadErrorMessage + ": \n" + e.toString());
                 	}
                 	finally {
                 		if (!blnEditorErrorEncountered)  break;
@@ -125,7 +142,8 @@ public class FileOpen extends JApplet implements Runnable {
 			}
     	}
     	catch(Exception e) {
-    		System.out.println("Err: "+e);
+        	System.out.println(uploadErrorMessage + ": \n " + e.toString());
+        	makeJSAlertCall(uploadErrorMessage + ": \n" + e.toString());
     	}
     	finally {
     		strFileName = "";
@@ -301,7 +319,7 @@ public class FileOpen extends JApplet implements Runnable {
           if (strEditClicked.equalsIgnoreCase("true")) return true;
         } catch (Exception ignored) { }
         return false;
-      }    
+    }    
     
     private void resetEditClicked() {
         try {
@@ -313,8 +331,7 @@ public class FileOpen extends JApplet implements Runnable {
         } catch (Exception ignored) { }
       }    
 
-    public void setFileToBeOpened(String strInputURL)
-    {
+    public void setFileToBeOpened(String strInputURL) {
       try {
     	strFileName = strInputURL;
       } 
@@ -323,4 +340,13 @@ public class FileOpen extends JApplet implements Runnable {
       }
     }
     
+    private void makeJSAlertCall(String strAlertMessage) {
+    	try {
+    	  String onLoadFunction = "alert";
+    	  JSObject win = JSObject.getWindow(fileOpen);
+    	  if (strAlertMessage == null || strAlertMessage.equals("")) return;
+    	  String args[] = {strAlertMessage};
+    	  Object foo = win.call(onLoadFunction,args);
+    	} catch (Exception ignored) { }
+    }
 } // end of class
