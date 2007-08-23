@@ -691,7 +691,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					.getProcessor(profiles, profiles.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
 			Map newUpdates = new HashMap(updates);
 			newUpdates.put(ObjectKeys.FIELD_PRINCIPAL_NAME, userName);
-			if (Validator.isNotNull(password)) updates.put(ObjectKeys.FIELD_USER_PASSWORD, password);
+			if (Validator.isNotNull(password)) newUpdates.put(ObjectKeys.FIELD_USER_PASSWORD, password);
 			//get default definition to use
 			Definition userDef = profiles.getDefaultEntryDef();		
 			if (userDef == null) userDef = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
