@@ -403,7 +403,10 @@ div.ss_editorHints {
   background-color:inherit;
   }
 .ss_entrySignature {
-  font-size: ${ss_style_font_smallprint};
+  font-size: 10px;
+  padding-left: 5px;
+  color: ${ss_style_metadata_color};
+  
   }
 .ss_entryDescription {
   padding-left: 24px;
@@ -2898,7 +2901,8 @@ div.ss_thumbnail_small img {
 }
 div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     width: 50px;
-    height: 50px;    
+    height: 50px;
+    margin-right: 5px;    
 }
 
 div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
@@ -3890,12 +3894,12 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 /* TEAM BUDDIES LIST */
 
 div.ss_buddies {
-	padding-bottom: 35px; 
+	padding-bottom: 10px; 
 }
 div.ss_buddiesListHeader {
-	padding: 5px;
+	padding: 0px;
 	font-family: ${ss_style_title_font_family};
-	font-size: ${ss_style_font_largerprint};
+	font-size: ${ss_style_font_largeprint};
 	font-weight: bold;
 }
 div.ss_buddiesListHeader img {
@@ -3905,12 +3909,12 @@ table.ss_buddiesList {
 	width: 100%; 
 	empty-cells: show;
 	padding: 0px; 
-	border-top: 1px solid ${ss_style_text_color};
+	border-top: 1px solid ${ss_guestbook_rule_color};
 }
 table.ss_buddiesList td {
 	border-bottom: 1px solid ${ss_guestbook_rule_color};
 	padding: 6px 0 7px 0px;
-	height: 50px;
+	height: 10px;
 }
 table.ss_buddiesList td.selectable {
 	width: 9px;
@@ -3920,14 +3924,14 @@ table.ss_buddiesList td.selectable {
 }
 table.ss_buddiesList td.picture {
 	border-bottom: 1px solid ${ss_guestbook_rule_color};
-	padding: 6px 15px 7px 8px; 
-	width: 35px;
+	padding: 6px 5px 7px 8px; 
+	width: 24px;
 }
 table.ss_buddiesList tr.options td {
 	border: 0;
 }
 table.ss_buddiesList tr.options td.selectall {
-	height: 50px;
+	height: 30px;
 	text-align: center;
 }
 div.ss_buddiesListFooter {
@@ -4140,6 +4144,7 @@ div.ss_entry {
 div.ss_entry p {
 	margin-top:    2px;
 	margin-bottom: 2px;
+
 }
 div.ss_entry_folderListView {
 	float: left;
@@ -4160,10 +4165,11 @@ h3.ss_entryTitle a:visited {
 	color:  purple;
 }
 div.ss_more {text-align:right;}
-div.ss_entryDetails {  padding:6px;}
+div.ss_entryDetails {padding:0px 0px 6px 24px;}
 div.ss_entryDetails p {
-	margin:0px 0px 1px 0px;
+	margin:0px 3px 1px 0px;
 	font-size: ${ss_style_font_smallprint};
+	color: #999999;
 }
 img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
