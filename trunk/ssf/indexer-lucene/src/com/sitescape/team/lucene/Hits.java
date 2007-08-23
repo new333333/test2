@@ -53,6 +53,7 @@ public class Hits implements Serializable {
         if (maxSize > 0) {
           length = Math.min(hits.length() - offset, maxSize);
         }
+        if (length <= 0) return new Hits(0);
         Hits ss_hits = new Hits(length);
         for(int i = 0; i < length; i++) {
             ss_hits.setDoc(hits.doc(offset + i), i);
