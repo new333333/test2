@@ -1476,11 +1476,11 @@ public static final String[] monthNamesShort = {
 		}
 
 		//The "Subsrciptions" menu
-		qualifiers = new HashMap();
-		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
-		folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
-		
 		if (folder.isTop()) {
+			qualifiers = new HashMap();
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
+			folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
+		
 			Subscription sub = getBinderModule().getSubscription(folder.getId());
 			qualifiers = new HashMap();
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
