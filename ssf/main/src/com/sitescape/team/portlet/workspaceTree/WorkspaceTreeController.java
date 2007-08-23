@@ -407,13 +407,14 @@ public class WorkspaceTreeController extends SAbstractController  {
 				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
 				workspace.getOwner() != null) {
 			Principal owner = workspace.getOwner();
+		
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
-			if (getProfileModule().testAccess(owner, ProfileOperation.modifyEntry)) {
+			if (owner.isActive() && getProfileModule().testAccess(owner, ProfileOperation.modifyEntry)) {
 				showModifyProfileMenu = true;
 			}
 		
-			if (getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
+			if (owner.isActive() && getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
 				//Don't let a user delete his or her own account
 				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
 			}
