@@ -146,12 +146,16 @@ function ss_calendar(prefix) {
 	    	}
 	    },
 	    box: function(binderId) {
+	    	var color;
 	    	var calsrc = this.getCalendar(binderId);
 	    	if (calsrc) {
-	    		return this.map[this.getCalendar(binderId)].box;
-	    	} 
-	    	// no more free calendars colors, generate one from binderid
-	    	return dojo.gfx.color.rgb2hex(204, 204, binderId);
+	    		color = this.map[this.getCalendar(binderId)].box;
+	    	} else {
+	    		// no more free calendars colors, generate one from binderid
+	    		color = dojo.gfx.color.rgb2hex(204, 204, binderId);
+	    	}
+	    	this.markCalendarLink(binderId, color);
+	    	return color;
 	    },
 	    border: function(binderId) { 
 	    	var calsrc = this.getCalendar(binderId);
@@ -165,6 +169,14 @@ function ss_calendar(prefix) {
 	    today : null,
 	
 		monthViewInfo : new Array(),
+		
+		// used on dashboard to color calendar links with the same color like calendar events
+		markCalendarLink : function(binderId, color) {
+			var link = document.getElementById("ssDashboardFolderLink" + prefix + binderId);
+			if (link) {
+				link.style.backgroundColor = color;
+			}
+		},
 	
 	    setMonthViewInfo : function (year, month, daysInMonth, startViewDate, endViewDate) {
 	    	this.monthViewInfo[year + "/" + month] = {
