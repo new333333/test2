@@ -69,9 +69,9 @@
 			<param name="externalBLOBs" value="false" />
 		</PersistenceManager>-->
 	</Versioning>
-  	<!--<Cluster id="node_1" syncDelay="5">
+  	<!--<Cluster id="node1" syncDelay="5">
       	<Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
-      		<param name="revision" value="${rep.home}/revision"/>
+      		<param name="revision" value="${rep.home}/revision.log"/>
       		<param name="driver" value="com.mysql.jdbc.Driver"/>
       		<param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8"/>
       		<param name="user" value="root"/>
