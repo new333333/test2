@@ -57,6 +57,7 @@ public interface Facade {
 	//
 	// Profile operations
 	//
+	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords);
 	public String getPrincipalAsXML(long binderId, long principalId);
 
 	/*
