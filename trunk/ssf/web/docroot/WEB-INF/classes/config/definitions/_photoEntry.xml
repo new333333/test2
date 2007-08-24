@@ -35,7 +35,7 @@
           <property name="width" value=""/>
           <property name="maxWidth" value=""/>
           <property name="maxHeight" value=""/>
-          <property name="storage" value="simpleFileRepository"/>
+          <property name="storage" value=""/>
         </properties>
       </item>
       <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" id="29">
@@ -44,7 +44,7 @@
           <property name="caption" value="__attach_files"/>
           <property name="width" value="60"/>
           <property name="number" value=""/>
-          <property name="storage" value="simpleFileRepository"/>
+          <property name="storage" value=""/>
           <property name="hide" value="true"/>
         </properties>
       </item>
