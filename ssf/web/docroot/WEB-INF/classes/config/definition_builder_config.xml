@@ -2289,7 +2289,8 @@
 		</options>
 	</item>
 	
-	<item name="readAccess" caption="__readAccess" category="accessControlsLayout">
+	<item name="readAccess" caption="__readAccess" category="accessControlsLayout" 
+		  multipleAllowed="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2299,7 +2300,8 @@
 		</properties>
 	</item>
 	
-	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout">
+	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" 
+		  multipleAllowed="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2309,7 +2311,8 @@
 		</properties>
 	</item>
 	
-	<item name="deleteAccess" caption="__deleteAccess" category="accessControlsLayout">
+	<item name="deleteAccess" caption="__deleteAccess" category="accessControlsLayout" 
+		  multipleAllowed="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2319,7 +2322,8 @@
 		</properties>
 	</item>
 	
-	<item name="transitionOutAccess" caption="__transitionOutAccess" category="accessControlsLayout">
+	<item name="transitionOutAccess" caption="__transitionOutAccess" category="accessControlsLayout" 
+		  multipleAllowed="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2329,7 +2333,8 @@
 		</properties>
 	</item>
 	
-	<item name="transitionInAccess" caption="__transitionInAccess" category="accessControlsLayout">
+	<item name="transitionInAccess" caption="__transitionInAccess" category="accessControlsLayout" 
+		  multipleAllowed="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
