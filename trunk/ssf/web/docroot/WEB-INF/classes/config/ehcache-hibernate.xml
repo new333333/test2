@@ -17,7 +17,7 @@
 
 	<!--<cacheManagerPeerProviderFactory
 		class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
-		properties="peerDiscovery=automatic,multicastGroupAddress=230.0.0.1,multicastGroupPort=4446,timeToLive=1"
+		properties="peerDiscovery=automatic,multicastGroupAddress=232.0.0.1,multicastGroupPort=4446,timeToLive=1"
 	/>
 	<cacheManagerPeerListenerFactory
 		class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
@@ -42,6 +42,7 @@
         maxElementsInMemory="1000"
         eternal="false"
         timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
         overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -65,6 +66,7 @@
 	<cache name="com.sitescape.team.domain.Principal" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -72,6 +74,7 @@
 	<cache name="com.sitescape.team.domain.Principal.memberOf" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -79,6 +82,7 @@
 	<cache name="com.sitescape.team.domain.UserProperties" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -87,6 +91,7 @@
 	<cache name="com.sitescape.team.domain.Binder" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -94,6 +99,7 @@
 	<cache name="com.sitescape.team.domain.Binder.definitions" 
 		maxElementsInMemory="1000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -101,6 +107,7 @@
 	<cache name="com.sitescape.team.domain.Binder.binders" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -108,6 +115,7 @@
 	<cache name="com.sitescape.team.domain.Dashboard" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -116,6 +124,7 @@
 	<cache name="com.sitescape.team.domain.Definition" 
 		maxElementsInMemory="1000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -123,6 +132,7 @@
 	<cache name="com.sitescape.team.domain.FolderEntry" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -131,6 +141,7 @@
 	<cache name="com.sitescape.team.security.function.Function" 
 		maxElementsInMemory="200" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -138,6 +149,7 @@
 	<cache name="com.sitescape.team.security.function.Function.operationNames" 
 		maxElementsInMemory="500" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -145,6 +157,7 @@
 	<cache name="com.sitescape.team.domain.Membership" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -153,6 +166,7 @@
 	<cache name="com.sitescape.team.security.function.WorkAreaFunctionMembership" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -160,6 +174,7 @@
 	<cache name="com.sitescape.team.security.function.WorkAreaFunctionMembership.memberIds" 
 		maxElementsInMemory="3000" eternal="false"
 		timeToIdleSeconds="600"
+        timeToLiveSeconds="86400"
 		overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
