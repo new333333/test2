@@ -4,6 +4,14 @@
 	<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
 		<param name="path" value="${rep.home}/repository" />
 	</FileSystem>
+	<!--<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
+	    <param name="driver" value="com.mysql.jdbc.Driver"/>
+	    <param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8" />
+	    <param name="user" value="root" />
+	    <param name="password" value="root" />
+	    <param name="schema" value="mysql"/>
+	    <param name="schemaObjectPrefix" value="JACKRABBIT_FS_"/>
+	</FileSystem>-->
 	<Security appName="Jackrabbit">
 		<AccessManager class="org.apache.jackrabbit.core.security.SimpleAccessManager" />
 		<LoginModule class="org.apache.jackrabbit.core.security.SimpleLoginModule">
@@ -15,40 +23,61 @@
 		<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
 			<param name="path" value="${wsp.home}" />
 		</FileSystem>
+		<!--<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
+		    <param name="driver" value="com.mysql.jdbc.Driver"/>
+		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8" />
+		    <param name="user" value="root" />
+		    <param name="password" value="root" />
+		    <param name="schema" value="mysql"/>
+		    <param name="schemaObjectPrefix" value="JACKRABBIT_FS_${wsp.name}_"/>
+		</FileSystem>-->
 
 		<PersistenceManager class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager" />
-		<!--<PersistenceManager class="org.apache.jackrabbit.core.state.xml.XMLPersistenceManager" />-->
-
-		<!-- SQL Server -->
 
 		<!--<PersistenceManager class="org.apache.jackrabbit.core.state.db.SimpleDbPersistenceManager">
-			<param name="driver" value="net.sourceforge.jtds.jdbc.Driver" />
-			<param name="url" value="jdbc:jtds:sqlserver://localhost/sitescape" />
-			<param name="user" value="sitescape" />
-			<param name="password" value="sitescape" />
+			<param name="driver" value="com.mysql.jdbc.Driver" />
+			<param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8" />
+			<param name="user" value="root" />
+			<param name="password" value="root" />
 			<param name="schema" value="mssql" />
-			<param name="schemaObjectPrefix" value="JACKRABBIT_${wsp.name}_" />
-			<param name="externalBLOBs" value="true" />
+			<param name="schemaObjectPrefix" value="JACKRABBIT_PM_${wsp.name}_" />
+			<param name="externalBLOBs" value="false" />
 		</PersistenceManager>-->
 	</Workspace>
 	<Versioning rootPath="${rep.home}/version">
 		<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
 			<param name="path" value="${rep.home}/version" />
 		</FileSystem>
+		<!--<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
+		    <param name="driver" value="com.mysql.jdbc.Driver"/>
+		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8" />
+		    <param name="user" value="root" />
+		    <param name="password" value="root" />
+		    <param name="schema" value="mysql"/>
+		    <param name="schemaObjectPrefix" value="JACKRABBIT_V_FS_"/>
+		</FileSystem>-->
 
 		<PersistenceManager class="org.apache.jackrabbit.core.state.obj.ObjectPersistenceManager" />
-		<!--<PersistenceManager class="org.apache.jackrabbit.core.state.xml.XMLPersistenceManager" />-->
 
-		<!-- SQL Server -->
-		
 		<!--<PersistenceManager class="org.apache.jackrabbit.core.state.db.SimpleDbPersistenceManager">
-			<param name="driver" value="net.sourceforge.jtds.jdbc.Driver" />
-			<param name="url" value="jdbc:jtds:sqlserver://localhost/sitescape" />
-			<param name="user" value="sitescape" />
-			<param name="password" value="sitescape" />
+			<param name="driver" value="com.mysql.jdbc.Driver" />
+			<param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8" />
+			<param name="user" value="root" />
+			<param name="password" value="root" />
 			<param name="schema" value="mssql" />
-			<param name="schemaObjectPrefix" value="JACKRABBIT_VERSION_" />
-			<param name="externalBLOBs" value="true" />
+			<param name="schemaObjectPrefix" value="JACKRABBIT_V_PM_" />
+			<param name="externalBLOBs" value="false" />
 		</PersistenceManager>-->
 	</Versioning>
+  	<!--<Cluster id="node_1" syncDelay="5">
+      	<Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
+      		<param name="revision" value="${rep.home}/revision"/>
+      		<param name="driver" value="com.mysql.jdbc.Driver"/>
+      		<param name="url" value="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&characterEncoding=UTF-8"/>
+      		<param name="user" value="root"/>
+      		<param name="password" value="root"/>
+      		<param name="schema" value="mysql"/>
+      		<param name="schemaObjectPrefix" value="JACKRABBIT_C_"/>
+ 		</Journal>
+  	</Cluster>-->
 </Repository>
