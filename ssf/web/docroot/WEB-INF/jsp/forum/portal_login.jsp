@@ -34,17 +34,20 @@ var ss_screens_after_login_screen_to_logged_in = ${ss_screens_after_login_screen
 
 var ss_targetUrlLoadCount = 0;
 function ss_loadTargetUrl() {
-	var iframeDiv = document.getElementById('iframe_window')
-	if (window.frames['iframe_window'] != null) {
-		var iframeHeight = parseInt(window.iframe_window.document.body.scrollHeight);
-		if (iframeHeight > 0) {
-			iframeDiv.style.height = iframeHeight + 40 + "px"
-		}
+	if (ss_watcherTimer != null) {
+		clearTimeout(ss_watcherTimer);
+		ss_watcherTimer = null;
 	}
+	var iframeDiv = document.getElementById('iframe_window')
+	var iframeHeight = parseInt(ss_getWindowHeight()) - 40;
+	if (iframeHeight > 0) {
+		iframeDiv.style.height = iframeHeight + "px"
+	}
+
 	ss_targetUrlLoadCount++;
 	//alert(ss_targetUrlLoadCount)
 	if (ss_targetUrlLoadCount > ss_screens_to_login_screen) {
-		ss_showHideObj('iframe_window', 'hidden', 'block');
+		//ss_showHideObj('iframe_window', 'hidden', 'block');
 	}
 
  	//Check to see if the user is logged in yet
@@ -65,8 +68,20 @@ function ss_loadTargetUrl() {
 function ss_postCheckIfLoggedIn(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "ok") {
 		//The user is logged in.
+		ss_showHideObj('iframe_window', 'hidden', 'block');
 		self.location.reload(true);
+	} else {
+		ss_startWatcher()
 	}
+}
+
+var ss_watcherTimer = null;
+function ss_startWatcher() {
+	if (ss_watcherTimer != null) {
+		clearTimeout(ss_watcherTimer);
+		ss_watcherTimer = null;
+	}
+	ss_watcherTimer = setTimeout("ss_loadTargetUrl();", 1000);
 }
 
 var ss_transferUrl = self.location.href;
@@ -74,9 +89,9 @@ var ss_transferUrl = self.location.href;
 </script>
 
 </head>
-<body>
+<body onLoad="ss_startWatcher();">
  <iframe id="iframe_window" name="iframe_window" 
-    style="width:100%; height:95%; display:block;"
+    style="width:100%; height:600px; display:block;"
     src="${ss_portalLoginUrl}" frameBorder="0" onLoad="ss_loadTargetUrl();">xxx</iframe>
 
 </body>
