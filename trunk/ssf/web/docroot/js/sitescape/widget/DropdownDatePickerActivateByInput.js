@@ -6,7 +6,7 @@ dojo.widget.defineWidget(
 	"sitescape.widget.DropdownDatePickerActivateByInput",
 	dojo.widget.DropdownDatePicker,
 	{
-		templateString: '<span style="white-space:nowrap"><input type="hidden" name="" value="" dojoAttachPoint="valueNode" /><input name="" type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" dojoAttachEvent="onclick: onIconClick"/> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachEvent="onclick: onIconClick" dojoAttachPoint="buttonNode" style="vertical-align:middle; cursor:pointer;" /></span>',
+		templateString: '<span style="white-space:nowrap"><input type="hidden" name="" value="" dojoAttachPoint="valueNode" /><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" dojoAttachEvent="onclick: onIconClick"/> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachEvent="onclick: onIconClick" dojoAttachPoint="buttonNode" style="vertical-align:middle; cursor:pointer;" /></span>',
 		
 		startDateWidgetId: "",
 		startTimeWidgetId: "",
