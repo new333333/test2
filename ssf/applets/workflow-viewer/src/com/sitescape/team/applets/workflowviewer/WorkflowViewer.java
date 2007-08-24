@@ -591,15 +591,15 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 	      }// End try statement
 	      catch(MalformedURLException ex)
 	      {
-	    	  System.err.println(ex + " (downloadFromUrl)");
+	    	  System.err.println(ex + " (downloadFromUrl) " + url);
 	      }
 	      catch(java.io.IOException iox)
 	      {
-	    	  System.out.println(iox + " (downloadFromUrl)");
+	    	  System.out.println(iox + " (downloadFromUrl) " + url);
 	      }
 	      catch(Exception generic)
 	      {
-	    	  System.out.println(generic.toString() + " (downloadFromUrl)");
+	    	  System.out.println(generic.toString() + " (downloadFromUrl) " + url);
 	      }
 	      finally
 	      {}
