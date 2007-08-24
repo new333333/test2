@@ -32,7 +32,7 @@
           <property name="caption" value="__attach_files"/>
           <property name="width" value="60"/>
           <property name="number" value=""/>
-          <property name="storage" value="simpleFileRepository"/>
+          <property name="storage" value=""/>
           <property name="hide" value="false"/>
         </properties>
       </item>
