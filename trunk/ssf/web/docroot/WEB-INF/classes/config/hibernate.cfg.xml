@@ -17,7 +17,6 @@
 		<property name="hibernate.query.factory_class">org.hibernate.hql.ast.ASTQueryTranslatorFactory</property>
 		<!-- Other miscellaneous Hibernate properties. -->
 		<property name="max_fetch_depth">0</property>
-		<property name="cache.use_query_cache">true</property>
 		<property name="statement_cache.size">20</property>
 		<!-- By default, the JDBC batch size is set to zero to workaround for a hanging bug
 		     in the Oracle driver. If you are not using Oracle database, you will want to
