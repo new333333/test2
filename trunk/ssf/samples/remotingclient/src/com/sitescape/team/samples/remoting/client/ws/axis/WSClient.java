@@ -49,6 +49,8 @@ public class WSClient
 				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("printPrincipal")) {
 				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
+			} else if(args[0].equals("printAllPrincipals")) {
+				fetchAndPrintXML("getAllPrincipalsAsXML", new Object[] {Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("printFolderEntries")) {
 				fetchAndPrintXML("getFolderEntriesAsXML", new Object[] {Long.parseLong(args[1])});
 			} else if(args[0].equals("addFolder")) {
@@ -180,6 +182,7 @@ public class WSClient
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth> [<page>]");
 		System.out.println("printPrincipal <binder id> <principal id>");
+		System.out.println("printAllPrincipals <first> <max>");
 		System.out.println("addFolder <parent binder id> <binder config id> <title>");
 		System.out.println("printFolderEntries <folder id>");
 		System.out.println("search <xmlFilename> <offset> <maxResults>");

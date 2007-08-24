@@ -328,6 +328,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
 		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
 		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
 		entryElem.addAttribute("type", entry.getEntityType().toString());
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
 		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
@@ -335,6 +336,44 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return entryElem;
 	}
 	
+	private Element addPrincipalToDocument(Branch doc, Map user)
+	{
+		Element entryElem = doc.addElement("principal");
+		
+		entryElem.addAttribute("id", (String) user.get(EntityIndexUtils.DOCID_FIELD));
+		entryElem.addAttribute("binderId", (String) user.get(EntityIndexUtils.BINDER_ID_FIELD));
+		entryElem.addAttribute("definitionId", (String) user.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD));
+		entryElem.addAttribute("title", (String) user.get(EntityIndexUtils.TITLE_FIELD));
+		entryElem.addAttribute("emailAddress", (String) user.get(ProfileIndexUtils.EMAIL_FIELD));
+		entryElem.addAttribute("type", (String) user.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
+		entryElem.addAttribute("reserved", Boolean.toString(user.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null));
+/*
+ * I don't know how to get this from the map
+		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
+*/
+
+		return entryElem;
+	}
+	
+	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
+		Document doc = DocumentHelper.createDocument();
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
+		Map results = getProfileModule().getUsers(getProfileModule().getProfileBinder().getId(), options);
+		List users = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+		Element rootElement = doc.addElement("principals");
+		rootElement.addAttribute("first", ""+firstRecord);
+		rootElement.addAttribute("count", ((Integer)results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).toString());
+		rootElement.addAttribute("total", ((Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)).toString());
+		for(Object searchEntry : users) {
+			Map user = (Map) searchEntry;
+			addPrincipalToDocument(rootElement, user);
+		}
+		String xml = rootElement.asXML();
+		
+		return xml;
+	}
 	public String getPrincipalAsXML(long binderId, long principalId) {
 		Long bId = new Long(binderId);
 		Long pId = new Long(principalId);
