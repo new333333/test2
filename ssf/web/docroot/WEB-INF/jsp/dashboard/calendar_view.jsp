@@ -29,7 +29,7 @@
 						>${folder.parentBinder.title}</a> // 
 				    <a href="javascript: ;"
 						onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"
-						><span class="ss_bold">${folder.title}</span></a></td>
+						id="ssDashboardFolderLink${prefix}${folder.id}" style="padding: 2px 3px 2px 3px;"><span class="ss_bold">${folder.title}</span></a></td>
 				</tr>
 			</c:forEach>
 		</table>
