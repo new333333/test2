@@ -676,7 +676,7 @@ public class SearchFilter {
 	}
 	
 	private void addCreationDateRange(Element parent, String startDate, String endDate) {
-		addDateRange(parent, EntityIndexUtils.CREATION_DAY_FIELD, startDate, endDate);
+		addDateRange(parent, EntityIndexUtils.CREATION_DATE_FIELD, startDate, endDate);
 	}
 
 	public void addCreationDates(List<Period> creationPeriods) {
@@ -696,7 +696,7 @@ public class SearchFilter {
 	}
 	
 	public void addModificationDateRange(Element parent, String startDate, String endDate) {
-		addDateRange(parent, EntityIndexUtils.MODIFICATION_DAY_FIELD, startDate, endDate);
+		addDateRange(parent, EntityIndexUtils.MODIFICATION_DATE_FIELD, startDate, endDate);
 	}
 	
 	public void addModificationDateRange(String startDate, String endDate) {
