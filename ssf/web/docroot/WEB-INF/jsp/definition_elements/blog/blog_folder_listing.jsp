@@ -32,3 +32,5 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			    entry="${ssBlogEntries[entry._docId].entry}" />
 			</div>
 		  </c:forEach>
+
+<c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

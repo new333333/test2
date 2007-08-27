@@ -24,7 +24,7 @@
         <div id="ss_wikiEntryDiv<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
           <iframe id="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="width:100%; 
     		display:block; position:relative;"
-    		<c:if test="${empty ss_wikiHomepageEntryId}">
+    		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
     		  src="<html:rootPath/>js/forum/null.html" 
     		</c:if>
     		<c:if test="${!empty ss_wikiHomepageEntryId || !empty ssEntryIdToBeShown}">

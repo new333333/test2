@@ -378,7 +378,7 @@ public static final String[] monthNamesShort = {
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//In Blog style we only want to show this entry
 			if (!entryIdToBeShown.equals("")) {
-				options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
+				//options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
 				model.put(WebKeys.FOLDER_VIEW_TYPE, viewType);
 			}
 		}

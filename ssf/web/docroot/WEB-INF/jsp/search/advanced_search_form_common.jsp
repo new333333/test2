@@ -73,6 +73,25 @@
 									<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
 								</c:if>
 								
+								<c:if test="${!activateDashboardFolder && !empty ssBinder}">
+								  <div style="padding-bottom:2px;">
+								 	<input type="checkbox" name="searchFolders_${ssBinder.id}" id="search_currentAndSubfolders" 
+								 	  style="width: 19px; margin: 0; padding: 0; " 
+								 	  onClick="ss_searchSetCheckbox(this, 'search_subfolders');"
+								 		<c:if test="${ss_filterMap.search_currentAndSubfolders}">
+								 			checked="checked"
+								 		</c:if>
+								 	> <label for="search_currentAndSubfolders">
+								 	<c:if test="${ssBinder.entityType != 'folder'}">
+								 	  <ssf:nlt tag="move.currentWorkspace"/> (${ssBinder.title})
+								 	</c:if>
+								 	<c:if test="${ssBinder.entityType == 'folder'}">
+								 	  <ssf:nlt tag="move.currentFolder"/> (${ssBinder.title})
+								 	</c:if>
+								 	</label>
+								  </div>
+								</c:if>
+								
 								<c:choose>
 									<c:when test="${!empty ss_filterMap.searchFolders}">
 										<c:set var="folderIds" value="${ss_filterMap.searchFolders}" />

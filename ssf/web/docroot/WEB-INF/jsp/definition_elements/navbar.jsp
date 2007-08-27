@@ -185,6 +185,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 			  href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 			  	name="action" value="advanced_search"/><portlet:param 
+			  	name="binderId" value="${ssBinder.id}"/><portlet:param 
 			  	name="tabTitle" value="SEARCH FORM"/><portlet:param 
 			  	name="newTab" value="0"/></portlet:actionURL>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
