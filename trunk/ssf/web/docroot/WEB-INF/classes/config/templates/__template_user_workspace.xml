@@ -8,7 +8,7 @@
   <attribute name="iconName" type="string">/icons/user_workspace.gif</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>
-  <property name="inheritMembership">true</property>
+  <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
   <definition name="_userWorkspace" internalId="402883b90cc53079010cc539bf26000b" databaseId="402883b90cc53079010cc539bf26000b"/>
   <dashboard>
@@ -87,7 +87,7 @@
     <attribute name="iconName" type="string">/icons/folder_blue_blog.gif</attribute>
     <property name="library">true</property>
     <property name="uniqueTitle">false</property>
-    <property name="inheritMembership">true</property>
+    <property name="inheritFunctionMembership">true</property>
     <property name="inheritDefinitions">false</property>
     <definition name="_blogFolder" databaseId="402883c6115753d8011157619e35000b"/>
     <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
@@ -104,7 +104,7 @@
     <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
     <property name="library">true</property>
     <property name="uniqueTitle">false</property>
-    <property name="inheritMembership">true</property>
+    <property name="inheritFunctionMembership">true</property>
     <property name="inheritDefinitions">false</property>
     <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
     <definition name="_blogFolder" databaseId="402883c6115753d8011157619e35000b"/>
@@ -121,7 +121,7 @@
     <attribute name="iconName" type="string">/icons/folder_blue_file_library.gif</attribute>
     <property name="library">true</property>
     <property name="uniqueTitle">false</property>
-    <property name="inheritMembership">true</property>
+    <property name="inheritFunctionMembership">true</property>
     <property name="inheritDefinitions">false</property>
     <definition name="_libraryFolder" databaseId="402883c6115753d8011157619e350009"/>
     <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
@@ -135,7 +135,7 @@
     <attribute name="iconName" type="string">/icons/folder_blue_guestbook.gif</attribute>
     <property name="library">true</property>
     <property name="uniqueTitle">false</property>
-    <property name="inheritMembership">true</property>
+    <property name="inheritFunctionMembership">true</property>
     <property name="inheritDefinitions">false</property>
     <definition name="_guestbookFolder" databaseId="402883c6115753d8011157619e35000a"/>
     <definition name="_guestbookEntry" databaseId="402883c6115753d8011157811ae1000e"/>
@@ -148,7 +148,7 @@
     <attribute name="iconName" type="string">/icons/folder_blue_photo.gif</attribute>
     <property name="library">true</property>
     <property name="uniqueTitle">false</property>
-    <property name="inheritMembership">true</property>
+    <property name="inheritFunctionMembership">true</property>
     <property name="inheritDefinitions">false</property>
     <definition name="_photoFolder" databaseId="402883c6115753d8011157619e350008"/>
     <definition name="_photoEntry" databaseId="402883c6115753d80111578720900010"/>
@@ -161,7 +161,7 @@
 	  <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
 	  <property name="library">true</property>
 	  <property name="uniqueTitle">false</property>
-	  <property name="inheritMembership">true</property>
+	  <property name="inheritFunctionMembership">true</property>
 	  <property name="inheritDefinitions">false</property>
 	  <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
 	  <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>

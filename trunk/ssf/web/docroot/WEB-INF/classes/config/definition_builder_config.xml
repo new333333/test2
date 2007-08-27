@@ -523,7 +523,6 @@
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
 			<option name="folderList" initial="true" />
-			<option name="viewEntry" initial="true" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -560,12 +559,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
-		</jsps>
-	</item>
-
-	<item name="viewEntry" caption="__view_entry_selectbox" category="folderViewData" >
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
 		</jsps>
 	</item>
 		

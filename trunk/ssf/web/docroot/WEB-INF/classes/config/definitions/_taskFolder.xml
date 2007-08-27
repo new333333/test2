@@ -40,9 +40,6 @@
     <item name="folderList" caption="__folder_listing" id="9">
       <properties/>
     </item>
-    <item name="viewEntry" caption="__view_entry_selectbox" id="10">
-      <properties/>
-    </item>
     <properties>
       <property name="type" value="task"/>
     </properties>

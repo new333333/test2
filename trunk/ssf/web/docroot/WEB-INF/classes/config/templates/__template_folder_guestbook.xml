@@ -8,7 +8,7 @@
   <attribute name="iconName" type="string">/icons/folder_blue_guestbook.gif</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>
-  <property name="inheritMembership">true</property>
+  <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
   <definition name="_guestbookFolder" databaseId="402883c6115753d8011157619e35000a"/>
   <definition name="_guestbookEntry" databaseId="402883c6115753d8011157811ae1000e"/>
