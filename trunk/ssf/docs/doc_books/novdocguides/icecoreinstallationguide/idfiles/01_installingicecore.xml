@@ -28,10 +28,6 @@
 
  <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="8"> <text>Start and Stop ICEcore.</text> </target>
 
- <target id="b9ptnu8" pid="b9vchn6" name="Step" level="3" number="9"> <text>Login.</text> </target>
-
- <target id="b9ptnua" pid="b9vchn6" name="Step" level="3" number="10"> <text>Add Users.</text> </target>
-
  <target id="b9vchn7" pid="b9vchn7" name="Sect1" level="1" number="1.3"> <text>Database Planning</text> </target>
 
  <target id="bannyhr" pid="b9vchn7" name="BridgeHead" level="2"> <text>MySQL</text> </target>
@@ -64,9 +60,9 @@
 
  <target id="bbijx0b" pid="bbijvt7" name="Sect2" level="2" number="1.6.1"> <text>Install a Standalone Lucene Index Server for a New ICEcore Application</text> </target>
 
- <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 35):</text> </target>
+ <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
 
- <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 35):</text> </target>
+ <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
 
  <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server"</text> </target>
 
@@ -74,7 +70,7 @@
 
  <target id="bbik1wm" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
 
- <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 7).</text> </target>
+ <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
  <target id="bbiks4e" pid="bbijvt7" name="Step" level="4" number="3"> <text>Start the server at the end of the installation:</text> </target>
 
@@ -86,13 +82,13 @@
 
  <target id="bbiktxj" pid="bbijvt7" name="Step" level="6" number="3c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 7).</text> </target>
+ <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
  <target id="bbijxwe" pid="bbijvt7" name="Sect2" level="2" number="1.6.2"> <text>Install a Standalone Lucene Index Server for an Existing ICEcore Application</text> </target>
 
- <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 35):</text> </target>
+ <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
 
- <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 35):</text> </target>
+ <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
 
  <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server"</text> </target>
 
@@ -100,11 +96,11 @@
 
  <target id="bbikxch" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
 
- <target id="bbikvyx" pid="bbijvt7" name="Step" level="4" number="2"> <text>Shutdown ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 8).</text> </target>
+ <target id="bbikvyx" pid="bbijvt7" name="Step" level="4" number="2"> <text>Shutdown ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 9).</text> </target>
 
- <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="3"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 7).</text> </target>
+ <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="3"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
- <target id="bbikwsp" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the installer on the standalone machine and choose the option for: Apply settings only (see Section 1.7, "Running the Installer," on page 7).</text> </target>
+ <target id="bbikwsp" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the installer on the standalone machine and choose the option for: Apply settings only (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
  <target id="bbikvyz" pid="bbijvt7" name="Step" level="4" number="5"> <text>Start the server at the end of the installation (if not started already):</text> </target>
 
@@ -116,9 +112,9 @@
 
  <target id="bbikvz2" pid="bbijvt7" name="Step" level="6" number="5c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikvz3" pid="bbijvt7" name="Step" level="4" number="6"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 7).</text> </target>
+ <target id="bbikvz3" pid="bbijvt7" name="Step" level="4" number="6"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
- <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="7"> <text>Restart ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 8).</text> </target>
+ <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="7"> <text>Restart ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 9).</text> </target>
 
  <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.7"> <text>Running the Installer</text> </target>
 
@@ -156,97 +152,11 @@
 
  <target id="bannz0o" pid="b9vchnb" name="BridgeHead" level="2"> <text>Stopping ICEcore</text> </target>
 
- <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="1.9"> <text>Initial Logon</text> </target>
-
- <target id="b9vchnd" pid="b9vchnd" name="Sect1" level="1" number="1.10"> <text>Adding Users</text> </target>
-
- <target id="bbihasx" pid="b9vchnd" name="Sect2" level="2" number="1.10.1"> <text>Basic User Management</text> </target>
-
- <target id="bbihi7w" pid="b9vchnd" name="Procedure" level="3" number="1"> <text> Using the Liferay Enterprise Admin portlet, click on the Users tab. </text> </target>
-
- <target id="bbihi7x" pid="b9vchnd" name="Step" level="4" number="1"> <text> Using the Liferay Enterprise Admin portlet, click on the Users tab. </text> </target>
-
- <target id="bbihi9d" pid="b9vchnd" name="Step" level="4" number="2"> <text>Click Add.</text> </target>
-
- <target id="bbihi9h" pid="b9vchnd" name="Step" level="4" number="3"> <text> Fill in the following fields: First, Last Name, assign a User ID, specify the e-mail address, and then click Save.</text> </target>
-
- <target id="bbihi9k" pid="b9vchnd" name="Step" level="4" number="4"> <text>Liferay shows an extended form.</text> </target>
-
- <target id="bbihi9n" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save. </text> </target>
-
- <target id="bbihi9s" pid="b9vchnd" name="Step" level="4" number="6"> <text>Click on the Password tab, type in the password, and then click Save.</text> </target>
-
- <target id="bbihi9x" pid="b9vchnd" name="Step" level="4" number="7"> <text>Repeat these steps to add additional users.</text> </target>
-
- <target id="bbihb9h" pid="b9vchnd" name="Sect2" level="2" number="1.10.2"> <text>User Management with LDAP/eDirectory </text> </target>
-
- <target id="bbih8mm" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the Liferay Enterprise Admin portlet, click on the Settings tab (you may need to click on the &#62;&#62; tab to see the Settings tab).</text> </target>
-
- <target id="bbih8mn" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the Liferay Enterprise Admin portlet, click on the Settings tab (you may need to click on the &#62;&#62; tab to see the Settings tab).</text> </target>
-
- <target id="bbih8o7" pid="b9vchnd" name="Step" level="4" number="2"> <text>Click on the Authentication tab.</text> </target>
-
- <target id="bbih8oa" pid="b9vchnd" name="Step" level="4" number="3"> <text>Click on the LDAP tab.</text> </target>
-
- <target id="bbih97n" pid="b9vchnd" name="Step" level="4" number="4"> <text>Fill out the form with the values needed to map to your corporate directory:</text> </target>
-
- <target name="SubSteps" level="5"> <text>For the search filter use uid=@screen_name@ or cn=@screen_name@, depending on your site conventions.</text> </target>
-
- <target id="bbih9h3" pid="b9vchnd" name="Step" level="6" number="4a"> <text>For the search filter use uid=@screen_name@ or cn=@screen_name@, depending on your site conventions.</text> </target>
-
- <target id="bbih9ir" pid="b9vchnd" name="Step" level="6" number="4b"> <text>Under If the user... add: password=givenName or password=sn.</text> </target>
-
- <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4c"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
-
- <target id="bbih8ol" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
-
- <target id="bbihbki" pid="b9vchnd" name="Sect2" level="2" number="1.10.3"> <text>The ICEcore LDAP Configuration Form</text> </target>
-
- <target id="bbih9rw" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the ICEcore Administration portlet, click on "Configure LDAP."</text> </target>
-
- <target id="bbih9rx" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the ICEcore Administration portlet, click on "Configure LDAP."</text> </target>
-
- <target id="bbiha6m" pid="b9vchnd" name="Step" level="4" number="2"> <text>Fill out the form using the corresponding values that were used to configure Liferay. (See below for details on this form). </text> </target>
-
- <target id="bbih9u6" pid="b9vchnd" name="Step" level="4" number="3"> <text>Click Apply.</text> </target>
-
- <target id="bbihcsa" pid="b9vchnd" name="BridgeHead" level="3"> <text>Connection settings:</text> </target>
-
- <target id="bbihcsb" pid="b9vchnd" name="BridgeHead" level="3"> <text>Users settings:</text> </target>
-
- <target id="bbihcsc" pid="b9vchnd" name="BridgeHead" level="3"> <text>Groups settings:</text> </target>
-
- <target id="bbihc08" pid="b9vchnd" name="Sect2" level="2" number="1.10.4"> <text>Secure LDAP/eDirectory Setup</text> </target>
-
- <target id="banqref" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Make sure you have openssl available.</text> </target>
-
- <target id="banqreg" pid="b9vchnd" name="Step" level="4" number="1"> <text>Make sure you have openssl available.</text> </target>
-
- <target id="banqreh" pid="b9vchnd" name="Step" level="4" number="2"> <text>Type: openssl s_client -connect ldap.company.com:636</text> </target>
-
- <target id="banqrei" pid="b9vchnd" name="Step" level="4" number="3"> <text>Copy everything from the &#212;----BEGIN CERTIFICATE----' to the &#212;----END CERTIFICATE----' lines (inclusive) into a file, say cert.ldap (the name does not matter).</text> </target>
-
- <target id="banqrej" pid="b9vchnd" name="Step" level="4" number="4"> <text>Type: </text> </target>
-
- <target id="banqrek" pid="b9vchnd" name="Step" level="4" number="5"> <text>Restart Tomcat.</text> </target>
-
- <target id="banqrel" pid="b9vchnd" name="Step" level="4" number="6"> <text>Make sure you use ldaps://ldap.company.com:636 as the LDAP URL, rather than the default ldap://ldap.company.com:389 (note protocol and port number changes).</text> </target>
-
- <target id="b9vchne" pid="b9vchne" name="Sect1" level="1" number="1.11"> <text>Mail Setup</text> </target>
-
- <target id="bano0iu" pid="b9vchne" name="BridgeHead" level="2"> <text>System Configuration</text> </target>
-
- <target id="bano0o8" pid="b9vchne" name="BridgeHead" level="2"> <text>Setting up Incoming Mail schedule</text> </target>
-
- <target id="bano0rs" pid="b9vchne" name="BridgeHead" level="2"> <text>Associating an E-mail Address with a Folder</text> </target>
-
- <target id="bano0w9" pid="b9vchne" name="BridgeHead" level="2"> <text>Establishing a Notification Schedule for a Folder</text> </target>
-
- <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.12"> <text>Memory Guidelines</text> </target>
+ <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.9"> <text>Memory Guidelines</text> </target>
 
  <target id="bano10m" pid="b9vchnf" name="BridgeHead" level="2"> <text>Hibernate Cache</text> </target>
 
- <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="1.13"> <text>Document Support</text> </target>
+ <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="1.10"> <text>Document Support</text> </target>
 
  <target id="bano1bk" pid="b9vchng" name="BridgeHead" level="2"> <text>Editing Support</text> </target>
 
