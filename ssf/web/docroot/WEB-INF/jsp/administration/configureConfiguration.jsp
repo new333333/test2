@@ -194,8 +194,12 @@ function ss_confirmDeleteConfig() {
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+<% // Navigation bar 
+/* Doesn't work for admin portlet
+ *	
+ *	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+ */ 
+ %>
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
