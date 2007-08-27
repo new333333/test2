@@ -400,7 +400,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <a href="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="add_binder"/><portlet:param 
 			  	name="operation" value="add_workspace"/><portlet:param 
-			  	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>"
+			  	name="binderId" value="${ssSidebarCurrentWorkspace.id}"/></portlet:actionURL>"
 	   class="ss_linkButton"><ssf:nlt tag="toolbar.menu.addWorkspace" /></a>
   </div>
 </td></tr>
