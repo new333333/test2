@@ -59,6 +59,7 @@ import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
@@ -917,11 +918,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 			objs.removeAll(tSet);
                 		}
                 	}
-                	//Load attachments
-                   	objs = session.createCriteria(Attachment.class)
+                	//Load file attachments
+            		//If there are every any others, will need to handle separately
+                   	objs = session.createCriteria(FileAttachment.class)
    						.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
                     	.add(Expression.in("owner.ownerId", ids))
                   		.addOrder(Order.asc("owner.ownerId"))
+                  		.setFetchMode("fileVersions", FetchMode.JOIN) //needed during indexing when converted files missing
                   		.list();
                    	readObjs.addAll(objs);
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
