@@ -58,7 +58,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			<applet CODE = "com.sitescape.team.applets.droptarget.TopFrame" name="dropboxobj${ssEntryId}${ss_namespace}"
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
 			  ARCHIVE = "droptarget/ssf-droptarget-applet.jar" 
-			  WIDTH = "20" HEIGHT = "20" MAYSCRIPT>
+			  WIDTH = "22" HEIGHT = "22" MAYSCRIPT>
 			</c:if>
 			    <PARAM NAME="CODE" VALUE = "com.sitescape.team.applets.droptarget.TopFrame" />
 			    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
