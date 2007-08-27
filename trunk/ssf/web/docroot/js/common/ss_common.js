@@ -299,7 +299,7 @@ function ss_showPermalink(obj) {
 	    divObj.appendChild(divObj3)
 		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
 	}
-	divObj3.innerHTML = obj.href;
+	divObj3.innerHTML = ss_replaceSubStrAll(obj.href, "%20", " ");
 	//ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
 	if (divObj.style && divObj.style.visibility && divObj.style.visibility == 'visible') {
 		divObj.style.display = 'none';

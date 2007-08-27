@@ -100,3 +100,4 @@
 <ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 	namespace="${renderResponse.namespace}">
 </ssf:menuLink>
+<c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

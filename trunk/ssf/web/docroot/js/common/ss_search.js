@@ -324,6 +324,13 @@ function ss_searchToggleFolders(objId, selection) {
 	}
 }
 
+function ss_searchSetCheckbox(obj, name) {
+	if (obj.checked) {
+		var formObj = ss_getContainingForm(obj)
+		formObj[name].checked = true;
+	}
+}
+
 function ss_showAdditionalOptions(objId, txtContainerId, namespace) {
 	var txtContainerObj = document.getElementById(txtContainerId);
 	if (txtContainerObj) {

@@ -105,6 +105,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		model.put(WebKeys.BINDER_ID, strBinderId);
+		if (!strBinderId.equals("")) {
+			Long binderId = Long.valueOf(strBinderId);
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+		}
         
         // this is necessary for the breadcrumbs and places choose
         Workspace top = getWorkspaceModule().getTopWorkspace();

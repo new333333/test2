@@ -18,7 +18,9 @@
 <br/>
 </c:if>
  <div class="ss_entryDescription">
-<c:out value="${ssDefinitionEntry.customAttributes[property_name].value.text}" escapeXml="false"/>
+<span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+  value="${ssDefinitionEntry.customAttributes[property_name].value.text}" 
+  escapeXml="false"/></ssf:markup></span>
  </div>
 </div>
 </c:if>
@@ -30,9 +32,11 @@
     <c:out value="${property_caption}" />
   </td>
   <td valign="top">
-    <div class="ss_entryContent ss_entryDescription"><c:out 
+    <div class="ss_entryContent ss_entryDescription">
+     <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
       value="${ssDefinitionEntry.customAttributes[property_name].value.text}" 
-      escapeXml="false"/></div>
+      escapeXml="false"/></ssf:markup></span>
+    </div>
   </td>
 </tr>
 </c:if>
