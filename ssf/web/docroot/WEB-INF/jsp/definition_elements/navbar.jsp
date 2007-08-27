@@ -394,6 +394,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </tbody></table>
 </td></tr>
 
+<tr><td>
+  <div class="ss_global_toolbar_quick">
+  <div style="text-align: center; padding: 3px;">
+    <a href="<portlet:actionURL windowState="maximized"><portlet:param 
+			  	name="action" value="add_binder"/><portlet:param 
+			  	name="operation" value="add_workspace"/><portlet:param 
+			  	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>"
+	   class="ss_linkButton"><ssf:nlt tag="toolbar.menu.addWorkspace" /></a>
+  </div>
+</td></tr>
+
+
 </tbody></table>
 
 </ssf:sidebarPanel>
