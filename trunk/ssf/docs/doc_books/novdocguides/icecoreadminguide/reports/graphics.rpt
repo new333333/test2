@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreadminguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `8/24/2007 3:24:50 PM'>
+   <String `8/27/2007 10:12:13 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2836,6 +2836,14 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `workflow_review_question_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `Each .eps file has a corresponding .png or .gif file in the /graphics directory'>
@@ -2863,12 +2871,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `option_modify_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `workflow_review_question_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7228,6 +7230,45 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Workflow preview area\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `workflow_review_question_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1131618'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `workflow_review_question_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Entry Workflow section\q'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow

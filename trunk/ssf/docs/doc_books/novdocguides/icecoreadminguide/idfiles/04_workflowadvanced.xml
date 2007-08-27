@@ -86,6 +86,6 @@
 
  <target id="bbgzxi5" pid="b9xe8xd" name="Step" level="4" number="3"> <text>In the confirmation dialog that appears, click OK to delete the Manual transition.</text> </target>
 
- <target id="bbgzxi7" pid="b9xe8xd" name="Step" level="4" number="4"> <text>Repeat this procedue to delete the remaining Manual transition for the Review state. </text> </target>
+ <target id="bbgzxi7" pid="b9xe8xd" name="Step" level="4" number="4"> <text>Repeat this procedure to delete the remaining Manual transition for the Review state. </text> </target>
 
 </targets>
