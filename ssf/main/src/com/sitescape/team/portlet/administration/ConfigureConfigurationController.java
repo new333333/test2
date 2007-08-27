@@ -498,15 +498,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, configId);
 			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), adapterUrl.toString(), qualifiers);
 
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, configId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
-			qualifiers = new HashMap();
-			qualifiers.put("popup", Boolean.TRUE);
-			qualifiers.put("popupWidth", "500");
-			qualifiers.put("popupHeight", "600");
-			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
 		}
 		
 		//	The "Manage dashboard" menu
