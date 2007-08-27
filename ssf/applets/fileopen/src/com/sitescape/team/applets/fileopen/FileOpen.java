@@ -260,9 +260,9 @@ public class FileOpen extends JApplet implements Runnable {
     static URL makeUrlFromFile(File file, String extras) {
         URL completeUrl = null;
         try {
-        completeUrl = file.toURL();
-        if (null != extras)
-            completeUrl = new URL(completeUrl.toString() + extras);
+	        completeUrl = file.toURL();
+	        if (null != extras)
+	            completeUrl = new URL(completeUrl.toString() + extras);
         } catch (MalformedURLException e) {
         }
         return completeUrl;
@@ -278,8 +278,6 @@ public class FileOpen extends JApplet implements Runnable {
     static boolean inBrowser() {
         AppletContext appletContext = getOurAppletContext();
         return (null != appletContext);
-
-
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -298,8 +296,7 @@ public class FileOpen extends JApplet implements Runnable {
         return appletContext;
     }
 
-    private void onLoad(FileOpen fileOpen)
-    {
+    private void onLoad(FileOpen fileOpen) {
       try {
         String onLoadFunction = fileOpen.getParameter("onLoadFunction");
         if (onLoadFunction.equals(null) || "".equals(onLoadFunction)) return;
