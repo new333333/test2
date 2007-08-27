@@ -84,3 +84,5 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 <ssf:ifnotaccessible>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
 </ssf:ifnotaccessible>
+
+<c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
