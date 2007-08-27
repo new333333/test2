@@ -8,7 +8,7 @@
   <attribute name="iconName" type="string">/icons/folder_blue_file_library.gif</attribute>
   <property name="library">true</property>
   <property name="uniqueTitle">false</property>
-  <property name="inheritMembership">true</property>
+  <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
   <definition name="_libraryFolder" databaseId="402883c6115753d8011157619e350009"/>
   <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
