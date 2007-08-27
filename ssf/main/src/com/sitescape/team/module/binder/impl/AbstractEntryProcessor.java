@@ -777,7 +777,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  		WorkflowState ws = wEntry.getWorkflowState(stateId);
 		Definition def = ws.getDefinition();
 		boolean changes = false;
-		//TODO: what access check belongs here??
 		Map questions = WorkflowUtils.getQuestions(def, ws.getState());
 		for (Iterator iter=questions.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();

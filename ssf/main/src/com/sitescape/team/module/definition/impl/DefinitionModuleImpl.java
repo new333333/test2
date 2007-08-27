@@ -1373,7 +1373,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (survey != null) {entryData.put(nameValue, survey);}
 					} else if (itemName.equals("user_list")) {
 						if (inputData.exists(nameValue)) {
-							Set<String>userIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue), " ");
+							Set<String>userIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue));
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							v.setValue(userIds);
 							entryData.put(nameValue, v);

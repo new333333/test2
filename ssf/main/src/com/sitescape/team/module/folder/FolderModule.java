@@ -53,12 +53,10 @@ public interface FolderModule {
 	   deleteEntryWorkflow,
 	   manageTag,
 	   modifyEntry,
-	   modifyWorkflowState,
 	   moveEntry,
 	   report,
 	   reserveEntry,
 	   overrideReserveEntry,
-	   setWorkflowResponse, 
 	   synchronize
    }
 
