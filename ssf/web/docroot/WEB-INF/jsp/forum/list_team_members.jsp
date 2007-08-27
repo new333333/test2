@@ -33,16 +33,16 @@
 		  <span>${ssBinder.title}</span> 
     </div>
     <div>
-		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> 
+		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/>:</span> 
 		  <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
 	</div>
 	</td>
 	<td>&nbsp;</td>
 	<td valign="top" align="right">
-	  <div align="left" style="float:right;">
+	  <div align="left" style="float:right; padding-right: 2px; padding-bottom: 2px;">
 	  <ul>
 		<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTeamMembers">
-		    <li><a href="<ssf:url 
+		    <li><a class="ss_linkButton" href="<ssf:url 
 		    		adapter="true" 
 		    		portletName="ss_forum" 
 		    		action="add_team_member" 
@@ -52,7 +52,7 @@
 		    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
 		    	><ssf:nlt tag="toolbar.teams.addMember"/></a></li>
 		</ssf:ifAccessAllowed>
-	    <li><a href="<ssf:url 
+	    <li><a class="ss_linkButton" href="<ssf:url 
 	    		adapter="true" 
 	    		portletName="ss_forum" 
 	    		action="send_email" 
@@ -61,7 +61,7 @@
 	    		name="appendTeamMembers" value="true"/></ssf:url>"
 	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
 	    	><ssf:nlt tag="toolbar.teams.sendmail"/></a></li>
-	    <li><a href="<ssf:url 
+	    <li><a class="ss_linkButton" href="<ssf:url 
 	    		adapter="true" 
 	    		portletName="ss_forum" 
 	    		action="add_meeting" 

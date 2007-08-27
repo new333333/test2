@@ -58,21 +58,28 @@
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
+	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+    <td valign="top" class="ss_view_sidebar">
+
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-	<div class="ss_clear"></div>
 
-	<div class="ss_tab_canvas">
-		<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-    	<div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
-				
-			<% // Folder toolbar %>
-			<div class="ss_content_inner">
-				<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
-			</div>
+	<% // Folder Sidebar %>
+
+    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+
+	</div>
+
+
+	</td>
+	<td valign="top" class="ss_view_info">
+		<div class="ss_style_color">	
 			<div class="ss_content_inner">
 				<% // Navigation links %>
 				<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
@@ -80,16 +87,16 @@
 				<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 
 				<c:if test="${!empty ss_reloadUrl}">
-					<div style="text-align: right; "><a href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" /></a></div>
+					<div style="text-align: right; padding-right: 2px; padding-bottom: 2px;"><a class="ss_linkButton" href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" /></a></div>
 				</c:if>
 			</div>
-		</div>
-	</div>
-
-	<% // Footer toolbar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-
-</div>
+ 		</div>
+		<% // Footer toolbar %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	</td>
+	</tr>
+	</tbody>
+	</table>
 </div>
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
