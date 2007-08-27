@@ -98,6 +98,9 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
             --%><c:when test="${empty toolbarMenu.value.qualifiers.disabled}"><%--
                 --%><a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <%--
+                --%><c:if test="${!empty toolbarMenu.value.qualifiers.linkclass}"><%--
+                	--%> class="${toolbarMenu.value.qualifiers.linkclass}"<%--
+                --%></c:if><%--                
                 --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"><%--
 
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
@@ -116,8 +119,8 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                     --%><span>${toolbarMenu.value.title}<%--
                 --%></c:if><%--
 
-                --%><c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"><%--
-                    --%><img border="0" title="<ssf:nlt tag="alt.showMenu"/>"<%--
+                --%><c:if test="${!empty toolbarMenu.value.categories}"><%--
+                    --%><img border="0" style="padding-left: 2px;" title="<ssf:nlt tag="alt.showMenu"/>"<%--
                     --%> src="<html:imagesPath/>pics/menudown.gif"/><%--
                 --%></c:if><%--
                 --%></span></a><%--
