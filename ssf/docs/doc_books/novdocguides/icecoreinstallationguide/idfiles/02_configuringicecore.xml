@@ -46,15 +46,17 @@
 
  <target id="bbbv0vx" pid="bbbuyjl" name="Step" level="3" number="6"> <text>Type in the Instance Name (no spaces): ICEcoreAdmin</text> </target>
 
- <target id="bbbv13d" pid="bbbuyjl" name="Step" level="3" number="7"> <text>Click Add. (You are now in the Portlet Instances).</text> </target>
+ <target id="bbilea2" pid="bbbuyjl" name="Step" level="3" number="7"> <text>Type a window name into the Window Name field under Content Definition before clicking Add.</text> </target>
 
- <target id="bbbv1sn" pid="bbbuyjl" name="Step" level="3" number="8"> <text>Click Dashboard in the top bar.</text> </target>
+ <target id="bbbv13d" pid="bbbuyjl" name="Step" level="3" number="8"> <text>Click Add. (You are now in the Portlet Instances).</text> </target>
 
- <target id="bbbv24t" pid="bbbuyjl" name="Step" level="3" number="9"> <text>Click Configure Dashboard.</text> </target>
+ <target id="bbbv1sn" pid="bbbuyjl" name="Step" level="3" number="9"> <text>Click Dashboard in the top bar.</text> </target>
 
- <target id="bbbv2b4" pid="bbbuyjl" name="Step" level="3" number="10"> <text>Select ICEcoreAdmin and click Add to Page Layout.</text> </target>
+ <target id="bbbv24t" pid="bbbuyjl" name="Step" level="3" number="10"> <text>Click Configure Dashboard.</text> </target>
 
- <target id="bbbv36l" pid="bbbuyjl" name="Step" level="3" number="11"> <text>Click Dashboard in the top bar.</text> </target>
+ <target id="bbbv2b4" pid="bbbuyjl" name="Step" level="3" number="11"> <text>Select ICEcoreAdmin and click Add to Page Layout.</text> </target>
+
+ <target id="bbbv36l" pid="bbbuyjl" name="Step" level="3" number="12"> <text>Click Dashboard in the top bar.</text> </target>
 
  <target id="b9vdczx" pid="b9vdczx" name="Sect1" level="1" number="2.3"> <text>Adjust Access Control for the Site</text> </target>
 
@@ -98,7 +100,7 @@
 
  <target id="bapr577" pid="b9vdczx" name="Step" level="4" number="1"> <text>Click Team Workspace.</text> </target>
 
- <target id="bapr6pw" pid="b9vdczx" name="Step" level="4" number="2"> <text>Click Access Control.</text> </target>
+ <target id="bapr6pw" pid="b9vdczx" name="Step" level="4" number="2"> <text>Select the Manage &#62; Access Control menu item.</text> </target>
 
  <target id="bapr7hy" pid="b9vdczx" name="Step" level="4" number="3"> <text>Click Add a Group in the Access Rights table.</text> </target>
 
@@ -122,9 +124,9 @@
 
  <target id="bapssn2" pid="bapqrpq" name="Step" level="4" number="2"> <text>Click Add a Team Workspace.</text> </target>
 
- <target id="bapsth2" pid="bapqrpq" name="Step" level="4" number="3"> <text>Type in a tile for the new workspace.</text> </target>
+ <target id="bapsth2" pid="bapqrpq" name="Step" level="4" number="3"> <text>Type in a Workspace Title for the new workspace.</text> </target>
 
- <target id="bapsukt" pid="bapqrpq" name="Step" level="4" number="4"> <text>Select the team members.</text> </target>
+ <target id="bapsukt" pid="bapqrpq" name="Step" level="4" number="4"> <text>Select the team members (add the admin group, which we will also use for setting access rights so that you only have to control membership to this group to control administrative access rights and administration workspace membership).</text> </target>
 
  <target id="bapsv49" pid="bapqrpq" name="Step" level="4" number="5"> <text>Select all the initial Workspace Folders you want to create in this workspace.</text> </target>
 
@@ -132,9 +134,9 @@
 
  <target id="bapsx9i" pid="bapqrpq" name="Sect2" level="2" number="2.4.2"> <text>Set the Administration Team Access Rights</text> </target>
 
- <target id="bapsxoy" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration Team workspace, click Access Control.</text> </target>
+ <target id="bapsxoy" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Access Control menu item.</text> </target>
 
- <target id="bapsxoz" pid="bapqrpq" name="Step" level="4" number="1"> <text>From the ICEcore Administration Team workspace, click Access Control.</text> </target>
+ <target id="bapsxoz" pid="bapqrpq" name="Step" level="4" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Access Control menu item.</text> </target>
 
  <target id="bapsy74" pid="bapqrpq" name="Step" level="4" number="2"> <text>In the Access Rights table, click Add a Group.</text> </target>
 
@@ -146,13 +148,25 @@
 
  <target id="bapt2r3" pid="bapqrpq" name="Step" level="4" number="6"> <text>Click Close.</text> </target>
 
+ <target id="bbilo0l" pid="bapqrpq" name="Sect2" level="2" number="2.4.3"> <text>Using the Root Team Workspace</text> </target>
+
+ <target id="bbils8b" pid="bapqrpq" name="BridgeHead" level="3"> <text>Configuring a Workspace to be a Root Team Workspace:</text> </target>
+
+ <target id="bbilsp8" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Access Control menu item.</text> </target>
+
+ <target id="bbilsp9" pid="bapqrpq" name="Step" level="4" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Access Control menu item.</text> </target>
+
+ <target id="bbin09g" pid="bapqrpq" name="Step" level="4" number="2"> <text>Select the Team workspace root option and click Apply.</text> </target>
+
+ <target id="bbin1fj" pid="bapqrpq" name="Step" level="4" number="3"> <text>Click Close.</text> </target>
+
  <target id="b9vde7f" pid="b9vde7f" name="Sect1" level="1" number="2.5"> <text>Set Up E-mail for a Workspace</text> </target>
 
  <target id="baptekl" pid="b9vde7f" name="Procedure" level="2" number="1"> <text>From your workspace, select the top level folder for which you want to enable e-mail.</text> </target>
 
  <target id="baptekm" pid="b9vde7f" name="Step" level="3" number="1"> <text>From your workspace, select the top level folder for which you want to enable e-mail.</text> </target>
 
- <target id="baptkyb" pid="b9vde7f" name="Step" level="3" number="2"> <text>Click Manage This Folder and select the Email Settings menu item.</text> </target>
+ <target id="baptkyb" pid="b9vde7f" name="Step" level="3" number="2"> <text>Select the Manage &#62; Email Settings menu item.</text> </target>
 
  <target id="baptlti" pid="b9vde7f" name="Step" level="3" number="3"> <text>Type in the e-mail alias you received from your e-mail administrator in the Receiving Email From field.</text> </target>
 
