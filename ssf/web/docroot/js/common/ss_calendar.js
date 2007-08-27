@@ -1630,7 +1630,7 @@ function ss_calendar(prefix) {
 	    e.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
 	    e.style.backgroundColor = boxColor;
 	    e.style.borderColor = borderColor
-	    e.style.height = (((((duration <= 0) ? 30 : duration) / 60) * 42) - 4) + "px";
+	    e.style.height = (((((duration <= 30) ? 30 : duration) / 60) * 42) - 4) + "px";
 	    var eHtml = "";
 	   	
 	   	if (event) {
