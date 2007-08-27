@@ -101,7 +101,9 @@ body.ss_style_body {
 .ss_style a {
   color: ${ss_style_link_color};
   text-decoration: none;
+<ssf:ifnotaccessible>
   outline: none;
+</ssf:ifnotaccessible>  
 }
 .ss_style a:visited {
   color: ${ss_style_link_visited_color};
@@ -4119,7 +4121,6 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 
 .ss_searchResult_dashboardHeader {
 	border-bottom: 1px solid #afc8e3;	
-	margin: 0px 0px -12px 0px;
 	padding: 3px 0px 3px 12px;
 	position:relative;
 <c:if test="<%= isIE %>">	
@@ -4471,15 +4472,13 @@ div.ss_task_list_container {
 	</c:if>
 	margin:0px;
 	padding:0px;
-	width:100%;
 }
 table.ss_tasks_list {
-	width:100%;
 	margin:6px 0px 0px 0px;
 	padding: 0px;
 	border-collapse: collapse;
 	border:1px solid #afc8e3;
-	clear:both;
+	border-spacing: 0px;
 }
 
 table.ss_tasks_list th {
@@ -4494,6 +4493,12 @@ table.ss_tasks_list td {
 	padding: 3px 0px 3px 2px;
 	border: 1px solid #afc8e3;
 }
+
+table.ss_tasks_accessory td {
+	font-size: 10px;
+}
+
+
 table.ss_tasks_list td.ss_iconsContainer {
 	white-space: nowrap;
 }
@@ -4526,7 +4531,6 @@ div.ss_completedContainer {
 		
 
 	height:12px;
-	float:left;
 	margin: 3px;
 	padding:0px;
 }
