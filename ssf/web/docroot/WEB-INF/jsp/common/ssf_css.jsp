@@ -552,7 +552,7 @@ table.ss_guestbook {
 
 
 
-input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
+input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited, a.ss_dashboard_config_control {
   font-family: ${ss_style_folder_view_font_family};
   font-size: ${ss_style_font_fineprint};
   background-color: ${ss_linkbutton_background_color};
@@ -560,6 +560,9 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   padding: 0px 6px 0px 6px;
   cursor: pointer;
   white-space: nowrap;
+}
+
+a.ss_dashboard_config_control {
 }
 
 
@@ -2190,17 +2193,6 @@ a:hover img.ss_accessory_delete {
     background-position:  left -12px;
 }
 
-img.ss_dashboard_config_control {
-	position:relative;
-    background:url(<html:imagesPath/>icons/dashboardconfig.gif) no-repeat left 0px;
-    width: 23px;
-    height: 18px;
-}
-
-a:hover img.ss_dashboard_config_control {
-    background-position:  left -18px;
-}
-
 
 span.ss_tabs_title {
 	font-size: ${ss_style_font_smallprint}!important;
@@ -2641,11 +2633,8 @@ div.ss_utils_bar {
     float:right;
     text-align:right;
 	margin-bottom:0px;
-	color:#666666;
-	font-weight:bold;
-	font-family:${ss_style_title_font_family};
 	background:transparent none repeat scroll 0%;
-	font-size:${ss_style_font_size};
+	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
 }
 div.ss_line {
 	border-bottom: 1px solid #666666;
@@ -2662,8 +2651,7 @@ ul.ss_utils_bar {
 }
 div.ss_utils_bar ul.ss_utils_bar li {
 	float:left;
-	font-weight:bold;
-	margin: 0px 10px 0px 0px;
+	margin: 0px 5px 0px 0px;
 }
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
 	color:#003782;
@@ -2673,10 +2661,9 @@ div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:vis
 	
 }
 div.ss_utils_bar ul.ss_utils_bar li a span {
-	padding: 5px 0px 6px 0px;
+	padding: 0px;
 	margin: 0px;
 	font-size:${ss_style_font_smallprint};
-	color:#003782;
 }
 
 .ss_utils_bar li a:hover {
@@ -2701,20 +2688,21 @@ ul.ss_utils_bar_submenu {
 	background-color: #ECECEC;
 } 
 
-.ss_utils_bar_submenu li  {
+ul.ss_utils_bar_submenu li  {
 	float:none;
 	padding:0px;
 	font-weight:normal;
 	border-right-style:none;
     line-height:20px;
 }
-.ss_utils_bar_submenu li:hover .ss_utils_bar_submenu a:hover {
+ul.ss_utils_bar_submenu li a:hover {
 	text-decoration:underline;
 	background-color:transparent;
 	color:#666666;
 	font-size:${ss_style_font_smallprint};	
 }
-.ss_utils_bar_submenu a, .ss_utils_bar_submenu a:visited {
+ul.ss_utils_bar_submenu a, .ss_utils_bar_submenu a:visited {
+	text-decoration:none;
 	color:#666666;
 	font-size:${ss_style_font_smallprint};
 }
@@ -4140,7 +4128,6 @@ div.ss_thumbnail {float: left; width:24px; text-align:center;}
 div.ss_thumbnail img {width:24px;height:24px;padding:0px; margin:0px;}
 div.ss_entry {
 	float: left;
-	width: 600px;
 }
 div.ss_entry p {
 	margin-top:    2px;
