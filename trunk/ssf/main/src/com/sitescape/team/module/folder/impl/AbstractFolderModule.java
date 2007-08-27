@@ -186,7 +186,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		switch (operation) {
 			case modifyEntry:
 			case addEntryWorkflow:
-			case setWorkflowResponse:
 			case deleteEntryWorkflow:
 			case reserveEntry:
 			case moveEntry:
@@ -207,9 +206,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			case report:
 				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.GENERATE_REPORTS);
 				break;
-			case modifyWorkflowState:
-				AccessUtils.modifyCheck(entry);   
-	    		break;				
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 					

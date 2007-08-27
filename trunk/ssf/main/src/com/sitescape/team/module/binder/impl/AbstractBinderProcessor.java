@@ -877,7 +877,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				"errorcode.notsupported.moveBinder", new String[]{source.getPathName()});
     	if (destination.isZone())
       		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
-    	 
+    	//cannot move a parent to a child
+    	if (destination.getBinderKey().getSortKey().startsWith(source.getBinderKey().getSortKey())) {
+    		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
+    	}
     	Map ctx = moveBinder_setCtx(source, destination, null);
     	moveBinder_preMove(source, destination, ctx);
     	boolean resourcePathAffected = moveBinder_mirrored(source, destination, ctx);

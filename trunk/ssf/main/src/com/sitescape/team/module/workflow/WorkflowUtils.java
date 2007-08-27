@@ -150,7 +150,7 @@ public class WorkflowUtils {
 			if ("folderDefault".equals(name)) {
 				result.setUseDefault(GetterUtil.getBoolean(value, true));
 			} else if ("userGroupAccess".equals(name)) {
-				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value, ","));
+				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value));
 			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
     			result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
 			} else if ("condition".equals(name)) {
@@ -161,6 +161,7 @@ public class WorkflowUtils {
 		    			String userListName = element.attributeValue("elementName"); //custom attribute name
 		   				CustomAttribute attr = entity.getCustomAttribute(userListName); 
 		   				if (attr != null) {
+		   					//comma separated value
 		   					result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
 		   				}
 		    		}

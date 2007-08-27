@@ -19,7 +19,6 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		switch (operation) {
 			case addEntryWorkflow:
 			case deleteEntryWorkflow:
-			case setWorkflowResponse:
 				return false;
 			default:
 				return super.testAccess(entry, operation);
