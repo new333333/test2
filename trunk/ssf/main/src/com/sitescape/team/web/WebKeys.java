@@ -710,6 +710,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
+    public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_MENU_SELECTED="selected"; 
     public static final String TOOLBAR_STYLE="ss_toolbar_style";

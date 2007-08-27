@@ -413,6 +413,16 @@ public class BinderHelper {
 		} catch (AccessControlException ac) {}
 
 		model.put(WebKeys.SIDEBAR_WORKSPACE_TREE, tree);
+
+		// Record the workspace passed in as the "current workspace" for
+		// the sidebar.  This is used as the default workspace context
+		// when adding a workspace from the sidebar.
+		// It turns out that the calculation of this for the workspace
+		// tree is exactly what is needed, so we piggyback this code
+		// for this bean.
+		
+		model.put(WebKeys.SIDEBAR_CURRENT_WORKSPACE, workspaceBinder);
+
 	}
 
 	static public void buildNavigationLinkBeans(AllModulesInjected bs, Binder binder, Map model) {
