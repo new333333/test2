@@ -102,9 +102,14 @@
 		     3. If we have our own mail.jar (javax.mail) in our lib directory, 
 		     ClassCastException occurs at startup during initialization of mail
 		     module due to class loader conflict. So we must remove that.
+		     4. If we have our own jta.jar in our lib directory, we get the following error at startup:
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'transactionManager' defined in ServletContext resource [/WEB-INF/context/applicationContext.xml]: Initialization of bean failed; nested exception is org.springframework.transaction.TransactionSystemException: JTA UserTransaction is not available at JNDI location [java:comp/UserTransaction]; nested exception is org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]
+org.springframework.transaction.TransactionSystemException: JTA UserTransaction is not available at JNDI location [java:comp/UserTransaction]; nested exception is org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]
+org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]		     
+			(reported in http://www.jroller.com/raible/entry/spring_s_jtatransactionmanager_on_jboss)
 		-->
 		<delete>
-			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,commons-logging*.jar,portlet.jar,mail.jar"/> 
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,commons-logging*.jar,portlet.jar,mail.jar,jta.jar"/> 
 		</delete>		
 	</target>		
 
