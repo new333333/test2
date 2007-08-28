@@ -1735,7 +1735,7 @@ public static final String[] monthNamesShort = {
 						viewType.equals(Definition.VIEW_STYLE_TASK))) {
 			
 			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "');return false;");
+			qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "');return false;");
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
 			} else {

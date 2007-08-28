@@ -1527,13 +1527,23 @@ public class AjaxController  extends SAbstractControllerRetry {
 			WebHelper.releaseFileHandle(fileHandle);
 		}
 		response.setRenderParameter("ssICalendarEntryIdsSize", Integer.toString(createdEntryIds.size()));
+		
+		List entryIdsAsStrings = new ArrayList();
+		Iterator it = createdEntryIds.iterator();
+		while (it.hasNext()) {
+			entryIdsAsStrings.add(it.next().toString());
+		}
+		String[] ids = new String[entryIdsAsStrings.size()];
+		ids = (String[])entryIdsAsStrings.toArray(ids);
+		response.setRenderParameter("ssICalendarEntryIds", ids);
 	}
 	
 	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response) {
 		int entriesAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryIdsSize", 0);
-		
+		long[] entryIds = PortletRequestUtils.getLongParameters(request, "ssICalendarEntryIds");
 		Map model = new HashMap();
 		model.put("entriesAmount", entriesAmount);
+		model.put("entryIds", entryIds);
 		
 		return new ModelAndView("forum/json/icalendar_upload", model);
 	}

@@ -1788,7 +1788,7 @@ function ss_calendar(prefix) {
 var ss_calendar_import = {
 	divId : "ss_calendar_import_div",
 	
-	importForm : function(forumId) {
+	importForm : function(forumId, namespace) {
 		
 		// Build the import form
 		var calImportDiv = document.getElementById(this.divId);
@@ -1822,14 +1822,14 @@ var ss_calendar_import = {
 				"<div style=\"text-align: left; width: 100%; \">" +
 					"<input type=\"file\" name=\"iCalFile\" />" +
 				"</div><br/>" +
-				"<input type=\"button\" value=\"Upload\" onclick=\"ss_calendar_import.uploadFile();\"/>" +
+				"<input type=\"button\" value=\"Upload\" onclick=\"ss_calendar_import.uploadFile('" + namespace + "');\"/>" +
 				"<input type=\"hidden\" name=\"folderId\" value=\"" + forumId + "\">" +
 			"</form>";
 	    
 		ss_showPopupDivCentered(this.divId);
 	},
 	
-	uploadFile : function () {
+	uploadFile : function (prefix) {
 		var url = ss_musterUrl;
 		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "uploadICalendarFile");
 		dojo.debug("uploadFile");
@@ -1840,9 +1840,14 @@ var ss_calendar_import = {
 				ss_calendar_import.cancel();
 			},
 			load: function(type, data, evt) {
-				if (data.notLoggedIn) {
+				if (data && data.notLoggedIn) {
 					alert(ss_not_logged_in);
-				} else if (data.entriesAmountMsg) {
+				} else if (data && data.entriesAmountMsg && data.entryIds) {
+					if (window["ss_calendar_" + prefix]) {
+						for (var i = 0; i < data.entryIds.length; i++) {
+							window["ss_calendar_" + prefix].refreshEntryEvents(data.entryIds[i]);
+						}
+					}
 					alert(data.entriesAmountMsg);
 				} else {
 					throw "Wrong server response.";
