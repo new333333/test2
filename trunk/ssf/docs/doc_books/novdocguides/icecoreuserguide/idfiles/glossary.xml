@@ -118,6 +118,8 @@
 
  <target id="basbs53" pid="b9rtisc" name="GlossEntry" level="1"> <text>template (a)</text> </target>
 
+ <target id="bbgjrf8" pid="b9rtisc" name="GlossEntry" level="1"> <text>type to find</text> </target>
+
  <target id="basbhw5" pid="b9rtisc" name="GlossEntry" level="1"> <text>view</text> </target>
 
  <target id="basc99o" pid="b9rtisc" name="GlossEntry" level="1"> <text>visitor</text> </target>

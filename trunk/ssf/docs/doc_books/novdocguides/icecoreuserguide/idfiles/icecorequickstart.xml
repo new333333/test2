@@ -14,8 +14,6 @@
 
  <target id="banqhqc" pid="banqhqb" name="Sect2" level="2" number="2.2.2"> <text>Edit Contact Information and Add Pictures</text> </target>
 
- <target id="bas8mfq" pid="banqhqb" name="BridgeHead" level="3"> <text>No Text</text> </target>
-
  <target id="banq7qc" pid="banqhqb" name="BridgeHead" level="3"> <text>Tips for uploading images</text> </target>
 
  <target id="banqhqd" pid="banqhqb" name="Sect2" level="2" number="2.2.3"> <text>Add a Blog Entry</text> </target>
