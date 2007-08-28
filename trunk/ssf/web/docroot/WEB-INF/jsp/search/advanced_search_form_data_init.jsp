@@ -13,12 +13,12 @@ function ss_initSearchOptions() {
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<c:if test="${!empty ss_filterMap.additionalFilters.tag}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.tag}">
-				ss_addInitializedTag("${block.communityTag}", "${block.personalTag}");
+				ss_addInitializedTag("<ssf:escapeJavaScript value="${block.communityTag}"/>", "<ssf:escapeJavaScript value="${block.personalTag}"/>");
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.creator_by_id}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creator_by_id}">
-				ss_addInitializedAuthor("${block.authorId}", "${block.authorTitle}");
+				ss_addInitializedAuthor("${block.authorId}", "<ssf:escapeJavaScript value="${block.authorTitle}"/>");
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.last_activity}">
@@ -39,16 +39,16 @@ function ss_initSearchOptions() {
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
 				<c:forEach var="step" items="${block.filterWorkflowStateName}">
-					ss_addInitializedWorkflow("${block.searchWorkflow}", "${step}");
+					ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", "<ssf:escapeJavaScript value="${step}"/>");
 				</c:forEach>
 				<c:if test="${empty block.filterWorkflowStateName}">
-					ss_addInitializedWorkflow("${block.searchWorkflow}", "");				
+					ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", "");				
 				</c:if>				
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
-				ss_addInitializedEntry("${block.entryType}", "${block.entryElement}", "${block.entryValuesNotFormatted}", "${block.entryValues}");
+				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", "<ssf:escapeJavaScript value="${block.entryElement}"/>", "<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", "<ssf:escapeJavaScript value="${block.entryValues}"/>");
 			</c:forEach>
 		</c:if>
 		
