@@ -1304,24 +1304,7 @@ public class BinderHelper {
 		
 		*
 		*/
-		if (newTab.equals("1")) {
-			tabs.setCurrentTab(tabs.findTab(binder, true));
-		} else if (newTab.equals("2")) {
-			tabs.setCurrentTab(tabs.addTab(binder));
-		} else if (newTab.equals("3")) {
-			//tabs.setCurrentTab(tabs.setTab(binder, true));
-			tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
-		} else if (tabId != null) {
-			//Do not set the page number to zero
-			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
-		} else {
-			//Don't overwrite a search tab
-			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-				tabs.setCurrentTab(tabs.findTab(binder, true));				
-			} else {
-				tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
-			}
-		}	
+		tabs.setCurrentTab(tabs.findTab(binder, true));
 		return tabs;
 	}
 

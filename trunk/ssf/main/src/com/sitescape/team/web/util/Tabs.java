@@ -510,6 +510,20 @@ public class Tabs {
 		tabs.put(NEXT_REF, new Integer(nextRef.intValue() + 1));
 		Map tab = getTab(newTabId);
 		tab.put(LAST_REF, new Integer(nextRef));
+
+		// Move current tab to the top of the list
+		List tabList = (List) tabs.get(TABLIST);
+		for (int i = 0; i < tabList.size(); i++) {
+			Map tab1 = (Map)tabList.get(i);
+			if (tab1.containsKey(TAB_ID) && 
+					((Integer)tab1.get(TAB_ID)).intValue() == tabId) {
+				tab1 = (Map) tabList.remove(i);
+				tabList.add(0, tab1);
+				break;
+			}
+		}
+
+		
 		return newTabId;
 	}
 	public String getTabType(int tabId) {
