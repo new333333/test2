@@ -113,24 +113,21 @@ function ss_calendar(prefix) {
 	var ss_cal_CalData = {
 	
 		/* Presentation data */
-	    map: new Array(),
-	    setMap: function(pMap) { for (var i in pMap) {
-           if (typeof(pMap[i]) == "function") continue;	       
-	       this.map[pMap[i].calsrc] = pMap[i]; }
+	    map: new Object(),
+	    setMap: function(pMap) { 
+	    	for (var i = 0; i < pMap.length; i++) {
+				this.map[pMap[i].calsrc] = pMap[i];
+			}
 	    },
-	    binderCalendarMapping: new Array(),
+	    binderCalendarMapping: new Object(),
 	    getCalendar: function(binderId) {
 	    	if (this.binderCalendarMapping[binderId]) {
 	    		return this.binderCalendarMapping[binderId];
 	    	} else {
 	    		// find first free calendar definition
-	    		for (i in this.map) {
-		            if (typeof(this.map[1]) == 'function') continue;
-	    		
+	    		for (var i in this.map) {
 	    			var inUse = false;
-	    			for (j in this.binderCalendarMapping) {
-			            if (typeof(this.binderCalendarMapping[j]) == 'function') continue;
-	    			
+	    			for (var j in this.binderCalendarMapping) {
 	    				if (this.binderCalendarMapping[j] == i) {
 	    					inUse = true;
 	    				}
@@ -168,7 +165,7 @@ function ss_calendar(prefix) {
 	    
 	    today : null,
 	
-		monthViewInfo : new Array(),
+		monthViewInfo : new Object(),
 		
 		// used on dashboard to color calendar links with the same color like calendar events
 		markCalendarLink : function(binderId, color) {
@@ -783,8 +780,7 @@ function ss_calendar(prefix) {
 	    currDispId: null,
 	    currDay: null,
 	
-	    allDayCount:  new Array(),
-	    calEvents: new Array(),
+	    allDayCount:  new Object(),
 	    currEventData: new Object(),
 	
 	    mouseIsDown: function(evt, grid) {
@@ -819,8 +815,7 @@ function ss_calendar(prefix) {
 	
 	    resetGridHeight: function() {
 	        var maxEvents = 0;
-	        for (i in this.allDayCount) {
-	            if (typeof(this.allDayCount[i]) == 'function') continue;	            
+	        for (var i in this.allDayCount) {
 	            if (this.allDayCount[i] > maxEvents) { maxEvents = this.allDayCount[i]; }
 	        }
 	        if (isIE) {
@@ -864,9 +859,9 @@ function ss_calendar(prefix) {
 	
 	
 	    reset: function() {    
-			// it doesn't work correctly for maps or objects
-	        // while (this.allDayCount.length) { this.allDayCount.pop() };
-	        this.allDayCount = new Array();
+	        for (var i in this.allDayCount) {
+	        	delete this.allDayCount[i];
+	        }
 	    }
 	
 	}
@@ -877,7 +872,6 @@ function ss_calendar(prefix) {
 	
 	    currGrid: null,
 	    currDispId: null,
-	    calEvents: new Array(),
 	    currEventData: new Object(),
 	
 	
@@ -974,20 +968,19 @@ function ss_calendar(prefix) {
 		
 	    displayId: 0,
 	    
-	    eventData: new Array(),
-	    eventIdsByEntryId: new Array(),
+	    eventData: new Object(),
+	    eventIdsByEntryId: new Object(),
 	    
-	    collisions: new Array(),
-	    collisionI: new Array(),
-	    collisionM: new Array(),
-	    order: new Array(),// eventType -> date(YYYY/MM/DD) -> events key
+	    collisions: new Object(),
+	    collisionI: new Object(),
+	    collisionM: new Object(),
+	    order: new Object(),// eventType -> date(YYYY/MM/DD) -> events key
 	    
 	    monthGridEvents: new Array(),
 	    dayGridEvents: new Object(),
 	            
 	    set: function(newEvents) {
-	        for (var i in newEvents) {	        
-	            if (typeof(newEvents[i]) == 'function') continue;
+	        for (var i = 0; i < newEvents.length; i++) {	        
 	            var nei = newEvents[i];
 	            // already loaded?
 	            if (this.eventData[nei.eventId]) {
@@ -1033,11 +1026,9 @@ function ss_calendar(prefix) {
 	    },
 	    
 		reorderEvent: function() {
-			for (i in this.order) {
-	            if (typeof(this.order[i]) == 'function') continue;
+			for (var i in this.order) {
 				if (typeof this.order[i] != "undefined") {
-					for (j in this.order[i]) {
-			            if (typeof(this.order[i][j]) == 'function') continue;			    
+					for (var j in this.order[i]) {
 						if (typeof this.order[i][j] != "undefined") {	
 		    				this.order[i][j].sort();
 		    			}
@@ -1048,7 +1039,7 @@ function ss_calendar(prefix) {
 	
 	    incrCollision: function(eventType, t) {
 	        if (typeof this.collisions[eventType] == "undefined") { 
-	        	this.collisions[eventType] = new Array(); 
+	        	this.collisions[eventType] = new Object(); 
 	        }
 	        if (typeof this.collisions[eventType][t] == "undefined") { 
 	        	this.collisions[eventType][t] = 0; 
@@ -1097,7 +1088,7 @@ function ss_calendar(prefix) {
 	
 		        this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
 		        if (typeof this.collisionM[event.eventType] == "undefined") { 
-		        	this.collisionM[event.eventType] = new Array(); 
+		        	this.collisionM[event.eventType] = new Object(); 
 		        }
 		        if (typeof this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()] == "undefined") { 
 		        	this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()] = new Array(); 
@@ -1134,7 +1125,7 @@ function ss_calendar(prefix) {
 	    collisionIndex: function(eventType, year, month, dayOfMonth, start) {
 	        var t = year + "/" + month + "/" + dayOfMonth + "/" + Math.floor(start);
 	        if (typeof this.collisionI[eventType] == "undefined") { 
-	        	this.collisionI[eventType] = new Array(); 
+	        	this.collisionI[eventType] = new Object(); 
 	        }
 	        if (typeof this.collisionI[eventType][t] == "undefined") { 
 	        	this.collisionI[eventType][t] = 0; 
@@ -1144,7 +1135,7 @@ function ss_calendar(prefix) {
 	
 	    sortEvent: function(event) {
 	    	if (typeof this.order[event.eventType] == "undefined") {
-	    		this.order[event.eventType] = new Array();
+	    		this.order[event.eventType] = new Object();
 	    	}
 	    	
 	    	var date = event.startDate;
@@ -1211,12 +1202,11 @@ function ss_calendar(prefix) {
 	
 	    undrawDayEvents: function() {
 	        for (var eventId in this.dayGridEvents) {
-	        	if (typeof(this.dayGridEvents[eventId]) == 'function') continue;
 	        	var eventDisplayIds = this.dayGridEvents[eventId];
-				while (eventDisplayIds.length) {
-					var displayId = eventDisplayIds.pop();
-					if (displayId) {
-		            	dojo.dom.removeNode(dojo.byId("calevt" + prefix + displayId).parentNode);
+	        	for (var i in eventDisplayIds) {
+					if (eventDisplayIds[i]) {
+		            	dojo.dom.removeNode(dojo.byId("calevt" + prefix + eventDisplayIds[i]).parentNode);
+		            	delete eventDisplayIds[i];
 		           	}
 	            }	        	
 	        }
@@ -1240,9 +1230,7 @@ function ss_calendar(prefix) {
 				
 				if (typeof this.order[this.eventsTypes[this.eventsType]] != "undefined" &&
 					typeof this.order[this.eventsTypes[this.eventsType]][key] != "undefined") {
-					for (i in this.order[this.eventsTypes[this.eventsType]][key]) {
-			           if (typeof(this.order[this.eventsTypes[this.eventsType]][key][i]) == 'function') continue;					
-					           
+					for (var i = 0; i< this.order[this.eventsTypes[this.eventsType]][key].length; i++) {
 		            	var eid = this.order[this.eventsTypes[this.eventsType]][key][i].substr(5);
 		            	var e = this.eventData[eid];
 					
@@ -1294,7 +1282,7 @@ function ss_calendar(prefix) {
 			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, false, e);
 			            }
 			            if (!this.dayGridEvents[eid]) {
-			            	this.dayGridEvents[eid] = new Array();
+			            	this.dayGridEvents[eid] = new Object();
 			            }
 			            this.dayGridEvents[eid][gridDay] = eventDisplayId;
 					}
@@ -1302,7 +1290,7 @@ function ss_calendar(prefix) {
 			
 				date = date.addDays(1);
 	        }
-	        this.collisionI = new Array();
+	        this.collisionI = new Object();
 	        ss_cal_CalAllDayEvent.resetGridHeight();
 	    },
 	
@@ -1310,7 +1298,6 @@ function ss_calendar(prefix) {
 	        this.undrawEvents();
 	        
 	        for (var d in this.collisionM[this.eventsTypes[this.eventsType]]) {
-	            if (typeof(this.collisionM[this.eventsTypes[this.eventsType]][d]) == 'function') continue;
 	            var grid = "ss_cal_monthGrid" + prefix;
 	                        
 	            var year = 1 * d.substring(0, 4);
