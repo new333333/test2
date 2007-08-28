@@ -47,7 +47,7 @@
 		    if (value == null) value = "";
 		}
 %>
-<div >
+<div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
 <span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
 </c:if>
