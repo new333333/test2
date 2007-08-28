@@ -131,17 +131,28 @@ function <%=cTreeName%>_showId(id, obj, action) {
 </c:if>
 
 <c:if test="${ssOperation == 'export'}">
+<script type="text/javascript">
+var ssExportURL="<portlet:actionURL windowState="maximized"><portlet:param 
+	name="action" value="configure_configuration"/></portlet:actionURL>";
+</script>
+
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_configuration"/><portlet:param 
-	name="operation" value="export"/></portlet:actionURL>" 
+<form class="ss_style ss_form" action="<ssf:url webPath="templateDownload"/>" 
 	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 
 <br>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.export.templates.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+<script type="text/javascript">
+document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.cancelBtn.onclick=function () {
+	document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssExportURL;
+	document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.onsubmit=function() { return true; };
+	return true;
+};
+document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
+</script>
 
 </form>
 <br>

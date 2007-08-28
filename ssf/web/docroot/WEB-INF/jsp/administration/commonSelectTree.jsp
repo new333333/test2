@@ -41,6 +41,20 @@ function ss_selectAll(formName, prefix, newState) {
         }
     }
 }
+function ss_selectAllIfNoneSelected(prefix) {
+    var totalElements = this.elements.length;
+    for ( var i=0; i < totalElements; i++) {
+        var namestring = this.elements[i].name.substring(0,prefix.length)
+        if (namestring == prefix) {
+            var e = this.elements[i];
+			if(e.checked) {
+				return true;
+			}
+        }
+    }
+	ss_selectAll(this.name, prefix, true);
+	return true;
+}
 </script>
 <ssf:tree treeName="<%= "t_" + renderResponse.getNamespace()+ "_tree" %>" treeDocument="${ssDomTree}"  
   rootOpen="true" multiSelect="<%= new java.util.ArrayList() %>" multiSelectPrefix="id_" />
