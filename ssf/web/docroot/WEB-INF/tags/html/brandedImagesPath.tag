@@ -1,6 +1,5 @@
 <%@ tag isELIgnored="false" body-content="empty"  %><%--
 --%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
---%><%@ page import="com.sitescape.team.util.SPropsUtil" %><%--
 --%><c:set var="ss_brand_prefix" value="branding.prefix" scope="request"/><%--
 --%><c:if test="${!empty ss_brand_prefix}"><%--
     --%><c:set var="ss_brand_prefix" value="icecore" scope="request"/><%--

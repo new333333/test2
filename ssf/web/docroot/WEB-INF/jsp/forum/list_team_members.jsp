@@ -29,7 +29,7 @@
 	<td valign="top">
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
-		  src="<html:imagesPath/>icons/group.gif"/> 
+		  src="<html:brandedImagesPath/>icons/group.gif"/> 
 		  <span>${ssBinder.title}</span> 
     </div>
     <div>

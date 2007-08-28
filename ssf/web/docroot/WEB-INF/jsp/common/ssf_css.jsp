@@ -2007,55 +2007,55 @@ div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 }
 
 .ss_global_toolbar_favs div {
-	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_favorites.gif) no-repeat top;
 	background-position: left 0px;
 	width: 49px;
 	height: 42px;	
 }
 
 .ss_global_toolbar_favs div:hover {
-	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_favorites.gif) no-repeat top;
 	background-position: left -42px;
 	width: 49px;
 	height: 42px;	
 }
 
 .ss_global_toolbar_myworkspace div {
-	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
 	background-position: left 0px;
 	width: 61px;
 	height: 42px;	
 }
 
 .ss_global_toolbar_myworkspace div:hover {
-	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
 	width: 61px;
 	height: 42px;
 	background-position: left -42px;
 }
 
 .ss_global_toolbar_myteams div {
-	background:url(<html:imagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
 	background-position: left 0px;
 	width: 46px;
 	height: 42px;	
 }
 
 .ss_global_toolbar_myteams div:hover {
-	background:url(<html:imagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
 	background-position: left -42px;
 	width: 46px;
 	height: 42px;	
 }
 
 .ss_global_toolbar_favs_big div {
-	background:url(<html:imagesPath/>icons/toolbar_favorites_big.jpg) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_favorites_big.jpg) no-repeat top;
 	width: 75px;
 	padding-top: 60px;
 	text-align: center;
 }
 .ss_global_toolbar_myworkspace_big div {
-	background:url(<html:imagesPath/>icons/toolbar_myworkspace_big.jpg) no-repeat top;
+	background:url(<html:brandedImagesPath/>icons/toolbar_myworkspace_big.jpg) no-repeat top;
 	width: 85px;
 	padding-top: 60px;
 	text-align: center;
@@ -3667,7 +3667,7 @@ div.ss_profile_info_frame {
 
 div.ss_profile_photo_box_empty {
     background-color: transparent !important;
-	background-image: url(<html:imagesPath/>pics/watermark_person.gif);
+	background-image: url(<html:brandedImagesPath/>pics/watermark_person.gif);
     background-position:  center;
 	background-repeat: no-repeat;
 }
