@@ -60,9 +60,9 @@
 
  <target id="bbijx0b" pid="bbijvt7" name="Sect2" level="2" number="1.6.1"> <text>Install a Standalone Lucene Index Server for a New ICEcore Application</text> </target>
 
- <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
+ <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 39):</text> </target>
 
- <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
+ <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 39):</text> </target>
 
  <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server"</text> </target>
 
@@ -70,7 +70,7 @@
 
  <target id="bbik1wm" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
 
- <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 8).</text> </target>
+ <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 7).</text> </target>
 
  <target id="bbiks4e" pid="bbijvt7" name="Step" level="4" number="3"> <text>Start the server at the end of the installation:</text> </target>
 
@@ -82,13 +82,13 @@
 
  <target id="bbiktxj" pid="bbijvt7" name="Step" level="6" number="3c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 8).</text> </target>
+ <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 7).</text> </target>
 
  <target id="bbijxwe" pid="bbijvt7" name="Sect2" level="2" number="1.6.2"> <text>Install a Standalone Lucene Index Server for an Existing ICEcore Application</text> </target>
 
- <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
+ <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 39):</text> </target>
 
- <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 37):</text> </target>
+ <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page 39):</text> </target>
 
  <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server"</text> </target>
 
@@ -96,11 +96,11 @@
 
  <target id="bbikxch" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
 
- <target id="bbikvyx" pid="bbijvt7" name="Step" level="4" number="2"> <text>Shutdown ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 9).</text> </target>
+ <target id="bbikvyx" pid="bbijvt7" name="Step" level="4" number="2"> <text>Shutdown ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 8).</text> </target>
 
- <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="3"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 8).</text> </target>
+ <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="3"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 7).</text> </target>
 
- <target id="bbikwsp" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the installer on the standalone machine and choose the option for: Apply settings only (see Section 1.7, "Running the Installer," on page 8).</text> </target>
+ <target id="bbikwsp" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the installer on the standalone machine and choose the option for: Apply settings only (see Section 1.7, "Running the Installer," on page 7).</text> </target>
 
  <target id="bbikvyz" pid="bbijvt7" name="Step" level="4" number="5"> <text>Start the server at the end of the installation (if not started already):</text> </target>
 
@@ -112,9 +112,9 @@
 
  <target id="bbikvz2" pid="bbijvt7" name="Step" level="6" number="5c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikvz3" pid="bbijvt7" name="Step" level="4" number="6"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 8).</text> </target>
+ <target id="bbikvz3" pid="bbijvt7" name="Step" level="4" number="6"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 7).</text> </target>
 
- <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="7"> <text>Restart ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 9).</text> </target>
+ <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="7"> <text>Restart ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 8).</text> </target>
 
  <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.7"> <text>Running the Installer</text> </target>
 
