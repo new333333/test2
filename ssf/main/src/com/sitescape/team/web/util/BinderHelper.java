@@ -536,8 +536,9 @@ public class BinderHelper {
 					
 		} else {
 			String icon = config.getIconName();
+			String imageBrand = SPropsUtil.getString("branding.prefix");
 			if (icon == null || icon.equals("")) icon = "/icons/folder.png";
-			element.addAttribute("image", icon);
+			element.addAttribute("image", "/" + imageBrand + icon);
 			element.addAttribute("imageClass", "ss_twIcon");
 			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
 			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_TEMPLATE, config));
