@@ -33,17 +33,11 @@
 <%-- Show the screen name --%>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><ssf:nlt tag="__profile_name"/></div>
-<input type="text" size="40" name="name" value="<c:out value="${ssDefinitionEntry.name}"/>"
-	<c:if test="${empty ssDefinitionEntry.name}">
-	  class="ss_text"
-	</c:if>
-	<c:if test="${!empty ssDefinitionEntry.name}">
-	  class="ss_text ss_readonly" READONLY="true" 
-	</c:if>
->
+<c:out value="${ssDefinitionEntry.name}"/>
 </div>
 
 <%-- Show the first, middle and last names --%>
+<div class="ss_entryContent">
 <table>
 <tr>
   <td style="padding-right:6px;">
@@ -82,6 +76,7 @@
   </td>
 </tr>
 </table>
+</div>
 
 <%-- Show all of the non-standard elements from the definition --%>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
