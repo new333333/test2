@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `8/21/2007 10:53:32 AM'>
+   <String `8/28/2007 5:54:08 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2057,6 +2057,350 @@
    <String `Filename'>
    <Char Tab> 
    <String `# of References'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-across-pages-minimized-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-across-pages1-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-across-pages2-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-icon-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-layout-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-location-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-minimizing-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-accessories-search-current-page-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-blogs-entry-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-blogs-tools-sidebar-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-calendars-default-page-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-clipboard-link-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-clipboard-selected-names-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-clipboard-using-names-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-contact-options-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-discussion-table-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-favorites-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-files-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-filter-applying-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-filter-edit-link-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-filter-navigation-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-global-workspaces-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-guestbooks-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-markup-click-icon-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-markup-page-name-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-photoalbum-folder-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-photoalbum-view-pic-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-project-a-task-folder-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-project-change-value-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-project-milestones-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-project-task-categories-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-project-ws-page-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-project-ws-structure-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-star-ratings-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-tags-adding-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-tags-for-current-folder-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-tags-search-for-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-wiki-compare-versions-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-wiki-edit-history-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-wiki-edit-history-link-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-wiki-nav-tools-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-wiki-set-main-page-a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-workflow-a.png'>
+   <Char Tab> 
+   <String `1'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2126,7 +2470,23 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `intro_display_myteams_list_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `intro_entry_click_title_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `intro_entry_close_overlay_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2230,7 +2590,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `intro_link_personal_workspace_a.png'>
+   <String `intro_navigation_portlet_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2238,7 +2598,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `intro_navigation_portlet_a.png'>
+   <String `intro_open_breadcrumbs_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2287,6 +2647,22 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `intro_return_portal_page_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `intro_search_people_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `intro_tools_sidebar_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2424,6 +2800,14 @@
   <ParaLine 
    <String `tasks_click_blog_a.png'>
    <Char Tab> 
+   <String `2'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `tasks_collapse_contact_info_a.png'>
+   <Char Tab> 
    <String `1'>
   > # end of ParaLine
  > # end of Para
@@ -2446,9 +2830,17 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `tasks_create_team_add_team_link_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `tasks_create_team_team_ws_link_a.png'>
    <Char Tab> 
-   <String `2'>
+   <String `1'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2462,7 +2854,15 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `tasks_list_teams_a.png'>
+   <String `tasks_findperson_nav_to_blog_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `tasks_mod_intro_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2494,6 +2894,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `tasks_modified_pers_ws_complete_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `tasks_my_workspace_icon_a.png'>
    <Char Tab> 
    <String `1'>
@@ -2503,14 +2911,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `tasks_my_ws_icon_navbar_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `tasks_navigate_to_blog_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2594,13 +2994,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `tasks_create_team_add_team_link_a.png'>
+   <String `tasks_mod_pers_workspace_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `tasks_mod_pers_workspace_a.png'>
+   <String `tasks_team_add_visitor_role_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2612,7 +3012,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `iconbuddylistaway_n.png'>
+   <String `features-accessories-across-pages-minimized-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2625,27 +3025,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103367'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037260'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `iconbuddylistaway_n.png'>
+   <String `features-accessories-across-pages-minimized-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecorequickstart.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: , Indent: Inline'>
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Closing the accessory panel to make more room for content\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `iconbuddylistoffline_n.png'>
+   <String `features-accessories-across-pages1-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2658,27 +3064,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103415'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036999'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `iconbuddylistoffline_n.png'>
+   <String `features-accessories-across-pages1-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecorequickstart.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: , Indent: Inline'>
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A global accessory (seen on all workspace and folder pages)\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `iconbuddylistonline_n.png'>
+   <String `features-accessories-across-pages2-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2691,27 +3103,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103324'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037106'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `iconbuddylistonline_n.png'>
+   <String `features-accessories-across-pages2-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecorequickstart.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: , Indent: Inline'>
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The global accessory seen on a different page\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `iconbuddylistunknown_n.png'>
+   <String `features-accessories-icon-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2724,27 +3142,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103465'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036338'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `iconbuddylistunknown_n.png'>
+   <String `features-accessories-icon-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecorequickstart.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: , Indent: Inline'>
+   <String `Width: 53%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Accessories icon and drop-down list\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `intro_add_content_a.png'>
+   <String `features-accessories-layout-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2757,54 +3181,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1041097'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037594'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `intro_add_content_a.png'>
+   <String `features-accessories-layout-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecoreunderstanding.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 85%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124708'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_add_content_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
+   <String `Width: 49%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 69%, Indent: Current Indent'>
+   <String `Description: \qDescription: Accessory layout menu items\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `intro_add_icecore_admin_a.png'>
+   <String `features-accessories-location-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2817,60 +3220,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124917'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036592'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `intro_add_icecore_admin_a.png'>
+   <String `features-accessories-location-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecoreunderstanding.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 36%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_admin_help_moreinfo_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1125169'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_admin_help_moreinfo_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
+   <String `Width: 100%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 93%, Indent: Current Indent'>
+   <String `Description: \qDescription: A photo gallery as an accessory\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `intro_create_icecore_portlets_a.png'>
+   <String `features-accessories-minimizing-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2883,27 +3259,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124755'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036866'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `intro_create_icecore_portlets_a.png'>
+   <String `features-accessories-minimizing-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecoreunderstanding.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 94%, Indent: Current Indent'>
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Close icons for both the single accessory and for the accessory panel\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `intro_entry_click_title_a.png'>
+   <String `features-accessories-search-current-page-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2916,15 +3298,249 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048877'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037408'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `intro_entry_click_title_a.png'>
+   <String `features-accessories-search-current-page-a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in icecoreunderstanding.fm'>
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A search-results accessory for one folder\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-blogs-entry-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039791'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-blogs-entry-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 78%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A blog entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-blogs-tools-sidebar-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039918'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-blogs-tools-sidebar-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 55%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The blog calendar and archive tools\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-calendars-default-page-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040172'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-calendars-default-page-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Calendar tools\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-clipboard-link-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038357'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-clipboard-link-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 50%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Clipboard link\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-clipboard-selected-names-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038532'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-clipboard-selected-names-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The clipboard panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-clipboard-using-names-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038738'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-clipboard-using-names-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2934,6 +3550,1605 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Applying clipboard names to the "send mail" form\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-contact-options-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039588'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-contact-options-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 41%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The contents of the presence panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-discussion-table-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040045'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-discussion-table-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The table view of a discussion folder\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-favorites-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037943'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-favorites-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 61%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The favorites panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-files-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040951'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-files-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A folder file\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-filter-applying-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038232'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-filter-applying-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 42%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Effects of using the filter\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-filter-edit-link-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037986'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-filter-edit-link-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 50%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Using the Edit link to create a new filter\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-filter-navigation-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038100'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-filter-navigation-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 46%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Providing search criteria for the filter\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-global-workspaces-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043932'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-global-workspaces-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 36%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Structure of global workspaces (geography followed by function)\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-guestbooks-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040636'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-guestbooks-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 93%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A guestbook folder\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-markup-click-icon-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042528'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-markup-click-icon-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 90%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The entry-reference mark-up icon\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-markup-page-name-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042797'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-markup-page-name-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 81%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Using the mark-up tool to specify an entry title\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-photoalbum-folder-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041937'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-photoalbum-folder-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A photo album\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-photoalbum-view-pic-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042020'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-photoalbum-view-pic-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 85%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Viewing a picture in a photo album\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-project-a-task-folder-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044420'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-project-a-task-folder-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 76%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A task folder\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-project-change-value-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044669'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-project-change-value-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 63%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Changing the % done value of a task\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-project-milestones-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044806'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-project-milestones-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 86%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A milestone folder\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-project-task-categories-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044289'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-project-task-categories-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 55%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Categories of tasks represented by separate task folders\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-project-ws-page-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1045191'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-project-ws-page-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 56%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A project workspace page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-project-ws-structure-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044157'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-project-ws-structure-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 58%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Structuring a project workspace within a team workspace\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-star-ratings-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038999'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-star-ratings-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 56%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The star ratings facility\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-tags-adding-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041423'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-tags-adding-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 63%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Adding tags to a folder\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-tags-for-current-folder-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041605'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-tags-for-current-folder-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 51%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Links to added tags\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-tags-search-for-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041747'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-tags-search-for-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 81%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Searching using tags\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-wiki-compare-versions-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043729'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-wiki-compare-versions-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 83%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The comparison of text in two different versions of the wiki entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-wiki-edit-history-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043462'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-wiki-edit-history-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Edit history" form\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-wiki-edit-history-link-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043424'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-wiki-edit-history-link-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 77%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Edit history" menu item\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-wiki-nav-tools-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042115'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-wiki-nav-tools-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 70%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Wiki navigation tools\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-wiki-set-main-page-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042264'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-wiki-set-main-page-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Setting the wiki folder\qs main page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `features-workflow-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039397'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `features-workflow-a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 78%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Using a drop-down list to change an entry\qs workflow state\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `iconbuddylistaway_n.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103367'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `iconbuddylistaway_n.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: , Indent: Inline'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The user is away from the computer\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `iconbuddylistoffline_n.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103415'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `iconbuddylistoffline_n.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: , Indent: Inline'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The user is offline \q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `iconbuddylistonline_n.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103324'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `iconbuddylistonline_n.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: , Indent: Inline'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The user is online\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `iconbuddylistunknown_n.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103465'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `iconbuddylistunknown_n.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: , Indent: Inline'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The user\qs status is unknown\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_add_content_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1041097'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_add_content_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 90%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add Content" link\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124708'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_add_content_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 90%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add Content" link for the LifeRay portal\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_add_icecore_admin_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124917'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_add_icecore_admin_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 40%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "ICEcore Administration" item and its "Add" button\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_admin_help_moreinfo_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1125169'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_admin_help_moreinfo_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: "More information" links on the main administrative Help panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_create_icecore_portlets_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124755'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_create_icecore_portlets_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 56%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The LifeRay portal\qs "Add Content" menu and the "ICEcore" menu item\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_display_myteams_list_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1138863'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_display_myteams_list_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "My teams" link in the Navigation portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_entry_click_title_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048877'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_entry_click_title_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A linked entry title within a folder listing\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_entry_close_overlay_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1136894'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_entry_close_overlay_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 85%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The X icon that closes an overlaid entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `intro_entry_overlay_a.png'>
@@ -2949,7 +5164,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048954'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048954'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_entry_overlay_a.png'>
@@ -2967,6 +5182,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Entry contents display within an "overlay" on the page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `intro_finished_adding_portlet_a.png'>
@@ -2982,7 +5203,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124982'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124982'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_finished_adding_portlet_a.png'>
@@ -2996,7 +5217,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 37%, Indent: Current Indent'>
+   <String `Width: 56%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The X icon that closes LifeRay\qs "Add Content" menu.\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3015,7 +5242,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048674'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048674'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_folder_navbar_a.png'>
@@ -3033,6 +5260,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The folder\qs navigation bar\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `intro_folder_page_a.png'>
@@ -3048,7 +5281,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048750'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048750'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_folder_page_a.png'>
@@ -3063,6 +5296,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The folder displays on its own page (maximized view)\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3081,43 +5320,10 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048599'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1138980'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_folder_tab_breadcrumbs_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 96%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_help_click_icon_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049367'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_help_click_icon_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -3132,6 +5338,51 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The workspace tree at the top of a workspace page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_help_click_icon_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049367'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_help_click_icon_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 88%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The X icon on a Help panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `intro_help_icon_a.png'>
@@ -3147,7 +5398,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048238'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048238'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_icon_a.png'>
@@ -3161,7 +5412,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 86%, Indent: Current Indent'>
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Help icon\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3180,7 +5437,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049291'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049291'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_info_icons_a.png'>
@@ -3194,7 +5451,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Information icons for various sections on the page\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3213,76 +5476,10 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049658'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049658'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_minimize_control_panel_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_help_more_page_numbers_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049493'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_help_more_page_numbers_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 97%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_help_panel_small_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049924'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_help_panel_small_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -3297,6 +5494,90 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The down-arrow icon (collapse) on the Help control panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_help_more_page_numbers_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049493'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_help_more_page_numbers_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 80%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Linked arrows and numbers that display additional Help panels\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_help_panel_small_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049924'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_help_panel_small_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 70%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The right-arrow icon (expand) on the Help control panel\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `intro_help_view_manuals_a.png'>
@@ -3312,7 +5593,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1050002'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1050002'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_view_manuals_a.png'>
@@ -3326,13 +5607,19 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 75%, Indent: Current Indent'>
+   <String `Width: 61%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "View manuals" button\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `intro_link_personal_workspace_a.png'>
+   <String `intro_navigation_portlet_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3345,10 +5632,88 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048503'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043472'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `intro_link_personal_workspace_a.png'>
+   <String `intro_navigation_portlet_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Navigation portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_open_breadcrumbs_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1139078'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_open_breadcrumbs_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Opening the workspace tree at the top of a workspace page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_open_team_subworkspace_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1044058'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_open_team_subworkspace_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -3363,69 +5728,9 @@
   > # end of ParaLine
  > # end of Para
  <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_navigation_portlet_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043472'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_navigation_portlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_open_team_subworkspace_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1044058'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_open_team_subworkspace_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 68%, Indent: Current Indent'>
+   <String `Description: \qDescription: The folders contained within a team workspace\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3444,7 +5749,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043853'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043853'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_open_teams_tree_a.png'>
@@ -3453,237 +5758,6 @@
     <FLocked No>
    > # end of Font
    <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 88%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_pers_workspace_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048405'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_pers_workspace_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 86%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_portal_page_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039582'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_portal_page_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_portlets_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039786'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_portlets_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `intro_return_portal_page_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048334'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `intro_return_portal_page_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecoreunderstanding.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_accessory_closing_icon_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121970'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_accessory_closing_icon_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_add_folder_add_team_menu_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120474'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_add_folder_add_team_menu_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 57%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_add_folder_add_teammates_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120940'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_add_folder_add_teammates_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3693,6 +5767,363 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Team workspaces" portion of the tree, expanded\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_pers_workspace_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1142193'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_pers_workspace_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 93%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Displaying a personal workspace page, which is added to "Recent places"\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_portal_page_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039582'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_portal_page_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The portal page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_portlets_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039786'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_portlets_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Two portlets within the larger portal page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_return_portal_page_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048334'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_return_portal_page_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Links that bring you from the folder page back to the portal page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_search_people_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1142123'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_search_people_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 52%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Find people" search text box in the tools side bar\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_tools_sidebar_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1141407'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_tools_sidebar_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 51%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The tools sidebar\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_accessory_closing_icon_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121970'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_accessory_closing_icon_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Collapse (down-arrow) icon\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_add_folder_add_team_menu_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120474'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_add_folder_add_team_menu_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 76%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Team menu and its "Add or delete team members" menu item\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_add_folder_add_teammates_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120940'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_add_folder_add_teammates_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 80%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add or delete team members" form\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `tasks_add_folder_initial_look_a.png'>
@@ -3708,10 +6139,88 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120312'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120312'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_add_folder_initial_look_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 70%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A link to the newly created folder appears in the tools sidebar\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_add_folder_team_participation_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121195'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_add_folder_team_participation_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 83%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: A teammate adds an entry in a folder in someone else\qs personal workspace\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_add_new_folder_menu_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119675'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_add_new_folder_menu_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -3726,9 +6235,15 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Manage menu and its "Add new folder" menu item\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `tasks_add_folder_team_participation_a.png'>
+   <String `tasks_advanced_search_link_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3741,10 +6256,466 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121195'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114784'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `tasks_add_folder_team_participation_a.png'>
+   <String `tasks_advanced_search_link_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 90%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Advanced link in the Navigation portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_advanced_search_restricted_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114930'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_advanced_search_restricted_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 80%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Specifying a search string and limiting the search to two folders\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_begin_typing_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112925'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_begin_typing_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 65%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: List of names that match the letters typed so far\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_blog_comment_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118165'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_blog_comment_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The displayed comments for an entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_blog_comment_add_form_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119072'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_blog_comment_add_form_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 55%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add comment" form\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_blog_comment_add_link_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118793'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_blog_comment_add_link_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 56%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add comment" link at the bottom of a blog entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_blog_comment_added_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119300'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_blog_comment_added_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 71%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The newly added comment\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_blog_new_entry_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114575'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_blog_new_entry_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The New menu and the "Blog entry" menu item\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_blog_view_comments_link_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118039'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_blog_view_comments_link_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 75%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "View comments" link at the bottom of a blog entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_buddy_list_portlet_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112562'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_buddy_list_portlet_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 70%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Buddy List portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_click_blog_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114450'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_click_blog_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Blog link in the Workspace section of the tools sidebar\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1133473'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_click_blog_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 78%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_collapse_contact_info_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132956'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_collapse_contact_info_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -3761,402 +6732,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `tasks_add_new_folder_menu_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119675'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_add_new_folder_menu_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 53%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_advanced_search_link_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114784'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_advanced_search_link_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_advanced_search_restricted_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114930'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_advanced_search_restricted_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_begin_typing_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112925'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_begin_typing_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 68%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_blog_comment_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118165'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_blog_comment_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_blog_comment_add_form_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119072'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_blog_comment_add_form_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 68%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_blog_comment_add_link_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118793'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_blog_comment_add_link_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 85%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_blog_comment_added_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119300'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_blog_comment_added_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_blog_new_entry_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114575'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_blog_new_entry_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 73%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_blog_view_comments_link_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118039'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_blog_view_comments_link_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 93%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_buddy_list_portlet_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112562'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_buddy_list_portlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 57%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_click_blog_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114450'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_click_blog_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 63%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `tasks_completed_blog_content_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -4170,7 +6745,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117932'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117932'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_completed_blog_content_a.png'>
@@ -4184,7 +6759,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 98%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The content of the new blog entry\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4203,7 +6784,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117812'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117812'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_completed_blog_entry_a.png'>
@@ -4221,6 +6802,51 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The page displaying the new blog entry\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_create_team_add_team_link_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121556'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_create_team_add_team_link_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 88%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add a team workspace" button\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `tasks_create_team_team_ws_link_a.png'>
@@ -4236,7 +6862,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121449'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121449'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_create_team_team_ws_link_a.png'>
@@ -4250,34 +6876,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 51%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121556'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_create_team_team_ws_link_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
+   <String `Width: 48%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 51%, Indent: Current Indent'>
+   <String `Description: \qDescription: The "Team workspaces" link in the workspace tree\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4296,10 +6901,49 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1113199'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1113199'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_delete_buddy_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 70%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Delete icon \q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_findperson_nav_to_blog_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1133346'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_findperson_nav_to_blog_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -4314,9 +6958,15 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Using "type to find" for the "Find people" text box:\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `tasks_list_teams_a.png'>
+   <String `tasks_mod_intro_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4329,10 +6979,10 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1122895'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132509'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `tasks_list_teams_a.png'>
+   <String `tasks_mod_intro_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -4343,7 +6993,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 73%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Manage menu and its "Modify this workspace" menu item\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4362,7 +7018,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117219'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117219'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_pers_ws_form_a.png'>
@@ -4376,7 +7032,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
+   <String `Width: 88%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Modify workspace" form\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4395,7 +7057,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115135'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115135'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_profile_a.png'>
@@ -4409,7 +7071,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 85%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Modify profile" link.\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4428,7 +7096,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115228'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115228'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_profile_browse_button_a.png'>
@@ -4442,7 +7110,46 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
+   <String `Width: 81%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Picture form element and the Browse button used to upload files\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `tasks_modified_pers_ws_complete_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132892'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `tasks_modified_pers_ws_complete_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecorequickstart.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4461,7 +7168,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117113'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117113'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_my_workspace_icon_a.png'>
@@ -4494,7 +7201,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119615'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119615'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_my_ws_icon_navbar_a.png'>
@@ -4508,40 +7215,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `tasks_navigate_to_blog_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118588'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `tasks_navigate_to_blog_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorequickstart.fm'>
+   <String `Width: 83%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
+   <String `Description: \qDescription: The "My workspace" icon in the Navigator section of the tools sidebar\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4560,7 +7240,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115041'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115041'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_pictures_a.png'>
@@ -4574,7 +7254,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
+   <String `Width: 71%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Thumbnail pictures and the currently displayed picture\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4593,7 +7279,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115609'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115609'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_rearrange_pictures_a.png'>
@@ -4607,7 +7293,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 50%, Indent: Current Indent'>
+   <String `Width: 42%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Up and Down arrow icons used to reposition profile pictures in the list\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4626,7 +7318,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123023'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123023'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_button_a.png'>
@@ -4640,7 +7332,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 61%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Manage menu and its "Access control" menu item\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4659,7 +7357,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123687'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123687'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_check_visitor_a.png'>
@@ -4674,6 +7372,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Checking the Visitor checkbox for the newly added user\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4692,7 +7396,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123280'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123280'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_no_inherit_a.png'>
@@ -4710,6 +7414,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The No radio button, which turns off inheritance\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `tasks_team_access_select_user_a.png'>
@@ -4725,7 +7435,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123404'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123404'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_select_user_a.png'>
@@ -4739,7 +7449,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 71%, Indent: Current Indent'>
+   <String `Width: 78%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Add a user" link, and using "type to find" to specify a user\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4758,7 +7474,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112739'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112739'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_type_nothing_a.png'>
@@ -4772,7 +7488,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
+   <String `Width: 75%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Display of all possible people in the installation\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4791,7 +7513,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123855'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123855'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_workspace_tree_a.png'>
@@ -4805,7 +7527,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 70%, Indent: Current Indent'>
+   <String `Width: 68%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Using the "Global workspaces" workspace to view other places\q'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow

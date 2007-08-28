@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `8/21/2007 10:53:32 AM'>
+   <String `8/28/2007 5:54:08 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2076,7 +2076,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `54'>
+   <String `59'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2116,7 +2116,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `76'>
+   <String `81'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2288,6 +2288,42 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `icecorefeaturesoverview.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `XrefIntText'>
+   <Char Tab> 
+   <String `4'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `4'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `glossary.fm'>
   > # end of ParaLine
  > # end of Para
@@ -2306,7 +2342,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `52'>
+   <String `53'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2316,7 +2352,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `52'>
+   <String `53'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
