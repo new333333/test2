@@ -24,7 +24,10 @@
 		<c:otherwise>
 			entriesAmountMsg: "<c:choose><c:when test="${entriesAmount == 1}"><ssf:nlt tag="calendar.import.status.message.single" /></c:when><c:otherwise><ssf:nlt tag="calendar.import.status.message.plural">
 								<ssf:param name="value" value="${entriesAmount}"/>
-							</ssf:nlt></c:otherwise></c:choose>"
+							</ssf:nlt></c:otherwise></c:choose>",
+			entryIds: [<c:forEach var="id" items="${entryIds}" varStatus="status">
+					"${id}"<c:if test="${!status.last}">,</c:if>
+				</c:forEach>]
 		</c:otherwise>
 	</c:choose>
 	}</textarea>
