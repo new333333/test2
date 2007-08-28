@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
@@ -200,14 +201,8 @@ public class CalendarViewRangeDates {
 	}
 
 	public static int calculateDifference(Date a, Date b) {
-		DateTime firstDate = new DateTime(a);
-		DateTime secondDate = new DateTime(b);
-		if (secondDate.getMinuteOfHour() == 59) {
-			secondDate = secondDate.plusMillis(1);
-		}
-		if (firstDate.getMinuteOfHour() == 59) {
-			firstDate = firstDate.plusMillis(1);
-		}
+		YearMonthDay firstDate = new DateTime(a).toYearMonthDay();
+		YearMonthDay secondDate = new DateTime(b).toYearMonthDay();
 				
 		if (!firstDate.isBefore(secondDate)) {
 			return Days.daysBetween(secondDate, firstDate).getDays();
