@@ -3672,19 +3672,6 @@ div.ss_profile_photo_box_empty {
 	background-repeat: no-repeat;
 }
 
-td.ss_profile_info_box {
-    background-color: transparent !important;
-	background-image: url(<html:imagesPath/>pics/watermark_info.gif);
-    background-position:  center;
-	background-repeat: no-repeat;
-}
-
-div.ss_profile_contact_box {
-    background-color: transparent !important;
-	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.gif);
-    background-position:  center;
-	background-repeat: no-repeat;
-}
 
 table.ss_minicard_interior {
 	background-color: white;
