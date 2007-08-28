@@ -45,6 +45,7 @@ sitescape.widget.incrementalPagableComboBoxDataProvider = function(/*String*/ ur
 				if(!dojo.lang.isArray(data)){
 					var arrData = [];
 					for(var key in data){
+						if (typeof(data[key]) == 'function') continue;
 						if (key=="_prev") {
 							arrData.unshift(data[key]);
 						}
