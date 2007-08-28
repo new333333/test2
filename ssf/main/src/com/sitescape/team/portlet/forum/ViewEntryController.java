@@ -275,32 +275,13 @@ public class ViewEntryController extends  SAbstractController {
 		//newTab == 3 If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
 		*
 		*/
-		if (newTab.equals("1")) {
+
+		
+		
+		//Change the tab only if not using the adaptor url
+		//Indicates that the request is being served by the adapter framework.
+		if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
 			tabs.setCurrentTab(tabs.findTab(folderEntry));
-		} else if (newTab.equals("2")) {
-			tabs.setCurrentTab(tabs.addTab(folderEntry));
-		} else if (newTab.equals("3")) {
-			//tabs.setCurrentTab(tabs.setTab(folderEntry, true));
-			tabs.setCurrentTab(tabs.findTab(folderEntry, new HashMap(), tabs.getCurrentTab()));
-		} else if (tabId != null) {
-			//Do not set the page number to zero
-			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), folderEntry));
-		} else {
-			//Change the tab only if not using the adaptor url
-			if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-				//Indicates that the request is being served by the adapter framework.
-				//Don't overwrite a search tab, when not explicitly asked to do so. 
-				//Overwriting the current tab even if it is a search tab will happen only
-				//when the newTab value is set to 3. If the tabId value is not specified 
-				//and if the newTab value is also not set (1, 2 or 3), then we will check
-				//if the current tab is a search tab, if so we will not overwrite it
-				//if the current tab is not a search tab, then we will overwrite it
-				if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-					tabs.setCurrentTab(tabs.findTab(folderEntry, true));
-				} else {
-					tabs.setCurrentTab(tabs.setTab(folderEntry, true));
-				}
-			}
 		}	
 		return tabs;
 	}	
