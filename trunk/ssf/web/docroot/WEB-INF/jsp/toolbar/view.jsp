@@ -46,7 +46,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <ssHelpSpot helpId="navigation_bar/workspace_tree_nav_bar" 
   title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>"
   offsetX="-13" offsetY="10">
-<div style="padding-top:10px; background: url(<html:imagesPath/>icons/toolbar_teaming.gif) no-repeat bottom right;
+<div style="padding-top:10px; background: url(<html:brandedImagesPath/>icons/toolbar_teaming.gif) no-repeat bottom right;
 ">
 <table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 <td valign="top">

@@ -258,7 +258,7 @@
 												    </ssf:url>" />
 								</c:if>
 								<c:if test="${empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
-								  src="<html:imagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
+								  src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">

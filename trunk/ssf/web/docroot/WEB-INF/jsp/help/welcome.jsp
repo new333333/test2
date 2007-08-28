@@ -14,7 +14,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/common.js"></script>
 <div class="ss_portlet_style ss_portlet">
 <div class="ss_style" style="padding:4px;" align="center">
-<img src="<html:imagesPath/>pics/getting_started.gif">
+<img src="<html:brandedImagesPath/>pics/getting_started.gif">
 <p>
   <a href="javascript:;" 
        onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');">

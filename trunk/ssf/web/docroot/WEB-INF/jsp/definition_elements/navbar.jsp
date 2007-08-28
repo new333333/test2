@@ -788,7 +788,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
   	<div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_addBinderToFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
-		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:imagesPath/>icons/button_new_bookmark.gif" />
+		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
   	</div>
@@ -797,7 +797,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_showhideFavoritesEditor('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')"
-		><img <ssf:alt tag="favorites.edit"/> src="<html:imagesPath/>icons/button_edit_bookmark.gif" />
+		><img <ssf:alt tag="favorites.edit"/> src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
   </div>
