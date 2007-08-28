@@ -316,6 +316,7 @@ public class TreeTag extends TagSupport {
 	    	initOnly=false;
 	    	noInit=false;
 	    	flat=false;
+	    	className="";
 	    }
 	    
 		return SKIP_BODY;
@@ -355,8 +356,14 @@ public class TreeTag extends TagSupport {
 			if (s_showIdRoutine.equals("")) s_showIdRoutine = this.treeName + "_showId";
 			if (!s_binderId.equals("") && s_binderId.equals(this.highlightNode)) {
 				titleClass = "class=\"ss_tree_highlight\"";
+				if (!e.attributeValue("titleHighlightClass", "").equals("")) {
+					titleClass = "class=\""+ e.attributeValue("titleHighlightClass") +"\"";
+				}
 			} else {
-				if (!className.equals("")) titleClass = "class=\""+className+"\"";
+				if (!className.equals("")) titleClass = "class=\"" + className + "\"";
+				if (!e.attributeValue("titleClass", "").equals("")) {
+					titleClass = "class=\"" + e.attributeValue("titleClass") + "\"";
+				}
 			}
 	
 			//Text
@@ -473,7 +480,7 @@ public class TreeTag extends TagSupport {
 						if (!className.equals("")) {
 							classField = "class=\""+className+"\"";
 						} else {
-							classField = "class=\""+titleClass+"\"";
+							classField = titleClass;
 						}
 						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
@@ -659,8 +666,14 @@ public class TreeTag extends TagSupport {
 			String titleClass = "class=\"ss_twSpan\"";
 			if (!s_binderId.equals("") && s_binderId.equals(this.highlightNode)) {
 				titleClass = "class=\"ss_twSpan ss_tree_highlight\"";
+				if (!e.attributeValue("titleHighlightClass", "").equals("")) {
+					titleClass = "class=\"ss_twSpan "+ e.attributeValue("titleHighlightClass") +"\"";
+				}
 			} else {
-				if (!className.equals("")) titleClass = "class=\"ss_twSpan "+className+"\"";
+				if (!className.equals("")) titleClass = "class=\"ss_twSpan " + className + "\"";
+				if (!e.attributeValue("titleClass", "").equals("")) {
+					titleClass = "class=\"ss_twSpan " + e.attributeValue("titleClass") + "\"";
+				}
 			}
 	
 			//Image
@@ -772,7 +785,7 @@ public class TreeTag extends TagSupport {
 			//jspOut.print("&nbsp;");
 			if (!displayOnly) {
 				String classField = "class=\"ss_twA\"";
-				if (!className.equals("")) classField = "class=\"ss_twA "+className+"\"";
+				if (!className.equals("")) classField = "class=\"ss_twA " + className + "\"";
 				jspOut.print("<a "+classField+" "+targetField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
 					if (action.equals("")) {

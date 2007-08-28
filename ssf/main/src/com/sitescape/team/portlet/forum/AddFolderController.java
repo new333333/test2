@@ -32,11 +32,15 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WorkspaceAddWorkspaceHelper;
 import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -127,7 +131,7 @@ public class AddFolderController extends SAbstractController {
 		model.put(WebKeys.USER_PRINCIPAL, user);
 
 		//Build the navigation beans
-		BinderHelper.buildNavigationLinkBeans(this, binder, model, new WorkspaceConfigHelper());
+		BinderHelper.buildNavigationLinkBeans(this, binder, model, new WorkspaceAddWorkspaceHelper());
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
 
@@ -135,6 +139,11 @@ public class AddFolderController extends SAbstractController {
 		Set memberIds = new HashSet();
 		memberIds.add(user.getId());
 		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
+		
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		if (binder instanceof Workspace) 
+			accessControlMap.put("createWorkspace", getWorkspaceModule().testAccess((Workspace)binder, 
+						WorkspaceModule.WorkspaceOperation.addWorkspace));
 
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);

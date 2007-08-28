@@ -178,9 +178,25 @@ function ss_checkForm(obj) {
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 </fieldset>
 <br/>
+<c:if test="${!empty ss_accessControlMap && 
+  !empty ss_accessControlMap.createWorkspace && 
+  !ss_accessControlMap.createWorkspace}">
+<span class="ss_errorLabel">
+  <ssf:nlt tag="errorcode.operation.denied">
+    <ssf:param name="value" value="${ssUser.title}"/>
+    <ssf:param name="value" useBody="true"><ssf:nlt tag="workarea_operation.createWorkspaces"/></ssf:param>
+    <ssf:param name="value" value="${ssBinder.title}"/>
+  </ssf:nlt>
+</span>
+<br/>
+<br/>
+</c:if>
 </td></tr>
 </c:if>
 
+<c:if test="${empty ss_accessControlMap || 
+  empty ss_accessControlMap.createWorkspace || 
+  ss_accessControlMap.createWorkspace}">
 <tr><td>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="general.title" /></legend>
@@ -398,10 +414,15 @@ function ss_checkForm(obj) {
 </div>
 </td></tr>
 </c:if>
+</c:if>
 
 </table>
 
+<c:if test="${empty ss_accessControlMap || 
+  empty ss_accessControlMap.createWorkspace || 
+  ss_accessControlMap.createWorkspace}">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
+</c:if>
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 
 </form>

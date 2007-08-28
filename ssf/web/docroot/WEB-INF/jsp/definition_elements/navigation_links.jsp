@@ -89,8 +89,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
 <div style="display:inline">
-<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
-  topId="${nextBinder.id}" rootOpen="false" showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" 
+  treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
+  topId="${nextBinder.id}" rootOpen="false" showImages="false" 
+  showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
 </div>
 </c:if>
 </li>
