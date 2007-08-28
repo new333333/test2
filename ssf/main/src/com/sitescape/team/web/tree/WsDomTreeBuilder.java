@@ -25,6 +25,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.Validator;
 
@@ -162,12 +163,13 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				Workspace ws = (Workspace)source;
 				String icon = ws.getIconName();
 				String imageClass = "ss_twIcon";
+				String imageBrand = SPropsUtil.getString("branding.prefix");
 				if (icon == null || icon.equals("")) {
 					icon = "/icons/workspace.gif";
 					imageClass = "ss_twImg";
 				}
 				element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
-				element.addAttribute("image", icon);
+				element.addAttribute("image", "/" + imageBrand + icon);
 				element.addAttribute("imageClass", imageClass);
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_WORKSPACE, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_WORKSPACE, source));
@@ -176,9 +178,10 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			} else if ((type == DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
 				String icon = f.getIconName();
+				String imageBrand = SPropsUtil.getString("branding.prefix");
 				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
 				element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
-				element.addAttribute("image", icon);
+				element.addAttribute("image", "/" + imageBrand + icon);
 				element.addAttribute("imageClass", "ss_twIcon");
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
