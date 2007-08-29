@@ -26,12 +26,8 @@ public class IfBrandIsTag extends TagSupport {
 	private String brandToCheck;
 	
 	public int doStartTag() throws JspException {
-		boolean isThisBrand = false;
-
-		if (brandToCheck == SPropsUtil.getString("branding.prefix")) {
-			isThisBrand = true;
-		}
-		if (isThisBrand) {
+		String currentBrand = SPropsUtil.getString("branding.prefix", "icecore"); 
+		if (brandToCheck.equals(currentBrand)) {
 			// Indicates that the current brand matches what was passed in
 			return EVAL_BODY_INCLUDE;
 		}
@@ -40,4 +36,11 @@ public class IfBrandIsTag extends TagSupport {
 			return SKIP_BODY;
 		}
 	}
+	
+	
+	public void setBrandToCheck(String brandToCheck) {
+		this.brandToCheck = brandToCheck;
+	}
+	
 }
+
