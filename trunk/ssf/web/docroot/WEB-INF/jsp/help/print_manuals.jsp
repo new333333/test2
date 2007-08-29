@@ -29,7 +29,7 @@
 <p><ssf:nlt tag="help.viewBooks.content.quickTips.explain"/></p>
 </li>
 
-<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore User Guide.pdf">
+<li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore User Guide.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
 
 <p><ssf:nlt tag="help.viewBooks.content.userGuide.explain"/></p>
@@ -40,7 +40,13 @@
 <p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.administrators"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></p>
 
 <ul>
-<li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf">
+<li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Administration Guide.pdf">
+  <span class="document_title"><ssf:nlt tag="help.viewBooks.content.listItem.administrationGuide"
+    text="${ssProductName} Administration Guide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></a> 
+  <ssf:nlt tag="help.globalStrings.englishOnly"/>
+</li>
+
+<li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Installation and Configuration Guide.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
 
 <p><ssf:nlt tag="help.viewBooks.content.installConfigGuide.explain"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
