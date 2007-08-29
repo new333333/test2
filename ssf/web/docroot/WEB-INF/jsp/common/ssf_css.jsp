@@ -1846,6 +1846,7 @@ div.ss_content_outer {
 div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_body table, table.ss_popup {
 	border-collapse: separate;
 	border-spacing: 0px;
+	
 }
 
 
@@ -4446,26 +4447,34 @@ div.ss_task_list_container {
 	</c:if>
 	margin:0px;
 	padding:0px;
+	align: center;
 }
 table.ss_tasks_list {
-	margin:6px 0px 0px 0px;
+	margin:6px 0px 0px 10px;
 	padding: 0px;
-	border-collapse: collapse;
-	border:1px solid #afc8e3;
+	align: center;
+	border-top: 1px solid #afc8e3;
+	border-left: 1px solid #afc8e3;
+	border-right: 1px solid #afc8e3;
 	border-spacing: 0px;
+	max-width 100%;
 }
 
 table.ss_tasks_list th {
 	background-color: #dbe6f2;
-	border:1px solid #afc8e3;
+	border-bottom: 1px solid #afc8e3;
+	border-right: 1px solid #afc8e3;
 	text-align: left;
-	padding: 2px 0px 2px 2px;
+	padding: 3px 0px 3px 5px;
 	white-space: nowrap;
 	overflow: visible;
 }
 table.ss_tasks_list td {
-	padding: 3px 0px 3px 2px;
-	border: 1px solid #afc8e3;
+	padding: 3px 0px 3px 6px;
+	font-size: 11px !important;
+	border-bottom: 1px solid #afc8e3;
+	
+	
 }
 
 table.ss_tasks_accessory td {
@@ -4483,7 +4492,7 @@ table.ss_tasks_list ul, table.ss_tasks_list li {
 }
 
 table.ss_tasks_list .ss_due, table.ss_tasks_list .ss_assigned {
-	font-size: 11px;
+	font-size: 10px;
 }
 
 table.ss_tasks_list td.ss_overdue, table.ss_tasks_list td.ss_overdue a {
