@@ -273,7 +273,7 @@ div.ss_replies div.ss_entryDescription {
 .ss_style_color {
 	border-left: solid 1px ${ss_style_border_color_dark_hue};
 	border-right: solid 1px ${ss_style_border_color_dark_hue};
-	border-bottom: solid ${ss_style_border_color_dark_hue};
+	border-bottom: solid 1px ${ss_style_border_color_dark_hue};
 }
 .ss_form_color {
   color: ${ss_form_text_color};
@@ -2374,7 +2374,7 @@ table.ss_actions_bar4_pane {
 	background-repeat: repeat-x;
 	width: 100%;
 	height: 20px;
-	padding: 0px;
+	padding: 4px 0px 0px 0px;
 	margin: 0px;
 	border-collapse: collapse;
 	border-spacing: 0px;
@@ -4450,7 +4450,7 @@ div.ss_task_list_container {
 	align: center;
 }
 table.ss_tasks_list {
-	margin:6px 0px 0px 10px;
+	margin:6px 0px 4px 10px;
 	padding: 0px;
 	align: center;
 	border-top: 1px solid #afc8e3;
