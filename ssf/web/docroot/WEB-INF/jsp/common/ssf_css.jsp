@@ -4471,7 +4471,7 @@ table.ss_tasks_list th {
 }
 table.ss_tasks_list td {
 	padding: 3px 0px 3px 6px;
-	font-size: 11px !important;
+	font-size: 10px !important;
 	border-bottom: 1px solid #afc8e3;
 	
 	
