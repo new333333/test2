@@ -116,6 +116,8 @@ public class CCExecutionTemplate {
 				throw new TypeMismatchException(message);
 			else if(statusCode.equals(CrossContextConstants.ERROR_GENERAL))
 				throw new CCClientException(message);			
+			else if(statusCode.equals(CrossContextConstants.WARNING_GENERAL))
+				throw new CCClientException(message, true);			
 			// Unrecognized status code - simply return normally
 		}
 		// No error code - normal completion 

@@ -252,7 +252,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			if(e.isWarning())
+				throw new ServiceAccessException(service, e.getLocalizedMessage(), true);
+			else
+				throw new ServiceAccessException(service, e.getLocalizedMessage());
 		} 
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);

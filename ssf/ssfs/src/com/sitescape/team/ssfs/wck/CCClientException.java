@@ -12,10 +12,21 @@ package com.sitescape.team.ssfs.wck;
 
 public class CCClientException extends RuntimeException {
 
+	private boolean warning = false;
+	
 	public CCClientException() {
 	}
 	
 	public CCClientException(String msg) {
 		super(msg);
+	}
+	
+	public CCClientException(String msg, boolean warning) {
+		this(msg);
+		this.warning = warning;
+	}
+	
+	public boolean isWarning() {
+		return warning;
 	}
 }

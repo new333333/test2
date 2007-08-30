@@ -141,6 +141,7 @@ public abstract class CrossContextConstants {
 	public static final String ERROR_LOCK = "lock";
 	public static final String ERROR_TYPE_MISMATCH = "typeMismatch";
 	public static final String ERROR_GENERAL = "generalError";
+	public static final String WARNING_GENERAL = "generalWarning";
 	
 	// Key name used for returning error message. 
 	public static final String ERROR_MESSAGE = "errorMessage";
