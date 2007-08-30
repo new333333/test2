@@ -55,6 +55,7 @@
 <br/>
 </ssf:ifnotadapter>
 
+<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" 

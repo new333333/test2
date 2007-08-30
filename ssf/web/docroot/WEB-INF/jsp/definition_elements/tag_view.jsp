@@ -93,7 +93,7 @@ function ss_postModifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadap
 }
 </script>
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
-<c:set var="ssEntry" value="${ssDefinitionEntry}" scope="request"/>
+<c:set var="ssEntry" value="${ss_tagObject}" scope="request"/>
 <%
 boolean isIEtag = BrowserSniffer.is_ie(request);
 %>
@@ -115,7 +115,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
   		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
 	</ssf:ifaccessible>
 	<ssf:ifnotaccessible>
-		onClick="ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}'); return false;"
+		onClick="ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ss_tagDivNumber}', '${ss_tagObject.entityType}', '${ss_tagObject.id}'); return false;"
 	</ssf:ifnotaccessible>
 	<ssf:title tag="title.open.tag.menu" />
 ><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a>
@@ -127,7 +127,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 	<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
 </ssf:ifaccessible>
 <ssf:ifnotaccessible>
-	<c:set var="ssCloseScript" value="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');return false;" scope="request"/>
+	<c:set var="ssCloseScript" value="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');return false;" scope="request"/>
 </ssf:ifnotaccessible>
 
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
@@ -166,7 +166,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 <ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
     </td><td>
       <a class="ss_linkButton" href="javascript:;" 
-        onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
+        onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
         <ssf:title tag="title.add.personal.tags" />
       ><ssf:nlt tag="button.add"/></a>
     </td></tr>
@@ -195,7 +195,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
     
     <ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">  
     <a class="ss_linkButton" href="javascript:;" 
-      onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
+      onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
       <ssf:title tag="title.add.community.tags" />
     ><ssf:nlt tag="button.add"/></a>
     </ssf:ifAccessAllowed>  
@@ -220,7 +220,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 </tbody>
 </table>
 <input type="submit" value="ok" style="height:10px; width:10px; margin-left: -8000px;"
-  onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssDefinitionEntry.entityType}', '${ssDefinitionEntry.id}');return false;"/>
+  onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');return false;"/>
 </div>
 </form>
 </div>
