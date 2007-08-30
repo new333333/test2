@@ -66,11 +66,11 @@
 	<item name="title" caption="__title" type="data" canBeDeleted="false" 
 		multipleAllowed="false" >
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
 			<property name="name" caption="__data_name" type="text" value="title" 
 			  readonly="true" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__title"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
 			<property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1">
 			</property>
@@ -150,8 +150,8 @@
 <!-- folder entry items -->
 	<item name="entryType" definitionType="1" caption="__entry_definition">		
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
@@ -215,10 +215,10 @@
 <!-- folder entry form data items -->
 	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false" category="entryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
 			  readonly="true" unique="//item[@type='data']">
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__icon"/>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
@@ -230,11 +230,11 @@
 	
 	<item name="event" caption="__event" type="data" category="entryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
 			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true">
 				<help>ihelp.designers.recur</help>
@@ -254,8 +254,8 @@
 
 	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData">
 		<properties>
-			<property name="name" caption="__name" type="text" value="_subscribe" readonly="true" />
 			<property name="caption" caption="__caption" type="text" value="__subscribe" />
+			<property name="name" caption="__name" type="text" value="_subscribe" readonly="true" />
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/subscribe_form_entry.jsp" />
@@ -264,8 +264,8 @@
 	
 	<item name="sendMail" caption="__sendMail" multipleAllowed="false" category="entryData">
 		<properties>
-			<property name="name" caption="__name" type="text" value="_sendMail" readonly="true" />
 			<property name="caption" caption="__caption" type="text" value="__sendMail" />
+			<property name="name" caption="__name" type="text" value="_sendMail" readonly="true" />
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/send_mail_form_entry.jsp" />
@@ -314,8 +314,8 @@
 	
 	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
 		<properties>
-			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
 	    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
 				optionCaption="__data_items_from_the_entry_form">
@@ -398,8 +398,8 @@
 	
 	<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData">
 		<properties>
-			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
 	    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
 				optionCaption="__data_items_from_the_entry_form">
@@ -441,8 +441,8 @@
 <!-- Folder items -->
 	<item name="forumViewType" definitionType="5" caption="__folder_view_definition">		
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
@@ -484,10 +484,10 @@
 <!-- Folder form items	-->
 	<item name="folderIcon" caption="__icon" type="data" multipleAllowed="false" category="folderData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
 			  readonly="true" unique="//item[@type='data']">
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__icon"/>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
@@ -540,8 +540,8 @@
 	
 	<item name="folderDataItem" type="dataView"  caption="__folder_data_item" category="folderViewData">
 		<properties>
-			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
 	    <option_entry_data select_type="data" path="//item[@name='folderForm']/.//item" 
 				optionCaption="__folder_form_data_items" >
@@ -566,8 +566,8 @@
 <!-- Profile list items -->
 	<item name="profileViewType" definitionType="6" caption="__profile_view_definition">		
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 			<property name="icon" caption="__icons.profileList" type="iconList" 
 				path="icons.profileList" default="/icons/profile_list.png" />
 		</properties>
@@ -622,8 +622,8 @@
 	<item name="profileDataItem" type="dataView" 
 		caption="__profile_data_item" category="profileViewData">
 		<properties>
-			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
 	    <option_entry_data select_type="data" path="//item[@name='profileForm']/.//item" 
 				optionCaption="__profile_form_data_items" >
@@ -646,8 +646,8 @@
 <!-- Group definition: we don't allow creation of new groups.  This is here so common code works -->
 	<item name="groupEntryViewType" definitionType="11" caption="__group_entry_view">		
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 		</properties>
 		
 		<options>
@@ -697,8 +697,8 @@
 <!-- Profile entry items -->
 	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition">		
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 		</properties>
 		
 		<options>
@@ -760,11 +760,11 @@
 	<item name="profileName" caption="__profile_name" type="data" 
 		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
 			<property name="name" caption="__data_name" type="text" value="name" 
 			  readonly="true" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 		</properties>
 		<jsps>
@@ -777,9 +777,9 @@
 	<item name="profileFirstName" caption="__firstName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__firstName"/>
 			<property name="name" caption="__data_name" type="text" value="firstName" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__firstName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -795,9 +795,9 @@
 	<item name="profileLastName" caption="__lastName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__lastName"/>
 			<property name="name" caption="__data_name" type="text" value="lastName" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__lastName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -812,9 +812,9 @@
 	<item name="profileMiddleName" caption="__middleName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__middleName"/>
 			<property name="name" caption="__data_name" type="text" value="middleName" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__middleName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -830,9 +830,9 @@
 	<item name="profileOrganization" caption="__organization" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__organization"/>
 			<property name="name" caption="__data_name" type="text" value="organization" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__organization"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -847,9 +847,9 @@
 	<item name="profileEmailAddress" caption="__emailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__emailAddress"/>
 			<property name="name" caption="__data_name" type="text" value="emailAddress" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__emailAddress"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -864,9 +864,9 @@
 	<item name="profileZonName" caption="__zonName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__zonName"/>
 			<property name="name" caption="__data_name" type="text" value="zonName" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__zonName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -881,9 +881,9 @@
 	<item name="profilePhone" caption="__phone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__phone"/>
 			<property name="name" caption="__data_name" type="text" value="phone" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__phone"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -898,9 +898,9 @@
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_entry_picture" />
 			<property name="name" caption="__data_name" type="text" 
 			  value="picture" readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__profile_entry_picture" />
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="maxWidth" caption="__max_graphic_width" type="text"
 				characterMask="^[0-9]*$" default="200">
@@ -952,8 +952,8 @@
 	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" 
 		    category="profileEntryViewData">
 		<properties>
-			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
 		<option_entry_data select_type="data" path="//item[@name='profileEntryForm']/.//item" >
 			<exclude name="title" />
@@ -1056,8 +1056,8 @@
 <!-- Workspace items -->
 	<item name="workspaceViewType" definitionType="8" caption="__workspace_view">
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
@@ -1098,9 +1098,9 @@
 	
 	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false" category="workspaceData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
 			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__icon"/>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
@@ -1146,8 +1146,8 @@
 	<item name="workspaceDataItem" type="dataView" 
 		caption="__workspace_data_item" category="workspaceViewData">
 		<properties>
-			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
 	    <option_entry_data select_type="data" path="//item[@name='workspaceForm']/.//item" 
 				optionCaption="__workspace_form_data_items">
@@ -1171,8 +1171,8 @@
 <!-- User Workspace items -->
 	<item name="userWorkspaceViewType" definitionType="12" caption="__user_workspace_view">
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 			<property name="family" caption="__family" type="selectbox" 
 				  default="user" value="user">
 				<option name="user" caption="__family_user" />
@@ -1237,11 +1237,11 @@
 <!-- Common entry form items -->
 	<item name="text" caption="__text" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -1257,11 +1257,11 @@
 	
 	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -1277,11 +1277,11 @@
 	
 	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
 			<property name="size" caption="__size" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1302,12 +1302,12 @@
 
 	<item name="selectboxSelection" caption="__selection">
 		<properties>
-			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
-				<help>ihelp.designers.selection_data_name</help>
-			</property>
 			<property name="caption" caption="__selection_string" type="text">
 				<help>ihelp.designers.selection_string</help>
 			</property>			
+			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>ihelp.designers.selection_data_name</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp" />
@@ -1316,12 +1316,12 @@
 
 	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text"
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
 				unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="source" caption="__sourceElementInParentFolder" type="text"/>
 			<property name="multipleAllowed" caption="__allow_multiple"
 				type="boolean" default="false"></property>
@@ -1344,11 +1344,11 @@
 
 	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="layout" caption="__layout" type="selectbox" 
 				  default="horizontal" value="horizontal">
 				<option name="horizontal" caption="__horizontal" />
@@ -1372,12 +1372,12 @@
 	
 	<item name="radioSelection" caption="__radio_button">
 		<properties>
-			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
-				<help>ihelp.designers.selection_data_name</help>
-			</property>
 			<property name="caption" caption="__selection_string" type="text">
 				<help>ihelp.designers.radio_string</help>
 			</property>			
+			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>ihelp.designers.selection_data_name</help>
+			</property>
 			<property name="selected" caption="__selected" type="boolean" default="false"></property>
 		</properties>
 		<jsps>
@@ -1387,11 +1387,11 @@
 	
 	<item name="places" caption="__places" type="data" category="entryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -1408,11 +1408,11 @@
 
 	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1441,11 +1441,11 @@
 	
 	<item name="graphic" caption="__graphic" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="maxWidth" caption="__max_graphic_width" type="text"
 				characterMask="^[0-9]*$">
@@ -1468,8 +1468,8 @@
 	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
 			multipleAllowed="false" category="commonEntryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
 			<property name="caption" caption="__caption" type="text" value="__attach_files"/>
+			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60" value="60"/>
 			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
 			<property name="storage" caption="__storage_media" type="repositoryList" 
@@ -1484,11 +1484,11 @@
 	</item>
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
 			<property name="name" caption="__data_name" type="text" 
 			  value="description" readonly="true" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" value="__description"/>
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
@@ -1504,11 +1504,11 @@
 	
 	<item name="file" caption="__file_upload" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
 			<property name="storage" caption="__storage_media" type="repositoryList" 
 				default="simpleFileRepository"><help>ihelp.designers.storage_media</help></property>
@@ -1525,11 +1525,11 @@
 	
 	<item name="date" caption="__date" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1544,11 +1544,11 @@
 	
 	<item name="date_time" caption="__date_time" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data_time']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1563,11 +1563,11 @@
 	
 	<item name="user_list" caption="__user_list" type="data" category="commonEntryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1582,11 +1582,11 @@
 
 	<item name="survey" caption="__survey_queries" type="data" category="entryData">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1762,8 +1762,8 @@
 		
 	<item name="table2" caption="__two_column_table" category="generalLayout">
 		<properties>
-			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1792,8 +1792,8 @@
 		
 	<item name="table3" caption="__three_column_table" category="generalLayout">
 		<properties>
-			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1822,8 +1822,8 @@
 
 	<item name="html" caption="__html" category="generalLayout">
 		<properties>
-			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
 			<property name="htmlTop" caption="__html_top" type="textarea"/>
 			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
 		</properties>
@@ -1851,11 +1851,11 @@
 		
 	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout">
 		<properties>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text"/>
 			<property name="formJsp" caption="__form_jsp_name" type="text"/>
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
 			<property name="mailJsp" caption="__mail_jsp_name" type="text"/>
@@ -1968,8 +1968,8 @@
 		
 	<item name="table2View" caption="__two_column_table" category="generalViewLayout">
 		<properties>
-			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1997,8 +1997,8 @@
 		
 	<item name="table3View" caption="__three_column_table" category="generalViewLayout">
 		<properties>
-			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -2025,8 +2025,8 @@
 
 	<item name="htmlView" caption="__html" category="generalViewLayout">
 		<properties>
-			<property name="name" caption="__name" type="text"/>
 			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
 			<property name="htmlTop" caption="__html_top" type="textarea"/>
 			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
 		</properties>
@@ -2077,8 +2077,8 @@
 <!-- Workflow items -->
 	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
 		<properties>
-			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
 		</properties>
 		
 		<options>
@@ -2101,10 +2101,10 @@
 	
 	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
 		<properties>
+			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" />
 			<property name="description" caption="__description" type="textarea" />
 		</properties>
 		<options>
@@ -2143,10 +2143,10 @@
 	
 	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
+			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="caption" caption="__caption" type="text" />
 			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
 			<property name="endState" caption="__endState" type="itemSelect" 
 				path="//item[@name='state']" multipleAllowed="true"/>
@@ -2233,10 +2233,10 @@
 	
 	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
+			<property name="question" caption="__workflow_question_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
 				unique="//item[@type='workflowQuestion']" />
-			<property name="question" caption="__workflow_question_text" type="text" />
 		</properties>
 		<options>
 			<option name="workflowResponse" caption="__workflow_response" />
@@ -2245,18 +2245,18 @@
 	
 	<item name="workflowResponse" caption="__workflow_response" type="workflowResponse" >
 		<properties>
+			<property name="response" caption="__workflow_response_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
 				unique="//item[@type='workflowResponse']" />
-			<property name="response" caption="__workflow_response_text" type="text" />
 		</properties>
 	</item>
 	
 	<item name="variable" caption="__workflow_variable" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
+			<property name="value" caption="__workflow_variable_value" type="text" />
 			<property name="name" caption="__workflow_variable_name" type="text" 
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
-			<property name="value" caption="__workflow_variable_value" type="text" />
 		</properties>
 	</item>
 	
