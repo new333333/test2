@@ -164,11 +164,14 @@ public class DispatchServer extends GenericServlet {
 				return;			
 			}
 			catch(SiteScapeFileSystemException e) {
-				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);		
-				if(e.isWarning())
+				if(e.isWarning()) {
+					req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.WARNING_GENERAL);		
 					logger.warn(e);
-				else
+				}
+				else {
+					req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);		
 					logger.error(e.getLocalizedMessage(), e);
+				}
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
