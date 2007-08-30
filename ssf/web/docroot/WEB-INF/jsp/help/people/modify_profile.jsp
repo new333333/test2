@@ -18,7 +18,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.modifyProfileButton"/></span>
 </div>
 
-<p><ssf:nlt tag="help.modifyProfileButton.intro" /></p>
+<p><ssf:nlt tag="help.modifyProfileButton.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.modifyProfileButton.pics"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
