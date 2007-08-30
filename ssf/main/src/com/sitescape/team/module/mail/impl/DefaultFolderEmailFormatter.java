@@ -11,6 +11,7 @@
 
 package com.sitescape.team.module.mail.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -606,6 +607,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		String type;
 		Object content;
 		Map fileItems = new HashMap();
+		List iCalendars = new ArrayList();
 		Map inputData = new HashMap();
 		Definition definition = pDef.getDefinition();
 		if (definition == null) definition = folder.getDefaultEntryDef();
@@ -635,8 +637,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						processText(content, inputData);
 					} else if (type.startsWith("text/html")) {
 						processHTML(content, inputData);
+					} else if (type.startsWith("text/calendar")) {
+						processICalendar(content, iCalendars);						
 					} else if (content instanceof MimeMultipart) {
-						processMime((MimeMultipart)content, inputData, fileItems);
+						processMime((MimeMultipart)content, inputData, fileItems, iCalendars);
 					}
 					//parse subject to see if this is a reply
 					if (title.startsWith(MailModule.REPLY_SUBJECT)) {
@@ -659,11 +663,30 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						}
 					} else {
 						List entryIdsFromICalendars = new ArrayList();
+						
+						// process attachments
 						Iterator fileItemsIt = fileItems.entrySet().iterator();
 						while (fileItemsIt.hasNext()) {
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
-							entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(folder.getId(), fileHandler.getInputStream()));
+							try {
+								entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(folder.getId(), fileHandler.getInputStream()));
+							} catch (Exception e) {
+								// can't import ical, ignore error
+								logger.warn(e);
+							}
+						}
+						
+						// process inline iCalendars
+						Iterator icalIt = iCalendars.iterator();
+						while (icalIt.hasNext()) {
+							InputStream icalStream = (InputStream)icalIt.next();
+							try {
+								entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(folder.getId(), icalStream));
+							} catch (Exception e) {
+								// can't import ical, ignore error
+								logger.warn(e);
+							}
 						}
 							
 						if (entryIdsFromICalendars.isEmpty()) {
@@ -677,6 +700,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					RequestContextHolder.setRequestContext(oldCtx);
 					fileItems.clear();
 					inputData.clear();
+					iCalendars.clear();
 					
 				}
 			} catch (Exception ex) {
@@ -723,24 +747,35 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		val[0] = (String)content;
 		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
 	}	
-	private void processMime(MimeMultipart content, Map inputData, Map fileItems) throws MessagingException, IOException {
+	private void processICalendar(Object content, List iCalendars) throws IOException {
+		try {
+			iCalendars.add((InputStream)content);
+		} catch (ClassCastException e) {
+			// ignore
+		}
+	}
+	
+	private void processMime(MimeMultipart content, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
 		int count = content.getCount();
 		for (int i=0; i<count; ++i ) {
 			BodyPart part = content.getBodyPart(i);
 			String disposition = part.getDisposition();
-			if ((disposition != null) && (disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0))
+			if ((disposition != null) && (disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0)) {
 				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-			else if (part.isMimeType("text/html"))
+			} else if (part.isMimeType("text/html")) {
 				processHTML(part.getContent(), inputData);
-			else if (part.isMimeType("text/plain"))
+			} else if (part.isMimeType("text/plain")) {
 				processText(part.getContent(), inputData);
-			else if (part instanceof MimeBodyPart) {
+			} else if (part.isMimeType("text/calendar")) {
+				processICalendar(part.getContent(), iCalendars);
+			} else if (part instanceof MimeBodyPart) {
 				Object bContent = ((MimeBodyPart)part).getContent();
-				if (bContent instanceof MimeMultipart) processMime((MimeMultipart)bContent, inputData, fileItems);
+				if (bContent instanceof MimeMultipart) processMime((MimeMultipart)bContent, inputData, fileItems, iCalendars);
 			}
 			
 		}
 	}
+	
 	public class FileHandler implements org.springframework.web.multipart.MultipartFile {
 		BodyPart part;
 		String fileName;

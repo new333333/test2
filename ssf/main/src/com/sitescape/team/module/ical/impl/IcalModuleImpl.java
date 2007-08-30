@@ -72,6 +72,7 @@ import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.util.CompatibilityHints;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -158,6 +159,7 @@ public class IcalModuleImpl implements IcalModule {
 		Event event = null;
 		Map<String, TimeZone> timeZones = new HashMap();
 		try {
+			CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
 			Calendar cal = (new CalendarBuilder()).build(new UnfoldingReader(icalData));
 			for(Object comp : cal.getComponents("VTIMEZONE")) {
 				VTimeZone timeZoneComponent = (VTimeZone) comp;
@@ -408,6 +410,7 @@ public class IcalModuleImpl implements IcalModule {
 				formData.put("location", new String[] {location});
 				
 				// TODO: how to find attendee? by email?
+				// TODO: add attachments support
 				
 				MapInputData inputData = new MapInputData(formData);
 				try {
