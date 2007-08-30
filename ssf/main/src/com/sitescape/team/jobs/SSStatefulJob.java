@@ -12,29 +12,26 @@ package com.sitescape.team.jobs;
 
 import java.text.ParseException;
 import java.util.TimeZone;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.CronTrigger;
-import org.quartz.Scheduler;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
-import org.quartz.StatefulJob;
 import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.StatefulJob;
 import org.quartz.Trigger;
 
-import com.sitescape.team.ObjectKeys;
-
 import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextUtil;
-import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -239,11 +236,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return com.sitescape.team.jobs.CleanupJobListener.name;
 	}
   	public TimeZone getDefaultTimeZone() {
-   		try {
-			return RequestContextHolder.getRequestContext().getUser().getTimeZone();
-		} catch (Exception e) {
-			return TimeZone.getDefault();
-		}
+		return TimeZone.getDefault();
 	}
 
 	public CronTrigger buildCronTrigger(JobDescription job, Schedule schedule) throws ParseException{

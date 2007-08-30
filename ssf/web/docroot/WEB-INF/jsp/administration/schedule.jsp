@@ -10,6 +10,7 @@
  *
  */
 %>
+<%@ page import="java.util.TimeZone" %>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="top"> 
    <table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -102,7 +103,7 @@
 		<option <c:if test="${schedule.minutes == '50'}">selected="selected"</c:if> value="50">50
 		<option <c:if test="${schedule.minutes == '55'}">selected="selected"</c:if> value="55">55
 	</select>
-&nbsp;<span class="ss_bold">${ssUser.timeZone.ID}</span>
+&nbsp;<span class="ss_bold"><%= TimeZone.getDefault().getID() %></span>
 <br/>
 
 
