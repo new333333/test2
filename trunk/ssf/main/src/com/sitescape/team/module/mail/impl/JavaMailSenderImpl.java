@@ -9,12 +9,7 @@
  *
  */
 package com.sitescape.team.module.mail.impl;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Transport;
-
-import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 
 import com.sitescape.util.Validator;
 /**
@@ -28,31 +23,36 @@ public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
 		implements com.sitescape.team.module.mail.JavaMailSender {
 	private String name;
-	protected Transport getTransport(Session session) throws NoSuchProviderException {
-		Transport transport = super.getTransport(session);
-		//setup password
-		String protocol = getProtocol();
-		String prefix = "mail." + protocol + ".";
-		String auth = session.getProperty(prefix + "auth");
-		if (Validator.isNull(auth)) 
-			auth = session.getProperty("mail.auth");
-		//apparently this isn't a standard property
-		if ("true".equals(auth)) {
-			String password = session.getProperty(prefix + "password");
-			if (Validator.isNull(password)) 
-				password = session.getProperty("mail.password");
-			setPassword(password);
-		}
-		return transport;
-	}
 
+	public void setSession(Session session) {
+		//using either bean properties or jndi properties for host, port, userName
+		super.setSession(session);
+		String protocol = session.getProperty("mail.transport.protocol");
+		if (Validator.isNotNull(protocol)) setProtocol(protocol);	//the default bean is smtp, need to set if supplied
+		String prefix = "mail." + getProtocol() + ".";
+		//if password not set in bean, see if in session properties
+		if (Validator.isNull(getPassword())) {
+			String auth = session.getProperty(prefix + "auth");
+			if (Validator.isNull(auth)) 
+				auth = session.getProperty("mail.auth");
+			if ("true".equals(auth)) {
+				String password = session.getProperty(prefix + "password");
+				if (Validator.isNull(password)) 
+					password = session.getProperty("mail.password");
+				setPassword(password);
+			}
+		}
+		//if password not set in bean, see if in session properties
+		//	setup for defaultFrom
+		if (Validator.isNull(getUsername())) {
+			String user = session.getProperty(prefix + "user");
+			if (Validator.isNull(user)) 
+				user = session.getProperty("mail.user");
+			setUsername(user); 
+		}
+	}
 	public String getDefaultFrom() {
-		Session session = getSession();
-		String protocol = getProtocol();
-		String from = session.getProperty("mail." + protocol + ".user");
-		if (Validator.isNull(from))
-			from = session.getProperty("mail.user");
-		return from;
+		return getUsername();
 	}
 	public void setName(String name) {
 		this.name = name;

@@ -696,6 +696,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+
+ 		// The controller for createing a new binder ignores this, but leave here anyway 
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
 		if (!binder.isTeamMembershipInherited()) {
 			//store as names, not ids
@@ -705,6 +707,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME, p.getName());	    				 
 			}
 		}
+
 		Set<Map.Entry> mes = binder.getCustomAttributes().entrySet();
 		for (Map.Entry me: mes) {
 			CustomAttribute attr = (CustomAttribute)me.getValue();
