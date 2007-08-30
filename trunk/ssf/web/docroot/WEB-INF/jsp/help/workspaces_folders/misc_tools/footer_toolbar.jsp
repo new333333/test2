@@ -18,7 +18,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.bottomLinks"/></span>
 </div>
 
-<p><ssf:nlt tag="help.bottomLinks.intro" /></p>
+<p><ssf:nlt tag="help.bottomLinks.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.bottomLinks.exceptions"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 

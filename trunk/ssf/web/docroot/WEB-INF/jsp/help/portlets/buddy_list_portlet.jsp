@@ -20,9 +20,9 @@
 
 <p><ssf:nlt tag="help.buddyListPortlet.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.buddyListPortlet.contacting" /> <ssf:nlt tag="help.displayEntryControl.presenceIconDescription" /></p>
+<p><ssf:nlt tag="help.buddyListPortlet.contacting" /> <ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.displayEntryControl.contactPeople" /> <ssf:nlt tag="help.buddyListPortlet.contactingContinued" /></p>
+<p><ssf:nlt tag="help.displayEntryControl.contactPeople"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.buddyListPortlet.contactingContinued" /></p>
 
 <p><ssf:nlt tag="help.buddyListPortlet.configure" /></p>
 
