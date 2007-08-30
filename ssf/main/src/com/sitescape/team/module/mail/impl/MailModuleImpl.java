@@ -237,57 +237,38 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 *
 	 */
 	public void receivePostings() {
-		String storeProtocol, prefix, auth;
+		String prefix, auth;
 		List posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
 		List<PostingDef> postings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
 		SearchTerm[] aliasSearch = new SearchTerm[2];
 		
 		for (int i=0; i<posters.size(); ++i) {
 			Session session = (Session)posters.get(i);
-			storeProtocol = session.getProperty("mail.store.protocol");
-			prefix = "mail." + storeProtocol + ".";
-			String hostName = session.getProperty(prefix + "host");
-			if (Validator.isNull(hostName)) {
-				hostName = session.getProperty("mail.host");
-			}
-			
-			Integer port = null;
-			try {
-				if (Validator.isNull(session.getProperty(prefix + "port"))) {
-					port = Integer.parseInt(session.getProperty("mail.port"));
-				} else {
-					port = Integer.parseInt(session.getProperty(prefix + "port"));
-				}
-			} catch (Exception ex) {
-				logger.error("Error reading posting port", ex);
-			}
-			if (port == null) {
-				if ("imap".equalsIgnoreCase(storeProtocol)) {
-					port = 143;
-				} else port = 110;
-			}
+			String protocol = session.getProperty("mail.store.protocol");
+			// see if need password
+			prefix = "mail." + protocol + ".";
 			auth = session.getProperty(prefix + "auth");
 			if (Validator.isNull(auth)) 
 				auth = session.getProperty("mail.auth");
-			String user = session.getProperty(prefix + "user");
-			if (Validator.isNull(user)) 
-				user = session.getProperty("mail.user");
+			String password=null;
+			if ("true".equals(auth)) {
+				password = session.getProperty(prefix + "password");
+				if (Validator.isNull(password)) 
+					password = session.getProperty("mail.password");
+			}
+
 			javax.mail.Folder mFolder=null;
 			Store store=null;
-			try {
-				
-				store = session.getStore();
-				if ("true".equals(auth)) {
-					String password = session.getProperty(prefix + "password");
-					if (Validator.isNull(password)) 
-						password = session.getProperty("mail.password");
-					store.connect(hostName, port, user, password);
+			try {				
+				store = session.getStore(protocol);
+				if (Validator.isNotNull(password)) {
+					//rest of defaults from jndi setting
+					store.connect(null, null, password);
 				} else {
 					store.connect();
 				}
 
-				mFolder = store.getFolder("inbox");
-				
+				mFolder = store.getFolder("inbox");				
 				mFolder.open(javax.mail.Folder.READ_WRITE);
 				
 				//determine which alias a message belongs to and post it
@@ -305,6 +286,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}				
 
 			} catch (Exception ex) {
+				String hostName = session.getProperty(prefix + "host");
+				if (Validator.isNull(hostName)) {
+					hostName = session.getProperty("mail.host");
+				}
+
 				logger.error("Error posting mail from [" + hostName + "]", ex);
 			} finally  {
 				//Close connection and expunge
@@ -314,63 +300,34 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}		
 		
 	}
+	private String getMessage(Exception ex) {
+		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
+		return ex.getMessage();
+	}
 	private void sendErrors(Binder binder, Session session, List errors) {
 		if (!errors.isEmpty()) {
-			String sendProtocol = session.getProperty("mail.transport.protocol");
-			String prefix = "mail." + sendProtocol + ".";
-			String hostName = session.getProperty(prefix + "host");
-			if (Validator.isNull(hostName)) {
-				hostName = session.getProperty("mail.host");
-			}
-			int port = Integer.parseInt(session.getProperty(prefix + "port"));
-			if (Validator.isNull(session.getProperty(prefix + "port"))) {
-				port = Integer.parseInt(session.getProperty("mail.port"));
-			}
-			String auth = session.getProperty(prefix + "auth");
-			if (Validator.isNull(auth)) 
-				auth = session.getProperty("mail.auth");
-			String user = session.getProperty(prefix + "user");
-			if (Validator.isNull(user)) 
-				user = session.getProperty("mail.user");
-			Transport transport=null;
-			try {
-				
-				transport = session.getTransport(sendProtocol);
-				if ("true".equals(auth)) {
-					String password = session.getProperty(prefix + "password");
-					if (Validator.isNull(password)) 
-						password = session.getProperty("mail.password");
-					transport.connect(hostName, port, user, password);
-				} else {
-					transport.connect();
-				}
-			
-				for (int i=0; i<errors.size(); ++i) {
-					MimeMessage mailMsg = null;
-					try {
-						mailMsg = (MimeMessage)errors.get(i);
-						mailMsg.saveChanges();
-						transport.sendMessage(mailMsg, mailMsg.getAllRecipients());
-					} catch (MailParseException px) {
-						logger.error(px.getLocalizedMessage());	    		
-					} catch (MailSendException sx) {
-						if (binder != null) {
-							FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
-							process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
-						}
-						logger.error("Error sending posting reject:" + sx.getLocalizedMessage());
-					} catch (MailAuthenticationException ax) {
-						logger.error("Authentication Exception:" + ax.getLocalizedMessage());
-					} catch (AuthenticationFailedException ax) {
-						logger.error("Authentication Exception:" + ax.getLocalizedMessage());
-					} catch (Exception ex) {
-					logger.error("Error sending posting reject:" + ex.getLocalizedMessage());
+			try	{
+				JavaMailSender sender = (JavaMailSender)mailSender.getClass().newInstance();				
+				SpringContextUtil.applyDependencies(sender, "mailSender");	
+				sender.setSession(session);
+				sender.send((MimeMessage[])errors.toArray(new MimeMessage[errors.size()]));
+			} catch (MailAuthenticationException ax) {
+				logger.error("Authentication Exception:" + getMessage(ax));
+			} catch (MailSendException ms) {
+				logger.error("Error sending posting reject:" + getMessage(ms));
+				Map failures = ms.getFailedMessages();
+				if ((binder != null) && !failures.isEmpty()) {
+					FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
+					for (Iterator iter=failures.entrySet().iterator(); iter.hasNext();) {
+						Map.Entry me = (Map.Entry)iter.next();
+						//TODO retries will have to be on the outgoing side of posters because it is a reply.
+						//this isn't set to work yet
+//						process.schedule(binder, mailSender, (MimeMessage)me.getKey(), getMailDirPath(binder));			
+						logger.error("Error sending posting reject:" + getMessage((Exception)me.getValue()));						
 					}
 				}
 			} catch (Exception ex) {
-				logger.error("Error sending posting reject:" + ex.getLocalizedMessage());
-			} finally {
-				if (transport != null) try {transport.close();} catch (Exception ex) {};
+				logger.error("Error sending posting reject:" + getMessage(ex));
 			}
 		}
 		
