@@ -72,6 +72,7 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 </a>
 </td>	
 <td valign="top">
+<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </td>
 </tr></tbody></table>
