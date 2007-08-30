@@ -35,7 +35,7 @@
 <img border="0" <ssf:alt tag="helpTitleAlt.presence.unavailable"/> src="<html:imagesPath/>pics/sym_s_white_dude.gif" /> 
 </div>
 
-<p><ssf:nlt tag="help.displayEntryControl.presenceIconDescription" /> <ssf:nlt tag="help.displayEntryControl.contactPeople" /></p>
+<p><ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.displayEntryControl.contactPeople"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 

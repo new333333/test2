@@ -26,19 +26,6 @@
 
 <p><ssf:nlt tag="help.controlPanel.helpOnHelp.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.controlPanel.tableOfContent.title"/></span>
 </div>
-
-<p><ssf:nlt tag="help.controlPanel.tableOfContent.introduction"/></p>
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.controlPanel.helpOnHelp.books"/></span>
-</div>
-
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.books.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
-</div>
-
 
 </div>
