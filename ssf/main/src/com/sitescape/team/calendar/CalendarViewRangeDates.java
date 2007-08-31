@@ -192,10 +192,21 @@ public class CalendarViewRangeDates {
 		endView.put("dayOfMonth", endViewExtWindowTemp
 				.get(Calendar.DAY_OF_MONTH));
 		result.put("endView", endView);
-
-		result.put("numberOfDaysInView", calculateDifference(
-				endViewExtWindowTemp.getTime(), startViewExtWindowTemp
-						.getTime()));
+		
+		int daysInMonthView = calculateDifference(
+				endViewExtWindow.getTime(), startViewExtWindow
+				.getTime());
+		// there is a bug on some systems, I can't test it so small workaround
+		if (daysInMonthView == 27 || daysInMonthView == 29) {
+			daysInMonthView = 28; // == 4 weeks * 7
+		}
+		if (daysInMonthView == 34 || daysInMonthView == 36) {
+			daysInMonthView = 35; // == 5 weeks * 7
+		}	
+		if (daysInMonthView == 41 || daysInMonthView == 43) {
+			daysInMonthView = 42; // == 6 weeks * 7
+		}
+		result.put("numberOfDaysInView", daysInMonthView);
 
 		return result;
 	}
