@@ -200,7 +200,7 @@
 	<target name="deploy">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}"
-				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/additionalContext-ext.xml"
+				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/applicationContext-ext.xml"
 			/>
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
