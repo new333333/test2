@@ -144,9 +144,10 @@ public class FilesErrors implements Serializable {
 				.append(getRepositoryName())
 				.append(")");
 			}
-			if(getException() != null)
+			if(getException() != null) {
 				sb.append(" - ");
-			sb.append(getException().getLocalizedMessage());
+				sb.append(getException().getLocalizedMessage());
+			}
 			return sb.toString();
 		}
 	}
