@@ -206,7 +206,8 @@
 											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
 									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
 											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
-											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" 
+											dashboardType="${ssDashboard.scope}" hrefClass="ss_parentPointer">
 											
 											<ssf:param name="url" useBody="true">
 												<c:if test="${isDashboard == 'yes'}">
@@ -220,10 +221,10 @@
 												</c:if>
 											</ssf:param>
 										
-										    <span class="ss_parentPointer"><c:if test="${empty entry.title}">
+										    <c:if test="${empty entry.title}">
 										    	(<ssf:nlt tag="entry.noTitle"/>)
 										    </c:if>
-									    	<c:out value="${entry.title}"/></span>
+									    	<c:out value="${entry.title}"/>
 										</ssf:menuLink>
 								</p>
 								<c:if test="${!empty entryBinderTitle}">

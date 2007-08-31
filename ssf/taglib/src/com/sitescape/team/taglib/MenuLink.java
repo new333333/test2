@@ -51,6 +51,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String useBinderFunction = "";
 	private String dashboardType = "";
 	private String isFile = "";
+	private String hrefClass = "";
 	
 	private Map _params;
     
@@ -109,6 +110,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("dashboardType", new String[] {this.dashboardType});
 				_params.put("isFile", new String[] {this.isFile});
 				_params.put("isAccessible", new String[] {isAccessible.toString()});
+				_params.put("hrefClass", new String[] {this.hrefClass});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -254,5 +256,9 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setIsFile(String isFile) {
 	    this.isFile = isFile;
+	}
+
+	public void setHrefClass(String hrefClass) {
+	    this.hrefClass = hrefClass;
 	}
 }
