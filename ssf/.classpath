@@ -88,6 +88,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/portal-kernel.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portal-service.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-taglibs-standard.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
