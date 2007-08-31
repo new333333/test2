@@ -76,6 +76,5 @@
 				 /></div></form>
 			<div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"></div>
 		</li>
-		<li class="ss_calendarNaviBarOption" />	
 	</ul>
 </div>
