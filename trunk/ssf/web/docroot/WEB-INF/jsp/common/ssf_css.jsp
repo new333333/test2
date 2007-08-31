@@ -3737,6 +3737,7 @@ span.ss_cal_eventTime {
 }
 
 ul.ss_calendarNaviBar {	
+	display: table;
 	font-family: Arial;
 	border: 1px solid #CCCCCC;
 	background-color: #AFC8E3;
@@ -3744,8 +3745,12 @@ ul.ss_calendarNaviBar {
 	height: 30px;
 	padding: 0;
 	margin: 0 0 5px 0;
+	width: 100%;
 }
 
+ul.ss_calendarNaviBar li {
+	display: table-cell;
+}
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	position:relative;
@@ -3753,7 +3758,6 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_cal
 	float: left;
 	height: 30px;
 	line-height: 30px;
-	display: inline;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption {	
