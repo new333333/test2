@@ -182,8 +182,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
     				!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
     				fileUploadItems.remove(j);
-    				errors.addProblem(new FilesErrors.Problem(fui1.getRepositoryName(), 
-       	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui1.getOriginalFilename())));
+    				errors.addProblem(new FilesErrors.Problem(null, 
+       	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
     			} else ++j;
 			}
    		}
@@ -270,7 +270,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     				++i;
     			} catch (TitleException te) {
     				fileUploadItems.remove(i);
-    				nameErrors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
+    				nameErrors.addProblem(new FilesErrors.Problem(null, 
        	   					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
     			}
     		}
@@ -532,13 +532,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		   		++i;
        			} else if (!fui.getRepositoryName().equals(fa.getRepositoryName())) {
        	   			fileUploadItems.remove(i);
-       	   			nameErrors.addProblem(new FilesErrors.Problem(fa.getRepositoryName(), 
-       	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui.getOriginalFilename())));
+       	   			nameErrors.addProblem(new FilesErrors.Problem(null, 
+       	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
        			} else 	++i;      				
     		} catch (TitleException te) {
     			fileUploadItems.remove(i);
-    			nameErrors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
-       	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
+    			nameErrors.addProblem(new FilesErrors.Problem(null, 
+       	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
     		}
     	}
    		

@@ -1297,7 +1297,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	if ((fAtt != null) && !repositoryName.equals(fAtt.getRepositoryName())) {
 			errors.addProblem(new FilesErrors.Problem
 					(fAtt.getRepositoryName(), relativeFilePath, 
-							FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(relativeFilePath)));
+							FilesErrors.Problem.PROBLEM_FILE_EXISTS));
 			return false;
     	}
 

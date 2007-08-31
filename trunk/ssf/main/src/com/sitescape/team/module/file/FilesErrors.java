@@ -83,7 +83,7 @@ public class FilesErrors implements Serializable {
 			"file.error.canceling.lock",
 			"file.error.locked.by.another.user",
 			"file.error.reserved.by.another.user",
-			"file.error.file.exists",
+			"entry.duplicateFileInLibrary",
 			"file.error.archiving",
 			"file.error.mirrored.file.in.regular.folder",
 			"file.error.mirrored.file.multiple",
@@ -132,15 +132,21 @@ public class FilesErrors implements Serializable {
 		
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append(NLT.get(getTypeCode()))
-				.append(": ")
-				.append(getFileName())
-				.append(" (")
+			String typeCodeError = NLT.get(getTypeCode()).trim();
+			sb.append(typeCodeError);
+			if (typeCodeError.lastIndexOf(":") == -1 || 
+					typeCodeError.lastIndexOf(":") < typeCodeError.length() - 1) sb.append(":");
+			sb.append(" ");
+			sb.append(getFileName());
+			sb.append(" ");
+			if (getRepositoryName() != null && !getRepositoryName().equals("")) {
+				sb.append("(")
 				.append(getRepositoryName())
-				.append(")")
-				.append(": ");
+				.append(")");
+			}
 			if(getException() != null)
-				sb.append(getException().getLocalizedMessage());
+				sb.append(" - ");
+			sb.append(getException().getLocalizedMessage());
 			return sb.toString();
 		}
 	}
