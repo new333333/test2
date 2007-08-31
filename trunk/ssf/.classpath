@@ -53,7 +53,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/wss4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/addressing.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk13-128.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-codec.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/opensaml.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xalan.jar"/>
@@ -89,5 +88,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/portal-kernel.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portal-service.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-taglibs-standard.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
