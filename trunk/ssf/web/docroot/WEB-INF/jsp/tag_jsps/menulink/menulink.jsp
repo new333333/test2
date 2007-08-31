@@ -48,6 +48,7 @@ String isDashboard = ParamUtil.get(request, "isDashboard", "no");
 String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
 String dashboardType = ParamUtil.get(request, "dashboardType", "");
 String isFile = ParamUtil.get(request, "isFile", "no");
+String hrefClass = ParamUtil.get(request, "hrefClass", "ss_title_menu");
 %>
 
 <% if (isAccessible.equals("false")) { %><%@ page import="com.sitescape.util.BrowserSniffer" %>
@@ -65,7 +66,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   offsetX="24"  
   </c:if>
   title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot></c:if><c:set 
-  var="ss_menuLinkHelpShown" value="1" scope="request"/><a class="ss_title_menu" href="<%= url %>" 
+  var="ss_menuLinkHelpShown" value="1" scope="request"/><a class="<%= hrefClass %>" href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
 	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
 <% } else if ( useBinderFunction.equals("no") && dashboardType.equals("portlet") ) { %>
@@ -83,7 +84,7 @@ src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null |
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
 
 <% } else { %>
-<a class="ss_title_menu" 
+<a class="<%= hrefClass %>" 
 	<% if ("yes".equals(isFile)) { %>
 		<ssf:titleForEntityType entityType="file" text="<%= title %>" />
 		href="<%= url %>" target="_blank"
