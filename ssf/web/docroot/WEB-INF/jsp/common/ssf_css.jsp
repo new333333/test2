@@ -1363,7 +1363,7 @@ table.ss_attachments_list td.ss_att_space {
   font: ${ss_style_footer_font};
   text-align:center;
   margin-top: 0px;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
   padding-top:2px;
   padding-bottom:2px;
   }
@@ -1942,7 +1942,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
 	width: 4px;
 	height: 43px;
 	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.gif) no-repeat;	
-	margin: 0 5px 0 5px;	
+	margin: 0px 5px 0px 5px;	
 }
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
@@ -2400,7 +2400,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 
 .ss_actions_bar {
 	list-style-type:none;	
-	padding: 0 0 0 5px;
+	padding: 0px 0px 0px 5px;
 	height: 20px;
 	margin: 0px;
 }
@@ -2416,9 +2416,9 @@ ul.ss_actions_bar li {
 }
 
 .ss_actions_bar li.ss_toolBarItem {
-	border: 0;
-	margin: 0;
-	padding: 0;
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
 	background-color: inherit;
 }
 
@@ -2427,8 +2427,8 @@ ul.ss_actions_bar li {
 .ss_actions_bar li.ss_toolBarItem ul {
 	float: left;
 	display: inline;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 }
 
 .ss_actions_bar li.ss_toolBarItem .ss_toolBarItemTxt {
@@ -2437,12 +2437,12 @@ ul.ss_actions_bar li {
 }
 
 .ss_actions_bar li.ss_actions_bar_separator {
-	border-right: 0;
-	border-top: 0;
+	border-right: 0px;
+	border-top: 0px;
 	height: 18px;
-	margin: 0 5px 0 5px;
-	width: 0;
-	padding: 0;
+	margin: 0px 5px 0px 5px;
+	width: 0px;
+	padding: 0px;
 }
 
 .ss_actions_bar form {
@@ -3400,9 +3400,9 @@ div.ss_cal_monthGridDayBadge a:hover {
 a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img {
 	width: 25px;
 	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3422,9 +3422,9 @@ a.ss_calDaySelectButton:hover img {
 a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3443,9 +3443,9 @@ a.ss_cal3DaysSelectButton:hover img {
 a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3464,9 +3464,9 @@ a.ss_cal5DaysSelectButton:hover img {
 a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3485,9 +3485,9 @@ a.ss_cal7DaysSelectButton:hover img {
 a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img {
 	width: 25px;
 	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3506,9 +3506,9 @@ a.ss_cal14DaysSelectButton:hover img {
 a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
 	width: 25px;
 	height: 24px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3527,9 +3527,9 @@ a.ss_calMonthSelectButton:hover img {
 a.ss_calDateDownButton img {
 	width: 12px;
 	height: 28px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3544,9 +3544,9 @@ a.ss_calDateDownButton:hover img {
 a.ss_calDateUpButton img {
 	width: 12px;
 	height: 28px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3562,9 +3562,9 @@ a.ss_calDateUpButton:hover img {
 a.ss_calendarButton img {
 	width: 14px;
 	height: 16px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -3690,8 +3690,8 @@ div.ss_calendarNaviBarAccessible {
 	background-color: #AFC8E3;
 	height: 30px;
 	vertical-align: middle;
-	padding: 0;
-	margin: 0 0 5px 0;
+	padding: 0px;
+	margin: 0px 0px 5px 0px;
 }
 
 div.ss_cal_eventBody {
@@ -3743,8 +3743,8 @@ ul.ss_calendarNaviBar {
 	background-color: #AFC8E3;
 	list-style-type: none;
 	height: 30px;
-	padding: 0;
-	margin: 0 0 5px 0;
+	padding: 0px;
+	margin: 0px 0px 5px 0px;
 	width: 100%;
 }
 
@@ -3761,15 +3761,15 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_cal
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption {	
-	padding: 0 4px 0 4px;
-	margin: 0;	
+	padding: 0px 4px 0px 4px;
+	margin: 0px;	
 }
 
 ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	border-left: 1px dotted #FFFFFF;
-	margin: 0 5px 0 5px;
-	padding: 0;
-	width: 0;
+	margin: 0px 5px 0px 5px;
+	padding: 0px;
+	width: 0px;
 }
 
 ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
@@ -3796,11 +3796,11 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionBigImg {
 	padding-top: 1px;
-	font-size: 0;
+	font-size: 0px;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption > a > img.ss_fullHeight {
-	margin: 1px 0 1px 0;
+	margin: 1px 0px 1px 0px;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
@@ -3808,7 +3808,7 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
-	margin: 7px 0 7px 0;
+	margin: 7px 0px 7px 0px;
 }
 
 ul.ss_calendarNaviBar span.ss_calViewDatesDescriptions {	
@@ -3818,17 +3818,17 @@ ul.ss_calendarNaviBar span.ss_calViewDatesDescriptions {
 ul.ss_calendarNaviBar li.ss_calViewDatesDescriptionLi {
 	width: 208px;
 	text-align: center;
-	padding: 0;
+	padding: 0px;
 }
 
 ul.ss_calendarNaviBar li.ss_calSelectDate {
-	padding: 0 10px 0 7px;
+	padding: 0px 10px 0px 7px;
 }
 
 ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	border: 1px solid white; 
 	height: 24px; 
-	margin: 2px 0 2px 0;
+	margin: 2px 0px 2px 0px;
 }
 
 .ss_hoursSelectorList li  {
@@ -3895,14 +3895,14 @@ table.ss_buddiesList {
 }
 table.ss_buddiesList td {
 	border-bottom: 1px solid ${ss_guestbook_rule_color};
-	padding: 6px 0 7px 0px;
+	padding: 6px 0px 7px 0px;
 	height: 10px;
 }
 table.ss_buddiesList td.selectable {
 	width: 9px;
 	padding-left: 15px;
 	padding-right: 15px;
-	border: 0;
+	border: 0px;
 }
 table.ss_buddiesList td.picture {
 	border-bottom: 1px solid ${ss_guestbook_rule_color};
@@ -3910,7 +3910,7 @@ table.ss_buddiesList td.picture {
 	width: 24px;
 }
 table.ss_buddiesList tr.options td {
-	border: 0;
+	border: 0px;
 }
 table.ss_buddiesList tr.options td.selectall {
 	height: 30px;
@@ -3923,9 +3923,9 @@ div.ss_buddiesListFooter {
 
 form.inline {
 	display: inline;
-	border: 0;
-	padding: 0;
-	margin: 0;	
+	border: 0px;
+	padding: 0px;
+	margin: 0px;	
 }
 
 div.ss_teamMembersList, div.ss_clipboardUsersList {
@@ -3971,14 +3971,14 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	vertical-align: top;
 }
 #ss_content_container {
-    padding:0;
-    margin:0;
+    padding:0px;
+    margin:0px;
     vertical-align:top;
 }
 div.ss_searchContainer, div.ss_surveyContainer {
 	background: transparent url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
 	padding:5px 0px 0px 0px;
-	margin: 0 0 0 15px;
+	margin: 0px 0px 0px 15px;
 	border-right:1px solid #afc8e3;
 	width:95%;
 <c:if test="<%= isIE %>">
@@ -4018,12 +4018,12 @@ div.ss_searchContainer #ss_content {
 #ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
 #ss_searchForm ul {
-	margin: 0 0 5px 0;
-	padding: 0;
+	margin: 0px 0px 5px 0px;
+	padding: 0px;
 }
 #ss_searchForm li {
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 }
 #ss_searchForm_additionalFilters {
 	background-color:#ffffff;
@@ -4034,9 +4034,9 @@ div.ss_searchContainer #ss_content {
 a.ss_searchButton img {
 	width: 22px;
 	height: 17px;
-	margin: 0;
-	padding: 0;
-	border: 0;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
 	vertical-align: bottom;
 }
 
@@ -4087,7 +4087,7 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 
 .ss_searchResult_header {
 	border-bottom: 1px solid #afc8e3;	
-	margin: 0 0 24px 0;
+	margin: 0px 0px 24px 0px;
 	padding: 3px 24px 3px 12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
@@ -4173,7 +4173,7 @@ div.ss_rating_box_content h5 {margin:0px; border-bottom: 1px solid #afc8e3;font-
 div.ss_rating_box_content p {margin:6px 0px 0px 0px; font-size: 11px;}
 
 span.ss_pageNumber {
-	margin: 0 2px 0 2px;
+	margin: 0px 2px 0px 2px;
 }
 
 span.ss_pageNumber a {
@@ -4229,8 +4229,8 @@ input.ss_saveQueryName {
 }
 div.ss_questionContainer {
 	border-bottom: 1px solid #afc8e3;
-	padding: 0 0 10px 0;
-	margin: 0 0 5px 0;
+	padding: 0px 0px 10px 0px;
+	margin: 0px 0px 5px 0px;
 	background-color:#ffffff;
 }
 div.ss_questionContainer h4 {
@@ -4284,7 +4284,7 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 	z-index: 500;
 	background-color: ${ss_style_background_color_opaque};
 	border: 1px solid ${ss_form_border_color};
-	margin: 0;
+	margin: 0px;
 	padding: 6px;
 	text-align: left;
 	font-size: ${ss_style_font_smallprint};
@@ -4293,8 +4293,8 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 }
 
 .ss_navbarPopupPane ul, .ss_navbarPopupPane li {
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 	
 }
 
@@ -4552,9 +4552,9 @@ div.ss_bar_off {
 	background-color: #e8eff7; 
 	width: 9%; 
 	float: left; 
-	padding: 0; 
-	margin: 0; 
-	border: 0; 
+	padding: 0px; 
+	margin: 0px; 
+	border: 0px; 
 	color: #000099; 
 	font-size: 10px;
 	line-height: 12px;
@@ -4565,8 +4565,8 @@ div.ss_bar_off {
 
 div.ss_bar_status {
 	clear: both;
-	padding: 0; 
-	margin: 0;
+	padding: 0px; 
+	margin: 0px;
 	color: #000099; 
 	font-size: 10px;
 	line-height: 12px;
@@ -4690,7 +4690,7 @@ div.ssPageNavi table td {
 	font-size: 11px;
 	color: #3333FF;
 	text-decoration: underline;
-	margin: 0 2px 0 2px;
+	margin: 0px 2px 0px 2px;
 }
 
 .ssPageNavi a.ssPageNumber:visited {
@@ -4768,18 +4768,18 @@ table.ssMeetingRecords {
 	text-align: left;
 	empty-cells: show;
 	width: 100%;
-	margin: 10px 0 10px 0;
+	margin: 10px 0px 10px 0px;
 }
 
 table.ssMeetingRecords th {
-	padding: 5px 0 5px 5px;
+	padding: 5px 0px 5px 5px;
 	border-top: 1px solid ${ss_style_border_color};
 	border-bottom: 1px solid ${ss_style_border_color};
 	background-color: #dbe6f2;
 }
 
 table.ssMeetingRecords td {
-	padding: 2px 0 2px 10px;
+	padding: 2px 0px 2px 10px;
 	border-bottom: 1px solid ${ss_style_border_color};
 }
 
