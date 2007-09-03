@@ -39,8 +39,10 @@ public class IndexUtils  {
     //only index for top leve; entries
     public static void addLastActivityDate(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	// Add modification-date field
-    	if (entry.getLastActivity() != null ) {
-    		Date modDate = entry.getLastActivity();
+		Date modDate = entry.getLastActivity();
+		if (modDate == null) modDate= entry.getModification().getDate();
+		if (modDate == null) modDate= entry.getCreation().getDate();
+    	if (modDate != null ) {
         	Field modificationDateField = new Field(LASTACTIVITY_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(modificationDateField);        
             // index the YYYYMMDD string
