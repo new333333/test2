@@ -31,11 +31,22 @@ public class ScheduleHelper {
 		}		
 		
 		if (val.equals("repeat")) {
-			int iVal = PortletRequestUtils.getIntParameter(request, "hoursRepeat", -1);
-			if (iVal != -1)
-				schedule.setHours("0/" + iVal);
-			else
-				schedule.setHours("0/1");	
+			String sVal = PortletRequestUtils.getStringParameter(request, "hoursRepeat", "");
+			if (sVal.contains(".")) {
+				if (sVal.equals("0.25")) {
+					schedule.setMinutes("0/15");
+				} else if (sVal.equals("0.5")) {
+					schedule.setMinutes("0/30");
+				} else if (sVal.equals("0.75")) {
+					schedule.setMinutes("0/45");
+				}
+			} else {
+				int iVal = PortletRequestUtils.getIntParameter(request, "hoursRepeat", -1);
+				if (iVal != -1)
+					schedule.setHours("0/" + iVal);
+				else
+					schedule.setHours("0/1");
+			}
 		} else {
 			int hours = PortletRequestUtils.getIntParameter(request, "schedHours", -1);
 			if (hours != -1) schedule.setHours(Integer.toString(hours));

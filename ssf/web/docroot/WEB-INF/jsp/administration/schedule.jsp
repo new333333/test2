@@ -107,20 +107,29 @@
 <br/>
 
 
-<input type="radio"  name="hourType" id="hourType" value="repeat"   <c:if test="${schedule.repeatHours}">checked</c:if>>
-	</input>
+<input type="radio"  name="hourType" id="hourType" value="repeat"   
+  <c:if test="${schedule.repeatHours || schedule.repeatMinutes}">checked</c:if>>
+</input>
    
 	<span class="ss_labelRight">
 	<ssf:nlt tag="schedule.repeathours">
    	<ssf:param name="value" useBody="true">
 
-	<select name="hoursRepeat" id="hoursRepeat"<c:if test="${schedule.repeatHours}">value="${schedule.hours}"</c:if>>
-		<option <c:if test="${schedule.hoursRepeat == '1'}">selected="selected"</c:if> value="01">01
-		<option <c:if test="${schedule.hoursRepeat == '2'}">selected="selected"</c:if> value="02">02
-		<option <c:if test="${schedule.hoursRepeat == '3'}">selected="selected"</c:if> value="03">03
-		<option <c:if test="${schedule.hoursRepeat == '4'}">selected="selected"</c:if> value="04">04
-		<option <c:if test="${schedule.hoursRepeat == '6'}">selected="selected"</c:if> value="06">06
-		<option <c:if test="${schedule.hoursRepeat == '8'}">selected="selected"</c:if> value="08">08
+	<select name="hoursRepeat" id="hoursRepeat" 
+	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '15'}">value="0.25"</c:if>
+	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '30'}">value="0.5"</c:if>
+	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '45'}">value="0.75"</c:if>
+	  <c:if test="${schedule.repeatHours}">value="${schedule.hours}"</c:if>
+	>
+		<option <c:if test="${schedule.minutesRepeat == '15'}">selected="selected"</c:if> value="0.25">0.25
+		<option <c:if test="${schedule.minutesRepeat == '30'}">selected="selected"</c:if> value="0.5">0.5
+		<option <c:if test="${schedule.minutesRepeat == '45'}">selected="selected"</c:if> value="0.75">0.75
+		<option <c:if test="${schedule.hoursRepeat == '1'}">selected="selected"</c:if> value="01">1
+		<option <c:if test="${schedule.hoursRepeat == '2'}">selected="selected"</c:if> value="02">2
+		<option <c:if test="${schedule.hoursRepeat == '3'}">selected="selected"</c:if> value="03">3
+		<option <c:if test="${schedule.hoursRepeat == '4'}">selected="selected"</c:if> value="04">4
+		<option <c:if test="${schedule.hoursRepeat == '6'}">selected="selected"</c:if> value="06">6
+		<option <c:if test="${schedule.hoursRepeat == '8'}">selected="selected"</c:if> value="08">8
 		<option <c:if test="${schedule.hoursRepeat == '12'}">selected="selected"</c:if> value="12">12
 	</select>
 	
