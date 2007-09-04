@@ -622,7 +622,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @return the next element in the iteration.
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
-	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
+	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData) 
+			throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def.getType(), DefinitionOperation.manageDefinition);
 		
@@ -637,26 +638,30 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return newItem;
 	}
 	
-	protected Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
+	protected Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, 
+			String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
 	
 		Element newItem = null;
 		
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
-			Map uniqueNames = getUniqueNameMap(this.configRoot, root, itemNameToAdd);
-			if (inputData.exists("propertyId_name")) {
-				String name = inputData.getSingleValue("propertyId_name");
-				if (uniqueNames.containsKey(name)) {
-					//This name is not unique
-					throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
-				}
-			}
-
 			//Find the element to add to
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
 				//Find the requested new item in the configuration document
 				Element itemEleToAdd = (Element) this.configRoot.selectSingleNode("item[@name='"+itemNameToAdd+"']");
+				
+				Map uniqueNames = getUniqueNameMap(this.configRoot, root, itemNameToAdd);
+				if (inputData.exists("propertyId_name")) {
+					String name = inputData.getSingleValue("propertyId_name");
+					if (Validator.isNull(name) && itemEleToAdd.attributeValue("type", "").equals("data")) 
+						throw new DefinitionInvalidException("definition.error.nullname");
+					if (uniqueNames.containsKey(name)) {
+						//This name is not unique
+						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
+					}
+				}
+
 				if (itemEleToAdd != null) {
 					//Add the item 
 					newItem = item.addElement("item");
@@ -744,7 +749,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							//See if the user entered a valid name
 							if (!value.equals("") && !value.matches(characterMask)) {
 								//The value is not well formed, go complain to the user
-								throw new DefinitionInvalidException("definition.error.invalidCharacter", new Object[] {defId, value});
+								throw new DefinitionInvalidException("definition.error.invalidCharacter", new Object[] {"\""+value+"\""});
 							}
 						}
 						
