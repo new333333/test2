@@ -211,13 +211,17 @@ public class DisplayConfiguration extends TagSupport {
 								}
 							} else {
 								if (!"mail".equals(configJspStyle)) {
-									pageContext.getOut().print("<br><i>[No jsp for configuration element: "
+									/*
+									 pageContext.getOut().print("<br><i>[No jsp for configuration element: "
 											+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+									*/
 								}
 							}
 						} else {
-							pageContext.getOut().print("<br><i>[No configuration element: "
+							/*
+							 pageContext.getOut().print("<br><i>[No configuration element: "
 										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+							 */
 						}
 					} //end for
 				} //end no itemlist
