@@ -83,7 +83,7 @@
 	     Make sure to assign a unique id to each node in the cluster. -->
   	<!--<Cluster id="node1" syncDelay="5">
       	<Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
-      		<param name="revision" value="${rep.home}/revision.log"/>
+      		<param name="revision" value="${rep.home}/revision"/>
       		<param name="driver" value="com.mysql.jdbc.Driver"/>
       		<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8"/>
       		<param name="user" value="root"/>
