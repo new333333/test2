@@ -22,8 +22,9 @@
 
 
         <div id="ss_wikiEntryDiv<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
-          <iframe id="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="width:100%; 
-    		display:block; position:relative;"
+          <iframe id="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+            name="ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+            style="width:100%; display:block; position:relative;"
     		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
     		  src="<html:rootPath/>js/forum/null.html" 
     		</c:if>
@@ -38,9 +39,10 @@
 		    		folderId="${ssFolder.id}" 
 		    		action="view_folder_entry" 
 		    		entryId="${entryId}" 
-		    		actionUrl="true" />" 
+		    		actionUrl="true" ><ssf:param name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
     		</c:if>
     		height="95%" width="100%" 
-    		onLoad="ss_setWikiIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();" frameBorder="0" >xxx</iframe>
+    		onLoad="ss_setWikiIframeSize('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');" 
+    		frameBorder="0" >xxx</iframe>
         </div>
    
