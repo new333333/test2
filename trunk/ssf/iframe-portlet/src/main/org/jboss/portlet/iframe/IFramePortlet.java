@@ -64,11 +64,6 @@ public class IFramePortlet extends GenericPortlet
             boolean save = true;
             if((url != null) && (height != null) && (width != null) && (noIFrameMessage != null))
             {
-               if(!url.startsWith("http://"))
-               {
-                  save = false;
-                  message.append("URLs must start with 'http://'<br/>");
-               }
 
                try
                {

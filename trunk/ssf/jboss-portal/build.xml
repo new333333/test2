@@ -56,6 +56,9 @@
 		<ant dir="${project.dir}/jboss-portal" target="deploy" inheritAll="false" />
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
+		<!-- Modified IFrame portlet -->
+		<ant dir="${project.dir}/iframe-portlet" target="deploy" inheritAll="false" />
+		<copy file="${project.dir}/iframe-portlet/iframeportlet.war" todir="${app.server.dir}/server/all/deploy" overwrite="true"/>
 	</target>
 	
 	<!--<target name="deploy-jdbc-properties">
