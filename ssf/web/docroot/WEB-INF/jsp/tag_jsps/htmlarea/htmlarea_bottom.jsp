@@ -18,7 +18,7 @@
    --%><div class="ss_editorHints"><%--
    --%><ssf:nlt tag="editor.wikilink.tip"><%--
        --%><ssf:param name="value" useBody="true"><%--
-           --%><img align="absmiddle" src="<html:imagesPath/>icons/wikilink.gif" alt="Wikilink" title="" /><%--
+           --%><img align="absmiddle" src="<html:brandedImagesPath/>icons/wikilink.gif" alt="Wikilink" title="" /><%--
        --%></ssf:param><%--   
    --%></ssf:nlt>  <%--
    --%><ssf:inlineHelp jsp="workspaces_folders/entries/link_to_entry_markup"/><%--
