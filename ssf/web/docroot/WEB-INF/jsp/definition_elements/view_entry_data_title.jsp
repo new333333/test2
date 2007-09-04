@@ -13,6 +13,8 @@
 <% //Title view %>
 
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<c:set var="ss_title_namespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ss_namespace}"><c:set var="ss_title_namespace" value="${ss_namespace}"/></c:if>
 
 <%
 String displayStyle = ssUser.getDisplayStyle();
@@ -77,7 +79,8 @@ ${nextEntry.docNumber}.
 	
 			<ssf:param name="url" useBody="true">
 				<ssf:url adapter="true" portletName="ss_forum" folderId="${ssDefinitionEntry.parentFolder.id}" 
-				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" />
+				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
+				name="namespace" value="${ss_title_namespace}"/></ssf:url>
 			</ssf:param>
 	
 			<c:if test="${empty ssDefinitionEntry.title}">
