@@ -160,18 +160,19 @@ public class EventsViewHelper {
 			
 			// Add the creation date as an event
 			Date creationDate = (Date) entry.get(EntityIndexUtils.CREATION_DATE_FIELD);
-			if (viewRangeDates == null || viewRangeDates.dateInView(creationDate)) {
+			if (creationDate != null && 
+					(viewRangeDates == null || viewRangeDates.dateInView(creationDate))) {
 				result.add(getEventBean(
-						createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, (String)entry.get(EntityIndexUtils.DOCID_FIELD)), 
-						entry, EVENT_TYPE_CREATION));
+						createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
+								(String)entry.get(EntityIndexUtils.DOCID_FIELD)), entry, EVENT_TYPE_CREATION));
 			}
 
 			// Add the activity date as an event
 			Date lastActivityDate = (Date) entry.get(IndexUtils.LASTACTIVITY_FIELD);
-			if (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate)) {
+			if (lastActivityDate != null && (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate))) {
 				result.add(getEventBean(
-						createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, (String)entry.get(EntityIndexUtils.DOCID_FIELD)), 
-						entry, EVENT_TYPE_ACTIVITY));
+						createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
+								(String)entry.get(EntityIndexUtils.DOCID_FIELD)), entry, EVENT_TYPE_ACTIVITY));
 			}
 			
 			result.addAll(getEntryEvents(entry, eventsCount, viewRangeDates));
