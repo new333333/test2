@@ -136,11 +136,14 @@ public class ViewEntryController extends  SAbstractController {
 		
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map formData = request.getParameterMap();
 				
 		Map model = new HashMap();
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+		model.put(WebKeys.NAMESPACE, namespace);
+		
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());

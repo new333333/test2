@@ -15,7 +15,8 @@
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 boolean isAppletSupported = SsfsUtil.supportApplets();
@@ -26,7 +27,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
 	<td valign="top">
-		<span id="ss_browse_div_position${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 		class="ss_style ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
 	</td>
 
@@ -47,7 +48,9 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 			<% if (isAppletSupported) { %>
-				<a id="ss_dropbox_div_position${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"
+				<a id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+				href="javascript: ;" 
+				onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
 				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>"><img class="ss_icon_link" src="<html:imagesPath/>icons/upload_applet.gif"/></a>
 			<% } %>
 		</c:if>
@@ -74,50 +77,67 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 
-		<a class="" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"
+		<a class="" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
+		  onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
 		  ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_browser.gif"/></a>
 	
 	</c:if>
 	
-	<% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) */ %>
-	<a class="" title="<ssf:nlt tag="attachMeeting.attachResults"/>" href="javascript: ;" onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"
-	  ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_meeting.gif"/></a>
-	<div style="display: none; " id="ss_status_message"></div>
+	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) */ %>
+	  <a class="" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
+	    href="javascript: ;" 
+	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+	    ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_meeting.gif"/></a>
+	  <div style="display: none; " id="ss_status_message"></div>
 	
-		<div id="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_div_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:visible;display:block; width:1px; height:1px;">
-			<div align="right">
-				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="1" width="1">xxx</iframe>
-			</div>
+	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+	    style="visibility:visible;display:block; width:1px; height:1px;">
+		<div align="right">
+			<iframe frameborder="0" scrolling="no" 
+			  id="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+			  name="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+			  height="1" width="1">xxx</iframe>
 		</div>
-		
+	  </div>
+	</c:if>		
 	</td>
 </tr>
 <tr>
 	<td style="padding-left: 30px;" colspan="2" align="left" width="100%">
-					<div id="ss_div_dropbox${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_border_light" style="visibility:hidden;display:none;">
+					<div id="ss_div_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+					  class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
-						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"><img 
+						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
 						</div>	
-						<iframe <ssf:title tag="entry.AttachFilesByApplet" /> frameborder="0" scrolling="no" id="ss_iframe_dropbox${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_dropbox${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="70%" width="100%" onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;">xxx</iframe>
+						<iframe <ssf:title tag="entry.AttachFilesByApplet" /> frameborder="0" scrolling="no" 
+						  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+						  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+						height="70%" width="100%" 
+						onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
 					</div>
 
-					<div id="ss_div_browse${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_border_light" style="visibility:hidden;display:none;">
+					<div id="ss_div_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+					  class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
-						<a onClick="ss_hideAddAttachmentBrowse('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"><img 
+						<a onClick="ss_hideAddAttachmentBrowse('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
 						</div>	
-						<iframe <ssf:title tag="entry.AttachFilesByWebBrowse" /> frameborder="0" scrolling="no" id="ss_iframe_browse${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
-							name="ss_iframe_browse${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+						<iframe <ssf:title tag="entry.AttachFilesByWebBrowse" /> frameborder="0" scrolling="no" 
+						  id="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+							name="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" height="75%" width="100%">xxx</iframe>
 					</div>
 					
-					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="display: none; padding: 5px; " class="ss_border_light">
+					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+					  style="display: none; padding: 5px; " class="ss_border_light">
 						<div align="right">
-						<a onClick="ss_hideAddAttachmentMeetingRecords('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;"><img 
+						<a onClick="ss_hideAddAttachmentMeetingRecords('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
 						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
 						</div>
-						<div id="ss_div_attach_meeting_records_content${ssDefinitionEntry.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+						<div id="ss_div_attach_meeting_records_content${ssDefinitionEntry.id}${ss_attachments_namespace}">
 						</div>
 					</div>
 	</td>	
