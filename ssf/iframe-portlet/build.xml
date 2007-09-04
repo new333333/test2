@@ -113,7 +113,6 @@
    <target name="all" depends="deploy24"/>
 
 	<target name="deploy" depends="deploy24">
-		<copy file="iframeportlet.war" todir="${app.server.dir}" overwrite="true"/>
 	</target>
 </project>
 
