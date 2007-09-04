@@ -85,7 +85,7 @@
 <c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
 <select name="resourceDriverName" onchange="updateResourceRootPath();" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
 <c:forEach var="driver" items="${resourceDrivers}">
-<option value="${driver.name}" label="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
+<option value="${driver.name}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
 <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
 </c:forEach>
 </select>
