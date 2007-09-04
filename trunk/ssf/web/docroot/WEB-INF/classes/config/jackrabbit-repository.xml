@@ -8,7 +8,7 @@
 	<!-- Uncomment this if using DB -->
 	<!--<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
 	    <param name="driver" value="com.mysql.jdbc.Driver"/>
-	    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&characterEncoding=UTF-8" />
+	    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 	    <param name="user" value="root" />
 	    <param name="password" value="root" />
 	    <param name="schema" value="mysql"/>
@@ -29,7 +29,7 @@
 		<!-- Uncomment this if using DB -->
 		<!--<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
 		    <param name="driver" value="com.mysql.jdbc.Driver"/>
-		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&characterEncoding=UTF-8" />
+		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 		    <param name="user" value="root" />
 		    <param name="password" value="root" />
 		    <param name="schema" value="mysql"/>
@@ -42,7 +42,7 @@
 		<!-- Uncomment this if using DB -->
 		<!--<PersistenceManager class="org.apache.jackrabbit.core.state.db.SimpleDbPersistenceManager">
 			<param name="driver" value="com.mysql.jdbc.Driver" />
-			<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&characterEncoding=UTF-8" />
+			<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 			<param name="user" value="root" />
 			<param name="password" value="root" />
 			<param name="schema" value="mysql" />
@@ -58,7 +58,7 @@
 		<!-- Uncomment this if using DB -->
 		<!--<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
 		    <param name="driver" value="com.mysql.jdbc.Driver"/>
-		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&characterEncoding=UTF-8" />
+		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 		    <param name="user" value="root" />
 		    <param name="password" value="root" />
 		    <param name="schema" value="mysql"/>
@@ -71,7 +71,7 @@
 		<!-- Uncomment this if using DB -->
 		<!--<PersistenceManager class="org.apache.jackrabbit.core.state.db.SimpleDbPersistenceManager">
 			<param name="driver" value="com.mysql.jdbc.Driver" />
-			<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&characterEncoding=UTF-8" />
+			<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 			<param name="user" value="root" />
 			<param name="password" value="root" />
 			<param name="schema" value="mysql" />
@@ -85,7 +85,7 @@
       	<Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
       		<param name="revision" value="${rep.home}/revision.log"/>
       		<param name="driver" value="com.mysql.jdbc.Driver"/>
-      		<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&characterEncoding=UTF-8"/>
+      		<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8"/>
       		<param name="user" value="root"/>
       		<param name="password" value="root"/>
       		<param name="schema" value="mysql"/>
