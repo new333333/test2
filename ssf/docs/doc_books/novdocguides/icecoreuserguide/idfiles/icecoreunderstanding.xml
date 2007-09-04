@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="bamndbk" pid="bamndbk" name="Chapter" level="0" number="1"> <text>Understanding ICEcore</text> </target>
+ <target id="bamndbk" pid="bamndbk" name="Chapter" level="0" number="1"> <text>Concepts and Navigation</text> </target>
 
  <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>ICEcore is Collaboration Software</text> </target>
 

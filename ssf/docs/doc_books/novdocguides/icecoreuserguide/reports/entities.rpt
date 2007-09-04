@@ -2042,7 +2042,7 @@
    <String `Entity Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/4/2007 5:47:17 PM'>
+   <String `9/4/2007 6:03:05 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2288,32 +2288,6 @@
     <MType 8>
     <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1210741'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1210800'>
     <MCurrPage `1'>
    > # end of Marker
    <String `product'>
@@ -5153,32 +5127,6 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String ` References'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `empty'>
-  <ParaLine 
-   <String `'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `blue'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\glossary.fm|1053790'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `product'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
   > # end of ParaLine
  > # end of Para
  <Para 
