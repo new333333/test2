@@ -274,8 +274,8 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		addMembership(top, teamWsRole, teamRoot, members);
 	        		//add members to participants
 	        		members.add(ObjectKeys.TEAM_MEMBER_ID);
-	        		addMembership(top, participantsRole, top, members);
-	        		addMembership(top, participantsRole, teamRoot, members);
+	        		addMembership(top, teamMemberRole, top, members);
+	        		addMembership(top, teamMemberRole, teamRoot, members);
 	        		
 	        		members.clear();
 	        		members.add(ObjectKeys.OWNER_USER_ID);
