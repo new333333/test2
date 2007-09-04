@@ -3064,6 +3064,7 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	divObj.style.height = "120px";
 	
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
 function ss_hideAddAttachmentBrowse(entryId, namespace) {
@@ -3158,6 +3159,7 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	divObj.style.height = "100px";
 
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
 function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
@@ -3190,6 +3192,7 @@ function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
 	ajaxRequest.sendRequest();  //Send the request
 	
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
 function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
