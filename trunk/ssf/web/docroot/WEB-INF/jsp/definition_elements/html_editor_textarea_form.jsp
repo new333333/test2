@@ -26,7 +26,7 @@
 	String caption = (String) request.getAttribute("property_caption");
 	String height = (String) request.getAttribute("property_height");
 	if (height == null || height.equals("")) {
-		height = "200";
+		height = "300";
 	}
 	height = height.replaceAll("px", "").trim();
 	try {
