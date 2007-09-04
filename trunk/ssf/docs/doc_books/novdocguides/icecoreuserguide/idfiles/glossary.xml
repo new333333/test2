@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="b9rtisc" pid="b9rtisc" name="Glossary" level="0"> <text>ICEcore Glossary</text> </target>
+ <target id="b9rtisc" pid="b9rtisc" name="Glossary" level="0"> <text>Glossary</text> </target>
 
  <target id="basbaeb" pid="b9rtisc" name="GlossEntry" level="1"> <text>access control</text> </target>
 
