@@ -4451,17 +4451,17 @@ div.ss_task_list_container {
 	</c:if>
 	margin:0px;
 	padding:0px;
-	align: center;
+	text-align: center;
 }
 table.ss_tasks_list {
 	margin:6px 0px 4px 10px;
 	padding: 0px;
-	align: center;
+	text-align: center;
 	border-top: 1px solid #afc8e3;
 	border-left: 1px solid #afc8e3;
 	border-right: 1px solid #afc8e3;
 	border-spacing: 0px;
-	max-width 100%;
+	max-width: 100%;
 }
 
 table.ss_tasks_list th {
