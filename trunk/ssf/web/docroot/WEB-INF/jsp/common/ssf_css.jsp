@@ -1411,7 +1411,6 @@ div.ss_folder_tags {
   font-weight:bold;
 }
 .ss_tag_pane {
-  position:absolute; 
   display:none; 
   visibility:hidden; 
   margin:0px;
