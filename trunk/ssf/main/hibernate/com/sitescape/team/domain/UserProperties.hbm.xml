@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class table="SS_UserProperties" name="com.sitescape.team.domain.UserProperties">
-    <cache usage="nonstrict-read-write"/>
+    <cache usage="read-write"/>
     <composite-id name="id" class="com.sitescape.team.domain.UserPropertiesPK">
       <key-property name="principalId"/>
       <key-property name="binderId"/>
