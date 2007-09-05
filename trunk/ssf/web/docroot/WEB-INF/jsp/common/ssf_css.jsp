@@ -111,6 +111,9 @@ body.ss_style_body {
 .ss_style a:hover {
   color: ${ss_style_link_hover_color};
   text-decoration: none;
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
 }
 .ss_title_link {
   text-decoration:underline;
