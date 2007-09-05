@@ -27,7 +27,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
 		    entryId="${ss_wikiHomepageEntryId}" 
-		    actionUrl="true"><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+		    actionUrl="true"><ssf:param
+		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
 
 		    <ssf:title tag="title.open.folderEntrySimple" />
 		    
@@ -87,7 +88,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    portletName="ss_forum" 
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
-		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:param
+		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
 
 		    <ssf:title tag="title.open.folderEntry">
 			    <ssf:param name="value" value="${entry1.title}" />

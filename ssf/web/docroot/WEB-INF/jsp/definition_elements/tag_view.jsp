@@ -12,6 +12,8 @@
 %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_tagView_namespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ss_namespace}"><c:set var="ss_tagView_namespace" value="${ss_namespace}"/></c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
 <c:if test="${empty ss_tagDivNumber}">
   <c:set var="ss_tagDivNumber" value="0" scope="request"/>
@@ -20,34 +22,40 @@
 <script type="text/javascript">
 function ss_showTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
 	var divId = 'ss_tags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_' + parseInt(divNumber) + '_pane';
+	<ssf:ifnotadapter>
 	ss_moveDivToBody(divId);
+	</ssf:ifnotadapter>
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
 	divObj.style.zIndex = ssMenuZ;
 	var anchorObj = document.getElementById('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber));
+	<ssf:ifnotadapter>
 	ss_setObjectTop(divObj, (ss_getDivTop('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)) + 20) + "px");
+	</ssf:ifnotadapter>
 	var leftEdge = parseInt(ss_getDivLeft('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber))) + 10;
 	var rightEdge = parseInt(leftEdge + ss_getObjectWidth(divObj));
 	if (leftEdge < 0) leftEdge = 0;
 	self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+parseInt(divNumber)) + ", left = " +leftEdge)
+	<ssf:ifnotadapter>
 	ss_setObjectLeft(divObj, leftEdge + "px")
+	</ssf:ifnotadapter>
 	ss_showDiv(divId);
 	
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize('${ss_tagView_namespace}');
 }
 function ss_hideTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
 	var divId = 'ss_tags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_' + parseInt(divNumber) + '_pane';
-	ss_hideDiv(divId);
+	ss_hideDivNone(divId);
 }
 function ss_addTag<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(divNumber, entityType, entryId) {
 	ss_modifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('add', '', divNumber, entityType, entryId);
 	
 }
 function ss_addTag2<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, divNumber, entityType, entryId) {
-	alert(entryId)
 	document.forms['ss_modifyTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_'+divNumber].communityTag.value = id;
 	ss_modifyTags<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('add', '', divNumber, entityType, entryId);
 }
@@ -139,6 +147,8 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 	</ssf:ifaccessible>
 	<ssf:ifnotaccessible>
 		class="ss_tag_pane"
+		<ssf:ifadapter>style="position:relative;"</ssf:ifadapter>
+		<ssf:ifnotadapter>style="position:absolute;"</ssf:ifnotadapter>
 	</ssf:ifnotaccessible>
 >
 
