@@ -62,9 +62,6 @@
 		</c:if>
 	</ssf:sidebarPanel>
 
-	</div>
-
-
 	</td>
 	<td valign="top" class="ss_view_info">
 
@@ -102,7 +99,6 @@
 					</div>
 
 				</div>
-			</div>
 
 			<% // Footer toolbar %>
 			<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
@@ -125,13 +121,12 @@
 				</div>
 			</c:if>
 
-
 		</div>
-	</div>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+  </div>
 	
 </c:if>
 
