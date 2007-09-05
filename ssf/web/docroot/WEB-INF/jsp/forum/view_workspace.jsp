@@ -104,7 +104,7 @@
 			<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 			
 			<c:if test="${ss_userWorkspace}">
-				<div align="right" width="100%" style="margin:10px;">
+				<div width="100%" style="margin:10px;">
 				  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-17" 
                   offsetY="-12" title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
 				  </ssHelpSpot>
