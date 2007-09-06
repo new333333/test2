@@ -18,7 +18,7 @@ import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
-import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
+import com.sitescape.team.security.authentication.DigestDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.web.WebKeys;
 
@@ -33,10 +33,10 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
-		String passwordDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
+		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, passwordDigest, LoginInfo.AUTHENTICATOR_RSS);
+			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, privateDigest, LoginInfo.AUTHENTICATOR_RSS);
 			//don't set user, session is not currently active
 			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
 		}
@@ -44,7 +44,7 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 			logger.info(e.getLocalizedMessage());
 			request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
 		}
-		catch(PasswordDoesNotMatchException e) {
+		catch(DigestDoesNotMatchException e) {
 			logger.info(e.getLocalizedMessage());
 			request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
 		}

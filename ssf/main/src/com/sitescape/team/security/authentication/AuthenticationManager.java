@@ -24,8 +24,8 @@ public interface AuthenticationManager {
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 	throws PasswordDoesNotMatchException, UserDoesNotExistException;
 
-	public User authenticate(String zoneName, Long userId, String passwordDigest, 
-			String authenticatorName) throws PasswordDoesNotMatchException, 
+	public User authenticate(String zoneName, Long userId, String privateDigest, 
+			String authenticatorName) throws DigestDoesNotMatchException, 
 			UserDoesNotExistException;
 	
 }
