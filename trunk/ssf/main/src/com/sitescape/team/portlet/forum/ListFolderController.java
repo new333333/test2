@@ -1499,8 +1499,10 @@ public static final String[] monthNamesShort = {
 
 			//RSS link 
 			qualifiers = new HashMap();
-			folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), 
-					UrlUtil.getFeedURL(request, forumId), qualifiers);
+			String rssUrl = UrlUtil.getFeedURL(request, forumId);
+			if (rssUrl != null && !rssUrl.equals(""))
+				folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), 
+						rssUrl, qualifiers);
 		}
 		
 		// list team members
