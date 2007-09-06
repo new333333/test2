@@ -272,13 +272,13 @@ public class User extends Principal {
 			digestSeed = new Long(digestSeed.longValue() + 1);
 	}
 	
-	public String getPrivateDigest() {
+	public String getPrivateDigest(String binderId) {
 		
 		Long digestSeed = getDigestSeed();
 		if(digestSeed == null)
 			digestSeed = 0L;
 		
-		return EncryptUtil.encryptSHA1(getId().toString(), digestSeed.toString());
+		return EncryptUtil.encryptSHA1(getId().toString(), digestSeed.toString(), binderId);
 	}
  
     /**

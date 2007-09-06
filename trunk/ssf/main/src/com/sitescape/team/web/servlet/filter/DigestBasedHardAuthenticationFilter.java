@@ -42,10 +42,11 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
+		String binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
 		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, privateDigest, LoginInfo.AUTHENTICATOR_ICAL);
+			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_ICAL);
 			//don't set user, session is not currently active
 			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
 			

@@ -36,7 +36,7 @@ public class UrlUtil {
 			append("&ui=").
 			append(rc.getUserId()).
 			append("&pd=").
-			append(rc.getUser().getPrivateDigest());
+			append(rc.getUser().getPrivateDigest(binderId));
 		
 		return url.toString();
 	}

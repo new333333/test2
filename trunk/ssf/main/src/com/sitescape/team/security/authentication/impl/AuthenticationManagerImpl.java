@@ -173,14 +173,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
-	public User authenticate(String zoneName, Long userId, String privateDigest, String authenticatorName) 
+	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
 			if (!hadSession) SessionUtil.sessionStartup();	
 			user = getProfileDao().loadUser(userId, zoneName);
-			if(!privateDigest.equals(user.getPrivateDigest())) {
+			if(!privateDigest.equals(user.getPrivateDigest(binderId))) {
 				throw new DigestDoesNotMatchException("Authentication failed: digest does not match");
 			}
 			
