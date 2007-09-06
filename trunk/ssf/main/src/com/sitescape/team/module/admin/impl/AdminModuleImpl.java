@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.LinkedHashSet;
+import java.io.InputStream;
 
 import javax.mail.internet.InternetAddress;
 
@@ -449,19 +450,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//default definitions stored in separate config file
 		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
 		SAXReader reader = new SAXReader(false);  
+		InputStream in=null;
 		try {
-			Document cfg = reader.read(new ClassPathResource(startupConfig).getInputStream());
-			
+			in = new ClassPathResource(startupConfig).getInputStream();
+			Document cfg = reader.read(in);
+			in.close();
 			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
 			for (Element element:elements) {
 				String file = element.getTextTrim();
 				reader = new SAXReader(false);  
 				try {
-					Document doc = reader.read(new ClassPathResource(file).getInputStream());
+					in = new ClassPathResource(file).getInputStream();
+					Document doc = reader.read(in);
 					getDefinitionModule().addDefinition(doc, true);
 					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
-	        	logger.error("Cannot read definition from file: " + file);
+					logger.error("Cannot read definition from file: " + file);
+				} finally {
+					if (in!=null) in.close();
 				}
 			}
 		} catch (Exception ex) {
@@ -474,8 +480,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//default definitions stored in separate config file
 		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
 		SAXReader reader = new SAXReader(false);  
+		InputStream in=null;
 		try {
-			Document cfg = reader.read(new ClassPathResource(startupConfig).getInputStream());
+			in = new ClassPathResource(startupConfig).getInputStream();
+			Document cfg = reader.read(in);
+			in.close();
 			//Now setup configurations
 			List elements = cfg.getRootElement().selectNodes("templateFile");
 			for (int i=0; i<elements.size(); ++i) {
@@ -483,11 +492,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				String file = element.getTextTrim();
 				reader = new SAXReader(false);  
 				try {
-					Document doc = reader.read(new ClassPathResource(file).getInputStream());
+					in = new ClassPathResource(file).getInputStream();
+					Document doc = reader.read(in);
 					addTemplate(doc);
 					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
 					logger.error("Cannot add template:", ex);
+				} finally {
+					if (in!=null) in.close();
 				}
 			}
 		} catch (Exception ex) {
