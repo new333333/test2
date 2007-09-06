@@ -33,7 +33,7 @@ public class LdapConfig extends ScheduleInfo {
 	public static final String USERS_CREDENTIAL = "ldap.users.credentials";
 	public static final String USERS_ID="ldap.users.id";
 	public static final String USERS_MAPPINGS="ldap.users.mappings";
-//	public static final String GROUPS_URL = "ldap.groups.url";
+	public static final String GROUPS_BASE_DN = "ldap.groups.basedn";
 //	public static final String GROUPS_PRINCIPAL = "ldap.groups.princiapl";
 //	public static final String GROUPS_CREDENTIAL = "ldap.groups.credentials";
 //	public static final String DISABLE_USERS = "ldap.users.disable";
@@ -91,6 +91,12 @@ public class LdapConfig extends ScheduleInfo {
 	}
 	public void setUserMappings(Map mappings) {
 		details.put(USERS_MAPPINGS, mappings);
+	}
+	public String getGroupsBasedn() {
+		return GetterUtil.get((String)details.get(GROUPS_BASE_DN), "");
+	}
+	public void setGroupsBasedn(String basedn) {
+		details.put(GROUPS_BASE_DN, basedn);
 	}
 	public boolean isScheduleEnabled() {
 		return GetterUtil.get((String)details.get(ENABLE_SCHEDULE), false);

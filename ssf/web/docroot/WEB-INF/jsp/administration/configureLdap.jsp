@@ -60,7 +60,14 @@
 	   <td><span class="ss_labelLeft ss_normal"><ssf:nlt tag="ldap.user.credential"/></span>
 	   </td><td><input type="password"  name="userCredentials" value="${ssLdapConfig.userCredential}"/>
 	   </td>
+	   <tr>
+	   <td colspan="2"><ssf:nlt tag="ldap.group.basedn.title"/></td>
 	   </tr>
+	   <tr><td>
+	   <span class="ss_labelLeft ss_normal"><ssf:nlt tag="ldap.group.basedn"/></span>
+	   </td><td><input type="text"  size="100" name="groupBasedn" value="${ssLdapConfig.groupsBasedn}"/>
+	   </td>
+	   </tr></tr>
 	   </table>
 <div class="ss_divider"></div>
 </ssf:expandableArea>
