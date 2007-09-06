@@ -628,6 +628,7 @@
 		</property>
 		<property name="interceptorNames">
 			<list>
+				<value>checkEnabledInterceptor</value>
 				<value>aopallianceLoggingInterceptor</value>
 				<!-- When a user request is served, typically one of the very first 
 				     interceptors we define is one that sets up request context for 
@@ -664,6 +665,8 @@
 	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.interceptor.LoginInfoInterceptor">
 		<property name="reportModule"><ref local="reportModule"/></property>
 	</bean>
+	
+	<bean id="checkEnabledInterceptor" class="com.sitescape.team.remoting.ws.interceptor.CheckEnabledInterceptor" />
 	
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
