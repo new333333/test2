@@ -14,6 +14,10 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+<div class="ss_entryContent">
+<span class="ss_bold"><c:out value="${property_caption}" /></span>
+<br>
+<span>
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
 <c:forEach var="selection" items="${selections}">
 <img border="0" src="<ssf:fileurl 
@@ -27,4 +31,5 @@
     <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
     </ssf:fileurl>" alt="${property_caption}" />
 </c:forEach>
+</div>
 </c:if>
