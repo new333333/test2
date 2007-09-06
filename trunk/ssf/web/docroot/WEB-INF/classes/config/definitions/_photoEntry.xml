@@ -95,7 +95,7 @@
     <item name="entryDataItem" caption="__entry_data_item" id="23" formItem="graphic">
       <properties>
         <property name="name" value="photo"/>
-        <property name="caption" value="__photo"/>
+        <property name="caption" value=""/>
       </properties>
     </item>
     <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="27">
