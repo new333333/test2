@@ -39,17 +39,15 @@ public class PrintWorkspaceTree
 {
 	public static void main(String[] args) {
 		try {
-			printWorkspaceTree(new Long(1), new Integer(-1));
+			printWorkspaceTree(args[0], new Long(1), new Integer(-1));
 		}
 		catch(Exception e) {
 			System.out.println(e.toString());
 		}
 	}
 	
-	static void printWorkspaceTree(Long id, Integer depth) throws Exception {
-		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://localhost:8080/ssf/ws/Facade";
-
+	static void printWorkspaceTree(String endpoint, Long id, Integer depth) throws Exception {
+		System.out.println("Endpoint = " + endpoint);
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
 
