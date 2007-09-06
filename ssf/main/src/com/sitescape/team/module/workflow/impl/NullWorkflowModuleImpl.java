@@ -35,6 +35,9 @@ public class NullWorkflowModuleImpl extends CommonDependencyInjection implements
 	//Routine to build (or modify) a workflow process definition from a Definition
 	public void modifyProcessDefinition(String definitionName, Definition def) {		
 	}
+	public void modifyStateName(String definitionName, String oldName, String newName) {
+		
+	}
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
 	}
 

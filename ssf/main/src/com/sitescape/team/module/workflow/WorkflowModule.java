@@ -59,9 +59,17 @@ public interface WorkflowModule {
 	 */
 	public void modifyProcessDefinition(String definitionName, Definition def);
 	/**
-	 * Same as <code>modifyProcessDefinition</code>
-	 * @param pD
-	 * @param def
+	 * Change the name of a state
+	 * @param definitionName
+	 * @param oldName
+	 * @param newName
+	 */
+	public void modifyStateName(String definitionName, String oldName, String newName);
+	/**
+	 * Transition to a new state
+	 * @param entry
+	 * @param state
+	 * @param toState
 	 */
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState);
 	/**
