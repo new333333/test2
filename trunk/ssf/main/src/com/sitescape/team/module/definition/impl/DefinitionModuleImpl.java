@@ -874,8 +874,41 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						//The name is being changed. Check if this is a workflow state
 						if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
 							if (checkStateInUse(def, itemNamePropertyValue)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
+							getWorkflowModule().modifyStateName(def.getId(), itemNamePropertyValue, name);
+							//change transition to names
+							List<Element> properties = item.selectNodes("../item[@name='state']/item[@name='transitions']/item[@type='transition']/properties/property[@name='toState' and @value='"+itemNamePropertyValue+"']");
+							for (Element prop:properties) {
+								prop.addAttribute("value", name);
+							}
+							//change start state
+							properties = item.selectNodes("../properties/property[@name='initialState' and @value='"+itemNamePropertyValue+"']");
+							for (Element prop:properties) {
+								prop.addAttribute("value", name);
+							}
+							//change end state
+							properties = item.selectNodes("../properties/property[@name='endState' and @value='"+itemNamePropertyValue+"']");
+							for (Element prop:properties) {
+								prop.addAttribute("value", name);
+							}
+							//change parallel start state
+							properties = item.selectNodes("../item[@name='parallelThread']/properties/property[@name='startState' and @value='"+itemNamePropertyValue+"']");
+							for (Element prop:properties) {
+								prop.addAttribute("value", name);
+							}
+							//change parallel end state
+							properties = item.selectNodes("../item[@name='parallelThread']/properties/property[@name='endState' and @value='"+itemNamePropertyValue+"']");
+							for (Element prop:properties) {
+								prop.addAttribute("value", name);
+							}
+							
 						} else if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
 							if (checkThreadInUse(def, itemNamePropertyValue)) throw new DefinitionInvalidException("definition.error.cannotModifyThread", new Object[] {def.getId()});
+							//change start/stop
+							List<Element> properties = item.selectNodes("../item[@name='state']/item[@name='onEntry' or @name='onExit']/item[@name='startParallelThread' or @name='stopParallelThread']/properties/property[@name='name' and @value='"+itemNamePropertyValue+"']");
+							for (Element prop:properties) {
+								prop.addAttribute("value", name);
+							}
+							
 						}
 					}
 				}
