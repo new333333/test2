@@ -27,6 +27,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
@@ -271,15 +272,13 @@ public class User extends Principal {
 			digestSeed = new Long(digestSeed.longValue() + 1);
 	}
 	
-	public String getPasswordDigest() {
+	public String getPrivateDigest() {
 		
 		Long digestSeed = getDigestSeed();
 		if(digestSeed == null)
 			digestSeed = 0L;
-		//this sometimes happens if we don't sync correctly with portal
-		//on loggin
-		if (password == null) PasswordEncryptor.encrypt("", digestSeed);
-		return PasswordEncryptor.encrypt(getPassword(), digestSeed);
+		
+		return EncryptUtil.encryptSHA1(getId().toString(), digestSeed.toString());
 	}
  
     /**

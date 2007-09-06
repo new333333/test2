@@ -28,7 +28,7 @@ import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
-import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
+import com.sitescape.team.security.authentication.DigestDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 
 public class DigestBasedHardAuthenticationFilter implements Filter {
@@ -42,10 +42,10 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
-		String passwordDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
+		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, passwordDigest, LoginInfo.AUTHENTICATOR_ICAL);
+			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, privateDigest, LoginInfo.AUTHENTICATOR_ICAL);
 			//don't set user, session is not currently active
 			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
 			
@@ -57,7 +57,7 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 			logger.warn(e);
 			throw new ServletException(e);
 		}
-		catch(PasswordDoesNotMatchException e) {
+		catch(DigestDoesNotMatchException e) {
 			logger.warn(e);
 			throw new ServletException(e);
 		}

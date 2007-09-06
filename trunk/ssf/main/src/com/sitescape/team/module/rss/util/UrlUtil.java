@@ -36,7 +36,7 @@ public class UrlUtil {
 			append("&ui=").
 			append(rc.getUserId()).
 			append("&pd=").
-			append(rc.getUser().getPasswordDigest());
+			append(rc.getUser().getPrivateDigest());
 		
 		return url.toString();
 	}

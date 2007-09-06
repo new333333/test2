@@ -27,6 +27,7 @@ import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.security.authentication.AuthenticationManager;
+import com.sitescape.team.security.authentication.DigestDoesNotMatchException;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
@@ -172,15 +173,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
-	public User authenticate(String zoneName, Long userId, String passwordDigest, String authenticatorName) 
+	public User authenticate(String zoneName, Long userId, String privateDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
 			if (!hadSession) SessionUtil.sessionStartup();	
 			user = getProfileDao().loadUser(userId, zoneName);
-			if(!passwordDigest.equals(user.getPasswordDigest())) {
-				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
+			if(!privateDigest.equals(user.getPrivateDigest())) {
+				throw new DigestDoesNotMatchException("Authentication failed: digest does not match");
 			}
 			
 			if(authenticatorName != null)
