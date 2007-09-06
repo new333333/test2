@@ -43,7 +43,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
 				config.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
 				config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
-//				config.setGroupSync(PortletRequestUtils.getBooleanParameter(request, "groupSync", true));
+				config.setGroupsBasedn(PortletRequestUtils.getStringParameter(request, "groupBasedn", ""));
 				config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
 				config.setUserUrl(PortletRequestUtils.getStringParameter(request, "userUrl", ""));
 				config.setUserPrincipal(PortletRequestUtils.getStringParameter(request, "userPrincipal", ""));
