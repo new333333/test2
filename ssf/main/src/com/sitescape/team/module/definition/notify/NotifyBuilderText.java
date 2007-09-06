@@ -25,7 +25,7 @@ public class NotifyBuilderText extends AbstractNotifyBuilder {
 	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
 	    	Object obj = attribute.getValue();
 	    	if (obj != null) {
-	    		element.setText(obj.toString());
+	    		element.addCDATA(obj.toString());
 	    	}
 	    	return true;
 	    }

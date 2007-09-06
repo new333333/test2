@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.module.definition.notify;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -18,6 +19,8 @@ import java.util.Map;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.util.ResolveIds;
 
 /**
 *
@@ -26,21 +29,16 @@ import com.sitescape.team.domain.CustomAttribute;
 public class NotifyBuilderUserListSelect extends AbstractNotifyBuilder {
 
 	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-	    	Object obj = attribute.getValue();
-	    	if (obj instanceof Set) {
-	    		Set set = (Set)obj;
-	    		for (Iterator iter=set.iterator();iter.hasNext();) {
+		   Collection users = ResolveIds.getPrincipals(attribute);
+		   if ((users != null) && !users.isEmpty()) {
+	    		for (Iterator iter=users.iterator();iter.hasNext();) {
 		    		Element value = element.addElement("value");		    		
-		    		obj = iter.next();
-		    		value.setText(obj.toString());
+		    		value.setText(((Principal)iter.next()).getTitle());
 	    		}
-	    	} else if (obj != null) {
-		    	Element value = element.addElement("value");
-	    		value.setText(obj.toString());
 	    	} else {
 	    		element.addElement("value");
 	    	}
 	    	return true;
-	    }
+	   }
 }
 

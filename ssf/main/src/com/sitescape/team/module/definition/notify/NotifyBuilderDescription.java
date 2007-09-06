@@ -43,10 +43,10 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
 	    private void doElement(Element parent, Object obj) {
 	    	if (obj instanceof Description) {
 	    		Description desc = (Description)obj;
-	    		parent.setText(desc.getText());
+	    		parent.addCDATA(desc.getText());
 	    		parent.addAttribute("format",String.valueOf(desc.getFormat()));
 	    	} else if (obj != null) {
-	    		parent.setText(obj.toString());
+	    		parent.addCDATA(obj.toString());
 	    		parent.addAttribute("format", String.valueOf(Description.FORMAT_NONE));
 	    	}
 	    	
