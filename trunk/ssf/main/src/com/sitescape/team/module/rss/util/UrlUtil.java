@@ -14,12 +14,16 @@ import javax.portlet.PortletRequest;
 
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 public class UrlUtil {
 
 	public static String getFeedURL(PortletRequest req, String binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
+		
+		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
+		if (!rssEnabled) return "";
 		
 		StringBuffer url = new StringBuffer();
 		
