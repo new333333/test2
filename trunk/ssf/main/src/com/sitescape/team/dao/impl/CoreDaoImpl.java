@@ -818,6 +818,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 
 	               		results = session.createCriteria(Binder.class)
+               			.createCriteria("definitions")
+               			.add(Expression.eq("id", def.getId()))
+               			.list();
+	               		//definition not used by an entry, but may be part of a binder config
+	               		//it is safe to remove it now.
+	               		for (int i=0; i<results.size(); ++i ) {
+	               			Binder b = (Binder)results.get(i);
+	               			b.removeDefinition(def);
+	               		}
+	               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("workflowAssociations")
 	               			.add(Expression.eq("id", def.getId()))
 	               			.list();
