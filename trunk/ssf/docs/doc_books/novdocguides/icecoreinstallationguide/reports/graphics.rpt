@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `8/28/2007 3:00:29 PM'>
+   <String `9/6/2007 2:15:17 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2483,6 +2483,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `righthandcorner_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `select_managemodify_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 

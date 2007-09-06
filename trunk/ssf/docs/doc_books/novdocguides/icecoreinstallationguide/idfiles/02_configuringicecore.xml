@@ -246,7 +246,9 @@
 
  <target id="bbin1fj" pid="bapqrpq" name="Step" level="4" number="3"> <text>Click Close.</text> </target>
 
- <target id="b9vde7f" pid="b9vde7f" name="Sect1" level="1" number="2.8"> <text>Set Up E-mail for a Workspace</text> </target>
+ <target id="b9vde7i" pid="b9vde7i" name="Sect1" level="1" number="2.8"> <text>Invite Users to the Site</text> </target>
+
+ <target id="b9vde7f" pid="b9vde7f" name="Sect1" level="1" number="2.9"> <text>Set Up E-mail for a Workspace</text> </target>
 
  <target id="baptekl" pid="b9vde7f" name="Procedure" level="2" number="1"> <text>From your workspace, select the top level folder for which you want to enable e-mail.</text> </target>
 
@@ -258,6 +260,28 @@
 
  <target id="bapto85" pid="b9vde7f" name="Step" level="3" number="4"> <text>Configure the e-mail Notification Schedule and add the users, groups, and any individual e-mail addresses you want to receive e-mail notifications, and then click Apply.</text> </target>
 
- <target id="b9vde7i" pid="b9vde7i" name="Sect1" level="1" number="2.9"> <text>Invite Users to the Site</text> </target>
+ <target id="bbn4ml9" pid="bbn4ml9" name="Sect1" level="1" number="2.10"> <text>Mirrored Folders Configuration</text> </target>
+
+ <target id="bbn4of7" pid="bbn4ml9" name="BridgeHead" level="2"> <text>To Create a Mirrored Folder:</text> </target>
+
+ <target id="bbn4oii" pid="bbn4ml9" name="Procedure" level="2" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver.  (You may want to use one of the disabled samples as a template.)</text> </target>
+
+ <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver.  (You may want to use one of the disabled samples as a template.)</text> </target>
+
+ <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into ICEcore as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</text> </target>
+
+ <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="3"> <text>In ICEcore create a folder of type File folder.</text> </target>
+
+ <target id="bbn54nc" pid="bbn4ml9" name="Step" level="3" number="4"> <text>Within the folder, select the Manage &#62; Modify this folder menu item.</text> </target>
+
+ <target id="bbn5578" pid="bbn4ml9" name="Step" level="3" number="5"> <text>Select the Mirror external folders option.</text> </target>
+
+ <target id="bbn5dnb" pid="bbn4ml9" name="Step" level="3" number="6"> <text>Select the mirrored folder resource driver that you created in step 1.</text> </target>
+
+ <target id="bbn5duy" pid="bbn4ml9" name="Step" level="3" number="7"> <text>Optionally, you can specify a subdirectory within the resource driver's root directory structure that you want this folder to mirror.</text> </target>
+
+ <target id="bbn5eiz" pid="bbn4ml9" name="Step" level="3" number="8"> <text>Click OK to make the folder a mirrored folder.</text> </target>
+
+ <target id="bbn5ep6" pid="bbn4ml9" name="Step" level="3" number="9"> <text>Perform initial synchronization/loading by selecting the Manage this folder &#62; Synchronize menu item from the folder listing.</text> </target>
 
 </targets>

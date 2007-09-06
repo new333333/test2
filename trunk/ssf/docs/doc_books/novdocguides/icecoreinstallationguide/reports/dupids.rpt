@@ -2042,7 +2042,7 @@
    <String `Dupicate Id Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `8/28/2007 3:00:29 PM'>
+   <String `9/6/2007 2:15:17 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2054,13 +2054,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `front.fm has no duplicate id(s)'>
+   <String `sitescape_front.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `preface.fm has no duplicate id(s)'>
+   <String `sitescape_preface.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
