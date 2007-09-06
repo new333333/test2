@@ -669,10 +669,19 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						while (fileItemsIt.hasNext()) {
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
+							if (fileHandler.getName() != null && !fileHandler.getName().endsWith(".ics")) {
+								// it's not icalendar file
+								continue;
+							}
+							
 							try {
-								entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(folder.getId(), fileHandler.getInputStream()));
+								List entryIds = getIcalModule().parseToEntries(folder.getId(), fileHandler.getInputStream());
+								entryIdsFromICalendars.addAll(entryIds);
+								if (!entryIds.isEmpty()) {
+									fileItemsIt.remove();
+								}
 							} catch (Exception e) {
-								// can't import ical, ignore error
+//								 can't import ical, ignore error, it's probably wrong file format
 								logger.warn(e);
 							}
 						}
@@ -682,14 +691,18 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						while (icalIt.hasNext()) {
 							InputStream icalStream = (InputStream)icalIt.next();
 							try {
-								entryIdsFromICalendars.addAll(getIcalModule().parseToEntries(folder.getId(), icalStream));
+								List entryIds = getIcalModule().parseToEntries(folder.getId(), icalStream);
+								entryIdsFromICalendars.addAll(entryIds);
+								if (!entryIds.isEmpty()) {
+									icalIt.remove();
+								}								
 							} catch (Exception e) {
-								// can't import ical, ignore error
+								// can't import ical, ignore error, it's probably wrong file format
 								logger.warn(e);
 							}
 						}
 							
-						if (entryIdsFromICalendars.isEmpty()) {
+						if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
 							folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
 						}
 						msgs[i].setFlag(Flags.Flag.DELETED, true);
