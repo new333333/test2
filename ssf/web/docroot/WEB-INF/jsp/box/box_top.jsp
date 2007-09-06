@@ -23,6 +23,8 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/box/init.jsp" %>
+<c:if test="${empty ss_box_color}"><c:set var="ss_box_color" value="#CCCCCC" scope="request"/></c:if>
+<c:if test="${empty ss_box_canvas_color}"><c:set var="ss_box_canvas_color" value="#FFFFAA" scope="request"/></c:if>
 <jsp:useBean id="ss_box_color" type="String" scope="request" />
 <jsp:useBean id="ss_box_canvas_color" type="String" scope="request" />
 
