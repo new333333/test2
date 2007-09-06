@@ -255,6 +255,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			if (rssFeedInactive(entry, indexPath))
 				return;
 
+			// see if the rss capability has been disabled, if so, delete the feed.
+			boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
+			if (!rssEnabled) {
+				deleteRssIndex(entry.getParentBinder());
+				return;
+			}
+			
 			long endDate = new Date().getTime() - (maxDays * DAYMILLIS);
 			String dateRange = "0 TO " + endDate;
 
@@ -300,6 +307,11 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
 	}
 
+	private String getRssDisabledString() {
+		String rss = addRssHeader("RSS has been disabled for this feed");
+		rss += addRssFooter();
+		return rss;
+	}
 	/**
 	 * Find the rss feed index. If it doesn't exist, then create it.
 	 * Filter results by the requestor's acls.
@@ -312,6 +324,12 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	public String filterRss(HttpServletRequest request,
 			HttpServletResponse response, Binder binder, User user) {
 
+		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
+		if (!rssEnabled) {
+			return WebHelper.markupStringReplacement(null, null, request,
+					response, null, this.getRssDisabledString(), WebKeys.MARKUP_VIEW);
+		}
+		
 		String indexPath = getRssPathName(binder);
 		RssFeedLock rfl = new RssFeedLock(rssRootDir, binder);
 
@@ -436,6 +454,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				.getDescription().getText();
 		description = WebHelper.markupStringReplacement(null, null, null, null,
 				entry, description, WebKeys.MARKUP_FILE);
+		description = description.replaceAll("&nbsp;", " ");
 		ret += "<description>" + description + "</description>\n";
 
 		ret += "<author>" + entry.getCreation().getPrincipal().getName()
