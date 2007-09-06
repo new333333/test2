@@ -18,9 +18,9 @@
 
  <target id="bbfigvt" pid="bbfequg" name="Step" level="4" number="4"> <text>On the right-side of the window, click Add a new entry definition.</text> </target>
 
- <target id="bbfijdy" pid="bbfequg" name="Step" level="4" number="5"> <text>In the entry form that appears, type the name for this entry type into the Name field.</text> </target>
+ <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>Type the name for the entry that you want to see in ICEcore into the Caption field.</text> </target>
 
- <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="6"> <text>Type the name for the entry that you want to see in ICEcore into the Caption field.</text> </target>
+ <target id="bbfijdy" pid="bbfequg" name="Step" level="4" number="6"> <text>In the entry form that appears, type the name for this entry type into the Name field.</text> </target>
 
  <target id="bbfiqmr" pid="bbfequg" name="Step" level="4" number="7"> <text>Select the family for this entry from the Family list box. Select the item type that is closest to the function of the item you are creating. People can use the family type when performing filtered searches. This custom entry has an -unspecified- family.</text> </target>
 
@@ -87,6 +87,26 @@
  <target id="bbg1d7t" pid="bbfequg" name="Step" level="4" number="7"> <text>Add a required Text element named Total Hours Off and move it below the Time Off Dates and Time element.</text> </target>
 
  <target id="bbg1dpz" pid="bbfequg" name="Step" level="4" number="8"> <text>Add a required Text element named Time Off Reason and move it below the Title element.</text> </target>
+
+ <target id="bbmq22d" pid="bbfequg" name="Step" level="4" number="9"> <text>To add a container:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Click Form.</text> </target>
+
+ <target id="bbmqbdd" pid="bbfequg" name="Step" level="6" number="9a"> <text>Click Form.</text> </target>
+
+ <target id="bbmqbde" pid="bbfequg" name="Step" level="6" number="9b"> <text>In the options dialog, click Add.</text> </target>
+
+ <target id="bbmq89q" pid="bbfequg" name="Step" level="6" number="9c"> <text>Click Box.</text> </target>
+
+ <target id="bbmq9nv" pid="bbfequg" name="Step" level="6" number="9d"> <text>Select Square with border and click OK.</text> </target>
+
+ <target id="bbmqago" pid="bbfequg" name="Step" level="6" number="9e"> <text>Click Time Off Dates and Time.</text> </target>
+
+ <target id="bbmqii2" pid="bbfequg" name="Step" level="6" number="9f"> <text>In the options dialog, click Move.</text> </target>
+
+ <target id="bbmqbyq" pid="bbfequg" name="Step" level="6" number="9g"> <text>Click Box.</text> </target>
+
+ <target id="bbmqdhd" pid="bbfequg" name="Step" level="6" number="9h"> <text>Select Move into the selected item and click OK.</text> </target>
 
  <target id="bbg05pu" pid="bbfequg" name="Sect2" level="2" number="2.1.4"> <text>Create a Custom View for an Entry</text> </target>
 
