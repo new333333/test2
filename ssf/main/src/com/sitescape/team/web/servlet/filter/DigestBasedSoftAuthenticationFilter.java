@@ -33,10 +33,11 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
 		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
+		String binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
 		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
 		
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, privateDigest, LoginInfo.AUTHENTICATOR_RSS);
+			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_RSS);
 			//don't set user, session is not currently active
 			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
 		}

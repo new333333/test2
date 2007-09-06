@@ -6,16 +6,18 @@ import java.security.NoSuchAlgorithmException;
 
 public class EncryptUtil {
 
-	public static String encryptSHA1(String value, String digestSeed) {
-		return encrypt(value, digestSeed, "SHA-1");
+	public static String encryptSHA1(String... input) {
+		return encrypt("SHA-1", input);
 	}
 	
-	public static String encrypt(String value, String digestSeed, String algorithm) {
+	public static String encrypt(String algorithm, String[] input) {
 		try {
 			MessageDigest md = MessageDigest.getInstance(algorithm);
 			md.reset();
-			md.update(value.getBytes("UTF-8"));
-			md.update(digestSeed.toString().getBytes("UTF-8"));
+			for(int i = 0; i < input.length; i++) {
+				if(input[i] != null)
+					md.update(input[i].getBytes("UTF-8"));
+			}
 			byte[] messageDigest = md.digest();
 			
 			StringBuffer hexString = new StringBuffer();
@@ -32,7 +34,7 @@ public class EncryptUtil {
 			throw new RuntimeException(e);			
 		}
 		catch (NullPointerException e) {
-			// this will occur when the value.getBytes("UTF-8") returns a null.
+			// this will occur when the .getBytes("UTF-8") returns a null.
 			return new StringBuffer().toString();
 		}
 	}

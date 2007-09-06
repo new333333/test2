@@ -32,9 +32,9 @@ public class AuthenticationManagerUtil {
 		return am.authenticate(zoneName, username, password, passwordAutoSynch, ignorePassword, authenticatorName);
 	}
 
-	public static User authenticate(String zoneName, Long userId, String privateDigest, String authenticatorName)
+	public static User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName)
 	throws UserDoesNotExistException, DigestDoesNotMatchException {
 		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, userId, privateDigest, authenticatorName);
+		return am.authenticate(zoneName, userId, binderId, privateDigest, authenticatorName);
 	}
 }
