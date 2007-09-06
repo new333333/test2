@@ -154,56 +154,35 @@ line-height: 200%; text-decoration:
   		</span>
 		</xsl:if>
 		<br/>
-		<xsl:call-template name="getString">
+		<b><xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'fromLabel'"/>
-		</xsl:call-template>
+		</xsl:call-template></b>
 		:&nbsp;<xsl:value-of select="@notifyBy"/><br/>
-		<xsl:call-template name="getString">
+		<b><xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'dateLabel'"/>
-		</xsl:call-template>
+		</xsl:call-template></b>
 		:&nbsp;<xsl:value-of select="@notifyDate"/><br/>
 		<xsl:for-each select="attribute">
-		<xsl:value-of select="@caption"/>&nbsp;
+		<b><xsl:value-of select="@caption"/></b>&nbsp;
 		<xsl:choose>
-		<xsl:when test="@type = 'selectbox'">
-			<xsl:for-each select="value">
-				&nbsp;&nbsp;&nbsp;<xsl:value-of select="."/><br/>
-			</xsl:for-each>
-		</xsl:when>
 		<xsl:when test="@type = 'description' or @type = 'htmlEditorTextarea'">
+		<br/>
 			<xsl:if test="@format != 2">
 				<xsl:value-of select="." disable-output-escaping="yes"/>
 			</xsl:if>
 			<xsl:if test="@format = 2">
 				<xsl:value-of select="."/>
 			</xsl:if>
-		<br/>
 		</xsl:when>
-		<xsl:when test="@type = 'attachFiles'">
-			<ul>
-			<xsl:for-each select="file">
-			<li>&nbsp;&nbsp;&nbsp;<xsl:choose>
-			<xsl:when test="@href != ''">
-				<a href="{@href}">
-				<xsl:value-of select="."/><br/>
-				</a></xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="."/><br/>
-				</xsl:otherwise>
-			</xsl:choose>
-			</li>
-			</xsl:for-each>
-			</ul>
-		</xsl:when>
-		<xsl:when test="@type = 'file'">
+		<xsl:when test="@type = 'attachFiles' or @type = 'file'">
 			<xsl:for-each select="file">
 			<xsl:choose>
 			<xsl:when test="@href != ''">
-				<a href="{@href}">
-				<xsl:value-of select="."/><br/>
+				<br/>&nbsp;&nbsp;&nbsp;<a href="{@href}">
+				<xsl:value-of select="."/>
 				</a></xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="."/><br/>
+				<br/>&nbsp;&nbsp;&nbsp;<xsl:value-of select="."/>
 				</xsl:otherwise>
 			</xsl:choose>
 			</xsl:for-each>
@@ -212,10 +191,11 @@ line-height: 200%; text-decoration:
 			<xsl:for-each select="graphic">
 			<xsl:choose>
 			<xsl:when test="@href != ''">
-				<img src="{@href}" />
-			</xsl:when>
+				<br/>&nbsp;&nbsp;&nbsp;<a href="{@href}">
+				<xsl:value-of select="."/>
+				</a></xsl:when>
 			<xsl:otherwise>
-				<xsl:value-of select="."/><br/>
+				<br/>&nbsp;&nbsp;&nbsp;<xsl:value-of select="."/>
 				</xsl:otherwise>
 			</xsl:choose>
 			</xsl:for-each>
@@ -237,10 +217,19 @@ line-height: 200%; text-decoration:
 			</xsl:for-each>
 			</ul>
 		</xsl:when>
+		<xsl:when test="value">
+			<xsl:for-each select="value">
+				<br/>&nbsp;&nbsp;&nbsp;<xsl:value-of select="."/>
+			</xsl:for-each>
+		</xsl:when>
+		<xsl:when test="@type = 'text'">
+				<xsl:value-of select="." disable-output-escaping="yes"/>
+		</xsl:when>
 		<xsl:otherwise>
-		<xsl:value-of select="."/><br/>
+		<xsl:value-of select="."/>
 		</xsl:otherwise>
-		</xsl:choose>
+		</xsl:choose>		
+		<br/>
 		</xsl:for-each>
 </div>
 <br/>
