@@ -93,7 +93,7 @@
 			
 			</c:forEach>
 			</div>
-			</table>
+			</td></tr></table>
 
    </div>
 
