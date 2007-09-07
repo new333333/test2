@@ -13,6 +13,10 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<div class="ss_portlet">
+<div class="ss_style ss_form" style="margin:6px;">
+<div>
+<div style="margin:6px; width:100%;">
 <form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"/>" 
 	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
 	onSubmit="return ss_onSubmit(this);">
@@ -27,4 +31,8 @@
 </td></tr></table>
 </form>
 <br>
+</div>
+</div>
+</div>
+</div>
 
