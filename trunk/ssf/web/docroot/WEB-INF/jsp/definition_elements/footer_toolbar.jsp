@@ -233,6 +233,6 @@ function ss_hideFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portleta
 	ss_hideDiv(divId);
 }
 </script>
-<ssf:ifnotadapter><div align="right"><a target="_blank" 
+<ssf:ifnotadapter><div align="right" style="padding-top:20px;"><a target="_blank" 
   href="http://www.icecore.com"><img border="0" <ssf:alt tag="alt.poweredByIcecore" text="Powered by ICEcore"/>
   src="<html:imagesPath/>pics/powered_by_icecore.png"/></a></div></ssf:ifnotadapter>
