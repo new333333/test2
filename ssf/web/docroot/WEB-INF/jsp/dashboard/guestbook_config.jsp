@@ -74,5 +74,5 @@ ${ssDashboard.beans[ssComponentId].ssBinder.title}
   singleSelectName="ss_folder_id"
 />
 </div>
-
+</td></tr></table>
 <br/>
