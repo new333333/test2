@@ -445,7 +445,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 	private String createRssItem(Entry entry) {
 		String ret = "<item>\n";
-		ret += "<title>" + entry.getTitle() + "</title>\n";
+		String title = "<![CDATA[ " + entry.getTitle() + "]]>";
+		ret += "<title>" + title + "</title>\n";
 		ret += "<link>"
 				+ WebUrlUtil.getEntryViewURL((FolderEntry) entry).replaceAll(
 						"&", "&amp;") + "</link>\n";
@@ -454,7 +455,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				.getDescription().getText();
 		description = WebHelper.markupStringReplacement(null, null, null, null,
 				entry, description, WebKeys.MARKUP_FILE);
-		description = description.replaceAll("&nbsp;", " ");
+		description = "<![CDATA[ " + description + "]]>";
 		ret += "<description>" + description + "</description>\n";
 
 		ret += "<author>" + entry.getCreation().getPrincipal().getName()
