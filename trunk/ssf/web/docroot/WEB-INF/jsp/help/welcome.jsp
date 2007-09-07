@@ -10,14 +10,14 @@
  *
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript" src="<html:rootPath/>js/common/common.js"></script>
 <div class="ss_portlet_style ss_portlet">
 <div class="ss_style" style="padding:4px;" align="center">
 <img src="<html:brandedImagesPath/>pics/getting_started.gif">
 <p>
   <a href="javascript:;" 
-       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 100, 'center', 'middle');">
+       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 230, 'center', 'middle');">
      <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
    </a>
 </p>
