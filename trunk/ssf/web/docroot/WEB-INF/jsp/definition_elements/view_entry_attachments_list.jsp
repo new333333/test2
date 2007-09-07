@@ -12,6 +12,8 @@
 %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <div id="${ss_viewEntryAttachmentDivId}">
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);
@@ -64,7 +66,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						fileAttachment="${selection}"/>" 
 						onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
 						    '${ssDefinitionEntry.id}', 
-						    '${ss_namespace_attach}', 
+						    '${ss_attachments_namespace}', 
 						    '<%= operatingSystem %>', 
 							'${selection.id}');
 							return false;"
@@ -112,7 +114,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						fileAttachment="${selection}"/>" 
 						onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', 
 						    '${ssDefinitionEntry.id}', 
-						    '${ss_namespace_attach}', 
+						    '${ss_attachments_namespace}', 
 						    '<%= operatingSystem %>', 
 							'${selection.id}');
 							return false;"
@@ -228,7 +230,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					
 							<a href="javascript: ;" 
-								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_namespace_attach}', '<%= operatingSystem %>', 
+								onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}', '<%= operatingSystem %>', 
 									'${selection.id}');
 									return false;">
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
