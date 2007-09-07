@@ -21,8 +21,8 @@
 <ssHelpSpot helpId="portlets/buddy_list_portlet" offsetX="0" offsetY="-10" 
 			    title="<ssf:nlt tag="helpSpot.buddyListPortlet"/>"></ssHelpSpot>
 <table class="ss_style" width="100%"><tr><td>
-<div class="ss_decor-border5">
-  <div class="ss_decor-border6">
+<div>
+  <div>
     <div class="ss_content_window">
 <%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view_init.jsp" %>
 <%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view.jsp" %>
