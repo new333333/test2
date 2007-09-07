@@ -569,6 +569,7 @@ public class ViewEntryController extends  SAbstractController {
 		adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENTRY_SUBSCRIBE);
 		adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		adapterSubscriptionUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
 		
 		qualifiers = new HashMap();		
 		qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
