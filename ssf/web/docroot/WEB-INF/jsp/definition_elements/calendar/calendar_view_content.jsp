@@ -56,7 +56,7 @@
     <tbody>
       <tr>
         <td class="ss_cal_dayGridHourTicksColumn" style="padding-right: 0px;"><div class="ss_cal_gridHeader"></td>
-        <td><div id="ss_cal_dayGridHeader${prefix}" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
+        <td><div width="100%" id="ss_cal_dayGridHeader${prefix}" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
       </tr>
       <tr>
         <td class="ss_cal_dayGridHourTicksColumn">All day</td>
