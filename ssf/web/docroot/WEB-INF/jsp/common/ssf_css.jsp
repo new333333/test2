@@ -4048,6 +4048,9 @@ a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img,
 
 a.ss_searchButton:hover img {
     background-position:  left -17px; 
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
@@ -4059,10 +4062,16 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
 	color: #333333;
 	text-decoration:underline;
 	margin:0px 0px 0px 0px;
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
 	}
 a.ss_parentPointer:hover {
 	color: #0000ff;
 	text-decoration:underline;
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
 }
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: purple;
@@ -4319,7 +4328,7 @@ p.ss_legend {
 /* skip link */
 
 .ss_skiplink {
-	display:none;
+	display:none !important;
 }
 
 /* skip link - end */
