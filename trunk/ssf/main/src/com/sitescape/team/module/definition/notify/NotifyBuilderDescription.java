@@ -18,6 +18,8 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.util.InvokeUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
 
 /**
@@ -45,6 +47,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
 	    	if (obj instanceof Description) {
 	    		Description desc = (Description)obj;
 	    		value = desc.getText();
+	    		value = WebHelper.markupStringReplacement(null, null, null, null, entity, value, WebKeys.MARKUP_VIEW);
 	    		parent.addAttribute("format",String.valueOf(desc.getFormat()));
 	    	} else if (obj != null) {
 	    		value = obj.toString();
