@@ -15,6 +15,7 @@
 
 <div class="ss_style ss_portlet">
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+<div class="ss_clear"></div>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" 
