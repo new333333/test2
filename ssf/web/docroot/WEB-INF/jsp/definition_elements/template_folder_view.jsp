@@ -63,6 +63,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 <% // Entry toolbar %>
 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </ssf:toolbar>
+<div class="ss_clear"></div>
 </div>
 
 <div align="left" class="ssPageNavi">

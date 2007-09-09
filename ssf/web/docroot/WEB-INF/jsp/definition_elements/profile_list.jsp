@@ -43,6 +43,7 @@
 		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 	</c:if>
 </ssf:toolbar>
+<div class="ss_clear"></div>
 </div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 

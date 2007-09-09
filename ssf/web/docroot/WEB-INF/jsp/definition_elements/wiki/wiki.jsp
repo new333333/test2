@@ -71,6 +71,7 @@ function ss_confirmSetWikiHomepage() {
 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </c:if>
 </ssf:toolbar>
+<div class="ss_clear"></div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_wiki_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>

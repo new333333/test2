@@ -32,6 +32,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </c:if>
 </ssf:toolbar>
+<div class="ss_clear"></div>
 </div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
 <div class="ss_folder" id="ss_guestbook_folder_div">
