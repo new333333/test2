@@ -16,19 +16,6 @@
 
 <div class="ss_style ss_portlet_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
-<%
-	String displayStyle = ssUser.getDisplayStyle();
-	if (displayStyle == null || displayStyle.equals("")) {
-		displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-	}
-	if (!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) && 
-		!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) &&
-		!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
-%>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-<%
-	}
-%>
 <table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar4_pane">
 <tr><td valign="top">
   <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 

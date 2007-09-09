@@ -96,7 +96,10 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
         </c:otherwise>
 	 </c:choose>
 
-      <div id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:hidden;display:none;white-space:nowrap;">
+      <div id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+        class="${ss_toolbar_style}_submenu"
+        style="background:${ss_toolbar4_background_color};position:relative; top:0px;left:0px;
+          visibility:hidden;display:none;white-space:nowrap;">
       
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
@@ -341,5 +344,4 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 	  </c:choose>
     </c:if>
 </c:forEach>
-
 </ssf:skipLink>

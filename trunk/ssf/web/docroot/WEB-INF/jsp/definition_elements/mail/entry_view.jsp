@@ -12,7 +12,7 @@
 %>
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<div>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" 
