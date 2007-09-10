@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,6 +82,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	int maxDays = 31;
 
 	int maxInactiveDays = 7;
+	SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+
 
 	public RssModuleImpl() {
 
@@ -462,7 +465,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				+ "</author>\n";
 
 		Date eDate = entry.getModification().getDate();
-		ret += "<pubDate>" + eDate.toString() + "</pubDate>\n";
+		
+		ret += "<pubDate>" + fmt.format(eDate) + "</pubDate>\n";
 
 		ret += "<age>" + new Long(eDate.getTime()).toString() + "</age>\n";
 		ret += "<guid>" + entry.getId().toString() + "</guid>\n";
@@ -478,7 +482,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<title>" + title + "</title>\n";
 		ret += "<link/>";
 		ret += "<description>" + title + "</description>\n";
-		ret += "<pubDate>" + new Date().toString() + "</pubDate>\n";
+		ret += "<pubDate>" + fmt.format(new Date()) + "</pubDate>\n";
 		ret += "<ttl>60</ttl>\n";
 		ret += "<generator feedVersion=\"1.0\">IceCore</generator>\n";
 		return ret;
@@ -504,7 +508,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		channel.addElement("title").addText(title);
 		channel.addElement("link").addText("");
 		channel.addElement("description").addText(title);
-		channel.addElement("pubDate").addText(new Date().toString());
+		channel.addElement("pubDate").addText(fmt.format(new Date()));
 		channel.addElement("ttl").addText("60");
 		channel.addElement("generator").addAttribute("feedVersion", "1.0")
 				.addText("IceCore");
