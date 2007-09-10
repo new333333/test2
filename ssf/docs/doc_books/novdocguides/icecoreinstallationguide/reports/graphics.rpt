@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/6/2007 2:15:17 PM'>
+   <String `9/10/2007 10:05:08 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2310,6 +2310,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `ldap_ecryption_dropdownlist_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `ldap_export-settings_a.png'>
    <Char Tab> 
    <String `1'>
@@ -2447,6 +2455,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `clickicecoreadminadd_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `features-markup-page-name-a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2968,7 +2982,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
+   <String `Width: 63%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3743,6 +3757,45 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Create database install question\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `ldap_ecryption_dropdownlist_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1338524'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `ldap_ecryption_dropdownlist_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 62%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Encryption Algorithm drop-down list\q'>
   > # end of ParaLine
  > # end of Para
  <Para 

@@ -96,9 +96,11 @@
 
  <target id="bbih9h3" pid="b9vchnd" name="Step" level="6" number="4a"> <text>For the search filter use uid=@screen_name@ or cn=@screen_name@, depending on your site conventions.</text> </target>
 
- <target id="bbih9ir" pid="b9vchnd" name="Step" level="6" number="4b"> <text>Under If the user... add: password=givenName or password=sn.</text> </target>
+ <target id="bbo53bl" pid="b9vchnd" name="Step" level="6" number="4b"> <text>Liferay checks passwords against LDAP by either doing a comparison between the user typed password and the password stored in the LDAP server or by binding to the LDAP server using the user typed password. </text> </target>
 
- <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4c"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
+ <target id="bbih9ir" pid="b9vchnd" name="Step" level="6" number="4c"> <text>Under If the user... add: password=givenName or password=sn. </text> </target>
+
+ <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4d"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
 
  <target id="bbih8ol" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
 
@@ -204,9 +206,9 @@
 
  <target id="bapsept" pid="bapqrpq" name="Sect2" level="2" number="2.7.1"> <text>Create an Administration Team Workspace</text> </target>
 
- <target id="bapsonc" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From your Home Page, click Team Workspace.</text> </target>
+ <target id="bapsonc" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From your Home Page, click Team Workspaces.</text> </target>
 
- <target id="bapsond" pid="bapqrpq" name="Step" level="4" number="1"> <text>From your Home Page, click Team Workspace.</text> </target>
+ <target id="bapsond" pid="bapqrpq" name="Step" level="4" number="1"> <text>From your Home Page, click Team Workspaces.</text> </target>
 
  <target id="bapssn2" pid="bapqrpq" name="Step" level="4" number="2"> <text>Click Add a Team Workspace.</text> </target>
 
@@ -238,9 +240,9 @@
 
  <target id="bbils8b" pid="bapqrpq" name="BridgeHead" level="3"> <text>Configuring a Workspace to be a Root Team Workspace:</text> </target>
 
- <target id="bbilsp8" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Access Control menu item.</text> </target>
+ <target id="bbilsp8" pid="bapqrpq" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Configure menu item.</text> </target>
 
- <target id="bbilsp9" pid="bapqrpq" name="Step" level="4" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Access Control menu item.</text> </target>
+ <target id="bbilsp9" pid="bapqrpq" name="Step" level="4" number="1"> <text>From the ICEcore Administration Team workspace, select the Manage &#62; Configure menu item.</text> </target>
 
  <target id="bbin09g" pid="bapqrpq" name="Step" level="4" number="2"> <text>Select the Team workspace root option and click Apply.</text> </target>
 
@@ -264,9 +266,9 @@
 
  <target id="bbn4of7" pid="bbn4ml9" name="BridgeHead" level="2"> <text>To Create a Mirrored Folder:</text> </target>
 
- <target id="bbn4oii" pid="bbn4ml9" name="Procedure" level="2" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver.  (You may want to use one of the disabled samples as a template.)</text> </target>
+ <target id="bbn4oii" pid="bbn4ml9" name="Procedure" level="2" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver. (You may want to use one of the disabled samples as a template.)</text> </target>
 
- <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver.  (You may want to use one of the disabled samples as a template.)</text> </target>
+ <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver. (You may want to use one of the disabled samples as a template.)</text> </target>
 
  <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into ICEcore as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</text> </target>
 

@@ -24,7 +24,7 @@
 
  <target id="bbijs99" pid="b9vchn6" name="Step" level="3" number="6"> <text>If you want to run the indexing service in ICEcore on a different machine from ICEcore, you have to Install the Lucene Index Server on the other machine.</text> </target>
 
- <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="7"> <text>Run the installer (on Linux, do a chmod +x -(liferay|jboss).linux to make the installer executable).</text> </target>
+ <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="7"> <text>Run the installer (on Linux, do a chmod +x installer-(liferay|jboss).linux to make the installer executable).</text> </target>
 
  <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="8"> <text>Start and Stop ICEcore.</text> </target>
 
@@ -38,29 +38,31 @@
 
  <target id="bbn6o2j" pid="b9vchn7" name="BridgeHead" level="2"> <text>Non-Local Database Setup</text> </target>
 
- <target id="bbn6rez" pid="b9vchn7" name="BridgeHead" level="2"> <text>Port 80/443 configuration on Linux</text> </target>
-
  <target id="b9vchn8" pid="b9vchn8" name="Sect1" level="1" number="1.4"> <text>File System Planning</text> </target>
 
- <target id="bbn8hra" pid="bbn8hra" name="Sect1" level="1" number="1.5"> <text>Integrating with iChain</text> </target>
+ <target id="bbn8hra" pid="bbn8hra" name="Sect1" level="1" number="1.5"> <text>Network Planning</text> </target>
 
- <target id="bbn8q05" pid="bbn8hra" name="BridgeHead" level="2"> <text>To set up an iChain proxy, the following steps must be taken:</text> </target>
+ <target id="bbpnq0t" pid="bbn8hra" name="Sect2" level="2" number="1.5.1"> <text>Port 80/443 configuration on Linux</text> </target>
 
- <target id="bbn8j9e" pid="bbn8hra" name="Procedure" level="2" number="1"> <text>Assure that the iChain proxy's port number matches the ICEcore/Liferay port number. For example, if you have configured ICEcore to run on port 8080, the iChain proxy must also use port 8080. If you change ports through the proxy, some ICEcore features do not work properly.</text> </target>
+ <target id="bbpnnvh" pid="bbn8hra" name="Sect2" level="2" number="1.5.2"> <text>Integrating with iChain</text> </target>
 
- <target id="bbn8j9f" pid="bbn8hra" name="Step" level="3" number="1"> <text>Assure that the iChain proxy's port number matches the ICEcore/Liferay port number. For example, if you have configured ICEcore to run on port 8080, the iChain proxy must also use port 8080. If you change ports through the proxy, some ICEcore features do not work properly.</text> </target>
+ <target id="bbn8q05" pid="bbn8hra" name="BridgeHead" level="3"> <text>To set up an iChain proxy, the following steps must be taken:</text> </target>
 
- <target id="bbn8jfu" pid="bbn8hra" name="Step" level="3" number="2"> <text>Edit the SSO section in the installer.xml file and set the SSO enable="true", set the Logoff URL to the log-off URL provided by the iChain proxy server, and set the IP address of the iChain proxy server.</text> </target>
+ <target id="bbn8j9e" pid="bbn8hra" name="Procedure" level="3" number="1"> <text>Assure that the iChain proxy's port number matches the ICEcore/Liferay port number. For example, if you have configured ICEcore to run on port 8080, the iChain proxy must also use port 8080. If you change ports through the proxy, some ICEcore features do not work properly.</text> </target>
 
- <target id="bbn8jfw" pid="bbn8hra" name="Step" level="3" number="3"> <text>Install the software or, if you have already installed ICEcore, stop the running server and use the installer's "Apply Settings only" option.</text> </target>
+ <target id="bbn8j9f" pid="bbn8hra" name="Step" level="4" number="1"> <text>Assure that the iChain proxy's port number matches the ICEcore/Liferay port number. For example, if you have configured ICEcore to run on port 8080, the iChain proxy must also use port 8080. If you change ports through the proxy, some ICEcore features do not work properly.</text> </target>
 
- <target id="bbn8jfy" pid="bbn8hra" name="Step" level="3" number="4"> <text>After enabling the iChain SSO, you need to log into Liferay using a direct login URL: http://localhost:8080/c/portal/login and log in as admin. Since the SSO configuration removes the "Sign In" link, you must type the URL manually.</text> </target>
+ <target id="bbn8jfu" pid="bbn8hra" name="Step" level="4" number="2"> <text>Edit the SSO section in the installer.xml file and set the SSO enable="true", set the Logoff URL to the log-off URL provided by the iChain proxy server, and set the IP address of the iChain proxy server.</text> </target>
 
- <target id="bbn8jg1" pid="bbn8hra" name="Step" level="3" number="5"> <text>If you have not already done this, use Liferay's Admin portlet to enable LDAP-based authentication. This setup is necessary since Liferay has to copy user data from the LDAP into the portal database upon user login.</text> </target>
+ <target id="bbn8jfw" pid="bbn8hra" name="Step" level="4" number="3"> <text>Install the software or, if you have already installed ICEcore, stop the running server and use the installer's "Apply Settings only" option.</text> </target>
 
- <target id="bbn8jg5" pid="bbn8hra" name="Step" level="3" number="6"> <text>To prevent users from logging into the portal directly through the portal's login form, remove or rename the following file from ICEcore's liferay-portal-tomcat directory:</text> </target>
+ <target id="bbn8jfy" pid="bbn8hra" name="Step" level="4" number="4"> <text>After enabling the iChain SSO, you need to log into Liferay using a direct login URL: http://localhost:8080/c/portal/login and log in as admin. Since the SSO configuration removes the "Sign In" link, you must type the URL manually.</text> </target>
 
- <target id="bbn8nqy" pid="bbn8hra" name="Step" level="3" number="7"> <text>Liferay/ICEcore is now ready to be put behind the proxy. Consult your iChain documentation on how to do this.</text> </target>
+ <target id="bbn8jg1" pid="bbn8hra" name="Step" level="4" number="5"> <text>If you have not already done this, use Liferay's Admin portlet to enable LDAP-based authentication. This setup is necessary since Liferay has to copy user data from the LDAP into the portal database upon user login.</text> </target>
+
+ <target id="bbn8jg5" pid="bbn8hra" name="Step" level="4" number="6"> <text>To prevent users from logging into the portal directly through the portal's login form, remove or rename the following file from ICEcore's liferay-portal-tomcat directory:</text> </target>
+
+ <target id="bbn8nqy" pid="bbn8hra" name="Step" level="4" number="7"> <text>Liferay/ICEcore is now ready to be put behind the proxy. Consult your iChain documentation on how to do this.</text> </target>
 
  <target id="b9vchn9" pid="b9vchn9" name="Sect1" level="1" number="1.6"> <text>Editing the Installer (.xml) File</text> </target>
 
@@ -108,7 +110,7 @@
 
  <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.8"> <text>Starting and Stopping ICEcore</text> </target>
 
- <target id="bannxe9" pid="b9vchnb" name="BridgeHead" level="2"> <text>Starting ICEcore</text> </target>
+ <target id="bannxe9" pid="b9vchnb" name="BridgeHead" level="2"> <text>Starting ICEcore/Liferay</text> </target>
 
  <target id="bant502" pid="b9vchnb" name="BridgeHead" level="2"> <text>Setting up ICEcore to start on system startup</text> </target>
 
@@ -118,9 +120,17 @@
 
  <target id="bant6f3" pid="b9vchnb" name="Step" level="3" number="2"> <text>Use the Services Control Panel to configure the service to your needs.</text> </target>
 
- <target id="bant6o3" pid="b9vchnb" name="Procedure" level="2" number="1"> <text>cp  /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore  /etc/init.d</text> </target>
+ <target name="SubSteps" level="4"> <text>Select Control Panel &#62; Administration Tools &#62; Services.</text> </target>
 
- <target id="bant6vx" pid="b9vchnb" name="Step" level="3" number="1"> <text>cp  /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore  /etc/init.d</text> </target>
+ <target id="bbo72yz" pid="b9vchnb" name="Step" level="5" number="2a"> <text>Select Control Panel &#62; Administration Tools &#62; Services.</text> </target>
+
+ <target id="bbo73bh" pid="b9vchnb" name="Step" level="5" number="2b"> <text>Right-click on the ApacheTomcat icecore service and select Properties.</text> </target>
+
+ <target id="bbo73vc" pid="b9vchnb" name="Step" level="5" number="2c"> <text>Change the Startup Type to Automatic and click OK.</text> </target>
+
+ <target id="bant6o3" pid="b9vchnb" name="Procedure" level="2" number="1"> <text>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore /etc/init.d</text> </target>
+
+ <target id="bant6vx" pid="b9vchnb" name="Step" level="3" number="1"> <text>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore /etc/init.d</text> </target>
 
  <target id="bant6wo" pid="b9vchnb" name="Step" level="3" number="2"> <text>chkconfig --add icecore </text> </target>
 
@@ -129,8 +139,6 @@
  <target id="bannz0o" pid="b9vchnb" name="BridgeHead" level="2"> <text>Stopping ICEcore</text> </target>
 
  <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.9"> <text>Memory Guidelines</text> </target>
-
- <target id="bano10m" pid="b9vchnf" name="BridgeHead" level="2"> <text>Hibernate Cache</text> </target>
 
  <target id="bbn5klr" pid="bbn5klr" name="Sect1" level="1" number="1.10"> <text>Security Guidelines</text> </target>
 
@@ -142,17 +150,17 @@
 
  <target id="bbijx0b" pid="bbijvt7" name="Sect2" level="2" number="1.12.1"> <text>Install a Standalone Lucene Index Server for a New ICEcore Application</text> </target>
 
- <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page li):</text> </target>
+ <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 47):</text> </target>
 
- <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page li):</text> </target>
+ <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 47):</text> </target>
 
- <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server"</text> </target>
+ <target name="SubSteps" level="5"> <text>In the Lucene section, set luceneLocation="server"</text> </target>
 
- <target id="bbik1we" pid="bbijvt7" name="Step" level="6" number="1a"> <text>In the Lucene section set luceneLocation="server"</text> </target>
+ <target id="bbik1we" pid="bbijvt7" name="Step" level="6" number="1a"> <text>In the Lucene section, set luceneLocation="server"</text> </target>
 
  <target id="bbik1wm" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
 
- <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page xv).</text> </target>
+ <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
  <target id="bbiks4e" pid="bbijvt7" name="Step" level="4" number="3"> <text>Start the server at the end of the installation:</text> </target>
 
@@ -164,13 +172,21 @@
 
  <target id="bbiktxj" pid="bbijvt7" name="Step" level="6" number="3c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page xv).</text> </target>
+ <target id="bbo58ws" pid="bbijvt7" name="Step" level="4" number="4"> <text>On the ICEcore server, edit the Installer.xml file:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server" </text> </target>
+
+ <target id="bbo59kx" pid="bbijvt7" name="Step" level="6" number="4a"> <text>In the Lucene section set luceneLocation="server" </text> </target>
+
+ <target id="bbo59l9" pid="bbijvt7" name="Step" level="6" number="4b"> <text>Set lucene.index.hostname to the hostname of the machine on which you installed the Lucene Index Server (in steps 1-3).</text> </target>
+
+ <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="5"> <text>Run the normal installation of ICEcore (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
  <target id="bbijxwe" pid="bbijvt7" name="Sect2" level="2" number="1.12.2"> <text>Install a Standalone Lucene Index Server for an Existing ICEcore Application</text> </target>
 
- <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page li):</text> </target>
+ <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 47):</text> </target>
 
- <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>Edit the Installer.xml file (see "The sample-installer.xml File" on page li):</text> </target>
+ <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 47):</text> </target>
 
  <target name="SubSteps" level="5"> <text>In the Lucene section set luceneLocation="server"</text> </target>
 
@@ -178,17 +194,17 @@
 
  <target id="bbikxch" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
 
- <target id="bbikvyx" pid="bbijvt7" name="Step" level="4" number="2"> <text>Shutdown ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page xvii).</text> </target>
+ <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page 8).</text> </target>
 
- <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="3"> <text>Run the installer on the standalone machine and choose the option for: ICEcore Enterprise Lucene Server (see Section 1.7, "Running the Installer," on page xv).</text> </target>
+ <target id="bbo5ce8" pid="bbijvt7" name="Step" level="4" number="3"> <text>Shutdown ICEcore on the ICEcore server (see Section 1.8, "Starting and Stopping ICEcore," on page 10).</text> </target>
 
- <target id="bbikwsp" pid="bbijvt7" name="Step" level="4" number="4"> <text>Run the installer on the standalone machine and choose the option for: Apply settings only (see Section 1.7, "Running the Installer," on page xv).</text> </target>
+ <target id="bbo5co3" pid="bbijvt7" name="Step" level="4" number="4"> <text>On the standalone machine, check the lucene-server.properties file and find the setting for index.root.dir (you can edit this setting to change the location of the root directory).</text> </target>
 
- <target id="bbn3gt6" pid="bbijvt7" name="Step" level="4" number="5"> <text>Edit the lucene-server.properties file in the directory into which you just installed the lucene server.</text> </target>
+ <target id="bbo5ixl" pid="bbijvt7" name="Step" level="4" number="5"> <text>Create a "liferay.com" subdirectory in the  &#60;index.root.dir&#62;  directory.</text> </target>
 
- <target id="bbn3gwp" pid="bbijvt7" name="Step" level="4" number="6"> <text>Create a liferay.com directory in the index.root.dir in the filesystem.</text> </target>
+ <target id="bbo5jtu" pid="bbijvt7" name="Step" level="4" number="6"> <text>On the ICEcore server, look at the ssf.properties file and find the data.root.dir setting. </text> </target>
 
- <target id="bbn3gwt" pid="bbijvt7" name="Step" level="4" number="7"> <text>Move all the files from the RootDirectory (found in your installer.xml file on the server) to the liferay.com directory you just created.</text> </target>
+ <target id="bbo5kd5" pid="bbijvt7" name="Step" level="4" number="7"> <text>Copy all the files from the &#60;data.root.dir&#62;/lucene/liferay.com directory on the ICEcore server to the &#60;index.root.dir&#62;/liferay.com directory you just created on the standalone machine.</text> </target>
 
  <target id="bbn3gww" pid="bbijvt7" name="Step" level="4" number="8"> <text>For Unix systems, make sure permissions are set so that the ICEcore user has full access to these files and the liferay.com directory.</text> </target>
 
@@ -202,6 +218,38 @@
 
  <target id="bbikvz2" pid="bbijvt7" name="Step" level="6" number="9c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="10"> <text>Restart ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page xvii).</text> </target>
+ <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="10"> <text>Restart ICEcore (see Section 1.8, "Starting and Stopping ICEcore," on page 10).</text> </target>
+
+ <target id="bbnqb4c" pid="bbnqb4c" name="Sect1" level="1" number="1.13"> <text>Load-Balancing and Clustering ICEcore</text> </target>
+
+ <target id="bbnqei6" pid="bbnqb4c" name="Procedure" level="2" number="1"> <text>Set up a shared file storage that is accessible to all nodes.</text> </target>
+
+ <target id="bbnqei7" pid="bbnqb4c" name="Step" level="3" number="1"> <text>Set up a shared file storage that is accessible to all nodes.</text> </target>
+
+ <target id="bbnqewc" pid="bbnqb4c" name="Step" level="3" number="2"> <text>Install and configure the Lucene Index Server.</text> </target>
+
+ <target id="bbnqewf" pid="bbnqb4c" name="Step" level="3" number="3"> <text>Make sure that the time is the same on all nodes in the cluster.</text> </target>
+
+ <target id="bbnqewh" pid="bbnqb4c" name="Step" level="3" number="4"> <text>Install the ICEcore/portal bundle kit on each cluster node.</text> </target>
+
+ <target id="bbo3q8t" pid="bbnqb4c" name="Step" level="3" number="5"> <text>Set the portal up to work in a clustered environment.</text> </target>
+
+ <target id="bbo3q8v" pid="bbnqb4c" name="Step" level="3" number="6"> <text>Configure the Load Balancer.</text> </target>
+
+ <target name="SubSteps" level="4"> <text>Edit Tomcat's server.xml.</text> </target>
+
+ <target id="bbo3xrk" pid="bbnqb4c" name="Step" level="5" number="6a"> <text>Edit Tomcat's server.xml.</text> </target>
+
+ <target id="bbo4598" pid="bbnqb4c" name="Step" level="5" number="6b"> <text>Edit Apache's httpd.conf file (in the &#60;apache installation&#62;/conf directory).</text> </target>
+
+ <target id="bbo3q8x" pid="bbnqb4c" name="Step" level="3" number="7"> <text>Configure Hibernate to use the cluster-safe second-level cache. For this, you need to modify the cache settings in /ssf/WEB-INF/classes/config/ehcache-hibernate.xml for each node in the cluster.</text> </target>
+
+ <target name="SubSteps" level="4"> <text>First, uncomment the following section to enable distributed cache:</text> </target>
+
+ <target id="bbo4a0o" pid="bbnqb4c" name="Step" level="5" number="7a"> <text>First, uncomment the following section to enable distributed cache:</text> </target>
+
+ <target id="bbo4a4i" pid="bbnqb4c" name="Step" level="5" number="7b"> <text>Also, uncomment the following section in each cache definition, including the default cache:</text> </target>
+
+ <target id="bbo3q8y" pid="bbnqb4c" name="Step" level="3" number="8"> <text>Start the Lucene Index Server first, and then start the application cluster nodes.</text> </target>
 
 </targets>
