@@ -50,5 +50,6 @@ function ${treeName}_showId(forum, obj) {
 	singleSelectName="ss_folder_id" />
 
 </div>
+</td></tr></table>
 
 <br/>

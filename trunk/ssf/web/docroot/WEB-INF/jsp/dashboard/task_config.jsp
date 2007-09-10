@@ -113,7 +113,7 @@
 				  multiSelectPrefix="ss_folder_id_"
 				/>
 			</div>
-
+</td></tr></table>
 <script type="text/javascript">
 
 	djConfig.searchIds.push("ss_authors_options_${renderResponse.namespace}");

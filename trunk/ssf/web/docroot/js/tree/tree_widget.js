@@ -368,3 +368,36 @@ function ss_clearMultiSelect(id) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
 }
+
+function ss_saveTreeId(obj) {
+	var formObj = null;
+	if (obj.type == 'radio') {
+		//Strip off the leading "ss_tree_radio"
+		var prefix = obj.id.substr(13)
+		prefix = ss_replaceSubStr(prefix, obj.name + obj.value, "");
+		for (var i = 0; i < parent.document.forms.length; i++) {
+			if (parent.document.forms[i].name && parent.document.forms[i].name.indexOf(prefix) >= 0) {
+				formObj = parent.document.forms[i];
+				break;
+			}
+		}
+		if (formObj != null && typeof formObj.idChoices !== "undefined") {
+			formObj.idChoices.value = obj.name + "_" + obj.value;
+		}
+	} else {
+		//Strip off the leading "ss_tree_checkbox"
+		var prefix = obj.id.substr(16)
+		prefix = ss_replaceSubStr(prefix, obj.name, "");
+		for (var i = 0; i < parent.document.forms.length; i++) {
+			if (parent.document.forms[i].name && parent.document.forms[i].name.indexOf(prefix) >= 0) {
+				formObj = parent.document.forms[i];
+				break;
+			}
+		}
+		if (formObj != null && typeof formObj.idChoices !== "undefined") {
+			if (typeof formObj.idChoices.value === "undefined")  formObj.idChoices.value = "";
+			formObj.idChoices.value = ss_replaceSubStrAll(formObj.idChoices.value, " " + obj.name, "");
+			if (obj.checked) formObj.idChoices.value += " " + obj.name;
+		}
+	}
+}
