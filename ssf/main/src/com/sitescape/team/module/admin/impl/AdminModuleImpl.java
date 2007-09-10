@@ -1252,7 +1252,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		   filter.add("operation", operation);
 	   }
 	   OrderBy order = new OrderBy();
-	   order.addColumn("entityId");
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
