@@ -12,7 +12,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="ss_dashboard_config_form_name" value="<%= renderResponse.getNamespace() + "searchfm" %>"/>
+<c:set var="ss_dashboard_config_form_name" value="${ssDashboard.ssComponentId}${renderResponse.namespace}searchfm"/>
 
 <form method="post" class="ss_style ss_form"  name="${ss_dashboard_config_form_name}" id="${ss_dashboard_config_form_name}"
 	action="<portlet:actionURL windowState="maximized"/>"  onSubmit="return ss_onSubmit(this);">

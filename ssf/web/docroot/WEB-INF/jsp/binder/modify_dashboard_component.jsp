@@ -38,7 +38,7 @@
 </div>
 
 <br/>
-<c:set var="ss_dashboard_config_form_name" value="${renderResponse.namespace}form1" scope="request"/>
+<c:set var="ss_dashboard_config_form_name" value="${ssDashboard.ssComponentId}${renderResponse.namespace}form1" scope="request"/>
 <form method="post" name="${ss_dashboard_config_form_name}" 
   id="${ss_dashboard_config_form_name}" 
   action="<portlet:actionURL windowState="maximized"><portlet:param 

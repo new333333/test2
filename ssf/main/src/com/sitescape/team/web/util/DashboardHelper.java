@@ -1083,7 +1083,16 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 							//single select
 							if ((id != null) && !folderIds.contains(id)) folderIds.add(id); 
 						}
-
+					}
+					if (formData.containsKey("idChoices")) {
+						//If this is accessibile mode, the list isin idChoices
+						String idChoices = PortletRequestUtils.getStringParameter(request, "idChoices", "");
+						String[] idChoices2 = idChoices.split(" ");
+						for (int i = 0; i < idChoices2.length; i++) {
+							if (idChoices2[i].matches("^ss_folder_id_[0-9]+$")) {
+								folderIds.add(idChoices2[i].replaceFirst("^ss_folder_id_", ""));
+							}
+						}
 					}
 					//	Get the forums to be deleted
 					itFormData = formData.entrySet().iterator();
@@ -1148,7 +1157,15 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						}
 					} else {
 						String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
-						if (id != null) folderIds.add(id); 
+						String idChoices = PortletRequestUtils.getStringParameter(request, "idChoices", "");
+						if (!idChoices.equals("")) {
+							//If this is accessibile mode, the id is in idChoices
+							if (idChoices.matches("^ss_folder_id_[0-9]+$")) {
+								folderIds.add(idChoices.replaceFirst("^ss_folder_id_", ""));
+							}
+						} else if (id != null) {
+							folderIds.add(id); 
+						}
 					}
 					
 					SearchFilter searchFilter = new SearchFilter(true);

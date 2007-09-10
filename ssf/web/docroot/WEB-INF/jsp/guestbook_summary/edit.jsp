@@ -12,13 +12,14 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:set var="ss_dashboard_config_form_name" value="${ssDashboard.ssComponentId}${renderResponse.namespace}fm"/>
 
 <div class="ss_portlet">
 <div class="ss_style ss_form" style="margin:6px;">
 <div>
 <div style="margin:6px; width:100%;">
 <form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"/>" 
-	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
+	method="post" name="${ss_dashboard_config_form_name}"
 	onSubmit="return ss_onSubmit(this);">
 <input type="hidden" name="componentName" value="guestbook"/>
 <table class="ss_style" width="100%"><tr><td>

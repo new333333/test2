@@ -271,9 +271,14 @@ public class TreeTag extends TagSupport {
 							sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + id + "_lastChoice\"" + name + value + "/>\n");
 						}
 					}
-					
+					if (this.multiSelect != null && !mPrefix.equals("")) {
+						sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + "_idChoices\" name=\"idChoices\" />\n");
+					}
 					if (this.singleSelect != null && !this.singleSelect.equals("")) {
 						sb.append("<input type=\"hidden\" id=\"" + treeName + "_lastChoice\" name=\"" + this.singleSelectName + "\" value=\"" + this.singleSelect + "\" />\n");
+					}
+					if (this.singleSelectName != null && !this.singleSelectName.equals("")) {
+						sb.append("<input type=\"hidden\" id=\"" + treeName + this.singleSelectName + "_idChoices\" name=\"idChoices\" />\n");
 					}
 					
 				}
@@ -441,7 +446,10 @@ public class TreeTag extends TagSupport {
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 						jspOut.print(checked);
 						if (this.multiSelect.contains(s_binderId)) {
-							jspOut.print(" onclick=\"ss_clearMultiSelect('" + treeName + mPrefix + s_id + "')\"");
+							jspOut.print(" onclick=\"ss_saveTreeId(this); ss_clearMultiSelect('" + treeName + mPrefix + s_id + "')\"");
+						} else {
+							jspOut.print(" onclick=\"ss_saveTreeId(this);\"");
+							
 						}
 						jspOut.print("/>");
 					}
@@ -455,7 +463,10 @@ public class TreeTag extends TagSupport {
 						if (s_binderId.equals(this.singleSelect)) checked = "checked=\"checked\"";
 						jspOut.print("<input type=\"radio\" class=\"ss_text\"");
 						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
-						jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
+						jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked);
+						jspOut.print(" id=\"");
+						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" ");
+						jspOut.print(" onclick=\"ss_saveTreeId(this);return ss_clearSingleSelect('" + treeName +"');\"/>");
 					}
 					
 				}
