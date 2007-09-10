@@ -65,11 +65,11 @@ public class WebUrlUtil {
 	 * @param secure
 	 * @return
 	 */
-	public static String getAdapterRootURL(HttpServletRequest req, boolean secure) {
+	public static String getAdapterRootURL(HttpServletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getAdapterWebProtocol()).append("a/").toString();
 	}
 	
-	public static String getAdapterRootURL(PortletRequest req, boolean secure) {
+	public static String getAdapterRootURL(PortletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getAdapterWebProtocol()).append("a/").toString();
 	}
 	
@@ -93,11 +93,11 @@ public class WebUrlUtil {
 	 * @param secure
 	 * @return
 	 */
-	public static String getServletRootURL(HttpServletRequest req, boolean secure) {
+	public static String getServletRootURL(HttpServletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getServletWebProtocol()).append("s/").toString();
 	}
 
-	public static String getServletRootURL(PortletRequest req, boolean secure) {
+	public static String getServletRootURL(PortletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getServletWebProtocol()).append("s/").toString();
 	}
 
@@ -151,11 +151,11 @@ public class WebUrlUtil {
 	 * @param secure
 	 * @return
 	 */
-	public static String getRssRootURL(HttpServletRequest req, boolean secure) {
+	public static String getRssRootURL(HttpServletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getRssWebProtocol()).append("rss/").toString();
 	}
 	
-	public static String getRssRootURL(PortletRequest req, boolean secure) {
+	public static String getRssRootURL(PortletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getRssWebProtocol()).append("rss/").toString();
 	}
 	
@@ -171,11 +171,11 @@ public class WebUrlUtil {
 	 * @param secure
 	 * @return
 	 */
-	public static String getIcalRootURL(HttpServletRequest req, boolean secure) {
+	public static String getIcalRootURL(HttpServletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getIcalWebProtocol()).append("ical/").toString();
 	}
 	
-	public static String getIcalRootURL(PortletRequest req, boolean secure) {
+	public static String getIcalRootURL(PortletRequest req, Boolean secure) {
 		return getSSFContextRootURL(req, secure, getIcalWebProtocol()).append("ical/").toString();
 	}
 	
@@ -196,7 +196,7 @@ public class WebUrlUtil {
 		return entryUrl;
 	}
 	
-	private static StringBuffer getSSFContextRootURL(PortletRequest req, boolean secure, int webProtocol) {
+	private static StringBuffer getSSFContextRootURL(PortletRequest req, Boolean secure, int webProtocol) {
 		StringBuffer sb = getHostAndPort(req, secure, webProtocol, false);
 				
 		// Context path
@@ -210,7 +210,7 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
-	private static StringBuffer getSSFContextRootURL(HttpServletRequest req, boolean secure, int webProtocol) {
+	private static StringBuffer getSSFContextRootURL(HttpServletRequest req, Boolean secure, int webProtocol) {
 		StringBuffer sb = getHostAndPort(req, secure, webProtocol, false);
 				
 		// Context path
@@ -224,7 +224,7 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
-	private static StringBuffer getHostAndPort(HttpServletRequest req, boolean isSecure, int webProtocol, boolean portRequired) {
+	private static StringBuffer getHostAndPort(HttpServletRequest req, Boolean isSecure, int webProtocol, boolean portRequired) {
 		String host;
 		int port;
 		boolean secure;
@@ -233,7 +233,10 @@ public class WebUrlUtil {
 			if(req != null) {
 				host = req.getServerName();
 				port = req.getServerPort();
-				secure = isSecure; // don't use req.isSecure() !
+				if(isSecure != null)
+					secure = isSecure; // don't use req.isSecure() !
+				else
+					secure = req.isSecure();
 			}
 			else {
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
@@ -245,7 +248,10 @@ public class WebUrlUtil {
 			if(req != null) {
 				host = req.getServerName();
 				port = req.getServerPort();
-				secure = isSecure; // don't use req.isSecure() !
+				if(isSecure != null)
+					secure = isSecure; // don't use req.isSecure() !
+				else
+					secure = req.isSecure();
 			}
 			else {
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
@@ -267,7 +273,7 @@ public class WebUrlUtil {
 		return getHostAndPort(host, port, secure, portRequired);
 	}
 	
-	private static StringBuffer getHostAndPort(PortletRequest req, boolean isSecure, int webProtocol, boolean portRequired) {
+	private static StringBuffer getHostAndPort(PortletRequest req, Boolean isSecure, int webProtocol, boolean portRequired) {
 		String host;
 		int port;
 		boolean secure;
@@ -276,11 +282,15 @@ public class WebUrlUtil {
 			if(req != null) {
 				host = req.getServerName();
 				port = req.getServerPort();
-				secure = isSecure; // don't use req.isSecure() !
+				if(isSecure != null) // context override value supplied
+					secure = isSecure; // don't use req.isSecure() !
+				else
+					secure = req.isSecure(); // get the context value from the req object
 			}
 			else {
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
 				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
+				// context override value isSecure is relevant only when req is non-null
 				secure = false;
 			}
 		}
@@ -288,11 +298,15 @@ public class WebUrlUtil {
 			if(req != null) {
 				host = req.getServerName();
 				port = req.getServerPort();
-				secure = isSecure; // don't use req.isSecure() !
+				if(isSecure != null) // context override value supplied
+					secure = isSecure; // don't use req.isSecure() !
+				else
+					secure = req.isSecure(); // get the context value from the req object
 			}
 			else {
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
 				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
+				// context override value isSecure is relevant only when req is non-null
 				secure = true;
 			}			
 		}
