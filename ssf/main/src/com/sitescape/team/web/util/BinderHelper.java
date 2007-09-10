@@ -1435,12 +1435,14 @@ public class BinderHelper {
 		String subscribe = PortletRequestUtils.getStringParameter(request, "_subscribe", "");
 		String subscribeIncludeAttachments = PortletRequestUtils.getStringParameter(request, "_subscribe_include_attachments", "");
 		String subscribeElementPresent = PortletRequestUtils.getStringParameter(request, "_subscribe_element_present", "");
-		int style = Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION;
-		if (subscribeIncludeAttachments.equals("on")) style = Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION;
-		if (subscribe.equals("on")) {
+		//test attachments first for higher precedence
+		if ("on".equals(subscribeIncludeAttachments)) {
 			//The user has asked to subscribe to this entry
-			bs.getFolderModule().addSubscription(folderId, entryId, style);
-		} else if (!subscribeElementPresent.equals("")) {
+			bs.getFolderModule().addSubscription(folderId, entryId, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+		} else if ("on".equals(subscribe)) {
+			//The user has asked to subscribe to this entry
+			bs.getFolderModule().addSubscription(folderId, entryId, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+		} else if (Validator.isNotNull(subscribeElementPresent)) {
 			//The user turned off the subscription
 			bs.getFolderModule().deleteSubscription(folderId, entryId);
 		}
