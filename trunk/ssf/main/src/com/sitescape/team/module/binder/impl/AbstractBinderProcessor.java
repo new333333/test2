@@ -315,8 +315,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setLogVersion(Long.valueOf(1));
         binder.setOwner(user);
 
-        //update parent in a new session to reduce optimistic lock exceptions
-        //this will do a quick commit write to the database
+    	//force a lock so contention on the sortKey is reduced
         if (Boolean.TRUE.equals(inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK))) {
             getCoreDao().lock(parent);
         } 
