@@ -157,11 +157,11 @@ line-height: 200%; text-decoration:
 		<b><xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'fromLabel'"/>
 		</xsl:call-template></b>
-		:&nbsp;<xsl:value-of select="@notifyBy"/><br/>
+		&nbsp;<xsl:value-of select="@notifyBy"/><br/>
 		<b><xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'dateLabel'"/>
 		</xsl:call-template></b>
-		:&nbsp;<xsl:value-of select="@notifyDate"/><br/>
+		&nbsp;<xsl:value-of select="@notifyDate"/><br/>
 		<xsl:for-each select="attribute">
 		<b><xsl:value-of select="@caption"/></b>&nbsp;
 		<xsl:choose>
