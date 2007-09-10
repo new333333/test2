@@ -268,13 +268,20 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		//setup allUsers access
 	        		List members = new ArrayList();
 	        		members.add(group.getId());
-	        		
+	        		//all users visitors at top
 	        		addMembership(top, visitorsRole, top, members);
+	        		// all users participants at top
+	        		addMembership(top, participantsRole, top, members);
+	        		// all users participants at teamroot
 	        		addMembership(top, participantsRole, teamRoot, members);
+	        		// all users createWs  at teamroot
 	        		addMembership(top, teamWsRole, teamRoot, members);
 	        		//add members to participants
+	        		members.clear();
 	        		members.add(ObjectKeys.TEAM_MEMBER_ID);
+	        		// all team members have team member role at top
 	        		addMembership(top, teamMemberRole, top, members);
+	        		// all team members have team member role at teamroot
 	        		addMembership(top, teamMemberRole, teamRoot, members);
 	        		
 	        		members.clear();
