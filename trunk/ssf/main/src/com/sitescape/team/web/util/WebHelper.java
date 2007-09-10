@@ -446,7 +446,7 @@ public class WebHelper {
     		    	//Now, replace the url with special markup version
     	        		String newText = new String("{{attachmentFileId: fileId=" + fa.getId() 
     	        				+ specialAmp + "binderId=" + binderId + specialAmp + "entryId=" + entryId 
-    	        				+ specialAmp + "entityType=" + entityType + "}}\"");
+    	        				+ specialAmp + "entityType=" + entityType + "}}");
     	        		description.setText(m1.replaceFirst(newText.replace("$", "\\$")));
     	        		m1 = p1.matcher(description.getText());
 	    		}
