@@ -620,7 +620,7 @@ public class WebHelper {
 	    	}
 	    	
 	    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx}}
-	    	if (type.equals(WebKeys.MARKUP_VIEW)) {
+	    	if (type.equals(WebKeys.MARKUP_VIEW) && ((req != null && res != null) || (httpReq != null && httpRes != null))) {
 		    	Pattern p2 = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
 		    	Matcher m2 = p2.matcher(outputString);
 		    	loopDetector = 0;
@@ -702,7 +702,8 @@ public class WebHelper {
 	    	}
 
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
-			if (binderId != null && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FILE))) {
+			if (binderId != null && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FILE)) && 
+	    			((req != null && res != null) || (httpReq != null && httpRes != null))) {
 				String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
 		    	Pattern p3 = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 		    	Matcher m3 = p3.matcher(outputString);
