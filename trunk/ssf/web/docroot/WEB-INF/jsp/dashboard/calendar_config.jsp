@@ -84,5 +84,4 @@
 				  multiSelectPrefix="ss_folder_id_"
 				/>
 			</div>
-
-
+</td></tr></table>
