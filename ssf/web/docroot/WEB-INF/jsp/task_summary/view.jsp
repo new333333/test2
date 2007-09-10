@@ -40,4 +40,3 @@ var ss_reloadUrl = "<portlet:renderURL windowState="maximized"/>";
 </div>
 </div>
 </div>
-</table>
