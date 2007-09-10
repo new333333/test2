@@ -17,12 +17,13 @@
 <div style="padding:15px 0px 4px 0px;">
 <ssf:expandableArea title="${property_caption}">
 <div class="ss_entryContent ss_indent_medium">
+      <c:if test="${ssSubscription.style=='2' || ssSubscription.style=='3'}">
+      <input type="hidden" name="_subscribe_element_present" value="1"/> </c:if>
   <table>
   <tr>
     <td><input type="checkbox" name="_subscribe"
       <c:if test="${ssSubscription.style=='2' || ssSubscription.style=='3'}"> checked="checked"</c:if>
       />
-      <input type="hidden" name="_subscribe_element_present" value="1"/>
 	</td>
 	<td>
 	  <span class="ss_labelRight"><ssf:nlt tag="toolbar.menu.subscribeToEntry"/></span>
