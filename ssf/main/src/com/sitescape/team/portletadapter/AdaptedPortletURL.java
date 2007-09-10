@@ -31,7 +31,7 @@ public class AdaptedPortletURL {
 	private String portletName;
 	private boolean action;
 	private Map params;
-	private boolean secure;
+	private Boolean secure;
 	
 	private final String ACTION_FALSE = "0";
 	private final String ACTION_TRUE = "1";
@@ -47,7 +47,8 @@ public class AdaptedPortletURL {
 		this.sreq = req;
 		this.portletName = portletName;
 		this.action = action;
-		this.secure = req.isSecure();
+		if(req != null)
+			this.secure = req.isSecure();
 		this.params = new HashMap();
 	}
 	
@@ -62,7 +63,8 @@ public class AdaptedPortletURL {
 		this.preq = req;
 		this.portletName = portletName;
 		this.action = action;
-		this.secure = req.isSecure();
+		if(req != null)
+			this.secure = req.isSecure();
 		this.params = new HashMap();
 	}
 	
@@ -99,7 +101,7 @@ public class AdaptedPortletURL {
 		this.preq = null;
 		this.portletName = portletName;
 		this.action = action;
-		this.secure = false;
+		this.secure = Boolean.FALSE;
 		this.params = new HashMap();
 	}
 	
@@ -156,8 +158,8 @@ public class AdaptedPortletURL {
 		this.params = newParams;
 	}
 
-	public void setSecure(boolean secure) throws PortletSecurityException {
-		this.secure = secure;
+	public void setSecure(boolean sec) throws PortletSecurityException {
+		this.secure = Boolean.valueOf(sec);
 	}
 		
 	public String toString() {
