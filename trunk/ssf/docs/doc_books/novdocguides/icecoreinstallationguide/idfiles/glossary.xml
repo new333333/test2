@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="b9rtisc" pid="b9rtisc" name="Glossary" level="0"> <text>ICEcore Glossary</text> </target>
+ <target id="b9rtisc" pid="b9rtisc" name="Glossary" level="0"> <text>Glossary</text> </target>
 
  <target id="basbaeb" pid="b9rtisc" name="GlossEntry" level="1"> <text>access control</text> </target>
 
@@ -68,7 +68,7 @@
 
  <target id="basc4i1" pid="b9rtisc" name="GlossEntry" level="1"> <text>instant message (IM)</text> </target>
 
- <target id="basc024" pid="b9rtisc" name="GlossEntry" level="1"> <text>Liferay (a)</text> </target>
+ <target id="basc024" pid="b9rtisc" name="GlossEntry" level="1"> <text>LifeRay (a)</text> </target>
 
  <target id="basc3mt" pid="b9rtisc" name="GlossEntry" level="1"> <text>meeting</text> </target>
 
@@ -117,6 +117,8 @@
  <target id="basbx96" pid="b9rtisc" name="GlossEntry" level="1"> <text>team workspace</text> </target>
 
  <target id="basbs53" pid="b9rtisc" name="GlossEntry" level="1"> <text>template (a)</text> </target>
+
+ <target id="bbgjrf8" pid="b9rtisc" name="GlossEntry" level="1"> <text>type to find</text> </target>
 
  <target id="basbhw5" pid="b9rtisc" name="GlossEntry" level="1"> <text>view</text> </target>
 
