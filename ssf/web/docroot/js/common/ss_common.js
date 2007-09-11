@@ -2994,6 +2994,7 @@ function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, namespace
 
 function ss_moreDashboardSearchResultsCallback(s, divId) {
 	var divObj = document.getElementById(divId);
+	if (divObj == null) return;
 	divObj.innerHTML = s;
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
