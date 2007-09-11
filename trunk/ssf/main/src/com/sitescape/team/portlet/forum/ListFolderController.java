@@ -328,6 +328,17 @@ public static final String[] monthNamesShort = {
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
+		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+		if (!entryTitle.equals("") && !entryTitle.equals(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER)) {
+			//This must be a request for a title link
+			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(binderId, entryTitle);
+			if (entries.size() == 1) {
+				FolderEntry entry = (FolderEntry)entries.iterator().next();
+				entryIdToBeShown = entry.getId().toString();
+			} else {
+				entryIdToBeShown = "";
+			}
+		}
 		model.put(WebKeys.ENTRY_ID_TO_BE_SHOWN, entryIdToBeShown);
 
 		//Build a reload url

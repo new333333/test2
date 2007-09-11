@@ -101,6 +101,7 @@ public class WebKeys {
 	public static final String URL_ENTRY_ID = "entryId";
 	public static final String URL_SUBSCRIBE_ENTRY_ID = "subscribeEntryId";
     public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
+    public static final String URL_ENTRY_TITLE_PLACE_HOLDER="ss_entry_title_place_holder";
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
