@@ -1,6 +1,0 @@
-"product","ICEcore","no description"
-"thrdmrk","*","no description"
-"mdash","-","no description"
-"conf_prod_name","Conferencing","no description"
-"ycc_runlevel","System Services (Runlevel)","no description"
-"euro","&#x20AC;","no description"
