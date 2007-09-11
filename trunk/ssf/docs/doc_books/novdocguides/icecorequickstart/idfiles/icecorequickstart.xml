@@ -2,13 +2,13 @@
 
 <targets>
 
- <target id="quickstart" pid="quickstart" name="QuickStart" level="0"> <text>ICEcore Quick Start Guide</text> </target>
+ <target id="quickstart" pid="quickstart" name="QuickStart" level="0"> <text>Novell Teaming 1.0 Quick Start Guide</text> </target>
 
- <target id="b20g4u4" pid="b20g4u4" name="Sect1" level="1"> <text>ICEcore</text> </target>
+ <target id="b20g4u4" pid="b20g4u4" name="Sect1" level="1"> <text>Novell Teaming</text> </target>
 
  <target id="b9ygnf7" pid="b20g4u4" name="Sect2" level="2"> <text>Explore the Welcome Portlet</text> </target>
 
- <target id="b9ygpwl" pid="b20g4u4" name="Sect2" level="2"> <text>Find Your Way Using ICEcore Navigator</text> </target>
+ <target id="b9ygpwl" pid="b20g4u4" name="Sect2" level="2"> <text>Find Your Way Using Novell Teaming Navigator</text> </target>
 
  <target id="b9yh7oz" pid="b20g4u4" name="FormalPara" level="3"> <text>My Workspace -</text> </target>
 
@@ -46,7 +46,7 @@
 
  <target id="b9yh44k" pid="b20g4u4" name="Step" level="4" number="2"> <text>On the menu bar for your workspace, click Modify Profile.</text> </target>
 
- <target id="b9yh44n" pid="b20g4u4" name="Step" level="4" number="3"> <text>In the Modify Profile window, fill in any missing information. This information is visible to others and is also used by ICEcore and Conferencing to contact you by phone, e-mail, or IM.</text> </target>
+ <target id="b9yh44n" pid="b20g4u4" name="Step" level="4" number="3"> <text>In the Modify Profile window, fill in any missing information. This information is visible to others and is also used by Novell Teaming and Conferencing to contact you by phone, e-mail, or IM.</text> </target>
 
  <target id="b9yh44r" pid="b20g4u4" name="Step" level="4" number="4"> <text>Add a picture. Click Browse&#201; to look for a graphics file on your computer; then click OK. The picture is displayed in the Photo box of your profile.</text> </target>
 
@@ -156,7 +156,7 @@
 
  <target id="ban75mv" pid="b20g4u4" name="Step" level="5" number="2"> <text>In the Text field, type text related to the item for which you are searching.</text> </target>
 
- <target id="ban76s5" pid="b20g4u4" name="Step" level="5" number="3"> <text>If you know who created (added) the item in ICEcore, type the name into the Authors field.</text> </target>
+ <target id="ban76s5" pid="b20g4u4" name="Step" level="5" number="3"> <text>If you know who created (added) the item in Novell Teaming, type the name into the Authors field.</text> </target>
 
  <target id="ban78ko" pid="b20g4u4" name="Step" level="5" number="4"> <text>If you know that the information is tagged, type the relevant tag into the Tags field.</text> </target>
 
