@@ -56,6 +56,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.Html;
 import com.sitescape.util.PortalDetector;
 import com.sitescape.util.Validator;
 
@@ -525,7 +526,7 @@ public class WebHelper {
         	if (m.groupCount() >= 2) { linkText = m.group(2).trim(); }
 
         	if (!linkArgs.equals("")) {
-        		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs + " text=" + linkText + "}}"));
+        		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs + " text=" + Html.stripHtml(linkText) + "}}"));
         		m = pattern.matcher(description.getText());
 	    	}
     	}
@@ -641,12 +642,13 @@ public class WebHelper {
 		        	Pattern p4 = Pattern.compile("title=([^ ]*)");
 		        	Matcher m4 = p4.matcher(urlParts);
 		        	if (m4.find() && m4.groupCount() >= 1) normalizedTitle = m4.group(1).trim();
-		        	normalizedTitle = getNormalizedTitle(normalizedTitle);
+		        	normalizedTitle = getNormalizedTitle(Html.stripHtml(normalizedTitle));
 		        	
 		        	String title = "";
 		        	Pattern p5 = Pattern.compile("text=(.*)$");
 		        	Matcher m5 = p5.matcher(urlParts);
 		        	if (m5.find() && m5.groupCount() >= 1) title = m5.group(1).trim();
+		        	title = Html.stripHtml(title);
 		        	
 		    		//build the link
 		        	String titleLink = "";
@@ -691,11 +693,13 @@ public class WebHelper {
 		        	Pattern p4 = Pattern.compile("title=([^ ]*)");
 		        	Matcher m4 = p4.matcher(urlParts);
 		        	if (m4.find() && m4.groupCount() >= 1) normalizedTitle = m4.group(1).trim();
+		        	normalizedTitle = Html.stripHtml(normalizedTitle);
 		        	
 		        	String title = "";
 		        	Pattern p5 = Pattern.compile("text=(.*)$");
 		        	Matcher m5 = p5.matcher(urlParts);
 		        	if (m5.find() && m5.groupCount() >= 1) title = m5.group(1).trim();
+		        	title = Html.stripHtml(title);
 		        	
 		    		//build the link
 		        	String titleLink = "";
@@ -722,6 +726,7 @@ public class WebHelper {
 		    		loopDetector++;
 		    		//Get the title
 		    		String title = m3.group(2).trim();
+		    		title = Html.stripHtml(title);
 		    		String normalizedTitle = getNormalizedTitle(title);
 		    		if (!normalizedTitle.equals("")) {
 		    			//Build the url to that entry
@@ -760,7 +765,7 @@ public class WebHelper {
 	//Routine to compute a normalized title
 	public static String getNormalizedTitle(String title) {
 		if (title == null) return null;
-		String titleTrimmed = title.trim();
+		String titleTrimmed = Html.stripHtml(title.trim());
 		if (titleTrimmed.equals("")) return null;
 		
         //compute normalized title
