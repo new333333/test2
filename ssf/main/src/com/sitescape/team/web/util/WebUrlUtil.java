@@ -196,6 +196,25 @@ public class WebUrlUtil {
 		return entryUrl;
 	}
 	
+	public static String getEntryPermalinkURL(FolderEntry entry) {
+		return getEntryPermalinkURL(entry.getParentFolder().getId().toString(), 
+				entry.getId().toString(), entry.getEntityType().toString());
+	}
+	
+	public static String getEntryPermalinkURL(String parentBinderId, String entryId, String entityType) {
+		String entryUrl="";
+		try {
+			AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", false);
+			url.setParameter("action", WebKeys.ACTION_VIEW_PERMALINK);
+			url.setParameter(WebKeys.URL_BINDER_ID, parentBinderId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
+			entryUrl = url.toString();
+		}
+		catch(Exception e) {}
+		return entryUrl;
+	}
+	
 	private static StringBuffer getSSFContextRootURL(PortletRequest req, Boolean secure, int webProtocol) {
 		StringBuffer sb = getHostAndPort(req, secure, webProtocol, false);
 				
