@@ -18,7 +18,7 @@
 
  <target id="bbgfvs1" pid="bbgf81d" name="Step" level="4" number="4"> <text>In the options dialog on the right, click Add a new workflow process.</text> </target>
 
- <target id="bbgfwnn" pid="bbgf81d" name="Step" level="4" number="5"> <text>In the form that appears on the right, type in the Name (workflow name) and Caption (name that appears in ICEcore) for this workflow.</text> </target>
+ <target id="bbgfwnn" pid="bbgf81d" name="Step" level="4" number="5"> <text>In the form that appears on the right, type in the Name (workflow name) and Caption (name that appears in Novell Teaming) for this workflow.</text> </target>
 
  <target id="bbgfzw7" pid="bbgf81d" name="Step" level="4" number="6"> <text>Click OK.</text> </target>
 
@@ -40,7 +40,7 @@
 
  <target id="bbgg3qn" pid="bbgf81d" name="Step" level="4" number="7"> <text>Click State to add a state to this workflow.</text> </target>
 
- <target id="bbgg4cb" pid="bbgf81d" name="Step" level="4" number="8"> <text>Type in the Data Name (database name), Caption (name used in ICEcore), and Description for this workflow as follows:</text> </target>
+ <target id="bbgg4cb" pid="bbgf81d" name="Step" level="4" number="8"> <text>Type in the Caption (name used in Novell Teaming), Data Name (database name), and Description for this workflow as follows:</text> </target>
 
  <target id="bbgg79k" pid="bbgf81d" name="Step" level="4" number="9"> <text>Click OK.</text> </target>
 
@@ -174,7 +174,7 @@
 
  <target id="bbgjewf" pid="bbgif26" name="Step" level="6" number="8c"> <text>Click Transition out of this state.</text> </target>
 
- <target id="bbgj9e9" pid="bbgif26" name="Step" level="6" number="8d"> <text>Deselect the Folder default access option, add the Managers group, and click OK.</text> </target>
+ <target id="bbgj9e9" pid="bbgif26" name="Step" level="6" number="8d"> <text>Deselect the Folder default access option, add the Managers group and click OK.</text> </target>
 
  <target id="bbgjotb" pid="bbgif26" name="Step" level="6" number="8e"> <text>Repeat this for the Review and Approve states with the following rights:</text> </target>
 
