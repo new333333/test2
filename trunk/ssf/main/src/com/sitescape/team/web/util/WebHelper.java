@@ -641,6 +641,7 @@ public class WebHelper {
 		        	Pattern p4 = Pattern.compile("title=([^ ]*)");
 		        	Matcher m4 = p4.matcher(urlParts);
 		        	if (m4.find() && m4.groupCount() >= 1) normalizedTitle = m4.group(1).trim();
+		        	normalizedTitle = getNormalizedTitle(normalizedTitle);
 		        	
 		        	String title = "";
 		        	Pattern p5 = Pattern.compile("text=(.*)$");
