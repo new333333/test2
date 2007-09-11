@@ -38,6 +38,6 @@
 
  <target id="bbn3zav" pid="bbmqmww" name="Step" level="4" number="6d"> <text>Click OK.</text> </target>
 
- <target id="bbn42cu" pid="bbmqmww" name="Step" level="2" number="7"> <text>Go to a user's workspace and view the changes (in this example the Organization element has been given a value for the user.</text> </target>
+ <target id="bbn42cu" pid="bbmqmww" name="Step" level="2" number="7"> <text>Go to a user's workspace and view the changes (in this example the Organization element has been given a value for the user).</text> </target>
 
 </targets>
