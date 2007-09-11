@@ -576,9 +576,12 @@ public class BuildDefinitionDivs extends TagSupport {
 	protected boolean testOption(Element item, Element sourceRoot, String name) {
 		if (item.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") && 
 				sourceRoot.selectSingleNode("//item[@name='"+name+"']") != null) return false;
-		
+
 		if (rootElement == null) return true;
-		
+
+		if (item.attributeValue("multipleAllowedInParent", "").equalsIgnoreCase("false") && 
+				rootElement.selectSingleNode("item[@name='"+name+"']") != null) return false;
+				
 		String unq = item.attributeValue("unique");
 		if (Validator.isNull(unq)) return true; 
 		List results = rootElement.selectNodes(unq);

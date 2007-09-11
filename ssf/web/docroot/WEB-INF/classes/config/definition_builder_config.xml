@@ -2260,7 +2260,8 @@
 		</properties>
 	</item>
 	
-	<item name="accessControls" caption="__accessControls" canBeDeleted="true" unique="./item[@name='accessControls']">
+	<item name="accessControls" caption="__accessControls" canBeDeleted="true" 
+		  unique="./item[@name='accessControls']" multipleAllowedInParent="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -2270,7 +2271,7 @@
 	</item>
 	
 	<item name="readAccess" caption="__readAccess" category="accessControlsLayout" 
-		  multipleAllowed="false">
+		  multipleAllowedInParent="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2281,7 +2282,7 @@
 	</item>
 	
 	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" 
-		  multipleAllowed="false">
+		  multipleAllowedInParent="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2292,7 +2293,7 @@
 	</item>
 	
 	<item name="deleteAccess" caption="__deleteAccess" category="accessControlsLayout" 
-		  multipleAllowed="false">
+		  multipleAllowedInParent="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2303,7 +2304,7 @@
 	</item>
 	
 	<item name="transitionOutAccess" caption="__transitionOutAccess" category="accessControlsLayout" 
-		  multipleAllowed="false">
+		  multipleAllowedInParent="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2314,7 +2315,7 @@
 	</item>
 	
 	<item name="transitionInAccess" caption="__transitionInAccess" category="accessControlsLayout" 
-		  multipleAllowed="false">
+		  multipleAllowedInParent="false">
 		<properties>
 			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
@@ -2326,7 +2327,8 @@
 	
 
 	
-	<item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']">
+	<item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']"
+		  multipleAllowedInParent="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 			<operation name="deleteItem" caption="__delete" />
@@ -2341,7 +2343,8 @@
 		<help>ihelp.workflow.on_entry</help>
 	</item>
 	
-	<item name="onExit" caption="__onExit" unique="./item[@name='onExit']">
+	<item name="onExit" caption="__onExit" unique="./item[@name='onExit']"
+		  multipleAllowedInParent="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
 			<operation name="deleteItem" caption="__delete" />
@@ -2355,7 +2358,8 @@
 		</options>
 	</item>
 	
-	<item name="notifications" caption="__notifications">
+	<item name="notifications" caption="__notifications"
+		  multipleAllowedInParent="false">
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
@@ -2368,7 +2372,7 @@
 		</properties>
 	</item>
 	
-	<item name="moveEntry" caption="__moveEntry">
+	<item name="moveEntry" caption="__moveEntry" multipleAllowedInParent="false">
 		<properties>
 			<property name="folder" caption="__toFolder" type="folderSelect" />
 		</properties>
