@@ -451,13 +451,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		String title = "<![CDATA[ " + entry.getTitle() + "]]>";
 		ret += "<title>" + title + "</title>\n";
 		ret += "<link>"
-				+ WebUrlUtil.getEntryViewURL((FolderEntry) entry).replaceAll(
+				+ WebUrlUtil.getEntryPermalinkURL((FolderEntry) entry).replaceAll(
 						"&", "&amp;") + "</link>\n";
 
 		String description = entry.getDescription() == null ? "" : entry
 				.getDescription().getText();
 		description = WebHelper.markupStringReplacement(null, null, null, null,
-				entry, description, WebKeys.MARKUP_FILE);
+				entry, description, WebKeys.MARKUP_VIEW);
 		description = "<![CDATA[ " + description + "]]>";
 		ret += "<description>" + description + "</description>\n";
 
