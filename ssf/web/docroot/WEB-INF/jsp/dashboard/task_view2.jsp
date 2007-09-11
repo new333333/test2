@@ -55,7 +55,7 @@
 	<div class="ss_clear"></div>
 </div>
 <div class="ss_task_list_container">
-<table class="ss_tasks_list">
+<table class="ss_tasks_list" style="text-align: left;">
 	<tr>
 		<th><ssf:nlt tag="task.title"/></th>
 		<th><ssf:nlt tag="task.priority"/></th>
@@ -88,13 +88,14 @@
 					<c:out value="${entry.title}" escapeXml="false"/>
 				</ssf:menuLink>
 		</td>
-		<td class="ss_iconsContainer"><c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if><c:if test="${entry.priority != prio.key}"><img src="<html:imagesPath/>pics/1pix.gif" alt="${prio.value}" title="${prio.value}" class="ss_taskPriority ss_taskPriority_${prio.key}_u" /></c:if></c:forEach></c:if></td>
+		<td class="ss_iconsContainer" style="text-align: center;">
+		<c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if></c:forEach></c:if></td>
 		<td>
 			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
 				  dateStyle="short" timeStyle="short" />
 		</td>
-		<td class="ss_iconsContainer"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if><c:if test="${entry.status != status.key}"><img src="<html:imagesPath/>pics/1pix.gif" class="ss_taskStatus ss_taskStatus_${status.key}_u" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
+		<td class="ss_iconsContainer"  style="text-align: center;"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
 		<td>
 			<ul>
 				<c:forEach var="assigned" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>">
@@ -112,23 +113,27 @@
 			</c:if>
 		</td>
 		<td class="ss_normalprint" width="20%">
-			<c:set var="title" value=""/>
+
+			<c:set var="path" value=""/>
 
 			<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
 				<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
 					<c:if test="${folder.id == entry._binderId}">
-						<c:set var="title" value="${folder}"/>
+						<c:set var="path" value="${folder}"/>
+						<c:set var="title" value="${folder.title}"/>
 					</c:if>
 				</c:forEach>
 			</c:if>
 			<c:set var="isDashboard" value="yes"/>
 
-			<c:if test="${!empty title}">
+			<c:if test="${!empty path}">
 	    		<a href="javascript: ;"
 					onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+					title="${path}"
 					><span class="ss_bold">${title}</span></a>
 			</c:if>
 				
+								
 		</td>	
 	</tr>
 	</c:forEach>

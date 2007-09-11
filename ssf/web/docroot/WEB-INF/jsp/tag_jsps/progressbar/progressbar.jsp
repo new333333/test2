@@ -28,10 +28,9 @@
 <c:set var="entryId" value="<%= entryId %>" />
 <c:set var="readOnly" value="<%= readOnly %>" />
 
+<c:if test="${!readOnly}">
 <div class="ss_completedContainer" id="ss_completedContainer_${namespace}_${entryId}" 
-		<c:if test="${!readOnly}">
 			onmouseout="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, this, document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${currentValue}');"
-		</c:if>
 	>
 	<c:forEach var="cv" items="<%= valuesInt %>">
 		<c:set var="fullValue" value="c${cv}" />
@@ -44,12 +43,15 @@
 					class="ss_bar_off"
 				</c:otherwise> 
 			</c:choose>
-			<c:if test="${!readOnly}">
 				onclick="myTasks_${namespace}.ss_saveValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}')"
 				onmouseover="myTasks_${namespace}.ss_changeValue({'id' : ${entryId}, document.getElementById('ss_completedContainer_${namespace}_${entryId}'), document.getElementById('ss_completedContainer_status_${namespace}_${entryId}'), '${fullValue}');"
-			</c:if>
 			></div>
 	</c:forEach>
 </div>
 <div class="ss_bar_status" id="ss_completedContainer_status_${namespace}_${entryId}">${valuesMap[currentValue]}</div>
+</c:if>
+<c:if test="${readOnly}">
+  <!-- <div style="height: 12px; width: ${currentValueInt}px; background-color: green;"><img src="<html:imagesPath/>pics/1pix.gif"/></div> -->
+  ${currentValueInt}%
+</c:if>
 
