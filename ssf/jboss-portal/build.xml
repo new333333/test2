@@ -110,9 +110,12 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 org.springframework.transaction.TransactionSystemException: JTA UserTransaction is not available at JNDI location [java:comp/UserTransaction]; nested exception is org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]
 org.springframework.jndi.TypeMismatchNamingException: Object [org.jboss.tm.usertx.client.ServerVMClientUserTransaction@19fbe63] available at JNDI location [java:comp/UserTransaction] is not assignable to [javax.transaction.UserTransaction]		     
 			(reported in http://www.jroller.com/raible/entry/spring_s_jtatransactionmanager_on_jboss)
+			5. If we have our own hibernate3.jar in our lib directory, we can get intermittent
+			ClassCastException depending on the order in which classes are loaded.
+			So we remove ours and instead use the shared one in JBoss.
 		-->
 		<delete>
-			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,commons-logging*.jar,portlet.jar,mail.jar,jta.jar"/> 
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,commons-logging*.jar,portlet.jar,mail.jar,jta.jar,hibernate3.jar"/> 
 		</delete>		
 	</target>		
 
