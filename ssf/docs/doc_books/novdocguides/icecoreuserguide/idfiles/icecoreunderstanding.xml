@@ -4,13 +4,15 @@
 
  <target id="bamndbk" pid="bamndbk" name="Chapter" level="0" number="1"> <text>Concepts and Navigation</text> </target>
 
- <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>ICEcore is Collaboration Software</text> </target>
+ <target id="bbq7hga" pid="bamndbk" name="FormalPara" level="1"> <text>Note: </text> </target>
 
- <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>ICEcore is Knowledge Management Software</text> </target>
+ <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>Novell Teaming is Collaboration Software</text> </target>
 
- <target id="bamolyw" pid="bamolyw" name="Sect1" level="1" number="1.2"> <text>Navigating ICEcore</text> </target>
+ <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>Novell Teaming is Knowledge Management Software</text> </target>
 
- <target id="banmcg1" pid="bamolyw" name="Sect2" level="2" number="1.2.1"> <text>The Default ICEcore Portlets</text> </target>
+ <target id="bamolyw" pid="bamolyw" name="Sect1" level="1" number="1.2"> <text>Navigating Workspaces and Folders</text> </target>
+
+ <target id="banmcg1" pid="bamolyw" name="Sect2" level="2" number="1.2.1"> <text>The Default Portlets</text> </target>
 
  <target id="banmk7p" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The welcome portlet</text> </target>
 
@@ -24,7 +26,7 @@
 
  <target id="banmwr2" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Guestbook summary</text> </target>
 
- <target id="banmwr3" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>ICEcore administration</text> </target>
+ <target id="banmwr3" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Novell Teaming administration</text> </target>
 
  <target id="banmwr4" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Photo gallery</text> </target>
 
@@ -50,7 +52,7 @@
 
  <target id="banmwr9" pid="bamolyw" name="Sect2" level="2" number="1.2.3"> <text>Viewing a Workspace or Folder</text> </target>
 
- <target id="banmwra" pid="bamolyw" name="Sect2" level="2" number="1.2.4"> <text>Navigation</text> </target>
+ <target id="banmwra" pid="bamolyw" name="Sect2" level="2" number="1.2.4"> <text>Using More Navigational Tools</text> </target>
 
  <target id="bbgermu" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Navigator</text> </target>
 
@@ -62,7 +64,7 @@
 
  <target id="banmwrb" pid="bamolyw" name="Sect2" level="2" number="1.2.5"> <text>Returning to the Portal Page</text> </target>
 
- <target id="bamomb3" pid="bamomb3" name="Sect1" level="1" number="1.3"> <text>Using ICEcore Help</text> </target>
+ <target id="bamomb3" pid="bamomb3" name="Sect1" level="1" number="1.3"> <text>Using Help Mode</text> </target>
 
  <target id="barrne2" pid="bamomb3" name="Sect2" level="2" number="1.3.1"> <text>Help for Administrators</text> </target>
 
