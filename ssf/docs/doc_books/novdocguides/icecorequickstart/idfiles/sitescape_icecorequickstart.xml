@@ -46,7 +46,7 @@
 
  <target id="b9yh44k" pid="b20g4u4" name="Step" level="4" number="2"> <text>On the menu bar for your workspace, click Modify Profile.</text> </target>
 
- <target id="b9yh44n" pid="b20g4u4" name="Step" level="4" number="3"> <text>In the Modify Profile window, fill in any missing information. This information is visible to others and is also used by ICEcore and Conferencing to contact you by phone, e-mail, or IM.</text> </target>
+ <target id="b9yh44n" pid="b20g4u4" name="Step" level="4" number="3"> <text>In the Modify Profile window, fill in any missing information. This information is visible to others and is also used by ICEcore and ICEcore Conference to contact you by phone, e-mail, or IM.</text> </target>
 
  <target id="b9yh44r" pid="b20g4u4" name="Step" level="4" number="4"> <text>Add a picture. Click Browse&#201; to look for a graphics file on your computer; then click OK. The picture is displayed in the Photo box of your profile.</text> </target>
 
