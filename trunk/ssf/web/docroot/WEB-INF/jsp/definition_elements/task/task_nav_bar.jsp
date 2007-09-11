@@ -78,6 +78,5 @@
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewAll"/>
 			</a>			
 		</li>
-		<li class="ss_calendarNaviBarOption" />
 	</ul>
 </div>

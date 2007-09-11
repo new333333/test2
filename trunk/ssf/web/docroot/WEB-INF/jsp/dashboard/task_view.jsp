@@ -31,12 +31,10 @@
 				</tr>
 			</c:forEach>
 		</table>
-		<br/>
 	
 	</c:if>
 	
 	<div id="${ss_divId}" width="100%">
-	<br/>
 	<%@ include file="/WEB-INF/jsp/dashboard/task_view2.jsp" %>
 	</div>
 
@@ -52,6 +50,5 @@
 		</tr>
 		</c:forEach>
 		</table>
-	<br/>
 	</c:if>
 </c:if>

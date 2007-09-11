@@ -4467,18 +4467,18 @@ div.ss_task_list_container {
 table.ss_tasks_list {
 	margin:6px 0px 4px 10px;
 	padding: 0px;
-	text-align: center;
 	border-top: 1px solid #afc8e3;
 	border-left: 1px solid #afc8e3;
 	border-right: 1px solid #afc8e3;
 	border-spacing: 0px;
-	max-width: 100%;
+	width: 99%;
 }
 
 table.ss_tasks_list th {
 	background-color: #dbe6f2;
 	border-bottom: 1px solid #afc8e3;
 	border-right: 1px solid #afc8e3;
+	font-size: 10px !important;
 	text-align: left;
 	padding: 3px 0px 3px 5px;
 	white-space: nowrap;
@@ -4561,7 +4561,7 @@ div.ss_bar_on {
 
 div.ss_bar_off {
 	background-color: #e8eff7; 
-	width: 9%; 
+	width: 9px; 
 	float: left; 
 	padding: 0px; 
 	margin: 0px; 
