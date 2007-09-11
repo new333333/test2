@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -620,7 +621,7 @@ public class WebHelper {
 	    	}
 	    	
 	    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx}}
-	    	if (type.equals(WebKeys.MARKUP_VIEW) && ((req != null && res != null) || (httpReq != null && httpRes != null))) {
+	    	if (type.equals(WebKeys.MARKUP_VIEW)) {
 		    	Pattern p2 = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
 		    	Matcher m2 = p2.matcher(outputString);
 		    	loopDetector = 0;
@@ -652,6 +653,11 @@ public class WebHelper {
 	    			Map params = new HashMap();
 	    			params.put(WebKeys.URL_BINDER_ID, s_binderId.toString());
 	    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+	    			if (req == null && res == null && httpReq == null && httpRes == null) {
+	    				action = WebKeys.ACTION_VIEW_PERMALINK;
+	    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
+	    				params.put(WebKeys.URL_ENTITY_TYPE, ObjectKeys.FOLDER_ENTRY);
+	    			}
 	    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 	    			titleLink = "<a href=\"" + webUrl + "\" ";
 	    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
@@ -702,8 +708,7 @@ public class WebHelper {
 	    	}
 
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
-			if (binderId != null && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FILE)) && 
-	    			((req != null && res != null) || (httpReq != null && httpRes != null))) {
+			if (binderId != null && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FILE))) {
 				String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
 		    	Pattern p3 = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 		    	Matcher m3 = p3.matcher(outputString);
@@ -724,6 +729,11 @@ public class WebHelper {
 			    			Map params = new HashMap();
 			    			params.put(WebKeys.URL_BINDER_ID, binderId.toString());
 			    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+			    			if (req == null && res == null && httpReq == null && httpRes == null) {
+			    				action = WebKeys.ACTION_VIEW_PERMALINK;
+			    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
+			    				params.put(WebKeys.URL_ENTITY_TYPE, ObjectKeys.FOLDER_ENTRY);
+			    			}
 			    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 			    			titleLink = "<a href=\"" + webUrl + "\" ";
 			    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
