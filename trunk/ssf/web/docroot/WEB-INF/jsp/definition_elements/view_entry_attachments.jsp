@@ -146,6 +146,10 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 
 <c:set var="ss_viewEntryAttachmentDivId" value="ss_divAttachmentList${ssDefinitionEntry.id}${renderResponse.namespace}" scope="request"/>
 <c:set var="ss_namespace_attach" value="${renderResponse.namespace}" scope="request"/>
+<c:if test="${!empty ss_namespace}">
+<c:set var="ss_viewEntryAttachmentDivId" value="ss_divAttachmentList${ssDefinitionEntry.id}${ss_namespace}" scope="request"/>
+<c:set var="ss_namespace_attach" value="${ss_namespace}" scope="request"/>
+</c:if>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list.jsp" %>
 
