@@ -257,6 +257,8 @@ public class JCRRepositorySession implements RepositorySession {
 		String newFileNodePath = getFileNodePath(destBinder, destEntity, destRelativeFilePath);
 
 		try {
+			createFoldersIfNecessary(getFolderNodePath(newFileNodePath));
+			
 			Node dirNode = getRootNode();
 			String absFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + fileNodePath;
 			String newAbsFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + newFileNodePath;
@@ -285,6 +287,8 @@ public class JCRRepositorySession implements RepositorySession {
 		String newFileNodePath = getFileNodePath(destBinder, destEntity, destRelativeFilePath);
 
 		try {
+			createFoldersIfNecessary(getFolderNodePath(newFileNodePath));
+
 			Node dirNode = getRootNode();
 			String absFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + fileNodePath;
 			String newAbsFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + newFileNodePath;
