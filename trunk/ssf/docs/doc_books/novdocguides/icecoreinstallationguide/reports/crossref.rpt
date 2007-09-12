@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/10/2007 10:05:08 AM'>
+   <String `9/12/2007 10:13:02 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2076,7 +2076,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `58'>
+   <String `59'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2106,6 +2106,42 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
+   <String `9'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `121'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `front.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `Ulink'>
+   <Char Tab> 
    <String `4'>
    <Char Tab> 
    <String `0'>
@@ -2116,7 +2152,43 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `115'>
+   <String `4'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `preface.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `Ulink'>
+   <Char Tab> 
+   <String `1'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `1'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2244,7 +2316,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `52'>
+   <String `53'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2254,7 +2326,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `52'>
+   <String `53'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine

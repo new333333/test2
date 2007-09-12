@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/10/2007 10:05:08 AM'>
+   <String `9/12/2007 10:13:02 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2278,14 +2278,6 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `enter_installtype_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
    <String `filesupporttable.png'>
    <Char Tab> 
    <String `1'>
@@ -2295,14 +2287,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `icecorediagram_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `install_db_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2327,14 +2311,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `ldap_groups-settings_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `ldap_password_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2460,6 +2436,12 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `enter_installtype_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `features-markup-page-name-a.png'>
   > # end of ParaLine
  > # end of Para
@@ -2467,6 +2449,18 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `icecoreadminportlet_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `install_db_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `ldap_password_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3612,45 +3606,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `enter_installtype_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1160150'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `enter_installtype_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 01_installingicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 78%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Install type\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `filesupporttable.png'>
   > # end of ParaLine
  > # end of Para
@@ -3718,45 +3673,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: System diagram\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `install_db_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1160438'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `install_db_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 01_installingicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 89%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Create database install question\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3874,45 +3790,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Ldap group settings\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `ldap_password_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1146437'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_password_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 89%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Ldap password\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
