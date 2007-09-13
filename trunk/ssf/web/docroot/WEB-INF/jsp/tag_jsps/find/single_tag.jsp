@@ -55,7 +55,25 @@
     </c:if>
 	></textarea>
 	<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
-			onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:'', '${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
+			onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', 
+			<ssf:ifnotadapter>
+			'<portlet:actionURL windowState="maximized" 
+		portletMode="view"><portlet:param 
+		name="action" value="advanced_search"/><portlet:param 
+		name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
+		name="operation" value="ss_searchResults"/><portlet:param 
+		name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
+		name="newTab" value="1"/><portlet:param 
+		name="searchItemType" value="workspace"/><portlet:param 
+		name="searchItemType" value="folder"/><portlet:param 
+		name="searchItemType" value="user"/><portlet:param 
+		name="searchItemType" value="entry"/><portlet:param 
+		name="searchItemType" value="reply"/></portlet:actionURL>'
+		</ssf:ifnotadapter>
+		<ssf:ifadapter>
+		window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:''
+		</ssf:ifadapter>
+	,'${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
 	/>    
 </div>
 <div id="ss_findTag_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
