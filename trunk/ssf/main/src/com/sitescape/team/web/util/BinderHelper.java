@@ -1306,7 +1306,7 @@ public class BinderHelper {
 		
 		*
 		*/
-		tabs.setCurrentTab(tabs.findTab(binder, true));
+		tabs.setCurrentTab(tabs.findTab(binder, false));
 		return tabs;
 	}
 
