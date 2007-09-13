@@ -408,6 +408,10 @@
 						<classpath refid="project.classpath" />
 						<arg value="${web.dir}/WEB-INF" />
 					</java>	 
+					<native2ascii encoding="UTF-8" 
+						     	  src="${web.dir}/WEB-INF/classes/content"
+						 	      dest="${web.dir}/WEB-INF/classes/content" 
+							      includes="*.native" ext=".properties" />
 				</target>
 	
 </project>
