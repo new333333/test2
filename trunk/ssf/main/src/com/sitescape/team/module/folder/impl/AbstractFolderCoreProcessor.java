@@ -360,7 +360,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
     //inside write transaction    
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
-    	Folder from = (Folder)binder;
+       	if (binder.equals(destination)) return;
+       	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
     		throw new NotSupportedException("errorcode.notsupported.moveEntryDestination", new String[] {destination.getPathName()});
     	Folder to = (Folder)destination;
