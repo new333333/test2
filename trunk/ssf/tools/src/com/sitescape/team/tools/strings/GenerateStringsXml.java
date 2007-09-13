@@ -72,7 +72,7 @@ public class GenerateStringsXml {
             
            	
            	String []localeCodes = {"en", "de", "es", "fr", "it", "ja",	
-           			"nl", "pt_BR", "sv", "zh_CN", "zh_TW"};
+           			"nl", "pl", "pt_BR", "sv", "zh_CN", "zh_TW"};
            	
            	generateTags(strRoot, localeCodes, pathname);
             xOut.write(strRoot);

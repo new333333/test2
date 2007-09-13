@@ -40,7 +40,7 @@ public class GeneratePortletProperties {
         		"toolbar", "welcome", "widgettest",	"wiki",	"workspacetree"};
            	
         String []localeCodes = {"en", "de", "es", "fr", "it", "ja",	
-        		"nl", "pt_BR", "sv", "zh_CN", "zh_TW"};
+        		"nl", "pl", "pt_BR", "sv", "zh_CN", "zh_TW"};
         
         try {
         generatePropFiles(pathname, outPath, propNames, localeCodes);
@@ -71,7 +71,7 @@ public class GeneratePortletProperties {
 					outFile = outPath + "\\" + propNames[i] + ".properties";
 				else
 					outFile = outPath + "\\" + propNames[i] + "_" 
-						+ localeCodes[j] + ".properties";
+						+ localeCodes[j] + ".native";
 				
 				file = new File(outFile);
 				
