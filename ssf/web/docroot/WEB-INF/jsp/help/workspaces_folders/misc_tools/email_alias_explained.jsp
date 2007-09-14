@@ -40,7 +40,7 @@
 </p>
 
 <div class="ss_help_moreinfo">
-<p><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale.language}/pdfs/ICEcore Installation and Configuration Guide.pdf">
+<p><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Installation and Configuration Guide.pdf">
   <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/><a id="skip_nav_titles"/></p>
 </div>
 
