@@ -50,12 +50,12 @@
 
 		  <table  cellspacing="0" cellpadding="0">
 		  <tr>
-		  <td ><img src="<%= prefix %>/images/login_top_left.png" /></td>
-		  <td style="background-image:url('<%= prefix %>/images/login_top.png')"></td>
-		  <td><img src="<%= prefix %>/images/login_top_right.png" /></td>
+		  <td ><img src="<%= prefix %>/jbossportal/images/login_top_left.png" /></td>
+		  <td style="background-image:url('<%= prefix %>/jbossportal/images/login_top.png')"></td>
+		  <td><img src="<%= prefix %>/jbossportal/images/login_top_right.png" /></td>
 		  </tr>
 		  <tr>
-		  <td style="background-image:url('<%= prefix %>/images/login_left.png')"></td>
+		  <td style="background-image:url('<%= prefix %>/jbossportal/images/login_left.png')"></td>
 				<!-- REAL CONTENT CELL : begin -->
 				<td style="background-color:#b4b4b4" align="center">
 					<b>JBoss Portal Login</b><br/><br/>
@@ -86,12 +86,12 @@
 
 				</td>
 				<!-- REAL CONTENT CELL : end -->
-		  <td style="background-image:url('<%= prefix %>/images/login_right.png')"></td>
+		  <td style="background-image:url('<%= prefix %>/jbossportal/images/login_right.png')"></td>
 		  </tr>
 		  <tr>
-		  <td><img src="<%= prefix %>/images/login_bottom_left.png" /></td>
-		  <td style="background-image:url('<%= prefix %>/images/login_bottom.png')"></td>
-		  <td><img src="<%= prefix %>/images/login_bottom_right.png" /></td>
+		  <td><img src="<%= prefix %>/jbossportal/images/login_bottom_left.png" /></td>
+		  <td style="background-image:url('<%= prefix %>/jbossportal/images/login_bottom.png')"></td>
+		  <td><img src="<%= prefix %>/jbossportal/images/login_bottom_right.png" /></td>
 		  </tr>
 		  </table>
 
