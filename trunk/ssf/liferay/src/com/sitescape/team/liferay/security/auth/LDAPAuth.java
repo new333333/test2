@@ -20,14 +20,19 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.security.auth;
+package com.sitescape.team.liferay.security.auth;
 
 import com.liferay.portal.NoSuchUserException;
+import com.liferay.portal.PortalException;
+import com.liferay.portal.SystemException;
+import com.liferay.portal.UserPasswordException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.log.LogUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.User;
+import com.liferay.portal.security.auth.AuthException;
+import com.liferay.portal.security.auth.Authenticator;
 import com.liferay.portal.security.ldap.PortalLDAPUtil;
 import com.liferay.portal.security.pwd.PwdEncryptor;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -135,7 +140,7 @@ public class LDAPAuth implements Authenticator {
 		// Make exceptions for omniadmins so that if they break the LDAP
 		// configuration, they can still login to fix the problem
 
-		if (authenticateOmniadmin(companyId, emailAddress, userId) == SUCCESS) {
+		if (authenticateOmniadmin(companyId, emailAddress, screenName, userId) == SUCCESS) {
 			return SUCCESS;
 		}
 
@@ -279,9 +284,9 @@ public class LDAPAuth implements Authenticator {
 				authenticated = true;
 			}
 			catch (Exception e) {
-				_log.error(
+				_log.warn(
 					"Failed to bind to the LDAP server with " + userId +
-						" " + password + " " + e.getMessage());
+						" " + e.getMessage());
 
 				authenticated = false;
 			}
@@ -309,10 +314,8 @@ public class LDAPAuth implements Authenticator {
 				else {
 					authenticated = false;
 
-					_log.error(
-						"LDAP password " + ldapPassword +
-							" does not match with given password " +
-								encryptedPassword + " for user id " + userId);
+					_log.warn(
+						"LDAP password does not match with given password for user id " + userId);
 				}
 			}
 		}
@@ -321,7 +324,7 @@ public class LDAPAuth implements Authenticator {
 	}
 
 	protected int authenticateOmniadmin(
-			long companyId, String emailAddress, long userId)
+			long companyId, String emailAddress, String screenName, long userId)
 		throws Exception {
 
 		// Only allow omniadmin if Liferay password checking is enabled
@@ -332,6 +335,18 @@ public class LDAPAuth implements Authenticator {
 			if (userId > 0) {
 				if (OmniadminUtil.isOmniadmin(userId)) {
 					return SUCCESS;
+				}
+			}
+			else if (Validator.isNotNull(screenName)) {
+				try {
+					User user = UserLocalServiceUtil.getUserByScreenName(
+						companyId, screenName);
+
+					if (OmniadminUtil.isOmniadmin(user.getUserId())) {
+						return SUCCESS;
+					}
+				}
+				catch (NoSuchUserException nsue) {
 				}
 			}
 			else if (Validator.isNotNull(emailAddress)) {
@@ -366,6 +381,25 @@ public class LDAPAuth implements Authenticator {
 	}
 
 	protected void processUser(
+			Attributes attrs, Properties userMappings, long companyId,
+			String emailAddress, String screenName, long userId,
+			String password)
+		throws Exception {
+
+		try {
+			doProcessUser(attrs, userMappings, companyId, emailAddress, screenName, userId, password);
+		}
+		catch(UserPasswordException e) {
+			// This workaround is necessary to get around the bug in the original
+			// class, where the code attempting to update user password in the 
+			// portal database following each and every successful login gets 
+			// this ugly exception because the new password and the old password 
+			// are identical (which is normal case except for the very first 
+			// login). Therefore we needed to add this handler here.
+		}
+	}
+
+	protected void doProcessUser(
 			Attributes attrs, Properties userMappings, long companyId,
 			String emailAddress, String screenName, long userId,
 			String password)
@@ -423,7 +457,7 @@ public class LDAPAuth implements Authenticator {
 		boolean checkExists = true;
 		boolean updatePassword = true;
 
-		PortalLDAPUtil.importFromLDAP(
+		importFromLDAP(
 			creatorUserId, companyId, autoPassword, password1, password2,
 			passwordReset, autoScreenName, screenName, emailAddress, locale,
 			firstName, middleName, lastName, prefixId, suffixId, male,
@@ -431,6 +465,75 @@ public class LDAPAuth implements Authenticator {
 			locationId, sendEmail, checkExists, updatePassword);
 	}
 
-	private static Log _log = LogFactoryUtil.getLog(LDAPAuth.class);
+	protected User importFromLDAP(
+			long creatorUserId, long companyId, boolean autoPassword,
+			String password1, String password2, boolean passwordReset,
+			boolean autoScreenName, String screenName, String emailAddress,
+			Locale locale, String firstName, String middleName, String lastName,
+			int prefixId, int suffixId, boolean male, int birthdayMonth,
+			int birthdayDay, int birthdayYear, String jobTitle,
+			long organizationId, long locationId, boolean sendEmail,
+			boolean checkExists, boolean updatePassword)
+		throws PortalException, SystemException {
+
+		User user = null;
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Screen name " + screenName + " and email address " +
+					emailAddress);
+		}
+
+		if (Validator.isNull(screenName) || Validator.isNull(emailAddress)) {
+			if (_log.isWarnEnabled()) {
+				_log.warn(
+					"Cannot add user because screen name and email address " +
+						"are required");
+			}
+
+			return user;
+		}
+
+		boolean create = true;
+
+		if (checkExists) {
+			try {
+				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
+				
+				if (updatePassword) {
+					UserLocalServiceUtil.updatePassword(
+						user.getUserId(), password1, password2, passwordReset);
+				}
+
+				create = false;
+			}
+			catch (NoSuchUserException nsue) {
+
+				// User does not exist so create
+
+			}
+		}
+
+		if (create) {
+			try {
+				user = UserLocalServiceUtil.addUser(
+					creatorUserId, companyId, autoPassword, password1,
+					password2, autoScreenName, screenName, emailAddress, locale,
+					firstName, middleName, lastName, prefixId, suffixId, male,
+					birthdayMonth, birthdayDay, birthdayYear, jobTitle,
+					organizationId, locationId, sendEmail);
+			}
+			catch (Exception e){
+				_log.error(
+					"Problem adding user with screen name " + screenName +
+						" and email address " + emailAddress,
+					e);
+			}
+		}
+
+		return user;
+	}
+	
+	protected static Log _log = LogFactoryUtil.getLog(LDAPAuth.class);
 
 }
