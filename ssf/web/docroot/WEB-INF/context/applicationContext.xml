@@ -70,6 +70,15 @@
   	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler">
 	</bean>
 	
+<!-- Oracle Lob handler
+	<bean id="oracleExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+		<property name="nativeJdbcExtractor"><ref local="oracleExtractor"/></property>
+	  </bean>
+
+ -->
+
 	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
