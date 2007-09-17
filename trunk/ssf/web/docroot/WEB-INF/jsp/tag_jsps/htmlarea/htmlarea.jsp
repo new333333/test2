@@ -35,7 +35,7 @@ tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
   language: "${language}", 
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
-  relative_urls: false, 
+  relative_urls: true, 
   width: "100%",
 <ssf:ifnotaccessible>  accessibility_focus: false,</ssf:ifnotaccessible>
 <ssf:ifaccessible>  accessibility_focus: true,</ssf:ifaccessible>
