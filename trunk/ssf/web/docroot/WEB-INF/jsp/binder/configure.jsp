@@ -210,6 +210,8 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 </c:if>
   </fieldset>
   <br>
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.AdvancedWorkflow">
+  
   <% //only display if have workflows - which covers the case where workflow is not supported %>
 <c:if test="${!empty ssPublicWorkflowDefinitions}">
   <fieldset class="ss_fieldset">
@@ -244,6 +246,7 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
+  
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:inlineHelp tag="ihelp.other.allowed_workflows"/> </legend>
 
@@ -264,8 +267,9 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
-</c:if>
   <br>
+</c:if>
+</ssf:ifAuthorizedByLicense>
   
 </c:if>
 
