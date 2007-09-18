@@ -11,7 +11,6 @@
  */
 %>
 <% // Folder listing %>
-<%@ page import="com.sitescape.team.search.SearchFieldResult" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
@@ -568,11 +567,8 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
           	<c:set var="separator" value=""/>
 <%
 	try {
-		SearchFieldResult sr = (SearchFieldResult)entry1.get(eleName2);
-		String[] sIds = new String[0];
-		java.util.Set ids = new java.util.HashSet();
-		sIds = (String[]) sr.getValueSet().toArray(new String[0]);
-		ids = com.sitescape.team.util.LongIdUtil.getIdsAsLongSet(sIds);
+		String sr = entry1.get(eleName2).toString();
+		java.util.Set ids = com.sitescape.team.util.LongIdUtil.getIdsAsLongSet(sr, ",");
 %>
           	<c:forEach var="user" 
           	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ids) %>"
