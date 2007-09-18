@@ -56,7 +56,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	
 	public void testFindUserByName() {
 		createZone(zoneName);
-		User user = pdi.findUserByName("liferay.com.1", "liferay.com");
+		User user = pdi.findUserByName(adminUser, zoneName);
 		assertNotNull(user);
 	}
 	

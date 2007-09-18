@@ -2,7 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" destroy-method="close">
 		<property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
 		<property name="url"><value>jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8</value></property>
@@ -49,43 +48,42 @@
 
 			</list>
 		</property>
- 		<property name="hibernateProperties">
+  		<property name="hibernateProperties">
  		   <props>
-  		    <prop key="hibernate.show_sql">true</prop>
+  		    <prop key="hibernate.show_sql">false</prop>
 			<prop key="hibernate.cache.use_second_level_cache">false</prop>
 		    </props>
 		</property>
-
 	</bean>
-	<bean id="zoneConfig" class="com.sitescape.team.util.SZoneConfig">
-		<property name="configDocs">
-			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
+
+	<bean id="sPropsUtil" class="com.sitescape.team.util.SPropsUtil">
+		<property name="config">
+			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
-						<value>config/zone.cfg.xml</value>
+						<value>config/ssf.properties</value>
 					</list>		
 				</property>
-				<property name="validating"><value>false</value></property>
 			</bean>
 		</property>
 	</bean>
-
 	<bean id="coreDaoImpl" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
+	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl"  depends-on="sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
+	</bean>
 	<bean id="folderDaoImpl" class="com.sitescape.team.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>
-	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl"  depends-on="zoneConfig">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
-	</bean>
-
 	<!-- Local transaction manager. -->
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
+
+
 
 </beans>

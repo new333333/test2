@@ -26,6 +26,7 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
@@ -314,8 +315,11 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		dVals.add(new Date());
 		entry.addCustomAttribute("aDateList", dVals);
 		Set eVals = new HashSet();
+		HistoryStamp stamp = new HistoryStamp();
+		stamp.setDate(new Date());
 		for (int i=0; i<4; ++i) {
 			Event event = new Event();
+			event.setCreation(stamp); //needed for setValue ordering
 			cdi.save(event);
 			eVals.add(event);
 			assertNotNull(event.getId());

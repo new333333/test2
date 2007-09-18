@@ -51,21 +51,30 @@
 		</property>
   		<property name="hibernateProperties">
  		   <props>
-  		    <prop key="hibernate.show_sql">true</prop>
+  		    <prop key="hibernate.show_sql">false</prop>
 			<prop key="hibernate.cache.use_second_level_cache">false</prop>
 		    </props>
 		</property>
 	</bean>
-
+	<bean id="sPropsUtil" class="com.sitescape.team.util.SPropsUtil">
+		<property name="config">
+			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/ssf.properties</value>
+					</list>		
+				</property>
+			</bean>
+		</property>
+	</bean>
 	<bean id="coreDaoImpl" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
-	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl">
+	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl"  depends-on="sPropsUtil">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>
-
 	<!-- Local transaction manager. -->
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
