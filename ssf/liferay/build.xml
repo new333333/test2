@@ -10,7 +10,7 @@
 	
 	<property name="jar.file" value="ssf-liferay.jar" />
 
-	<target name="clean">
+	<target name="clean" depends="build-common.clean">
 		<delete dir="temp" />
 		<delete dir="temp2" />
 	</target>
