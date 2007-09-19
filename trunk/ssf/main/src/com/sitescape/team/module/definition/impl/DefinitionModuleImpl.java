@@ -1577,8 +1577,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public Map getEntryDefinitionElements(String id) {
 		//Get a map for the results
 		//access doesn't seem needed
-    	Map dataElements = new TreeMap();		
-		Definition def = getDefinition(id);
+    	Map dataElements = new TreeMap();
+    	Definition def=null;
+		try {
+			def = getCoreDao().loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
+		} catch (NoDefinitionByTheIdException nd) {
+			return dataElements;
+		}
 		
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
@@ -1652,8 +1657,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public Map getWorkflowDefinitionStates(String id) {
 		//Get a map for the results
     	Map dataStates = new TreeMap();
-		//TODO: access doesn't seem needed
-		Definition def = getDefinition(id);
+    	Definition def=null;
+		try {
+			def = getCoreDao().loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
+		} catch (NoDefinitionByTheIdException nd) {
+			return dataStates;
+		}
 		
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {

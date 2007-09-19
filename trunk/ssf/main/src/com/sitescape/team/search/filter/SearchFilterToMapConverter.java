@@ -276,38 +276,40 @@ public class SearchFilterToMapConverter {
 		List values = getElementValues(filterTerm);
 		if (values.size() > 0) {
 			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
-			String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
-			block.put(SearchEntryValueType, valueType);
-			String value = (String)values.get(0);
-			
-			Object parsedValue = value;
-			String formattedValue = value;
-			if (valueType.equals("date")) {
-				parsedValue = parseDate_from_yyyy_MM_dd(value);
-				formattedValue = value;
-			} else if (valueType.equals("checkbox")) {
-				boolean valueObj = Boolean.parseBoolean(value);
-				if (valueObj) {
-					formattedValue = NLT.get("searchForm.checkbox.selected");
-				} else {
-					formattedValue = NLT.get("searchForm.checkbox.unselected");
-				}
-			} else if (valueType.equals("selectbox") || valueType.equals("radio")) {
-				Map selectBoxDefinedValues = (Map)((Map)fieldsMap.get(entryFieldId)).get(EntryField.ValuesField);
-				formattedValue = (String)selectBoxDefinedValues.get(value);
-			} else if (valueType.equals("user_list")) {
-				if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
-					formattedValue = NLT.get("searchForm.currentUserTitle");
-				} else {
-					Iterator users = profileModule.getUsers(Collections.singleton(Long.parseLong(value))).iterator();
-					if (users.hasNext()) {
-						formattedValue = ((User)users.next()).getTitle();
+			if (fieldsMap.containsKey(entryFieldId)) {
+				String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
+				block.put(SearchEntryValueType, valueType);
+				String value = (String)values.get(0);
+				
+				Object parsedValue = value;
+				String formattedValue = value;
+				if (valueType.equals("date")) {
+					parsedValue = parseDate_from_yyyy_MM_dd(value);
+					formattedValue = value;
+				} else if (valueType.equals("checkbox")) {
+					boolean valueObj = Boolean.parseBoolean(value);
+					if (valueObj) {
+						formattedValue = NLT.get("searchForm.checkbox.selected");
+					} else {
+						formattedValue = NLT.get("searchForm.checkbox.unselected");
+					}
+				} else if (valueType.equals("selectbox") || valueType.equals("radio")) {
+					Map selectBoxDefinedValues = (Map)((Map)fieldsMap.get(entryFieldId)).get(EntryField.ValuesField);
+					formattedValue = (String)selectBoxDefinedValues.get(value);
+				} else if (valueType.equals("user_list")) {
+					if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
+						formattedValue = NLT.get("searchForm.currentUserTitle");
+					} else {
+						Iterator users = profileModule.getUsers(Collections.singleton(Long.parseLong(value))).iterator();
+						if (users.hasNext()) {
+							formattedValue = ((User)users.next()).getTitle();
+						}
 					}
 				}
+				
+				block.put(SearchEntryValues, formattedValue);
+				block.put(SearchEntryValuesNotFormatted, parsedValue);
 			}
-			
-			block.put(SearchEntryValues, formattedValue);
-			block.put(SearchEntryValuesNotFormatted, parsedValue);
 		} 
 		return block;
 	}
@@ -329,19 +331,21 @@ public class SearchFilterToMapConverter {
 		
 		if (values.size() > 0) {
 			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
-			String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
-			block.put(SearchEntryValueType, valueType);
-			String value = (String)values.get(0);
-			
-			Object parsedValue = value;
-			String formattedValue = value;
-			if (valueType.equals("event")) {
-				parsedValue = parseDate_from_yyyy_MM_dd(value);
-				formattedValue = value;
+			if (fieldsMap.containsKey(entryFieldId)) {
+				String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
+				block.put(SearchEntryValueType, valueType);
+				String value = (String)values.get(0);
+				
+				Object parsedValue = value;
+				String formattedValue = value;
+				if (valueType.equals("event")) {
+					parsedValue = parseDate_from_yyyy_MM_dd(value);
+					formattedValue = value;
+				}
+				
+				block.put(SearchEntryValues, formattedValue);
+				block.put(SearchEntryValuesNotFormatted, parsedValue);
 			}
-			
-			block.put(SearchEntryValues, formattedValue);
-			block.put(SearchEntryValuesNotFormatted, parsedValue);
 		} 
 		return block;
 	}
@@ -500,7 +504,7 @@ public class SearchFilterToMapConverter {
 			
 			if (entryType != null && !entryType.equals("")) {
 				Map fieldsMap = definitionModule.getEntryDefinitionElements(entryType);
-				if (fieldsMap != null && fieldName != null && fieldsMap.get(fieldName) != null) {
+				if (fieldName != null && fieldsMap.get(fieldName) != null) {
 					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
 					((Entry)entriesMap.get(entryType)).addField(entryField);
 				}	
@@ -557,12 +561,14 @@ public class SearchFilterToMapConverter {
 			Map wfFilter = (Map) it.next();
 			String wfId = (String)wfFilter.get(SearchFilterKeys.SearchWorkflowId);
 			Map steps = definitionModule.getWorkflowDefinitionStates(wfId);
-			
+			if (steps.isEmpty()) continue;
 			List selectedStepsNames = (List) wfFilter.get(SearchFilterKeys.FilterWorkflowStateName);
 			Iterator filterSteps = selectedStepsNames.iterator();
 			while (filterSteps.hasNext()) {
 				String stepName = (String)filterSteps.next();
-				WorkflowStep wfStep = new WorkflowStep(stepName, (String)((Map)steps.get(stepName)).get(WorkflowStep.TitleField));
+				Map stepMap = (Map)steps.get(stepName);
+				if (stepMap == null) continue;
+				WorkflowStep wfStep = new WorkflowStep(stepName, (String)stepMap.get(WorkflowStep.TitleField));
 				((Workflow)wfMap.get(wfId)).addStep(wfStep);
 			}
 		}
