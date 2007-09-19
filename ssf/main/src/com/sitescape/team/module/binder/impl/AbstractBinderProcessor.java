@@ -871,6 +871,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //inside write transaction    
     public void moveBinder(Binder source, Binder destination) {
+    	if (source.equals(destination)) return;
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.moveBinder", new String[]{source.getPathName()});
@@ -1149,6 +1150,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			// limit list to 100 or index will be locked
     			if (binders.size() >= 100) {
     				updateIndexFolderAcl(binders);
+    				//evict used binders so don't fill session cache, but don't evict starting binder
     				if (binders.get(0).equals(binder)) binders.remove(0);
     				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
     				binders.clear();
@@ -1162,15 +1164,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
  
-    protected void updateIndexFolderAcl(List<Binder> binders) {
+    protected void updateIndexFolderAcl(List<Binder> indexBinders) {
     	ArrayList<Query> updateQueries = new ArrayList();
     	ArrayList<String> updateIds = new ArrayList();
+    	//make a copy so don't modify original
+    	ArrayList<Binder>binders = new ArrayList(indexBinders);
 		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index with this new 
 		// Acl list.
 		//find descendent binders with the same owner and re-index together
 		//the owner  may be part of the acl set, so cannot always share
-		while (!binders.isEmpty()) {
+ 		while (!binders.isEmpty()) {
 			Binder top = binders.get(0);
 			binders.remove(0);
 			List ids = new ArrayList();
