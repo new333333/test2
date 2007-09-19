@@ -2102,7 +2102,8 @@
 	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
-			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']">
+			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']"
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="description" caption="__description" type="textarea" />
