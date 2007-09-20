@@ -363,7 +363,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public String getTeamMemberString() {
     	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
     	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	if (members == null) return "";
+    	if (members == null) return "xx";
     	return members;
     	
     }
