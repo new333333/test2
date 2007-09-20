@@ -25,6 +25,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.AclUpdater;
 import org.apache.lucene.index.DocumentSelection;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexUpdater;
@@ -668,15 +669,16 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private void doUpdate(Query q, String fieldname, String fieldvalue) {
-		IndexUpdater updater = null;
+		AclUpdater updater = null;
 		long startTime = System.currentTimeMillis();
 
 		try {
 			Directory indDir = FSDirectory.getDirectory(indexPath);
-			updater = new IndexUpdater(indDir);
+			updater = new AclUpdater(indDir);
 			DocumentSelection docsel = updater.createDocSelection(q);
+			if (fieldvalue.equalsIgnoreCase("")) fieldvalue = "xx";
 			if (docsel.size() != 0)
-				updater.updateField(new Field(fieldname, fieldvalue,
+				updater.addField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfIndexAnalyzer(), docsel);
 			updater.close();
