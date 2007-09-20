@@ -2042,7 +2042,7 @@
    <String `Dupicate Id Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/11/2007 5:40:51 PM'>
+   <String `9/20/2007 11:30:11 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2084,13 +2084,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `glossary.fm has no duplicate id(s)'>
+   <String `icecoreusertroubleshooting.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `icecoreusertroubleshooting.fm has no duplicate id(s)'>
+   <String `glossary.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow
