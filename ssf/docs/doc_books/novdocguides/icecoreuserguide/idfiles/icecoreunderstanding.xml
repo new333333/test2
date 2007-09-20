@@ -4,9 +4,9 @@
 
  <target id="bamndbk" pid="bamndbk" name="Chapter" level="0" number="1"> <text>Concepts and Navigation</text> </target>
 
- <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>ICEcore is Collaboration Software</text> </target>
+ <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>Novell Teaming is Collaboration Software</text> </target>
 
- <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>ICEcore is Knowledge Management Software</text> </target>
+ <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>Novell Teaming is Knowledge Management Software</text> </target>
 
  <target id="bamolyw" pid="bamolyw" name="Sect1" level="1" number="1.2"> <text>Navigating Workspaces and Folders</text> </target>
 
@@ -24,7 +24,7 @@
 
  <target id="banmwr2" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Guestbook summary</text> </target>
 
- <target id="banmwr3" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>ICEcore administration</text> </target>
+ <target id="banmwr3" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Novell Teaming administration</text> </target>
 
  <target id="banmwr4" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Photo gallery</text> </target>
 
