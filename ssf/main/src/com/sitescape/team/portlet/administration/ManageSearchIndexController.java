@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -104,10 +105,12 @@ public class ManageSearchIndexController extends  SAbstractController {
     	users.addAttribute("title", NLT.get("administration.profile.content"));
     	users.addAttribute("id", p.getId().toString());
 		String icon = p.getIconName();
+		String imageBrand = SPropsUtil.getString("branding.prefix");
 		if (Validator.isNull(icon)) {
-	    	users.addAttribute("image", "people");
+	    	users.addAttribute("image", "/" + imageBrand + "/icons/profiles.gif");
+			users.addAttribute("imageClass", "ss_twImg");
 		} else {
-			users.addAttribute("image", icon);
+			users.addAttribute("image", "/" + imageBrand + icon);
 			users.addAttribute("imageClass", "ss_twIcon");
 		}
 		users.addAttribute("url", "");
