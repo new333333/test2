@@ -1666,8 +1666,8 @@ insert into Role_ (roleId, companyId, classNameId, classPK, name, description, t
 
 
 insert into Group_ (groupId, companyId, creatorUserId, classNameId, classPK, parentGroupId, liveGroupId, name, friendlyURL, active_) values (13, 1, 4, 0, 0, 0, 0, 'Guest', '/guest', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (14, 1, 13, 1, 0, 'Novell', '01', 0);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (15, 1, 13, 0, 0, 'Novell', '01', 1);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (14, 1, 13, 1, 0, 'ICEcore', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (15, 1, 13, 0, 0, 'ICEcore', '01', 1);
 insert into Layout (plid, groupId, companyId, privateLayout, layoutId, parentLayoutId, name, title, type_, typeSettings, hidden_, friendlyURL, priority) values (16, 13, 1, 0, 1, 0, '<?xml version="1.0"?>
 
 <root>
@@ -1684,8 +1684,8 @@ insert into PortletPreferences (portletPreferencesId, portletId, plid, ownerId, 
 insert into PortletPreferences (portletPreferencesId, portletId, plid, ownerId, ownerType, preferences) values (2, '48_INSTANCE_1XQI', 16, 0, 3, '<portlet-preferences><preference><name>portlet-setup-title</name><value>Welcome</value></preference><preference><name>hspace</name><value>0</value></preference><preference><name>form-method</name><value>post</value></preference><preference><name>portlet-setup-show-borders</name><value>false</value></preference><preference><name>width</name><value>800</value></preference><preference><name>portlet-setup-use-custom-title</name><value>true</value></preference><preference><name>hidden-variables</name><value></value></preference><preference><name>height-normal</name><value>450</value></preference><preference><name>password</name><value></value></preference><preference><name>user-name</name><value></value></preference><preference><name>bordercolor</name><value>#000000</value></preference><preference><name>frameborder</name><value>0</value></preference><preference><name>height-maximized</name><value>600</value></preference><preference><name>scrolling</name><value>auto</value></preference><preference><name>auth-type</name><value>basic</value></preference><preference><name>portlet-setup-css</name><value>{"spacingData":{"margin":{"sameForAll":true,"bottom":{"unit":"px","value":""},"left":{"unit":"px","value":""},"right":{"unit":"px","value":""},"top":{"unit":"px","value":""}},"padding":{"sameForAll":true,"bottom":{"unit":"px","value":""},"left":{"unit":"px","value":""},"right":{"unit":"px","value":""},"top":{"unit":"px","value":""}}},"borderData":{"borderStyle":{"sameForAll":true,"bottom":"","left":"","right":"","top":""},"borderColor":{"sameForAll":true,"bottom":"","left":"","right":"","top":""},"borderWidth":{"sameForAll":true,"bottom":{"unit":"px","value":""},"left":{"unit":"px","value":""},"right":{"unit":"px","value":""},"top":{"unit":"px","value":""}}},"textData":{"fontWeight":"","lineHeight":"","textDecoration":"","letterSpacing":"","color":"","fontStyle":"","textAlign":"","fontFamily":"","wordSpacing":"","fontSize":""},"bgData":{"backgroundPosition":{"left":{"unit":"px","value":""},"top":{"unit":"px","value":""}},"backgroundColor":"","backgroundRepeat":"","backgroundImage":"","useBgImage":false},"advancedData":{"customCSS":""}}</value></preference><preference><name>src</name><value>/ssf/help/en/guest.html</value></preference><preference><name>border</name><value>0</value></preference><preference><name>vspace</name><value>0</value></preference><preference><name>auth</name><value>false</value></preference></portlet-preferences>');
 
 insert into Group_ (groupId, companyId, creatorUserId, classNameId, classPK, parentGroupId, liveGroupId, name, friendlyURL, active_) values (16, 1, 4, 0, 0, 0, 0, 'Support', '', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (17, 1, 16, 1, 0, 'Novell', '01', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (18, 1, 16, 0, 0, 'Novell', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (17, 1, 16, 1, 0, 'ICEcore', '01', 1);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (18, 1, 16, 0, 0, 'ICEcore', '01', 0);
 insert into Layout (plid, groupId, companyId, privateLayout, layoutId, parentLayoutId, name, type_, typeSettings, hidden_, friendlyURL, priority) values (19, 16, 1, 1, 1, 0, '<?xml version="1.0"?>
 
 <root>
@@ -1698,14 +1698,14 @@ column-2=19,', 0, '', 0);
 insert into Organization_ (organizationId, companyId, parentOrganizationId, name, recursable, regionId, countryId, statusId, comments) values (20, 1, 0, 'Liferay USA', 0, 5, 19, 12017, '');
 
 insert into Group_ (groupId, companyId, creatorUserId, classNameId, classPK, parentGroupId, liveGroupId, name, friendlyURL, active_) values (21, 1, 4, 7, 20, 0, 0, '21', '', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (22, 1, 21, 1, 0, 'Novell', '01', 0);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (23, 1, 21, 0, 0, 'Novell', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (22, 1, 21, 1, 0, 'ICEcore', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (23, 1, 21, 0, 0, 'ICEcore', '01', 0);
 
 insert into Organization_ (organizationId, companyId, parentOrganizationId, name, recursable, regionId, countryId, statusId, comments) values (24, 1, 20, 'Liferay Los Angeles', 0, 5, 19, 12017, '');
 
 insert into Group_ (groupId, companyId, creatorUserId, classNameId, classPK, parentGroupId, liveGroupId, name, friendlyURL, active_) values (25, 1, 4, 7, 24, 0, 0, '25', '', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (26, 1, 25, 1, 0, 'Novell', '01', 0);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (27, 1, 25, 0, 0, 'Novell', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (26, 1, 25, 1, 0, 'ICEcore', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (27, 1, 25, 0, 0, 'ICEcore', '01', 0);
 
 insert into User_ (userId, companyId, createDate, modifiedDate, defaultUser, contactId, password_, passwordEncrypted, passwordReset, screenName, emailAddress, greeting, loginDate, failedLoginAttempts, agreedToTermsOfUse, active_) values (4, 1, GetDate(), GetDate(), 1, 5, 'password', 0, 0, '4', 'default@liferay.com', 'Welcome!', GetDate(), 0, 1, 1);
 insert into Contact_ (contactId, companyId, userId, userName, createDate, modifiedDate, accountId, parentContactId, firstName, middleName, lastName, male, birthday) values (5, 1, 4, '', GetDate(), GetDate(), 6, 0, '', '', '', 1, '19700101');
@@ -1714,8 +1714,8 @@ insert into User_ (userId, companyId, createDate, modifiedDate, defaultUser, con
 insert into Contact_ (contactId, companyId, userId, userName, createDate, modifiedDate, accountId, parentContactId, firstName, middleName, lastName, male, birthday) values (3, 1, 2, 'Mary Admin', GetDate(), GetDate(), 6, 0, 'Mary', '', 'Admin', 1, '19700101');
 
 insert into Group_ (groupId, companyId, creatorUserId, classNameId, classPK, parentGroupId, liveGroupId, name, friendlyURL, active_) values (64, 1, 2, 8, 2, 0, 0, '64', '', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (65, 1, 64, 1, 0, 'Novell', '01', 1);
-insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (66, 1, 64, 0, 0, 'Novell', '01', 0);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (65, 1, 64, 1, 0, 'ICEcore', '01', 1);
+insert into LayoutSet (layoutSetId, companyId, groupId, privateLayout, logo, themeId, colorSchemeId, pageCount) values (66, 1, 64, 0, 0, 'ICEcore', '01', 0);
 insert into Layout (plid, groupId, companyId, privateLayout, layoutId, parentLayoutId, name, type_, typeSettings, hidden_, friendlyURL, priority) values (67, 64, 1, 1, 1, 0, '<?xml version="1.0"?>
 
 <root>
