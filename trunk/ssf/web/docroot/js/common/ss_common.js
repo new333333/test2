@@ -5433,7 +5433,7 @@ function ss_startSpinner()
 	spinner.style.position='absolute';
     spinner.style.zIndex = 1000;
 	spinner.style.display='block';
-	ss_centerPopupDiv(spinner, bodyObj);
+	ss_centerPopupDiv(spinner);
 }
 
 function ss_stopSpinner()
