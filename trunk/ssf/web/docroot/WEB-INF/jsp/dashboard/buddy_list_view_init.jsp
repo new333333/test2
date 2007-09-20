@@ -13,6 +13,11 @@
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <script type="text/javascript">
+//How long to sleep between auto refresh; 
+//  set this to 0 for no auto refresh (defaulted to 0 to keep iChain session timeouts from being voided)
+//  set to 300000 for 5 minutes between refreshes
+var ss_presenceTimeoutTimeToSleep = 0;
+
 function ${ss_namespace}_${componentId}_getPresence(timeout) {
 //alert("1");
 //	var myDiv = document.getElementById('${ss_divId}');
@@ -34,7 +39,9 @@ function ${ss_namespace}_${componentId}_getPresence(timeout) {
     	<ssf:param name="userList" value="${ss_userList}"/>
     	</ssf:url>"
 	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, '${ss_divId}');
-	${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", 300000);
+	if (ss_presenceTimeoutTimeToSleep > 0) {
+		${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", 300000);
+	}
 }
 
 var ${ss_namespace}_${componentId}_presenceTimer = null;
