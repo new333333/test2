@@ -459,7 +459,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <c:if test="${!ssBinder.functionMembershipInherited}">
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" 
- onClick="ss_startSpinner();setTimeout('self.document.forms[\'${renderResponse.namespace}rolesForm\'].submit();',100);return false;"
+ onClick="ss_startSpinner();"
  value="<ssf:nlt tag="button.saveChanges" />">
 </c:if>
 
