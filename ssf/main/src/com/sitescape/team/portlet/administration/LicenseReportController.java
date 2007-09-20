@@ -33,12 +33,12 @@ public class LicenseReportController extends AbstractReportController {
 		model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
 		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 
-		Document doc = getLicenseModule().getLicense();
+		Document doc = getLicenseModule().getLicenses().get(0);
 		Node node = null;
 		model.put(WebKeys.LICENSE_KEY, getValue(doc, "//KeyInfo/@uid"));
 		model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
 		model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + getValue(doc, "//Dates/@expiration"));
-		model.put(WebKeys.LICENSE_USERS, getValue(doc, "//Users/@registered"));
+		model.put(WebKeys.LICENSE_USERS, "" + getLicenseModule().getRegisteredUsers());
 		model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
 	}
 	

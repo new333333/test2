@@ -133,11 +133,21 @@ implements LicenseModule, InitializingBean {
 		getLicenseManager().validate();
 	}
 
-	public Document getLicense()
+	public List<Document> getLicenses()
 	{
-		return getLicenseManager().getLicense();
+		return getLicenseManager().getLicenses();
 	}
 	
+	public long getRegisteredUsers()
+	{
+			return getLicenseManager().getRegisteredUsers();
+	}
+
+	public long getExternalUsers()
+	{
+			return getLicenseManager().getExternalUsers();
+	}
+
 	public boolean testAccess(LicenseOperation operation)
 	{
    		try {
