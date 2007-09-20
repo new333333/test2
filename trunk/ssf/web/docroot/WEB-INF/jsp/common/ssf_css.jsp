@@ -1126,6 +1126,7 @@ div.ss_sliding_table_column0 {
 }
 .ss_sliding_table_column0 * {
   color: ${ss_sliding_table_text_color};
+  white-space:nowrap;
 }
 div.ss_sliding_table_column1 {
   position: absolute; 
@@ -1136,6 +1137,7 @@ div.ss_sliding_table_column1 {
 }
 .ss_sliding_table_column1 * {
   color: ${ss_sliding_table_text_color};
+  white-space:nowrap;
 }
 div.ss_sliding_table_column {
   position: absolute; 
@@ -1146,6 +1148,7 @@ div.ss_sliding_table_column {
 }
 .ss_sliding_table_column * {
   color: ${ss_sliding_table_text_color};
+  white-space:nowrap;
 }
 .ss_sliding_table_info_popup {
   position: absolute; 
