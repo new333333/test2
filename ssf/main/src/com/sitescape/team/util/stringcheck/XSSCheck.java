@@ -38,7 +38,7 @@ public class XSSCheck implements StringCheck {
 		pattern = Pattern.compile(patternStr);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
-		groups = SPropsUtil.getStringArray("xss.groups", "\n");
+		groups = SPropsUtil.getStringArray("xss.groups", ";");
 
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
