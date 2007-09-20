@@ -1,10 +1,9 @@
 package com.sitescape.team.module.license;
 
-import java.util.Map;
+import java.util.List;
 
 import org.dom4j.Document;
 
-import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.license.LicenseException;
 
 public interface LicenseModule {
@@ -16,7 +15,10 @@ public interface LicenseModule {
 	public void updateLicense() throws LicenseException;
 	public void validateLicense() throws LicenseException;
 	
-	public Document getLicense();
+	public List<Document> getLicenses();
 		
 	public boolean testAccess(LicenseOperation operation);
+
+	public long getRegisteredUsers();
+	public long getExternalUsers();
 }

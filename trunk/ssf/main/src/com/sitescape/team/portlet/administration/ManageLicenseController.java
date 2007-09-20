@@ -56,11 +56,11 @@ public class ManageLicenseController extends SAbstractController {
 			getLicenseModule().validateLicense();
 		} catch(LicenseException e) {
 			model.put(WebKeys.LICENSE_EXCEPTION,
-					  e.getLocalizedMessage());
+					e.getLocalizedMessage());
 		}
-		Document doc = getLicenseModule().getLicense();
-		String visibleDoc = "";
-		if(doc != null) {
+		List<Document> docs = getLicenseModule().getLicenses();
+		StringBuffer visibleDoc = new StringBuffer();
+		for(Document doc : docs) {
 			try {
 				TransformerFactory transFactory = TransformerFactory.newInstance();
 				Source xsltSource = new StreamSource(request.getPortletSession().getPortletContext().getResourceAsStream(LICENSE_XSL_FILE));
@@ -68,48 +68,42 @@ public class ManageLicenseController extends SAbstractController {
 				Transformer trans = template.newTransformer();
 				StreamResult result = new StreamResult(new StringWriter());
 				trans.transform(new DocumentSource(doc), result);
-				visibleDoc = result.getWriter().toString().replaceAll("<\\?xml .*\\?>", "");
+				String textDoc= result.getWriter().toString().replaceAll("<\\?xml .*\\?>", "");
 				Document helperDoc = DocumentHelper.createDocument();
 				Element helperRoot = helperDoc.addElement("pre");
-				helperRoot.addText(visibleDoc);
-				visibleDoc = helperRoot.asXML();
+				helperRoot.addText(textDoc);
+				visibleDoc.append(helperRoot.asXML());
 			} catch(TransformerConfigurationException e) {
 				logger.warn("Unable to process license with XSL", e);
 			}
-		}
-		
-		model.put(WebKeys.LICENSE_KEY, getValue(doc, "//KeyInfo/@uid"));
-		model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
-		
-		String expireDate = getValue(doc, "//Dates/@expiration");
-		
-		if(expireDate.equals("1/1/2500"))
-			model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") 
-					+ " - " + NLT.get("license.expire.never"));
-		else
-			model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + expireDate);
-		model.put(WebKeys.LICENSE_USERS, getValue(doc, "//Users/@registered"));
-		model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
-		
-		model.put(WebKeys.LICENSE_ISSUER, getValue(doc, "//KeyInfo/@by"));
-		model.put(WebKeys.LICENSE_PRODUCT_ID, getValue(doc, "//Product/@id"));
-		model.put(WebKeys.LICENSE_PRODUCT_TITLE, getValue(doc, "//Product/@title"));
-		model.put(WebKeys.LICENSE_PRODUCT_VERSION, getValue(doc, "//Product/@version"));
-		model.put(WebKeys.LICENSE_EXTERNAL_USERS, getValue(doc, "//Users/@external"));
-		
-		
-		if(doc != null) {
-			
+
+			model.put(WebKeys.LICENSE_KEY, getValue(doc, "//KeyInfo/@uid"));
+			model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
+
+			String expireDate = getValue(doc, "//Dates/@expiration");
+
+			if(expireDate.equals("1/1/2500"))
+				model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") 
+						+ " - " + NLT.get("license.expire.never"));
+			else
+				model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + expireDate);
+			model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
+
+			model.put(WebKeys.LICENSE_ISSUER, getValue(doc, "//KeyInfo/@by"));
+			model.put(WebKeys.LICENSE_PRODUCT_ID, getValue(doc, "//Product/@id"));
+			model.put(WebKeys.LICENSE_PRODUCT_TITLE, getValue(doc, "//Product/@title"));
+			model.put(WebKeys.LICENSE_PRODUCT_VERSION, getValue(doc, "//Product/@version"));
+
 			Object obj = doc.selectObject("//Options/*");
-			
+
 			if(obj != null) {
 				if(obj instanceof List) {
 					List options = null;
 					options = (List) obj;
-		
+
 					if(options != null) {
 						StringBuilder optionsList = new StringBuilder();
-			
+
 						for(int i = 0; i < options.size(); i++) {
 							Element ele = (Element) options.get(i);
 							optionsList.append(ele.attribute("title").getValue() + ",");
@@ -120,23 +114,23 @@ public class ManageLicenseController extends SAbstractController {
 				if(obj instanceof Element) {
 					Element singleOption = null;
 					singleOption = (Element) obj;
-				
+
 					if(singleOption != null) {
 						model.put(WebKeys.LICENSE_OPTIONS_LIST, singleOption.attribute("title").getValue());
 					}
 				}
 			}
-			
+
 			obj = doc.selectObject("//ExternalAccess/*");
-			
+
 			if(obj != null) {
 				if(obj instanceof List) {
 					List extAccess = null;
 					extAccess = (List) obj;
-		
+
 					if(extAccess != null) {
 						StringBuilder extAccessList = new StringBuilder();
-			
+
 						for(int i = 0; i < extAccess.size(); i++) {
 							Element ele = (Element) extAccess.get(i);
 							extAccessList.append(ele.asXML().replace("<", "").replace("/>", "") + ",");
@@ -147,20 +141,21 @@ public class ManageLicenseController extends SAbstractController {
 				if(obj instanceof Element) {
 					Element singleExtAccess = null;
 					singleExtAccess = (Element) obj;
-				
+
 					if(singleExtAccess != null) {
 						model.put(WebKeys.LICENSE_EXTERNAL_ACCESS_LIST, singleExtAccess.asXML().replace("<", "").replace("/>", ""));
 					}
 				}
 			}
-			
 		}
-			
+
+		model.put(WebKeys.LICENSE_USERS, ""+getLicenseModule().getRegisteredUsers());
+		model.put(WebKeys.LICENSE_EXTERNAL_USERS, ""+getLicenseModule().getExternalUsers());
 		model.put(WebKeys.LICENSE, visibleDoc);
 		return new ModelAndView("administration/manage_license", model);
-		
+
 	}
-	
+
 	private String getValue(Document doc, String xpath)
 	{
 		Node node = null;
