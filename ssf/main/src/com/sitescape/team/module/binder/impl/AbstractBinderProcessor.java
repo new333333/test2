@@ -74,7 +74,6 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
-import com.sitescape.team.pipeline.Pipeline;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
@@ -148,15 +147,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		this.rssModule = rssModule;
 	}
 	
-	private Pipeline pipeline;
-	
-	public void setPipeline(Pipeline pipeline) {
-		this.pipeline = pipeline;
-	}
-	protected Pipeline getPipeline() {
-		return pipeline;
-	}
-
 	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
