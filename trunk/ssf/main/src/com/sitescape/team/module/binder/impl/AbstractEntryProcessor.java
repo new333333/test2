@@ -1170,7 +1170,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
-   		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
+        BasicIndexUtils.addAttachmentType(indexDoc, BasicIndexUtils.ATTACHMENT_TYPE_ENTRY, true);
+  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
    		return indexDoc;
  
     }

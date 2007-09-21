@@ -1054,7 +1054,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     		//need to update access, since owner has changed - assume read access is effected
 			if (workArea instanceof Binder) {
 				Binder binder = (Binder)workArea;
-				loadBinderProcessor(binder).indexFunctionMembership(binder, false);
+				loadBinderProcessor(binder).indexOwner(binder);
 			}
     	}
     }

@@ -22,6 +22,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceDriverManagerUtil;
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.Validator;
@@ -363,7 +364,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public String getTeamMemberString() {
     	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
     	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	if (members == null) return "xx";
+    	if (members == null) return BasicIndexUtils.EMPTY_ACL_FIELD;
     	return members;
     	
     }

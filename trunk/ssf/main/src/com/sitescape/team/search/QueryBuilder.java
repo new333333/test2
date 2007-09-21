@@ -83,6 +83,7 @@ public class QueryBuilder {
 	private static final String FOLDER_PREFIX=BasicIndexUtils.FOLDER_ACL_FIELD + ":";
 	private static final String ENTRY_PREFIX=BasicIndexUtils.ENTRY_ACL_FIELD + ":";
 	private static final String ENTRY_ALL=ENTRY_PREFIX+BasicIndexUtils.READ_ACL_ALL;
+	private static final String BINDER_OWNER_PREFIX=BasicIndexUtils.BINDER_OWNER_ACL_FIELD + ":";
 
 	private Set principalIds;
 
@@ -340,11 +341,11 @@ public class QueryBuilder {
 		
 		/*
 		 * if widen(the default), then acl query is:
-		 * access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3) OR
+		 * access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3) OR (entryAcl:all and folderAcl:own and bOwnerAcl:<user>) OR
 		 * access to entry (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3)) 
 		 * 
 		 * if !widen, then acl query is: 
-		 * access to folder (((folderAcl:1,2,3) OR (folderAcl:team and teamAcl:1,2,3)) AND
+		 * access to folder (((folderAcl:1,2,3) OR (folderAcl:team and teamAcl:1,2,3) OR (folderAcl:own and bOwnerAcl:<user>)) AND
 		 * access to entry ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
 		 * 
 		 *  
@@ -359,6 +360,9 @@ public class QueryBuilder {
 			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 								FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " +
 								"(" + idField(principalIds, TEAM_PREFIX) + "))");								
+			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
+					FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " +
+					BINDER_OWNER_PREFIX + user.getId().toString() + ")");								
 			qString.append(" OR (" + idField(principalIds, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
 			qString.append(" OR (" + ENTRY_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 								"(" + idField(principalIds, TEAM_PREFIX) + "))");
@@ -369,6 +373,8 @@ public class QueryBuilder {
 			qString.append(" OR ");
 			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + idField(principalIds, TEAM_PREFIX) + "))");
+			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
+					BINDER_OWNER_PREFIX + user.getId().toString() + ")");
 			qString.append(") AND (");												//) AND (
 			qString.append("(" + ENTRY_ALL + " OR " +						//(entryAcl:all OR entryAcl:1 OR entryAcl:2)
 						idField(principalIds, ENTRY_PREFIX) + ")");
