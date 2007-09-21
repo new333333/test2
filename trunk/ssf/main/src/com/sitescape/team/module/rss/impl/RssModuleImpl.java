@@ -399,7 +399,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		Document doc = createEmptyRssDoc(NLT.get("rss.auth.failure"));
 		return doc.asXML();
 	}
-
+	
+	public String BinderExistenceError(HttpServletRequest request,
+			HttpServletResponse response) {
+		Document doc = createEmptyRssDoc(NLT.get("binder.deleted"));
+		return doc.asXML();
+	}
+	
 	private org.apache.lucene.document.Document createDocumentFromEntry(
 			Entry entry) {
 		org.apache.lucene.document.Document doc = new org.apache.lucene.document.Document();

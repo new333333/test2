@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -27,6 +28,7 @@ public class ListController extends SAbstractController {
 
 	private static final int THREESECS = 3000;
 	private boolean authErr = false;
+	private boolean binderExists = true;
 
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -35,12 +37,18 @@ public class ListController extends SAbstractController {
 		Binder binder = null;
 		User user = null;
 		authErr = false;
+		binderExists = true;
+		
 		// Test if the user is authenticated or not using the flag stored in
 		// the request. Don't ever make this decision based on the existence
 		// of request context data, since it may be a stale data from previous
 		// request that for some reason was cleared properly. 
 		if(!WebHelper.isUnauthenticatedRequest(request)) {
-			binder = getBinderModule().getBinder(binderId);
+			try {
+				binder = getBinderModule().getBinder(binderId);
+			} catch (NoBinderByTheIdException nbe) {
+				binderExists = false;
+			}
 			user = RequestContextHolder.getRequestContext().getUser();
 		} else {
 			// the authentication key is incorrect, make them wait
@@ -56,10 +64,12 @@ public class ListController extends SAbstractController {
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		//use writer to enfoce character set
-		if (!authErr) {
-			response.getWriter().write(getRssModule().filterRss(request, response, binder,user));
-		} else {
+		if (authErr) {
 			response.getWriter().write(getRssModule().AuthError(request, response));
+		} else if (!binderExists) {
+			response.getWriter().write(getRssModule().BinderExistenceError(request, response));
+		} else {
+			response.getWriter().write(getRssModule().filterRss(request, response, binder,user)); 
 		}
 		response.flushBuffer();
 		return null;
