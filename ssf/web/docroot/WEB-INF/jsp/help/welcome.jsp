@@ -11,7 +11,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<script type="text/javascript" src="<html:rootPath/>js/common/common.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 <div class="ss_portlet_style ss_portlet">
 <div class="ss_style" style="padding:4px;" align="center">
 <img src="<html:brandedImagesPath/>pics/getting_started.gif">
