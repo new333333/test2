@@ -447,39 +447,61 @@ public class EntityIndexUtils {
 		doc.add(new Field(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.TOKENIZED));
    	
     }
-    // Get ids for folder read access.  Replace owner with binder owner.  Leave team member indicator in place
+    // Get ids for folder read access.  Replace owner indicator with search owner search flag. Replace team indicator with team owner search flag
     public static String getFolderAclString(Binder binder) {
 		Set binderIds = AccessUtils.getReadAccessIds(binder);
-		if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
    		String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
+       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), BasicIndexUtils.READ_ACL_BINDER_OWNER);
         return ids;
     }
     
-    public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
-    	//set entryAcl to all
-		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+    //Add acl fields for binder for storage in search engine
+    private static void addBinderAcls(Document doc, Binder binder) {
 		//get real binder access
 		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
 		//get team members
 		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
+		//add binder owner
+		Long owner = binder.getOwnerId();
+		String ownerStr = BasicIndexUtils.EMPTY_ACL_FIELD;
+		if (owner != null) ownerStr = owner.toString();
+		doc.add(new Field(BasicIndexUtils.BINDER_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.TOKENIZED));    	
     }
-    
-    public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly) {
-		//add binder access
+    //Add acl fields for binder for storage in dom4j documents.
+    //In this case replace owner with real owner in _folderAcl
+ 	//The extra field is not necessary cause bulk updateing is not done
+    private static void addBinderAcls(org.dom4j.Element parent, Binder binder) {
+		Set binderIds = AccessUtils.getReadAccessIds(binder);
+      	if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
+      	String ids = LongIdUtil.getIdsAsString(binderIds);
+       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
     	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
-   		acl.setText(getFolderAclString(binder));
+   		acl.setText(ids);
+   		//add Team
+   		acl = parent.addElement(BasicIndexUtils.TEAM_ACL_FIELD);
+   		acl.setText(binder.getTeamMemberString());
+   }
+    
+    public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
     	//set entryAcl to all
-		acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
+		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+		//add binder acls
+		addBinderAcls(doc, binder);
+    }
+    public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly) {
+    	//set entryAcl to all
+   		Element  acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
  		acl.setText(BasicIndexUtils.READ_ACL_ALL);
- 	   	//set team
-		acl = parent.addElement(BasicIndexUtils.TEAM_ACL_FIELD);
- 		acl.setText(binder.getTeamMemberString());
+		//add binder access
+   		addBinderAcls(parent, binder);
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
 		//get principals given read access 
      	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
-     	//replace owner indicator, but leave team member alone
+     	//replace owner indicator, but leave team member alone for now
+        //for entries, the owner is stored in the entry acl and not its own field like binders
+     	//The extra field is not necessary cause updateing does not have to optimized
      	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(wEntry.getOwnerId());
      	// I'm not sure if putting together a long string value is more
      	// 	efficient than processing multiple short strings... We will see.
@@ -497,9 +519,7 @@ public class EntityIndexUtils {
        		// Add the Entry_ACL field
        		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
        		//add binder access
-    		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
-    		//get team members
-    		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
+    		addBinderAcls(doc, binder);
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);
@@ -510,14 +530,11 @@ public class EntityIndexUtils {
 		// Add ACL field. We only need to index ACLs for read access.
   		//add binder access
    		if (entry instanceof WorkflowSupport) {
-   		   	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
-   	   		acl.setText(getFolderAclString(binder));
-   	   		WorkflowSupport wEntry = (WorkflowSupport)entry;
+  	   		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
-       		acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
+   	   		Element acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
        		acl.setText(getWfEntryAccess(wEntry));
-    		acl = parent.addElement(BasicIndexUtils.TEAM_ACL_FIELD);
-     		acl.setText(binder.getTeamMemberString());
+    		addBinderAcls(parent, binder);
 
     	} else {
      		addReadAccess(parent, binder, fieldsOnly);

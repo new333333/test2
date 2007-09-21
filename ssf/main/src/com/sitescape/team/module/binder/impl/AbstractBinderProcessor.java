@@ -98,7 +98,7 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-	public static  String[] docTypes = new String[] {BasicIndexUtils.DOC_TYPE_BINDER, BasicIndexUtils.DOC_TYPE_ENTRY,BasicIndexUtils.DOC_TYPE_ATTACHMENT};
+	private static  String[] docTypes = new String[] {BasicIndexUtils.DOC_TYPE_ENTRY,BasicIndexUtils.DOC_TYPE_ATTACHMENT};
     protected DefinitionModule definitionModule;
     protected static Map fieldsOnlyIndexArgs = new HashMap();
     static {
@@ -1127,7 +1127,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void indexFunctionMembership(Binder binder, boolean cascade) {
     	List<Binder> binders = new ArrayList();
     	binders.add(binder);
-    	
+		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
     		List<Binder>candidates = new ArrayList(binder.getBinders());
     		while (!candidates.isEmpty()) {
@@ -1139,7 +1139,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			}
     			// limit list to 100 or index will be locked
     			if (binders.size() >= 100) {
-    				updateIndexFolderAcl(binders);
+    				doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);
     				//evict used binders so don't fill session cache, but don't evict starting binder
     				if (binders.get(0).equals(binder)) binders.remove(0);
     				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
@@ -1149,59 +1149,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	};
     	
     	//finish list
-    	if (!binders.isEmpty()) {
-    		updateIndexFolderAcl(binders);
-    	}
+		doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);
     }
  
-    protected void updateIndexFolderAcl(List<Binder> indexBinders) {
-    	ArrayList<Query> updateQueries = new ArrayList();
-    	ArrayList<String> updateIds = new ArrayList();
-    	//make a copy so don't modify original
-    	ArrayList<Binder>binders = new ArrayList(indexBinders);
-		// Now, create a query which can be used by the index update method to modify all the
-		// entries, replies, attachments, and binders(workspaces) in the index with this new 
-		// Acl list.
-		//find descendent binders with the same owner and re-index together
-		//the owner  may be part of the acl set, so cannot always share
- 		while (!binders.isEmpty()) {
-			Binder top = binders.get(0);
-			binders.remove(0);
-			List ids = new ArrayList();
-			ids.add(top.getId());
-			List<Binder> others = new ArrayList(binders);
-			for (Binder b:others) {
-				//have same owner  same acl				
-				if (b.getOwnerId() != null && b.getOwnerId().equals(top.getOwnerId())) {
-					binders.remove(b);
-					ids.add(b.getId());
-				}
-			}
-			org.dom4j.Document qTree = buildQueryforUpdate(ids);
-	    	//don't need to add access check to update of acls
-			//access to entries is not required to update the folder acl
-	    	QueryBuilder qb = new QueryBuilder(null);
-			// add this query and list of ids to the lists we'll pass to updateDocs.
-			updateQueries.add(qb.buildQuery(qTree, true).getQuery());
-			updateIds.add(EntityIndexUtils.getFolderAclString(top));
-		}
-		
-    	if (updateQueries.size() > 0) {
-    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-    		try {
-    			
-    			luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
-    						updateIds);
-    		} finally {
-    			luceneSession.close();
-    		}
-    	}
-    		
-    }
-    public void indexTeamMembership(Binder binder, boolean cascade) {
+     public void indexTeamMembership(Binder binder, boolean cascade) {
        	List<Binder> binders = new ArrayList();
     	binders.add(binder);
-    	
+    	String value = binder.getTeamMemberString();
     	if (cascade) {
     		List<Binder>candidates = new ArrayList(binder.getBinders());
     		while (!candidates.isEmpty()) {
@@ -1213,7 +1167,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        			} 
     			// limit list to 100 or index will be locked
     			if (binders.size() >= 100) {
-    				updateIndexTeamAcl(binders);
+    				doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
     				if (binders.get(0).equals(binder)) binders.remove(0);
     				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
     				binders.clear();
@@ -1222,44 +1176,49 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	};
     	
     	//finish list
-   		updateIndexTeamAcl(binders);
+		doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
    }
-    protected void updateIndexTeamAcl(List<Binder> binders) {
+
+    private void doFieldUpdate(List<Binder>binders, String field, String value) {
     	if (binders.isEmpty()) return;
 		// Now, create a query which can be used by the index update method to modify all the
-		// entries, replies, attachments, and binders(workspaces) in the index with this new 
-		// team list.
-		List ids = new ArrayList();
-		for (Binder b:binders) {
-			ids.add(b.getId());
-		}
-		org.dom4j.Document qTree = buildQueryforUpdate(ids);
+		// entries, replies, attachments, and binders(workspaces) in the index 
+		org.dom4j.Document qTree = buildQueryforUpdate(binders);
 		//don't need to add access check to update of acls
 		//access to entries is not required to update the team acl
 		QueryBuilder qb = new QueryBuilder(null);
 		// add this query and list of ids to the lists we'll pass to updateDocs.
    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
    		try {
-   			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), BasicIndexUtils.TEAM_ACL_FIELD, binders.get(0).getTeamMemberString());
+   			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
    		} finally {
    			luceneSession.close();
     	}    		
-    }   
- 
-	private static org.dom4j.Document buildQueryforUpdate(List<Long> binderIds) {
+    	
+    }
+    public void indexOwner(Binder binder) {
+      	List<Binder> binders = new ArrayList();
+      	binders.add(binder);
+		String value = BasicIndexUtils.EMPTY_ACL_FIELD;
+		Long id = binder.getOwnerId();
+		if (id != null) value = id.toString();
+		doFieldUpdate(binders, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
+    }
+
+	private org.dom4j.Document buildQueryforUpdate(List<Binder> binders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
     	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
  
     	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
-    	//get all the entrys, replies and attachments
-    	// Folderid's and doctypes:{entry, binder, attachment}
-    	for (Iterator iter = binderIds.iterator(); iter.hasNext();) {
+    	//get all the entrys, replies and their attachments
+    	// _binderId and doctypes:{entry, attachment}
+    	for (Binder b:binders) {
     		Element field = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
 			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
 			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(iter.next().toString());
+			child.setText(b.getId().toString());
     	}
     	
     	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
@@ -1270,18 +1229,31 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			child.setText(docTypes[i]);
     	}
     	// Get all the binder's themselves
-    	// OR Doctype=binder and binder id's
+    	// (Doctype=binder OR (DocType=attachment and attType=binder)) and binder id's
     	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
-    	Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-    	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	Element bOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+    	Element field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
 		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
-	   	for (Iterator iter = binderIds.iterator(); iter.hasNext();) {
+
+		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
+    	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+		
+    	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
+		
+		Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+	   	for (Binder b:binders) {
     		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
 			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
 			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(iter.next().toString());
+			child.setText(b.getId().toString());
     	}
 	   	return qTree;
 	}
@@ -1445,7 +1417,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
        	//do common part first.  Indexing a file will remove some of the items
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
-         	
+        BasicIndexUtils.addAttachmentType(indexDoc, BasicIndexUtils.ATTACHMENT_TYPE_BINDER, true);
+
   	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags);
        	return indexDoc;
      }

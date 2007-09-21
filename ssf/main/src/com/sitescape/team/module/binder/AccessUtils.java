@@ -82,7 +82,8 @@ public class AccessUtils  {
 	 */
 	public static boolean checkAccess(Element parent, Set<String> userIds) {	
 		//KEEP IN SYNC WITH QUERYBUILDER.GETACLCLAUSE 
-
+		//Don't exactly duplicate all the optimizations in the search engine.
+		//The folder owner is stored in toe folderAcl field, not a separate field cause bulk updates are never done
 		/* if widen(the default), then acl query is:
 		 * access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3) OR
 		 * access to entry (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3)) 

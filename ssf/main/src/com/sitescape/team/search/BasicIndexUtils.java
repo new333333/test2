@@ -44,12 +44,14 @@ public class BasicIndexUtils {
     
     public static final String UID_FIELD = "_uid";
     public static final String DOC_TYPE_FIELD = "_docType";
+    public static final String ATTACHMENT_TYPE_FIELD = "_attType";
     public static final String THIS_CLASS_FIELD = "_class";
     public static final String ALL_TEXT_FIELD = "_allText";
     public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
     public static final String READ_ACL_FIELD = "_readAcl";
     public static final String ENTRY_ACL_FIELD = "_entryAcl";
     public static final String FOLDER_ACL_FIELD = "_folderAcl";
+    public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
     public static final String TEAM_ACL_FIELD = "_teamAcl";  //team members used with folder and entry acl
     public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
 //    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
@@ -63,16 +65,23 @@ public class BasicIndexUtils {
     // Defines field values
     public static final String READ_ACL_ALL = "all";
     public static final String READ_ACL_TEAM = "team";
+    public static final String READ_ACL_BINDER_OWNER = "own";
     public static final String TAG = "TAG";
     public static final String TAG_ACL_PRE = "ACL";
     public static final String GROUP_ANY = "any";
-    
+    public static final String EMPTY_ACL_FIELD="xx";
     
     // The following fields represent valid values for DOC_TYPE_FIELD.
     
     public final static String DOC_TYPE_BINDER 		= "binder";
     public final static String DOC_TYPE_ENTRY 		= "entry";
     public final static String DOC_TYPE_ATTACHMENT	= "attachment"; 
+    //The following fields represent valid values for ATTACHMENT_TYPE_FIELD
+    //Need to indicate what type of entity an attachment belongs to for updateDocs
+    //Binder attachments don't have anything unqiue to distinquish them from entry attachments,
+    //DocID is not unique
+    public final static String ATTACHMENT_TYPE_BINDER="binder";
+    public final static String ATTACHMENT_TYPE_ENTRY="entry";
     
     private static final String UID_DELIM = "_";
     //use to separate field ids and names
@@ -103,6 +112,9 @@ public class BasicIndexUtils {
         doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.UN_TOKENIZED));
     }
     
+    public static void addAttachmentType(Document doc, String attType, boolean fieldsOnly) {
+        doc.add(new Field(ATTACHMENT_TYPE_FIELD, attType, Field.Store.YES, Field.Index.UN_TOKENIZED));
+    }
     /*
     public static Document createDocument(String uid, String docType, String className) {
         Document doc = new Document();

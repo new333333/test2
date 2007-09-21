@@ -76,7 +76,9 @@ public class LongIdUtil {
 		StringBuffer buf = new StringBuffer();
 		if (ids == null) return "";
 		for (Iterator iter=ids.iterator(); iter.hasNext();) {
-			buf.append(iter.next().toString());
+			Object id = iter.next();
+			if (id == null) continue;
+			buf.append(id.toString());
 			buf.append(DEFAULT_SEPARATOR);
 		}
 		return buf.toString();
