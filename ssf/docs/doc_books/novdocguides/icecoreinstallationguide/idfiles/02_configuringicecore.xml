@@ -2,15 +2,15 @@
 
 <targets>
 
- <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring ICEcore</text> </target>
+ <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring Novell Teaming</text> </target>
 
  <target id="b9vde7e" pid="b9vde7e" name="Sect1" level="1" number="2.1"> <text>Log in as Liferay Site Manager</text> </target>
 
  <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>To Log In Using the Administrator Account:</text> </target>
 
- <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
+ <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the Novell Teaming URL for your company into the browser window:</text> </target>
 
- <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
+ <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the Novell Teaming URL for your company into the browser window:</text> </target>
 
  <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the Login field, type:</text> </target>
 
@@ -242,9 +242,9 @@
 
  <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver. (You may want to use one of the disabled samples as a template.)</text> </target>
 
- <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into ICEcore as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</text> </target>
+ <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into Novell Teaming as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</text> </target>
 
- <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="3"> <text>In ICEcore, create a folder of type File folder.</text> </target>
+ <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="3"> <text>In Novell Teaming, create a folder of type File folder.</text> </target>
 
  <target id="bbn54nc" pid="bbn4ml9" name="Step" level="3" number="4"> <text>Within the folder, select the Manage &#62; Modify this folder menu item.</text> </target>
 
