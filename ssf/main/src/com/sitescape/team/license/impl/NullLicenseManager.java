@@ -1,8 +1,8 @@
 package com.sitescape.team.license.impl;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -59,7 +59,7 @@ public class NullLicenseManager implements LicenseManager {
 		return cal;
 	}
 
-	public List<Document> getLicenses()
+	public Collection<Document> getLicenses()
 	{
 		return null;
 	}

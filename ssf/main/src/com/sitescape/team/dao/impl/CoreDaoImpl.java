@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -60,6 +62,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
@@ -1211,6 +1214,32 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         	   		}
         	   	}
        	   	);
+	}
+	
+	public int daysSinceInstallation()
+	{
+		final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
+		List dates = (List) getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(FolderEntry.class)
+                 		.setProjection(Projections.projectionList()
+								.add(Projections.min("creation.date"))
+								.add(Projections.max("lastActivity")))
+ 	                 	.list();
+	                }
+	            }
+	        );
+		
+		Object[] row = (Object[]) dates.get(0);
+		Date earliest = (Date) row[0];
+		Date latest = (Date) row[1];
+		if(earliest != null && latest != null) {
+			long millis = latest.getTime() - earliest.getTime();
+			return (int) ((millis + MILLIS_PER_DAY + 1)/MILLIS_PER_DAY);
+		}
+		
+		return 0;
 	}
 	
 }
