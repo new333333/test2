@@ -297,7 +297,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
 				Description description = new Description();
 				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
-				WebHelper.scanDescriptionForUploadFiles(description, fileData);
+				WebHelper.scanDescriptionForUploadFiles(description, ObjectKeys.FIELD_ENTITY_DESCRIPTION, fileData);
 				WebHelper.scanDescriptionForAttachmentFileUrls(description);
 				WebHelper.scanDescriptionForICLinks(description);
 				description.setFormat(Description.FORMAT_HTML);

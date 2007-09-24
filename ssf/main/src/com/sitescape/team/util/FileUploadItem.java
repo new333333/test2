@@ -34,7 +34,9 @@ public class FileUploadItem {
 	private int type;
 	private boolean uniqueName=false;
 	private boolean registered=false;
-	private String name; // This is NOT file name.
+	private boolean markup=false; //indicates whether this file is referenced from a text area
+	private String markupFieldName = null; //data field name that references this attachment = not the same as name.
+	private String name; // This is NOT file name; it is the naem of data field the file is attached to 
 	
 	// Used for generating scaled file - Zero value indicates no need for 
 	// generating scaled file. 
@@ -121,7 +123,7 @@ public class FileUploadItem {
 	public int getType() {
 		return type;
 	}
-	
+	//name represents the data name associated with this field that this file is attached to
 	public String getName() {
 		return name;
 	}
@@ -137,6 +139,19 @@ public class FileUploadItem {
 	public void setRegistered(boolean registered) {
 		this.registered = registered;
 	}
+	public boolean isMarkup() {
+		return markup;
+	}
+	public void setMarkup(boolean markup) {
+		this.markup = markup;
+	}
+	public String getMarkupFieldName() {
+		return markupFieldName;
+	}
+	public void setMarkupFieldName(String markupFieldName) {
+		this.markupFieldName = markupFieldName;
+	}
+	
 	/**
 	 * Return the original filename in the client's filesystem. 
 	 * @return
