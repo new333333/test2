@@ -10,6 +10,9 @@
  */
 package com.sitescape.team.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.util.PropsUtil;
 
@@ -40,11 +43,17 @@ public class SPropsUtil extends PropsUtil {
 	public static final String SSF_SECURE_PORT = "ssf.secure.port";
 	public static final String SSFS_CTX = "ssfs.ctx";
 	public static final String WIDEN_ACCESS="entryacl.widens.folderacl";
+
+	protected Log logger = LogFactory.getLog(getClass());
+
 	public SPropsUtil() {
 		if(instance != null)
 			throw new SingletonViolationException(SPropsUtil.class);
 		
 		instance = this;
+		
+		logger.info(Constants.NEWLINE + Utils.toStringML(System.getProperties()));
+		logger.info(Constants.NEWLINE + Utils.toStringML(System.getenv()));
 	}
 	
     public void setConfig(PropertiesClassPathConfigFiles config) {
