@@ -374,7 +374,7 @@ public class WebHelper {
 	 * @param File
 	 * @return 
 	 */
-	public static void scanDescriptionForUploadFiles(Description description, List fileData) {
+	public static void scanDescriptionForUploadFiles(Description description, String fieldName, List fileData) {
     	String fileHandle = "";
     	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewUploadFile[^>]*>)");
     	Matcher m = pattern.matcher(description.getText());
@@ -403,6 +403,9 @@ public class WebHelper {
 			    	// If not specified, use the statically selected one.  
 			    	String repositoryName = RepositoryUtil.getDefaultRepositoryName();
 			    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+			    	//flag as used in markup, for further processing after files are saved
+			    	fui.setMarkup(true);
+			    	fui.setMarkupFieldName(fieldName);
 			    	fileData.add(fui);
 		    	}
 	    	}
@@ -434,6 +437,7 @@ public class WebHelper {
 		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
     	Matcher m1 = p1.matcher(description.getText());
     	int loopDetector = 0;
+    	boolean changes = false;
     	while (m1.find()) {
     		if (loopDetector > 2000) {
 	        	logger.error("Error processing markup: " + description.getText());
@@ -451,12 +455,14 @@ public class WebHelper {
     	        				+ specialAmp + "entityType=" + entityType + "}}");
     	        		description.setText(m1.replaceFirst(newText.replace("$", "\\$")));
     	        		m1 = p1.matcher(description.getText());
+    	        		changes = true;
 	    		}
 			}
     	}
-    	description.setText(description.getText().replaceAll(specialAmp, "&"));
+    	//don't want to break "==" compare if not necesary, faster for long text
+    	if (changes) description.setText(description.getText().replaceAll(specialAmp, "&"));
 	}
-	
+	//converts back to markup.  Would happen if modify
 	public static void scanDescriptionForAttachmentFileUrls(Description description) {
     	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
     	Matcher m = pattern.matcher(description.getText());

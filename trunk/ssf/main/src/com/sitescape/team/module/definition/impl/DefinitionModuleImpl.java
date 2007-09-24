@@ -1381,7 +1381,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							description.setText(inputData.getSingleValue(nameValue));
 							//Deal with any markup language transformations before storing the description
-							WebHelper.scanDescriptionForUploadFiles(description, fileData);
+							WebHelper.scanDescriptionForUploadFiles(description, nameValue, fileData);
 							WebHelper.scanDescriptionForAttachmentFileUrls(description);
 							WebHelper.scanDescriptionForICLinks(description);
 							entryData.put(nameValue, description);

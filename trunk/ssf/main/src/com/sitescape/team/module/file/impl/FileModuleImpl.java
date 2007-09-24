@@ -46,6 +46,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.HistoryStamp;
@@ -86,6 +87,7 @@ import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SimpleProfiler;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.util.Validator;
@@ -1226,7 +1228,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		} 
            		//add file name so not null
             	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
-        			            	
+            	//if file was referenced from a field, resolve markup now as part of this transaction
+            	if (fui.isMarkup()) {
+            		String fieldName = fui.getMarkupFieldName();
+            		if (Validator.isNotNull(fieldName) && !fieldName.equals(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
+            			CustomAttribute attr = entry.getCustomAttribute(fieldName);
+            			if (attr != null) {
+            				Object val = attr.getValue();
+            				if (val instanceof Description) {
+            					WebHelper.scanDescriptionForAttachmentUrls((Description)val, entry);
+            				}
+            			}
+            		} else {
+    					WebHelper.scanDescriptionForAttachmentUrls(entry.getDescription(), entry);           			
+            		}
+            		
+            	}
         		ChangeLog changes;
             	if (isNew)
             		changes = new ChangeLog(entry, ChangeLog.FILEADD);
