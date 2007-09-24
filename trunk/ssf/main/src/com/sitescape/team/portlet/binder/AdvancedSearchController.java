@@ -120,7 +120,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 
 		model.put(WebKeys.SEARCH_TOP_FOLDER_ID, Collections.singletonList(top.getId().toString()));
         
-        if (op.equals(WebKeys.SEARCH_RESULTS)) {
+       if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model.putAll(prepareSearchResultData(request));
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
@@ -405,7 +405,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Arrays.sort(array);
 		
 		for (int j = 0; j < array.length; j++) {
-			Binder binder = binderModule.getBinder(((Place)array[j]).getId());
+			Binder binder=null;
+			try {
+				binder = binderModule.getBinder(((Place)array[j]).getId());
+			} catch (Exception ex) {
+				//not access or doesn't exist?
+			}
 			int count = ((Place)array[j]).getCount();
 			Map place = new HashMap();
 			place.put(WebKeys.BINDER, binder);
@@ -460,6 +465,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		while (it.hasNext()) {
 			Map place = (Map) it.next();
 			Binder binder = (Binder)place.get(WebKeys.BINDER);
+			if (binder == null) continue;
 			Binder parentBinder = binder.getParentBinder();
 			String parentBinderTitle = "";
 			if (parentBinder != null) parentBinderTitle = parentBinder.getTitle() + " // ";
