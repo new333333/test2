@@ -373,7 +373,7 @@ public class QueryBuilder {
 			qString.append(" OR ");
 			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + idField(principalIds, TEAM_PREFIX) + "))");
-			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
+			qString.append(" OR (" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 					BINDER_OWNER_PREFIX + user.getId().toString() + ")");
 			qString.append(") AND (");												//) AND (
 			qString.append("(" + ENTRY_ALL + " OR " +						//(entryAcl:all OR entryAcl:1 OR entryAcl:2)
