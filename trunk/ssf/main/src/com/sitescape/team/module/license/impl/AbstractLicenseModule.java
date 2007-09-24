@@ -10,6 +10,7 @@
  */
 package com.sitescape.team.module.license.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,7 @@ implements LicenseModule, InitializingBean {
 		getLicenseManager().validate();
 	}
 
-	public List<Document> getLicenses()
+	public Collection<Document> getLicenses()
 	{
 		return getLicenseManager().getLicenses();
 	}

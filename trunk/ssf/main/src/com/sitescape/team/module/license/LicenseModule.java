@@ -1,6 +1,6 @@
 package com.sitescape.team.module.license;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.dom4j.Document;
 
@@ -15,7 +15,7 @@ public interface LicenseModule {
 	public void updateLicense() throws LicenseException;
 	public void validateLicense() throws LicenseException;
 	
-	public List<Document> getLicenses();
+	public Collection<Document> getLicenses();
 		
 	public boolean testAccess(LicenseOperation operation);
 

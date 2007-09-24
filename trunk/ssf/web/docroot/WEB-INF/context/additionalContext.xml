@@ -36,6 +36,7 @@
 	</bean>
 	
 	<bean id="licenseManager" class="com.sitescape.team.license.impl.NullLicenseManager">
+		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>
 	<!-- ============================== Document Converter ============================ -->
 

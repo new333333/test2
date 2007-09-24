@@ -1,7 +1,7 @@
 package com.sitescape.team.license;
 
 import java.util.Calendar;
-import java.util.List;
+import java.util.Collection;
 
 import org.dom4j.Document;
 
@@ -77,7 +77,7 @@ public interface LicenseManager {
 	 * 
 	 * @return License documents loaded by last loadLicense(), or null if no license found
 	 */
-	public List<Document> getLicenses();
+	public Collection<Document> getLicenses();
 
 	
 	/**

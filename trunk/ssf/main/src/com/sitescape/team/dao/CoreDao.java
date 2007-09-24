@@ -128,4 +128,5 @@ public interface CoreDao {
     public void unRegisterFileName(Binder binder, String name);
     public void unRegisterTitle(Binder binder, String name);
 
+    public int daysSinceInstallation();
 }

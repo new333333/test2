@@ -1,6 +1,7 @@
 package com.sitescape.team.portlet.administration;
 
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +59,9 @@ public class ManageLicenseController extends SAbstractController {
 			model.put(WebKeys.LICENSE_EXCEPTION,
 					e.getLocalizedMessage());
 		}
-		List<Document> docs = getLicenseModule().getLicenses();
+		Collection<Document> docs = getLicenseModule().getLicenses();
 		StringBuffer visibleDoc = new StringBuffer();
+		StringBuffer uids = new StringBuffer();
 		for(Document doc : docs) {
 			try {
 				TransformerFactory transFactory = TransformerFactory.newInstance();
@@ -76,8 +78,8 @@ public class ManageLicenseController extends SAbstractController {
 			} catch(TransformerConfigurationException e) {
 				logger.warn("Unable to process license with XSL", e);
 			}
-
-			model.put(WebKeys.LICENSE_KEY, getValue(doc, "//KeyInfo/@uid"));
+			uids.append(getValue(doc, "//KeyInfo/@uid") + " ");
+			
 			model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
 
 			String expireDate = getValue(doc, "//Dates/@expiration");
@@ -149,6 +151,7 @@ public class ManageLicenseController extends SAbstractController {
 			}
 		}
 
+		model.put(WebKeys.LICENSE_KEY, uids.toString());
 		model.put(WebKeys.LICENSE_USERS, ""+getLicenseModule().getRegisteredUsers());
 		model.put(WebKeys.LICENSE_EXTERNAL_USERS, ""+getLicenseModule().getExternalUsers());
 		model.put(WebKeys.LICENSE, visibleDoc);
