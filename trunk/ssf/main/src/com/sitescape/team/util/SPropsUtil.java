@@ -52,8 +52,8 @@ public class SPropsUtil extends PropsUtil {
 		
 		instance = this;
 		
-		logger.info(Constants.NEWLINE + Utils.toStringML(System.getProperties()));
-		logger.info(Constants.NEWLINE + Utils.toStringML(System.getenv()));
+		logger.info("System properties" + Constants.NEWLINE + Utils.toStringML(System.getProperties()));
+		logger.info("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));
 	}
 	
     public void setConfig(PropertiesClassPathConfigFiles config) {
