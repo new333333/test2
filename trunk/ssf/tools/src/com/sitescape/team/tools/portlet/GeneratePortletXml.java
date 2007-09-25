@@ -67,7 +67,7 @@ public class GeneratePortletXml {
     		xOut = new XMLWriter(fOut, fmt);
            	Element strRoot = document.getRootElement();
             
-           	String []localeCodes = {"en", "de", "es", "fr", "it", "ja",	
+           	String []localeCodes = {"en", "da", "de", "es", "fr", "it", "ja",	
            			"nl", "pl", "pt_BR", "sv", "zh_CN", "zh_TW"};
            	
            	generateTags(strRoot, localeCodes, pathname);
