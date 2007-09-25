@@ -139,7 +139,6 @@ public class TreeTag extends TagSupport {
 			Element treeRoot = null;
 			if (tree != null) treeRoot = (Element)tree.getRootElement();
 			if (!this.noInit && Validator.isNull(startingId) || this.initOnly) {
-				sb.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/js/tree/tree_widget.js\"></script>\n");
 				sb.append("<script type=\"text/javascript\">\n");
 				sb.append("ssTree_defineBasicIcons('"+contextPath+"/images');\n");
 				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
