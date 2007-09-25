@@ -1,11 +1,15 @@
 package com.sitescape.team.ical.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
 
+import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.property.Summary;
 
 public class ICalUtils {
@@ -31,6 +35,13 @@ public class ICalUtils {
 		}
 		
 		return null;
-	}	
+	}
+
+	public static ByteArrayOutputStream toOutputStraem(Calendar calendar) throws IOException, ValidationException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		CalendarOutputter calendarOutputter = new CalendarOutputter();
+		calendarOutputter.output(calendar, out);
+		return out;
+	}
 	
 }

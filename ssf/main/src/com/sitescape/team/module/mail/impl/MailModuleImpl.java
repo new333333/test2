@@ -48,7 +48,9 @@ import javax.mail.search.SearchTerm;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.util.Calendars;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +62,7 @@ import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.util.Assert;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
@@ -74,6 +77,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.ical.util.ICalUtils;
 import com.sitescape.team.jobs.FailedEmail;
 import com.sitescape.team.jobs.SendEmail;
+import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -529,15 +533,21 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			df.setTimeZone(timezone);
 			notify.setDateFormat(df);
 			
+			boolean folderNotification = (entry == null);
+			
+			Map result ;
+			if (entry != null)
+				result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
+			else
+				result = processor.buildNotificationMessage(folder, entries, notify);
+			
 			message = null;
 			int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
 
-			if (notify.getEvents() != null && notify.getEvents().entrySet().size() == 1) {
+			if (notify.getEvents() != null && notify.getEvents().entrySet().size() > 0) {
 				// Need to attach icalendar as alternative content,
-				// but only if there is one iCalendar.
-				// More iCalendars means: there are more entries to send
-				// and those iCalendars are not alternative to email text 
-				// (e.g. send folder per email).
+				// if there is more then one icals then
+				// all are merged and add ones to email as alternative content
 				multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
 			}
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
@@ -556,117 +566,90 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}
 			helper.setFrom(from);
 
-			mimeMessage.addHeader("Content-Transfer-Encoding", "8bit");
-			Map result ;
-			if (entry != null)
-				result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
-			else
-				result = processor.buildNotificationMessage(folder, entries, notify);
+			mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
+
 //currently not implemented 			
-//			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
-			helper.setText((String)result.get(FolderEmailFormatter.HTML),true);
-			
+//			MailHelper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML), helper);
+			MailHelper.setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
 			prepareAttachments(notify, helper);
-			prepareICalendars(notify, helper);
+			prepareICalendars(notify, helper, folderNotification);
 			
 			//save message incase cannot connect and need to resend;
 			message = mimeMessage;
 		}
 		
-		private void prepareICalendars(Notify notify, MimeMessageHelper helper) throws MessagingException {
+		private void prepareICalendars(Notify notify, MimeMessageHelper helper, boolean folderNotification) throws MessagingException {
 			int c = 0;
 			int eventsSize = notify.getEvents().size();
+			Calendar margedCalendars = null;
 			Iterator entryEventsIt = notify.getEvents().entrySet().iterator();
 			while (entryEventsIt.hasNext()) { 
-				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
-				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
-				List events = (List)mapEntry.getValue();
-				Calendar iCal = getIcalModule().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
-				
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				CalendarOutputter calendarOutputter = new CalendarOutputter();
 				try {
-					calendarOutputter.output(iCal, out);
+					Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
+					DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
+					List events = (List)mapEntry.getValue();
+					Calendar iCal = getIcalModule().generate(entry, events, getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+					
+					ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(iCal);
+					String fileName = entry.getTitle() + MailHelper.ICAL_FILE_EXTENSION;
+					if (eventsSize > 1) {
+						fileName = entry.getTitle() + c + MailHelper.ICAL_FILE_EXTENSION;
+					}
+					
+					String component = null;
+					if (!iCal.getComponents(Component.VTODO).isEmpty()) {
+						component = Component.VTODO;
+					}
+					
+					String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(iCal));
+					
+					DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
+						
+					if (sendAttachments) {
+						MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);			
+					}
+					
+					// attach alternative iCalendar content
+					if (eventsSize == 1 && !folderNotification) {
+						MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
+					} else {
+						if (margedCalendars == null) {
+							margedCalendars = new Calendar();
+						}
+						margedCalendars = Calendars.merge(margedCalendars, iCal);
+					}
 				} catch (IOException e) {
 					logger.error(e);
+					continue;
 				} catch (ValidationException e) {
-					logger.error(e);
-					
-				}
-				
-				String fileName = entry.getTitle() + ".ics";
-				if (eventsSize > 1) {
-					fileName = entry.getTitle() + c + ".ics";
-				}
-				
-				String component = null;
-				if (!iCal.getComponents("VTODO").isEmpty()) {
-					component = "VTODO";
-				}
-				String contentType = "text/calendar";
-				contentType += (component != null ? "; component=" + component : "");
-				contentType += "; method=" + ICalUtils.getMethod(iCal);
-				
-				DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), contentType, fileName);
-		
-				MimeBodyPart mimeICalendarAttachment = new MimeBodyPart();
-				mimeICalendarAttachment.setDisposition(MimeBodyPart.ATTACHMENT);
-				mimeICalendarAttachment.setFileName(fileName);
-				mimeICalendarAttachment.setDataHandler(new DataHandler(dataSource));
-				helper.getMimeMultipart().addBodyPart(mimeICalendarAttachment);				
-				
-				
-				// attach alternative iCalendar content
-				if (eventsSize == 1) {
-					MimeMultipart mimeMultipart = helper.getMimeMultipart();
-					MimeBodyPart bodyPart = null;
-					for (int i = 0; i < mimeMultipart.getCount(); i++) {
-						BodyPart bp = mimeMultipart.getBodyPart(i);
-						if (bp.getFileName() == null) {
-							bodyPart = (MimeBodyPart) bp;
-						}
-					}
-					if (bodyPart == null) {
-						MimeBodyPart mimeBodyPart = new MimeBodyPart();
-						mimeMultipart.addBodyPart(mimeBodyPart);
-						bodyPart = mimeBodyPart;
-					}
-					try {
-						MimeMultipart bodyContent = (MimeMultipart)bodyPart.getContent();
-						
-						MimeBodyPart mimeICalendarAlternative = new MimeBodyPart();
-						mimeICalendarAlternative.setDataHandler(new DataHandler(dataSource));
-						
-						bodyContent.addBodyPart(mimeICalendarAlternative);
-					
-					} catch (IOException e) {
-						logger.error(e);
-					}
+					logger.error("Unvalid calendar", e);
+					continue;
 				}
 				c++;
 			}
+			
+			if (margedCalendars != null) {
+				try { 
+					String fileName = folder.getTitle() + MailHelper.ICAL_FILE_EXTENSION;
+					ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(margedCalendars);
+					String component = null;
+					if (!margedCalendars.getComponents(Component.VTODO).isEmpty()) {
+						component = Component.VTODO;
+					}
+					String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(margedCalendars));
+					DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
+	
+					MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
+				} catch (IOException e) {
+					logger.error(e);
+				} catch (ValidationException e) {
+					logger.error("Unvalid calendar", e);
+				}
+			}
+			
 			notify.clearEvents();
 		}
-		
-		protected DataSource createDataSource(
-			    final InputStreamSource inputStreamSource, final String contentType, final String name) {
-
-				return new DataSource() {
-					public InputStream getInputStream() throws IOException {
-						return inputStreamSource.getInputStream();
-					}
-					public OutputStream getOutputStream() {
-						throw new UnsupportedOperationException("Read-only javax.activation.DataSource");
-					}
-					public String getContentType() {
-						return contentType;
-					}
-					public String getName() {
-						return name;
-					}
-				};
-			}
-		
+			
 		private void prepareAttachments(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			if (sendAttachments) {
 				Set atts = notify.getAttachments();

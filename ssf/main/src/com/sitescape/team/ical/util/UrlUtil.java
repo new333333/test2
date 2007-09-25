@@ -14,6 +14,7 @@ import javax.portlet.PortletRequest;
 
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 /**
@@ -41,7 +42,8 @@ public class UrlUtil {
 		StringBuffer url = new StringBuffer();
 		
 		url.append(WebUrlUtil.getIcalRootURL(req)).
-			append("basic.ics").
+			append("basic").
+			append(MailHelper.ICAL_FILE_EXTENSION).
 			append("?zn=").
 			append(rc.getZoneName()).
 			append("&bi=").

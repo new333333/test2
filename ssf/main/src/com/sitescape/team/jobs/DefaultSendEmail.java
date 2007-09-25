@@ -34,7 +34,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.util.Calendars;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,6 +57,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.ical.util.ICalUtils;
+import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.repository.RepositoryUtil;
@@ -191,12 +194,10 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 				int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
 				
 				Collection<net.fortuna.ical4j.model.Calendar> iCals = (Collection)details.get(SendEmail.ICALENDARS);
-				if (iCals != null && iCals.size() == 1) {
+				if (iCals != null && iCals.size() > 0) {
 					// Need to attach icalendar as alternative content,
-					// but only if there is one iCalendar.
-					// More iCalendars means: there are more entries to send
-					// and those iCalendars are not alternative to email text 
-					// (e.g. send folder per email).
+					// if there is more then one icals then
+					// all are merged and add ones to email as alternative content
 					multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
 				}
 			
@@ -222,8 +223,11 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 				if (text == null) text="";
 				String html = (String)details.get(SendEmail.HTML_MSG);
 				if (html == null) html = "";
+				
+				// the next line creates ALTERNATIVE part, change to setText(String, boolean)
+				// will couse error in iCalendar section (the ical is add as alternative content) 
 				helper.setText(text, html);
-				mimeMessage.addHeader("Content-Transfer-Encoding", "8bit");
+				mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 				Collection<FileAttachment> atts = (Collection)details.get(SendEmail.ATTACHMENTS);
 				if (atts != null) {
 					for (FileAttachment fAtt : atts) {
@@ -238,67 +242,61 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 				
 				if (iCals != null) {
 					int c = 0;
+					net.fortuna.ical4j.model.Calendar margedCalendars = null;
 					for (final net.fortuna.ical4j.model.Calendar ical : iCals) {
-						ByteArrayOutputStream out = new ByteArrayOutputStream();
-						CalendarOutputter calendarOutputter = new CalendarOutputter();
 						try {
-							calendarOutputter.output(ical, out);
+							ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(ical);
+							
+							String summary = ICalUtils.getSummary(ical);
+							String fileName = summary + MailHelper.ICAL_FILE_EXTENSION;
+							if (iCals.size() > 1) {
+								fileName = summary + c + MailHelper.ICAL_FILE_EXTENSION;
+							}
+							
+							String component = null;
+							if (!ical.getComponents("VTODO").isEmpty()) {
+								component = "VTODO";
+							}
+							String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(ical));
+							DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
+
+							MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);
+							
+							// attach alternative iCalendar content
+							if (iCals.size() == 1) {
+								MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
+							} else {
+								if (margedCalendars == null) {
+									margedCalendars = new net.fortuna.ical4j.model.Calendar();
+								}
+								margedCalendars = Calendars.merge(margedCalendars, ical);
+							}
+						
 						} catch (IOException e) {
 							logger.error(e);
 						} catch (ValidationException e) {
 							logger.error(e);
 						}
-						String summary = ICalUtils.getSummary(ical);
-						String fileName = summary + ".ics";
-						if (iCals.size() > 1) {
-							fileName = summary + c + ".ics";
-						}
-						
-						String component = null;
-						if (!ical.getComponents("VTODO").isEmpty()) {
-							component = "VTODO";
-						}
-						String contentType = "text/calendar";
-						contentType += (component != null ? "; component=" + component : "");
-						contentType += "; method=" + ICalUtils.getMethod(ical);
-						
-						DataSource dataSource = createDataSource(new ByteArrayResource(out.toByteArray()), contentType, fileName);
-						
-						MimeBodyPart mimeICalendarAttachment = new MimeBodyPart();
-						mimeICalendarAttachment.setDisposition(MimeBodyPart.ATTACHMENT);
-						mimeICalendarAttachment.setFileName(fileName);
-						mimeICalendarAttachment.setDataHandler(new DataHandler(dataSource));
-						helper.getMimeMultipart().addBodyPart(mimeICalendarAttachment);
-						
-						// attach alternative iCalendar content
-						if (iCals.size() == 1) {
-							MimeMultipart mimeMultipart = helper.getMimeMultipart();
-							MimeBodyPart bodyPart = null;
-							for (int i = 0; i < mimeMultipart.getCount(); i++) {
-								BodyPart bp = mimeMultipart.getBodyPart(i);
-								if (bp.getFileName() == null) {
-									bodyPart = (MimeBodyPart) bp;
-								}
-							}
-							if (bodyPart == null) {
-								MimeBodyPart mimeBodyPart = new MimeBodyPart();
-								mimeMultipart.addBodyPart(mimeBodyPart);
-								bodyPart = mimeBodyPart;
-							}
-							try {
-								MimeMultipart bodyContent = (MimeMultipart)bodyPart.getContent();
-								
-								MimeBodyPart mimeICalendarAlternative = new MimeBodyPart();
-								mimeICalendarAlternative.setDataHandler(new DataHandler(dataSource));
-								
-								bodyContent.addBodyPart(mimeICalendarAlternative);
-							
-							} catch (IOException e) {
-								logger.error(e);
-							}
-						}
 						c++;
 					}
+					if (margedCalendars != null) {
+						try { 
+							String fileName = ICalUtils.getSummary(margedCalendars) + MailHelper.ICAL_FILE_EXTENSION;
+							ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(margedCalendars);
+							String component = null;
+							if (!margedCalendars.getComponents(Component.VTODO).isEmpty()) {
+								component = Component.VTODO;
+							}
+							String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(margedCalendars));
+							DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
+			
+							MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
+						} catch (IOException e) {
+							logger.error(e);
+						} catch (ValidationException e) {
+							logger.error("Unvalid calendar", e);
+						}
+					}					
 				}
 	
 				//save message incase cannot connect and need to resend;
