@@ -72,6 +72,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -669,7 +670,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						while (fileItemsIt.hasNext()) {
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
-							if (fileHandler.getName() != null && !fileHandler.getName().endsWith(".ics")) {
+							if (fileHandler.getName() != null && !fileHandler.getName().endsWith(MailHelper.ICAL_FILE_EXTENSION)) {
 								// it's not icalendar file
 								continue;
 							}
