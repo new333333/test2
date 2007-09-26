@@ -1683,11 +1683,13 @@ public static final String[] monthNamesShort = {
 		}
 		
 		//WebDav Permalink
-		qualifiers = new HashMap();
-		qualifiers.put("webdavUrl", webdavUrl);
-		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-		footerToolbar.addToolbarMenu("webdavpermalink", NLT.get("toolbar.menu.webdavPermalink"), 
-				webdavUrl, qualifiers);
+		if (!webdavUrl.equals("")) {
+			qualifiers = new HashMap();
+			qualifiers.put("webdavUrl", webdavUrl);
+			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
+			footerToolbar.addToolbarMenu("webdavpermalink", NLT.get("toolbar.menu.webdavPermalink"), 
+					webdavUrl, qualifiers);
+		}
 		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
