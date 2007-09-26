@@ -106,7 +106,9 @@
       ></c:if><span id="folderLine_${fileEntry._docId}"
       ><c:out value="${fileEntry.title}"/></span><c:if test="${!empty fileEntry._desc}"
       ><hr width="80%" align="left"/></c:if>
-    <span >${fileEntry._desc}</span>
+    <span ><ssf:markup type="view" binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}"><%--
+    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="100">${fileEntry._desc}</ssf:textFormat><%--
+    		--%></ssf:markup></span>
   </div>
 </c:forEach>
 
