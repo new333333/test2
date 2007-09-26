@@ -396,6 +396,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </td></tr>
 
 <tr><td>
+<c:if test="${empty ssSidebarCurrentWorkspace.id}">
+<div style="padding:3px;"> </div>
+</c:if>
+<c:if test="${!empty ssSidebarCurrentWorkspace.id}">
   <div class="ss_global_toolbar_quick">
     <div style="text-align: center; padding: 3px;">
       <a href="<portlet:actionURL windowState="maximized"><portlet:param 
@@ -405,8 +409,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	   class="ss_linkButton"><ssf:nlt tag="toolbar.menu.addWorkspace" /></a>
     </div>
   </div>
+</c:if>
 </td></tr>
-
 
 </tbody></table>
 
