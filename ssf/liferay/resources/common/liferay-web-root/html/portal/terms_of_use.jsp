@@ -4,7 +4,7 @@
 <form action="<%= themeDisplay.getPathMain() %>/portal/update_terms_of_use" name="fm">
 
 <h3><%= LanguageUtil.get(pageContext, "license") %></h3>
-<iframe src="/html/portal/CPAL_license.html" id="license_iframe" width="100%" height="600">123</iframe>
+<iframe src="/html/portal/CPAL_license.html" id="license_iframe" width="100%" height="450">123</iframe>
 
 <br/>
 <br/>
