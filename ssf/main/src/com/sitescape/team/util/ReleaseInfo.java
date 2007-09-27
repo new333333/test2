@@ -19,12 +19,17 @@ public class ReleaseInfo {
 	static String title = "ICEcore";
 	static String version;
 	static String buildNumber,buildDate;
+	static boolean enterpriseEdition = false;
 	
 	static {
-		if(SPropsUtil.getString("release.type").equalsIgnoreCase("enterprise"))
+		if(SPropsUtil.getString("release.type").equalsIgnoreCase("enterprise")) {
 			title += " Enterprise"; // Enterprise/Premium
-		else
+			enterpriseEdition = true;
+		}
+		else {
 			title += ""; // Open Source version
+			enterpriseEdition = false;
+		}
 			
 		version = SPropsUtil.getString("release.version", "0");
 		
@@ -70,6 +75,10 @@ public class ReleaseInfo {
 	
 	public static final String getReleaseInfo() {
 		return releaseInfo;
+	}
+	
+	public static final boolean isEnterpriseEdition() {
+		return enterpriseEdition;
 	}
 	
 	/*
