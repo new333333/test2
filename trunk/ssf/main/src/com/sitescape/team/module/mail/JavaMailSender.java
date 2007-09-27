@@ -35,6 +35,7 @@ public interface JavaMailSender extends
 	public String getDefaultFrom();
 	public Session getSession();
 	public void setSession(Session session);
+	public void setSession(Session session, String userName, String password);
 	public String getName();
 	public void setName(String name);
 	
