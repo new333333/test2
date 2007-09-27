@@ -368,17 +368,19 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Manage license
-		if (getLicenseModule().testAccess(LicenseOperation.manageLicense)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.manage.license"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_LICENSE);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
+		if(ReleaseInfo.isEnterpriseEdition()) {
+			if (getLicenseModule().testAccess(LicenseOperation.manageLicense)) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.manage.license"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_LICENSE);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
 		}
 
 		//Reports
