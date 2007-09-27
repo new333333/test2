@@ -249,7 +249,8 @@
 		<help>ihelp.designers.event</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
 	    <webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEvent" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
+<!-- In order to get ICAl attachments all the time, summary must be true -->
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
 	</item>
 
 	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData">
@@ -1480,6 +1481,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderAttachments" />
+<!-- summary=true for attachments will include all graphic and file elements.  This just means the attachments are processed.  Won't be sent unless asked for -->
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments" />
 	</item>
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData">
