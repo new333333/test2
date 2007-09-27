@@ -602,7 +602,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element = rootElement.addElement("topFolder");
      	element.addAttribute("title", folder.getTitle());
 		fElement = rootElement.addElement("folder");
-		doFolder(fElement, folder);
+		doFolder(fElement, entry.getParentFolder());
  		
 		FolderEntry parent = entry.getParentEntry();
 		while (parent != null) {
