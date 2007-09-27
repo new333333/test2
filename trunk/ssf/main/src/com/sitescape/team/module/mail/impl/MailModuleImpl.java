@@ -517,20 +517,25 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
 		}
 		
+		mHelper.setEntries(null);
 		for (int i=0; i<messageNoAttsResults.size(); ++i) {
 			Object row[] = (Object [])messageNoAttsResults.get(i);
-			mHelper.setEntries((Collection)row[0]);
 			mHelper.setType(Notify.FULL);
 			mHelper.setSendAttachments(false);
-			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
+				mHelper.setEntry(iter.next());
+				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+			}
 		}
 
 		for (int i=0; i<messageResults.size(); ++i) {
 			Object row[] = (Object [])messageResults.get(i);
-			mHelper.setEntries((Collection)row[0]);
 			mHelper.setType(Notify.FULL);
 			mHelper.setSendAttachments(true);
-			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
+				mHelper.setEntry(iter.next());
+				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+			}
 		}
 		return until;
 	}
@@ -701,10 +706,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(iCal));
 					
 					DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
-						
-					if (sendAttachments) {
-						MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);			
-					}
+					//always send ICAL attachments, not bound by "file attachment" flag	
+					MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);			
 					
 					// attach alternative iCalendar content
 					if (eventsSize == 1 && !folderNotification) {
