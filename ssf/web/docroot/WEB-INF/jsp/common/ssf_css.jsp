@@ -281,6 +281,10 @@ div.ss_replies div.ss_entryDescription {
 	background-color: ${ss_replies_background_color};
 }
 
+div.ss_entryDescription.ss_entryContent table {
+	border-collapse: separate;
+}
+
 .ss_style_color,.ss_style_color table, .ss_style form {
   color: ${ss_style_text_color};
   background-color: ${ss_style_background_color};
