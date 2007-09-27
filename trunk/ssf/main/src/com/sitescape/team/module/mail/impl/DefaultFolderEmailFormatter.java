@@ -560,6 +560,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			if (!entry.getParentFolder().equals(lastFolder)) {
 				fElement = rootElement.addElement("folder");
 				doFolder(fElement, entry.getParentFolder());
+				lastFolder = entry.getParentFolder();
 			}
 			//make sure change of entries exist from topentry down to changed entry
 			//since entries are sorted by sortKey, we should have processed an changed parents
