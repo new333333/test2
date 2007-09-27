@@ -69,6 +69,12 @@ public class JavaMailSenderImpl extends
 			setUsername(user); 
 		}
 	}
+	public void setSession(Session session, String userName, String password) {
+		super.setSession(session);
+		setUsername(userName);
+		setPassword(password);
+		
+	}
 	public String getDefaultFrom() {
 		return getUsername();
 	}

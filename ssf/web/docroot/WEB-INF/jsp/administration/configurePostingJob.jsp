@@ -87,7 +87,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <input type="button" value="Edit" onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_showAliasDiv('${status.index}'); return false"/>
 </td><td>
 <c:if test="${!empty alias.binder}">
-${alias.binder.title}
+${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.binder.parentBinder.title})</span>
 </c:if>
 </td></tr>
 </c:forEach>

@@ -68,19 +68,12 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				
 				if (!formData.containsKey("delete" + pos)) {
 					if (!Validator.isNull(alias)) {
-						updates.put("emailAddress", alias);						
+						updates.put("emailAddress", alias);
+						getAdminModule().modifyPosting(aliasId, updates);
 					}
 				} else if (!Validator.isNull(aliasId)) getAdminModule().deletePosting(aliasId);
 				++pos;
 				updates.clear();
-			}
-			updates.clear();
-			String[] emailAddress = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
-			for (int i=0; i<emailAddress.length; ++i) {
-				String addr = emailAddress[i].trim();
-				updates.put("emailAddress", addr);
-				getAdminModule().addPosting(updates);
-				
 			}
 		response.setRenderParameters(formData);
 	} else if (formData.containsKey("closeBtn") || (formData.containsKey("cancelBtn"))) {

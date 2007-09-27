@@ -42,6 +42,7 @@ public class PostingDef extends PersistentObject {
     public static final Integer POST_AS_A_REPLY = 1;
     private Integer replyPostingOption = POST_AS_A_REPLY;
     private boolean enabled=true;
+    private String password=null;
     private Binder binder;
     private String emailAddress="";
     private Definition definition;
@@ -95,6 +96,15 @@ public class PostingDef extends PersistentObject {
     }
     public void setEmailAddress(String emailAddress) {
     	this.emailAddress = emailAddress;
+    }
+    /**
+     * @hibernate.property
+     */
+    public String getPassword() {
+    	return password;
+    }
+    public void setPassword(String password) {
+    	this.password = password;
     }
      /**
      * @hibernate.property

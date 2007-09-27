@@ -32,9 +32,6 @@ package com.sitescape.team.module.mail.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,22 +46,16 @@ import java.util.TimeZone;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.Transport;
-import javax.mail.AuthenticationFailedException;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 
-import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ValidationException;
@@ -73,15 +64,12 @@ import net.fortuna.ical4j.util.Calendars;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.springframework.core.io.InputStreamSource;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
-import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.util.Assert;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -108,6 +96,7 @@ import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.PortabilityUtil;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
@@ -132,7 +121,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected JndiAccessor jndiAccessor;
 	protected Map defaultProps = new HashMap();
 	private String mailRootDir;
-
+	protected boolean useAliases=false;
+//	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	public MailModuleImpl() {
 		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
@@ -169,6 +159,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 * Called after bean is initialized.  
 	 */
 	public void afterPropertiesSet() {
+		//Get alias setting
+		useAliases = SPropsUtil.getBoolean("mail.posting.useAliases", false);
 		//preload mailSenders so retry mail will work.  Needs name availailable 
 		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration//notify");
 		for (Element sEle:senders) {
@@ -192,7 +184,18 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}
 			}		
 		}
-		
+		//get mail posting accounts - possible alternative to storing passwords in database
+/*		List<Element>accounts = SZoneConfig.getAllElements("//mailConfiguration//account");
+		for (Element sEle:accounts) {
+			String account = sEle.attributeValue("name");
+			if (Validator.isNotNull(account)) {
+				String pwd = sEle.getText();
+				if ((pwd != null) && (pwd.length() != 0)) { //don't know if blanks allowed??
+					mailAccounts.put(account, pwd);
+				}
+			}			
+		}
+*/		
 	}
 
 	public File getMailDirPath(Binder binder) {
@@ -261,10 +264,27 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void receivePostings() {
 		String prefix, auth;
 		List posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
-		List<PostingDef> postings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
+		List<PostingDef> allPostings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
+		/* There are 3 types of posting
+		 * 1. Using aliases, where mail is sent to different address which are aliases for the address configured in ssf.xml
+		 * 	  This works as long as the mail server doesn't convert the alias to the real email address, as does GroupWise!
+		 * 2. Each posting definition defines a userName/password that is used to connect to the store as configured in ssf.xml
+		 * 3. There is one connect as configured in ssf.xml that has the rights to read the folders of different users.
+		 */
+		List<PostingDef>aliases = new ArrayList();
+		List<PostingDef>useUserNamePwd = new ArrayList();
+		List<PostingDef>useUserName = new ArrayList();
+		for (PostingDef p:allPostings) {
+			if (!p.isEnabled()) continue;
+			if (p.getBinder() == null) continue;
+			if (useAliases) aliases.add(p);
+			else if (Validator.isNull(p.getPassword())) useUserName.add(p);
+			else useUserNamePwd.add(p);
+		}
+		
 		SearchTerm[] aliasSearch = new SearchTerm[2];
 		
-		for (int i=0; i<posters.size(); ++i) {
+		for (int i=0; i<posters.size(); ++i) {  //multiple aren't tested
 			Session session = (Session)posters.get(i);
 			String protocol = session.getProperty("mail.store.protocol");
 			// see if need password
@@ -278,47 +298,102 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (Validator.isNull(password)) 
 					password = session.getProperty("mail.password");
 			}
+			String hostName = session.getProperty(prefix + "host");
+			if (Validator.isNull(hostName)) {
+				hostName = session.getProperty("mail.host");
+			}
 
 			javax.mail.Folder mFolder=null;
 			Store store=null;
 			try {				
 				store = session.getStore(protocol);
-				if (Validator.isNotNull(password)) {
-					//rest of defaults from jndi setting
-					store.connect(null, null, password);
-				} else {
-					store.connect();
-				}
-
-				mFolder = store.getFolder("inbox");				
-				mFolder.open(javax.mail.Folder.READ_WRITE);
-				
-				//determine which alias a message belongs to and post it
-				for (PostingDef postingDef: postings) {
-					if (!postingDef.isEnabled()) continue;
-					if (postingDef.getBinder() == null) continue;
-					aliasSearch[0] = new RecipientStringTerm(Message.RecipientType.TO,postingDef.getEmailAddress());
-					aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
-					Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
-					if (aliasMsgs.length == 0) continue;
-					
-					Folder folder = (Folder)postingDef.getBinder();
-					FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-					sendErrors(folder, session, processor.postMessages(folder,postingDef, aliasMsgs, session));
-				}				
-
 			} catch (Exception ex) {
-				String hostName = session.getProperty(prefix + "host");
-				if (Validator.isNull(hostName)) {
-					hostName = session.getProperty("mail.host");
+				logger.error("Error posting mail from [" + hostName + "]", ex);
+				continue;
+			}
+			try {				
+				if (!aliases.isEmpty() || !useUserName.isEmpty()) {
+					if (Validator.isNotNull(password)) {
+						//rest of defaults from jndi setting
+						store.connect(null, null, password);
+					} else {
+						store.connect();
+					}
+					if (!aliases.isEmpty()) {
+						mFolder = store.getFolder("inbox");				
+						mFolder.open(javax.mail.Folder.READ_WRITE);
+					
+						//	determine which alias a message belongs to and post it
+						for (PostingDef postingDef: aliases) {
+							try {
+								aliasSearch[0] = new RecipientStringTerm(Message.RecipientType.TO,postingDef.getEmailAddress());
+								aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
+								Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
+								if (aliasMsgs.length == 0) continue;
+								Folder folder = (Folder)postingDef.getBinder();
+								FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+								sendErrors(folder, postingDef, session, processor.postMessages(folder,postingDef, aliasMsgs, session));
+							} catch (Exception ex) {
+								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
+							}
+						}				
+						try {mFolder.close(true);} catch (Exception ex) {};
+					}
+					//now see if we have a privledged account
+					for (PostingDef postingDef: useUserName) {
+						try {
+							javax.mail.Folder[] mailFolders = store.getUserNamespaces(postingDef.getEmailAddress());
+							if (mailFolders.length == 0) {
+								logger.info("Cannot read mail box for " + postingDef.getEmailAddress());
+								continue;
+							}
+							Folder folder = (Folder)postingDef.getBinder();
+							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+							for (int j=0; j<mailFolders.length; ++j) {
+								mFolder = mailFolders[j];
+								if ("inbox".equals(mFolder.getFullName())) {
+									try {
+										mFolder.open(javax.mail.Folder.READ_WRITE);
+										sendErrors(folder, postingDef,  session, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+									} finally {
+										mFolder.close(true);
+									}
+								}						
+							}
+						} catch (Exception ex) {
+							logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
+						}
+					}	
 				}
-
+					
+			} catch (Exception ex) {
+				//Close connection and expunge
+				if (mFolder != null) try {mFolder.close(true);} catch (Exception ex1) {};
 				logger.error("Error posting mail from [" + hostName + "]", ex);
 			} finally  {
-				//Close connection and expunge
-				if (mFolder != null) try {mFolder.close(true);} catch (Exception ex) {};
+				//Close connection 
 				if (store != null) try {store.close();} catch (Exception ex) {};
-			}						
+			}
+			//Now try connecting by user/password
+			for (PostingDef postingDef: useUserNamePwd) {
+				mFolder = null;
+				Folder folder = (Folder)postingDef.getBinder();
+				FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+				try {
+					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
+					mFolder = store.getFolder("inbox");				
+					mFolder.open(javax.mail.Folder.READ_WRITE);
+					sendErrors(folder, postingDef, session, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+				} catch (Exception ex) {
+					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
+					continue;
+				} finally {
+					if (mFolder != null) try {mFolder.close(true);} catch (Exception ex) {};
+					try {store.close();} catch (Exception ex) {};
+				}
+				
+			}
+
 		}		
 		
 	}
@@ -326,12 +401,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
 		return ex.getMessage();
 	}
-	private void sendErrors(Binder binder, Session session, List errors) {
+	private void sendErrors(Binder binder, PostingDef postingDef, Session session, List errors) {
 		if (!errors.isEmpty()) {
 			try	{
 				JavaMailSender sender = (JavaMailSender)mailSender.getClass().newInstance();				
 				SpringContextUtil.applyDependencies(sender, "mailSender");	
-				sender.setSession(session);
+				if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
+					sender.setSession(session, postingDef.getEmailAddress(), postingDef.getPassword());
+				} else {
+					sender.setSession(session);
+				}
 				sender.send((MimeMessage[])errors.toArray(new MimeMessage[errors.size()]));
 			} catch (MailAuthenticationException ax) {
 				logger.error("Authentication Exception:" + getMessage(ax));
