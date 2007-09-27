@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,7 +76,8 @@ public class FacadeImpl extends AbstractFacade {
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
-		fileName = StringCheckUtil.check(fileName);
+		File originalFile = new File(fileName);
+		fileName = StringCheckUtil.check(originalFile.getName());
 
 		// Get all the attachments
 		AttachmentPart[] attachments;
