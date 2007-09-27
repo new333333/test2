@@ -41,7 +41,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:template>
 
 <xsl:template match="mail">
-
+<xsl:if test="@summary = 'true'">
 <xsl:if test="topFolder/@changeCount = '1'">
 <xsl:value-of select="topFolder/@changeCount"/>&nbsp;
 <xsl:call-template name="getString">
@@ -90,7 +90,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:for-each>
 </span>
 <hr size="1" color="black" noshade="true"/>
-
+</xsl:if>
 <xsl:for-each select="folder">
 <a name="f{@name}"/>
 <span style="font-family: arial, helvetica,
@@ -105,12 +105,14 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:for-each select="folderEntry">
 <div style="border-bottom: thin solid #cccccc;">
 <xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
+<xsl:if test="../../@summary = 'true'">
 <a href="#toc"><span style="font-family:
   arial, helvetica, sans-serif; font-size: 13px;">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'TOC'"/>
 </xsl:call-template>
 </span></a>
+</xsl:if>
 <br/>		
 		<a name="id{@name}"/>
 <table border="0" width="100%">
