@@ -109,17 +109,46 @@
 		<td class="ss_iconsContainer" style="text-align: center;">
 		<c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if></c:forEach></c:if></td>
 		<td>
-			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			      value="<%= (java.util.Date)entry.get("start_end#EndDate") %>" type="both" 
-				  dateStyle="short" timeStyle="short" />
+			<c:choose>
+				<c:when test="${!empty entry['start_end#EndDate']}">
+					<c:choose>
+						<c:when test="${!empty entry['start_end#TimeZoneID']}">
+							<fmt:formatDate 
+									timeZone="${ssUser.timeZone.ID}"
+									value="${entry['start_end#EndDate']}" type="both" 
+									dateStyle="short" timeStyle="short" />						
+						</c:when>	
+						<c:otherwise>
+							<fmt:formatDate 
+									timeZone="GMT"
+									value="${entry['start_end#EndDate']}" type="date" 
+									dateStyle="short"/>
+						</c:otherwise>
+					</c:choose>
+					<c:if test="${overdue}">
+						<ssf:nlt tag="milestone.overdue"/>
+					</c:if>
+				</c:when>
+				<c:otherwise>
+					&nbsp;
+				</c:otherwise>
+			</c:choose>				  
 		</td>
 		<td class="ss_iconsContainer"  style="text-align: center;"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
 		<td>
-			<ul>
-				<c:forEach var="assigned" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>">
-					<li><ssf:showUser user="${assigned}"/></li>
-				</c:forEach>
-			</ul>
+			<c:set var="assignment" value="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>" />
+			<c:choose>
+				<c:when test="${!empty assignment}">
+					<ul>
+						<c:forEach var="assigned" items="${assignment}">
+							<li><ssf:showUser user="${assigned}"/></li>
+						</c:forEach>
+					</ul>
+				</c:when>
+				<c:otherwise>
+				&nbsp;
+				</c:otherwise>
+			</c:choose>			
 		</td>
 		<td>
 			<c:if test="${! empty entry.completed && !empty entry.ssEntryDefinitionElementData.completed.values}">
