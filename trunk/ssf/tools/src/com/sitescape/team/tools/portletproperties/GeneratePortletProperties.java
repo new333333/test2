@@ -59,9 +59,12 @@ public class GeneratePortletProperties {
            	
         String []localeCodes = {"en", "da", "de", "es", "fr", "it", "ja",	
         		"nl", "pl", "pt_BR", "sv", "zh_CN", "zh_TW"};
+
+        String []localeCodes2 = {"en", "da_DK", "de_DE", "es_ES", "fr_FR", "it_IT", "ja_JP",	
+        		"nl_NL", "pl_PL", "pt_BR", "sv_SV", "zh_CN", "zh_TW"};
         
         try {
-        generatePropFiles(pathname, outPath, propNames, localeCodes);
+        generatePropFiles(pathname, outPath, propNames, localeCodes, localeCodes2);
             
 	    } catch (Exception ex) {
 	    	System.out.println("Can't write properties files in " + outPath + ": error is: " + ex.getLocalizedMessage());
@@ -69,7 +72,7 @@ public class GeneratePortletProperties {
 	    } 
 	}
 				
-	private static void generatePropFiles(String pathname, String outPath, String []propNames, String []localeCodes)  throws Exception {
+	private static void generatePropFiles(String pathname, String outPath, String []propNames, String []localeCodes, String []localeCodes2)  throws Exception {
 		ReloadableResourceBundleMessageSource rrbms = new ReloadableResourceBundleMessageSource();
 		
 		rrbms.setBasename(pathname + "\\messages\\messages");
@@ -89,7 +92,7 @@ public class GeneratePortletProperties {
 					outFile = outPath + "\\" + propNames[i] + ".properties";
 				else
 					outFile = outPath + "\\" + propNames[i] + "_" 
-						+ localeCodes[j] + ".native";
+						+ localeCodes2[j] + ".native";
 				
 				file = new File(outFile);
 				

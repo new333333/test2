@@ -87,8 +87,11 @@ public class GeneratePortletXml {
             
            	String []localeCodes = {"en", "da", "de", "es", "fr", "it", "ja",	
            			"nl", "pl", "pt_BR", "sv", "zh_CN", "zh_TW"};
-           	
-           	generateTags(strRoot, localeCodes, pathname);
+
+            String []localeCodes2 = {"en", "da_DK", "de_DE", "es_ES", "fr_FR", "it_IT", "ja_JP",	
+            		"nl_NL", "pl_PL", "pt_BR", "sv_SV", "zh_CN", "zh_TW"};
+
+           	generateTags(strRoot, localeCodes, localeCodes2, pathname);
             xOut.write(strRoot);
     		xOut.flush();
 	    } catch (Exception ex) {
@@ -100,7 +103,7 @@ public class GeneratePortletXml {
 	    }
 	}
 				
-	private static void generateTags(Element node, String []localeCodes, String pathname)  throws Exception {
+	private static void generateTags(Element node, String []localeCodes, String []localeCodes2, String pathname)  throws Exception {
 		List <Element> elements = node.elements("portlet");
 		
 		for(int i = 0; i < elements.size(); i++) {
@@ -108,7 +111,7 @@ public class GeneratePortletXml {
 			elements.get(i).remove(lastEle);
 			for (int j=0; j<localeCodes.length; j++) {
 				Element temp = elements.get(i).addElement("supported-locale");
-				temp.addText(localeCodes[j]);
+				temp.addText(localeCodes2[j]);
 			}
 			elements.get(i).add(lastEle);
 		}
