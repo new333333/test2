@@ -31,7 +31,7 @@
 <!-- oddities -->
 <!ENTITY thrdmrk "*">
 <!ENTITY mdash "-">
-<!ENTITY conf_prod_name "Novell Conferencing">
+<!ENTITY conf_prod_name "Conferencing">
 
 <!-- ============================================================= -->
 <!--                    yast desktop entities                      -->

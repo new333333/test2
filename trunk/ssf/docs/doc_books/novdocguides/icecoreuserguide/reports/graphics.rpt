@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/20/2007 11:30:11 AM'>
+   <String `9/28/2007 11:16:25 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3079,7 +3079,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1137649'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1137649'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessible-mode-link-a.png'>
@@ -3112,7 +3112,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037260'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037260'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-across-pages-minimized-a.png'>
@@ -3151,7 +3151,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036999'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036999'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-across-pages1-a.png'>
@@ -3190,7 +3190,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037106'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037106'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-across-pages2-a.png'>
@@ -3229,7 +3229,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036338'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036338'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-icon-a.png'>
@@ -3268,7 +3268,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037594'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037594'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-layout-a.png'>
@@ -3307,7 +3307,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036592'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036592'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-location-a.png'>
@@ -3346,7 +3346,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036866'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1036866'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-minimizing-a.png'>
@@ -3385,7 +3385,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1076935'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1076935'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-reconfigure-a.png'>
@@ -3424,7 +3424,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037408'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037408'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-accessories-search-current-page-a.png'>
@@ -3463,7 +3463,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039791'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039791'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-blogs-entry-a.png'>
@@ -3502,7 +3502,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039918'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039918'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-blogs-tools-sidebar-a.png'>
@@ -3541,7 +3541,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040172'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040172'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-calendars-default-page-a.png'>
@@ -3580,7 +3580,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038357'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038357'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-clipboard-link-a.png'>
@@ -3619,7 +3619,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038532'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038532'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-clipboard-selected-names-a.png'>
@@ -3658,7 +3658,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038738'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038738'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-clipboard-using-names-a.png'>
@@ -3697,7 +3697,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039588'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039588'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-contact-options-a.png'>
@@ -3736,7 +3736,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040045'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040045'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-discussion-table-a.png'>
@@ -3775,7 +3775,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1137147'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1137147'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-email-notif-menu-items-a.png'>
@@ -3808,7 +3808,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037943'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037943'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-favorites-a.png'>
@@ -3847,7 +3847,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040951'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040951'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-files-a.png'>
@@ -3886,7 +3886,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038232'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038232'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-filter-applying-a.png'>
@@ -3925,7 +3925,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037986'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1037986'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-filter-edit-link-a.png'>
@@ -3964,7 +3964,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038100'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038100'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-filter-navigation-a.png'>
@@ -4003,7 +4003,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043932'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043932'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-global-workspaces-a.png'>
@@ -4042,7 +4042,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040636'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1040636'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-guestbooks-a.png'>
@@ -4081,7 +4081,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042528'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042528'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-markup-click-icon-a.png'>
@@ -4120,7 +4120,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042797'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042797'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-markup-page-name-a.png'>
@@ -4159,7 +4159,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041937'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041937'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-photoalbum-folder-a.png'>
@@ -4198,7 +4198,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042020'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042020'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-photoalbum-view-pic-a.png'>
@@ -4237,7 +4237,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044420'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044420'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-project-a-task-folder-a.png'>
@@ -4276,7 +4276,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044669'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044669'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-project-change-value-a.png'>
@@ -4315,7 +4315,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044806'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044806'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-project-milestones-a.png'>
@@ -4354,7 +4354,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044289'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044289'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-project-task-categories-a.png'>
@@ -4393,7 +4393,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1045191'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1045191'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-project-ws-page-a.png'>
@@ -4432,7 +4432,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044157'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1044157'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-project-ws-structure-a.png'>
@@ -4471,7 +4471,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038999'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1038999'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-star-ratings-a.png'>
@@ -4510,7 +4510,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041423'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041423'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-tags-adding-a.png'>
@@ -4549,7 +4549,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041605'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041605'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-tags-for-current-folder-a.png'>
@@ -4588,7 +4588,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041747'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1041747'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-tags-search-for-a.png'>
@@ -4627,7 +4627,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043729'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043729'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-wiki-compare-versions-a.png'>
@@ -4666,7 +4666,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043462'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043462'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-wiki-edit-history-a.png'>
@@ -4705,7 +4705,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043424'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1043424'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-wiki-edit-history-link-a.png'>
@@ -4744,7 +4744,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042115'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042115'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-wiki-nav-tools-a.png'>
@@ -4783,7 +4783,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042264'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1042264'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-wiki-set-main-page-a.png'>
@@ -4822,7 +4822,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039397'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1039397'>
     <MCurrPage `1'>
    > # end of Marker
    <String `features-workflow-a.png'>
@@ -4861,7 +4861,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103367'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103367'>
     <MCurrPage `1'>
    > # end of Marker
    <String `iconbuddylistaway_n.png'>
@@ -4900,7 +4900,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103415'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103415'>
     <MCurrPage `1'>
    > # end of Marker
    <String `iconbuddylistoffline_n.png'>
@@ -4939,7 +4939,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103324'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103324'>
     <MCurrPage `1'>
    > # end of Marker
    <String `iconbuddylistonline_n.png'>
@@ -4978,7 +4978,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103465'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1103465'>
     <MCurrPage `1'>
    > # end of Marker
    <String `iconbuddylistunknown_n.png'>
@@ -5017,7 +5017,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1041097'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1041097'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_add_content_a.png'>
@@ -5050,7 +5050,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124708'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124708'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_add_content_a.png'>
@@ -5089,7 +5089,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124917'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124917'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_add_icecore_admin_a.png'>
@@ -5128,7 +5128,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1125169'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1125169'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_admin_help_moreinfo_a.png'>
@@ -5167,7 +5167,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124755'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124755'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_create_icecore_portlets_a.png'>
@@ -5206,7 +5206,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1138863'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1138863'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_display_myteams_list_a.png'>
@@ -5245,7 +5245,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048877'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048877'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_entry_click_title_a.png'>
@@ -5284,7 +5284,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1136894'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1136894'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_entry_close_overlay_a.png'>
@@ -5323,7 +5323,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048954'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048954'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_entry_overlay_a.png'>
@@ -5362,7 +5362,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1201512'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1201512'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_entry_previous_next_a.png'>
@@ -5401,7 +5401,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1209111'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1209111'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_entry_reposition_a.png'>
@@ -5440,7 +5440,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124982'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1124982'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_finished_adding_portlet_a.png'>
@@ -5479,7 +5479,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048674'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048674'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_folder_navbar_a.png'>
@@ -5518,7 +5518,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048750'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048750'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_folder_page_a.png'>
@@ -5557,7 +5557,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1138980'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1138980'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_folder_tab_breadcrumbs_a.png'>
@@ -5596,7 +5596,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049367'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049367'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_click_icon_a.png'>
@@ -5635,7 +5635,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048238'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048238'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_icon_a.png'>
@@ -5674,7 +5674,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049291'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049291'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_info_icons_a.png'>
@@ -5713,7 +5713,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049658'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049658'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_minimize_control_panel_a.png'>
@@ -5752,7 +5752,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049493'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049493'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_more_page_numbers_a.png'>
@@ -5791,7 +5791,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049924'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1049924'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_panel_small_a.png'>
@@ -5830,7 +5830,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1050002'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1050002'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_help_view_manuals_a.png'>
@@ -5869,7 +5869,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043472'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043472'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_navigation_portlet_a.png'>
@@ -5908,7 +5908,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1139078'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1139078'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_open_breadcrumbs_a.png'>
@@ -5947,7 +5947,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1044058'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1044058'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_open_team_subworkspace_a.png'>
@@ -5986,7 +5986,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043853'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1043853'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_open_teams_tree_a.png'>
@@ -6025,7 +6025,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1142193'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1142193'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_pers_workspace_a.png'>
@@ -6064,7 +6064,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039582'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039582'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_portal_page_a.png'>
@@ -6103,7 +6103,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039786'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1039786'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_portlets_a.png'>
@@ -6142,7 +6142,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048334'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1048334'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_return_portal_page_a.png'>
@@ -6181,7 +6181,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1142123'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1142123'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_search_people_a.png'>
@@ -6220,7 +6220,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1141407'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1141407'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_tools_sidebar_a.png'>
@@ -6259,7 +6259,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121970'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121970'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_accessory_closing_icon_a.png'>
@@ -6298,7 +6298,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120474'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120474'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_add_folder_add_team_menu_a.png'>
@@ -6337,7 +6337,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120940'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120940'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_add_folder_add_teammates_a.png'>
@@ -6376,7 +6376,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120312'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1120312'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_add_folder_initial_look_a.png'>
@@ -6415,7 +6415,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121195'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121195'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_add_folder_team_participation_a.png'>
@@ -6454,7 +6454,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119675'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119675'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_add_new_folder_menu_a.png'>
@@ -6493,7 +6493,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114784'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114784'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_advanced_search_link_a.png'>
@@ -6532,7 +6532,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114930'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114930'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_advanced_search_restricted_a.png'>
@@ -6571,7 +6571,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112925'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112925'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_begin_typing_a.png'>
@@ -6610,7 +6610,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118165'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118165'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_blog_comment_a.png'>
@@ -6649,7 +6649,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119072'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119072'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_blog_comment_add_form_a.png'>
@@ -6688,7 +6688,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118793'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118793'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_blog_comment_add_link_a.png'>
@@ -6727,7 +6727,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119300'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119300'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_blog_comment_added_a.png'>
@@ -6766,7 +6766,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114575'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114575'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_blog_new_entry_a.png'>
@@ -6805,7 +6805,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118039'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1118039'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_blog_view_comments_link_a.png'>
@@ -6844,7 +6844,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112562'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112562'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_buddy_list_portlet_a.png'>
@@ -6883,7 +6883,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114450'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1114450'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_click_blog_a.png'>
@@ -6916,7 +6916,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1133473'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1133473'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_click_blog_a.png'>
@@ -6949,7 +6949,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132956'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132956'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_collapse_contact_info_a.png'>
@@ -6982,7 +6982,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117932'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117932'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_completed_blog_content_a.png'>
@@ -7021,7 +7021,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117812'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117812'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_completed_blog_entry_a.png'>
@@ -7060,7 +7060,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121556'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121556'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_create_team_add_team_link_a.png'>
@@ -7099,7 +7099,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121449'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1121449'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_create_team_team_ws_link_a.png'>
@@ -7138,7 +7138,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1113199'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1113199'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_delete_buddy_a.png'>
@@ -7177,7 +7177,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1133346'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1133346'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_findperson_nav_to_blog_a.png'>
@@ -7216,7 +7216,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132509'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132509'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_intro_a.png'>
@@ -7255,7 +7255,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117219'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117219'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_pers_ws_form_a.png'>
@@ -7294,7 +7294,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115135'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115135'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_profile_a.png'>
@@ -7333,7 +7333,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115228'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115228'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_mod_profile_browse_button_a.png'>
@@ -7372,7 +7372,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132892'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1132892'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_modified_pers_ws_complete_a.png'>
@@ -7405,7 +7405,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117113'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1117113'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_my_workspace_icon_a.png'>
@@ -7438,7 +7438,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119615'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1119615'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_my_ws_icon_navbar_a.png'>
@@ -7477,7 +7477,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115041'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115041'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_pictures_a.png'>
@@ -7516,7 +7516,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115609'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1115609'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_rearrange_pictures_a.png'>
@@ -7555,7 +7555,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123023'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123023'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_button_a.png'>
@@ -7594,7 +7594,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123687'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123687'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_check_visitor_a.png'>
@@ -7633,7 +7633,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123280'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123280'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_no_inherit_a.png'>
@@ -7672,7 +7672,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123404'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123404'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_access_select_user_a.png'>
@@ -7711,7 +7711,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1211527'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1211527'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_team_add_visitor_role_a.png'>
@@ -7744,7 +7744,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112739'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1112739'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_type_nothing_a.png'>
@@ -7783,7 +7783,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123855'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreuserguide\\icecorequickstart.fm|1123855'>
     <MCurrPage `1'>
    > # end of Marker
    <String `tasks_workspace_tree_a.png'>
