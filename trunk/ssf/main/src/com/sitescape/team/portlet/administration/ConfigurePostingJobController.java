@@ -38,6 +38,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.jobs.ScheduleInfo;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -61,6 +62,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				if (!formData.containsKey("alias" + pos))
 					break;
 				String alias = PortletRequestUtils.getStringParameter(request, "alias" + pos, "").trim().toLowerCase();
+				String password = PortletRequestUtils.getStringParameter(request, "password" + pos, null);
 				String aliasId=null;
 				try {
 					aliasId = PortletRequestUtils.getStringParameter(request, "aliasId" + pos);
@@ -69,6 +71,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				if (!formData.containsKey("delete" + pos)) {
 					if (!Validator.isNull(alias)) {
 						updates.put("emailAddress", alias);
+						updates.put("password", password);
 						getAdminModule().modifyPosting(aliasId, updates);
 					}
 				} else if (!Validator.isNull(aliasId)) getAdminModule().deletePosting(aliasId);
@@ -92,6 +95,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		ScheduleInfo config = getAdminModule().getPostingSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, config);	
 		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
+		model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model);
 	}
 

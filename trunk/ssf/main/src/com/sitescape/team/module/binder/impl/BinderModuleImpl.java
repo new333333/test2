@@ -892,11 +892,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	setPosting(binderId, updates);
     }
     //inside write transaction    
+    public void setPosting(Long binderId, String emailAddress, String password) {
+    	Map updates = new HashMap();
+    	updates.put("emailAddress", emailAddress);
+    	updates.put("password", password);
+    	setPosting(binderId, updates);
+    }
+    //inside write transaction    
     public void setPosting(Long binderId, Map updates) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, BinderOperation.manageMail);
         PostingDef post = binder.getPosting();
         String email = (String)updates.get("emailAddress");
+        String password = null;
+        if (updates.containsKey("password")) password = (String)updates.get("password");
         if (Validator.isNull(email)) {
         	//if posting exists for this binder, remove it
         	if (post == null) return;
@@ -936,6 +945,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
        	ObjectBuilder.updateObject(post, updates);
       	post.setEmailAddress(email);
+      	post.setPassword(password);
       	binder.setPosting(post);
     }
 	/**
