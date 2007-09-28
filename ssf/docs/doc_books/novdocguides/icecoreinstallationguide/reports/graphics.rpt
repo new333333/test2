@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/21/2007 12:08:30 PM'>
+   <String `9/25/2007 2:39:20 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2335,6 +2335,14 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `ldap_users_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `lifrayldapattributes.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -3666,7 +3674,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
+   <String `Width: 88%, Indent: Left Edge'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3907,6 +3915,39 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Ldap users settings\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `lifrayldapattributes.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1615225'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `lifrayldapattributes.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 90%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
