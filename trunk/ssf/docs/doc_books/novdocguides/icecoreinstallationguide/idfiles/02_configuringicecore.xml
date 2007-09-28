@@ -70,7 +70,9 @@
 
  <target id="bbo53bl" pid="b9vchnd" name="Step" level="6" number="4b"> <text>If your LDAP is set up for password comparison, select the algorithm to use for LDAP password encryption from the Encryption Algorithm drop-down list (a blank value means no encryption, MD5 and SHA specify two different algorithms).</text> </target>
 
- <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4c"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
+ <target id="bbxgsaw" pid="b9vchnd" name="Step" level="6" number="4c"> <text>You need to provide your specific LDAP values for all of the listed Liferay attributes.</text> </target>
+
+ <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4d"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
 
  <target id="bbih8ol" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
 
