@@ -43,6 +43,10 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias() {
 	var param = eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.alias' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
 	param.value = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value;
+<c:if test="${mail_posting_use_aliases == 'false'}">
+	var param = eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.password' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
+	param.value = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.password.value;
+</c:if>
 	var param = document.getElementById('aliasSpan' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
 	param.innerHTML = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value;
 }
@@ -79,6 +83,11 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <c:forEach var="alias" varStatus="status" items="${ssPostings}" >
 <input type="hidden" id="aliasId${status.index}" name="aliasId${status.index}" value="${alias.id}"/>
 <input type="hidden" id="alias${status.index}" name="alias${status.index}" value="${alias.emailAddress}"/>
+<c:if test="${mail_posting_use_aliases == 'false'}">
+  <c:set var="emailPassword" value=""/>
+  <c:if test="${!empty alias.password}"><c:set var="emailPassword" value="_____"/></c:if>
+  <input type="hidden" id="password${status.index}" name="password${status.index}" value="${emailPassword}"/>
+</c:if>
 <tr><td>
 <input type="checkbox" class="ss_normal" id="delete${status.index}" name="delete${status.index}">
 </td><td>
@@ -107,6 +116,11 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 <br/><br/>
 <span class="ss_labelRight"><ssf:nlt tag="incoming.modifyAlias"/></span>
  <input type="text" name="alias" id="alias" value="" size="32"/> 
+<c:if test="${mail_posting_use_aliases == 'false'}">
+<br/>
+<span class="ss_labelRight"><ssf:nlt tag="incoming.password"/></span>
+ <input type="password" name="password" id="password" value="" size="32"/> 
+</c:if>
 <br/><br/>
 <div class="ss_buttonBarLeft">
   <input type="submit" value="<ssf:nlt tag="button.ok"/>" 

@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.domain;
 
+import com.sitescape.team.web.WebKeys;
+
 
 /**
  * @hibernate.class table="SS_Postings" dynamic-update="true"
@@ -104,7 +106,9 @@ public class PostingDef extends PersistentObject {
     	return password;
     }
     public void setPassword(String password) {
-    	this.password = password;
+    	//Only store the password if it isn't the dummy password
+    	if (password == null || !password.equals(WebKeys.MAIL_POSTING_DUMMY_PASSWORD)) 
+    		this.password = password;
     }
      /**
      * @hibernate.property

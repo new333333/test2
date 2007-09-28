@@ -310,6 +310,13 @@ public interface BinderModule {
      */
     public void setPosting(Long binderId, String emailAddress) throws AccessControlException;  
     /**
+     * Same as <code>setPosting</code>
+     * @param binderId
+     * @param emailAddress
+     * @param password
+     */
+    public void setPosting(Long binderId, String emailAddress, String password) throws AccessControlException;  
+    /**
      * Set a property to be associated with this binder
      * @param binderId
      * @param property

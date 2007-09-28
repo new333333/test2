@@ -53,6 +53,7 @@ import com.sitescape.team.web.tree.MailTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.ScheduleHelper;
 import com.sitescape.util.Validator;
@@ -84,8 +85,9 @@ public class EmailConfigController extends  AbstractBinderController  {
 			}
 			if (formData.containsKey("alias")) {
 				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
+				String password = PortletRequestUtils.getStringParameter(request, "password", null);
 				try {
-					getBinderModule().setPosting(folderId, alias);
+					getBinderModule().setPosting(folderId, alias, password);
 				} catch (Exception ne) {
 					if (ne.getCause() != null)
 						response.setRenderParameter(WebKeys.EXCEPTION, ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage());
@@ -128,6 +130,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 			model.put(WebKeys.GROUPS, gList); 
 		}
 		model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
+		model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
 		return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
 			
 		

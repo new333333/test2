@@ -97,10 +97,21 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br/>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">
 <tr><td> 
-<span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" />
-
+<span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span> 
+<c:if test="${mail_posting_use_aliases != 'false'}">
+<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" />
+</c:if>
+<br/>
 <input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"> 
-<c:if test="${!ssScheduleInfo2.enabled}"><br/><ssf:nlt tag="incoming.disabled"/></c:if>
+<c:if test="${mail_posting_use_aliases == 'false'}">
+<br/>
+<span class="ss_labelLeft"><ssf:nlt tag="incoming.password" text="Password"/></span> 
+<br/>
+<c:set var="emailPassword" value=""/>
+<c:if test="${!empty ssBinder.posting.emailAddress}"><c:set var="emailPassword" value="_____"/></c:if>
+<input type="password" name="password" value="${emailPassword}" size="30"> 
+</c:if>
+<c:if test="${!ssScheduleInfo2.enabled}"><br/>[<ssf:nlt tag="incoming.disabled"/>]</c:if>
 
 </td>
 <td class="ss_buttonBarRight">
