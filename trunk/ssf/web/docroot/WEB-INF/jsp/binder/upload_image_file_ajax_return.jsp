@@ -41,7 +41,6 @@
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 <title>{$lang_ss_addimage_insert_image_title}</title>
-<link href="css/ss_addimage.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 function passBackUrl() {
 	//Get the handle on the form from the parent page
