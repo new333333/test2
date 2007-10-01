@@ -90,5 +90,41 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </tr></tbody></table>
 </div>
 </ssHelpSpot>
+<div style="padding-top: 10px;" align="right">
+   <a href="javascript:;" onClick="ss_showAbout('${renderResponse.namespace}_aboutBox');"><span class="ss_light ss_smallprint"><ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductNickname}"/></ssf:nlt></span></a>
+</div>
+<div class="ss_themeMenu" onClick="ss_cancelAbout('${renderResponse.namespace}_aboutBox');" style="display: none; width: 350px;" id="${renderResponse.namespace}_aboutBox">
+  <div style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px; border-bottom: 1px solid #333333;">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+  <tbody><tr>
+    <c:choose>
+    <c:when test="${ssProductName == 'Novell'}">
+        <td><span style="font-size: 24px">Novell<span style="vertical-align: sub; font-size: 10px;"> &reg;</span> Teaming</span></td>
+        <td align="right"><img src="<html:brandedImagesPath/>pics/novell-n.png"></td>
+    </c:when>
+    <c:otherwise>
+    	<td>
+        <span style="font-size: 24px">${ssProductTitle}</span>
+        </td>
+    </c:otherwise>
+    </c:choose>
+    </tr></tbody>
+    </table>
+  </div>
+  <div class="ss_style" style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px;">
+    <p>
+     ${releaseInfo}<br/>
+    <c:if test="${ssProductName == 'Novell'}">
+    &copy; Copyright 2007, Novell, Inc. All rights reserved<br/> 
+    </c:if>
+     &copy; Copyright 2007, SiteScape, Inc. All rights reserved<br/>
+    </p>
+    <div align="right">
+    <p style="padding-top: 10px;">
+     <a href="http://www.icecore.org" target="_blank"><img src="<html:imagesPath/>pics/powered_by_icecore.png" /></a>
+    </p>
+    </div>
+  </div>
+</div>
 </div>
 </c:if>
