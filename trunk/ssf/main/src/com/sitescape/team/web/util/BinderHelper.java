@@ -88,6 +88,7 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ReleaseInfo;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -124,6 +125,13 @@ public class BinderHelper {
 			url = response.createActionURL();
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
 		}
+		
+
+		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
+		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
+		model.put(WebKeys.PRODUCT_NICKNAME, SPropsUtil.getString("product.nickname", ObjectKeys.PRODUCT_NICKNAME_DEFAULT));
+		model.put(WebKeys.PRODUCT_EDITION, SPropsUtil.getString("product.edition", ObjectKeys.PRODUCT_EDITION_DEFAULT));
+		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 		
 		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
