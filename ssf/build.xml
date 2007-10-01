@@ -29,10 +29,6 @@
 		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
-	<!--<target name="clean-build-and-full-deploy" depends="clean,build,deploy-internal" />
-
-	<target name="build-and-full-deploy" depends="build,deploy-internal" />-->
-
 	<!-- Do NOT run the following target on its own. When executed on its own, 
 	     it may very well be deploying an artifact built for different portal. 
 	     So when in doubt, ALWAYS run either "clean-build-and-full-deploy" or 
@@ -205,113 +201,6 @@
 	<target name="precompile-jsp">
   		<ant dir="web" target="precompile-jsp" />
 	</target>
-		
-	<!--<target name="zip">
-		<antcall target="zip-docs" />
-		<antcall target="zip-src" />
-		<antcall target="zip-war" />
-		<antcall target="liferay-tomcat-bundle" />
-		<antcall target="liferay-jboss-tomcat-bundle" />
-		<antcall target="jbossportal-jboss-tomcat-bundle" />
-  		<ant dir="indexer-lucene" target="zip" />
-  		<ant dir="stellent" target="zip" />
-	</target>-->
-
-	<!--<target name="zip-docs" depends="init">
-		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-doc-${product.version}.zip" failonerror="false" />
-		<zip zipfile="${dist.dir}/sitescape-forum-doc-${product.version}.zip"
-			basedir="."
-			includes="docs/**/*.*"
-		/>
-	</target>-->
-
-	<!--<target name="zip-src" depends="init">
-		<delete file="${dist.dir}/sitescape-forum-src-${product.version}.zip" failonerror="false" />
-		<zip zipfile="${dist.dir}/sitescape-forum-src-${product.version}.zip"
-			basedir="${ssf.source.dir}"
-			excludes="**/CVS/**,**/*.scc"
-		/>
-	</target>-->
-
-	<!--<target name="zip-war" depends="init">
-		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-ssf-${product.version}.war" failonerror="false" />
-		<delete file="${dist.dir}/sitescape-forum-ssfs-${product.version}.war" failonerror="false" />
-		<copy file="war/ssf.war" tofile="${dist.dir}/sitescape-forum-ssf-${product.version}.war" />
-		<copy file="ssfs/ssfs.war" tofile="${dist.dir}/sitescape-forum-ssfs-${product.version}.war" />
-	</target>-->
-
-	<!-- Build Aspen kit bundled with Liferay-Tomcat -->
-	<!--<target name="liferay-tomcat-bundle" depends="init">
-		<delete dir="${temp.dir}" />
-		<unzip src="liferay/download/${liferay.tomcat.zip.file.name}" dest="${temp.dir}/" />
-		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="app.server.${user.name}.properties">portal.type=liferay
-app.server.type=tomcat
-app.server.liferay.tomcat.dir=${temp.dir.path}
-		</echo>
-		<ant dir="liferay" target="full-deploy" inheritAll="false" />
-		
-		<mkdir dir="${temp.dir}/common/endorsed" />
-		<copy file="lib/xalan.jar" todir="${temp.dir}/common/endorsed" />
-		<copy file="lib/xercesImpl.jar" todir="${temp.dir}/common/endorsed" />
-		<delete file="temp/webapps/ROOT/WEB-INF/lib/xercesImpl.java" />
-		
-		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${product.version}-liferay-tomcat-${liferay.version.tomcat}.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${product.version}-liferay-tomcat-${liferay.version.tomcat}.zip"
-			basedir="${temp.dir}" />
-		<delete file="app.server.${user.name}.properties" />
-		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
-	</target>-->
-	
-	<!--<target name="jong-copy-liferay-tomcat-bundle-archives-to-aspen-lib-for-checkin" depends="init">
-		<copy file="${temp.dir}/webapps/ROOT/WEB-INF/lib/portal-ejb.jar" todir="lib"/>
-	</target>-->
-	
-	<!-- Build Aspen kit bundled with Liferay-JBoss-Tomcat -->
-	<!--<target name="liferay-jboss-tomcat-bundle" depends="init">
-		<delete dir="${temp.dir}" />
-		<unzip src="liferay/download/${liferay.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
-		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="app.server.${user.name}.properties">portal.type=liferay
-app.server.type=jboss-tomcat
-app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
-		</echo>
-		<ant dir="liferay" target="full-deploy" inheritAll="false" />
-		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${product.version}-liferay-jboss-tomcat-${liferay.version.jboss.tomcat}.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${product.version}-liferay-jboss-tomcat-${liferay.version.jboss.tomcat}.zip"
-			basedir="${temp.dir}" />
-		<delete file="app.server.${user.name}.properties" />
-		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
-	</target>-->
-	
-	<!-- Build Aspen kit bundled with JBoss-JBoss-Tomcat -->
-	<!--<target name="jbossportal-jboss-tomcat-bundle" depends="init">
-		<delete dir="${temp.dir}" />
-		<unzip src="jboss-portal/download/${jbossportal.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
-		<property name="aspen-jboss-portal.top.dir" value="${temp.dir}/sitescape-forum-${product.version}-jboss-portal-${jbossportal.version.jboss.tomcat}" />
-		<rename dest="${aspen-jboss-portal.top.dir}" src="${temp.dir}/${jbossportal.jboss-tomcat.zip.file.top.dir}"/>
-		<pathconvert targetos="unix" property="aspen-jboss-portal.top.dir.path">
-			<path>
-				<pathelement location="${aspen-jboss-portal.top.dir}"/>
-			</path>
-		</pathconvert>
-		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="app.server.${user.name}.properties">portal.type=jbossportal
-app.server.type=jboss-tomcat
-app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
-		</echo>
-		<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
-		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${product.version}-jboss-portal-${jbossportal.version.jboss.tomcat}.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${product.version}-jboss-portal-${jbossportal.version.jboss.tomcat}.zip"
-			basedir="${temp.dir}" />
-		<delete file="app.server.${user.name}.properties" />
-		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
-	</target>-->
 
 	<target name="tcpmon" description="Run Apache Axis tcpmon utility">
 		<java classname="org.apache.axis.utils.tcpmon" fork="true" failonerror="true">
