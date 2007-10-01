@@ -103,7 +103,7 @@
 <c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
 <select name="resourceDriverName" onchange="updateResourceRootPath();" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
 <c:forEach var="driver" items="${resourceDrivers}">
-<option value="${driver.name}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
+<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
 <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
 </c:forEach>
 </select>
@@ -112,9 +112,9 @@
 
 <c:if test="${ssDefinitionEntry.mirrored || !empty resourceDrivers}" >
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
-<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled></br/>
+<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled/><br/>
 <span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
-<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>></br/>
+<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>/><br/>
 </c:if>
 <br/>
 </c:if>
@@ -133,6 +133,6 @@
 function updateResourceRootPath() {
 	var selectObjs = document.getElementsByName("resourceDriverName");
 	var rootPathObjs = document.getElementsByName("rootPath");
-	rootPathObjs[0].value = selectObjs[0].options[selectObjs[0].selectedIndex].label;
+	rootPathObjs[0].value = selectObjs[0].options[selectObjs[0].selectedIndex].id;
 }
 </script>
