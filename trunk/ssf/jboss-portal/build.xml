@@ -60,21 +60,6 @@
 		<ant dir="${project.dir}/iframe-portlet" target="deploy" inheritAll="false" />
 		<copy file="${project.dir}/iframe-portlet/iframeportlet.war" todir="${app.server.dir}/server/all/deploy" overwrite="true"/>
 	</target>
-	
-	<!--<target name="deploy-jdbc-properties">
-		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
-		<property file="${project.dir}/tools/sql/database.properties" />
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
-		<replace file="${deploy.root.file}"
-			token="@@@driverClassName" value="${jdbc.driver.liferay}"/>
-		<replace file="${deploy.root.file}" 
-			token="@@@url" value="${jdbc.url.liferay}"/>
-		<replace file="${deploy.root.file}"
-			token="@@@username" value="${jdbc.username.liferay}"/>
-		<replace file="${deploy.root.file}"
-			token="@@@password" value="${jdbc.password.liferay}"/>		
-	</target>-->
 		
 	<target name="deploy-jboss-jboss-tomcat" depends="clean, init-jboss-portal, clean-app-server">	
 		<unwar src="${project.dir}/war/ssf.war" dest="${app.server.ssf.dir}" />

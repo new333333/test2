@@ -97,21 +97,6 @@
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
 	</target>
-	
-	<!--<target name="deploy-jdbc-properties">
-		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
-		<property file="${project.dir}/tools/sql/database.properties" />
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
-		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
-		<replace file="${deploy.root.file}"
-			token="@@@driverClassName" value="${jdbc.driver.liferay}"/>
-		<replace file="${deploy.root.file}" 
-			token="@@@url" value="${jdbc.url.liferay}"/>
-		<replace file="${deploy.root.file}"
-			token="@@@username" value="${jdbc.username.liferay}"/>
-		<replace file="${deploy.root.file}"
-			token="@@@password" value="${jdbc.password.liferay}"/>		
-	</target>-->
 
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
@@ -202,17 +187,6 @@
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources/${liferay.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
-		
-		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
-	
-		<!-- The following resource directory no longer exists. I moved them
-		     under Liferay directory because we cannot guarantee that those
-		     files will be exactly identical between the Liferay-JBoss and
-		     the JBoss-JBoss.
-		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="${project.dir}/jboss/resources" />
-		</copy>
-		-->
 				
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
