@@ -65,8 +65,16 @@
 	// - create event
 	// - event created in time zone 1 and updated into time zone 2
 	// - event imported in time zone 1 and updated into time zone 2
+	// - all day event
 %>
-<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
+<c:choose>
+	<c:when test="${initEvent.allDayEvent}">
+		<c:set var="timeZoneID" value="GMT" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
+	</c:otherwise>
+</c:choose>
 
 <table class="ss_style">
 	<tr>

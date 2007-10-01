@@ -34,12 +34,16 @@ import java.util.Map;
 
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.joda.time.DateTime;
+import org.joda.time.YearMonthDay;
 
+import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 
@@ -55,10 +59,28 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	    	if (obj == null) return true;
 	    	if (obj instanceof Event) {
 	    		Event event = (Event)obj;
+	    		
+	    		YearMonthDay startDate = (new DateTime(event.getDtStart().getTime())).toYearMonthDay();
+	    		YearMonthDay endDate = (new DateTime(event.getDtEnd().getTime())).toYearMonthDay();
+	    		
 	    		Element value = element.addElement("startDate");
 	    		value.setText(notifyDef.getDateFormat().format(event.getDtStart().getTime()));
 	    		value = element.addElement("endDate");
-	    		value.setText(notifyDef.getDateFormat().format(event.getDtEnd().getTime()));
+	    		if (((event.isAllDayEvent() && startDate.isEqual(endDate))) || !event.hasDuration()) {
+	    			value.setText("");
+	    		} else {
+	    			value.setText(notifyDef.getDateFormat().format(event.getDtEnd().getTime())); 
+	    		}
+	    		
+	    		String freqString = event.getFrequencyString();
+	    		
+	    		value = element.addElement("frequency");
+	    		if (freqString == null) {
+	    			value.setText("");
+	    		} else {
+	    			value.setText(NLT.get("calendar.frequency") + ": " + EventsViewHelper.eventToRepeatHumanReadableString(event));
+	    		}
+	    		  
 	    		notifyDef.addEvent(entity, event);
 	    	} else { 
 	    		element.setText(obj.toString());

@@ -242,10 +242,8 @@ function ss_calendar(prefix) {
 					alert(ss_not_logged_in);
 				},
 				load: function(type, data, evt) {
-					try {
 					ss_cal_Events.set(data.events);
 			        ss_cal_Events.redrawAll();
-					} catch (e){alert(e);}
 				},
 				mimetype: "text/json",
 				preventCache: true,
@@ -1745,7 +1743,8 @@ function ss_calendar(prefix) {
 	        ebox.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
 	        ebox.style.backgroundColor = "#BBBBBB";
 	        ebox.style.height = ((eventHeight/heightFactor1) * 100) + "%";
-	        ebox.innerHTML = "... plus " + (eventCount - 2) + " other events...";
+	        ebox.style.textAlign = "center";
+	        ebox.innerHTML = "+" + (eventCount - 2) + " " + ss_calendar.entriesLabel;
 	
 	        container.appendChild(ebox);
 	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 250).play();

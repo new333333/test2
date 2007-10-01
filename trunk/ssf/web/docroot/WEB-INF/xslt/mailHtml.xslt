@@ -203,7 +203,8 @@ line-height: 200%; text-decoration:
 			</xsl:for-each>
 		</xsl:when>
 		<xsl:when test="@type = 'event'">
-			<xsl:value-of select="startDate"/>-<xsl:value-of select="endDate"/><br/>
+			<xsl:value-of select="startDate"/><xsl:if test="endDate != ''"> - <xsl:value-of select="endDate"/></xsl:if><br/>
+			<xsl:if test="frequency != ''"><xsl:value-of select="frequency" disable-output-escaping="yes"/><br/></xsl:if>
 		</xsl:when>
 		<xsl:when test="@type = 'survey'">
 			<ul>
