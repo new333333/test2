@@ -161,7 +161,7 @@ function showDisplayDiv() {
 
     //Position the div being displayed so it is in view
     var spacerTop = parseInt(ss_getDivTop('displaydiv_spacer'));
-    var spacerBottom = parseInt(ss_getDivTop('displaydiv_spacer_bottom'));
+    var spacerBottom = parseInt(ss_getDivTop('displaydiv_spacer_bottom') + 50);
     var divHeight = 0;
     if (spacerTop < parseInt(ss_getScrollXY()[1]) + ss_scrollTopOffset) {
     	divHeight = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset - spacerTop);
@@ -599,7 +599,7 @@ function ss_saveUserGroupResults(s) {
 <br/>
 </c:if>
 
-<table width="100%">
+<table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td><span class="ss_titlebold">
 <a href="<portlet:actionURL windowState="maximized"><portlet:param 
