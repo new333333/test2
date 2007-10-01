@@ -3215,7 +3215,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public void setAllDaysEvent(boolean allDaysEvent) {
-		if (allDaysEvent) {
+		if (!allDaysEvent) {
 			setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
 		} else {
 			setTimeZone(null);

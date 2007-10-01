@@ -41,6 +41,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -109,19 +110,19 @@ public class EventsViewHelper {
 	private static final String nums[] = new String[6];
 	
 	static {
-		dayNames[Calendar.SUNDAY] = NLT.get("calendar.day.abbrevs.su");
-		dayNames[Calendar.MONDAY] = NLT.get("calendar.day.abbrevs.mo");
-		dayNames[Calendar.TUESDAY] = NLT.get("calendar.day.abbrevs.tu");
-		dayNames[Calendar.WEDNESDAY] = NLT.get("calendar.day.abbrevs.we");
-		dayNames[Calendar.THURSDAY] = NLT.get("calendar.day.abbrevs.th");
-		dayNames[Calendar.FRIDAY] = NLT.get("calendar.day.abbrevs.fr");
-		dayNames[Calendar.SATURDAY] = NLT.get("calendar.day.abbrevs.sa");
+		dayNames[Calendar.SUNDAY] = "calendar.day.abbrevs.su";
+		dayNames[Calendar.MONDAY] = "calendar.day.abbrevs.mo";
+		dayNames[Calendar.TUESDAY] = "calendar.day.abbrevs.tu";
+		dayNames[Calendar.WEDNESDAY] = "calendar.day.abbrevs.we";
+		dayNames[Calendar.THURSDAY] = "calendar.day.abbrevs.th";
+		dayNames[Calendar.FRIDAY] = "calendar.day.abbrevs.fr";
+		dayNames[Calendar.SATURDAY] = "calendar.day.abbrevs.sa";
 		
-		nums[1] = NLT.get("calendar.first");
-		nums[2] = NLT.get("calendar.second");
-		nums[3] = NLT.get("calendar.third");
-		nums[4] = NLT.get("calendar.fourth");
-		nums[5] = NLT.get("calendar.last");
+		nums[1] = "calendar.first";
+		nums[2] = "calendar.second";
+		nums[3] = "calendar.third";
+		nums[4] = "calendar.fourth";
+		nums[5] = "calendar.last";
 	}
 	
 	public static final String EVENT_TYPE_CREATION = "creation";
@@ -484,7 +485,7 @@ public class EventsViewHelper {
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType);
 	}
 	
-	public static String eventToRepeatHumanReadableString (Event event) {
+	public static String eventToRepeatHumanReadableString (Event event, Locale locale) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		// in addition to the raw event, we disintangle some of the
@@ -506,39 +507,38 @@ public class EventsViewHelper {
 			bynum = nn;
 		}
 		
-		long interval = event.getDuration().getInterval();
 		String freqString = event.getFrequencyString();
 		String onString = "";
 		String untilString = "";
 		String onStringSeparator = "";
 		if (freqString == null) {
 			// freqString = "does not repeat";
-			freqString = NLT.get("event.no_repeat");
+			freqString = NLT.get("event.no_repeat", locale);
 		} else {
 			freqString = freqString.toLowerCase();
 			if (event.getInterval() > 1) {
-				freqString = NLT.get("event.every") + " " + event.getInterval();
+				freqString = NLT.get("event.every", locale) + " " + event.getInterval();
 				if (event.getFrequency() == Event.DAILY) {
-					freqString += " " + NLT.get("event.days");
+					freqString += " " + NLT.get("event.days", locale);
 				}
 				if (event.getFrequency() == Event.WEEKLY) {
-					freqString += " " + NLT.get("event.weeks");
+					freqString += " " + NLT.get("event.weeks", locale);
 				}
 				if (event.getFrequency() == Event.MONTHLY) {
-					freqString += " " + NLT.get("event.months");
+					freqString += " " + NLT.get("event.months", locale);
 				}
 				if (event.getFrequency() == Event.YEARLY) {
-					freqString += " " + NLT.get("event.years");
+					freqString += " " + NLT.get("event.years", locale);
 				}
 			}
 			Iterator byDaysIt = bydays.listIterator();
 
 			// format weekly events as comma-separated list of ondays
 			if (event.getFrequency() == Event.WEEKLY && byDaysIt.hasNext()) {
-				onString += NLT.get("event.occurson") + " ";
+				onString += NLT.get("event.occurson", locale) + " ";
 				while (byDaysIt.hasNext()) {
 					Integer ii = (Integer) byDaysIt.next();
-					onString += onStringSeparator + dayNames[ii.intValue()];
+					onString += onStringSeparator + NLT.get(dayNames[ii.intValue()], locale);
 					onStringSeparator = ", ";
 				}
 			}
@@ -549,8 +549,8 @@ public class EventsViewHelper {
 			// not a list)
 			if (event.getFrequency() == Event.MONTHLY && byDaysIt.hasNext()) {
 				Integer ii = (Integer) byDaysIt.next();
-				onString += NLT.get("event.occurson") + " " + nums[bynum.intValue()] + " ";
-				onString += dayNames[ii.intValue()];
+				onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[bynum.intValue()], locale) + " ";
+				onString += NLT.get(dayNames[ii.intValue()], locale);
 			}
 
 			if (event.getFrequency() == Event.YEARLY) {
@@ -559,7 +559,7 @@ public class EventsViewHelper {
 						&& event.getByMonth() != null
 						&& event.getByMonth().length > 0) {
 					for (int i = 0; i < event.getByMonthDay().length; i++) {
-						onString += NLT.get("event.occurson") + " "
+						onString += NLT.get("event.occurson", locale) + " "
 								+ event.getByMonthDay()[i]
 								+ (getNumberSuffix(event.getByMonthDay()[i]))
 								+ (i < (event.getByMonthDay().length - 1) ? ", "
@@ -576,8 +576,8 @@ public class EventsViewHelper {
 				if (byDaysIt.hasNext() && event.getByMonth() != null
 						&& event.getByMonth().length > 0) {
 					Integer ii = (Integer) byDaysIt.next();
-					onString += NLT.get("event.occurson") + " " + nums[bynum.intValue()] + " ";
-					onString += dayNames[ii.intValue()] + " ";
+					onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[bynum.intValue()], locale) + " ";
+					onString += NLT.get(dayNames[ii.intValue()], locale) + " ";
 
 					onString += "of ";
 					for (int i = 0; i < event.getByMonth().length; i++) {
@@ -592,15 +592,15 @@ public class EventsViewHelper {
 		if (event.getFrequencyString() != null) {
 			untilString += "<br>";
 			if (event.getCount() == 0) {
-				untilString += NLT.get("event.repeat_forever");
+				untilString += NLT.get("event.repeat_forever", locale);
 			} else if (event.getCount() == -1) {
-				DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM,
-						user.getLocale());
+				DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
+						locale);
 				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-				untilString += NLT.get("event.repeat_until") + " " + dateFormat.format(event.getUntil().getTime());
+				untilString += NLT.get("event.repeat_until", locale) + " " + dateFormat.format(event.getUntil().getTime());
 			} else {
-				untilString += NLT.get("event.repeat") + " " + event.getCount() + " " + NLT.get("event.times");
+				untilString += NLT.get("event.repeat", locale) + " " + event.getCount() + " " + NLT.get("event.times", locale);
 			}
 		}
 		
