@@ -315,6 +315,7 @@ div.ss_entryDescription.ss_entryContent table {
   }
 
 div.ss_style input[type="text"],
+div.ss_style input[type="password"],
 div.ss_style textarea,
 div.ss_style select,
 div.ss_global_toolbar_quick input {
@@ -329,6 +330,7 @@ div.ss_style textarea {
   padding: 0px;
 }
 div.ss_style input[type="text"],
+div.ss_style input[type="password"],
 div.ss_style select,
 div.ss_global_toolbar_quick input {
   padding: 1px;
