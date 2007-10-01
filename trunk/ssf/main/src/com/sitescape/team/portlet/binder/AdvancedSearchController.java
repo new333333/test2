@@ -142,19 +142,55 @@ public class AdvancedSearchController extends AbstractBinderController {
         	model.putAll(prepareSearchResultData(request));
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
-        	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
+
+    		//Build a reload url
+    		Tabs tabs = setupTabs(request);
+    		PortletURL reloadUrl = response.createRenderURL();
+    		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADVANCED_SEARCH);
+    		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.SEARCH_VIEW_PAGE);
+    		reloadUrl.setParameter(WebKeys.URL_TAB_ID, String.valueOf(tabs.getCurrentTab()));
+    		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+
+    		return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else if (op.equals(WebKeys.SEARCH_VIEW_PAGE)) {
         	model.putAll(prepareSearchResultPage(request));
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
+        	
+    		//Build a reload url
+    		Tabs tabs = setupTabs(request);
+    		PortletURL reloadUrl = response.createRenderURL();
+    		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADVANCED_SEARCH);
+    		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.SEARCH_VIEW_PAGE);
+    		reloadUrl.setParameter(WebKeys.URL_TAB_ID, String.valueOf(tabs.getCurrentTab()));
+    		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else if (op.equals(WebKeys.SEARCH_SAVED_QUERY)) {
         	model.putAll(prepareSavedQueryResultData(request));
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
+        	
+    		//Build a reload url
+    		Tabs tabs = setupTabs(request);
+    		PortletURL reloadUrl = response.createRenderURL();
+    		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADVANCED_SEARCH);
+    		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.SEARCH_VIEW_PAGE);
+    		reloadUrl.setParameter(WebKeys.URL_TAB_ID, String.valueOf(tabs.getCurrentTab()));
+    		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else {
         	model.putAll(prepareSearchFormData(request));
+        	
+    		//Build a reload url
+    		Tabs tabs = setupTabs(request);
+    		PortletURL reloadUrl = response.createRenderURL();
+    		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADVANCED_SEARCH);
+    		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.SEARCH_VIEW_PAGE);
+    		reloadUrl.setParameter(WebKeys.URL_TAB_ID, String.valueOf(tabs.getCurrentTab()));
+    		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+
         	return new ModelAndView("search/search_form", model);
         }
 	}
