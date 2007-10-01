@@ -5572,6 +5572,27 @@ function ss_cancelUITheme() {
 }
 
 
+
+function ss_showAbout(divId) {
+	ss_moveDivToBody(divId);
+	divObj = dojo.byId(divId);
+	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+	lightBox.onclick = function(e) {ss_cancelAbout(divId);};
+	divObj.style.visibility = "visible";
+	divObj.style.display= "block";	
+	ss_centerPopupDiv(divObj);
+}
+
+
+function ss_cancelAbout(divId) {
+	ss_hideLightbox();
+	ss_hideDiv(divId);
+}
+
+
+
+
 //Hemanth: This method will be called by the links that get created in tiny MCE
 //Refer to link.js insertLink() method.
 function ss_checkTypeOfLink(linkObj) {
