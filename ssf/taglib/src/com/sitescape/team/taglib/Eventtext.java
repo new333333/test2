@@ -108,7 +108,7 @@ public class Eventtext extends TagSupport {
 						DateFormat.MEDIUM, user.getLocale());
 				dateFormat.setTimeZone(user.getTimeZone());
 			} else {
-				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, user
+				dateFormat = DateFormat.getDateInstance(DateFormat.LONG, user
 						.getLocale());
 				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			}
@@ -116,7 +116,7 @@ public class Eventtext extends TagSupport {
 			String startString = dateFormat.format(st.getTime());
 			String endString = dateFormat.format(en.getTime());
 
-			String repeatString = EventsViewHelper.eventToRepeatHumanReadableString(event);
+			String repeatString = EventsViewHelper.eventToRepeatHumanReadableString(event, user.getLocale());
 
 			req.setAttribute("startString", startString);
 			req.setAttribute("endString", endString);

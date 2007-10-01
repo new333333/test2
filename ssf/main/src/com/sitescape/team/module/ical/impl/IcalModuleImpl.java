@@ -326,9 +326,9 @@ public class IcalModuleImpl implements IcalModule {
 	}
 
 	private boolean isAllDaysEvent(DtStart start) {
-		return (start.getParameter(Parameter.TZID) != null) || 
+		return !((start.getParameter(Parameter.TZID) != null) || 
 				(start.getParameter(Parameter.TZID) == null && 
-					start.getParameter(Value.DATE.getName()) == null);
+					start.getParameter(Value.DATE.getName()) == null));
 	}
 
 	/**
@@ -406,7 +406,6 @@ public class IcalModuleImpl implements IcalModule {
 				try {
 					Long entryId = folderModule.addEntry(folderId, entryType, inputData, new HashMap());
 					entries.add(entryId);
-					logger.info("New entry id created from iCal file [" + entryId + "]");
 				} catch (AccessControlException e) {
 					logger.warn("Can not create entry from iCal file.", e);
 				} catch (WriteFilesException e) {

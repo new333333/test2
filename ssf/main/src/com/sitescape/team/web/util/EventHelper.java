@@ -95,8 +95,9 @@ public class EventHelper {
         }
         
         if (!isAllDayEvent(inputData, id)) {
-        	event.setTimeZone(user.getTimeZone());
+        	event.setAllDaysEvent(false);
         } else {
+        	event.setAllDaysEvent(true);
         	if (event.getDtStart() != null) {
         		DateTime startEvent = new DateTime(event.getDtStart());
         		event.setDtStart(startEvent.withMillisOfDay(0).toGregorianCalendar());

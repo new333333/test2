@@ -28,9 +28,11 @@
  */
 package com.sitescape.team.module.definition.notify;
 
+import java.text.DateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -63,22 +65,28 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	    		YearMonthDay startDate = (new DateTime(event.getDtStart().getTime())).toYearMonthDay();
 	    		YearMonthDay endDate = (new DateTime(event.getDtEnd().getTime())).toYearMonthDay();
 	    		
-	    		Element value = element.addElement("startDate");
-	    		value.setText(notifyDef.getDateFormat().format(event.getDtStart().getTime()));
-	    		value = element.addElement("endDate");
+	    		DateFormat dateFormat = notifyDef.getDateFormat();
+	    		if (event.isAllDayEvent()) {
+	    			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, notifyDef.getLocale());
+	    			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    		}
+	    		
+	    		Element startDateEl = element.addElement("startDate");
+	    		startDateEl.setText(dateFormat.format(event.getDtStart().getTime()));
+	    		Element endDateEl = element.addElement("endDate");
 	    		if (((event.isAllDayEvent() && startDate.isEqual(endDate))) || !event.hasDuration()) {
-	    			value.setText("");
+	    			endDateEl.setText("");
 	    		} else {
-	    			value.setText(notifyDef.getDateFormat().format(event.getDtEnd().getTime())); 
+	    			endDateEl.setText(dateFormat.format(event.getDtEnd().getTime())); 
 	    		}
 	    		
 	    		String freqString = event.getFrequencyString();
 	    		
-	    		value = element.addElement("frequency");
+	    		Element frequencyEl = element.addElement("frequency");
 	    		if (freqString == null) {
-	    			value.setText("");
+	    			frequencyEl.setText("");
 	    		} else {
-	    			value.setText(NLT.get("calendar.frequency") + ": " + EventsViewHelper.eventToRepeatHumanReadableString(event));
+	    			frequencyEl.setText(NLT.get("calendar.frequency", notifyDef.getLocale()) + ": " + EventsViewHelper.eventToRepeatHumanReadableString(event, notifyDef.getLocale()));
 	    		}
 	    		  
 	    		notifyDef.addEvent(entity, event);

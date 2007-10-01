@@ -116,7 +116,7 @@ public class Notify {
 		this.locale = locale;
 	}
 	public DateFormat getDateFormat() {
-		if (dateFormat == null) dateFormat=DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
+		if (dateFormat == null) dateFormat=DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, getLocale());
 		return dateFormat;
 	}
 	public void setDateFormat(DateFormat dateFormat) {
