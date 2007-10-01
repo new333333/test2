@@ -287,6 +287,19 @@ function ss_checkForm(obj) {
     </c:if>
     </c:if>
   </c:forEach>
+
+  <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+    <c:if test="${!empty config.templateTitle && empty config.internalId && !empty config.id}">
+      <tr><td valign="top" nowrap><input type="radio" name="binderConfigId" value="${config.id}" 
+      <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
+      onClick="ss_showAddBinderOptions()"
+      > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
+        <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
+      </span></td>
+      </tr>
+    </c:if>
+  </c:forEach>
 </table>
 <br/>  
 </c:if>
