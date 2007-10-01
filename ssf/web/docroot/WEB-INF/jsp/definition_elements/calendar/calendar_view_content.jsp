@@ -58,6 +58,7 @@
 			}
 		}
 		
+		ss_calendar.entriesLabel = "<ssf:nlt tag="statistic.unity.plural"/>";
 		ss_calendar_${prefix} = new ss_calendar("${prefix}");
 		if (!window.ssScope) { ssScope = {}; };
 		ssScope.refreshView = function (entryId) {

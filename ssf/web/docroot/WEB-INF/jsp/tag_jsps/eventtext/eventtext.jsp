@@ -40,7 +40,7 @@
 		    <ssf:nlt tag="calendar.end" text="End"/>: ${endString}<br />			
 		</c:otherwise>
 	</c:choose>
-    <ssf:nlt tag="calendar.frequency" text="Frequency"/>: ${freqString} ${onString} ${untilString}
+    <ssf:nlt tag="calendar.frequency" text="Frequency"/>: ${repeatString}
 </span>
 
 
