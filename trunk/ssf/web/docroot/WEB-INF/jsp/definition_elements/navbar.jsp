@@ -789,6 +789,12 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 		name="newTab" value="1"/></portlet:renderURL>";
 
+var ss_AdvancedSearch = "<ssf:url 
+		adapter="false" 
+		portletName="ss_forum" 
+		action="advanced_search" 
+		actionUrl="true" ><ssf:param
+		name="newTab" value="1" /></ssf:url>";
 </script>
 
 <div id="ss_navbar_bottom<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"></div>
