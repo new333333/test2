@@ -50,8 +50,6 @@
 
  <target id="b9yh44r" pid="b20g4u4" name="Step" level="4" number="4"> <text>Add a picture. Click Browse&#201; to look for a graphics file on your computer; then click OK. The picture is displayed in the Photo box of your profile.</text> </target>
 
- <target id="b9yh44v" pid="b20g4u4" name="Step" level="4" number="5"> <text>Click  to return to the initial page.</text> </target>
-
  <target id="b9yh4la" pid="b20g4u4" name="Sect3" level="3"> <text>Tips for Adding Photos to Your Profile:</text> </target>
 
  <target id="b9yh9yk" pid="b20g4u4" name="Sect2" level="2"> <text>To Add Your First Blog Entry:</text> </target>
@@ -64,7 +62,7 @@
 
  <target id="barbs6a" pid="b20g4u4" name="Step" level="4" number="3"> <text>Click on Blog.</text> </target>
 
- <target id="b9yhak2" pid="b20g4u4" name="Step" level="4" number="4"> <text>On the menu bar above the blog calendar, select the New &#62; Blog Entry menu item.</text> </target>
+ <target id="b9yhak2" pid="b20g4u4" name="Step" level="4" number="4"> <text>Select the New &#62; Blog Entry menu item.</text> </target>
 
  <target id="b9yhank" pid="b20g4u4" name="Step" level="4" number="5"> <text>In the Blog Entry form that appears, type in the title of your blog entry in the Title box.</text> </target>
 
