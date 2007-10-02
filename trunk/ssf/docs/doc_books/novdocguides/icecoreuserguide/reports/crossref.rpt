@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/28/2007 11:16:25 AM'>
+   <String `10/2/2007 4:48:26 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2106,7 +2106,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `7'>
+   <String `1'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2116,7 +2116,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `82'>
+   <String `76'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2124,43 +2124,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `front.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Element'>
-   <Char Tab> 
-   <String `Total'>
-   <Char Tab> 
-   <String `Invalid'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTab'>
-  <ParaLine 
-   <String `Ulink'>
-   <Char Tab> 
-   <String `6'>
-   <Char Tab> 
-   <String `0'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Total'>
-   <Char Tab> 
-   <String `6'>
-   <Char Tab> 
-   <String `0'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `preface.fm'>
+   <String `sitescape_front.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 

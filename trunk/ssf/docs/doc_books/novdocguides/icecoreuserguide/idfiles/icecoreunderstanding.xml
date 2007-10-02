@@ -4,9 +4,9 @@
 
  <target id="bamndbk" pid="bamndbk" name="Chapter" level="0" number="1"> <text>Concepts and Navigation</text> </target>
 
- <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>Novell Teaming is Collaboration Software</text> </target>
+ <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>ICEcore is Collaboration Software</text> </target>
 
- <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>Novell Teaming is Knowledge Management Software</text> </target>
+ <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>ICEcore is Knowledge Management Software</text> </target>
 
  <target id="bamolyw" pid="bamolyw" name="Sect1" level="1" number="1.2"> <text>Navigating Workspaces and Folders</text> </target>
 
@@ -14,17 +14,17 @@
 
  <target id="banmk7p" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The welcome portlet</text> </target>
 
- <target id="banmwqz" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The navigation portlet</text> </target>
+ <target id="banmwqz" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The navigator portlet</text> </target>
 
  <target id="banmwr0" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The buddy-list portlet</text> </target>
 
- <target id="banmwr1" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The bookmark portlet</text> </target>
+ <target id="banmwr1" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>The bookmarks portlet</text> </target>
 
  <target id="banms4r" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Blog summary</text> </target>
 
  <target id="banmwr2" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Guestbook summary</text> </target>
 
- <target id="banmwr3" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Novell Teaming administration</text> </target>
+ <target id="banmwr3" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Administration tools</text> </target>
 
  <target id="banmwr4" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Photo gallery</text> </target>
 
@@ -34,7 +34,7 @@
 
  <target id="banmwr7" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>Workspace tree</text> </target>
 
- <target id="banmwr8" pid="bamolyw" name="Sect2" level="2" number="1.2.2"> <text>The Navigation Portlet</text> </target>
+ <target id="banmwr8" pid="bamolyw" name="Sect2" level="2" number="1.2.2"> <text>The Navigator Portlet</text> </target>
 
  <target id="banmy1d" pid="bamolyw" name="FormalPara" level="3" number="w"> <text>My-workspace icon</text> </target>
 
