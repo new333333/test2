@@ -400,6 +400,7 @@
 			</target>
 	
 	<target name="make-portlet-properties">
+					<mkdir dir="${web.dir}/WEB-INF/classes/content"/>
 					<java 	classname="com.sitescape.team.tools.portletproperties.GeneratePortletProperties"
 							fork="true"
 							newenvironment="true"
