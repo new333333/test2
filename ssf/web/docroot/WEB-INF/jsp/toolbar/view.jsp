@@ -95,20 +95,20 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </div>
 <div class="ss_themeMenu" onClick="ss_cancelAbout('${renderResponse.namespace}_aboutBox');" style="display: none; width: 350px;" id="${renderResponse.namespace}_aboutBox">
   <div style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px; border-bottom: 1px solid #333333;">
-  <table cellpadding="0" cellspacing="0" border="0" width="100%">
-  <tbody><tr>
-    <c:choose>
-    <c:when test="${ssProductName == 'Novell'}">
-        <td><span style="font-size: 24px">Novell<span style="vertical-align: sub; font-size: 10px;"> &reg;</span> Teaming</span></td>
+    <table style="line-height: 30px;" cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody><tr>
+     <c:choose>
+     <c:when test="${ssProductName == 'Novell'}">
+        <td style="line-height: 30px;"><span style="font-size: 24px">Novell<span style="vertical-align: sub; font-size: 10px;"> &reg;</span> Teaming</span></td>
         <td align="right"><img src="<html:brandedImagesPath/>pics/novell-n.png"></td>
-    </c:when>
-    <c:otherwise>
-    	<td>
-        <span style="font-size: 24px">${ssProductTitle}</span>
+     </c:when>
+     <c:otherwise>
+    	<td style="line-height: 30px;">
+        <span style="line-height: 30px; font-size: 24px">${ssProductTitle}</span>
         </td>
-    </c:otherwise>
-    </c:choose>
-    </tr></tbody>
+     </c:otherwise>
+     </c:choose>
+     </tr></tbody>
     </table>
   </div>
   <div class="ss_style" style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px;">
