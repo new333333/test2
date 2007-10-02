@@ -159,17 +159,12 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
 		
-		if(parentBinder instanceof Workspace) {
+		if(parentBinder instanceof Workspace)
 			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), new HashMap());
-		}
-		else { // folder
-			long folderId = getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
+		else
+			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), new HashMap());
-			if(parentBinder.isMirrored())
-				getBinderModule().setDefinitions(folderId, true);
-			return folderId;
-		}
 	}
 
 	/**
