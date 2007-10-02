@@ -1237,23 +1237,19 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	message.put(SendEmail.SUBJECT, subject);
  		message.put(SendEmail.TO, emailSet);
  		if (entries != null) {
-
-			if (sendAttachments) {
-	 			List attachments = new ArrayList();
-				List iCalendars = new ArrayList();
+ 			List attachments = new ArrayList();
+			List iCalendars = new ArrayList();
 				 	 			
-	 			for (DefinableEntity entry:entries) {
-					attachments.addAll(entry.getFileAttachments());
-					if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
-	 					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
-	 				}
-	 	 		}
-				message.put(SendEmail.ATTACHMENTS, attachments);
-	 			if (!iCalendars.isEmpty()) {
-	 				message.put(SendEmail.ICALENDARS, iCalendars);
+			for (DefinableEntity entry:entries) {
+				if (sendAttachments) attachments.addAll(entry.getFileAttachments());
+				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
+					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
 	 			}
+	 	 	}
+			if (sendAttachments) message.put(SendEmail.ATTACHMENTS, attachments);
+			if (!iCalendars.isEmpty()) {
+				message.put(SendEmail.ICALENDARS, iCalendars);
 			}
- 			
  			
  		}
 		boolean sent = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
