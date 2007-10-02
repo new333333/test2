@@ -26,6 +26,7 @@
 
 <!-- please change product to anything that makes sense in your current release -->
 <!ENTITY product       "Novell Teaming">
+<!ENTITY productshort       "Teaming">
 <!ENTITY zon       "Conferencing">
 
 
