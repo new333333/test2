@@ -82,6 +82,7 @@ import com.sitescape.team.jobs.FillEmailSubscription;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -114,6 +115,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
     protected ReportModule reportModule;
+    protected BinderModule binderModule;
     
     AtomicInteger aeCount = new AtomicInteger();
     AtomicInteger meCount = new AtomicInteger();
@@ -251,6 +253,13 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		this.fileModule = fileModule;
 	}
 	
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	
 	Folder loadFolder(Long folderId)  {
         Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
 		if (folder.isDeleted()) throw new NoBinderByTheIdException(folderId);
@@ -311,6 +320,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		}
     			
 		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
+		if(parentFolder.isMirrored() && binder.isMirrored())
+			getBinderModule().setDefinitions(binder.getId(), true);
 		return binder.getId();
     }
     //no transaction by default

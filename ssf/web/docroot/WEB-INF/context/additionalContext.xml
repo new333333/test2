@@ -23,6 +23,7 @@
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
+    	<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 
