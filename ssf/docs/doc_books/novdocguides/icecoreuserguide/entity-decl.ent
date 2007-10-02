@@ -25,13 +25,15 @@
 <!-- ============================================================= -->
 
 <!-- please change product to anything that makes sense in your current release -->
-<!ENTITY product       "Novell Teaming">
+<!ENTITY product       "ICEcore">
+<!ENTITY product_short       "ICEcore">
+<!ENTITY conf_prod_name "ICEcore Conference">
+<!ENTITY conf_prod_name_short "Conference">
 
 
 <!-- oddities -->
 <!ENTITY thrdmrk "*">
 <!ENTITY mdash "-">
-<!ENTITY conf_prod_name "Conferencing">
 
 <!-- ============================================================= -->
 <!--                    yast desktop entities                      -->
