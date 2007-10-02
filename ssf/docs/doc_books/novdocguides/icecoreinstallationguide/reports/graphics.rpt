@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `9/25/2007 2:39:20 PM'>
+   <String `10/2/2007 11:20:51 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2278,6 +2278,22 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `emailfields_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `emailsettings_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `filesupporttable.png'>
    <Char Tab> 
    <String `1'>
@@ -2287,6 +2303,14 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `icecorediagram_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `icomingmail_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2350,6 +2374,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `notificationchedule_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `selectemailsettings_a.png'>
    <Char Tab> 
    <String `1'>
@@ -2374,6 +2406,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `sendemailnot_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `switchworkspacecreatorright_a.png'>
    <Char Tab> 
    <String `1'>
@@ -2391,14 +2431,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `winconfigureroles_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `wsemailsettings_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2517,6 +2549,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `teammembers_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `wsemailsettings_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2789,7 +2827,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 57%, Indent: Current Indent'>
+   <String `Width: 35%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3062,7 +3100,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 43%, Indent: Current Indent'>
+   <String `Width: 42%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3374,7 +3412,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 65%, Indent: Current Indent'>
+   <String `Width: 55%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3614,6 +3652,72 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `emailfields_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654604'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `emailfields_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 64%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `emailsettings_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654421'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `emailsettings_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 18%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `filesupporttable.png'>
   > # end of ParaLine
  > # end of Para
@@ -3674,13 +3778,46 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 88%, Indent: Left Edge'>
+   <String `Width: 76%, Indent: Left Edge'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: System diagram\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `icomingmail_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1655714'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `icomingmail_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 40%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3713,7 +3850,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 62%, Indent: Current Indent'>
+   <String `Width: 61%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3953,6 +4090,39 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `notificationchedule_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654768'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `notificationchedule_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 48%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `selectemailsettings_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -4070,6 +4240,39 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `sendemailnot_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654825'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `sendemailnot_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 76%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `switchworkspacecreatorright_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -4175,52 +4378,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 82%, Indent: Current Indent'>
+   <String `Width: 88%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Configure Roles page\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `wsemailsettings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1107201'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `wsemailsettings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: E-mail settings\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
