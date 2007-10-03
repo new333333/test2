@@ -27,6 +27,34 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
+%>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<style>
+.ss_credits_title {
+	padding-left:4px;
+}
+a:link {
+	text-decoration:none !important;
+}
+a:hover {
+	text-decoration:underline !important;
+}
+</style>
+
+<div class="ss_portlet_style ss_portlet">
+  <div class="ss_style">
+  
+  <div align="right">
+	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
+	  name="${ssNamespace}_btnForm" method="post" 
+	  action="<portlet:renderURL windowState="normal"/>">
+		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	</form>
+  </div>
+	<ssf:expandableArea titleClass="ss_credits_title" title="ICEcore is brought to you by <a href=\"http://sitescape.com\">SiteScape, Inc.</a>">
+		<style>
+		<!--
+		 /* Font Definitions */
 		 @font-face
 			{font-family:Wingdings;
 			panose-1:5 0 0 0 0 0 0 0 0 0;}
