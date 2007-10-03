@@ -30,20 +30,24 @@ package com.sitescape.team.repository.webdav;
 
 import java.io.IOException;
 
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.UncheckedIOException;
-import com.sitescape.team.repository.AbstractRepositorySessionFactory;
-import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.impl.AbstractExclusiveRepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SWebdavResource;
 
-public class WebdavRepositorySessionFactory extends AbstractRepositorySessionFactory
-implements ExclusiveRepositorySessionFactory, WebdavRepositorySessionFactoryMBean {
+public class WebdavRepositorySessionFactory extends AbstractExclusiveRepositorySessionFactory
+implements WebdavRepositorySessionFactoryMBean {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -166,4 +170,20 @@ implements ExclusiveRepositorySessionFactory, WebdavRepositorySessionFactoryMBea
 	public boolean supportSmartCheckin() {
 		return true;
 	}	
+	
+	public DataSource getDataSourceVersioned(Binder binder,
+			DefinableEntity entity, String relativeFilePath,
+			String versionName, FileTypeMap fileTypeMap)
+			throws RepositoryServiceException, UncheckedIOException {
+		return new WebdavRepositoryDataSource(binder, entity, relativeFilePath, 
+				versionName, fileTypeMap);
+	}
+
+	public class WebdavRepositoryDataSource extends AbstractExclusiveRepositoryDataSource {
+		public WebdavRepositoryDataSource(Binder binder, DefinableEntity entity, 
+				String relativeFilePath, String versionName, FileTypeMap fileMap) {
+			super(binder, entity, relativeFilePath, versionName, fileMap);
+		}
+	}
+
 }

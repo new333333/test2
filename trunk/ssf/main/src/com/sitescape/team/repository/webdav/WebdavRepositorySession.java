@@ -33,9 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.activation.DataSource;
-import javax.activation.FileTypeMap;
-
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -202,19 +199,6 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public DataSource getDataSourceVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException, UncheckedIOException {
-		try {
-			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
-					relativeFilePath, versionName);			
-			return new WebDavDataSource(wdr, versionResourcePath, relativeFilePath, fileTypeMap);
-			
-		} catch (IOException e) {
-			wdr.logError(logger);
-			throw new UncheckedIOException(e);
-		}
-	}	
 	// obsolete
 	public List fileVersionsURIs(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
@@ -658,32 +642,6 @@ public class WebdavRepositorySession implements RepositorySession {
 		return fileResourcePath.substring(0, fileResourcePath.lastIndexOf(Constants.SLASH) + 1);
 	}
 	
-	public class WebDavDataSource implements DataSource {
-		protected SWebdavResource wdr;
-		protected String resourcePath, name;
-		protected FileTypeMap fileMap;
-		public WebDavDataSource(SWebdavResource wdr, String resourcePath, String name, FileTypeMap fileMap) {
-			this.wdr = wdr;
-			this.resourcePath = resourcePath;
-			this.fileMap = fileMap;
-			this.name = name;
-		}
-		public java.io.InputStream getInputStream() throws java.io.IOException {
-			return wdr.getMethodData(resourcePath);
-		}
-		
-		public java.io.OutputStream getOutputStream() throws java.io.IOException {
-			return null;
-		}
-		public java.lang.String getContentType() {
-			return fileMap.getContentType(resourcePath);
-		}
-		public java.lang.String getName() {
-			return name;
-			
-		}
-	}
-
 	public RepositorySessionFactory getFactory() {
 		return factory;
 	}

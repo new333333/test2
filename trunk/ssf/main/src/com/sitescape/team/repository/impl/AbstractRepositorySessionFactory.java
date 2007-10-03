@@ -26,13 +26,25 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.repository;
+package com.sitescape.team.repository.impl;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.repository.RepositoryServiceException;
+import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.archive.ArchiveStore;
 
-public class AbstractRepositorySessionFactory {
+public abstract class AbstractRepositorySessionFactory implements RepositorySessionFactory {
 
 	private ArchiveStore archiveStore;
 	
@@ -46,5 +58,48 @@ public class AbstractRepositorySessionFactory {
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
 		if(archiveStore == null)
 			throw new ConfigurationException("errorcode.no.archive.store", (Object[])null);
+	}
+
+	public abstract class AbstractRepositoryDataSource implements DataSource {
+		protected Binder _binder;
+		protected DefinableEntity _entity;
+		protected String _relativeFilePath;
+		protected String _versionName;
+		protected FileTypeMap _fileMap;
+
+		public AbstractRepositoryDataSource(Binder binder, DefinableEntity entity, 
+				String relativeFilePath, String versionName, FileTypeMap fileMap) {
+			this._binder = binder;
+			this._entity = entity;
+			this._relativeFilePath = relativeFilePath;
+			this._versionName = versionName;
+			this._fileMap = fileMap;
+		}
+		
+		public String getContentType() {
+			return _fileMap.getContentType(_relativeFilePath);
+		}
+
+		public InputStream getInputStream() throws IOException {
+			RepositorySession session = createSessionForDataSource();
+			InputStream in = null;
+			try {
+				in = session.readVersioned(_binder, _entity, _relativeFilePath, _versionName, null);
+				return new SessionWrappedInputStream(in, session);
+			} finally {
+				if(in == null)
+					session.close();
+			}		
+		}
+
+		public String getName() {
+			return _relativeFilePath;
+		}
+
+		public OutputStream getOutputStream() throws IOException {
+			return null;
+		}
+		
+		protected abstract RepositorySession createSessionForDataSource();
 	}
 }

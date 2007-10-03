@@ -39,10 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.activation.FileTypeMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
@@ -358,15 +354,6 @@ public class FileRepositorySession implements RepositorySession {
 				return VERSIONED_FILE;
 		}
 	}
-	
-	public DataSource getDataSourceVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
-		throws RepositoryServiceException, UncheckedIOException {
-		File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
-		FileDataSource fSource = new FileDataSource(versionFile);
-		fSource.setFileTypeMap(fileTypeMap);
-		return fSource;
-	}	
 	
 	public void checkout(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {

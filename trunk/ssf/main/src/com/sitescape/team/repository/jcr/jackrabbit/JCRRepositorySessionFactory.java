@@ -31,6 +31,7 @@ package com.sitescape.team.repository.jcr.jackrabbit;
 import java.io.File;
 import java.io.IOException;
 
+import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
@@ -45,16 +46,17 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.sitescape.team.UncheckedIOException;
-import com.sitescape.team.repository.AbstractRepositorySessionFactory;
-import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.impl.AbstractExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.jcr.JCRRepositorySession;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 
-public class JCRRepositorySessionFactory extends AbstractRepositorySessionFactory
-implements ExclusiveRepositorySessionFactory, JCRRepositorySessionFactoryMBean {
+public class JCRRepositorySessionFactory extends AbstractExclusiveRepositorySessionFactory
+implements JCRRepositorySessionFactoryMBean {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -227,4 +229,20 @@ implements ExclusiveRepositorySessionFactory, JCRRepositorySessionFactoryMBean {
 		return true;
 	}
 	
+
+	public DataSource getDataSourceVersioned(Binder binder,
+			DefinableEntity entity, String relativeFilePath,
+			String versionName, FileTypeMap fileTypeMap)
+			throws RepositoryServiceException, UncheckedIOException {
+		return new JCRRepositoryDataSource(binder, entity, relativeFilePath, 
+				versionName, fileTypeMap);
+	}
+	
+	public class JCRRepositoryDataSource extends AbstractExclusiveRepositoryDataSource {
+		public JCRRepositoryDataSource(Binder binder, DefinableEntity entity, 
+				String relativeFilePath, String versionName, FileTypeMap fileMap) {
+			super(binder, entity, relativeFilePath, versionName, fileMap);
+		}
+	}
+
 }

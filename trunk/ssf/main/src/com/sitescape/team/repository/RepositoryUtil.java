@@ -43,6 +43,7 @@ import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.repository.impl.SessionWrappedInputStream;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
 
@@ -236,13 +237,9 @@ public class RepositoryUtil {
 			DefinableEntity entity, String relativeFilePath, String versionName,
 			FileTypeMap fileTypeMap) throws RepositoryServiceException,
 			UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
-
-		try {
-			return session.getDataSourceVersioned(binder, entity, relativeFilePath, versionName, fileTypeMap);
-		} finally {
-			session.close();
-		}	
+		RepositorySessionFactory factory = RepositorySessionFactoryUtil.getRepositorySessionFactory(repositoryName);
+		
+		return factory.getDataSourceVersioned(binder, entity, relativeFilePath, versionName, fileTypeMap);
 	}
 	
 	public static void checkout(String repositoryName, Binder binder, 
