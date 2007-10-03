@@ -31,9 +31,6 @@ package com.sitescape.team.repository;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.activation.DataSource;
-import javax.activation.FileTypeMap;
-
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -253,26 +250,6 @@ public interface RepositorySession {
 	public InputStream readUnversioned(Binder binder, 
 			DefinableEntity entity, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException;
-	
-	/**
-	 * Return a datasource that will be used to read the file to a mime message.
-	 * <p>
-	 * This method can only be called on a versioned file.
-	 * 
-	 * @param session
-	 * @param binder
-	 * @param entity
-	 * @param relativeFilePath A pathname of the file relative to the entity. This may
-	 * simply be the name of the file. 
-	 * @param versionName the name of the version
-	 * @param fileTypeMap 
-	 * @return
-	 * @throws RepositoryServiceException
-	 */
-	public DataSource getDataSourceVersioned(Binder binder, 
-			DefinableEntity entity, String relativeFilePath, String versionName, 
-			FileTypeMap fileTypeMap) throws RepositoryServiceException,
-			UncheckedIOException;
 	
 	/**
 	 * Checks out the specified file resource. It is illegal to call this method

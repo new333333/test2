@@ -28,15 +28,17 @@
  */
 package com.sitescape.team.repository.fi.impl;
 
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.fi.FIException;
-import com.sitescape.team.repository.AbstractRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
-import com.sitescape.team.repository.fi.FIRepositorySessionFactoryAdapter;
 
-public class NullFIRepositorySessionFactoryAdapter extends AbstractRepositorySessionFactory
-implements FIRepositorySessionFactoryAdapter {
+public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositorySessionFactoryAdapter {
 
 	public RepositorySession openSession(String resourceDriverName) throws FIException, UncheckedIOException {
 		return null;
@@ -62,6 +64,13 @@ implements FIRepositorySessionFactoryAdapter {
 
 	public boolean supportSmartCheckin() {
 		return false;
+	}
+
+	public DataSource getDataSourceVersioned(Binder binder,
+			DefinableEntity entity, String relativeFilePath,
+			String versionName, FileTypeMap fileTypeMap)
+			throws RepositoryServiceException, UncheckedIOException {
+		return null;
 	}
 
 }

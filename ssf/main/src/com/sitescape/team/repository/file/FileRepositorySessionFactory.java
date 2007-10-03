@@ -28,15 +28,19 @@
  */
 package com.sitescape.team.repository.file;
 
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import com.sitescape.team.UncheckedIOException;
-import com.sitescape.team.repository.AbstractRepositorySessionFactory;
-import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.impl.AbstractExclusiveRepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class FileRepositorySessionFactory extends AbstractRepositorySessionFactory 
-implements ExclusiveRepositorySessionFactory, FileRepositorySessionFactoryMBean {
+public class FileRepositorySessionFactory extends AbstractExclusiveRepositorySessionFactory 
+implements FileRepositorySessionFactoryMBean {
 
 	private String repositoryRootDir;
 
@@ -68,5 +72,20 @@ implements ExclusiveRepositorySessionFactory, FileRepositorySessionFactoryMBean 
 
 	public boolean supportSmartCheckin() {
 		return true;
+	}
+
+	public DataSource getDataSourceVersioned(Binder binder,
+			DefinableEntity entity, String relativeFilePath,
+			String versionName, FileTypeMap fileTypeMap)
+			throws RepositoryServiceException, UncheckedIOException {
+		return new FileRepositoryDataSource(binder, entity, relativeFilePath, 
+				versionName, fileTypeMap);
+	}
+	
+	public class FileRepositoryDataSource extends AbstractExclusiveRepositoryDataSource {
+		public FileRepositoryDataSource(Binder binder, DefinableEntity entity, 
+				String relativeFilePath, String versionName, FileTypeMap fileMap) {
+			super(binder, entity, relativeFilePath, versionName, fileMap);
+		}
 	}
 }

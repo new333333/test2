@@ -26,10 +26,12 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.repository;
+package com.sitescape.team.repository.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.sitescape.team.repository.RepositorySession;
 
 public class SessionWrappedInputStream extends InputStream {
 

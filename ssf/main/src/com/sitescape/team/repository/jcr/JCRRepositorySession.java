@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -213,12 +212,6 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 
-	public DataSource getDataSourceVersioned(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String versionName, FileTypeMap fileTypeMap) 
-		throws RepositoryServiceException, UncheckedIOException {
-		return new JCRDataSource(binder, entity, relativeFilePath, versionName, fileTypeMap);
-	}
-	
 	public void checkout(Binder binder, DefinableEntity entity, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
@@ -667,38 +660,6 @@ public class JCRRepositorySession implements RepositorySession {
 			list.add(v.getName());
 		}
 		return list;
-	}
-
-	public class JCRDataSource implements DataSource {
-		protected Binder binder;
-		protected DefinableEntity entity;
-		protected String relativeFilePath;
-		protected String versionName;
-		protected FileTypeMap fileMap;
-		
-		public JCRDataSource(Binder binder, DefinableEntity entity, 
-				String relativeFilePath, String versionName, FileTypeMap fileMap) {
-			this.binder = binder;
-			this.entity = entity;
-			this.relativeFilePath = relativeFilePath;
-			this.versionName = versionName;
-			this.fileMap = fileMap;
-		}
-		
-		public java.io.InputStream getInputStream() throws java.io.IOException {
-			return readVersioned(binder, entity, relativeFilePath, versionName, null);
-		}
-		
-		public java.io.OutputStream getOutputStream() throws java.io.IOException {
-			return null;
-		}
-		
-		public java.lang.String getContentType() {
-			return fileMap.getContentType(getFileName(relativeFilePath));
-		}
-		public java.lang.String getName() {
-			return relativeFilePath;
-		}
 	}
 
 	public RepositorySessionFactory getFactory() {

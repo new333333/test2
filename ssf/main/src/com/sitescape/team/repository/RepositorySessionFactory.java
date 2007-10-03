@@ -28,7 +28,12 @@
  */
 package com.sitescape.team.repository;
 
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.archive.ArchiveStore;
 
 public interface RepositorySessionFactory {
@@ -81,4 +86,25 @@ public interface RepositorySessionFactory {
 	public boolean supportSmartCheckin();
 	
 	public ArchiveStore getArchiveStore();
+	
+	/**
+	 * Return a datasource that will be used to read the file to a mime message.
+	 * <p>
+	 * This method can only be called on a versioned file.
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entity
+	 * @param relativeFilePath A pathname of the file relative to the entity. This may
+	 * simply be the name of the file. 
+	 * @param versionName the name of the version
+	 * @param fileTypeMap 
+	 * @return
+	 * @throws RepositoryServiceException
+	 */
+	public DataSource getDataSourceVersioned(Binder binder, 
+			DefinableEntity entity, String relativeFilePath, String versionName, 
+			FileTypeMap fileTypeMap) throws RepositoryServiceException,
+			UncheckedIOException;
+	
 }
