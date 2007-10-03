@@ -938,7 +938,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									break;
 								}
 							}
-							sb.append(">").append(entryDef.getTitle().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 					
