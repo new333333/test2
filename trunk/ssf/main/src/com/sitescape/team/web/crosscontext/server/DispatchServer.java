@@ -129,6 +129,8 @@ public class DispatchServer extends GenericServlet {
 			
 			ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
 			ses.setAttribute(WebKeys.USER_NAME, userName);
+			ses.setAttribute(WebKeys.SERVER_NAME, req.getServerName());
+			ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
 		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");

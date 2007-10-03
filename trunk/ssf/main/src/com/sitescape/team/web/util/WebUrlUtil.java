@@ -29,7 +29,9 @@
 package com.sitescape.team.web.util;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -262,14 +264,25 @@ public class WebUrlUtil {
 	}
 	
 	private static StringBuffer getHostAndPort(HttpServletRequest req, Boolean isSecure, int webProtocol, boolean portRequired) {
-		String host;
-		int port;
+		String host = null;
+		int port = -1;
 		boolean secure;
 		
 		if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTP) {
 			if(req != null) {
-				host = req.getServerName();
-				port = req.getServerPort();
+				HttpSession ses = req.getSession(false);
+				if(ses != null) {
+					host = (String) ses.getAttribute(WebKeys.SERVER_NAME);
+					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT);
+					if(intPort != null)
+						port = intPort.intValue();
+				}
+				
+				if(host == null)
+					host = req.getServerName();
+				if(port == -1)
+					port = req.getServerPort();
+				
 				if(isSecure != null)
 					secure = isSecure; // don't use req.isSecure() !
 				else
@@ -283,8 +296,19 @@ public class WebUrlUtil {
 		}
 		else if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTPS) {
 			if(req != null) {
-				host = req.getServerName();
-				port = req.getServerPort();
+				HttpSession ses = req.getSession(false);
+				if(ses != null) {
+					host = (String) ses.getAttribute(WebKeys.SERVER_NAME);
+					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT);
+					if(intPort != null)
+						port = intPort.intValue();
+				}
+				
+				if(host == null)
+					host = req.getServerName();
+				if(port == -1)
+					port = req.getServerPort();
+				
 				if(isSecure != null)
 					secure = isSecure; // don't use req.isSecure() !
 				else
@@ -311,14 +335,25 @@ public class WebUrlUtil {
 	}
 	
 	private static StringBuffer getHostAndPort(PortletRequest req, Boolean isSecure, int webProtocol, boolean portRequired) {
-		String host;
-		int port;
+		String host = null;
+		int port = -1;
 		boolean secure;
 		
 		if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTP) {
 			if(req != null) {
-				host = req.getServerName();
-				port = req.getServerPort();
+				PortletSession ses = req.getPortletSession(false);
+				if(ses != null) {
+					host = (String) ses.getAttribute(WebKeys.SERVER_NAME, PortletSession.APPLICATION_SCOPE);
+					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT, PortletSession.APPLICATION_SCOPE);
+					if(intPort != null)
+						port = intPort.intValue();
+				}
+				
+				if(host == null)
+					host = req.getServerName();
+				if(port == -1)
+					port = req.getServerPort();
+				
 				if(isSecure != null) // context override value supplied
 					secure = isSecure; // don't use req.isSecure() !
 				else
@@ -333,8 +368,19 @@ public class WebUrlUtil {
 		}
 		else if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTPS) {
 			if(req != null) {
-				host = req.getServerName();
-				port = req.getServerPort();
+				PortletSession ses = req.getPortletSession(false);
+				if(ses != null) {
+					host = (String) ses.getAttribute(WebKeys.SERVER_NAME, PortletSession.APPLICATION_SCOPE);
+					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT, PortletSession.APPLICATION_SCOPE);
+					if(intPort != null)
+						port = intPort.intValue();
+				}
+				
+				if(host == null)
+					host = req.getServerName();
+				if(port == -1)
+					port = req.getServerPort();
+				
 				if(isSecure != null) // context override value supplied
 					secure = isSecure; // don't use req.isSecure() !
 				else
