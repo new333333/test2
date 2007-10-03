@@ -182,6 +182,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case modifyEntry:
+				//give users modify access to their own entry
+				if (RequestContextHolder.getRequestContext().getUser().equals(entry)) return;
 				AccessUtils.modifyCheck(entry);   		
 				break;
 			case deleteEntry:
