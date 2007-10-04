@@ -66,6 +66,12 @@ import javax.naming.ldap.LdapContext;
  */
 public class LDAPAuth implements Authenticator {
 
+	protected enum AuthenticatedBy {
+		EMAIL_ADDRESS,
+		SCREEN_NAME,
+		USER_ID
+	}
+	
 	public static final String AUTH_METHOD_BIND = "bind";
 
 	public static final String AUTH_METHOD_PASSWORD_COMPARE =
@@ -78,7 +84,7 @@ public class LDAPAuth implements Authenticator {
 
 		try {
 			return authenticate(
-				companyId, emailAddress, StringPool.BLANK, 0, password);
+				companyId, emailAddress, StringPool.BLANK, 0, password, AuthenticatedBy.EMAIL_ADDRESS);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -94,7 +100,7 @@ public class LDAPAuth implements Authenticator {
 
 		try {
 			return authenticate(
-				companyId, StringPool.BLANK, screenName, 0, password);
+				companyId, StringPool.BLANK, screenName, 0, password, AuthenticatedBy.SCREEN_NAME);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -111,7 +117,7 @@ public class LDAPAuth implements Authenticator {
 		try {
 			return authenticate(
 				companyId, StringPool.BLANK, StringPool.BLANK, userId,
-				password);
+				password, AuthenticatedBy.USER_ID);
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -122,7 +128,7 @@ public class LDAPAuth implements Authenticator {
 
 	protected int authenticate(
 			long companyId, String emailAddress, String screenName, long userId,
-			String password)
+			String password, AuthenticatedBy authBy)
 		throws Exception {
 
 		if (!PortalLDAPUtil.isAuthEnabled(companyId)) {
@@ -237,7 +243,7 @@ public class LDAPAuth implements Authenticator {
 
 				processUser(
 					attrs, userMappings, companyId, emailAddress, screenName,
-					userId, password);
+					userId, password, authBy);
 			}
 			else {
 				if (_log.isDebugEnabled()) {
@@ -383,11 +389,11 @@ public class LDAPAuth implements Authenticator {
 	protected void processUser(
 			Attributes attrs, Properties userMappings, long companyId,
 			String emailAddress, String screenName, long userId,
-			String password)
+			String password, AuthenticatedBy authBy)
 		throws Exception {
 
 		try {
-			doProcessUser(attrs, userMappings, companyId, emailAddress, screenName, userId, password);
+			doProcessUser(attrs, userMappings, companyId, emailAddress, screenName, userId, password, authBy);
 		}
 		catch(UserPasswordException e) {
 			// This workaround is necessary to get around the bug in the original
@@ -402,7 +408,7 @@ public class LDAPAuth implements Authenticator {
 	protected void doProcessUser(
 			Attributes attrs, Properties userMappings, long companyId,
 			String emailAddress, String screenName, long userId,
-			String password)
+			String password, AuthenticatedBy authBy)
 		throws Exception {
 
 		long creatorUserId = 0;
@@ -462,7 +468,7 @@ public class LDAPAuth implements Authenticator {
 			passwordReset, autoScreenName, screenName, emailAddress, locale,
 			firstName, middleName, lastName, prefixId, suffixId, male,
 			birthdayMonth, birthdayDay, birthdayYear, jobTitle, organizationId,
-			locationId, sendEmail, checkExists, updatePassword);
+			locationId, sendEmail, checkExists, updatePassword, authBy);
 	}
 
 	protected User importFromLDAP(
@@ -473,7 +479,8 @@ public class LDAPAuth implements Authenticator {
 			int prefixId, int suffixId, boolean male, int birthdayMonth,
 			int birthdayDay, int birthdayYear, String jobTitle,
 			long organizationId, long locationId, boolean sendEmail,
-			boolean checkExists, boolean updatePassword)
+			boolean checkExists, boolean updatePassword,
+			AuthenticatedBy authBy)
 		throws PortalException, SystemException {
 
 		User user = null;
@@ -498,7 +505,13 @@ public class LDAPAuth implements Authenticator {
 
 		if (checkExists) {
 			try {
-				user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
+				if(authBy == AuthenticatedBy.EMAIL_ADDRESS) {
+					user = UserLocalServiceUtil.getUserByEmailAddress(
+							companyId, emailAddress);
+				}
+				else {
+					user = UserLocalServiceUtil.getUserByScreenName(companyId, screenName);
+				}
 				
 				if (updatePassword) {
 					UserLocalServiceUtil.updatePassword(
