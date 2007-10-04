@@ -366,8 +366,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		getCoreDao().save(obj);
         }
         EntryBuilder.buildEntry(entry, entryData);
-        takeCareOfLastModDate(entry, inputData);
-        
     }
 
     //inside write transaction
@@ -605,8 +603,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         
         EntryBuilder.updateEntry(entry, entryData);
- 	   takeCareOfLastModDate(entry, inputData);
- 
     }
     //inside write transaction
     protected void modifyEntry_startWorkflow(Entry entry, Map ctx) {
@@ -640,14 +636,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
-    }
-    protected void takeCareOfLastModDate(Entry entry, InputDataAccessor inputData) {
- 	   Date lastModDate = (Date) inputData.getSingleObject(ObjectKeys.PI_LAST_MODIFIED);
- 	   if(lastModDate != null) {
- 		   // We have a caller-supplied last-modified date.
- 	        User user = RequestContextHolder.getRequestContext().getUser();
- 	        entry.setModification(new HistoryStamp(user, lastModDate));
- 	   }
     }
     //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Entry entry, boolean deleteMirroredSource) {
