@@ -396,6 +396,5 @@ public interface ObjectKeys {
 	public static final String FI_ADAPTER = "fiAdapter";
 	
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
-	public static final String PI_LAST_MODIFIED = "_lastModified";
 	
 }

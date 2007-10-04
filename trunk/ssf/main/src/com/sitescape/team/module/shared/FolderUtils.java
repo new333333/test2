@@ -254,13 +254,7 @@ public class FolderUtils {
 		
 		Map data = new HashMap(); // Input data
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
-		
-		if(modDate != null) {
-			// We need to tell the system to use this client-supplied mod date
-			// for the newly created entry (instead of current time). 
-			data.put(ObjectKeys.PI_LAST_MODIFIED, modDate);
-		}
-		
+				
 		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
 	}
 	
@@ -288,12 +282,6 @@ public class FolderUtils {
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
-		
-		if(modDate != null) {
-			// We need to tell the system to use this client-supplied mod date
-			// for the newly created entry (instead of current time). 
-			data.put(ObjectKeys.PI_LAST_MODIFIED, modDate);
-		}
 		
 		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
 	}
@@ -331,18 +319,7 @@ public class FolderUtils {
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementName, mf); // single file item
 		
-		InputDataAccessor inputData;
-		
-		if(modDate != null) {
-			// We need to tell the system to use this client-supplied mod date
-			// for the newly created entry (instead of current time). 
-			Map data = new HashMap();
-			data.put(ObjectKeys.PI_LAST_MODIFIED, modDate);
-			inputData = new MapInputData(data);
-		}
-		else {
-			inputData = new EmptyInputData(); // No non-file input data
-		}
+		InputDataAccessor inputData = new EmptyInputData(); // No non-file input data
 
 		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
 				inputData, fileItems, null, null);
@@ -374,12 +351,6 @@ public class FolderUtils {
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 	
-		if(modDate != null) {
-			// We need to tell the system to use this client-supplied mod date
-			// for the newly created entry (instead of current time). 
-			data.put(ObjectKeys.PI_LAST_MODIFIED, modDate);
-		}
-
 		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
 				new MapInputData(data), fileItems, null, null);
 	}
