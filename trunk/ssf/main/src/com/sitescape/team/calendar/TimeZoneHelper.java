@@ -98,6 +98,9 @@ public class TimeZoneHelper {
 	}
 
 	private static String getConvertedId(String id) {
+		if (id == null) {
+			return null;
+		}
 		if (!cZoneIdConversion.containsKey(id)) {
 			return id;
 		}
