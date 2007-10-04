@@ -230,7 +230,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			//delete alias
 	    			//scheduled items should delete themselves as they come due
 	    			PostingDef def = binder.getPosting();
-	    			if (def != null) session.delete(def);
+	    			if (def != null) {
+	    				binder.setPosting(null);
+	    				session.delete(def);
+	    			}
 	    			session.flush();
 	    			Connection connect = session.connection();
 		   			try {
