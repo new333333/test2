@@ -83,7 +83,6 @@ var ss_findButtonClose;
 var ss_AjaxBaseUrl;
 var ss_viewEntryURL;
 var ss_validationErrorMessage;
-var ss_AdvancedSearch;
 var ss_savedSearchTitle;
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
@@ -233,13 +232,6 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized"
 	ss_calendarTitleText = "<ssf:nlt tag="calendar.import.window.title"/>";
 	ss_calendarTitleText = "<ssf:nlt tag="task.import.window.title"/>";
 	
-	ss_AdvancedSearch = "<ssf:url 
-				adapter="false" 
-				portletName="ss_forum" 
-				action="advanced_search" 
-				actionUrl="true" ><ssf:param
-				name="newTab" value="1" /></ssf:url>";
-
 	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 }
 
