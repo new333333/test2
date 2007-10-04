@@ -225,10 +225,11 @@ function ss_findPlacesSelectItem${prefix}(obj, type) {
 			</ssf:url>" 
 	url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
 	url = ss_replaceSubStr(url, 'ss_entityTypePlaceholder', type);
-	if (ss_gotoPermalink(id, id, type, '${renderResponse.namespace}', 'yes')) return true;
-
-	self.location.href = url;
+	if (ss_gotoPermalink(id, id, type, '${renderResponse.namespace}', 'yes')) {
+		self.location.href = url;
+	}
 	return false;
+
 </c:if>
 <c:if test="${not empty clickRoutine}">
     <%= clickRoutine %>(id, type, obj);
