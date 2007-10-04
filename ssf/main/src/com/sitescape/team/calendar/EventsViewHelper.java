@@ -256,7 +256,7 @@ public class EventsViewHelper {
 					Event event = new Event();
 					event.setId(eventId);
 					if (timeZoneID != null) {
-						event.setTimeZone(TimeZone.getTimeZone(timeZoneID));
+						event.setTimeZone(TimeZoneHelper.getTimeZone(timeZoneID));
 					}
 					Calendar startCal = Calendar.getInstance();
 					startCal.setTime(evStartDate);
@@ -596,7 +596,7 @@ public class EventsViewHelper {
 			} else if (event.getCount() == -1) {
 				DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
 						locale);
-				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+				dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
 
 				untilString += NLT.get("event.repeat_until", locale) + " " + dateFormat.format(event.getUntil().getTime());
 			} else {

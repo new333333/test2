@@ -51,6 +51,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Binder;
@@ -1469,11 +1470,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							if (val == null) {
 								entryData.put(nameValue, null);
 							} else if (val instanceof TimeZone) {
-								entryData.put(nameValue, (TimeZone)val);
+								entryData.put(nameValue, TimeZoneHelper.fixTimeZone((TimeZone)val));
 							} else {
 								String sVal = inputData.getSingleValue(nameValue);
 								if (Validator.isNull(sVal)) entryData.put(nameValue, null);
-								else entryData.put(nameValue, TimeZone.getTimeZone(sVal));
+								else entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
 							}
 						}
 					} else if (itemName.equals("file") || itemName.equals("graphic") || 

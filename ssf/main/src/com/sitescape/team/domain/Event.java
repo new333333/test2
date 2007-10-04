@@ -85,6 +85,7 @@ import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.CalendarHelper;
@@ -1481,7 +1482,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 	
 	public void setTimeZone(TimeZone timeZone) {
-		this.timeZone = timeZone;
+		this.timeZone = TimeZoneHelper.fixTimeZone(timeZone);
 	}
 	
 	/**
@@ -2467,7 +2468,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		Calendar ret = new GregorianCalendar(y, mo, d, h, m, sec);
 
 		if (zulu) {
-			ret.setTimeZone(TimeZone.getTimeZone("GMT"));
+			ret.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
 		}
 
 		/*
@@ -3216,7 +3217,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	public void setAllDaysEvent(boolean allDaysEvent) {
 		if (!allDaysEvent) {
-			setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+			setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
 		} else {
 			setTimeZone(null);
 		}

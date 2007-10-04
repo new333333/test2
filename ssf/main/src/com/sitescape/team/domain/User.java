@@ -45,6 +45,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.PasswordEncryptor;
@@ -78,10 +79,10 @@ public class User extends Principal {
 	}
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return timeZone;
-		return TimeZone.getDefault();
+		return TimeZoneHelper.getDefault();
 	}
 	public void setTimeZone(TimeZone timeZone) {
-		this.timeZone = timeZone;
+		this.timeZone = TimeZoneHelper.fixTimeZone(timeZone);
 	}
 
    public Locale getLocale() {

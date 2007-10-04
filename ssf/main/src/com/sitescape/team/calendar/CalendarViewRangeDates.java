@@ -113,7 +113,7 @@ public class CalendarViewRangeDates {
 		setBeforeMidnight(endViewCal);
 		setBeforeMidnight(endViewExtWindow);
 
-		TimeZone zulu = TimeZone.getTimeZone("GMT");
+		TimeZone zulu = TimeZoneHelper.getTimeZone("GMT");
 		this.startViewCal = CalendarHelper.convertToTimeZone(this.startViewCal,
 				zulu);
 		this.endViewCal = CalendarHelper.convertToTimeZone(this.endViewCal,
