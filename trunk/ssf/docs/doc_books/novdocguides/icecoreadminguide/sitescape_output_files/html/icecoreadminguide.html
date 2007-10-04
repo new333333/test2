@@ -1,0 +1,3199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Thursday, October 04, 2007" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<style type="text/css">
+body { 
+		margin-left: .2in;
+		padding:0;
+		font-family:arial, helvetica, sans-serif;
+		font-size: 75%;
+		font-weight: normal;
+		color: #000000;
+		background-color: #ffffff;
+}
+
+/* headings */
+	h1 {font-size: 125%; font-weight: bold; color: #000000;}
+	h2,h3,h4,h5,h6 {font-size: 100%; font-weight: bold; color: #000000; margin-bottom:-6px;}
+
+	/* single file heading adjustments */
+	.singlefile h1 {font-size: 185%; color: #CC0000; margin-top:10px;}
+	.singlefile h2 {font-size: 140%; margin-top:35px;}
+	.singlefile h3 {font-size: 125%; margin-top:25px;}
+
+/* sections */
+	div.sect1 { margin-bottom: 10pt; }
+	div.sect2 { }
+	div.sect3, div.sect4, div.sect5, div.sect6 {margin-left:18px;}
+	
+/* msgset */
+	div.msgexplan {margin: 0px 0px 7px 0px;}
+	div.msgexplan span.title {margin: 0px 7px 0px 0px; font-size: 100%; font-weight: bold; color: #000000;}
+	div.msgtext p.para {margin: 4px 0px 16px 0px; font-size: 100%; font-weight: bold; color: #b00000;}
+
+/* links */
+	a {color:#0000cc;}
+	a:hover {color:#3366ff;}
+	a:visited {color:#993333;}
+	li.listitem a:hover {color:#3366ff;}
+	a.ulink a:hover {text-decoration:none; color:#3366ff;}
+
+	a.nav:link,
+	a.nav:visited,
+	a.nav:active { vertical-align: middle; font-weight: bold; color: gray; text-decoration: none; font-size: 100%;}
+	a.nav:hover { vertical-align: middle; font-weight: bold; color: #999999; text-decoration: none; font-size: 100%;}  
+
+/* paragraphs */	
+	p.para {font-weight: normal; color: #000000;}
+/*	p.title {margin:10px 0 4px 0;} */
+	p.msgtext {font-style: italic; font-weight: normal}
+	p.trademark {font-size: 75%; font-weight: normal; font-style: italic;}
+	/*p.entry {font-size: 95%; font-weight: normal; color: #000000; margin-top: -5px;}
+	p.table {font-weight: bold;}*/
+	pre.screen {font-family: monospace; margin: 10px 5px 10px 0px; padding: 1px 0px 3px 5px;font-size: 110%;color: #000000;}
+	p.glossterm {font-weight: bold;}
+	div.glossdef {margin:-10pt 0 0 0;}
+	
+/* admonitions */	
+	div.note,
+	div.tip,
+	div.warning,
+	div.important {margin: 12px 0px 5px 0px; padding: 0px 15px 0px 15px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+
+	div.note p em.title,
+	div.tip p em.title,
+	div.warning p em.title,
+	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;font-size:95%;}
+	div.warning em.title {color: #cc0000}
+
+/* figures and images */	
+	img.inline {vertical-align: middle;}
+	img {line-height: normal;}
+	br.img {line-height: normal;}
+	div.figure em.figure {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:5px 5px 0 0;}
+	div.figure em.title {font-family: times, serif; font-size: 95%; font-style: italic; font-weight: normal; color: #000000;}
+	div.figure p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.informalfigure {margin:15px 0px 10px 0px;}
+	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
+	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
+	
+/* tables */
+	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	td {font-size: 95%; font-weight: normal; color: #000000;}
+	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.formalpara table.topbot-lines {margin:0px 0 16px 0;}
+	div.informaltable table.topbot-lines {margin:10px 0 7px 0;}
+
+	table.topbot-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.topbot-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.topbot-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.topbot-lines tr.evenrow {background-color: white}
+	table.topbot-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.topbot-lines tr.oddrow {background-color: #f8f8f8}
+	table.topbot-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.all-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.all-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.all-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.all-lines tr.evenrow {background-color: white}
+	table.all-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.all-lines tr.oddrow {background-color: #f8f8f8}
+	table.all-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.no-lines tr.headerrow {background-color: white }
+	table.no-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; color: #404040; margin:1pt 0 0 0; background-color: white }
+	table.no-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white }
+	table.no-lines tr.evenrow td {background-color: white}
+	table.no-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white}
+	table.no-lines tr.oddrow td {background-color: white}
+	
+	table.calloutlist td {margin:0px; padding: 0px 6px 0px 0px;}
+	table.calloutlist p {margin: 5px 0px 5px 0px; padding: 0px;}
+	
+/* variablelists */
+	dt.term {font-style: normal; font-weight: bold; color: #000000;}
+	dd.listitem {margin-left: 22px; font-weight: normal;}
+	dt.refclass .application {font-size: 90%; font-style: normal; font-weight: bold; color: #000000; padding: 0px 20px 2px 0px;}
+	
+/* lists,procedures */
+	div.itemizedlist, div.orderedlist, div.procedure, div.substeps {margin-bottom:15px; font-weight: normal;}
+	ul.listbullet,ul.listcheck,ol {margin-left: 28px; padding-left: 0pt;}
+	ul.listcheck  {list-style-image : url("images/checkbox.gif"); list-style-type: square;}
+	ul.listbullet {list-style-type: disc; list-style-image : none;}
+	ul.simplelist {margin-left: 0px; list-style-type: none; list-style-image : none;padding-left: 0pt;}
+	div.orderedlist div.orderedlist > ol {list-style-type: lower-alpha;}
+	div.orderedlist div.orderedlist div.orderedlist > ol {list-style-type: lower-roman;}
+	div.substeps div.substeps div.substeps > ol {list-style-type:lower-alpha;}
+	div.substeps div.substeps > ol {list-style-type: decimal;}
+	div.substeps > ol {list-style-type: lower-alpha;}
+	li {margin: 5px 0 4px 0;}
+	li.member {margin:3px 0px 0px 10px;text-indent:-10px; font-weight: normal;}
+	li.step {font-weight: bold;color: #000000;}
+	div.procedure h1.title {font-weight: bold; color: #000000; margin-top: 22px; margin-bottom: -4pt;}
+
+/* bold inlines */	
+	em.refclass,em.glossterm,em.option {font-weight: bold; font-style: normal}
+
+/* italic inlines */	
+	em.diskname,em.emphasis,em.variable,em.versionvariable {font-style: italic; font-weight: normal}
+	span.citetitle,span.guimenu,span.replaceable {font-style: italic;}
+	tt,span.command,span.literal,span.filename {font-family: monospace; font-size: 130%;}
+	
+/* other inlines */	
+	em.msgtext {font-weight: bold; font-style: italic}
+	span.emphasis {font-weight: bold;}
+
+/* superscript and subscript */	
+	span.subscript,span.superscript {font-size: 80%;}
+
+/* single file toc elements */
+	div.toc {line-height: 11.5pt; background-color: #EEEEEE;  margin: 20px 0px 24px 0px; padding: 1px 0px 5px 0px}
+	div.toc h2 {margin-left: 5px}
+	div.toc div.toc1 {font-weight: normal; margin: 15px 10px 6px 5px}
+	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
+	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
+	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+	
+</style>
+
+<title>ICEcore Administration Guide</title>
+</head>
+<body>
+
+<div class="book singlefile"  id="bookinfo">
+
+<h1 class="title"> ICEcore Administration Guide</h1>
+
+<p class="para">This guide provides administration information for administrators of ICEcore. In this manual, the term “ICEcore” applies to all versions of ICEcore unless otherwise noted.</p>
+<h4 class="bridgehead" id="audience"> Audience</h4>
+
+<p class="para">This guide is intended for ICEcore administrators.</p>
+<h4 class="bridgehead" id="b9yxnfu"> Contents of this Manual</h4>
+
+<p class="para">This manual provides information about the following:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Custom Entries</p></li>
+<li class="listitem">
+<p class="listitem">Basic Workflows </p></li>
+<li class="listitem">
+<p class="listitem">Advanced Workflow</p></li></ul></div>
+
+<h4 class="bridgehead" id="b9yxnfv"> Conventions</h4>
+
+<p class="para">This manual uses the following conventions:</p>
+<p class="para">A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</p>
+<p class="para">A trademark symbol (®, ™, etc.) denotes a SiteScape trademark. An asterisk (*) denotes a third-party trademark.</p>
+<p class="para">When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</p>
+<div class="informaltable">
+<table class="topbot-lines">
+          
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yxhs9"></a>
+<p class="para">What you see</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">What it means</p></th>
+</tr>
+        
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsa"></a>
+<p class="para">Click the 
+       <span class="guimenu">Add toolbar</span> item.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Getting Started</span> link.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Add Document</span> menu item.
+      </p>
+<p class="para">Click 
+       <span class="guimenu">Close</span>.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">References to toolbar items, links, menu items, and buttons are presented in 
+       <span class="guimenu">italic</span> font.
+      </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsb"></a>
+<p class="para">Type 
+       <span class="literal">status</span>, then press Enter.
+      </p>
+<p class="para">Open the 
+       <span class="literal">ManagerGuide.pdf</span> file.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Text that you must type and file names are presented in 
+       <span class="filename">Courier</span> font.
+      </p></td>
+</tr></table>
+</div>
+
+<h4 class="bridgehead" id="ban8e22"> Additional Documentation</h4>
+
+<p class="para">You may find more information in the ICEcore documentation, which is accessible from links within ICEcore:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">ICEcore Help system</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Quick Start Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore User Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Installation and Configuration Guide</p></li></ul></div>
+
+<p class="para">The ICEcore online documents may be found from within the ICEcore Help system. To access the ICEcore Help system, after logging in (described later in this manual), click the 
+  <span class="guimenu">Help</span> link.
+ </p>
+<p class="para">In the ICEcore Help system, click the 
+  <span class="guimenu">Getting Started Manuals</span> link to access copies of the online documents listed above.
+ </p>
+<div class="chapter singlefile"  id="b9vcafr">
+
+<h1 class="title"><span class="number">1.0</span> Introduction</h1>
+
+<p class="para">Companies are focused on creating efficient and cost-effective methods that enable them to bring their products or services to the marketplace. Thanks to the Internet, and to video and networking innovations, companies now have many tools at their disposal, and can enhance and streamline their existing business processes. This guide provides a general introduction to custom entries (forms and views), workflow, and instruction on how workflow is implemented using ICEcore, and includes a short chapter on using the 
+  <span class="guimenu">Profile Designer</span> to edit the business card on the users’ workspaces.
+ </p>
+<div class="sect1 singlefile"  id="bbgexbl">
+
+<h2 class="title"><span class="number">1.1</span> Custom Entries</h2>
+
+<p class="para">Custom entries allow you to design custom forms and views for specific types of entries. These custom entries allow you to configure your workspaces in ICEcore to manage the data and interactions for your company and teams in the most effective manner possible. These custom entries (and default entries) can be linked to workflow processes in ICEcore to manage your business processes in a comprehensive manner.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A workflow process is an online representation of a business process and allows the participants of the workflow to organize, automate, and track all aspects of the business process.</p></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9wu634">
+
+<h2 class="title"><span class="number">1.2</span> What is a Workflow Process?</h2>
+
+<p class="para">When a business process is defined and put into operation through the use of software and other tools, it becomes a workflow process. The workflow process provides the online forms that participants use. A workflow process can also indicate the reassignment of work from one person to the next.</p>
+<p class="para">Well-designed workflow processes identify and integrate the possible outcomes of each task, as different outcomes change the way in which one task transitions to another. When a user makes a decision, the flow of work changes based upon his response. In a workflow process, a decision can be made either manually (by selecting a label from a drop-down list) or automatically (“after ten days of inaction occur”). Once a decision has been made, ICEcore sends the appropriate notification to the next participant in the workflow. Decisions, information, and a history of the completed work can be stored and later accessed in ICEcore. </p>
+<p class="para">Workflow allows you to move work quickly and efficiently throughout the organization. When developing an online workflow process, you should try to represent the associated business process in its fullest detail. To do this, workflow processes usually use a workflow-management system to support the design, implementation, testing, maintenance and administration of processes.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A workflow-management system is a software-based system that allows IT to create and manage the execution of workflows that serve their organization, and that assists participants in completing tasks within the business process. </p></div>
+
+<p class="para">Most workflow management systems provide a common set of tools. These tools allow IT to define the business processes, initiate and control specific tasks, or create rules for determining how specific data is processed and shared.</p>
+</div>
+
+<div class="sect1 singlefile"  id="b9wu635">
+
+<h2 class="title"><span class="number">1.3</span> Workflow Tasks and Workflow States</h2>
+
+<p class="para">To track work within a business process, a participant (most often a manager) checks the status of the work periodically. For example, the manager may request that the employees produce status reports using e-mail or may hold weekly status meetings. The purpose of these efforts is to communicate where within the business process the work currently resides. A manager who understands the status of the work can make appropriate decisions about who must perform subsequent tasks.</p>
+<p class="para">We could provide a label for that point in the process (for example, “an employee has submitted a time-off request” or more simply “submit”). The only outcomes that can result from the manager’s actions while reviewing the submission are “approve” or “deny.” These labels (“submit,” “approve,” and “deny”) quickly communicate the state of the work at a given point in the process and who is responsible for the next task. </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A state is a label that identifies the result of a completed task and that indicates who is responsible for performing a subsequent task in the process (if any). </p></div>
+
+<p class="para">For example, a user submits a form to HR indicating that he wants to take a vacation day. Once the user has finished entering the Time Off Request form, the state transitions to Submit. Later in the process, once the request is entered into the Time Off database, the state transitions to the Record state. </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A transition indicates that work moved from one workflow state to another.</p></div>
+
+<p class="para">Notice that one or more discrete actions must be taken with the work in order for its state to change; however, a task may be composed of more than one discrete action. With an online workflow process, some actions can be automated. For example, once a user completes a form and clicks OK, ICEcore can automatically transition the work to the Submit state and can notify the manager through e-mail that the Time Off request is ready for review. As another example, the work can transition to Deny, if “more than ten days of inaction occur.”</p>
+<p class="para">Other actions require that a participant use the workflow-management system to report the status of work manually. For example, before a manager begins reviewing of the request, he can select a label from a drop-down list that indicates that the work is to transition to the Review state. As another example, while in the Review state, the manager can manually select the Deny label.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A state transition occurs when one or more discrete conditions are met. Depending on conditions that are met, a state may transition to one of potentially many subsequent states.</p></div>
+
+<p class="para">States allow participants to track and identify the progress of the work. By seeing the work in the Submit state, the user and HR know that the request has yet to be reviewed by the manager. Based upon the decision that the manager makes in the Review state, the state can transition to one of two different states. If the manager manually denies the request or if ten days of inaction occur, one of the required conditions has been met to make the state transition to the Deny state. When the state transitions to Deny, the actions required are different than if the state had transitioned to Approve.</p>
+<p class="para">Workflows, which are based upon business processes, are comprised of tasks that are completed by workflow participants. Tasks are associated with states that identify the status of the work. States transition based upon conditions that are defined in the workflow. </p>
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="bbfekr8">
+
+<h1 class="title"><span class="number">2.0</span> Custom Entries</h1>
+
+<p class="para">ICEcore allows you to create custom entries with custom forms and views. These entries allow you to use unique forms and views when making specific types of entries. This chapter shows you how to design these entries and assign them to a workspace folder. The next chapter shows you how to create basic workflows in ICEcore. You can also design custom entries to enhance the functionality of your workflows. The advanced workflow chapter shows you some of the functionality of the Advanced Workflow Add-On module that you can purchase.</p>
+<p class="para">This chapter contains the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbfequg">Section 2.1, Creating a Custom Entry</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbg062f">Section 2.2, Using a Custom Entry</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="bbfequg">
+
+<h2 class="title"><span class="number">2.1</span> Creating a Custom Entry</h2>
+
+<p class="para">The following procedures show you how to create a custom entry with a custom form and view. The example used in these procedures show you how to create a Time Off custom entry that can be added to a team workspace so that members can alert their team about the days on which they plan to be out. </p>
+<p class="para">The following procedures and topics are included in this section:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbfzhdh">Section 2.1.1, Create the Custom Entry</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbfzhv1">Section 2.1.2, The Entry Designer Editing Window</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbfzt0g">Section 2.1.3, Create a Custom Form for an Entry</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbg05pu">Section 2.1.4, Create a Custom View for an Entry</a>
+          </p></li></ul></div>
+
+<div class="sect2 singlefile"  id="bbfzhdh">
+
+<h3 class="title"><span class="number">2.1.1</span> Create the Custom Entry</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbferjj">
+<p class="para">From the 
+      <span class="guimenu">ICEcore Administration</span> portlet, click the plus sign (+) to the left of 
+      <span class="guimenu">Form and view designers</span> to expand this section and view the available designers.
+     </p>
+<div class="informalfigure">
+                  <img src="./icecoreadminportlet_a.png" alt="ICEcore Administration portlet" />
+                </div>
+</li>
+<li class="step" id="bbfeu64">
+<p class="para">Click 
+      <span class="guimenu">Entry designer</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_entrydesigner_a.png" alt="Form and view designers" />
+                </div>
+</li>
+<li class="step" id="bbff2y0">
+<p class="para">In the Designers window that appears, click 
+      <span class="guimenu">Entry definitions</span>. 
+     </p>
+<div class="informalfigure">
+                  <img src="./select_entrydefinitions_a.png" alt="Designers window" />
+                </div>
+</li>
+<li class="step" id="bbfigvt">
+<p class="para">On the right-side of the window, click 
+      <span class="guimenu">Add a new entry definition</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_newentrydef_a.png" alt="Entry definitions" />
+                </div>
+</li>
+<li class="step" id="bbfion2">
+<p class="para">Type the name for the entry that you want to see in ICEcore into the 
+      <span class="guimenu">Caption</span> field.
+     </p>
+<div class="informalfigure">
+                  <img src="./enter_captionname_a.png" alt="Caption field" />
+                </div>
+</li>
+<li class="step" id="bbfijdy">
+<p class="para">In the entry form that appears, type the name for this entry type into the 
+      <span class="guimenu">Name</span> field.
+     </p>
+<div class="informalfigure">
+                  <img src="./enter_entryname_a.png" alt="Name field" />
+                </div>
+</li>
+<li class="step" id="bbfiqmr">
+<p class="para">Select the family for this entry from the 
+      <span class="guimenu">Family</span> list box. Select the item type that is closest to the function of the item you are creating. People can use the family type when performing filtered searches. This custom entry has an 
+      <span class="guimenu">-unspecified-</span> family.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_entryfamily_a.png" alt="Family list box" />
+                </div>
+</li>
+<li class="step" id="bbfitt8">
+<p class="para">Select the comment types you want to allow for this new custom entry from the 
+      <span class="guimenu">Allowed comment types</span> list box (use the Ctrl key to select multiple comment types).
+     </p>
+<div class="informalfigure">
+                  <img src="./select_allowedcommenttypes_a.png" alt="Allowed comment types list box" />
+                </div>
+</li>
+<li class="step" id="bbfze22">
+<p class="para">Click 
+      <span class="guimenu">OK</span> at the bottom of the entry form.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_ok_entry_a.png" alt="OK button" />
+                </div>
+
+<p class="para">A custom entry named 
+      <span class="guimenu">Time Off Entry </span>now exists, which you can view under 
+      <span class="guimenu">Entry definitions</span> in the 
+      <span class="guimenu">Entry Designer</span> window.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_timeoffentrydesigner_a.png" alt="Entry definitions list" />
+                </div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbfzhv1">
+
+<h3 class="title"><span class="number">2.1.2</span> The Entry Designer Editing Window</h3>
+
+<p class="para">The following image shows you the 
+    <span class="guimenu">Designer</span> window when working with a specific entry.
+   </p>
+<div class="informalfigure">
+              <img src="./entrydesignerwindow_a.png" alt="Entry designer editing window" />
+            </div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbfzt0g">
+
+<h3 class="title"><span class="number">2.1.3</span> Create a Custom Form for an Entry</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbg07ar">
+<p class="para">Click the plus sign (+) to the left of 
+      <span class="guimenu">Entry form definition</span> to expand this section. 
+     </p>
+<div class="informalfigure">
+                  <img src="./expand_entryform1_a.png" alt="Entry form definition" />
+                </div>
+</li>
+<li class="step" id="bbg0ajs">
+<p class="para">Click the plus sign (+) to the left of 
+      <span class="guimenu">Form</span> to expand this section and view the current elements in this form.
+     </p>
+<div class="informalfigure">
+                  <img src="./expand_form_a.png" alt="Form elements" />
+                </div>
+</li>
+<li class="step" id="bbg0cgf">
+<p class="para">To delete an element:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbg0ecs">
+<p class="para">Click the element (
+        <span class="guimenu">Description</span>).
+       </p>
+<div class="informalfigure">
+                      <img src="./click_description_a.png" alt="Description element" />
+                    </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For this custom form, a simple text box element is going to be used instead of the 
+         <span class="guimenu">Description</span> element.
+        </p></div>
+</li>
+<li class="step" id="bbg0ekn">
+<p class="para">In the option dialog that appears to the right, click the 
+        <span class="guimenu">Delete</span> option.
+       </p>
+<div class="informalfigure">
+                      <img src="./delete_description_a.png" alt="Option dialog" />
+                    </div>
+</li>
+<li class="step" id="bbg0h5j">
+<p class="para">Click 
+        <span class="guimenu">OK</span> to confirm that you want to delete the 
+        <span class="guimenu">Description</span> element.
+       </p>
+<div class="informalfigure">
+                      <img src="./confirm_deletedescription_a.png" alt="Confirmation dialog" />
+                    </div>
+
+<p class="para">The 
+        <span class="guimenu">Description</span> element is deleted and is removed from the 
+        <span class="guimenu">Entry tree</span> and the 
+        <span class="guimenu">Form preview</span> area.
+       </p></li></ol>
+</div>
+</li>
+<li class="step" id="bbg0e1u">
+<p class="para">To hide an element from appearing in the form view:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbg0jx1">
+<p class="para">Click the element you want to hide (
+        <span class="guimenu">Attachments</span>).
+       </p>
+<div class="informalfigure">
+                      <img src="./click_attachments_a.png" alt="Attachments element" />
+                    </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>This custom entry is for entering your time off, there is no need to attach files to these entries.</p></div>
+</li>
+<li class="step" id="bbg0k4j">
+<p class="para">In the options dialog, click 
+        <span class="guimenu">Modify</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_modifyformelement_a.png" alt="Options dialog" />
+                    </div>
+</li>
+<li class="step" id="bbg0mf6">
+<p class="para">In the 
+        <span class="guimenu">Attachments</span> element form that appears, select the 
+        <span class="guimenu">Hide this form element</span> option.
+       </p>
+<div class="informalfigure">
+                      <img src="./select_hide_attachmentform_a.png" alt="Attachment element form" />
+                    </div>
+</li>
+<li class="step" id="bbg0omj">
+<p class="para">Click 
+        <span class="guimenu">OK</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_ok_entry_a.png" alt="OK button" />
+                    </div>
+
+<p class="para">The 
+        <span class="guimenu">Attachment</span> element is removed from the 
+        <span class="guimenu">Form preview</span> area.
+       </p></li></ol>
+</div>
+</li>
+<li class="step" id="bbg0jw2">
+<p class="para">To add an element: </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbg0r4o">
+<p class="para">Click 
+        <span class="guimenu">Form</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_form_a.png" alt="Form definition" />
+                    </div>
+</li>
+<li class="step" id="bbg0r8a">
+<p class="para">In the options dialog, click 
+        <span class="guimenu">Add</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_add_a.png" alt="Options dialog" />
+                    </div>
+
+<p class="para">The 
+        <span class="guimenu">Standard Form Elements</span> and 
+        <span class="guimenu">Layout Options</span> appear to the right.
+       </p></li>
+<li class="step" id="bbg0st1">
+<p class="para">Click 
+        <span class="guimenu">Event</span> to add the 
+        <span class="guimenu">Event</span> element to use for entering the time off as an event with a start and end time.
+        <span class="guimenu"></span>
+       </p>
+<div class="informalfigure">
+                      <img src="./click_event_a.png" alt="Standard form elements" />
+                    </div>
+</li>
+<li class="step" id="bbg11eu">
+<p class="para">Fill in the 
+        <span class="guimenu">Event</span> element form.
+       </p>
+<div class="informalfigure">
+                      <img src="./eventelementform_a.png" alt="Event element form" />
+                    </div>
+
+<div class="orderedlist">
+<ol class="orderedlist">
+                  
+<li class="listitem">
+<p class="listitem">Type in the Caption name (the name used in ICEcore).</p></li>
+                  
+<li class="listitem">
+<p class="listitem">Type in the 
+          <span class="guimenu">Data Name</span>.
+         </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>This is an internal-use, database name. Names for elements in one definition must be unique. The first character must be an alphabetic character (a-z, A-Z). For the rest, legal characters are alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_).</p></div>
+</li>
+                  
+<li class="listitem">
+<p class="listitem">Select the 
+          <span class="guimenu">Has a duration (start and end times)?</span> option.
+         </p></li>
+                  
+<li class="listitem">
+<p class="listitem">Select the 
+          <span class="guimenu">Required</span> option.
+         </p></li>
+                  
+<li class="listitem">
+<p class="listitem">Click 
+          <span class="guimenu">OK</span>.
+         </p></li>
+                </ol></div>
+
+<p class="para">The 
+        <span class="guimenu">Time Off Dates and Time</span> element appears under 
+        <span class="guimenu">Form</span> and in the 
+        <span class="guimenu">Form preview </span>area at the bottom (below the other elements).
+       </p></li></ol>
+</div>
+</li>
+<li class="step" id="bbg15p2">
+<p class="para">To move an element:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbg17mk">
+<p class="para">Click the 
+        <span class="guimenu">Time Off Dates and Time</span> element.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_timeoffelement_a.png" alt="Form elements" />
+                    </div>
+</li>
+<li class="step" id="bbg17rh">
+<p class="para">In the options dialog, click 
+        <span class="guimenu">Move</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_moveoption_a.png" alt="Options dialog" />
+                    </div>
+</li>
+<li class="step" id="bbg18dn">
+<p class="para">Click the element under 
+        <span class="guimenu">Form</span> that you want this element to appear under or above (
+        <span class="guimenu">Title</span>).
+       </p>
+<div class="informalfigure">
+                      <img src="./click_title_a.png" alt="Form elements" />
+                    </div>
+</li>
+<li class="step" id="bbg1an4">
+<p class="para">Select the 
+        <span class="guimenu">Move to below the selected item</span> option and click 
+        <span class="guimenu">OK</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./moveoptions_a.png" alt="Move options" />
+                    </div>
+
+<p class="para">The 
+        <span class="guimenu">Time Off Dates and Time</span> element moves to below the 
+        <span class="guimenu">Title</span> element.
+       </p></li></ol>
+</div>
+</li>
+<li class="step" id="bbg1d7t">
+<p class="para">Add a required 
+      <span class="guimenu">Text </span>element named 
+      <span class="guimenu">Total Hours Off</span> and move it below the 
+      <span class="guimenu">Time Off Dates and Time</span> element.
+     </p></li>
+<li class="step" id="bbg1dpz">
+<p class="para">Add a required 
+      <span class="guimenu">Text</span> element named 
+      <span class="guimenu">Reason for Time Off </span>and move it below the 
+      <span class="guimenu">Title</span> element.
+     </p></li>
+<li class="step" id="bbmq22d">
+<p class="para">To add a container:</p>
+<p class="para">So far all the elements have been added below 
+      <span class="guimenu">Form</span>, which is itself a container. In this step you want to add a Box container below form and move the 
+      <span class="guimenu">Time Off Dates and Time</span> element into the box.
+     </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbmqbdd">
+<p class="para">Click 
+        <span class="guimenu">Form</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_form_a.png" alt="Form definition" />
+                    </div>
+</li>
+<li class="step" id="bbmqbde">
+<p class="para">In the options dialog, click 
+        <span class="guimenu">Add</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_add_a.png" alt="Options dialog" />
+                    </div>
+
+<p class="para">The 
+        <span class="guimenu">Standard Form Elements</span> and 
+        <span class="guimenu">Layout Options</span> appear to the right. Every element under 
+        <span class="guimenu">Layout Options</span>, except 
+        <span class="guimenu">Divider</span>, is a container.
+       </p></li>
+<li class="step" id="bbmq89q">
+<p class="para">Click 
+        <span class="emphasis">Box</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./layoutoptions_a.png" alt="Layout options" />
+                    </div>
+</li>
+<li class="step" id="bbmq9nv">
+<p class="para">Select 
+        <span class="guimenu">Square with border</span> and click 
+        <span class="guimenu">OK</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./addbox_a.png" alt="Add Box options" />
+                    </div>
+</li>
+<li class="step" id="bbmqago">
+<p class="para">Click 
+        <span class="guimenu">Time Off Dates and Time</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./select_event_a.png" alt="" />
+                    </div>
+</li>
+<li class="step" id="bbmqii2">
+<p class="para">In the options dialog, click 
+        <span class="guimenu">Move</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_moveoption_a.png" alt="Options dialog" />
+                    </div>
+</li>
+<li class="step" id="bbmqbyq">
+<p class="para">Click 
+        <span class="guimenu">Box</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_box2_a.png" alt="Form tree" />
+                    </div>
+</li>
+<li class="step" id="bbmqdhd">
+<p class="para">Select 
+        <span class="guimenu">Move into the selected item</span> and click 
+        <span class="guimenu">OK</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./move_into_a.png" alt="" />
+                    </div>
+
+<p class="para">Your custom form should now look like this:</p>
+<div class="informalfigure">
+                      <img src="./timeoff_preview_a.png" alt="Custom form preview" />
+                    </div>
+</li></ol>
+</div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbg05pu">
+
+<h3 class="title"><span class="number">2.1.4</span> Create a Custom View for an Entry</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbg1ly2">
+<p class="para">Expand 
+      <span class="guimenu">Entry view definition</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./expand_entryviewdef_a.png" alt="Entry view elements" />
+                </div>
+</li>
+<li class="step" id="bbg1mma">
+<p class="para">Select and delete the 
+      <span class="guimenu">Description</span> and 
+      <span class="guimenu">Attachments</span> elements.
+     </p></li>
+<li class="step" id="bbg1ngp">
+<p class="para">Click 
+      <span class="guimenu">Entry view definition</span>, click 
+      <span class="guimenu">Add</span> in the option dialog, and click 
+      <span class="guimenu">Time Off Dates and Time</span>.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Any elements you added to the custom form appear in the list when you are adding elements to the custom view.</p></div>
+
+<div class="informalfigure">
+                  <img src="./cadd_timeoff_a.png" alt="Standard form elements" />
+                </div>
+</li>
+<li class="step" id="bbg1nps">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p></li>
+<li class="step" id="bbgeq6z">
+<p class="para">Click 
+      <span class="guimenu">Add</span> in the option dialog, click 
+      <span class="guimenu">Reason for Time Off</span>, and click 
+      <span class="guimenu">OK</span>.
+     </p></li>
+<li class="step" id="bbg1oxh">
+<p class="para">Move the 
+      <span class="guimenu">Reason for Time Off</span> element below the
+      <span class="guimenu"> Entry creator and creation date </span>element and move the
+      <span class="guimenu"> Time Off Dates and Time </span>element below the 
+      <span class="guimenu">Reason for Time Off</span> element.
+     </p>
+<p class="para">Your custom view for this custom entry should contain these elements in this order now:</p>
+<div class="informalfigure">
+                  <img src="./customvieworder_a.png" alt="Entry view elements" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The Summary view is used for Blogs or Guestbooks. You can create a custom Summary view in the same manner as the custom view in this procedure.</p></div>
+</li></ol>
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bbg062f">
+
+<h2 class="title"><span class="number">2.2</span> Using a Custom Entry</h2>
+
+<p class="para">Custom entries can be assigned to any folder, but you may want to configure specific folders for some types of custom entries depending on their purpose. For example, you might want a folder that only contains the 
+   <span class="guimenu">Time Off</span> custom entries.
+  </p>
+<p class="para">For the 
+   <span class="guimenu">Time Off</span> custom entry, a team plans to create a special folder that only contains these specific entry types. The following procedures show you how to add this custom entry to a team folder and configure the folder to only utilize this entry type.
+  </p>
+<p class="para">This section contains the following procedures:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbg26pg">Section 2.2.1, Configure a Folder to Use Your Custom Entry</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbgehyt">Section 2.2.2, Add a Time Off Entry</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbgeol1">Section 2.2.3, View the Time Off Entry</a>
+          </p></li></ul></div>
+
+<div class="sect2 singlefile"  id="bbg26pg">
+
+<h3 class="title"><span class="number">2.2.1</span> Configure a Folder to Use Your Custom Entry</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbg1x4h">
+<p class="para">Find the folder you want to use for the teams time off entries (
+      <span class="guimenu">Engineering &gt; Time Off Entries</span> for this procedure).
+     </p></li>
+<li class="step" id="bbg1y9g">
+<p class="para">Select the 
+      <span class="guimenu">Manage &gt; Configure</span> menu item.
+     </p>
+<div class="informalfigure">
+                  <img src="./manage-configure-timeofffolder_a.png" alt="Time Off Entries folder" />
+                </div>
+</li>
+<li class="step" id="bbg1z8g">
+<p class="para">Under 
+      <span class="guimenu">Allowed Views</span>, select the 
+      <span class="guimenu">Discussion folder viewed as a table</span> and 
+      <span class="guimenu">Discussion folder viewed as a list </span>options (deselect any others) and click 
+      <span class="guimenu">Apply</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./allowed-views_a.png" alt="Allowed views" />
+                </div>
+</li>
+<li class="step" id="bbg21xl">
+<p class="para">Under 
+      <span class="guimenu">Default view</span>, select the 
+      <span class="guimenu">Discussion folder viewed as a list </span>option and click 
+      <span class="guimenu">Apply</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./default-view_a.png" alt="Default view" />
+                </div>
+</li>
+<li class="step" id="bbg231u">
+<p class="para">Under 
+      <span class="guimenu">Default entry types</span>, select the 
+      <span class="guimenu">Time Off</span> entry type (deselect any others) and click 
+      <span class="guimenu">Apply</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./default-entrytypes_a.png" alt="Default entry types" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Users can now only enter 
+       <span class="guimenu">Time Off</span> entries in this folder.
+      </p></div>
+</li>
+<li class="step" id="bbg23bs">
+<p class="para">At the top or bottom of this window, click 
+      <span class="guimenu">Close</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click-close_a.png" alt="Close button" />
+                </div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbgehyt">
+
+<h3 class="title"><span class="number">2.2.2</span> Add a Time Off Entry</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgei4g">
+<p class="para">Select the 
+      <span class="guimenu">New &gt; Time Off </span>menu item.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_new-timeoff_a.png" alt="New menu" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>
+       <span class="guimenu">Time Off</span> should be the only available menu item.
+      </p></div>
+</li>
+<li class="step" id="bbgein6">
+<p class="para">Fill out the Time Off entry form.</p>
+<p class="para">Type in a 
+      <span class="guimenu">Title</span>, 
+      <span class="guimenu">Reason</span>, select your time off period 
+      <span class="guimenu">Start</span> and 
+      <span class="guimenu">End</span> dates (time), and type in the 
+      <span class="guimenu">Total Hours Off</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./timeoff_entryform_a.png" alt="Time Off entry form" />
+                </div>
+</li>
+<li class="step" id="bbgejfx">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<p class="para">The new entry is added to the 
+      <span class="guimenu">Time Off</span> folder.
+     </p>
+<div class="informalfigure">
+                  <img src="./newtimeoff_entry_a.png" alt="Time Off folder entry" />
+                </div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbgeol1">
+
+<h3 class="title"><span class="number">2.2.3</span> View the Time Off Entry</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgeowa">
+<p class="para">Click the title of the 
+      <span class="guimenu">Time Off </span>entry you want to view.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_newtimeoffentry_a.png" alt="Time off folder entry" />
+                </div>
+</li>
+<li class="step" id="bbgep9v">
+<p class="para">View the entry. You can see it displays the elements selected for this custom view.</p>
+<div class="informalfigure">
+                  <img src="./view_timeoffentry_a.png" alt="Time Off entry view" />
+                </div>
+</li></ol>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="bbmqmww">
+
+<h1 class="title"><span class="number">3.0</span> The Profile Designer</h1>
+
+<p class="para">Use the Profile designer to edit the business card that appears on every user’s workspace. The following procedure shows you how to edit the business cards layout to taylor it for your specific company.</p>
+<p class="para">To edit the Business card:</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbn46tl">
+<p class="para">From the 
+    <span class="guimenu">ICEcore Administration</span> portlet, click the plus sign (+) to the left of 
+    <span class="guimenu">Form and view designers</span> to expand this section and view the available designers.
+   </p>
+<div class="informalfigure">
+              <img src="./icecoreadminportlet_a.png" alt="ICEcore Administration portlet" />
+            </div>
+</li>
+<li class="step" id="bbmqu0i">
+<p class="para">Click 
+    <span class="guimenu">Profile designer</span>.
+   </p>
+<div class="informalfigure">
+              <img src="./click_profiledesigner_a.png" alt="Form and view designers" />
+            </div>
+</li>
+<li class="step" id="bbmr0d8">
+<p class="para">Expand 
+    <span class="guimenu">Profile view</span> and click 
+    <span class="guimenu">User</span>.
+   </p>
+<div class="informalfigure">
+              <img src="./click_user_a.png" alt="Profile view" />
+            </div>
+
+<p class="para">You see the following for the user business card.</p>
+<div class="informalfigure">
+              <img src="./fullcarddesigner_a.png" alt="Business card designer" />
+            </div>
+</li>
+<li class="step" id="bbmr192">
+<p class="para">To edit the layout of the business card, expand 
+    <span class="guimenu">Business card</span>.
+   </p>
+<div class="informalfigure">
+              <img src="./expandbusinesscard_a.png" alt="Business card" />
+            </div>
+
+<p class="para">Any element you add to 
+    <span class="guimenu">Business card</span> appears below your picture on the business card. Any element you add to the 
+    <span class="guimenu">Business card elements</span> appears to the right of your picture on the business card.
+   </p></li>
+<li class="step" id="bbmr7gz">
+<p class="para">Add the user’s first name below their picture:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbmr6yi">
+<p class="para">Click 
+      <span class="guimenu">Business card</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_businesscard_a.png" alt="Business card" />
+                </div>
+</li>
+<li class="step" id="bbmr72v">
+<p class="para">Click 
+      <span class="guimenu">Add</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_add_business_a.png" alt="" />
+                </div>
+
+<p class="para">The following elements are available:</p>
+<div class="informalfigure">
+                  <img src="./business_elements_a.png" alt="Elements dialog" />
+                </div>
+
+<p class="para">The upper section has elements for the business card with some already included in the 
+      <span class="guimenu">Business card elements</span>. The Layout options allow you to add custom elements (including additional containers), see <a href="#bbfzt0g">Create a Custom Form for an Entry</a>.
+     </p></li>
+<li class="step" id="bbmr7vn">
+<p class="para">Click 
+      <span class="guimenu">First name</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_firstname_a.png" alt="Element list" />
+                </div>
+</li>
+<li class="step" id="bbn37fy">
+<p class="para">Click 
+      <span class="guimenu">OK</span> in the dialog that appears.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_ok_firstname_a.png" alt="First name element dialog" />
+                </div>
+
+<p class="para">
+      <span class="guimenu">Profile element - First name</span> appears below the business card. 
+     </p>
+<div class="informalfigure">
+                  <img src="./firstnametree_a.png" alt="Business card designer tree" />
+                </div>
+</li></ol>
+</div>
+</li>
+<li class="step" id="bbn3v0c">
+<p class="para">Edit 
+    <span class="guimenu">Business card elements</span>:
+   </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbmr7q2">
+<p class="para">Click 
+      <span class="guimenu">Business card elements</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_businesscardelements_a.png" alt="Business card designer tree" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You can perform the same steps to add a new element below the 
+       <span class="guimenu">Business card elements</span>, which would appear to the right of your picture on the business card, or you can edit the 
+       <span class="guimenu">Business card elements</span> to select or deselect the elements that are already in the 
+       <span class="guimenu">Business card elements</span>.
+      </p></div>
+</li>
+<li class="step" id="bbn3v85">
+<p class="para">Click 
+      <span class="guimenu">Modify</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_modify_3_a.png" alt="Element options dialog" />
+                </div>
+
+<p class="para">The dialog for 
+      <span class="guimenu">Business card elements</span> appears.
+     </p>
+<div class="informalfigure">
+                  <img src="./businesselementsmodifydialog_a.png" alt="Business card elements dialog" />
+                </div>
+</li>
+<li class="step" id="bbn3vhu">
+<p class="para">Select the profile elements you want to appear to the right of the user’s picture on the business card (use the Shift or Ctrl keys to select multiple elements).</p>
+<p class="para">For this example, select all elements.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The Maximum width and Maximum height fields allow you to limit the size of your users’ pictures on their business cards. The graphic is scaled to fit within the maximum width and height that you specify, without distorting the picture (the “aspect ratio” is maintained).</p></div>
+</li>
+<li class="step" id="bbn3zav">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You might also have to add the 
+       <span class="guimenu">Organization</span> element in the 
+       <span class="guimenu">Profile form definition </span>so that users can enter their organizations when they modify their profiles. This is true for any new elements you add to the business card (you need to add the new elements to the 
+       <span class="guimenu">Profile form definition</span> so that users can input values when they modify their profiles).
+      </p></div>
+</li></ol>
+</div>
+</li>
+<li class="step" id="bbn42cu">
+<p class="para">Go to a user’s workspace and view the changes (in this example the 
+    <span class="guimenu">Organization</span> element has been given a value for the user).
+   </p>
+<div class="informalfigure">
+              <img src="./workspacejwaters_a.png" alt="User workspace" />
+            </div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="bbdcqbz">
+
+<h1 class="title"><span class="number">4.0</span> Creating a Basic Workflow Process</h1>
+
+<p class="para">When developing a workflow process with ICEcore, use the 
+  <span class="guimenu">ICEcore Administration</span> portlet. In ICEcore, the completed workflow process is a separate function that you can then apply to entries using one of several methods ICEcore provides to start the workflow.
+ </p>
+<p class="para">As one example, you can begin by creating a discussion topic in a folder, and then initiating an allowed workflow process for that entry (workflow availability is assigned in each folder’s configuration). The topic enters into the first state of the initiated process, and the workflow begins only for that one particular entry. As another example, you can specify in a folder’s configuration to initiate a specific workflow process automatically every time a user creates an entry of a specific type (including your own customized entries).</p>
+<p class="para">This chapter shows you how to implement a basic workflow design. The <a href="#bbfelt9">Advanced Workflow</a> chapter expands the design (using ICEcore’s Advanced Workflow add-on module) to more closely match the needs of a typical production-ready system (for example, using questions).</p>
+<p class="para">The following sections are covered in this chapter:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbgf81d">Section 4.1, Creating a Workflow</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbgif26">Section 4.2, Setting Access Controls</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbgk2dw">Section 4.3, Notifying Participants</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbgxiqf">Section 4.4, Using the Workflow in a Folder</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="bbgf81d">
+
+<h2 class="title"><span class="number">4.1</span> Creating a Workflow</h2>
+
+<p class="para">The following procedures show you how to define a workflow, add the states it requires, and define the transitions it requires. The example used is the creation of a Paid Time Off (PTO) request workflow.</p>
+<p class="para">This section contains the following topics:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbgf99g">Section 4.1.1, Define a Workflow</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbgfcpn">Section 4.1.2, Add States to a Workflow</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbgfcpq">Section 4.1.3, Define Manual Transitions for a Workflow</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbgh5av">Section 4.1.4, Configure a Folder to Use This Workflow</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bbggv0h">Section 4.1.5, Test the New Workflow</a>
+          </p></li></ul></div>
+
+<div class="sect2 singlefile"  id="bbgf99g">
+
+<h3 class="title"><span class="number">4.1.1</span> Define a Workflow</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgfrq3">
+<p class="para">From the 
+      <span class="guimenu">ICEcore Administration</span> portlet, click the plus sign (+) to the left of 
+      <span class="guimenu">Form and view designers</span> to expand this section and view the available designers.
+     </p>
+<div class="informalfigure">
+                  <img src="./icecoreadminportlet_a.png" alt="ICEcore Administration portlet" />
+                </div>
+</li>
+<li class="step" id="bbgfrtt">
+<p class="para">Click 
+      <span class="guimenu">Workflow designer</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_workflowdesigner_a.png" alt="Form and view designers" />
+                </div>
+</li>
+<li class="step" id="bbgfuwe">
+<p class="para">Click 
+      <span class="guimenu">Workflow processes</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_workflowprocesses_a.png" alt="" />
+                </div>
+</li>
+<li class="step" id="bbgfvs1">
+<p class="para">In the options dialog on the right, click 
+      <span class="guimenu">Add a new workflow process</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./dialog_addnewwokkflowprocess_a.png" alt="" />
+                </div>
+</li>
+<li class="step" id="bbgfwnn">
+<p class="para">In the form that appears on the right, type in the 
+      <span class="guimenu">Name</span> (workflow name) and 
+      <span class="guimenu">Caption</span> (name that appears in ICEcore) for this workflow.
+     </p>
+<div class="informalfigure">
+                  <img src="./dialog_workflowname_a.png" alt="" />
+                </div>
+</li>
+<li class="step" id="bbgfzw7">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<p class="para">The PTO workflow is now defined in ICEcore.</p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbgfcpn">
+
+<h3 class="title"><span class="number">4.1.2</span> Add States to a Workflow</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgg5r1">
+<p class="para">From the 
+      <span class="guimenu">ICEcore Administration</span> portlet, click the plus sign (+) to the left of 
+      <span class="guimenu">Form and view designers</span> to expand this section and view the available designers.
+     </p>
+<div class="informalfigure">
+                  <img src="./icecoreadminportlet_a.png" alt="ICEcore Administration portlet" />
+                </div>
+</li>
+<li class="step" id="bbgg5r2">
+<p class="para">Click 
+      <span class="guimenu">Workflow designer</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_workflowdesigner_a.png" alt="Form and view designers" />
+                </div>
+</li>
+<li class="step" id="bbgg1is">
+<p class="para">Expand 
+      <span class="guimenu">Workflow processes</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./expand_workflowprocesses_a.png" alt="Workflow processes" />
+                </div>
+</li>
+<li class="step" id="bbgg1w3">
+<p class="para">Click 
+      <span class="guimenu">PTO Request</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_ptorequest_a.png" alt="Workflow processes" />
+                </div>
+</li>
+<li class="step" id="bbgg2mh">
+<p class="para">Click 
+      <span class="guimenu">Workflow process</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_workflowprocess.png" alt="PTO Request workflow" />
+                </div>
+</li>
+<li class="step" id="bbgg3gk">
+<p class="para">In the options dialog on the right, click 
+      <span class="guimenu">Add</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_add_a.png" alt="Options dialog" />
+                </div>
+</li>
+<li class="step" id="bbgg3qn">
+<p class="para">Click 
+      <span class="guimenu">State</span> to add a state to this workflow.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_state_a.png" alt="Workflow add dialog" />
+                </div>
+</li>
+<li class="step" id="bbgg4cb">
+<p class="para">Type in the 
+      <span class="guimenu">Caption</span> (name used in ICEcore), 
+      <span class="guimenu">Data Name</span> (database name), and 
+      <span class="guimenu">Description</span> for this workflow as follows:
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The 
+       <span class="guimenu">Data Name</span> is an internal-use, database name. Names for elements in one definition must be unique. The first character must be an alphabetic character (a-z, A-Z). For the rest, legal characters are alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), and underscores (_).
+      </p></div>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+        <span class="guimenu">Caption</span> = Submit
+       </p></li>
+<li class="listitem">
+<p class="listitem">
+        <span class="guimenu">Data Name</span> = Submit_PTO_Request
+       </p></li>
+<li class="listitem">
+<p class="listitem">
+        <span class="guimenu">Description</span> = PTO Request Submitted
+       </p></li></ul></div>
+
+<div class="informalfigure">
+                  <img src="./dialog_state_a.png" alt="State information form" />
+                </div>
+</li>
+<li class="step" id="bbgg79k">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<p class="para">The new state is added to the workflow and appears in the Workflow Preview area at the bottom part of the window.</p>
+<div class="informalfigure">
+                  <img src="./stateappears_a.png" alt="Workflow preview area" />
+                </div>
+</li>
+<li class="step" id="bbggbpr">
+<p class="para">Repeat these steps to add the 
+      <span class="guimenu">Review</span>, 
+      <span class="guimenu">Approve</span>, 
+      <span class="guimenu">Deny</span>, and 
+      <span class="guimenu">Record</span> states.
+     </p>
+<div class="informalfigure">
+                  <img src="./allstatespreview1_a.png" alt="Workflow preview" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Once the states are defined, the next step is to develop transitions that move an entry from one state to the next. You can also take action when a process enters into or exits from a state. For example, upon entry (or exit) you can send a notification, begin or end a parallel process, or set a variable.</p></div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbgfcpq">
+
+<h3 class="title"><span class="number">4.1.3</span> Define Manual Transitions for a Workflow</h3>
+
+<p class="para">The following steps show you how to set up manual transitions (only manual transitions are available without the Advanced Workflow add-on module) between the states in this workflow.</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgfcps">
+<p class="para">Under 
+      <span class="guimenu">Workflow process</span>, expand 
+      <span class="guimenu">State - Submit</span> and click 
+      <span class="guimenu">Transitions</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_transitions_a.png" alt="Transitions" />
+                </div>
+</li>
+<li class="step" id="bbgghg6">
+<p class="para">In the options dialog on the right, click 
+      <span class="guimenu">Add</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./dialog_addtransition_a.png" alt="Options dialog" />
+                </div>
+</li>
+<li class="step" id="bbggjkh">
+<p class="para">In the options dialog, click 
+      <span class="guimenu">Manual Transition</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./options_transitions_a.png" alt="Transition Options dialog" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The 
+       <span class="guimenu">Manual Transition</span> is the only available transition in ICEcore unless you are using the Advanced Workflow add-on module.
+      </p></div>
+</li>
+<li class="step" id="bbggkg9">
+<p class="para">In the 
+      <span class="guimenu">To state</span> list box, select 
+      <span class="guimenu">Review (Review_PTO_Request)</span> and click 
+      <span class="guimenu">OK</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./dialog_tostate_a.png" alt="" />
+                </div>
+
+<p class="para">After you successfully complete the previous steps, the preview portion of the page displays an arrow in the flow chart that represents the newly defined transition.</p>
+<div class="informalfigure">
+                  <img src="./view_transition1_a.png" alt="Transition arrow" />
+                </div>
+</li>
+<li class="step" id="bbggquk">
+<p class="para">Repeat these steps to create the following manual transitions:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+        <span class="guimenu">Review</span> to 
+        <span class="guimenu">Approve</span>
+       </p></li>
+<li class="listitem">
+<p class="listitem">
+        <span class="guimenu">Review</span> to 
+        <span class="guimenu">Deny</span>
+       </p></li>
+<li class="listitem">
+<p class="listitem">
+        <span class="guimenu">Approve</span> to 
+        <span class="guimenu">Record</span>
+       </p></li></ul></div>
+
+<div class="informalfigure">
+                  <img src="./view_transitionall_a.png" alt="Workflow preview area" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You can drag each state to the position you want it to appear in the preview area and click 
+       <span class="guimenu">Save layout</span> to save these positions for ease of viewing.
+      </p></div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbgh5av">
+
+<h3 class="title"><span class="number">4.1.4</span> Configure a Folder to Use This Workflow</h3>
+
+<p class="para">You need to configure each folder in which you want to use this new workflow.</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbghvyh">
+<p class="para">Go to the 
+      <span class="guimenu">PTO Requests </span>folder in Human Resources.
+     </p></li>
+<li class="step" id="bbghwly">
+<p class="para">Select the 
+      <span class="guimenu">Manage &gt; Configure</span> menu item.
+     </p>
+<div class="informalfigure">
+                  <img src="./slect_manageconfigure_a.png" alt="Manage menu" />
+                </div>
+</li>
+<li class="step" id="bbghwya">
+<p class="para">Under 
+      <span class="guimenu">Allowed Workflows</span>, select the 
+      <span class="guimenu">PTO Request</span> option.
+     </p>
+<div class="informalfigure">
+                  <img src="./enable_ptorequest_a.png" alt="Allowed workflows" />
+                </div>
+</li>
+<li class="step" id="bbghyly">
+<p class="para">Click 
+      <span class="guimenu">Apply</span>
+     </p></li>
+<li class="step" id="bbghynl">
+<p class="para">Click 
+      <span class="guimenu">Close</span>.
+     </p>
+<p class="para">User can now use the 
+      <span class="guimenu">Workflow &gt; Start workflow: PTO Request</span> menu item when viewing entries in this folder to start this workflow process.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbggv0h">
+
+<h3 class="title"><span class="number">4.1.5</span> Test the New Workflow</h3>
+
+<p class="para">After creating a minimally functional workflow process, verify that the transitions function properly. (At this state of its development, the process does not define specific access to the workflow based upon the participant. This means that any user with access rights to the folder that is associated with this workflow can transition the entry through the entire workflow.) This example uses John Waters.</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgh2h3">
+<p class="para">Log in as John Waters (jwaters).</p></li>
+<li class="step" id="b9wzkze">
+<p class="para">Go to the 
+      <span class="guimenu">PTO Requests </span>folder in Human Resources.
+     </p></li>
+<li class="step" id="b9wzkzh">
+<p class="para">Click 
+      <span class="guimenu">New &gt; Discussion entry</span> menu item to add a discussion topic. 
+     </p>
+<div class="informalfigure">
+                  <img src="./new-discussionentry_a.png" alt="New menu" />
+                </div>
+</li>
+<li class="step" id="b9wzkzk">
+<p class="para">Type in the 
+      <span class="guimenu">Title</span> and 
+      <span class="guimenu">Description</span> information and click 
+      <span class="guimenu">OK</span>.
+     </p>
+<p class="para">The new entry appears in the folder.</p>
+<div class="informalfigure">
+                  <img src="./newentrytest_a.png" alt="Test folder entry" />
+                </div>
+</li>
+<li class="step" id="b9wzkzm">
+<p class="para">Click on the entry title to view the entry.</p>
+<div class="informalfigure">
+                  <img src="./click_test_a.png" alt="Entry title" />
+                </div>
+</li>
+<li class="step" id="bbgi1rq">
+<p class="para">Select the 
+      <span class="guimenu">Workflow &gt; Start workflow: PTO Request </span>menu item.
+     </p>
+<div class="informalfigure">
+                  <img src="./select_workflow_start_a.png" alt="Workflow menu" />
+                </div>
+</li>
+<li class="step" id="bbgi34k">
+<p class="para">In the confirmation dialog that appears, click 
+      <span class="guimenu">OK</span> to start the 
+      <span class="guimenu">PTO Request </span>workflow.
+     </p>
+<div class="informalfigure">
+                  <img src="./confirmworkflowstart_a.png" alt="Confirmation dialog" />
+                </div>
+
+<p class="para">The 
+      <span class="guimenu">PTO Request</span> workflow is added to entry with the entry in the initial 
+      <span class="guimenu">Submit</span> state.
+     </p>
+<div class="informalfigure">
+                  <img src="./pto_workflow_a.png" alt="Entry view" />
+                </div>
+</li>
+<li class="step" id="b9wzkzp">
+<p class="para">Select 
+      <span class="guimenu">Review</span> from the 
+      <span class="guimenu">Transition to:</span> drop-down list and click 
+      <span class="guimenu">OK</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./transition1_a.png" alt="Entry view" />
+                </div>
+
+<p class="para">The 
+      <span class="guimenu">State</span> should change to 
+      <span class="guimenu">Review</span>.
+     </p></li>
+<li class="step" id="b9wzkzr">
+<p class="para">Select 
+      <span class="guimenu">Deny</span> from the 
+      <span class="guimenu">Transition to:</span> drop-down list and click 
+      <span class="guimenu">OK</span>.
+     </p>
+<p class="para">The state should change to Deny and there should be no actions available (the Transition to: drop-down list should be gone) since there are no transitions from 
+      <span class="guimenu">Deny</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./deny_state_a.png" alt="Entry view" />
+                </div>
+</li>
+<li class="step" id="bbgi7w6">
+<p class="para">Select the 
+      <span class="guimenu">Workflow &gt; Stop workflow: PTO Request</span> menu item to stop the workflow process.
+     </p>
+<div class="informalfigure">
+                  <img src="./stopworkflow_a.png" alt="Workflow menu" />
+                </div>
+</li>
+<li class="step" id="b9wzkzv">
+<p class="para">Select the 
+      <span class="guimenu">Workflow &gt; Start workflow: PTO Request </span>menu item to start the workflow process.
+     </p></li>
+<li class="step" id="bbgiax7">
+<p class="para">Transition the entry through all the states (except 
+      <span class="guimenu">Deny</span>) until you reach 
+      <span class="guimenu">Record</span> (no transitions exist from 
+      <span class="guimenu">Record</span>).
+     </p>
+<p class="para">The manual transitions allow the user to change the state of this workflow, but in a real business process these transitions should be controlled by specific groups or individuals. The next section deals with setting access controls in the workflow.</p></li></ol>
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bbgif26">
+
+<h2 class="title"><span class="number">4.2</span> Setting Access Controls</h2>
+
+<p class="para">Using the access control feature, you can specify which participants may participate in causing an entry to transition from one state to another. Also, if the entry contains sensitive information at any time during the workflow process, you can restrict who may view the entry. This feature implements “per entry” access control, checking privileges for individual entries at each state in the workflow process.</p>
+<h4 class="bridgehead" id="b9wzwny"> What's in this Section?</h4>
+
+<p class="para">The following sections describe how to set up access control in ICEcore as well as using various approaches with the workflow tools that set access control for one or more states:</p>
+<div class="sect2 singlefile"  id="b9wzwxd">
+
+<h3 class="title"><span class="number">4.2.1</span> What is Access Control?</h3>
+
+<p class="para">When creating a workflow process using default settings, every user who can enter the discussion forum has access to view the entry and to participate in state changes. For almost all production-ready workflow systems, it is necessary to alter this default access control, so that:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> Only members of the team assigned to the business process may participate in the workflow process.</p></li>
+<li class="listitem">
+<p class="listitem">Only designated responsible individuals participate in changing states.</p></li></ul></div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Access control is the term used to identify which users have the right to perform specific tasks at each state within the workflow process. </p></div>
+
+<h4 class="bridgehead" id="b9xcxy2"> Planning Access Control </h4>
+
+<p class="para">Before configuring access, identify the following: </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">States - You defined these in the previous section. </p></li>
+<li class="listitem">
+<p class="listitem">Access rights - For each state, define who can view, modify or delete, respond to, and participate in state transitions.</p></li>
+<li class="listitem">
+<p class="listitem">Users or Groups - Map “participants” to usernames and group names within ICEcore.</p></li></ul></div>
+
+<p class="para">Create a table to use for access-control planning as follows:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+              
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9xdu9k"></a>
+<p class="para">State </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Participant </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Access Required</p></th>
+</tr>
+            
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xdu9l"></a>
+<p class="para">Submit</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The employee, or time off requestor</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Only the manager and employee can see an employee's request.</p></li>
+<li class="listitem">
+<p class="listitem">The manager is the only one allowed to transition the work to 
+           <span class="guimenu">Review</span>. 
+          </p></li></ul></div>
+</td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xdu9m"></a>
+<p class="para">Review</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">The manager is the only one allowed to transition the work to 
+           <span class="guimenu">Approve</span> or 
+           <span class="guimenu">Deny</span>. 
+          </p></li>
+<li class="listitem">
+<p class="listitem">Employees can review only their own pending requests in this state.</p></li></ul></div>
+</td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xdu9n"></a>
+<p class="para">Approve</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager and employee</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">The manager, employee, and HR may view the request in this state.</p></li>
+<li class="listitem">
+<p class="listitem">Only HR can transition to 
+           <span class="guimenu">Record</span>.
+          </p></li></ul></div>
+</td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xdu9o"></a>
+<p class="para">Deny</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager and employee</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager and employee can review requests in the 
+         <span class="guimenu">Deny</span> state.
+        </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xdu9p"></a>
+<p class="para">Record</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Human Resources</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager, employee, and HR may view the work in this completed state.</p></td>
+</tr></table>
+</div>
+
+<p class="para">Subsequent sections in this chapter describe how to implement this plan for access control.</p>
+</div>
+
+<div class="sect2 singlefile"  id="b9wzxih">
+
+<h3 class="title"><span class="number">4.2.2</span> Set Access Rights</h3>
+
+<p class="para">Entries in the 
+    <span class="guimenu">Submit</span> state needs to be viewable by the users who created the 
+    <span class="guimenu">PTO Requests</span>, but not by any of their peers. In addition, only a manager can transition an entry from 
+    <span class="guimenu">Submit</span> to 
+    <span class="guimenu">Review</span>, and from 
+    <span class="guimenu">Review</span> to 
+    <span class="guimenu">Deny</span> or 
+    <span class="guimenu">Approve</span>. Human Resources needs to transition each entry from Approve to Record.
+   </p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgj3oz">
+<p class="para">From the 
+      <span class="guimenu">ICEcore Administration</span> portlet, click the plus sign (+) to the left of 
+      <span class="guimenu">Form and view designers</span> to expand this section and view the available designers.
+     </p></li>
+<li class="step" id="bbgj3p0">
+<p class="para">Click 
+      <span class="guimenu">Workflow designer</span>.
+     </p></li>
+<li class="step" id="bbgj3p1">
+<p class="para">Expand 
+      <span class="guimenu">Workflow processes</span>.
+     </p></li>
+<li class="step" id="bbgj3p2">
+<p class="para">Click 
+      <span class="guimenu">PTO Request</span>.
+     </p></li>
+<li class="step" id="bbgj3p3">
+<p class="para">Expand 
+      <span class="guimenu">Workflow process</span>.
+     </p></li>
+<li class="step" id="bbgjfen">
+<p class="para">Add the 
+      <span class="guimenu">Access controls</span> to the workflow states:
+     </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbgin9n">
+<p class="para">Click 
+        <span class="guimenu">State - Submit</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./click_statesubmit_a.png" alt="Workflow processes" />
+                    </div>
+</li>
+<li class="step" id="bbginde">
+<p class="para">In the options dialog on the right, click 
+        <span class="guimenu">Add</span>.
+       </p></li>
+<li class="step" id="bbginod">
+<p class="para">Click 
+        <span class="guimenu">Access controls</span>.
+       </p>
+<p class="para">
+        <span class="guimenu">Access controls</span> is added below 
+        <span class="guimenu">Transitions</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./stateaccesscontrolls_a.png" alt="Workflow processes" />
+                    </div>
+</li>
+<li class="step" id="bbgjg30">
+<p class="para">Repeat this for each state to add the 
+        <span class="guimenu">Access controls</span>.
+       </p></li></ol>
+</div>
+</li>
+<li class="step" id="bbgjf16">
+<p class="para">Set the 
+      <span class="guimenu">Read access</span> rights:
+     </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbgiosw">
+<p class="para">Under 
+        <span class="guimenu">State - Submit</span>, click 
+        <span class="guimenu">Access controls</span>.
+       </p></li>
+<li class="step" id="bbgiq86">
+<p class="para">Click 
+        <span class="guimenu">Add</span>.
+       </p></li>
+<li class="step" id="bbgiqa4">
+<p class="para">Click 
+        <span class="guimenu">Read access</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./readaccess_a.png" alt="Access Controls options" />
+                    </div>
+</li>
+<li class="step" id="bbgiqxw">
+<p class="para">Deselect the 
+        <span class="guimenu">Folder default access</span> option, select the 
+        <span class="guimenu">Entry creator</span> option, add the 
+        <span class="guimenu">Managers</span> group, and click 
+        <span class="guimenu">OK</span>.
+       </p>
+<div class="informalfigure">
+                      <img src="./readaccessform_a.png" alt="Access control form" />
+                    </div>
+
+<p class="para">Now only the entry creator and managers can view these entries.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The 
+         <span class="guimenu">Select an entry type </span>drop-down list allows you to add any user lists that might be assigned to specific entry types.
+        </p></div>
+</li>
+<li class="step" id="bbgjgzm">
+<p class="para">Repeat this for each state to add the 
+        <span class="guimenu">Read access</span> rights (make sure to give the 
+        <span class="guimenu">Human Resources</span> group 
+        <span class="guimenu">Read access</span> rights in the 
+        <span class="guimenu">Approve</span> and 
+        <span class="guimenu">Record</span> states).
+       </p></li></ol>
+</div>
+</li>
+<li class="step" id="bbgjibb">
+<p class="para">Set the 
+      <span class="guimenu">Transition out of this state</span> access controls:
+     </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbgjewd">
+<p class="para">Under 
+        <span class="guimenu">State - Submit</span>, click 
+        <span class="guimenu">Access controls</span>.
+       </p></li>
+<li class="step" id="bbgjewe">
+<p class="para">Click 
+        <span class="guimenu">Add</span>.
+       </p></li>
+<li class="step" id="bbgjewf">
+<p class="para">Click 
+        <span class="guimenu">Transition out of this state</span>.
+       </p></li>
+<li class="step" id="bbgj9e9">
+<p class="para">Deselect the 
+        <span class="guimenu">Folder default access</span> option, add the 
+        <span class="guimenu">Managers</span> group and click 
+        <span class="guimenu">OK</span>.
+       </p>
+<p class="para">Now only a Manager can transition the entry out of the 
+        <span class="guimenu">Submit</span> state.
+       </p></li>
+<li class="step" id="bbgjotb">
+<p class="para">Repeat this for the 
+        <span class="guimenu">Review</span> and 
+        <span class="guimenu">Approve</span> states with the following rights:
+       </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <span class="guimenu">Review</span>- Managers group only
+         </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="guimenu">Approve</span>- Human Resources group only
+         </p></li></ul></div>
+</li></ol>
+</div>
+</li>
+<li class="step" id="bbgl9we">
+<p class="para">Set the 
+      <span class="guimenu">Transition into this state</span> access controls:
+     </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbgl9wf">
+<p class="para">Under 
+        <span class="guimenu">State - Review</span>, click 
+        <span class="guimenu">Access controls</span>.
+       </p></li>
+<li class="step" id="bbgl9wg">
+<p class="para">Click 
+        <span class="guimenu">Add</span>.
+       </p></li>
+<li class="step" id="bbgl9wh">
+<p class="para">Click 
+        <span class="guimenu">Transition into this state</span>.
+       </p></li>
+<li class="step" id="bbgl9wi">
+<p class="para">Deselect the 
+        <span class="guimenu">Folder default access</span> option, add the 
+        <span class="guimenu">Managers</span> group, and click 
+        <span class="guimenu">OK</span>.
+       </p>
+<p class="para">Now only a Manager can transition the entry into the 
+        <span class="guimenu">Review</span> state.
+       </p></li>
+<li class="step" id="bbgl9wj">
+<p class="para">Repeat this for the 
+        <span class="guimenu">Approve, Deny,</span> and 
+        <span class="guimenu">Record</span> states with the following rights:
+       </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <span class="guimenu">Review</span>- Managers group only
+         </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="guimenu">Approve</span>- Managers group only
+         </p></li>
+<li class="listitem">
+<p class="listitem">
+          <span class="guimenu">Record</span>- Human Resources group only
+         </p></li></ul></div>
+
+<p class="para">The access rights for this workflow are now set. You can log in as the members of the various groups to walk through the workflow and test it.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You have to set the 
+         <span class="guimenu">Transition out of this state</span> and the 
+         <span class="guimenu">Transition into this state</span> access rights correctly for all states in your workflow to map the business process correctly.
+        </p></div>
+</li></ol>
+</div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9wzxil">
+
+<h3 class="title"><span class="number">4.2.3</span> Summary</h3>
+
+<p class="para">Access control is an important aspect of workflow, because it allows a workflow designer to set levels of security and access to each task within the workflow.</p>
+<p class="para">While developing a workflow process, you can use workflow tools to set access for one state at a time or to work with more than one state simultaneously. Access control is comprised of who can see, modify or delete, respond to (a workflow question), or transition into or out of a specified state. When defining access control, you can specify all users, entry creators, or specific users and groups.</p>
+<p class="para">When you consider granting workflow access to an individual, make a distinction between times when more than one individual can use the workflow and when a specific individual always uses the workflow. The 
+    <span class="guimenu">Entry creator</span> individual applies to any ICEcore user who can create entries in that folder. However, there may be occasions when a specific user should be the only user who has certain access rights every time the workflow runs for an entry.
+   </p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bbgk2dw">
+
+<h2 class="title"><span class="number">4.3</span> Notifying Participants</h2>
+
+<p class="para">ICEcore can send e-mail notifications at different states of the workflow process. These notifications alert participants that the work has reached a state that requires their attention, provide information to managers who are tracking the process of the work, and provide a one-click method for a participant to view and work with the entry.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>In order to use workflow notifications, ICEcore must be configured to enable e-mail notifications. Refer to the ICEcore Installation and Configuration Guide for information on configuring e-mail servers and notifications.</p></div>
+
+<h4 class="bridgehead" id="b9xgzed"> What's in this Chapter?</h4>
+
+<p class="para">This chapter includes instructions on creating the following types of notification:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Notification of Request Submission - Define a notification that is sent whenever someone submits a 
+     <span class="guimenu">PTO Request</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem">Notification of Request Approval - Define a notification that is sent when the manager approves a 
+     <span class="guimenu">PTO Request</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem">Notification of Request Denial - Define a notification that is sent when the manager denies a 
+     <span class="guimenu">PTO Request</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem"> Notification of an Overdue State - Define a notification that is sent whenever a state reaches a specified time limit.</p></li></ul></div>
+
+<p class="para">The following sections walk you through these tasks:</p>
+<p class="para">To determine places in the process where a notification can be helpful, review the following table:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9xh066"></a>
+<p class="para">State</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Participants</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Action Required</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xh0ax"></a>
+<p class="para">N/A</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The employee (time off requestor)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Enters the 
+        <span class="guimenu">PTO Request</span>.
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xh0dk"></a>
+<p class="para">Submit</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Indicates that he has received the request.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xh0f6"></a>
+<p class="para">Review</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Reviews, and then approves or denies the request.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xh0go"></a>
+<p class="para">Approve</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager and employee</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager indicates that the request is approved. The employee must be notified when the request is approved.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xh0i5"></a>
+<p class="para">Deny</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager and employee</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The manager indicates that the request is denied. The employee must be notified when the request is denied.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xh0jp"></a>
+<p class="para">Record</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Human Resources</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">HR enters the PTO Request into the Time Off database.</p></td>
+</tr></table>
+</div>
+
+<div class="sect2 singlefile"  id="bbgwzi1">
+
+<h3 class="title"><span class="number">4.3.1</span> Define an On Entry Process:</h3>
+
+<p class="para">You can take action when a process enters into or exits from a state. For example, upon entry (or exit) you can send a notification, begin or end a parallel process, or set a variable. </p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgl9wm">
+<p class="para">Expand 
+      <span class="guimenu">Workflow processes</span>.
+     </p></li>
+<li class="step" id="bbgl9wn">
+<p class="para">Click 
+      <span class="guimenu">PTO Request</span>.
+     </p></li>
+<li class="step" id="bbgl9wo">
+<p class="para">Expand 
+      <span class="guimenu">Workflow process</span>.
+     </p></li>
+<li class="step" id="b9xgj4m">
+<p class="para">Click 
+      <span class="guimenu">State - Submit</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_statesubmit_a.png" alt="Workflow process states" />
+                </div>
+</li>
+<li class="step" id="b9xgj4n">
+<p class="para">In the options dialog on the right, click 
+      <span class="guimenu">Add</span>. 
+     </p>
+<div class="informalfigure">
+                  <img src="./click_add_wdelete_a.png" alt="State options dialog" />
+                </div>
+</li>
+<li class="step" id="b9xgj4p">
+<p class="para">Click 
+      <span class="guimenu">On entry</span>. 
+     </p>
+<div class="informalfigure">
+                  <img src="./click_onentry_a.png" alt="State Add Options dialog" />
+                </div>
+</li>
+<li class="step" id="b9xgj4r">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_ok2_a.png" alt="Confirmation dialog" />
+                </div>
+
+<p class="para">The 
+      <span class="guimenu">On entry</span> process is added to the Submit state.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_onentry2_a.png" alt="Submit state processes" />
+                </div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbgx1uh">
+
+<h3 class="title"><span class="number">4.3.2</span> Add a Notification to the On Entry Process</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9xgj4s">
+<p class="para"> Click 
+      <span class="guimenu">On entry</span>. 
+     </p>
+<div class="informalfigure">
+                  <img src="./click_onentry2_a.png" alt="Submit state processes" />
+                </div>
+</li>
+<li class="step" id="bbgx2ul">
+<p class="para">Click 
+      <span class="guimenu">Add</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_add3_a.png" alt="On entry options dialog" />
+                </div>
+</li>
+<li class="step" id="bbgx3w3">
+<p class="para">Click 
+      <span class="guimenu">Notifications</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_notifications_a.png" alt="On entry add options dialog" />
+                </div>
+</li>
+<li class="step" id="b9xgj4u">
+<p class="para"> Add the 
+      <span class="guimenu">Managers</span> group to the form that appears.
+     </p>
+<div class="informalfigure">
+                  <img src="./notifications_form_a.png" alt="Notification form" />
+                </div>
+</li>
+<li class="step" id="b9xgj4v">
+<p class="para">Type in a subject line for this notification and click the 
+      <span class="guimenu">Append the entry body</span> option to use the entry in the body of the notification e-mail.
+     </p>
+<div class="informalfigure">
+                  <img src="./notification_text_a.png" alt="Notification text" />
+                </div>
+</li>
+<li class="step" id="b9xgj4z">
+<p class="para">Click 
+      <span class="guimenu">OK</span> to create the notification.
+     </p>
+<p class="para">The 
+      <span class="guimenu">Notification</span> is added under the 
+      <span class="guimenu">On entry</span> process.
+     </p>
+<div class="informalfigure">
+                  <img src="./tree_notifications_a.png" alt="Notifications process in tree" />
+                </div>
+</li>
+<li class="step" id="bbgxao6">
+<p class="para">Repeat these steps to create a notification of request approval and a notification of request denied with the following settings:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Notification of Approval - notify the 
+        <span class="guimenu">Entry creator</span> and the 
+        <span class="guimenu">Human Resources</span> group whenever the manager approves a PTO Request. The 
+        <span class="guimenu">Human Resources</span> group must record the time in the Time Off database and transition the request to the 
+        <span class="guimenu">Record</span> state.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Notification of Denial - notify the 
+        <span class="guimenu">Entry creator</span> whenever the manager denies a PTO Request.
+       </p></li></ul></div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9xh1ib">
+
+<h3 class="title"><span class="number">4.3.3</span> Test the Notifications</h3>
+
+<p class="para">To test the notifications, log on as different users and move an entry through the workflow process. As the entry transitions, you should receive e-mail notification. If not, make sure that you configured e-mail settings on your server and review the workflow notifications you have created. </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9xh1gt">
+
+<h3 class="title"><span class="number">4.3.4</span> Summary</h3>
+
+<p class="para">Notifications are a vital mechanism for maintaining the efficient and proper flow of work through the process. Notification can be sent to a number of different workflow participants, whenever a workflow process enters or exits a specific state. In addition to many other reasons, notifications can communicate approval, denial, completion or overdue status. </p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bbgxiqf">
+
+<h2 class="title"><span class="number">4.4</span> Using the Workflow in a Folder</h2>
+
+<p class="para">The following procedure shows you how to set up a folder to use this workflow with a custom entry (see <a href="#bbfekr8">Section 2.0, Custom Entries</a>).</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgxrt9">
+<p class="para">Go to the 
+     <span class="guimenu">PTO Requests </span>folder in Human Resources.
+    </p></li>
+<li class="step" id="bbgxrta">
+<p class="para">Select the 
+     <span class="guimenu">Manage &gt; Configure</span> menu item.
+    </p>
+<div class="informalfigure">
+                <img src="./slect_manageconfigure_a.png" alt="Manage menu" />
+              </div>
+</li>
+<li class="step" id="bbh1137">
+<p class="para">Under 
+     <span class="guimenu">Allowed Views</span>, select the 
+     <span class="guimenu">Discussion folder viewed as a table</span> and 
+     <span class="guimenu">Discussion folder viewed as a list </span>options (deselect any others) and click 
+     <span class="guimenu">Apply</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./allowed-views_a.png" alt="Allowed views" />
+              </div>
+</li>
+<li class="step" id="bbh118i">
+<p class="para">Under 
+     <span class="guimenu">Default view</span>, select the 
+     <span class="guimenu">Discussion folder viewed as a list </span>option and click 
+     <span class="guimenu">Apply</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./default-view_a.png" alt="Default view" />
+              </div>
+</li>
+<li class="step" id="bbh11df">
+<p class="para">Under 
+     <span class="guimenu">Default entry types</span>, select the 
+     <span class="guimenu">Time Off</span> entry type (deselect any others) and click 
+     <span class="guimenu">Apply</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./default-entrytypes_a.png" alt="Default entry types" />
+              </div>
+</li>
+<li class="step" id="bbgxrtb">
+<p class="para">Under 
+     <span class="guimenu">Allowed Workflows</span>, select the 
+     <span class="guimenu">PTO Request</span> option.
+    </p>
+<div class="informalfigure">
+                <img src="./enable_ptorequest_a.png" alt="Allowed workflows" />
+              </div>
+</li>
+<li class="step" id="bbgxrtc">
+<p class="para">Click 
+     <span class="guimenu">Apply</span>
+    </p></li>
+<li class="step" id="bbgxofy">
+<p class="para">Under Workflow associations, select PTO Request from the Time Off drop-down list and click 
+     <span class="guimenu">Apply</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./select_workflowassociations_a.png" alt="Workflow associations" />
+              </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A drop-down list appears for each 
+      <span class="guimenu">Default entry type</span> you select. When you use a drop-down list to select a workflow process, that process begins automatically whenever a user creates an entry of that type.
+     </p></div>
+</li>
+<li class="step" id="bbgxofz">
+<p class="para">Click 
+     <span class="guimenu">Close</span>.
+    </p>
+<p class="para">Users can now only enter 
+     <span class="guimenu">Time Off</span> entries in this folder, which automatically triggers the 
+     <span class="guimenu">PTO Request</span> workflow process.
+    </p></li></ol>
+</div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="bbfelt9">
+
+<h1 class="title"><span class="number">5.0</span> Advanced Workflow</h1>
+
+<p class="para">This chapter expands the workflow design in the previous chapter (using ICEcore’s Advanced Workflow add-on module) to more closely match the needs of a typical production-ready system, (for example, using questions).</p>
+<p class="para">In the workflow designed in <a href="#bbdcqbz">Section 4.0, Creating a Basic Workflow Process</a>, ICEcore considers only one fact when determining if an entry’s state should change: did someone transition the entry manually? </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You need to have purchased the Advanced Workflow add-on module to perform any transitions in your workflows besides manual transitions.</p></div>
+
+<p class="para">Despite the power of manual transitions, there are many times when a business process calls for a more complex set of conditions, such as when someone adds a reply to a question in the entry, or when a certain number of days have passed without a transaction occurring.</p>
+<p class="para">In many complex transition scenarios, it can be helpful to define a workflow question for your process.</p>
+<h4 class="bridgehead" id="b9xe7dc"> What's in this Chapter?</h4>
+
+<p class="para">This chapter provides instructions for creating questions within workflows and for configuring state transitions based upon responses to the workflow question, which appears when the entry is in a specific state:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9xeakc">Section 5.1, Adding a Question to the Workflow</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9xe8xd">Section 5.2, Adding Transitions on Response</a>
+        </p></li></ul></div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A workflow question allows the workflow process to use a set of answers to determine whether and how an entry should transition. </p></div>
+
+<div class="sect1 singlefile"  id="b9xeakc">
+
+<h2 class="title"><span class="number">5.1</span> Adding a Question to the Workflow</h2>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A question can be specific to one state. As another option, you can define a global question, which you can then associate with any number of states; this is helpful when multiple states require the same question and answer set. Each state can have only one associated question.</p></div>
+
+<p class="para">For example, consider the following table:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9xeb1t"></a>
+<p class="para">Condition </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Causes the work to transition to…</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xeb1u"></a>
+<p class="para">The employee enters a PTO Request.</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Submit</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xec15"></a>
+<p class="para">The manager indicates receipt.</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Review</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xec16"></a>
+<p class="para">The manager approves the request.</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Approve</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xec17"></a>
+<p class="para">The manager denies the request.</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Deny</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9xec18"></a>
+<p class="para">HR has entered the approved vacation</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Record</p></td>
+</tr></table>
+</div>
+
+<p class="para">When reviewing the conditions table, look for conditions that can be automated. For example, the third and fourth items are excellent examples of conditions that can be determined automatically using workflow tools.</p>
+<p class="para">For example, you can alter the implementation of the 
+   <span class="guimenu">PTO Request</span> workflow, so that the manager’s answer to a workflow question determines if a request is 
+   <span class="guimenu">Approved</span> or 
+   <span class="guimenu">Denied</span>. Given the design of the 
+   <span class="guimenu">PTO Request</span> workflow, the workflow question should appear to the manager in the 
+   <span class="guimenu">Review</span> state. 
+  </p>
+<h4 class="bridgehead" id="b9xecuh"> To add a Workflow Question and Responses to the Review State:</h4>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The 
+    <span class="guimenu">Transition out of this state</span> access control determines who can view a Workflow question in a given state (see <a href="#b9wzxih">Section 4.2.2, Set Access Rights</a>).
+   </p></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbh109a">
+<p class="para">From the 
+     <span class="guimenu">ICEcore Administration</span> portlet, click the plus sign (+) to the left of 
+     <span class="guimenu">Form and view designers</span> to expand this section and view the available designers.
+    </p>
+<div class="informalfigure">
+                <img src="./icecoreadminportlet_a.png" alt="ICEcore Administration portlet" />
+              </div>
+</li>
+<li class="step" id="bbh10ei">
+<p class="para">Click 
+     <span class="guimenu">Workflow designer</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./select_workflowdesigner_a.png" alt="Form and view designers" />
+              </div>
+</li>
+<li class="step" id="bbh0zrw">
+<p class="para">Expand 
+     <span class="guimenu">Workflow processes</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./expand_workflowprocesses_a.png" alt="Workflow processes" />
+              </div>
+</li>
+<li class="step" id="bbh103l">
+<p class="para">Click 
+     <span class="guimenu">PTO Request</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_ptorequest_a.png" alt="Workflow processes" />
+              </div>
+</li>
+<li class="step" id="bbgy9wd">
+<p class="para">Expand 
+     <span class="guimenu">Workflow process</span> and click 
+     <span class="guimenu">State - Review</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_state-review_a.png" alt="PTO Request Workflow process" />
+              </div>
+</li>
+<li class="step" id="bbgyatb">
+<p class="para">In the options dialog on the right, click 
+     <span class="guimenu">Add</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_add_wdelete_a.png" alt="State options dialog" />
+              </div>
+</li>
+<li class="step" id="bbgybbb">
+<p class="para">Click 
+     <span class="guimenu">Workflow question</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_workflowquestion_a.png" alt="State add options dialog" />
+              </div>
+</li>
+<li class="step" id="bbgyc3v">
+<p class="para">Type in the 
+     <span class="guimenu">Data name</span> (
+     <span class="literal">approve_request</span>) and the 
+     <span class="guimenu">Question text</span> (
+     <span class="literal">Do you approve of this request?</span>) and click 
+     <span class="guimenu">OK</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./state_question_a.png" alt="Workflow question options dialog" />
+              </div>
+
+<p class="para">The 
+     <span class="guimenu">Workflow question</span> process appears below the 
+     <span class="guimenu">Review</span> state.
+    </p></li>
+<li class="step" id="bbgyfor">
+<p class="para">Click 
+     <span class="guimenu">Workflow question</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_workflowquestion-tree_a.png" alt="Review State processes" />
+              </div>
+</li>
+<li class="step" id="bbgyfyy">
+<p class="para">Click 
+     <span class="guimenu">Add</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_add_wdelete_a.png" alt="State options dialog" />
+              </div>
+</li>
+<li class="step" id="bbgygkg">
+<p class="para">Click 
+     <span class="guimenu">Workflow response</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./click_workflowresponse_a.png" alt="Workflow question add options" />
+              </div>
+</li>
+<li class="step" id="bbgyi3x">
+<p class="para">Type in the 
+     <span class="guimenu">Data name</span> (
+     <span class="literal">approve_request_yes</span>) and the 
+     <span class="guimenu">Response text</span> (
+     <span class="literal">Yes</span>) and click 
+     <span class="guimenu">OK</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./response_yes_a.png" alt="Workflow response form" />
+              </div>
+
+<p class="para">The 
+     <span class="guimenu">Workflow response</span> is added below the 
+     <span class="guimenu">Workflow question</span>.
+    </p></li>
+<li class="step" id="bbgyj8s">
+<p class="para">Repeat steps 9-12 to add a “
+     <span class="literal">No</span>” response to this 
+     <span class="guimenu">Workflow question</span>.
+    </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9xe8xd">
+
+<h2 class="title"><span class="number">5.2</span> Adding Transitions on Response</h2>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>For the entry to transition to another state based on participants’ responses to the workflow questions, the responses must be associated with the new non-manual response transitions.</p></div>
+
+<p class="para">The following sections describe how to add response transitions and remove the manual transitions:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9xego1">Section 5.2.1, Add the Response Transitions</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9xeakf">Section 5.2.2, Removing Older Transitions</a>
+          </p></li></ul></div>
+
+<div class="sect2 singlefile"  id="b9xego1">
+
+<h3 class="title"><span class="number">5.2.1</span> Add the Response Transitions</h3>
+
+<p class="para">The question, “Do you approve of this request?” has two possible responses. To implement our design, both of the responses must have an associated transition. </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The 
+     <span class="guimenu">Transition out of this state</span> access control determines who can view a Workflow question in a given state (see <a href="#b9wzxih">Section 4.2.2, Set Access Rights</a>).
+    </p></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbgytu6">
+<p class="para">Expand 
+      <span class="guimenu">State - Review</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_review-transitions_a.png" alt="State processes" />
+                </div>
+</li>
+<li class="step" id="bbh0ulw">
+<p class="para">Click 
+      <span class="guimenu">Add</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_add-olone_a.png" alt="Transitions options dialog" />
+                </div>
+</li>
+<li class="step" id="bbgznke">
+<p class="para">Click 
+      <span class="guimenu">Transition on response</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_transition-on-response_a.png" alt="Transition add options dialog" />
+                </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Only the Manual transition option is available for basic workflow. All other transition types are part of the Advanced Workflow add-on module.</p></div>
+</li>
+<li class="step" id="bbgznkn">
+<p class="para">In the
+      <span class="guimenu"> __transition_on_question </span>field, type in the 
+      <span class="guimenu">Data name</span> for your 
+      <span class="guimenu">Workflow question</span> (
+      <span class="literal">approve_request</span>).
+     </p></li>
+<li class="step" id="bbgzser">
+<p class="para">In the Transition on response field, type in the 
+      <span class="guimenu">Data name</span> for your 
+      <span class="guimenu">Workflow response</span> (
+      <span class="literal">approve_request_yes</span>).
+     </p></li>
+<li class="step" id="bbgzt9j">
+<p class="para">In the
+      <span class="guimenu"> To State </span>drop-down list, select the state to which you are transitioning (
+      <span class="literal">Approve</span>).
+     </p></li>
+<li class="step" id="bbgznkr">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./transition-on-response_dialog_a.png" alt="Transition on response form" />
+                </div>
+
+<p class="para">The new 
+      <span class="guimenu">Transition on response</span> process is added under 
+      <span class="guimenu">Transitions</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_transition-on-response-tree_a.png" alt="Transitions tree" />
+                </div>
+</li>
+<li class="step" id="bbgzt4p">
+<p class="para">Repeat this procedure to add a 
+      <span class="guimenu">Transition on response</span> for the “No” 
+      <span class="guimenu">Workflow response</span> (
+      <span class="literal">approve_request_no</span>) that transitions to the 
+      <span class="guimenu">Deny</span> state.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9xeakf">
+
+<h3 class="title"><span class="number">5.2.2</span> Removing Older Transitions</h3>
+
+<p class="para">The creation of the Transition on response processes renders the existing manual transitions unnecessary. </p>
+<h4 class="bridgehead" id="b9xfcya"> To Remove Manual Transitions:</h4>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9xfd3j">
+<p class="para">Under 
+      <span class="guimenu">State - Review</span> &gt; 
+      <span class="guimenu">Transitions</span>, click the first 
+      <span class="guimenu">Manual transition</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./clcik_manualtransition_a.png" alt="State transitions" />
+                </div>
+</li>
+<li class="step" id="bbgzxi3">
+<p class="para">In the options dialog on the right, click 
+      <span class="guimenu">Delete</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./click_delete_a.png" alt="Transition options dialog" />
+                </div>
+</li>
+<li class="step" id="bbgzxi5">
+<p class="para">In the confirmation dialog that appears, click 
+      <span class="guimenu">OK</span> to delete the 
+      <span class="guimenu">Manual transition</span>.
+     </p>
+<div class="informalfigure">
+                  <img src="./confirmation_delete_a.png" alt="Confirmation dialog" />
+                </div>
+</li>
+<li class="step" id="bbgzxi7">
+<p class="para">Repeat this procedure to delete the remaining 
+      <span class="guimenu">Manual transition</span> for the 
+      <span class="guimenu">Review</span> state. 
+     </p></li></ol>
+</div>
+
+<p class="para">The Workflow section of an entry in the 
+    <span class="guimenu">Review</span> state now shows the question and answers for those users with the correct access rights (
+    <span class="guimenu">Managers</span>).
+   </p>
+<div class="informalfigure">
+              <img src="./workflow_review_question_a.png" alt="Entry Workflow section" />
+            </div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="glossary singlefile"  id="b9rtisc">
+
+<h1 class="title"> Glossary</h1>
+
+<p class="para">Items that include an “(a)” are more relevant for ICEcore site administrators. </p>
+<div class="glossentry" id="basbaeb"><p class="glossterm">access control</p><div class="glossdef">
+        
+<p class="para">The tool that determines who has the right to perform which tasks in which places. See also
+    <a href="#basbb5e"> role-based access control</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="bascb1c"><p class="glossterm">accessibility mode</p><div class="glossdef">
+        
+<p class="para">An optimized user interface that facilitates use by assistive devices, such as auditory readers.</p>
+      </div></div>
+
+<div class="glossentry" id="basbo2i"><p class="glossterm">accessory</p><div class="glossdef">
+        
+<p class="para">A section located at the top of a workspace or folder page that provides a summary view, most likely of the information contained within the item. For example, an accessory can show all of the entries within a folder authored by someone designated as a subject-matter expert.</p>
+      </div></div>
+
+<div class="glossentry" id="basc69b"><p class="glossterm">advanced search</p><div class="glossdef">
+        
+<p class="para">Extra search tools that allow you to specify more specific criteria (such as the author of an item or restricting the search to a portion of the workspace tree).</p>
+      </div></div>
+
+<div class="glossentry" id="basce9u"><p class="glossterm">alias</p><div class="glossdef">
+        
+<p class="para">See 
+    <a href="#basccz5">e-mail alias</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbdpv"><p class="glossterm">attachment</p><div class="glossdef">
+        
+<p class="para">A file attached to an 
+    <a href="#b9rtisd">entry</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbfl6"><p class="glossterm">author</p><div class="glossdef">
+        
+<p class="para">The person who created an entry.</p>
+      </div></div>
+
+<div class="glossentry" id="basbgb5"><p class="glossterm">blog</p><div class="glossdef">
+        
+<p class="para">A folder that contains a chronological listing of journal entries.</p>
+      </div></div>
+
+<div class="glossentry" id="basbgn2"><p class="glossterm">blog archive</p><div class="glossdef">
+        
+<p class="para">A feature of blog folders that allows you to see entries authored in a specific month.</p>
+      </div></div>
+
+<div class="glossentry" id="b9rth09"><p class="glossterm">buddy list</p><div class="glossdef">
+        
+<p class="para">A list of people whose 
+    <a href="#basb1o0">presence</a> you want to check and whom you contact frequently.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbh7z"><p class="glossterm">calendar</p><div class="glossdef">
+        
+<p class="para">A folder containing entries for scheduled appointments. </p>
+      </div></div>
+
+<div class="glossentry" id="basbjg8"><p class="glossterm">clipboard</p><div class="glossdef">
+        
+<p class="para">A tool that gathers people’s names. Later, when using a tool that requires names, you can take them from your clipboard.</p>
+      </div></div>
+
+<div class="glossentry" id="basbk2c"><p class="glossterm">comment</p><div class="glossdef">
+        
+<p class="para">A reply to an 
+    <a href="#b9rtisd">entry</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basb1xw"><p class="glossterm">community tag</p><div class="glossdef">
+        
+<p class="para">A keyword 
+    <a href="#b9rtisg">tag</a> applied to an item by the owner of a workspace or folder. Other users of the workspace or folder can perform searches based on community tags.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbkja"><p class="glossterm">configuration (a)</p><div class="glossdef">
+        
+<p class="para">A set of tools that alter the way item content is presented. There are many types of configuration, ranging from setting allowable 
+    <a href="#basbhw5">views</a> for an item, selecting a color scheme, creating custom entries, and enabling workflow processes.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbp07"><p class="glossterm">default view</p><div class="glossdef">
+        
+<p class="para">The 
+    <a href="#basbkja">configuration</a> of the information you see when you first view a workspace or folder. Some items may be configured to allow alternate 
+    <a href="#basbhw5">views</a>, which you can select.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbq2d"><p class="glossterm">definition (a)</p><div class="glossdef">
+        
+<p class="para">A set of elements for both the 
+    <a href="#basbqw8">form</a> and 
+    <a href="#basbhw5">view</a> of a workspace, folder, or entry.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbtgj"><p class="glossterm">designer (a)</p><div class="glossdef">
+        
+<p class="para">A tool used to create 
+    <a href="#basbq2d">definitions</a> or 
+    <a href="#basbm6t">workflow processes</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbtzu"><p class="glossterm">discussion</p><div class="glossdef">
+        
+<p class="para">A folder whose entries are discussion topics and comments about those topics.</p>
+      </div></div>
+
+<div class="glossentry" id="basccz5"><p class="glossterm">e-mail alias</p><div class="glossdef">
+        
+<p class="para">An alternative e-mail address for an e-mail account. To enable e-mail posting into a folder, you must provide an e-mail alias for the one account used to post into all folders in your ICEcore installation. Consult with your ICEcore site administrator for further assistance; site administrators, consult with the IT person responsible for creating e-mail accounts to create new aliases.</p>
+      </div></div>
+
+<div class="glossentry" id="bascc56"><p class="glossterm">e-mail notification</p><div class="glossdef">
+        
+<p class="para">An e-mail message that ICEcore sends indicating new or changed entries in a folder (and subfolders).</p>
+      </div></div>
+
+<div class="glossentry" id="b9rtisd"><p class="glossterm">entry</p><div class="glossdef">
+        
+<p class="para">An item in a folder.</p>
+      </div></div>
+
+<div class="glossentry" id="basbv3d"><p class="glossterm">favorites panel</p><div class="glossdef">
+        
+<p class="para">A tool used to save links to workspaces and folders most important to you, providing a method of accessing these places quickly.</p>
+      </div></div>
+
+<div class="glossentry" id="bascis7"><p class="glossterm">file folder</p><div class="glossdef">
+        
+<p class="para">A folder whose entries are configured to highlight an attached file and to facilitate file management.</p>
+      </div></div>
+
+<div class="glossentry" id="basbvqh"><p class="glossterm">filter</p><div class="glossdef">
+        
+<p class="para">A setting that limits a 
+    <a href="#b9rtise">folder</a> listing to only the entries that match the filter’s search criteria. For example, you can create a filter that shows only the contents of a folder authored by you or that were created past a certain date.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="b9rtise"><p class="glossterm">folder</p><div class="glossdef">
+        
+<p class="para">A container for 
+    <a href="#b9rtisd">entries</a> and other folders. Each folder has a type, such as 
+    <a href="#basbgb5">blog</a>, 
+    <a href="#bascjfp">wiki</a>, or 
+    <a href="#basbh7z">calendar</a>, that determines its appearance and features.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbqw8"><p class="glossterm">form (a)</p><div class="glossdef">
+        
+<p class="para">An HTML form used to create a workspace, folder, or entry.</p>
+      </div></div>
+
+<div class="glossentry" id="basbwud"><p class="glossterm">global workspace</p><div class="glossdef">
+        
+<p class="para">
+    <a href="#b9rtisi">workspace</a> that, by default, allows everyone in your organization to participate.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbynz"><p class="glossterm">guestbook</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtise">folder</a> or 
+    <a href="#basbo2i">accessory</a> whose entries indicate who has visited the place.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbzdf"><p class="glossterm">help mode</p><div class="glossdef">
+        
+<p class="para">A dimmed page and information icons (“i”). When you click on an information icon, ICEcore presents a panel of information about that section of the page.</p>
+      </div></div>
+
+<div class="glossentry" id="basc25e"><p class="glossterm">inherit (a)</p><div class="glossdef">
+        
+<p class="para">A process by which a workspace or folder automatically uses 
+    <a href="#basbkja">configuration</a> settings from its 
+    <a href="#basc2qo">parent</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basc4i1"><p class="glossterm">instant message (IM)</p><div class="glossdef">
+        
+<p class="para">A quick communication between teammates using the ICEcore Conference messaging software.</p>
+      </div></div>
+
+<div class="glossentry" id="basc024"><p class="glossterm">LifeRay (a)</p><div class="glossdef">
+        
+<p class="para">The 
+    <a href="#basc0hl">portal</a> software within which ICEcore runs by default.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basc3mt"><p class="glossterm">meeting</p><div class="glossdef">
+        
+<p class="para">An online communication by teammates using the ICEcore Conference messaging software. ICEcore Conference provides tools that assist with online meetings, such as people designated as running the meeting, a way for participants to “raise their hands,” and a whiteboard.</p>
+      </div></div>
+
+<div class="glossentry" id="bascll8"><p class="glossterm">milestone</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtise">folder</a> that, by default, summarizes the status of tasks in a task folder as they relate to meeting 
+    <a href="#bascklm">project</a> milestones.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basc4xi"><p class="glossterm">navigator</p><div class="glossdef">
+        
+<p class="para">A set of tools that you can use to go anyplace within ICEcore you want to go. The tools include “
+    <a href="#basby2b">My workspace</a>,” “
+    <a href="#basbv3d">Favorites</a>,” viewing your 
+    <a href="#basbx96">teams</a>, search, 
+    <a href="#basbzdf">Help</a>, and a 
+    <a href="#basc6rs">workspace tree</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbfw4"><p class="glossterm">owner</p><div class="glossdef">
+        
+<p class="para">The person who created the workspace, folder, or entry.</p>
+      </div></div>
+
+<div class="glossentry" id="basc7vf"><p class="glossterm">parallel workflow process (a)</p><div class="glossdef">
+        
+<p class="para">A set of 
+    <a href="#basbn2q">state</a> transitions that happen at the same time as other state transitions. A state in the main thread initiates the parallel process, and a state later in the main thread can wait for the completion of the parallel thread.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basc2qo"><p class="glossterm">parent (a)</p><div class="glossdef">
+        
+<p class="para">A workspace or folder that contains another workspace or folder. The item contained within the parent is sometimes called its child.</p>
+      </div></div>
+
+<div class="glossentry" id="basc8uy"><p class="glossterm">participant</p><div class="glossdef">
+        
+<p class="para">An 
+    <a href="#basbb5e">access role</a> that, generally, by default, allows people to author entries in a folder.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basc9pq"><p class="glossterm">permalink</p><div class="glossdef">
+        
+<p class="para">A web address (URL) for an ICEcore workspace, folder, or entry that you can copy, paste, and send to a teammate so that they may access a page directly by specifying the address to their web browser.</p>
+      </div></div>
+
+<div class="glossentry" id="b9rtisf"><p class="glossterm">personal tag</p><div class="glossdef">
+        
+<p class="para">A keyword 
+    <a href="#b9rtisg">tag</a> that you apply to an item, and that only you can see and use.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basby2b"><p class="glossterm">personal workspace</p><div class="glossdef">
+        
+<p class="para">A workspace that serves as a person’s homepage in ICEcore, including contact information, pictures, a personal 
+    <a href="#basbgb5">blog</a>, and more.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="bascaiw"><p class="glossterm">photo gallery</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtise">folder</a> whose entries are pictures.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basc0hl"><p class="glossterm">portal page</p><div class="glossdef">
+        
+<p class="para">A web page that can run various applications in sections of its page. For example, Google and Yahoo use portal pages. Sections within a portal page may display the local time, the local weather, your favorite stock quotes, and more.</p>
+      </div></div>
+
+<div class="glossentry" id="basc1qi"><p class="glossterm">portlet</p><div class="glossdef">
+        
+<p class="para">A section on a portal page. ICEcore runs within portlets.</p>
+      </div></div>
+
+<div class="glossentry" id="basb1o0"><p class="glossterm">presence</p><div class="glossdef">
+        
+<p class="para">A person’s online status (online, away from the computer, offline, status unknown), represented in ICEcore by people icons of certain colors.</p>
+      </div></div>
+
+<div class="glossentry" id="bascklm"><p class="glossterm">project-management workspace</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtisi">workspace</a> configured to facilitate the tracking of tasks and completion of complex project work.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbb5e"><p class="glossterm">role-based access control</p><div class="glossdef">
+        
+<p class="para">A mechanism that controls access by assigning people and groups to roles, and the roles determine the rights assigned to those people. See the online Help for a list of ICEcore default role definitions.</p>
+      </div></div>
+
+<div class="glossentry" id="basbcy1"><p class="glossterm">site administrator</p><div class="glossdef">
+        
+<p class="para">The person or people who have the right to perform any task anyplace in the ICEcore installation.</p>
+      </div></div>
+
+<div class="glossentry" id="bascocd"><p class="glossterm">state</p><div class="glossdef">
+        
+<p class="para">See 
+    <a href="#basbn2q">workflow state</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="bascbib"><p class="glossterm">subscription</p><div class="glossdef">
+        
+<p class="para">A way to track new or changed items in ICEcore.</p>
+      </div></div>
+
+<div class="glossentry" id="b9rtisg"><p class="glossterm">tag</p><div class="glossdef">
+        
+<p class="para">A keyword that anyone can apply to a workspace, folder, or entry to make it easier to find. See also 
+    <a href="#b9rtisf">personal tag</a> and 
+    <a href="#basb1xw">community tag</a>. 
+   </p>
+      </div></div>
+
+<div class="glossentry" id="bascl0a"><p class="glossterm">task</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtise">folder</a> that, by default, contains entries that track progress in regard to completing an assignment.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="bascfza"><p class="glossterm">team</p><div class="glossdef">
+        
+<p class="para">An 
+    <a href="#basbb5e">access role</a> that, by default, allows people to 
+    <a href="#basc8uy">participate</a> in a workspace or folder, to do some minor administrative tasks, and to communicate easily with each other.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbx96"><p class="glossterm">team workspace</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtisi">workspace</a> that restricts participation to only teammates.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbs53"><p class="glossterm">template (a)</p><div class="glossdef">
+        
+<p class="para">A set of default configuration settings used to create a new workspace or folder. A template includes at least one 
+    <a href="#basbq2d">definition</a>, 
+    <a href="#basbaeb">access control</a>, a possible hierarchy of defined items, and possibly more.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="bbgjrf8"><p class="glossterm">type to find</p><div class="glossdef">
+        
+<p class="para">An ICEcore tool that uses the characters you have typed so far to present a list of possible choices. This tool is active for text boxes whose values are within a defined set: for example, people, places (workspaces and folders), and tags.</p>
+      </div></div>
+
+<div class="glossentry" id="basbhw5"><p class="glossterm">view</p><div class="glossdef">
+        
+<p class="para">A presentation of an item’s content. For example, you can view a discussion folder in either a list or table format. By default, most folders use one view (calendar folders use a calendar view, blog folders use a blog view, and so on).</p>
+      </div></div>
+
+<div class="glossentry" id="basc99o"><p class="glossterm">visitor</p><div class="glossdef">
+        
+<p class="para">An 
+    <a href="#basbb5e">access role</a> that, by default, allows people to read entries and make 
+    <a href="#basbk2c">comments</a> on them (but not create new entries).
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basch8k"><p class="glossterm">WebDAV</p><div class="glossdef">
+        
+<p class="para">The Web Distributed Authoring and Versioning protocol. If your system provides a tool that uses this protocol, it allows you to manage ICEcore file-folder entries using the WebDAV window.</p>
+      </div></div>
+
+<div class="glossentry" id="bascjfp"><p class="glossterm">wiki</p><div class="glossdef">
+        
+<p class="para">A 
+    <a href="#b9rtise">folder</a> whose entries are authored by all 
+    <a href="#basc8uy">participants</a>.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbm6t"><p class="glossterm">workflow</p><div class="glossdef">
+        
+<p class="para">An online representation of a business process (for example, document review, paid time-off requests, document sign off, and so on). An 
+    <a href="#b9rtisd">entry</a> can have an associated workflow process, which places the entry into various workflow states.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="basbn2q"><p class="glossterm">workflow state</p><div class="glossdef">
+        
+<p class="para">A status label for an 
+    <a href="#b9rtisd">entry</a> in a workflow process. A state determines who has the right to work with an entry (including who may see it), who needs to be notified, who needs to perform the next task, and which subsequent states are possible.
+   </p>
+      </div></div>
+
+<div class="glossentry" id="b9rtisi"><p class="glossterm">workspace</p><div class="glossdef">
+        
+<p class="para">A container for folders and other workspaces.</p>
+      </div></div>
+
+<div class="glossentry" id="basc6rs"><p class="glossterm">workspace tree</p><div class="glossdef">
+        
+<p class="para">A tool that allows you to navigate the hierarchy of workspaces, subworkspaces, 
+    <a href="#b9rtise">folders</a>, and subfolders within ICEcore.
+   </p>
+      </div></div>
+
+</div>
+
+<div class="appendix singlefile"  id="legal">
+
+<h1 class="title"><span class="number">A.0</span> Legal Notices</h1>
+<div class="legalnotice" id="legalnotices">
+      
+      
+<p class="para">SiteScape, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</p>
+      
+<p class="para">Further, SiteScape, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to make changes to any and all parts of SiteScape software, at any time, without any obligation to notify any person or entity of such changes.</p>
+      
+<p class="para">Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses.</p>
+      
+<p class="para">SiteScape, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document.</p>
+      <ul class="simplelist">
+        <li class="member">SiteScape, Inc.</li>
+        <li class="member">12 Clock Tower Place, Suite 210</li>
+        <li class="member">Maynard, MA 021754</li>
+        <li class="member">U.S.A.</li>
+        <li class="member">www.SiteScape.com</li>
+        <li class="member"></li>
+      </ul>
+    </div><div class="legalnotice" id="thirdparty">
+      
+<h1 class="title"> Third-Party Materials</h1>
+
+      <ul class="simplelist">
+        <li class="member">All third-party trademarks are the property of their respective owners.</li>
+      </ul>
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>

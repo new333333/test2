@@ -18,7 +18,7 @@
 
  <target id="bbfigvt" pid="bbfequg" name="Step" level="4" number="4"> <text>On the right-side of the window, click Add a new entry definition.</text> </target>
 
- <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>Type the name for the entry that you want to see in Novell Teaming into the Caption field.</text> </target>
+ <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>Type the name for the entry that you want to see in ICEcore into the Caption field.</text> </target>
 
  <target id="bbfijdy" pid="bbfequg" name="Step" level="4" number="6"> <text>In the entry form that appears, type the name for this entry type into the Name field.</text> </target>
 
