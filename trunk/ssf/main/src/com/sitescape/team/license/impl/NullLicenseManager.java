@@ -36,6 +36,7 @@ import java.util.TimeZone;
 
 import org.dom4j.Document;
 
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.license.LicenseException;
 import com.sitescape.team.license.LicenseManager;
 
@@ -74,14 +75,14 @@ public class NullLicenseManager implements LicenseManager {
 	
 	public Calendar getExpirationDate()
 	{
-		GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.US);
+		GregorianCalendar cal = new GregorianCalendar(TimeZoneHelper.getTimeZone("GMT"), Locale.US);
 		//  Make it tomorrow, so it's always valid
 		cal.add(Calendar.DATE, 1);
 		return cal;
 	}
 	public Calendar getEffectiveDate()
 	{
-		GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"), Locale.US);
+		GregorianCalendar cal = new GregorianCalendar(TimeZoneHelper.getTimeZone("GMT"), Locale.US);
 		// Make it yesterday, so it's always valid
 		cal.add(Calendar.DATE, -1);
 		return cal;

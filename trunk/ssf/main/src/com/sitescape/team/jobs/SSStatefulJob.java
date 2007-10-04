@@ -45,6 +45,7 @@ import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheIdException;
@@ -254,7 +255,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return com.sitescape.team.jobs.CleanupJobListener.name;
 	}
   	public TimeZone getDefaultTimeZone() {
-		return TimeZone.getDefault();
+		return TimeZoneHelper.getDefault();
 	}
 
 	public CronTrigger buildCronTrigger(JobDescription job, Schedule schedule) throws ParseException{

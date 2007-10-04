@@ -40,6 +40,7 @@ import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
@@ -68,7 +69,7 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	    		DateFormat dateFormat = notifyDef.getDateFormat();
 	    		if (event.isAllDayEvent()) {
 	    			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, notifyDef.getLocale());
-	    			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    			dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
 	    		}
 	    		
 	    		Element startDateEl = element.addElement("startDate");

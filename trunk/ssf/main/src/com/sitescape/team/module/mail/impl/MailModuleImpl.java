@@ -72,6 +72,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -612,7 +613,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			this.locale = locale;
 		}
 		protected void setTimeZone(String timezone) {			
-			this.timezone = TimeZone.getTimeZone(timezone);
+			this.timezone = TimeZoneHelper.getTimeZone(timezone);
 		}
 		protected void setType(String type) {
 			messageType = type;
@@ -631,7 +632,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			notify.setStartDate(startDate);
 			notify.setLocale(locale);
 			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale);
-			if (timezone == null) timezone = TimeZone.getDefault();
+			if (timezone == null) timezone = TimeZoneHelper.getDefault();
 			df.setTimeZone(timezone);
 			notify.setDateFormat(df);
 			

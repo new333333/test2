@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.text.DateFormat;
 
 import org.dom4j.Element;
@@ -44,6 +45,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.SFQuery;
@@ -255,7 +257,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE));
+    			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone((TimeZone)inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE)));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_PASSWORD) && !entryData.containsKey(ObjectKeys.FIELD_USER_PASSWORD)) {
     			entryData.put(ObjectKeys.FIELD_USER_PASSWORD, inputData.getSingleValue(ObjectKeys.FIELD_USER_PASSWORD));

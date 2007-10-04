@@ -33,6 +33,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import com.sitescape.team.calendar.TimeZoneHelper;
+
 public class CalendarHelper {
 
 	/**
@@ -48,7 +50,7 @@ public class CalendarHelper {
 			return null;
 		}
 		if (newTimeZone == null) { 
-			newTimeZone = TimeZone.getTimeZone("GMT");
+			newTimeZone = TimeZoneHelper.getTimeZone("GMT");
 		}
 		Calendar result = new GregorianCalendar(newTimeZone);
 		result.setTimeInMillis(calendar.getTimeInMillis());

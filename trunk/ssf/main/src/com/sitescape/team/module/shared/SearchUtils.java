@@ -51,6 +51,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
@@ -189,7 +190,7 @@ public class SearchUtils {
     		Calendar cal = Calendar.getInstance();
     		cal.set(1970, 0, 1);
     		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-    		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+    		formatter.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
     		String s = formatter.format(cal.getTime());
     		start.addText((String) s);
     		Element finish = range.addElement(QueryBuilder.RANGE_FINISH);

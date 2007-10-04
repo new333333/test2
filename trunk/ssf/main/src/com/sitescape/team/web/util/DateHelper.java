@@ -33,6 +33,7 @@
 package com.sitescape.team.web.util;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.InputDataAccessor;
@@ -143,7 +144,7 @@ public class DateHelper {
         
         if (inputData.exists(datePrefix + "timezoneid")) {
             String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
-            TimeZone tz = TimeZone.getTimeZone(tzs);
+            TimeZone tz = TimeZoneHelper.getTimeZone(tzs);
             cal.setTimeZone(tz);
         }
         d = cal.getTime();
@@ -163,7 +164,7 @@ public class DateHelper {
             if ("".equals(timeZoneString)) {
             	timeZoneString = DateTimeZone.UTC.getID();
             }
-            dateTimeZone = DateTimeZone.forTimeZone(TimeZone.getTimeZone(timeZoneString));
+            dateTimeZone = DateTimeZone.forTimeZone(TimeZoneHelper.getTimeZone(timeZoneString));
         }
         
 		String skipTime = null;
