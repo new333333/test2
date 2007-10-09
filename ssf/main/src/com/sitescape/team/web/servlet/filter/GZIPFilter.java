@@ -1,4 +1,4 @@
-package com.jspbook;
+package com.sitescape.team.web.servlet.filter;
 
 import java.io.*;
 import javax.servlet.*;
@@ -13,7 +13,6 @@ public class GZIPFilter implements Filter {
       HttpServletResponse response = (HttpServletResponse) res;
       String ae = request.getHeader("accept-encoding");
       if (ae != null && ae.indexOf("gzip") != -1) {
-        System.out.println("GZIP supported, compressing.");
         GZIPResponseWrapper wrappedResponse =
           new GZIPResponseWrapper(response);
         chain.doFilter(req, wrappedResponse);

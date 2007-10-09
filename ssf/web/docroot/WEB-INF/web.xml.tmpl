@@ -23,6 +23,11 @@
 	</context-param>
 
 	<filter>
+		<filter-name>CompressionFilter</filter-name>
+		<filter-class>com.sitescape.team.web.servlet.filter.GZIPFilter</filter-class>
+	</filter>
+
+	<filter>
 		<filter-name>digestBasedSoftAuthenticationFilter</filter-name>
 		<filter-class>com.sitescape.team.web.servlet.filter.DigestBasedSoftAuthenticationFilter</filter-class>
 	</filter>
@@ -33,6 +38,21 @@
 	</filter>
 
 @@LOGIN_FILTER@@
+	<filter-mapping>
+		<filter-name>CompressionFilter</filter-name>
+		<url-pattern>*.css</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>CompressionFilter</filter-name>
+		<url-pattern>*.js</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>CompressionFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+
 	<filter-mapping>
 		<filter-name>digestBasedSoftAuthenticationFilter</filter-name>
 		<servlet-name>rss</servlet-name>
