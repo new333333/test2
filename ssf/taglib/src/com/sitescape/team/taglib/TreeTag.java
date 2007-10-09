@@ -339,6 +339,7 @@ public class TreeTag extends TagSupport {
 	    	noInit=false;
 	    	flat=false;
 	    	className="";
+	    	fixedMultiSelectParamsMode = false;
 	    }
 	    
 		return SKIP_BODY;
