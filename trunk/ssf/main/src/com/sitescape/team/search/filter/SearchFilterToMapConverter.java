@@ -418,7 +418,7 @@ public class SearchFilterToMapConverter {
 	private Map createDateBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
-		if (EntityIndexUtils.CREATION_DAY_FIELD.equalsIgnoreCase(filterTerm.attributeValue(SearchFilterKeys.FilterElementName))) {
+		if (EntityIndexUtils.CREATION_DATE_FIELD.equalsIgnoreCase(filterTerm.attributeValue(SearchFilterKeys.FilterElementName))) {
 			block.put(SearchBlockType, SearchBlockTypeCreationDate);
 		} else {
 			block.put(SearchBlockType, SearchBlockTypeModificationDate);
@@ -428,10 +428,7 @@ public class SearchFilterToMapConverter {
 		String endDate = filterTerm.attributeValue(SearchEndDate, "");
 		
 		Date startDateParsed = parseDate_from_yyyy_MM_dd(startDate);
-//		String formatedStartDate = formatDate_to_yyyy_MM_dd(startDateParsed);
-		
 		Date endDateParsed = parseDate_from_yyyy_MM_dd(endDate);
-//		String formatedEndDate = formatDate_to_yyyy_MM_dd(endDateParsed);
 		
 		block.put(SearchStartDate, startDate);
 		block.put(SearchEndDate, endDate);
