@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Thursday, October 04, 2007" />
+<meta name="Generation-Date" content="Tuesday, October 09, 2007" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2007" />
 
 <style type="text/css">
@@ -2213,11 +2213,18 @@ http://yourhost.name.here:8080
       <span class="literal">cert.ldap</span> (the name does not matter).
      </p></li>
 <li class="step" id="banqrej">
-<p class="para">Type: </p><pre class="screen">
+<p class="para">From the
+      <span class="literal"> java/bin </span>directory type: 
+     </p><pre class="screen">
 keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-portal-tomcat-5.5-jdk5-4.3.0/conf/.keystore -file cert.ldap 
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>The path to the keystore depends on your install path.</p></div>
+<p class="para"><em class="title">NOTE:</em>In order for this command to succeed the
+       <span class="literal"> java/bin </span>directory must be in the PATH variable, or the command must be launched from the
+       <span class="literal"> java/bin </span>directory, for example:
+      </p><pre class="screen">
+/usr/java/jdk1.5.0_12/bin/keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-portal-tomcat-5.5-jdk5-4.3.0/conf/.keystore -file cert.ldap 
+</pre></div>
 </li>
 <li class="step" id="bbq7dcw">
 <p class="para">If prompted for a password, the keystore’s default password is:
@@ -2271,7 +2278,7 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
   </p>
 <p class="para">ICEcore posting uses “real” or “alias” e-mail addresses in your folders according to how you configure your inbound e-mail settings in the
    <span class="filename"> installer.xml </span>file. This is controlled by the 
-   <span class="literal">useAliases </span>attribute value (“false” to use real e-mail adresses or “true” to use aliases). This attribute is in the “Inbound” header line under the “EmailSettings” section:
+   <span class="literal">useAliases </span>attribute value (“false” to use real e-mail addresses or “true” to use aliases). This attribute is in the “Inbound” header line under the “EmailSettings” section:
   </p><pre class="screen">
 &lt;Inbound useAliases="false"&gt; 
 </pre>
@@ -2958,6 +2965,96 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
     </p></li>
 <li class="step" id="bbn50z6">
 <p class="para">Log into ICEcore as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</p></li>
+<li class="step" id="bc4kufr">
+<p class="para">Create a custom entry type representing mirrored files:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bc4kurs">
+<p class="para">Go to 
+       <span class="guimenu">ICEcore Administration</span> portlet &gt; 
+       <span class="guimenu">Form and view designers</span> &gt; 
+       <span class="guimenu">Entry designer</span>.
+      </p></li>
+<li class="step" id="bc4kvyp">
+<p class="para">Click 
+       <span class="guimenu">Entry definitions</span>.
+      </p></li>
+<li class="step" id="bc4kz2e">
+<p class="para">In the dialog on the right, click 
+       <span class="guimenu">Add a new entry definition</span>.
+      </p></li>
+<li class="step" id="bc4kz89">
+<p class="para">Type in a 
+       <span class="guimenu">Caption</span> (e.g., 
+       <span class="literal">Mirrored File entry</span>) and 
+       <span class="guimenu">Name</span> (e.g., 
+       <span class="literal"> Mirrored File entry</span>), and then click 
+       <span class="guimenu">OK</span>.
+      </p></li>
+<li class="step" id="bc4l0s5">
+<p class="para">Expand 
+       <span class="guimenu">Entry form definition</span> and click 
+       <span class="guimenu">Form</span>.
+      </p></li>
+<li class="step" id="bc4l1of">
+<p class="para">In the dialog on the right, click 
+       <span class="guimenu">Add</span>.
+      </p></li>
+<li class="step" id="bc4l2dy">
+<p class="para">In the 
+       <span class="guimenu">Standard form elements</span> dialog on the right, click 
+       <span class="guimenu">File upload</span>.
+      </p></li>
+<li class="step" id="bc4l35a">
+<p class="para">Type in a 
+       <span class="guimenu">Caption</span> (e.g., 
+       <span class="literal">Mirrored File</span>) and 
+       <span class="guimenu">Name</span> (database name, e.g., 
+       <span class="literal">mirrored_file</span>), select 
+       <span class="guimenu">External Resource Adapter (Mirrored folder only) </span>from the 
+       <span class="guimenu">Repository system</span> drop-down list, select the 
+       <span class="guimenu">Required</span> option, and then click 
+       <span class="guimenu">OK</span>.
+      </p></li>
+<li class="step" id="bc4l5uz">
+<p class="para">Under 
+       <span class="guimenu">Entry form definition</span> &gt; 
+       <span class="guimenu">Form</span>, click 
+       <span class="guimenu">Attachments - Attachments</span>.
+      </p></li>
+<li class="step" id="bc4l6rf">
+<p class="para">In the dialog on the right, click 
+       <span class="guimenu">Modify</span>.
+      </p></li>
+<li class="step" id="bc4l7ge">
+<p class="para">Select 
+       <span class="guimenu">External Resource Adapter (Mirrored folder only) </span>from the 
+       <span class="guimenu">Repository system</span> drop-down list, and then click 
+       <span class="guimenu">OK</span>.
+      </p></li>
+<li class="step" id="bc4l7la">
+<p class="para">Click 
+       <span class="guimenu">Entry view definition</span>.
+      </p></li>
+<li class="step" id="bc4l8ls">
+<p class="para">In the dialog on the right, click 
+       <span class="guimenu">Add</span>.
+      </p></li>
+<li class="step" id="bc4l8rb">
+<p class="para">In the 
+       <span class="guimenu">Standard form elements</span> dialog on the right, click the name of the element you just defined (
+       <span class="guimenu">Mirrored File</span>).
+      </p></li>
+<li class="step" id="bc4lae8">
+<p class="para">In the dialog on the right, click 
+       <span class="guimenu">OK</span>.
+      </p></li>
+<li class="step" id="bc4lbep">
+<p class="para">Exit the 
+       <span class="guimenu">ICEcore Administration</span> portlet.
+      </p></li></ol>
+</div>
+</li>
 <li class="step" id="bbn548y">
 <p class="para">In ICEcore, create a folder of type
      <span class="guimenu"> File folder</span>.
@@ -2971,7 +3068,7 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
      <span class="guimenu">Mirror external folders </span>option.
     </p></li>
 <li class="step" id="bbn5dnb">
-<p class="para">Select the mirrored folder resource driver that you created in step 1.</p></li>
+<p class="para">Select the mirrored folder resource driver that you created in <a href="#baptekm">Step 1</a>.</p></li>
 <li class="step" id="bbn5duy">
 <p class="para">Optionally, you can specify a subdirectory within the resource driver’s root directory structure that you want this folder to mirror.</p></li>
 <li class="step" id="bbn5eiz">
@@ -2981,6 +3078,31 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
     </p>
 <div class="note">
 <p class="para"><em class="title">NOTE:</em>Once you make a folder a mirrored folder, you cannot revert it back to a regular folder or change the information you provided (i.e., resource driver name and path).</p></div>
+</li>
+<li class="step" id="bc4lbxq">
+<p class="para">Configure the mirrored folder with the custom entry type that you defined in <a href="#bc4kufr">Step 3</a> (
+     <span class="guimenu">Mirrored File entry</span>):
+    </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bc4lcy3">
+<p class="para">Within the mirrored folder, select the 
+       <span class="guimenu">Manage &gt; Configure</span> menu item.
+      </p></li>
+<li class="step" id="bc4ld7o">
+<p class="para">In the 
+       <span class="guimenu">Default entry types</span> section, select the custom entry type you defined in <a href="#bc4kufr">Step 3</a> (
+       <span class="guimenu">Mirrored File entry</span>) and deselect all other entry types.
+      </p></li>
+<li class="step" id="bc4let7">
+<p class="para">Click 
+       <span class="guimenu">Apply</span>.
+      </p></li>
+<li class="step" id="bc4lf5j">
+<p class="para">Click 
+       <span class="guimenu">Close</span>.
+      </p></li></ol>
+</div>
 </li>
 <li class="step" id="bbn5ep6">
 <p class="para">Perform initial synchronization/loading by selecting the 
@@ -3287,7 +3409,7 @@ keytool -import -alias ldap.company.com -keystore /sitescape-team-0.1.0/liferay-
 </pre><pre class="screen">
       &lt;!-- speaking this is not a great idea, and the option     --&gt;
 </pre><pre class="screen">
-      &lt;!-- is there solely to accomodate beta sites who predate  --&gt;
+      &lt;!-- is there solely to accommodate beta sites who predate --&gt;
 </pre><pre class="screen">
       &lt;!-- the ability to explicitly set where Liferay stored    --&gt;
 </pre><pre class="screen">

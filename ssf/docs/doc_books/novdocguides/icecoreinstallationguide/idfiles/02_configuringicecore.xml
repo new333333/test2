@@ -2,15 +2,15 @@
 
 <targets>
 
- <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring ICEcore</text> </target>
+ <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring Novell Teaming</text> </target>
 
  <target id="b9vde7e" pid="b9vde7e" name="Sect1" level="1" number="2.1"> <text>Log in as Liferay Site Manager</text> </target>
 
  <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>To Log In Using the Administrator Account:</text> </target>
 
- <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
+ <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type the Novell Teaming URL for your company into the browser window:</text> </target>
 
- <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the ICEcore URL for your company into the browser window:</text> </target>
+ <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type the Novell Teaming URL for your company into the browser window:</text> </target>
 
  <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the Login field, type:</text> </target>
 
@@ -18,17 +18,17 @@
 
  <target id="b9vdg79" pid="b9vde7e" name="Step" level="4" number="4"> <text>Click Login.</text> </target>
 
- <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the ICEcore Administration Portlet </text> </target>
+ <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the Teaming Administration Portlet </text> </target>
 
- <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the ICEcore Administration Portlet to Your Home Page:</text> </target>
+ <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the Teaming Administration Portlet to Your Home Page:</text> </target>
 
  <target id="bantho8" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
 
  <target id="bantho9" pid="b9vde7e" name="Step" level="4" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
 
- <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper-left corner, click ICEcore to view the available ICEcore portlets that you can add.</text> </target>
+ <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper-left corner, click Teaming to view the available Teaming portlets that you can add.</text> </target>
 
- <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to ICEcore Administration to add this portlet to your Home Page.</text> </target>
+ <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to Teaming Administration to add this portlet to your Home Page.</text> </target>
 
  <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="2.2"> <text>Initial Logon</text> </target>
 
@@ -78,11 +78,11 @@
 
  <target id="bbih8ol" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
 
- <target id="bbihbki" pid="b9vchnd" name="Sect2" level="2" number="2.4.3"> <text>The ICEcore LDAP Configuration Form</text> </target>
+ <target id="bbihbki" pid="b9vchnd" name="Sect2" level="2" number="2.4.3"> <text>The Teaming LDAP Configuration Form</text> </target>
 
- <target id="bbih9rw" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the ICEcore Administration portlet, click on "Configure LDAP."</text> </target>
+ <target id="bbih9rw" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the Teaming Administration portlet, click on "Configure LDAP."</text> </target>
 
- <target id="bbih9rx" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the ICEcore Administration portlet, click on "Configure LDAP."</text> </target>
+ <target id="bbih9rx" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the Teaming Administration portlet, click on "Configure LDAP."</text> </target>
 
  <target id="bbiha6m" pid="b9vchnd" name="Step" level="4" number="2"> <text>Fill out the form using the corresponding values that were used to configure Liferay. (See below for details on this form). </text> </target>
 
@@ -104,7 +104,7 @@
 
  <target id="banqrei" pid="b9vchnd" name="Step" level="4" number="3"> <text>Copy everything from the &#212;----BEGIN CERTIFICATE----' to the &#212;----END CERTIFICATE----' lines (inclusive) into a file, say cert.ldap (the name does not matter).</text> </target>
 
- <target id="banqrej" pid="b9vchnd" name="Step" level="4" number="4"> <text>Type: </text> </target>
+ <target id="banqrej" pid="b9vchnd" name="Step" level="4" number="4"> <text>From the java/bin directory type: </text> </target>
 
  <target id="bbq7dcw" pid="b9vchnd" name="Step" level="4" number="5"> <text>If prompted for a password, the keystore's default password is: changeit</text> </target>
 
@@ -122,9 +122,9 @@
 
  <target id="bano0o8" pid="b9vchne" name="BridgeHead" level="2"> <text>Setting up Incoming Mail schedule</text> </target>
 
- <target id="bc0jt3d" pid="b9vchne" name="Procedure" level="2" number="1"> <text>In the ICEcore Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
+ <target id="bc0jt3d" pid="b9vchne" name="Procedure" level="2" number="1"> <text>In the Teaming Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
 
- <target id="bc0jt3e" pid="b9vchne" name="Step" level="3" number="1"> <text>In the ICEcore Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
+ <target id="bc0jt3e" pid="b9vchne" name="Step" level="3" number="1"> <text>In the Teaming Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
 
  <target id="bc0jt4o" pid="b9vchne" name="Step" level="3" number="2"> <text>Select the Enable incoming mail option.</text> </target>
 
@@ -144,9 +144,9 @@
 
  <target id="b9ve155" pid="b9vdczx" name="Sect2" level="2" number="2.6.2"> <text>To Change a Default Role Definition:</text> </target>
 
- <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
+ <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the Teaming Administration portlet, click Configure Role Definitions.</text> </target>
 
- <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
+ <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the Teaming Administration portlet, click Configure Role Definitions.</text> </target>
 
  <target id="b9ve1f5" pid="b9vdczx" name="Step" level="4" number="2"> <text>Click Visitor.</text> </target>
 
@@ -158,9 +158,9 @@
 
  <target id="baprfmt" pid="b9vdczx" name="BridgeHead" level="3"> <text>Create the Team Creator Group:</text> </target>
 
- <target id="baprgjf" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
+ <target id="baprgjf" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the Teaming Administration portlet, click Manage Groups.</text> </target>
 
- <target id="bapt97t" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
+ <target id="bapt97t" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the Teaming Administration portlet, click Manage Groups.</text> </target>
 
  <target id="baprhy5" pid="b9vdczx" name="Step" level="4" number="2"> <text>In the Manage Groups window, click Add a New Group.</text> </target>
 
@@ -260,20 +260,68 @@
 
  <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver. (You may want to use one of the disabled samples as a template.)</text> </target>
 
- <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into ICEcore as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</text> </target>
+ <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into Novell Teaming as one of the users you specified in the mirrored folder resource driver (or as a member of one of the specified groups).</text> </target>
 
- <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="3"> <text>In ICEcore, create a folder of type File folder.</text> </target>
+ <target id="bc4kufr" pid="bbn4ml9" name="Step" level="3" number="3"> <text>Create a custom entry type representing mirrored files:</text> </target>
 
- <target id="bbn54nc" pid="bbn4ml9" name="Step" level="3" number="4"> <text>Within the folder, select the Manage &#62; Modify this folder menu item.</text> </target>
+ <target name="SubSteps" level="4"> <text>Go to Teaming Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
 
- <target id="bbn5578" pid="bbn4ml9" name="Step" level="3" number="5"> <text>Select the Mirror external folders option.</text> </target>
+ <target id="bc4kurs" pid="bbn4ml9" name="Step" level="5" number="3a"> <text>Go to Teaming Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
 
- <target id="bbn5dnb" pid="bbn4ml9" name="Step" level="3" number="6"> <text>Select the mirrored folder resource driver that you created in step 1.</text> </target>
+ <target id="bc4kvyp" pid="bbn4ml9" name="Step" level="5" number="3b"> <text>Click Entry definitions.</text> </target>
 
- <target id="bbn5duy" pid="bbn4ml9" name="Step" level="3" number="7"> <text>Optionally, you can specify a subdirectory within the resource driver's root directory structure that you want this folder to mirror.</text> </target>
+ <target id="bc4kz2e" pid="bbn4ml9" name="Step" level="5" number="3c"> <text>In the dialog on the right, click Add a new entry definition.</text> </target>
 
- <target id="bbn5eiz" pid="bbn4ml9" name="Step" level="3" number="8"> <text>Click OK to make the folder a mirrored folder.</text> </target>
+ <target id="bc4kz89" pid="bbn4ml9" name="Step" level="5" number="3d"> <text>Type in a Caption (e.g., Mirrored File entry) and Name (e.g.,  Mirrored File entry), and then click OK.</text> </target>
 
- <target id="bbn5ep6" pid="bbn4ml9" name="Step" level="3" number="9"> <text>Perform initial synchronization/loading by selecting the Manage this folder &#62; Synchronize menu item from the folder listing.</text> </target>
+ <target id="bc4l0s5" pid="bbn4ml9" name="Step" level="5" number="3e"> <text>Expand Entry form definition and click Form.</text> </target>
+
+ <target id="bc4l1of" pid="bbn4ml9" name="Step" level="5" number="3f"> <text>In the dialog on the right, click Add.</text> </target>
+
+ <target id="bc4l2dy" pid="bbn4ml9" name="Step" level="5" number="3g"> <text>In the Standard form elements dialog on the right, click File upload.</text> </target>
+
+ <target id="bc4l35a" pid="bbn4ml9" name="Step" level="5" number="3h"> <text>Type in a Caption (e.g., Mirrored File) and Name (database name, e.g., mirrored_file), select External Resource Adapter (Mirrored folder only) from the Repository system drop-down list, select the Required option, and then click OK.</text> </target>
+
+ <target id="bc4l5uz" pid="bbn4ml9" name="Step" level="5" number="3i"> <text>Under Entry form definition &#62; Form, click Attachments - Attachments.</text> </target>
+
+ <target id="bc4l6rf" pid="bbn4ml9" name="Step" level="5" number="3j"> <text>In the dialog on the right, click Modify.</text> </target>
+
+ <target id="bc4l7ge" pid="bbn4ml9" name="Step" level="5" number="3k"> <text>Select External Resource Adapter (Mirrored folder only) from the Repository system drop-down list, and then click OK.</text> </target>
+
+ <target id="bc4l7la" pid="bbn4ml9" name="Step" level="5" number="3l"> <text>Click Entry view definition.</text> </target>
+
+ <target id="bc4l8ls" pid="bbn4ml9" name="Step" level="5" number="3m"> <text>In the dialog on the right, click Add.</text> </target>
+
+ <target id="bc4l8rb" pid="bbn4ml9" name="Step" level="5" number="3n"> <text>In the Standard form elements dialog on the right, click the name of the element you just defined (Mirrored File).</text> </target>
+
+ <target id="bc4lae8" pid="bbn4ml9" name="Step" level="5" number="3o"> <text>In the dialog on the right, click OK.</text> </target>
+
+ <target id="bc4lbep" pid="bbn4ml9" name="Step" level="5" number="3p"> <text>Exit the Teaming Administration portlet.</text> </target>
+
+ <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="4"> <text>In Novell Teaming, create a folder of type File folder.</text> </target>
+
+ <target id="bbn54nc" pid="bbn4ml9" name="Step" level="3" number="5"> <text>Within the folder, select the Manage &#62; Modify this folder menu item.</text> </target>
+
+ <target id="bbn5578" pid="bbn4ml9" name="Step" level="3" number="6"> <text>Select the Mirror external folders option.</text> </target>
+
+ <target id="bbn5dnb" pid="bbn4ml9" name="Step" level="3" number="7"> <text>Select the mirrored folder resource driver that you created in Step 1.</text> </target>
+
+ <target id="bbn5duy" pid="bbn4ml9" name="Step" level="3" number="8"> <text>Optionally, you can specify a subdirectory within the resource driver's root directory structure that you want this folder to mirror.</text> </target>
+
+ <target id="bbn5eiz" pid="bbn4ml9" name="Step" level="3" number="9"> <text>Click OK to make the folder a mirrored folder.</text> </target>
+
+ <target id="bc4lbxq" pid="bbn4ml9" name="Step" level="3" number="10"> <text>Configure the mirrored folder with the custom entry type that you defined in Step 3 (Mirrored File entry):</text> </target>
+
+ <target name="SubSteps" level="4"> <text>Within the mirrored folder, select the Manage &#62; Configure menu item.</text> </target>
+
+ <target id="bc4lcy3" pid="bbn4ml9" name="Step" level="5" number="10a"> <text>Within the mirrored folder, select the Manage &#62; Configure menu item.</text> </target>
+
+ <target id="bc4ld7o" pid="bbn4ml9" name="Step" level="5" number="10b"> <text>In the Default entry types section, select the custom entry type you defined in Step 3 (Mirrored File entry) and deselect all other entry types.</text> </target>
+
+ <target id="bc4let7" pid="bbn4ml9" name="Step" level="5" number="10c"> <text>Click Apply.</text> </target>
+
+ <target id="bc4lf5j" pid="bbn4ml9" name="Step" level="5" number="10d"> <text>Click Close.</text> </target>
+
+ <target id="bbn5ep6" pid="bbn4ml9" name="Step" level="3" number="11"> <text>Perform initial synchronization/loading by selecting the Manage this folder &#62; Synchronize menu item from the folder listing.</text> </target>
 
 </targets>
