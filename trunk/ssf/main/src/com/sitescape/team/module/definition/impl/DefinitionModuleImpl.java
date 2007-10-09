@@ -1435,7 +1435,31 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							v.setValue(userIds);
 							entryData.put(nameValue, v);
 						}
-					} else if (itemName.equals("places") || itemName.equals("userListSelectbox")) {
+					} else if (itemName.equals("places")) {
+						if (inputData.exists("idChoices")) {
+							ArrayList ids = new ArrayList();
+							String[] idChoices = inputData.getValues("idChoices");
+							for (int i = 0; i < idChoices.length; i++) {
+								String[] idc = idChoices[i].split(" ");
+								for (int j = 0; j < idc.length; j++) {
+									if (!idc[j].equals("")) ids.add(String.valueOf(idc[j]));
+								}
+							}
+							Set longIds = new HashSet();
+							for (int i = 0; i < ids.size(); i++) {
+								if (((String)ids.get(i)).startsWith(nameValue)) {
+									ids.set(i, ((String)ids.get(i)).substring(nameValue.length()));
+								}
+								try {
+									Long.parseLong((String)ids.get(i)); //validate as long
+									longIds.add((String)ids.get(i));	//but store string
+								} catch (NumberFormatException ne) {}
+							}
+							CommaSeparatedValue v = new CommaSeparatedValue();
+							v.setValue(longIds);
+							entryData.put(nameValue, v);
+						}
+					} else if (itemName.equals("userListSelectbox")) {
 						if (inputData.exists(nameValue)) {
 							String[] ids = inputData.getValues(nameValue);
 							Set longIds = new HashSet();

@@ -55,15 +55,13 @@
   
   	<c:choose>
 		<c:when test="${!empty ssDomTree}">
-			<c:set var="treeName" value="t_searchForm_wsTree" />
+			<c:set var="treeName" value="t_searchForm_wsTree${response.namespace}${propertyName}" />
 			<script type="text/javascript">
 				/* check/uncheck checkboxes in tree on click place name */
 				function ${treeName}_showId(forum, obj) {
 					var r = document.getElementById("ss_tree_checkbox${treeName}${propertyName}" + forum);
-					if (r && r.checked) {
-						r.checked=false;
-					} else {
-						r.checked=true;
+					if (r != null) {
+						r.click();
 					}
 					return false;
 				}
@@ -75,7 +73,7 @@
 				  rootOpen="false" 
 				  multiSelect="<%= folderIds %>" 
 				  multiSelectPrefix="${propertyName}"
-				  fixedMultiSelectParamsMode="true"/>
+				  fixedMultiSelectParamsMode="false"/>
 				  
 			
 		</c:when>
