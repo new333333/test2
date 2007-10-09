@@ -213,6 +213,8 @@
 
 	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
+	<bean id="localeResolver" class="com.sitescape.team.portletadapter.support.UserLocaleResolver" />	
+	
 	<!-- Portlet Parameter-based Mapping Interceptor -->
 	<bean id="portletParameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
 
