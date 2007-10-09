@@ -1,6 +1,6 @@
 package com.sitescape.team.liferay.security.auth;
 
-import com.sitescape.util.Validator;
+import com.liferay.util.Validator;
 
 public class ScreenNameValidator extends com.liferay.portal.security.auth.ScreenNameValidator {
 
