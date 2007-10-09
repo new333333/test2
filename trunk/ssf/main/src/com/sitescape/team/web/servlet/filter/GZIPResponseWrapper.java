@@ -1,4 +1,4 @@
-package com.jspbook;
+package com.sitescape.team.web.servlet.filter;
 
 import java.io.*;
 import java.util.*;
