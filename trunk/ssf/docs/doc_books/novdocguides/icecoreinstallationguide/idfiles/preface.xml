@@ -18,6 +18,10 @@
 
  <target id="b9yxhsb" pid="preface" name="row" level="2"> <text>Type status, then press Enter.</text> </target>
 
+ <target id="usercomments" pid="preface" name="BridgeHead" level="1"> <text>Feedback</text> </target>
+
+ <target id="docupdates" pid="preface" name="BridgeHead" level="1"> <text>Documentation Updates</text> </target>
+
  <target id="ban8e22" pid="preface" name="BridgeHead" level="1"> <text>Additional Documentation</text> </target>
 
 </targets>
