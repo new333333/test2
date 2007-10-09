@@ -2,7 +2,7 @@ package com.sitescape.team.liferay.security.auth;
 
 import com.sitescape.util.Validator;
 
-public class ScreenNameValidator {
+public class ScreenNameValidator extends com.liferay.portal.security.auth.ScreenNameValidator {
 
 	public boolean validate(long companyId, String screenName) {
 		if (Validator.isNull(screenName) 
