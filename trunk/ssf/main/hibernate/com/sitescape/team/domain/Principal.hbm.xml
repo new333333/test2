@@ -88,7 +88,7 @@
       <property name="phone" length="128"/>
       <property name="zonName" length="100"/>
       <property name="password" access="field" length="64"/>
-	  <property name="timeZone" access="field" length="16"/>
+	  <property name="timeZone" access="field" length="80"/>
 	  <property name="locale" access="field" length="32"/>
 	  <property name="digestSeed"/>
     </subclass>
