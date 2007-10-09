@@ -72,6 +72,12 @@ public class ViewCssController extends SAbstractController {
 		df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
 		response.setHeader(
 				"Last-Modified", df.format(d));
+
+		d = new Date(cssDate.getTime() + Long.valueOf("86400000"));
+		df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
+		response.setHeader(
+				"Expires", df.format(d));
+		
 		String viewPath = "common/ssf_css";
 		if (sheet.equals("editor")) {
 			viewPath = "common/editor_css";
