@@ -6010,19 +6010,24 @@ function ss_saveTreeId(obj) {
 			formObj.idChoices.value = obj.name + "_" + obj.value;
 		}
 	} else {
-		//Strip off the leading "ss_tree_checkbox"
-		var prefix = obj.id.substr(16)
-		prefix = ss_replaceSubStr(prefix, obj.name, "");
-		for (var i = 0; i < parent.document.forms.length; i++) {
-			if (parent.document.forms[i].name && parent.document.forms[i].name.indexOf(prefix) >= 0) {
-				formObj = parent.document.forms[i];
-				break;
+		var idChoices = null;
+		//Look for the idChoices element
+		nodes = document.getElementsByTagName("input");
+		var node1 = null;
+		for (var i = 0; i < nodes.length; i++) {
+			if (nodes[i].name && nodes[i].name == 'idChoices') {
+				if (idChoices == null) {
+					idChoices = nodes[i];
+					if (typeof idChoices.value === "undefined")  idChoices.value = "";
+				} else if (nodes[i].value != null && nodes[i].value != "") {
+					idChoices.value += " " + nodes[i].value;
+					nodes[i].value = "";
+				}
 			}
 		}
-		if (formObj != null && typeof formObj.idChoices !== "undefined") {
-			if (typeof formObj.idChoices.value === "undefined")  formObj.idChoices.value = "";
-			formObj.idChoices.value = ss_replaceSubStrAll(formObj.idChoices.value, " " + obj.name, "");
-			if (obj.checked) formObj.idChoices.value += " " + obj.name;
+		if (idChoices != null && typeof idChoices !== "undefined") {
+			idChoices.value = ss_replaceSubStrAll(idChoices.value, " " + obj.name, "");
+			if (obj.checked) idChoices.value += " " + obj.name;
 		}
 	}
 }

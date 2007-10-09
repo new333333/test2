@@ -272,6 +272,7 @@ public class TreeTag extends TagSupport {
 //						mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
 //					}
 					
+					String idChoices = "";
 					if (this.multiSelect != null && !this.multiSelect.isEmpty()) {
 						Iterator multiSelectIt = this.multiSelect.iterator();
 						while (multiSelectIt.hasNext()) {
@@ -286,10 +287,11 @@ public class TreeTag extends TagSupport {
 								value = "";
 							}
 							sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + id + "_lastChoice\"" + name + value + "/>\n");
+							idChoices += " " + mPrefix + id;
 						}
 					}
 					if (this.multiSelect != null && !mPrefix.equals("")) {
-						sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + "_idChoices\" name=\"idChoices\" />\n");
+						sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + "_idChoices\" name=\"idChoices\" value=\"" + idChoices + "\" />\n");
 					}
 					if (this.singleSelect != null && !this.singleSelect.equals("")) {
 						sb.append("<input type=\"hidden\" id=\"" + treeName + "_lastChoice\" name=\"" + this.singleSelectName + "\" value=\"" + this.singleSelect + "\" />\n");
