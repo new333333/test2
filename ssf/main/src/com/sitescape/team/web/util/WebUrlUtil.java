@@ -281,20 +281,20 @@ public class WebUrlUtil {
 					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT);
 					if(intPort != null)
 						port = intPort.intValue();
-					if(logger.isDebugEnabled()) {
+					if(logger.isTraceEnabled()) {
 						if(host == null)
-							logger.debug("*** No host name found in http session");
+							logger.trace("*** No host name found in http session");
 						else
-							logger.debug("Host name from http session is " + host);
+							logger.trace("Host name from http session is " + host);
 						if(intPort == null)
-							logger.debug("*** No host port found in http session");
+							logger.trace("*** No host port found in http session");
 						else
-							logger.debug("Host port from http session is " + intPort);
+							logger.trace("Host port from http session is " + intPort);
 					}
 				}
 				else {
-					if(logger.isDebugEnabled())
-						logger.debug("*** No http session found from http request");
+					if(logger.isTraceEnabled())
+						logger.trace("*** No http session found from http request");
 				}
 				
 				if(host == null)
@@ -308,8 +308,8 @@ public class WebUrlUtil {
 					secure = req.isSecure();
 			}
 			else {
-				if(logger.isDebugEnabled())
-					logger.debug("No context (http request) passed in. Getting values from properties file.");
+				if(logger.isTraceEnabled())
+					logger.trace("No context (http request) passed in. Getting values from properties file.");
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
 				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
 				secure = false;
@@ -323,20 +323,20 @@ public class WebUrlUtil {
 					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT);
 					if(intPort != null)
 						port = intPort.intValue();
-					if(logger.isDebugEnabled()) {
+					if(logger.isTraceEnabled()) {
 						if(host == null)
-							logger.debug("*** No host name found in http session");
+							logger.trace("*** No host name found in http session");
 						else
-							logger.debug("Host name from http session is " + host);
+							logger.trace("Host name from http session is " + host);
 						if(intPort == null)
-							logger.debug("*** No host port found in http session");
+							logger.trace("*** No host port found in http session");
 						else
-							logger.debug("Host port from http session is " + intPort);
+							logger.trace("Host port from http session is " + intPort);
 					}
 				}
 				else {
-					if(logger.isDebugEnabled())
-						logger.debug("*** No http session found from http request");
+					if(logger.isTraceEnabled())
+						logger.trace("*** No http session found from http request");
 				}
 				
 				if(host == null)
@@ -350,8 +350,8 @@ public class WebUrlUtil {
 					secure = req.isSecure();
 			}
 			else {
-				if(logger.isDebugEnabled())
-					logger.debug("No context (http request) passed in. Getting values from properties file.");
+				if(logger.isTraceEnabled())
+					logger.trace("No context (http request) passed in. Getting values from properties file.");
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
 				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
 				secure = true;
@@ -370,8 +370,8 @@ public class WebUrlUtil {
 		
 		StringBuffer sb = getHostAndPort(host, port, secure, portRequired);
 		
-		if(logger.isDebugEnabled())
-			logger.debug("(s) Generated host and port is " + sb.toString());
+		if(logger.isTraceEnabled())
+			logger.trace("(s) Generated host and port is " + sb.toString());
 		
 		return sb;
 	}
@@ -389,20 +389,20 @@ public class WebUrlUtil {
 					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT, PortletSession.APPLICATION_SCOPE);
 					if(intPort != null)
 						port = intPort.intValue();
-					if(logger.isDebugEnabled()) {
+					if(logger.isTraceEnabled()) {
 						if(host == null)
-							logger.debug("*** No host name found in portlet session");
+							logger.trace("*** No host name found in portlet session");
 						else
-							logger.debug("Host name from portlet session is " + host);
+							logger.trace("Host name from portlet session is " + host);
 						if(intPort == null)
-							logger.debug("*** No host port found in portlet session");
+							logger.trace("*** No host port found in portlet session");
 						else
-							logger.debug("Host port from portlet session is " + intPort);
+							logger.trace("Host port from portlet session is " + intPort);
 					}
 				}
 				else {
-					if(logger.isDebugEnabled())
-						logger.debug("*** No portlet session found from portlet request");
+					if(logger.isTraceEnabled())
+						logger.trace("*** No portlet session found from portlet request");
 				}
 				
 				if(host == null)
@@ -416,8 +416,8 @@ public class WebUrlUtil {
 					secure = req.isSecure(); // get the context value from the req object
 			}
 			else {
-				if(logger.isDebugEnabled())
-					logger.debug("No context (portlet request) passed in. Getting values from properties file.");
+				if(logger.isTraceEnabled())
+					logger.trace("No context (portlet request) passed in. Getting values from properties file.");
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
 				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
 				// context override value isSecure is relevant only when req is non-null
@@ -432,20 +432,20 @@ public class WebUrlUtil {
 					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT, PortletSession.APPLICATION_SCOPE);
 					if(intPort != null)
 						port = intPort.intValue();
-					if(logger.isDebugEnabled()) {
+					if(logger.isTraceEnabled()) {
 						if(host == null)
-							logger.debug("*** No host name found in portlet session");
+							logger.trace("*** No host name found in portlet session");
 						else
-							logger.debug("Host name from portlet session is " + host);
+							logger.trace("Host name from portlet session is " + host);
 						if(intPort == null)
-							logger.debug("*** No host port found in portlet session");
+							logger.trace("*** No host port found in portlet session");
 						else
-							logger.debug("Host port from portlet session is " + intPort);
+							logger.trace("Host port from portlet session is " + intPort);
 					}
 				}
 				else {
-					if(logger.isDebugEnabled())
-						logger.debug("*** No portlet session from portlet request");				
+					if(logger.isTraceEnabled())
+						logger.trace("*** No portlet session from portlet request");				
 				}
 				
 				if(host == null)
@@ -459,8 +459,8 @@ public class WebUrlUtil {
 					secure = req.isSecure(); // get the context value from the req object
 			}
 			else {
-				if(logger.isDebugEnabled())
-					logger.debug("No context (portlet request) passed in. Getting values from properties file.");
+				if(logger.isTraceEnabled())
+					logger.trace("No context (portlet request) passed in. Getting values from properties file.");
 				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
 				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
 				// context override value isSecure is relevant only when req is non-null
@@ -480,8 +480,8 @@ public class WebUrlUtil {
 		
 		StringBuffer sb = getHostAndPort(host, port, secure, portRequired);
 		
-		if(logger.isDebugEnabled())
-			logger.debug("(p) Generated host and port is " + sb.toString());
+		if(logger.isTraceEnabled())
+			logger.trace("(p) Generated host and port is " + sb.toString());
 		
 		return sb;
 	}
