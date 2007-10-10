@@ -121,7 +121,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 			  </c:if>
 			</ul>
 	</form>
-	<strong>${ssDashboard.dashboard.components[ssComponentId].title}&nbsp;</strong>
+	<strong><ssf:nlt tag="${ssDashboard.dashboard.components[ssComponentId].title}" checkIfTag="true"/>&nbsp;</strong>
   </div>
 </td>
 </tr>
