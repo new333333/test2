@@ -99,8 +99,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
     <tbody><tr>
      <c:choose>
      <c:when test="${ssProductName == 'Novell'}">
-        <td style="line-height: 30px;"><span style="font-size: 24px">Novell<span style="vertical-align: sub; font-size: 10px;"> &reg;</span> Teaming</span></td>
-        <td align="right"><img src="<html:brandedImagesPath/>pics/novell-n.png"></td>
+        <td><img src="<html:brandedImagesPath/>pics/novell-teaming-about.png"></td>
      </c:when>
      <c:otherwise>
     	<td style="line-height: 30px;">
@@ -111,13 +110,13 @@ function <%= wsTreeName %>_showId(id, obj, action) {
      </tr></tbody>
     </table>
   </div>
-  <div class="ss_style" style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px;">
+  <div class="ss_style" style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px; font-family:Arial, Helvetica, sans-serif; font-size: 12px; line-height: 20px;">
     <p>
      ${releaseInfo}<br/>
     <c:if test="${ssProductName == 'Novell'}">
-    &copy; Copyright 2007, Novell, Inc. All rights reserved<br/> 
+    &copy; 2007, Novell, Inc. and its licensors. All rights reserved<br/> 
     </c:if>
-     &copy; Copyright 2007, SiteScape, Inc. All rights reserved<br/>
+     &copy; 2007, SiteScape, Inc. All rights reserved<br/>
     </p>
     <div align="right">
     <p style="padding-top: 10px;">
