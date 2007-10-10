@@ -58,7 +58,7 @@ function ${ss_namespace}_${componentId}_getPresence(timeout) {
     	</ssf:url>"
 	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, '${ss_divId}');
 	if (ss_presenceTimeoutTimeToSleep > 0) {
-		${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", 300000);
+		${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", ss_presenceTimeoutTimeToSleep);
 	}
 }
 
@@ -66,5 +66,8 @@ var ${ss_namespace}_${componentId}_presenceTimer = null;
 function ${ss_namespace}_${componentId}_presenceTimout() {
 	${ss_namespace}_${componentId}_getPresence("timeout");
 }	
-${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", 300000);
+
+if (ss_presenceTimeoutTimeToSleep > 0) {
+	${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", ss_presenceTimeoutTimeToSleep);
+}
 </script>
