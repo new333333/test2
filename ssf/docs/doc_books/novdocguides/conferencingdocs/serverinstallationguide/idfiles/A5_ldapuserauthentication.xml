@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9varpy" pid="b9varpy" name="Appendix" level="0" number="E"> <text>LDAP User Authentication</text> </target>
+
+ <target id="bbkkx31" pid="b9varpy" name="BridgeHead" level="1"> <text>Configuring LDAP Authentication and Synchronization for ICEcore Conference</text> </target>
+
+ <target id="bbkkx32" pid="b9varpy" name="BridgeHead" level="1"> <text>Address Book Configuration (Synchronization)</text> </target>
+
+ <target id="bbkky1q" pid="b9varpy" name="BridgeHead" level="1"> <text>Jabber Configuration (Authentication)</text> </target>
+
+ <target id="bbkky1r" pid="b9varpy" name="BridgeHead" level="1"> <text>Web Server Configuration (Authentication)</text> </target>
+
+ <target id="bbkky1s" pid="b9varpy" name="BridgeHead" level="1"> <text>Client Installer Rebuild (Authentication)</text> </target>
+
+ <target id="bbkky1t" pid="b9varpy" name="BridgeHead" level="1"> <text>ICEcore Conference Field Names</text> </target>
+
+ <target id="bbklhf4" pid="b9varpy" name="BridgeHead" level="1"> <text>Notes:</text> </target>
+
+</targets>
