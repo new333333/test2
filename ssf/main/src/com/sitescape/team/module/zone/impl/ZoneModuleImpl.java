@@ -237,35 +237,36 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
 	        		user.setParentBinder(profiles);
 	        		getCoreDao().save(user);
-			
-	        		//indexing needs the user
+	        		//indexing and other modules needs the user
 	        		RequestContextHolder.getRequestContext().setUser(user);
+	        		HistoryStamp stamp = new HistoryStamp(user);
+	        		//add reserved group for use in import templates
+	        		Group group = addAllUserGroup(profiles, stamp);
+			
 	        		Function visitorsRole = addVisitorsRole(top);
 	        		Function participantsRole = addParticipantsRole(top);
 	        		Function teamMemberRole = addTeamMemberRole(top);
 	        		Function binderRole = 	addBinderRole(top);
 	        		Function adminRole = addAdminRole(top);
 	        		Function teamWsRole = addTeamWorkspaceRole(top);
-
+	        		//make sure allusers group and roles are defined, may be referenced by templates
 	        		getAdminModule().updateDefaultDefinitions(top.getId());
 	        		getAdminModule().updateDefaultTemplates(top.getId());
  
-	        		//need request context
+	        		//Update after import of definitions
 	        		getDefinitionModule().setDefaultBinderDefinition(top);
 	        		getDefinitionModule().setDefaultBinderDefinition(profiles);
 	        		getDefinitionModule().setDefaultEntryDefinition(user);
 
-	        		//fill in config form profiles
+	        		//fill in config for profiles
 	        		List defs = profiles.getDefinitions();
 	        		defs.add(profiles.getEntryDef());
 	        		defs.add(user.getEntryDef());
 	        		
 	        		defs = top.getDefinitions();
 	        		defs.add(top.getEntryDef());
-	        		
-	        		
+	        			        		
 	        		//fill in timestampes
-	        		HistoryStamp stamp = new HistoryStamp(user);
 	        		top.setCreation(stamp);
 	        		top.setModification(stamp);
 	        		profiles.setCreation(stamp);
@@ -277,7 +278,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 			
 	        		addPosting(profiles, stamp);
 	        		addJobProcessor(profiles, stamp); 
-	        		Group group = addAllUserGroup(profiles, stamp);
 	        		Workspace globalRoot = addGlobalRoot(top, stamp);		
 	        		Workspace teamRoot = addTeamRoot(top, stamp);
 	        		teamRoot.setFunctionMembershipInherited(false);
