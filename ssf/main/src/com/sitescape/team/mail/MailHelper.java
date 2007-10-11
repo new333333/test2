@@ -177,5 +177,17 @@ public class MailHelper {
 		
 		bodyContent.addBodyPart(alternativePart);
 	}
+	
+	public static boolean isCalendarContent(String fileName, String contentType) {
+		if (fileName != null && fileName.toLowerCase().endsWith(MailHelper.ICAL_FILE_EXTENSION)) {
+			return true;
+		}
+		
+		if (contentType != null && contentType.toLowerCase().startsWith(MailHelper.CONTENT_TYPE_CALENDAR)) {
+			return true;
+		}
+		
+		return false;
+	}
 
 }

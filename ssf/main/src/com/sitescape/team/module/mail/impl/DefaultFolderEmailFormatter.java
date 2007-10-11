@@ -657,7 +657,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						processText(content, inputData);
 					} else if (type.startsWith("text/html")) {
 						processHTML(content, inputData);
-					} else if (type.startsWith("text/calendar")) {
+					} else if (type.startsWith(MailHelper.CONTENT_TYPE_CALENDAR)) {
 						processICalendar(content, iCalendars);						
 					} else if (content instanceof MimeMultipart) {
 						processMime((MimeMultipart)content, inputData, fileItems, iCalendars);
@@ -689,8 +689,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						while (fileItemsIt.hasNext()) {
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
-							if (fileHandler.getName() != null && !fileHandler.getName().endsWith(MailHelper.ICAL_FILE_EXTENSION)) {
-								// it's not icalendar file
+							
+							if (!MailHelper.isCalendarContent(fileHandler.getOriginalFilename(), fileHandler.getContentType())) {
 								continue;
 							}
 							
@@ -799,7 +799,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				processHTML(part.getContent(), inputData);
 			} else if (part.isMimeType("text/plain")) {
 				processText(part.getContent(), inputData);
-			} else if (part.isMimeType("text/calendar")) {
+			} else if (part.isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
 				processICalendar(part.getContent(), iCalendars);
 			} else if (part instanceof MimeBodyPart) {
 				Object bContent = ((MimeBodyPart)part).getContent();

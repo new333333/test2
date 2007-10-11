@@ -43,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -66,7 +67,7 @@ public class GetController extends SAbstractController {
 		}
 		
 		response.resetBuffer();
-		response.setContentType("text/calendar; charset=" + XmlFileUtil.FILE_ENCODING);
+		response.setContentType(MailHelper.CONTENT_TYPE_CALENDAR + MailHelper.CONTENT_TYPE_CHARSET_SUFFIX + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		
