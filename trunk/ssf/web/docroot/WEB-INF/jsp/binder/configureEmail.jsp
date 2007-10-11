@@ -132,7 +132,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
 <tr>
 <th width="30%"><ssf:nlt tag="notify.schedule"/></th>
-<th width="70%"><ssf:nlt tag="notify.distribution.list"/> <ssf:inlineHelp tag="ihelp.email.notification_list"/></th>
+<th width="70%" style="padding-left:15px;"><ssf:nlt tag="notify.distribution.list"/> <ssf:inlineHelp tag="ihelp.email.notification_list"/></th>
 </tr>
 <tr>
 <td valign="top">
@@ -143,9 +143,24 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 </td>
-<td>
+<td style="padding-left:15px;">
 
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
+ <tr><td>
+    <br/><span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/>
+<div class="ss_indent_medium">
+  <input type="radio" name="style" value="1" id="notifyType_1"
+  <c:if test="${ssBinder.notificationDef.style=='1'}"> checked="checked"</c:if>
+  /><label for="notifyType_1"><ssf:nlt tag="subscribe.digest"/></label> <ssf:inlineHelp tag="ihelp.email.digest_notify"/><br/>
+  <input type="radio" name="style" value="2" 
+  <c:if test="${ssBinder.notificationDef.style=='2'}"> checked="checked"</c:if>
+  /><label for="notifyType_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
+  <input type="radio" name="style" value="3" 
+  <c:if test="${ssBinder.notificationDef.style=='3'}"> checked="checked"</c:if>
+  /><label for="notifyType_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
+<br/>
+</div>
+ </td></tr>
  <tr><td>
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.addresses"/></span>
    <input type="text" class="ss_style" name="addresses" id="addresses" size="86" value="${ssBinder.notificationDef.emailAddress}">
