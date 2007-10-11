@@ -55,6 +55,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
+import javax.mail.AuthenticationFailedException;
 
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -367,6 +368,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					}	
 				}
 					
+			} catch (AuthenticationFailedException ax) {
+				logger.error("Error posting mail from [" + hostName + "] " + getMessage(ax));
+				continue;
 			} catch (Exception ex) {
 				//Close connection and expunge
 				if (mFolder != null) try {mFolder.close(true);} catch (Exception ex1) {};
@@ -385,6 +389,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mFolder = store.getFolder("inbox");				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
 					sendErrors(folder, postingDef, session, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+				} catch (AuthenticationFailedException ax) {
+					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
+					continue;
 				} catch (Exception ex) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 					continue;
@@ -499,7 +506,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			return until;
 		}
  		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
-		List digestResults = processor.buildDistributionList(folder, entries, subscriptions);
+		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email with attachments
 		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email without attachments
@@ -723,7 +730,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					logger.error(e);
 					continue;
 				} catch (ValidationException e) {
-					logger.error("Unvalid calendar", e);
+					logger.error("Invalid calendar", e);
 					continue;
 				}
 				c++;
@@ -744,7 +751,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				} catch (IOException e) {
 					logger.error(e);
 				} catch (ValidationException e) {
-					logger.error("Unvalid calendar", e);
+					logger.error("Invalid calendar", e);
 				}
 			}
 			
