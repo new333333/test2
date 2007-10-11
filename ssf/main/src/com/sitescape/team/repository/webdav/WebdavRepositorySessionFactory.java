@@ -45,6 +45,7 @@ import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.impl.AbstractExclusiveRepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SWebdavResource;
+import com.sitescape.team.util.WebdavUtil;
 
 public class WebdavRepositorySessionFactory extends AbstractExclusiveRepositorySessionFactory
 implements WebdavRepositorySessionFactoryMBean {
@@ -130,7 +131,7 @@ implements WebdavRepositorySessionFactoryMBean {
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
 		try { 
-			HttpURL hrl = new HttpURL(getHttpUrl());
+			HttpURL hrl = WebdavUtil.getHttpUrl(getHttpUrlStr());
 			hrl.setUserinfo(username, password);
 			SWebdavResource wdr = new SWebdavResource(hrl);
 			
@@ -164,7 +165,7 @@ implements WebdavRepositorySessionFactoryMBean {
 		this.versionDeletionAllowed = versionDeletionAllowed;
 	}
 
-	protected String getHttpUrl() {
+	protected String getHttpUrlStr() {
 		return hostUrl + contextPath;
 	}
 	public boolean supportSmartCheckin() {

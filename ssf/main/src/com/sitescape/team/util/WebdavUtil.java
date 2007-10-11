@@ -38,6 +38,7 @@ import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.URIException;
 import org.apache.webdav.lib.ResponseEntity;
 import org.apache.webdav.lib.WebdavResource;
@@ -246,5 +247,12 @@ public class WebdavUtil {
 		for(int i = 0; i < indent; i++) {
 			sb.append(tab);
 		}
+	}
+	
+	public static HttpURL getHttpUrl(String urlStr) throws IOException {
+		if(urlStr.startsWith("https"))
+			return new HttpsURL(urlStr);
+		else
+			return new HttpURL(urlStr);
 	}
 }
