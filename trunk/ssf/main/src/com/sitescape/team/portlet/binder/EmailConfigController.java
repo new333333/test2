@@ -46,6 +46,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.web.WebKeys;
@@ -140,6 +141,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		
 		input.put("emailAddress", PortletRequestUtils.getStringParameter(request, "addresses", ""));
 		input.put("teamOn", PortletRequestUtils.getBooleanParameter(request,  "teamMembers", false));
+		input.put("style", PortletRequestUtils.getIntParameter(request,  "style", Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION));
 		return input;
 		
 	}

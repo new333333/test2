@@ -64,6 +64,7 @@
     <property name="pathName" length="1024"/>
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
+      <property name="style" column="notify_style"/>
 	  <bag inverse="false" access="field" cascade="all" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
       	<key column="binderId" />
  	     <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="principalId"/>

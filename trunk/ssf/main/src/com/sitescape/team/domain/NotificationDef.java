@@ -44,6 +44,8 @@ public class NotificationDef  {
     protected String emailAddress;//initialized by hibernate access=field
     protected boolean teamOn=false;
     protected String from,subject;
+    private int style=Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION;
+    
     public NotificationDef() {
     }
  
@@ -71,6 +73,16 @@ public class NotificationDef  {
     	distribution = CollectionUtil.mergeAsSet(getDistribution(), newDistribution);
      }
 
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public int getStyle() {
+        return style;
+    }
+    public void setStyle(int style) {
+        this.style = style;
+    }
 
     /**
      * @hibernate.property

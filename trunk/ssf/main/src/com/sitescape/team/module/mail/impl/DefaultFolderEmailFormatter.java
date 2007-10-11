@@ -201,9 +201,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		return languageMap;
 	}
+
 	/**
-	 * Build digest style lists.  Include notifications, minus disabled subscriptions,
-	 * plus digest folder subscriptions and explicit email address
 	 * Determine which users have access to which entries.
 	 * Return a list of Object[].  Each Object[0] contains a list of entries,
 	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
@@ -211,41 +210,50 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the message	
 	 */
-	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions) {
-		//done if no-one is interested
+	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		List result = new ArrayList();
-		Set userIds = new HashSet();
-		Set groupIds = new HashSet();
-		for (Iterator iter=folder.getNotificationDef().getDistribution().iterator(); iter.hasNext();) {
-			Principal p = (Principal)iter.next();
-			if (p.getEntityType().equals(EntityType.group))
-				groupIds.add(p.getId());
-			else
-				userIds.add(p.getId());
-		}
-		if (folder.getNotificationDef().isTeamOn()) {
-			Set teamIds = folder.getTeamMemberIds();
-			List team = getProfileDao().loadPrincipals(teamIds, folder.getZoneId(), true);
-			for (Iterator iter=team.iterator(); iter.hasNext();) {
+		List<User> users=null;
+		if (folder.getNotificationDef().getStyle() == style) {
+			Set userIds = new HashSet();
+			Set groupIds = new HashSet();
+			for (Iterator iter=folder.getNotificationDef().getDistribution().iterator(); iter.hasNext();) {
 				Principal p = (Principal)iter.next();
 				if (p.getEntityType().equals(EntityType.group))
 					groupIds.add(p.getId());
 				else
 					userIds.add(p.getId());
 			}
-			
-		}
-		userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));
-		//Add users wanting digest style messages, remove users wanting nothing
-		for (Subscription notify: (Collection<Subscription>)subscriptions) {
-			if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
-				userIds.add(notify.getId().getPrincipalId());
-			} else {
-				//user wants some other type of Notificaigton
-				userIds.remove(notify.getId().getPrincipalId());
+			if (folder.getNotificationDef().isTeamOn()) {
+				Set teamIds = folder.getTeamMemberIds();
+				List team = getProfileDao().loadPrincipals(teamIds, folder.getZoneId(), true);
+				for (Iterator iter=team.iterator(); iter.hasNext();) {
+					Principal p = (Principal)iter.next();
+					if (p.getEntityType().equals(EntityType.group))
+						groupIds.add(p.getId());
+					else
+						userIds.add(p.getId());
+				}
+				
 			}
+			//expand groups so we can remove users
+			userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));
+			//Add users wanting the same style messages, remove users wanting nothing or another style
+			for (Subscription notify: (Collection<Subscription>)subscriptions) {
+				if (notify.getStyle() == style) {
+					userIds.add(notify.getId().getPrincipalId());
+				} else {
+					//user wants some other type of Notification
+					userIds.remove(notify.getId().getPrincipalId());
+				}
+			}
+			users = getProfileDao().loadUsers(userIds, folder.getZoneId());
+		} else {
+			//done if no-one is interested
+			if (subscriptions.isEmpty()) return result;
+			//Users wanting this style messages
+			users = getUsers(subscriptions, style);
 		}
-		List<User> users = getProfileDao().loadUsers(userIds, folder.getZoneId());
+		
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
 		for (User u: users) {
@@ -260,39 +268,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			Object [] lists = mapEntries(checkList);
 			result.add(lists);
 		}
-		//add in email address only subscriptions
-		return doEmailAddrs(folder, entries, result);
-	}
-
-	/**
-	 * Determine which users have access to which entries.
-	 * Return a list of Object[].  Each Object[0] contains a list of entries,
-	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
-	 * using that locale that have access to the entries.
-	 * The list of entries will maintain the order used to do lookup.  This is important
-	 * when actually building the message	
-	 */
-	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
-		//done if no-one is interested
-		List result = new ArrayList();
-		if (subscriptions.isEmpty()) return result;
-		
-		//Users wanting digest style messages
-		List users = getUsers(subscriptions, style);
-		//check access to folder/entry and build lists of users to receive mail
-		List checkList = new ArrayList();
-		for (Iterator iter=users.iterator(); iter.hasNext();) {
-			User u = (User)iter.next();
-			if (!Validator.isNull(u.getEmailAddress())) {
-				AclChecker check = new AclChecker(u);
-				check.checkEntries(entries);
-				checkList.add(check);
-			}
-		}
-		//get a map containing a list of users mapped to a list of entries
-		while (!checkList.isEmpty()) {
-			Object [] lists = mapEntries(checkList);
-			result.add(lists);
+		if (folder.getNotificationDef().getStyle() == style) {
+			//add in email address only subscriptions
+			return doEmailAddrs(folder, entries, result);
 		}
 		return result;
 	}
