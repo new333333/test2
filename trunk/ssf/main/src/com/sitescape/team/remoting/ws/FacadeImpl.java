@@ -55,6 +55,7 @@ import org.apache.axis.attachments.Attachments;
 
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EmptyInputData;
@@ -208,7 +209,7 @@ public class FacadeImpl extends AbstractFacade {
 		}
 		
 		public String getName() { return "com.sitescape.team.CalendarDataSource"; }
-		public String getContentType() { return "text/calendar"; }
+		public String getContentType() { return MailHelper.CONTENT_TYPE_CALENDAR; }
 		
 		public InputStream getInputStream() throws IOException
 		{
