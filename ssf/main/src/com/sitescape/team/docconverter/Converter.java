@@ -41,9 +41,11 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.TempFileUtil;
 
 public abstract class Converter<T>
 {
@@ -107,19 +109,25 @@ public abstract class Converter<T>
 		throws IOException
 	{
 		InputStream is = null;
-		FileOutputStream fos = null;
 		File copyOfOriginalFile = null;
+		File tempConvertedFile = null;
 		try
 		{
+			String timestamp = getTimestamp();
+			
 			File parentDir = convertedFile.getParentFile();
 			if(!parentDir.exists())
 				parentDir.mkdirs();
 
 			is = getFileModule().readFile(binder, entry, fa);
-			copyOfOriginalFile = cacheFileStore.getFile(filePath);
-			fos = new FileOutputStream(copyOfOriginalFile);
-			FileCopyUtils.copy(is, fos);
-			convert(copyOfOriginalFile.getAbsolutePath(), convertedFile.getAbsolutePath(), 30000, parameters);
+			copyOfOriginalFile = TempFileUtil.createTempFileWithContent
+			("s" + timestamp, getSuffix(new File(filePath)), cacheFileStore.getFile(filePath).getParentFile(), true, is);
+
+			tempConvertedFile = TempFileUtil.createTempFile("t" + timestamp, getSuffix(convertedFile), convertedFile.getParentFile(), false);
+			
+			convert(copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), 30000, parameters);
+			
+			FileHelper.move(tempConvertedFile, convertedFile);
 		}
 		catch(Exception e) {
 		}
@@ -127,14 +135,28 @@ public abstract class Converter<T>
 		{
 			if (is != null)
 				is.close();
-			if (fos != null)
-				fos.close();
 			if(copyOfOriginalFile != null && copyOfOriginalFile.exists()) {
 				copyOfOriginalFile.delete();
+			}
+			if(tempConvertedFile != null && tempConvertedFile.exists()) {
+				tempConvertedFile.delete();
 			}
 		}
 	}
 
+	private String getTimestamp() {
+		return String.valueOf(System.currentTimeMillis());
+	}
+	
+	private String getSuffix(File file) {
+		String name = file.getName();
+		int index = name.lastIndexOf(".");
+		if(index > -1)
+			return name.substring(index);
+		else
+			return null;
+	}
+	
 	protected InputStream getCachedFile(Binder binder, DefinableEntity entry, FileAttachment fa, String fileName, String subdir)
 		throws IOException
 	{

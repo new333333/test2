@@ -157,14 +157,14 @@ public class TempFileUtil {
 	 * @return
 	 * @throws UncheckedIOException
 	 */
-	private static File createTempFile(String prefix, String suffix, File fileDir,
+	public static File createTempFile(String prefix, String suffix, File fileDir,
 			boolean deleteOnExit)
 		throws UncheckedIOException {
 		try {
 			if(fileDir != null && !fileDir.exists())
 				FileHelper.mkdirs(fileDir);
 			
-			File file = File.createTempFile(prefix, suffix, fileDir);
+			File file = doCreateTempFile(prefix, suffix, fileDir);
 			
 			if(deleteOnExit)
 				file.deleteOnExit();
@@ -191,7 +191,7 @@ public class TempFileUtil {
 	 * @return
 	 * @throws UncheckedIOException
 	 */
-	private static File createTempFileWithContent(String prefix, String suffix, File fileDir, 
+	public static File createTempFileWithContent(String prefix, String suffix, File fileDir, 
 			boolean deleteOnExit, InputStream content)
 		throws UncheckedIOException {
 		File tempFile = TempFileUtil.createTempFile(prefix, suffix, fileDir, deleteOnExit);
@@ -207,6 +207,20 @@ public class TempFileUtil {
 		}
 	}
 
+	private static File doCreateTempFile(String prefix, String suffix, File fileDir) throws IOException {
+		try {
+			return File.createTempFile(prefix, suffix, fileDir);
+		}
+		catch(IOException e) {
+			// Give it one more try after brief pause.
+			try {
+				Thread.sleep(1);
+			} 
+			catch (InterruptedException ignore) {}
+			return File.createTempFile(prefix, suffix, fileDir);
+		}
+	}
+	
 	/*
 	 * Opens a previously created temporary file and returns a stream to it.
 	 * 
