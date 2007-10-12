@@ -82,7 +82,7 @@ public class Htmleditor extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 		    User user = RequestContextHolder.getRequestContext().getUser();
-		    String languageCode = user.getLocale().getLanguage();
+		    String languageCode = user.getLocale().toString();
 		    if (languageCode == null || languageCode.equals("")) languageCode = "en";
 		    if (languageCode.startsWith("en")) languageCode = "en";
 	
