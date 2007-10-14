@@ -30,11 +30,14 @@ package com.sitescape.team.servlet.forum;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.activation.FileTypeMap;
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,6 +56,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
+import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.FileUtil;
 import com.sitescape.util.Validator;
 
@@ -218,7 +222,7 @@ public class ViewFileController extends SAbstractController {
 				if (!downloadFile.equals("")) attachment = "attachment; ";
 				response.setHeader(
 							"Content-Disposition",
-							attachment + "filename=\"" + shortFileName + "\"");
+							attachment + "filename=\"" + encodeFileName(request, shortFileName) + "\"");
 				
 				SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
 				Date d = fa.getModification().getDate();
@@ -296,5 +300,15 @@ public class ViewFileController extends SAbstractController {
 		catch(Exception ignore) {}
 	}
 	
-
+	private String encodeFileName(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
+		if(BrowserSniffer.is_ie(request)) {
+			return URLEncoder.encode(fileName, "UTF8");
+		}
+		else if(BrowserSniffer.is_mozilla(request)) {
+			return MimeUtility.encodeText(fileName, "UTF8", "B");
+		}
+		else {
+			return fileName;
+		}
+	}
 }
