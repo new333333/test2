@@ -65,6 +65,10 @@ public class ViewPermalinkController  extends SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
  		
  		String url = BinderHelper.getBinderPermaLink(this);
+ 		if (url.equals("")) {
+ 			model.put(WebKeys.PERMALINK, url);
+ 	    	return new ModelAndView("binder/view_permalink", model);
+ 		}
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
