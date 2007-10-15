@@ -677,7 +677,8 @@ div.ss_view_something {
 }
 
 div.ss_subscribe {
-  background-image: url(<html:imagesPath/>icons/subscribe.gif);
+  background-image: url(<html:imagesPath/>icons/send_friend.gif);
+  padding-left: 19px;
 }
 
 div.ss_send_friend {
