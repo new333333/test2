@@ -43,7 +43,8 @@ public class AuditTrail  {
 		modify, 
 		delete,
 		workflow,
-		login
+		login,
+		download
 	};
 
 	
@@ -57,6 +58,7 @@ public class AuditTrail  {
     protected String description; // any additional description
     protected String transactionType; // type of transaction/operation
     protected AuditType auditType=AuditType.unknown;
+    protected String fileId;
     
     public AuditTrail() {
 		
@@ -220,4 +222,14 @@ public class AuditTrail  {
 			}
 		}
    }
+	/**
+	 * @hibernate.property
+	 * @return
+	 */
+	public String getFileId() {
+		return fileId;
+	}
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
+	}
 }

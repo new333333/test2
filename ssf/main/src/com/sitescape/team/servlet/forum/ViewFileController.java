@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -248,7 +249,8 @@ public class ViewFileController extends SAbstractController {
 				} else {
 					try {
 						response.setHeader("Content-Length", String.valueOf(fa.getFileItem().getLength()));
-						getFileModule().readFile(parent, entity, fa, response.getOutputStream());				
+						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+						getReportModule().addFileInfo(AuditType.download, fa);
 					}
 					catch(Exception e) {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
