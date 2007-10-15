@@ -124,6 +124,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected Map defaultProps = new HashMap();
 	private String mailRootDir;
 	protected boolean useAliases=false;
+	protected boolean sendVTODO = true;
 //	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	public MailModuleImpl() {
 		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
@@ -163,6 +164,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void afterPropertiesSet() {
 		//Get alias setting
 		useAliases = SPropsUtil.getBoolean("mail.posting.useAliases", false);
+		//Get send tasks in email
+		sendVTODO = SPropsUtil.getBoolean("mail.sendVTODO", true);
 		//preload mailSenders so retry mail will work.  Needs name availailable 
 		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration//notify");
 		for (Element sEle:senders) {
@@ -716,15 +719,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
 					//always send ICAL attachments, not bound by "file attachment" flag	
 					MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);			
-					
-					// attach alternative iCalendar content
-					if (eventsSize == 1 && !folderNotification) {
-						MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
-					} else {
-						if (margedCalendars == null) {
-							margedCalendars = new Calendar();
+					//If okay to send todo or not a todo build alternatative
+					if (sendVTODO || !Component.VTODO.equals(component)) {
+						// 	attach alternative iCalendar content
+						if (eventsSize == 1 && !folderNotification) {
+							MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
+						} else {
+							if (margedCalendars == null) {
+								margedCalendars = new Calendar();
+							}
+							margedCalendars = Calendars.merge(margedCalendars, iCal);
 						}
-						margedCalendars = Calendars.merge(margedCalendars, iCal);
 					}
 				} catch (IOException e) {
 					logger.error(e);

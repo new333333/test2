@@ -81,6 +81,7 @@ import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -208,6 +209,8 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 			public void prepare(MimeMessage mimeMessage) throws MessagingException {
 				//make sure nothing saved yet
 				message = null;
+				//Get send tasks in email
+				boolean sendVTODO = SPropsUtil.getBoolean("mail.sendVTODO", true);
 			
 				int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
 				
@@ -272,22 +275,25 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 							}
 							
 							String component = null;
-							if (!ical.getComponents("VTODO").isEmpty()) {
-								component = "VTODO";
+							if (!ical.getComponents(Component.VTODO).isEmpty()) {
+								component = Component.VTODO;
 							}
 							String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(ical));
 							DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
 
 							MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);
 							
-							// attach alternative iCalendar content
-							if (iCals.size() == 1) {
-								MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
-							} else {
-								if (margedCalendars == null) {
-									margedCalendars = new net.fortuna.ical4j.model.Calendar();
+							//If okay to send todo or not a todo build alternatative
+							if (sendVTODO || !Component.VTODO.equals(component)) {
+								// attach alternative iCalendar content
+								if (iCals.size() == 1) {
+									MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
+								} else {
+									if (margedCalendars == null) {
+										margedCalendars = new net.fortuna.ical4j.model.Calendar();
+									}
+									margedCalendars = Calendars.merge(margedCalendars, ical);
 								}
-								margedCalendars = Calendars.merge(margedCalendars, ical);
 							}
 						
 						} catch (IOException e) {
