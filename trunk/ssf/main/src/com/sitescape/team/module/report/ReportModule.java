@@ -39,6 +39,7 @@ import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
@@ -64,6 +65,7 @@ public interface ReportModule {
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
 	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity);
 	public void addLoginInfo(LoginInfo loginInfo);
+	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
 	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory);
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
 

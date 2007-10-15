@@ -146,6 +146,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		addAuditTrail(loginInfo);		
 	}
 
+	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
+		AuditTrail audit = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), attachment.getOwner().getEntity());
+		audit.setDescription(attachment.getFileItem().getName());
+		audit.setFileId(attachment.getId());
+		addAuditTrail(audit);
+		
+	}
 	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory) {
 		addAuditTrail(workflowStateHistory);
 		
