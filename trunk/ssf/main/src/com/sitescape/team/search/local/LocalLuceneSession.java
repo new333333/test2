@@ -644,6 +644,7 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 				try {
 					indexWriter.optimize();
+					LuceneHelper.closeAll();
 					/*ROY indexWriter.close();
 					 * 
 					 */
