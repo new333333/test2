@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.AclUpdater;
@@ -643,6 +644,7 @@ public class LocalLuceneSession implements LuceneSession {
 									+ "]", e);
 				}
 				try {
+					addDocForOptimize(indexWriter);
 					indexWriter.optimize();
 					LuceneHelper.closeAll();
 					/*ROY indexWriter.close();
@@ -662,6 +664,18 @@ public class LocalLuceneSession implements LuceneSession {
 			logger.debug("LocalLucene: updateDocs(query) took: " + (endTime - startTime) + " milliseconds");
 	}
 
+	private void addDocForOptimize(IndexWriter writer) {
+		Document doc = new Document();
+		doc.add(new Field("__optimizer", "a", Field.Store.NO,
+				Field.Index.TOKENIZED));
+		try {
+			writer.addDocument(doc);
+		} catch (IOException ioe) {
+			if(debugEnabled)
+				logger.debug("LocalLucene: addDocForOptimize() failed to add opt doc");
+		}
+	}
+	
 	private void updateDocs(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
 		long startTime = System.currentTimeMillis();
 		//block every read/write while updateDocs is in progress
@@ -680,6 +694,7 @@ public class LocalLuceneSession implements LuceneSession {
 									+ "]", e);
 				}
 				try {
+					addDocForOptimize(indexWriter);
 					indexWriter.optimize();
 					LuceneHelper.closeAll();
 					/*ROY indexWriter.close();*/
