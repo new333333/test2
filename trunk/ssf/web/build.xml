@@ -16,6 +16,7 @@
 	<property name="jboss.portal.jboss-web.xml" value="jboss-portal.jboss-web.xml"/>
 	
 	<target name="clean">
+		<delete dir="temp"/>
 		<delete dir="{jspclasses.dir}" />
 		<delete file="${war.file}" failonerror="false" />
 		<delete>
@@ -128,7 +129,10 @@
 		</replace>
 	</target>
 		
-	<target name="war" depends="make-jboss-web.xml,make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
+	<target name="make-all-generated-files" depends="make-jboss-web.xml,make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
+	</target>
+	
+	<target name="war" depends="make-all-generated-files">
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
@@ -197,7 +201,7 @@
 
 	</target>
 	
-	<target name="deploy">
+	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}"
 				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/applicationContext-ext.xml"
@@ -208,6 +212,9 @@
 				excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl"
 			/>
 		</copy>
+	</target>
+	
+	<target name="deploy" depends="make-all-generated-files,deploy-light">
 	</target>
 	
 	<target name="precompile-jsp">
