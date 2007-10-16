@@ -180,10 +180,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				return result;
 			}});
 		LicenseStats stats = new LicenseStats();
-		if(marks.size() > 0) {
+		try {
 			Object cols[] = (Object[]) marks.get(0);
 			stats.setInternalUserCount(((Long) cols[0]).longValue());
 			stats.setExternalUserCount(((Long) cols[1]).longValue());
+		} catch(Exception e) {
+			// Ignore problems at startup that cause cols[] to have nulls
 		}
 		return stats;
 	}
