@@ -103,6 +103,9 @@ public class LuceneHelper {
 				break;
 			case (WRITE):
 				if (indexWriter != null) indexWriter.flush();
+				if (indexSearcher != null) {
+					indexSearcher.close();
+				}
 				indexSearcher = getNewSearcher(indexPath);
 			}
 		}
@@ -117,6 +120,9 @@ public class LuceneHelper {
 				if (indexWriter != null && !create)
 					break;
 			case (SEARCH):
+				if (indexWriter != null) {
+					indexWriter.close();
+				}
 				indexWriter = getNewWriter(indexPath, create);
 				break;
 			case (READ):
