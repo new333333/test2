@@ -135,11 +135,6 @@ public class ImageOpenOfficeConverter
 			ifile = new File(ifp);
 			ofile = new File(ofp);
 			
-			if (ofile != null
-			&& ofile.exists()
-			&& ofile.lastModified() >= ifile.lastModified())
-				return;
-			
 			try {
 				is = new FileInputStream(ifp);
 				inputData = FileCopyUtils.copyToByteArray(is);
