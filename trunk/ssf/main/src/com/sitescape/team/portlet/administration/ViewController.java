@@ -423,17 +423,19 @@ public class ViewController extends  SAbstractController {
 			reports.put(element.attributeValue("title"), element);
 
 			//License report
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.report.title.license"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			reports.put(element.attributeValue("title"), element);
-
+			if(ReleaseInfo.isEnterpriseEdition()) {
+				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				element.addAttribute("title", NLT.get("administration.report.title.license"));
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LICENSE_REPORT);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+				reports.put(element.attributeValue("title"), element);
+			}
+			
 			// Disk usage report
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.report.title.quota"));
