@@ -341,9 +341,6 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public com.sitescape.team.lucene.Hits search(Query query, int offset, int size) {
 		IndexSearcher indexSearcher = null;
-		//stop searches when an update is taking place.
-		synchronized(UpdateObject.class){
-		}
 		long startTime = System.currentTimeMillis();
 
 		try {
@@ -388,9 +385,6 @@ public class LocalLuceneSession implements LuceneSession {
 
 		Hits hits = null;
 		IndexSearcher indexSearcher = null;
-		// stop searches when an update is taking place.
-		synchronized(UpdateObject.class){
-		}
 		
 		try {
 			indexSearcher = LuceneHelper.getSearcher(indexPath);
@@ -631,33 +625,31 @@ public class LocalLuceneSession implements LuceneSession {
 		long startTime = System.currentTimeMillis();
 		//block every read/write while updateDocs is in progress
 		synchronized (LocalLuceneSession.class) {
-			// stop searches when an update is taking place.
-			synchronized(UpdateObject.class){
-				// first Optimize the index.
-				IndexWriter indexWriter = null;
-	
-				try {
-					indexWriter = LuceneHelper.getWriter(indexPath);
-				} catch (IOException e) {
-					throw new LuceneException(
-							"Could not open writer on the index [" + this.indexPath
-									+ "]", e);
-				}
-				try {
-					addDocForOptimize(indexWriter);
-					indexWriter.optimize();
-					LuceneHelper.closeAll();
-					/*ROY indexWriter.close();
-					 * 
-					 */
-					doUpdate(q,fieldname,fieldvalue);
-				} catch (IOException ioe) {
-					throw new LuceneException(
-							"Could not update fields on the index ["
-									+ this.indexPath + " ], query is: "
-									+ q.toString() + " field: " + fieldname);
-				}
+			// first Optimize the index.
+			IndexWriter indexWriter = null;
+
+			try {
+				indexWriter = LuceneHelper.getWriter(indexPath);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open writer on the index [" + this.indexPath
+								+ "]", e);
 			}
+			try {
+				addDocForOptimize(indexWriter);
+				indexWriter.optimize();
+				LuceneHelper.closeAll();
+				/*ROY indexWriter.close();
+				 * 
+				 */
+				doUpdate(q,fieldname,fieldvalue);
+			} catch (IOException ioe) {
+				throw new LuceneException(
+						"Could not update fields on the index ["
+								+ this.indexPath + " ], query is: "
+								+ q.toString() + " field: " + fieldname);
+			}
+			
 		}
 		long endTime = System.currentTimeMillis();
 		if(debugEnabled)
@@ -681,32 +673,30 @@ public class LocalLuceneSession implements LuceneSession {
 		//block every read/write while updateDocs is in progress
 		int count = 0;
 		synchronized (LocalLuceneSession.class) {
-			// stop searches when an update is taking place.
-			synchronized(UpdateObject.class){
-				// first Optimize the index.
-				IndexWriter indexWriter = null;
-	
-				try {
-					indexWriter = LuceneHelper.getWriter(indexPath);
-				} catch (IOException e) {
-					throw new LuceneException(
-							"Could not open writer on the index [" + this.indexPath
-									+ "]", e);
-				}
-				try {
-					addDocForOptimize(indexWriter);
-					indexWriter.optimize();
-					LuceneHelper.closeAll();
-					/*ROY indexWriter.close();*/
-					for (count = 0; count < queries.size(); count++)
-						doUpdate(queries.get(count),fieldname,values.get(count));
-				} catch (IOException ioe) {
-					throw new LuceneException(
-							"Could not update fields on the index ["
-									+ this.indexPath + " ], query is: "
-									+ queries.get(count).toString() + " field: " + fieldname);
-				} 
+			// first Optimize the index.
+			IndexWriter indexWriter = null;
+
+			try {
+				indexWriter = LuceneHelper.getWriter(indexPath);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open writer on the index [" + this.indexPath
+								+ "]", e);
 			}
+			try {
+				addDocForOptimize(indexWriter);
+				indexWriter.optimize();
+				LuceneHelper.closeAll();
+				/*ROY indexWriter.close();*/
+				for (count = 0; count < queries.size(); count++)
+					doUpdate(queries.get(count),fieldname,values.get(count));
+			} catch (IOException ioe) {
+				throw new LuceneException(
+						"Could not update fields on the index ["
+								+ this.indexPath + " ], query is: "
+								+ queries.get(count).toString() + " field: " + fieldname);
+			} 
+			
 		}
 		long endTime = System.currentTimeMillis();
 		if(debugEnabled)
@@ -986,7 +976,4 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 		}
 	}
-}
-
-class UpdateObject {
 }
