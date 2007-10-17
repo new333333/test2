@@ -59,9 +59,8 @@ public class PWCallbackText implements CallbackHandler {
                 String id = pc.getIdentifer();
                 //System.out.println("Identifier [" + id + "]");
                 if ("admin".equals(id)) {
-                	String clearPassword = "admin";
                 	//System.out.println("Client: Cleartext password is [" + clearPassword + "]");
-        			pc.setPassword(clearPassword);
+        			pc.setPassword("test");
                 }
                 else {
                 	// Leave the password as blank

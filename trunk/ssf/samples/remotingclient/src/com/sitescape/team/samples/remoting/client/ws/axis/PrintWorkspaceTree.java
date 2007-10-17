@@ -80,10 +80,18 @@ public class PrintWorkspaceTree
 		call.setOperationName(new QName("getWorkspaceTreeAsXML"));
 
 		// Programmatically set the username. Alternatively you can specify
-		// the username in the WS deployment descriptor client_deploy.wsdd
-		// if the username is known at deployment time and does not change
-		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "liferay.com.1");
+		// the username in the WS deployment descriptor client_deploy.wsdd.
+		call.setProperty(WSHandlerConstants.USER, "admin");
+		
+		// Programmatically set the password type and callback class. The type
+		// should be either PW_TEXT or PW_DIGEST. Alternatively the same can
+		// be specified in the WS deployment descriptor client_deploy.wsdd.
+		//call.setProperty(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);
+		//call.setProperty(WSHandlerConstants.PW_CALLBACK_CLASS, 
+		//		"com.sitescape.team.samples.remoting.client.ws.security.PWCallbackText");
+		//call.setProperty(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_DIGEST);
+		//call.setProperty(WSHandlerConstants.PW_CALLBACK_CLASS, 
+		//		"com.sitescape.team.samples.remoting.client.ws.security.PWCallbackDigest");
 
 		String wsTreeAsXML = (String) call.invoke(new Object[] {id, depth});
 
