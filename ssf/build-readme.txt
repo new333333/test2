@@ -63,12 +63,27 @@ Building and Deploying ICEcore Within Development Environment
 (1) Building and deploying ICEcore
 
 * For clean rebuild of ICEcore and deployment into the binary installation:
+
+  Note: Shutdown ICEcore server before executing the following command.
   
   cd C:/icecore-1.0
   ant clean-build-and-full-deploy
+
+  Note: You can use build-and-full-deploy instead of clean-build-and-full-deploy
+  in the above command if you want a slightly faster rebuild that only recompiles
+  modified code. The time difference is not significant though.
   
-* For a quicker rebuild of only modified code and redeployment you can use:
+(2) Building and deploying at sub-projects level
 
-  cd C:/icecore-1.0
-  ant build-and-full-deploy
-
+* Most of the subprojects have a deploy Ant target that lets you deploy updated
+  artifacts at smaller granularity. Depending on the nature and scope of the
+  changes being made, this may provide a faster way to deploy and test your
+  changes. When this smaller control is not effective, you must use the full
+  build command described above. 
+  
+* The web subproject contains an additional Ant target called deploy-light 
+  which could be handy when all you need to re-deploy to the installation area
+  are the common web-tier artifacts such as .jsp, .html, .js, .css, and image
+  files, etc. The main difference is that you can deploy these artifacts
+  using deploy-light without having to stop and restart the ICEcore server.
+  
