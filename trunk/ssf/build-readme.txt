@@ -76,10 +76,11 @@ Building and Deploying ICEcore Within Development Environment
 (2) Building and deploying at sub-projects level
 
 * Most of the subprojects have a deploy Ant target that lets you deploy updated
-  artifacts at smaller granularity. Depending on the nature and scope of the
+  artifacts at smaller granularity. Depending on the type and scope of the
   changes being made, this may provide a faster way to deploy and test your
   changes. When this smaller control is not effective, you must use the full
-  build command described above. 
+  build command described above. Re-deploying modified jar files or configuration
+  files almost always requires a restart of the ICEcore server.
   
 * The web subproject contains an additional Ant target called deploy-light 
   which could be handy when all you need to re-deploy to the installation area
