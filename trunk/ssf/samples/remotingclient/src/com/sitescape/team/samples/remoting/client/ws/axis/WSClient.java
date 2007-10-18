@@ -109,6 +109,8 @@ public class WSClient
 				String s = FacadeClientHelper.readText(args[1]);
 				System.out.println("XML: " + s);
 				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("getBinderTitle")) {
+				fetchAndPrintString("getBinderTitle", new Object[] {Long.parseLong(args[1])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -196,6 +198,16 @@ public class WSClient
 		System.out.println(ident);
 	}
 
+	static void fetchAndPrintString(String operation, Object[] args) throws Exception {
+		fetchAndPrintString(operation, args, null);
+	}
+	
+	static void fetchAndPrintString(String operation, Object[] args, String filename) throws Exception {
+		String str = (String) fetch(operation, args, filename);
+
+		System.out.println(str);
+	}
+
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth> [<page>]");
@@ -213,5 +225,7 @@ public class WSClient
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
 		System.out.println("uploadCalendarEntries <folder id> <xmlFilename> [<iCalFilename>]");
+		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
+		System.out.println("getBinderTitle <binder id>");
 	}
 }
