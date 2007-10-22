@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- View Definition File: Use this to change the default behavior -->
+<!-- Enable <bean id="customViewResolver"> in applicatonContext -->
+<beans>
+
+	<!-- ========================= View Definitions ========================= -->
+
+<!-- EXAMPLE:
+	<bean name="administration/view" class="org.springframework.web.servlet.view.JstlView">
+		<property name="url"><value>/WEB-INF/jsp/mycustimizations/admin_view.jsp</value></property>
+	</bean>
+-->		
+
+</beans>
