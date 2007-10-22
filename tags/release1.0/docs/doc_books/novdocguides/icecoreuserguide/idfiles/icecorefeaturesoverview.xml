@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bbgjv6a" pid="bbgjv6a" name="Chapter" level="0" number="3"> <text>Features Overview</text> </target>
+
+ <target id="bbgk3e9" pid="bbgk3e9" name="Sect1" level="1" number="3.1"> <text>Tools</text> </target>
+
+ <target id="bbgk5ei" pid="bbgk3e9" name="Sect2" level="2" number="3.1.1"> <text>Accessories</text> </target>
+
+ <target id="bbj059j" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Personal accessory for this page only:</text> </target>
+
+ <target id="bbj05vv" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Personal accessory for all workspaces and folders:</text> </target>
+
+ <target id="bbj06kn" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Community accessory for this page:</text> </target>
+
+ <target id="bbj0auv" pid="bbgk3e9" name="Sect3" level="3"> <text>Adding an Accessory Visible on All Pages</text> </target>
+
+ <target id="bbj0iv6" pid="bbgk3e9" name="Sect3" level="3"> <text>Adding an Accessory for One Page</text> </target>
+
+ <target id="bbj0ny8" pid="bbgk3e9" name="Sect3" level="3"> <text>Layout</text> </target>
+
+ <target id="bbgk5ku" pid="bbgk3e9" name="Sect2" level="2" number="3.1.2"> <text>Favorites</text> </target>
+
+ <target id="bbj2yij" pid="bbgk3e9" name="Sect2" level="2" number="3.1.3"> <text>Tags</text> </target>
+
+ <target id="bbgk6hx" pid="bbgk3e9" name="Sect2" level="2" number="3.1.4"> <text>Filters</text> </target>
+
+ <target id="bbq9ha7" pid="bbgk3e9" name="Sect2" level="2" number="3.1.5"> <text>E-mail Notifications</text> </target>
+
+ <target id="bbq9ny3" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Digest --</text> </target>
+
+ <target id="bbq9okx" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Individual messages --</text> </target>
+
+ <target id="bbq9p1y" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Individual messages with attachments --</text> </target>
+
+ <target id="bbgk71z" pid="bbgk3e9" name="Sect2" level="2" number="3.1.6"> <text>The Clipboard</text> </target>
+
+ <target id="bbj3qrh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.7"> <text>Entry-Reference Mark-Up</text> </target>
+
+ <target id="bbizuzh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.8"> <text>Rating Stars</text> </target>
+
+ <target id="bbgk7me" pid="bbgk3e9" name="Sect2" level="2" number="3.1.9"> <text>Workflow</text> </target>
+
+ <target id="bbgkaj3" pid="bbgk3e9" name="Sect2" level="2" number="3.1.10"> <text>ICEcore Conference</text> </target>
+
+ <target id="bbqa0rf" pid="bbgk3e9" name="Sect2" level="2" number="3.1.11"> <text>Accessibility Mode</text> </target>
+
+ <target id="bbgk3jn" pid="bbgk3jn" name="Sect1" level="1" number="3.2"> <text>Folder Types</text> </target>
+
+ <target id="bbgk7cy" pid="bbgk3jn" name="Sect2" level="2" number="3.2.1"> <text>Blogs</text> </target>
+
+ <target id="bbgk8kr" pid="bbgk3jn" name="Sect2" level="2" number="3.2.2"> <text>Discussions</text> </target>
+
+ <target id="bbgk8qf" pid="bbgk3jn" name="Sect2" level="2" number="3.2.3"> <text>Calendars</text> </target>
+
+ <target id="bbj2po3" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Import calendar:</text> </target>
+
+ <target id="bbj2qgo" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Show entries by:</text> </target>
+
+ <target id="bbj2rc9" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Work day:</text> </target>
+
+ <target id="bbj2seo" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Number of days:</text> </target>
+
+ <target id="bbj2t5k" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Previous and next page:</text> </target>
+
+ <target id="bbj2tti" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Calendar applet:</text> </target>
+
+ <target id="bbgk9gw" pid="bbgk3jn" name="Sect2" level="2" number="3.2.4"> <text>Guestbooks</text> </target>
+
+ <target id="bbgk9mn" pid="bbgk3jn" name="Sect2" level="2" number="3.2.5"> <text>File Folders</text> </target>
+
+ <target id="bbgk9sv" pid="bbgk3jn" name="Sect2" level="2" number="3.2.6"> <text>Milestone folders</text> </target>
+
+ <target id="bbgka71" pid="bbgk3jn" name="Sect2" level="2" number="3.2.7"> <text>Photo Albums</text> </target>
+
+ <target id="bbgkasg" pid="bbgk3jn" name="Sect2" level="2" number="3.2.8"> <text>Surveys </text> </target>
+
+ <target id="bbgkaza" pid="bbgk3jn" name="Sect2" level="2" number="3.2.9"> <text>Tasks</text> </target>
+
+ <target id="bbgkdy7" pid="bbgk3jn" name="Sect2" level="2" number="3.2.10"> <text>Wikis</text> </target>
+
+ <target id="bbj3qbp" pid="bbgk3jn" name="FormalPara" level="3"> <text>Note:</text> </target>
+
+ <target id="bbgk3yu" pid="bbgk3yu" name="Sect1" level="1" number="3.3"> <text>Workspaces</text> </target>
+
+ <target id="bbj44iq" pid="bbgk3yu" name="Sect2" level="2" number="3.3.1"> <text>Global Workspaces</text> </target>
+
+ <target id="bbj47vy" pid="bbgk3yu" name="FormalPara" level="3"> <text>Note:</text> </target>
+
+ <target id="bbj44n5" pid="bbgk3yu" name="Sect2" level="2" number="3.3.2"> <text>Personal Workspaces</text> </target>
+
+ <target id="bbj49ax" pid="bbgk3yu" name="Sect2" level="2" number="3.3.3"> <text>Team Workspaces</text> </target>
+
+ <target id="bbgke8j" pid="bbgk3yu" name="Sect2" level="2" number="3.3.4"> <text>Project Workspaces</text> </target>
+
+</targets>
