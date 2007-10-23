@@ -25,9 +25,9 @@
 <!-- ============================================================= -->
 
 <!-- please change product to anything that makes sense in your current release -->
-<!ENTITY product       "ICEcore Conference">
+<!ENTITY product       "Conferencing">
 
-<!ENTITY ICEcore       "ICEcore">
+<!ENTITY ICEcore       "Novell Teaming">
 
 <!-- oddities -->
 <!ENTITY thrdmrk "*">
