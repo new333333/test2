@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Wednesday, October 10, 2007" />
+<meta name="Generation-Date" content="Tuesday, October 23, 2007" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2007" />
 
 <style type="text/css">
@@ -739,6 +739,8 @@ sitescape-conferencing/cluster-prototype/new-user-template.default
 sitescape-conferencing/cluster-prototype/voiceconfig.xml
 </pre><pre class="screen">
 sitescape-conferencing/cluster-prototype/dialing.xml
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/ldap.xml.in
 </pre>
 <h4 class="bridgehead" id="b9y0c5v"> Backup the Directory</h4>
 
@@ -800,8 +802,28 @@ sitescape-conferencing/cluster-prototype/dialing.xml
 <p class="para">Change directories to the sitescape-conferencing directory that contains 
      <span class="literal">install.sh</span>:
     </p><pre class="screen">
-# cd &lt;directory-name&gt;
+# cd sitescape-conferencing
 </pre></li>
+<li class="step" id="bcbdn7d">
+<p class="para">If you plan on running Active Directory LDAP Synchronization, you need to edit the 
+     <span class="literal">ldap.xml.in </span>file in the 
+     <span class="literal">cluster-prototype</span> directory (see <a href="#b9varpy">Section E.0, LDAP User Authentication</a>):
+    </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bcbdodl">
+<p class="para">Open the
+       <span class="literal"> ldap.xml.in </span>file.
+      </p></li>
+<li class="step" id="bcbdolr">
+<p class="para">Comment out the
+       <span class="literal"> eDirectory </span>attributes section and uncomment out the
+       <span class="literal"> ActiveDirectory </span>attributes section.
+      </p></li>
+<li class="step" id="bcbdpqq">
+<p class="para">Save the file.</p></li></ol>
+</div>
+</li>
 <li class="step" id="bc22sau">
 <p class="para">Run the installer:</p><pre class="screen">
 # ./install.sh
@@ -954,7 +976,7 @@ Do you want to change system admin email configuration? (Y/N): &lt;enter_value&g
 Is this correct (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>The questions from <a href="#bc53g28">Step 24</a> through <a href="#bc53nxe">Step 37</a> all have default values of
+<p class="para"><em class="title">NOTE:</em>The questions from <a href="#bc53g28">Step 25</a> through <a href="#bc53nxe">Step 38</a> all have default values of
       <span class="literal"> N</span>. If you select
       <span class="literal"> Y</span>, the installer will prompt you to enter additional values and information to customize your server configuration. You can customize your configuration for information like how long a file is archived, with a different header look, the way summaries are viewed, security settings, etc. If you use the defaults and decide to customize your server configuration later, you have to re-run the installer to change these values.
      </p></div>
@@ -964,61 +986,64 @@ Is this correct (Y/N): &lt;enter_value&gt;
 Do you want to change mailer config? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0kfb">Section 2.6.3, Mailer Configuration (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0kfb">Section 2.6.4, Mailer Configuration (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53g29">
 <p class="para">The installer prompts you to select whether you want to change the database backup configuration:</p><pre class="screen">
 Do you want to change DB backup config (Y/N): 
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0l01">Section 2.6.4, Database Backup Configuration (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0l01">Section 2.6.5, Database Backup Configuration (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53g2a">
 <p class="para">The installer prompts you to select whether you want to change the meeting archive maintenance configuration:</p><pre class="screen">
 Do you want to change meeting archive maint? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0m2n">Section 2.6.5, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0m2n">Section 2.6.6, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53g2b">
 <p class="para">The installer prompts you to select whether you want to change the document share repository maintenance configuration:</p><pre class="screen">
 Do you want to change doc share repository maint config? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0m2n">Section 2.6.5, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0m2n">Section 2.6.6, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53nx5">
 <p class="para">The installer prompts you to select whether you want to change the audit logs:</p><pre class="screen">
 Do you want to change Audit logs? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0ny2">Section 2.6.6, Chat Audit Log Configuration (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0ny2">Section 2.6.7, Chat Audit Log Configuration (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53nx6">
 <p class="para">The installer prompts you to select whether you want to change the logging configuration:</p><pre class="screen">
 Do you want to change logging config? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0ny2">Section 2.6.6, Chat Audit Log Configuration (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0ny2">Section 2.6.7, Chat Audit Log Configuration (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53nx7">
 <p class="para">The installer prompts you to select whether you want to change the real-time call user-reservations logs:</p><pre class="screen">
 Do you want to change real-time call user-reservations logs? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0s79">Section 2.6.7, Event Logging Configuration (Optional)</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0s79">Section 2.6.8, Event Logging Configuration (Optional)</a>.</p></div>
 </li>
 <li class="step" id="bc53nx8">
 <p class="para">The installer prompts you to select whether you want to change the security configuration:</p><pre class="screen">
 Do you want to change security configuration? (Y/N): &lt;enter_value&gt;
 </pre>
 <div class="note">
-<p class="para"><em class="title">NOTE:</em>See <a href="#b9y15qu">Section 2.6.9, XML Router Security</a>.</p></div>
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y15qu">Section 2.6.10, XML Router Security</a>.</p></div>
 </li>
 <li class="step" id="bc53nx9">
 <p class="para">The installer prompts you to select whether you want to change the LDAP configuration:</p><pre class="screen">
 Do you want to change LDAP (Y/N): &lt;enter_value&gt;
-</pre></li>
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#bcb9zhr">Section 2.6.3, Configuring LDAP Synchronization (Optional)</a>. For Active Directory LDAP Synchronization, you need to complete <a href="#bcbdn7d">Step 4</a> first.</p></div>
+</li>
 <li class="step" id="bc53nxa">
 <p class="para">The installer prompts you to select whether you want to change the system e-mail header configuration:</p><pre class="screen">
 Do you want to change system email header config? (Y/N): &lt;enter_value&gt;
@@ -1036,7 +1061,7 @@ Do you want to change Meeting invite template? (Y/N): &lt;enter_value&gt;
 Do you want to change Summary email template? Y/N): &lt;enter_value&gt;
 </pre></li>
 <li class="step" id="bc53nxe">
-<p class="para">The installer prompts you to select whether you want to change </p><pre class="screen">
+<p class="para">The installer prompts you to select whether you want to change the meeting archive e-mail template:</p><pre class="screen">
 Do you want to change Meeting archive email template? (Y/N): &lt;enter_value&gt;
 </pre></li>
 <li class="step" id="bc53nxf">
@@ -1064,6 +1089,17 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 <p class="para">The installation completes and displays information stating the services that should be running. </p></li></ol>
 </div>
 
+<h4 class="bridgehead" id="bcbv5sq"> Initial Address Book Configuration (Synchronization)</h4>
+
+<p class="para">If you are using LDAP synchronization, execute
+   <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the initial synchronization. 
+  </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After starting the server, wait 20 seconds or so before executing this command; if you do not get an XML message back, you probably did not wait long enough.</p></div>
+
+<p class="para">This script displays an XML message if it fails (the fault message is clearly visible); if it succeeds, the XML data contains a single number that is the number of users actually synchronized. You can run this script manually as needed, or configured to run periodically using
+   <span class="literal"> cron</span> (the default setting is for it to run daily).
+  </p>
 </div>
 
 <div class="sect1 singlefile"  id="b9y00b9">
@@ -1083,39 +1119,43 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y0kfb">Section 2.6.3, Mailer Configuration (Optional)</a>
+            <a href="#bcb9zhr">Section 2.6.3, Configuring LDAP Synchronization (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y0l01">Section 2.6.4, Database Backup Configuration (Optional)</a>
+            <a href="#b9y0kfb">Section 2.6.4, Mailer Configuration (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y0m2n">Section 2.6.5, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>
+            <a href="#b9y0l01">Section 2.6.5, Database Backup Configuration (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y0ny2">Section 2.6.6, Chat Audit Log Configuration (Optional)</a>
+            <a href="#b9y0m2n">Section 2.6.6, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y0s79">Section 2.6.7, Event Logging Configuration (Optional)</a>
+            <a href="#b9y0ny2">Section 2.6.7, Chat Audit Log Configuration (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y15iv">Section 2.6.8, Port Forwarding (Optional)</a>
+            <a href="#b9y0s79">Section 2.6.8, Event Logging Configuration (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y15qu">Section 2.6.9, XML Router Security</a>
+            <a href="#b9y15iv">Section 2.6.9, Port Forwarding (Optional)</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y16eo">Section 2.6.10, Template Configuration (Optional)</a>
+            <a href="#b9y15qu">Section 2.6.10, XML Router Security</a>
           </p></li>
 <li class="listitem">
 <p class="listitem">
-            <a href="#b9y16f8">Section 2.6.11, Summary of Configuration</a>
+            <a href="#b9y16eo">Section 2.6.11, Template Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y16f8">Section 2.6.12, Summary of Configuration</a>
           </p></li></ul></div>
 
 <div class="sect2 singlefile"  id="b9y0hd9">
@@ -1126,26 +1166,20 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 <ol class="steps">
 <li class="step" id="bbprvys">
 <p class="para">Create and name a new ICEcore Conference installation.</p>
-<div class="note">
-<p class="para"><em class="title">NOTE:</em>The name of the installation cannot contain spaces, but can contain any combination of ASCII and alphanumeric characters.</p></div>
-</li>
+<p class="para">The name of the installation cannot contain spaces, but can contain any combination of ASCII and alphanumeric characters.</p></li>
 <li class="step" id="b9y0fcg">
 <p class="para"> Initialize the
       <span class="filename"> PostgreSQL </span>database.
      </p>
-<div class="note">
-<p class="para"><em class="title">NOTE:</em>Ensure that you have created the
-       <span class="filename"> PostgreSQL </span>database prior to installation. Refer to the 
-       <a href="#b9xzzfu">Installation Prerequisite</a> section for additional information.
-      </p></div>
-</li>
+<p class="para">Ensure that you have created the
+      <span class="filename"> PostgreSQL </span>database prior to installation. Refer to the 
+      <a href="#b9xzzfu">Installation Prerequisite</a> section for additional information.
+     </p></li>
 <li class="step" id="bc534ue">
 <p class="para">Identify a Single-Host or a Multiple-Host installation.</p></li>
 <li class="step" id="b9y0fde">
 <p class="para">Provide the IPs and the hostnames for the XML Router, Web Portal and Desktop/App Server.</p>
-<div class="note">
-<p class="para"><em class="title">NOTE:</em>The installer attempts to ping hosts and IP addresses to ensure that they are running and reachable. If an intervening firewall is filtering out ICMP messages or the host is intentionally down, it may not appear to be reachable even though the entered value is valid. </p></div>
-</li>
+<p class="para">The installer attempts to ping hosts and IP addresses to ensure that they are running and reachable. If an intervening firewall is filtering out ICMP messages or the host is intentionally down, it may not appear to be reachable even though the entered value is valid. </p></li>
 <li class="step" id="b9y0fdj">
 <p class="para">Install a ICEcore Conference Voice Bridge (optional).</p></li></ol>
 </div>
@@ -1174,9 +1208,114 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 </div>
 
+<div class="sect2 singlefile"  id="bcb9zhr">
+
+<h3 class="title"><span class="number">2.6.3</span> Configuring LDAP Synchronization (Optional)</h3>
+
+<p class="para">Synchronization between eDirectory or ActiveDirectory users and ICEcore Conference users is established when you install ICEcore Conference.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you plan on running Active Directory LDAP Synchronization, you need to edit the 
+     <span class="literal">ldap.xml.in </span>file in the
+     <span class="literal"> cluster-prototype directory</span> (see <a href="#b9varpy">Section E.0, LDAP User Authentication</a>) before running the installer.
+    </p></div>
+
+<p class="para">During the installation, you are prompted:</p><pre class="screen">
+Do you want to change the LDAP configuration? (y/n)
+</pre>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bcba2lr">
+<p class="para">Type
+      <span class="literal"> y</span>, then press Enter.
+     </p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Should the system enable LDAP synchronization? (y/n)
+</pre></li>
+<li class="step" id="bcba2sh">
+<p class="para">Type
+      <span class="literal"> y</span>, then press Enter.
+     </p>
+<p class="para">Next, you are prompted with options:</p><pre class="screen">
+LDAP servers
+</pre><pre class="screen">
+  1: URL=ldap://ldapserver, bindDN=cn=admin, o=yourcompany, bindPW=password, baseDN=ou=employees, dc=sleepy, dc=com, 
+import filter=(objectClass=User), auth filter=(uid=%s), 
+community=2
+</pre><pre class="screen">
+   A - Add
+</pre><pre class="screen">
+   E - Edit
+</pre><pre class="screen">
+   D - Delete
+</pre><pre class="screen">
+   Q - Quit
+</pre>
+<p class="para">The line of settings indicates the information that the Conferencing installation program gathers for each LDAP server.</p></li>
+<li class="step" id="bcba3k6">
+<p class="para">Type
+      <span class="literal"> e </span>for 
+      <span class="guimenu">Edit</span> to define your first LDAP server, then press Enter.
+     </p></li>
+<li class="step" id="bcbay56">
+<p class="para">Type
+      <span class="literal"> 1 </span>for the server number, then press Enter.
+     </p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the URL of the LDAP server:
+</pre></li>
+<li class="step" id="bcbdir2">
+<p class="para">Specify the URL in the following format, then press Enter.</p><pre class="screen">
+ldap://<span class="emphasis">hostname</span>
+</pre>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the dn with which to bind to the LDAP server:
+</pre></li>
+<li class="step" id="bcbdwgb">
+<p class="para">Specify the Admin-equivalent username with full context, then press Enter.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the password for the bind dn:
+</pre></li>
+<li class="step" id="bcbec5d">
+<p class="para">Type the password for the Admin-equivalent user, then press Enter.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the base dn under which to search for users:
+</pre></li>
+<li class="step" id="bcbecur">
+<p class="para">Specify the eDirectory/ActiveDirectory container that defines the search scope, then press Enter.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the filter used to select users for import:
+</pre></li>
+<li class="step" id="bcbsi89">
+<p class="para">Press Enter to accept the default value.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the filter used to select users for import:
+</pre></li>
+<li class="step" id="bcbsek6">
+<p class="para">Press Enter to accept the default value.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the community into which to place users imported from LDAP:
+</pre></li>
+<li class="step" id="bcbsekz">
+<p class="para">Press Enter to accept the default value.</p>
+<p class="para">You return to the original options prompt, which displays the information you have provided for the first LDAP server.</p></li>
+<li class="step" id="bcbsg4l">
+<p class="para">To add more LDAP servers to the list, type a for Add, press Enter, then repeat <a href="#bcbay56">Step 4</a> through <a href="#bcbsekz">Step 11</a>, adjusting the information as needed for each LDAP server.</p></li>
+<li class="step" id="bcbsiqc">
+<p class="para">If you make a mistake and need to remove an LDAP server from the list, type d for Delete, press Enter, type the number of the server to delete, then press Enter, type y to confirm, then press Enter again.</p></li>
+<li class="step" id="bcbsj8v">
+<p class="para">When you are finished listing LDAP servers, type q for Quit, then press Enter.</p></li>
+<li class="step" id="bcbsji6">
+<p class="para">Continue as usual with the ICEcore Conference installation.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#bbkkx32">Address Book Configuration (Synchronization)</a> for testing the LDAP synchronization.</p></div>
+</li></ol>
+</div>
+
+</div>
+
 <div class="sect2 singlefile"  id="b9y0kfb">
 
-<h3 class="title"><span class="number">2.6.3</span> Mailer Configuration (Optional)</h3>
+<h3 class="title"><span class="number">2.6.4</span> Mailer Configuration (Optional)</h3>
 
 <p class="para">The mailer is used to notify ICEcore Conference users of events. By default, the mailer uses the SMTP service provided on its host, but you can change the SMTP Server and provide user and password authentication for that server, if required:</p>
 <div class="orderedlist">
@@ -1193,7 +1332,7 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y0l01">
 
-<h3 class="title"><span class="number">2.6.4</span> Database Backup Configuration (Optional)</h3>
+<h3 class="title"><span class="number">2.6.5</span> Database Backup Configuration (Optional)</h3>
 
 <p class="para">Daily database backups are stored in the
     <span class="filename"> /var/iic/db-backups </span>directory.
@@ -1218,7 +1357,7 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y0m2n">
 
-<h3 class="title"><span class="number">2.6.5</span> Meeting Archive and Document Sharing Repository Configurations (Optional)</h3>
+<h3 class="title"><span class="number">2.6.6</span> Meeting Archive and Document Sharing Repository Configurations (Optional)</h3>
 
 <p class="para">The Meeting and Document Sharing (DocShare) Archive Repositories are both monitored daily at 4:00 a.m. to ensure that they have not reached a size of 2500MB. When a repository exceeds 2500MB, archives that have not been accessed within the last 30 days are deleted until the archive repository reaches 2000MB. If the system cannot delete archives to reach the 2500MB repository size, a warning e-mail is sent to the system administrator indicating the need for appropriate manual action. To avoid the automatic deletion of archives, the maintenance procedure can be configured to send daily notification when a meeting or document sharing archive repository reaches the specified maximum.</p>
 <p class="para">To modify the default maintenance procedure for a repository:</p>
@@ -1255,7 +1394,7 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y0ny2">
 
-<h3 class="title"><span class="number">2.6.6</span> Chat Audit Log Configuration (Optional)</h3>
+<h3 class="title"><span class="number">2.6.7</span> Chat Audit Log Configuration (Optional)</h3>
 
 <p class="para">You can configure chat audit logging at system installation or reconfiguration time using the 
     <span class="literal">install.sh </span>script.
@@ -1370,7 +1509,7 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y0s79">
 
-<h3 class="title"><span class="number">2.6.7</span> Event Logging Configuration (Optional)</h3>
+<h3 class="title"><span class="number">2.6.8</span> Event Logging Configuration (Optional)</h3>
 
 <p class="para">Log files are written to
     <span class="literal"> /var/log/iic</span>, except for the web portal and external API server logs, which are written to files in 
@@ -1413,14 +1552,14 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y15iv">
 
-<h3 class="title"><span class="number">2.6.8</span> Port Forwarding (Optional)</h3>
+<h3 class="title"><span class="number">2.6.9</span> Port Forwarding (Optional)</h3>
 
 <p class="para">The ICEcore Conference client attempts to connect to ports 1270, 443 and 21 when the primary port (either 5222 for the XML router or 2182 for desktop/app-share server) is blocked by a firewall. Connections to these ports should be forwarded to the primary port. If you are not running a load balancer that performs this task, you must forward these ports locally on the XML router host(s) or the desktop/app-share server host(s).</p>
 </div>
 
 <div class="sect2 singlefile"  id="b9y15qu">
 
-<h3 class="title"><span class="number">2.6.9</span> XML Router Security</h3>
+<h3 class="title"><span class="number">2.6.10</span> XML Router Security</h3>
 
 <p class="para">In order for a ICEcore Conference service (meeting controller, voice bridge, etc.) to connect to the XML router it must use the correct authentication key. If your XML router allows connections from the Internet, change the Service Connection Key so that unauthorized services cannot access and connect to your router. Additionally, the meeting controller needs to provide a User Session Creation Key. You should change this key so that unauthorized meeting controllers cannot create sessions on behalf of your users.</p>
 <div class="itemizedlist">
@@ -1438,7 +1577,7 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y16eo">
 
-<h3 class="title"><span class="number">2.6.10</span> Template Configuration (Optional)</h3>
+<h3 class="title"><span class="number">2.6.11</span> Template Configuration (Optional)</h3>
 
 <p class="para">You can modify the e-mail templates that ICEcore Conference uses to communicate with users (see <a href="#b9yefsv">Section 4.0, Modifying Template Files</a>).</p>
 <div class="orderedlist">
@@ -1487,7 +1626,7 @@ Satisfied with config (Y/N): &lt;enter_value&gt;
 
 <div class="sect2 singlefile"  id="b9y16f8">
 
-<h3 class="title"><span class="number">2.6.11</span> Summary of Configuration</h3>
+<h3 class="title"><span class="number">2.6.12</span> Summary of Configuration</h3>
 
 <p class="para">Once you have completed the installation script, you are presented with a summary of the choices you selected. If you are not satisfied with the configuration setup, you can either modify the configuration or you can exit the installer and run the script again. If you exit the installer, the current configuration is saved, and when you rerun the install script, it is used for the default values during the reconfiguration.</p>
 </div>
@@ -2694,149 +2833,106 @@ db_netmask=( 255.255.255.0 )
 
 <h1 class="title"><span class="number">E.0</span> LDAP User Authentication</h1>
 
-<h4 class="bridgehead" id="bbkkx31"> Configuring LDAP Authentication and Synchronization for ICEcore Conference</h4>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The password for
+   <span class="literal"> admin </span>always comes from the ICEcore Conference internal database so that an administrator is able to log on even if directory servers are not available. Because the password must be passed over the network in plain text, we recommend deployment using SSL.
+  </p></div>
 
-<p class="para">Currently you must manually configure this. Repeat this process if a server is re-installed or upgraded since a normal server install overwrites these changes.</p>
-<p class="para">An LDAP directory can be used as the data source for these two operations:</p>
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Creation of ICEcore Conference users (via periodic synchronization against users in the LDAP directory)</p></li>
-<li class="listitem">
-<p class="listitem">Authentication of ICEcore Conference users (password is checked against the directory as users sign on)</p></li></ul></div>
+<h4 class="bridgehead" id="bcbugrb"> LDAP User Authentication Input File</h4>
 
-<p class="para">You can configure either or both of these as described below. If you are going to enable both, we recommend that you start with synchronization – once synchronization is complete, you can sign on and check that all users were created before moving onto the authentication step.</p>
-<h4 class="bridgehead" id="bbkkx32"> Address Book Configuration (Synchronization)</h4>
-
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Modify
-    <span class="literal"> /opt/iic/conf/config.xml </span>and remove the XML comment declaration around the
-    <span class="literal"> ldapConfig </span>element (remove
-    <span class="literal">&lt;!-- </span>and
-    <span class="literal"> --&gt; </span>from the lines preceding and following this line).
-   </p></li>
-<li class="listitem">
-<p class="listitem">Modify
-    <span class="literal"> /opt/iic/conf/ldap.xml</span>, setting the server URL and other fields as appropriate. Use
-    <span class="literal"> ldap: </span>for normal and
-    <span class="literal"> ldaps: </span>for SSL connections.
-   </p></li>
-<li class="listitem">
-<p class="listitem">The
-    <span class="literal"> communityid </span>configuration item indicates the community to which new users located in the LDAP directory are added. The available community ids can be found using the ICEcore Conference server console.
-   </p></li>
-<li class="listitem">
-<p class="listitem">The
-    <span class="literal"> attributes </span>configuration section controls how LDAP attributes are mapped to ICEcore Conference contact fields. The
-    <span class="literal"> screenname </span>ICEcore Conference field is the most important field as that is how the ICEcore Conference user being updated is located in the address book.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /etc/init.d/iicaddress stop </span>and
-    <span class="literal"> /etc/init.d/iicaddress start </span>to restart the address book service.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the synchronization. This can be run manually as needed, or configured to run periodically using
-    <span class="literal"> cron</span>.
-   </p></li></ul></div>
-
-<h4 class="bridgehead" id="bbkky1q"> Jabber Configuration (Authentication)</h4>
-
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Modify LDAP section in
-    <span class="literal"> /opt/iic/jabberd/jabber.xm</span>l, setting the server URL and other fields as appropriate. Use
-    <span class="literal"> ldap: </span>for normal and
-    <span class="literal"> ldaps: </span>for SSL connections.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Add LDAP module (
-    <span class="literal">mod_auth_ldap</span>) to module list in
-    <span class="literal"> /opt/iic/jabberd/jabber.xml.</span> See the example below.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Remove
-    <span class="literal"> mod_auth_digest </span>from module list in jabber.xml.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /etc/init.d/iicjabber stop </span>and
-    <span class="literal"> /etc/init.d/iicjabber start </span>to restart XML router service.
-   </p></li></ul></div>
-
-<h4 class="bridgehead" id="bbkky1r"> Web Server Configuration (Authentication)</h4>
-
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Copy
-    <span class="literal"> zon-docshare-ldap.conf </span>and
-    <span class="literal"> zonpasswd </span>from
-    <span class="literal"> /opt/iic/conf/webcontent </span>to
-    <span class="literal"> /usr/local/apache2/conf</span>.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Edit
-    <span class="literal"> /usr/local/apache2/conf/zon-docshare-ldap.conf </span>and add the ICEcore Conference XML router host name to the
-    <span class="literal"> SetJabberHostName </span>parameter.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Edit
-    <span class="literal"> /usr/local/apache2/conf/httpd.conf </span>and change the include for
-    <span class="literal"> zon-docshare.conf </span>to
-    <span class="literal"> zon-docshare-ldap.conf</span>.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /etc/init.d/iicportal stop </span>and
-    <span class="literal"> /etc/init.d/iicportal start </span>to restart the web service.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Test config by hitting
-    <span class="literal"> http://&lt;server-portal&gt;/repository/SharedDocuments/ping.html </span>and entering valid username and password.
-   </p></li></ul></div>
-
-<h4 class="bridgehead" id="bbkky1s"> Client Installer Rebuild (Authentication)</h4>
-
-<p class="para">You need to build a ICEcore Conference client installer that enables plain text authentication. For testing purposes, install the client normally, then edit
-  <span class="literal">&lt;Program Files&gt;/Zon/zon-def.opt </span>on Windows or
-  <span class="literal"> /opt/iic/share/meeting/zon-def.opt </span>on Linux and add or modify the following line:
- </p><pre class="screen">
-"EnableExternalAuth","yes"
+<p class="para">You can modify the
+  <span class="literal"> sitescape-conferencing/cluster-prototype/ldap.xml.in </span>input file to use ActiveDirectory synchronization instead of eDirectory synchronization and to map additional LDAP attributes to ICEcore Conference contact fields.
+ </p>
+<p class="para">To use ActiveDirectory synchronization, you need to comment out the eDirectory section in the file and uncomment out the Active Directory section, see examples below:</p>
+<p class="para">eDirectory Section:</p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
 </pre>
-<p class="para">Once this is known to work, see <a href="#bauddzz">Section 2.9.1, Building the ICEcore Conference Client RPM</a> for information on how to rebuild the Linux installer. See the ICEcore Conference Package Kit for information on how to rebuild the Windows installer with this setting.</p>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the
+  <span class="literal"> ...generic LDAP server </span>comment so that it follows the
+  <span class="literal">&lt;/attributes&gt; </span>tag under the eDirectory section:
+ </p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server  
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+      --&gt;
+</pre>
+<p class="para">ActiveDirectory Section:</p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+	--&gt;
+</pre>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the 
+  <span class="literal">&lt;/attributes&gt; </span>tag so that it follows the 
+  <span class="literal">configuration for ActiveDirectory </span>comment:
+ </p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre>
 <h4 class="bridgehead" id="bbkky1t"> ICEcore Conference Field Names</h4>
 
 <p class="para">Use these names to configure the mapping of LDAP attributes to ICEcore Conference contact fields:</p>
 <p class="para">“screenname” - “title” - “firstname” - “middlename” - “lastname” - “suffix” - “company” - “jobtitle” - “address1” - “address2” - “state” - “country” - “postalcode” - “aimname” - “email” - “email2” - “email3” - “busphone” - “homephone” - “mobilephone” - “otherphone” - “extension” - “msnscreen” - “yahooscreen” - “aimscreen” - “user1” - “user2” - “defphone”</p>
-<h4 class="bridgehead" id="bbklhf4"> Notes:</h4>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For eDirectory, the
+   <span class="literal"> uid </span>attribute is mapped to the ICEcore Conference
+   <span class="literal"> screenname </span>by default. If you want to use the
+   <span class="literal"> cn </span>LDAP attribute instead of the
+   <span class="literal"> uid </span>attribute, you can change this mapping to map the
+   <span class="literal"> cn </span>attribute to the ICEcore Conference
+   <span class="literal"> screenname</span>.
+  </p></div>
 
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">There is no way to map a single LDAP field with a user’s full name into the separate ICEcore Conference contact fields (e.g. first name, last name, title). This will be added in a subsequent release. For now, map the LDAP name attribute to the ICEcore Conference first name field.</p></li>
-<li class="listitem">
-<p class="listitem">If using LDAP over SSL, the server name in the certificate must match the server name configured in
-    <span class="literal"> jabber.xml</span>
-   </p></li>
-<li class="listitem">
-<p class="listitem">The password for
-    <span class="literal"> admin </span>always comes from the ICEcore Conference internal database so that an administrator is able to log on even if directory servers are not available.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Because the password must be passed over the network in plain text, we recommend deployment using SSL.</p></li>
-<li class="listitem">
-<p class="listitem">
-    <span class="literal">&lt;cacertdir&gt;path&lt;/cacertdir&gt; </span>can be used in addition to or instead of
-    <span class="literal">&lt;cacertfile&gt;</span>. This directory must contain certificate files with names specially hashed as described by the documentation for option
-    <span class="literal"> -CApath </span>from
-    <span class="literal"> man verify</span>.
-   </p></li></ul></div>
+<h4 class="bridgehead" id="bbkkx32"> Address Book Configuration (Synchronization)</h4>
 
+<p class="para">Execute
+  <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the initial synchronization. 
+ </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After starting the server, wait 20 seconds or so before executing this command; if you do not get an XML message back, you probably did not wait long enough.</p></div>
+
+<p class="para">This script displays an XML message if it fails (the fault message is clearly visible); if it succeeds, the XML data contains a single number that is the number of users actually synchronized. You can run this script manually as needed, or configured to run periodically using
+  <span class="literal"> cron</span> (the default setting is for it to run daily).
+ </p>
 </div>
 
 <div class="appendix singlefile"  id="legal">
