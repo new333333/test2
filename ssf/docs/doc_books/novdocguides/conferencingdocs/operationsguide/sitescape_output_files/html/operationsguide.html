@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Thursday, October 04, 2007" />
+<meta name="Generation-Date" content="Tuesday, October 23, 2007" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2007" />
 
 <style type="text/css">
@@ -2441,149 +2441,106 @@ pg_restore -d &lt;db_name&gt; db.tar
 
 <h1 class="title"><span class="number">A.0</span> LDAP User Authentication</h1>
 
-<h4 class="bridgehead" id="bbkkx31"> Configuring LDAP Authentication and Synchronization for ICEcore Conference</h4>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The password for
+   <span class="literal"> admin </span>always comes from the ICEcore Conference internal database so that an administrator is able to log on even if directory servers are not available. Because the password must be passed over the network in plain text, we recommend deployment using SSL.
+  </p></div>
 
-<p class="para">Currently you must manually configure this. Repeat this process if a server is re-installed or upgraded since a normal server install overwrites these changes.</p>
-<p class="para">An LDAP directory can be used as the data source for these two operations:</p>
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Creation of ICEcore Conference users (via periodic synchronization against users in the LDAP directory)</p></li>
-<li class="listitem">
-<p class="listitem">Authentication of ICEcore Conference users (password is checked against the directory as users sign on)</p></li></ul></div>
+<h4 class="bridgehead" id="bcbugrb"> LDAP User Authentication Input File</h4>
 
-<p class="para">You can configure either or both of these as described below. If you are going to enable both, we recommend that you start with synchronization – once synchronization is complete, you can sign on and check that all users were created before moving onto the authentication step.</p>
-<h4 class="bridgehead" id="bbkkx32"> Address Book Configuration (Synchronization)</h4>
-
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Modify
-    <span class="literal"> /opt/iic/conf/config.xml </span>and remove the XML comment declaration around the
-    <span class="literal"> ldapConfig </span>element (remove
-    <span class="literal">&lt;!-- </span>and
-    <span class="literal"> --&gt; </span>from the lines preceding and following this line).
-   </p></li>
-<li class="listitem">
-<p class="listitem">Modify
-    <span class="literal"> /opt/iic/conf/ldap.xml</span>, setting the server URL and other fields as appropriate. Use
-    <span class="literal"> ldap: </span>for normal and
-    <span class="literal"> ldaps: </span>for SSL connections.
-   </p></li>
-<li class="listitem">
-<p class="listitem">The
-    <span class="literal"> communityid </span>configuration item indicates the community to which new users located in the LDAP directory are added. The available community ids can be found using the ICEcore Conference server console.
-   </p></li>
-<li class="listitem">
-<p class="listitem">The
-    <span class="literal"> attributes </span>configuration section controls how LDAP attributes are mapped to ICEcore Conference contact fields. The
-    <span class="literal"> screenname </span>ICEcore Conference field is the most important since that is how a user being updated is located in the address book.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /etc/init.d/iicaddress stop </span>and
-    <span class="literal"> /etc/init.d/iicaddress start </span>to restart the address book service.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the synchronization. This can be run manually as needed, or configured to run periodically using
-    <span class="literal"> cron</span>.
-   </p></li></ul></div>
-
-<h4 class="bridgehead" id="bbkky1q"> Jabber Configuration (Authentication)</h4>
-
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Modify LDAP section in
-    <span class="literal"> /opt/iic/jabberd/jabber.xm</span>l, setting the server URL and other fields as appropriate. Use
-    <span class="literal"> ldap: </span>for normal and
-    <span class="literal"> ldaps: </span>for SSL connections.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Add LDAP module (
-    <span class="literal">mod_auth_ldap</span>) to module list in
-    <span class="literal"> /opt/iic/jabberd/jabber.xml.</span> See the example below.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Remove
-    <span class="literal"> mod_auth_digest </span>from module list in jabber.xml.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /etc/init.d/iicjabber stop </span>and
-    <span class="literal"> /etc/init.d/iicjabber start </span>to restart XML router service.
-   </p></li></ul></div>
-
-<h4 class="bridgehead" id="bbkky1r"> Web Server Configuration (Authentication)</h4>
-
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">Copy
-    <span class="literal"> zon-docshare-ldap.conf </span>and
-    <span class="literal"> zonpasswd </span>from
-    <span class="literal"> /opt/iic/conf/webcontent </span>to
-    <span class="literal"> /usr/local/apache2/conf</span>.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Edit
-    <span class="literal"> /usr/local/apache2/conf/zon-docshare-ldap.conf </span>and add ICEcore Conference XML router host name to
-    <span class="literal"> SetJabberHostName </span>parameter.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Edit
-    <span class="literal"> /usr/local/apache2/conf/httpd.conf </span>and change the include for
-    <span class="literal"> zon-docshare.conf </span>to
-    <span class="literal"> zon-docshare-ldap.conf</span>.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Execute
-    <span class="literal"> /etc/init.d/iicportal stop </span>and
-    <span class="literal"> /etc/init.d/iicportal start </span>to restart the web service.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Test config by hitting
-    <span class="literal"> http://&lt;server-portal&gt;/repository/SharedDocuments/ping.html </span>and entering valid username and password.
-   </p></li></ul></div>
-
-<h4 class="bridgehead" id="bbkky1s"> Client Installer Rebuild (Authentication)</h4>
-
-<p class="para">You need to build a ICEcore Conference client installer that enables plain text authentication. For testing purposes, install the client normally, then edit
-  <span class="literal">&lt;Program Files&gt;/Zon/zon-def.opt </span>on Windows or
-  <span class="literal"> /opt/iic/share/meeting/zon-def.opt </span>on Linux and add or modify the following line:
- </p><pre class="screen">
-"EnableExternalAuth","yes"
+<p class="para">You can modify the
+  <span class="literal"> sitescape-conferencing/cluster-prototype/ldap.xml.in </span>input file to use ActiveDirectory synchronization instead of eDirectory synchronization and to map additional LDAP attributes to ICEcore Conference contact fields.
+ </p>
+<p class="para">To use ActiveDirectory synchronization, you need to comment out the eDirectory section in the file and uncomment out the Active Directory section, see examples below:</p>
+<p class="para">eDirectory Section:</p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
 </pre>
-<p class="para">Once this is known to work, see the ICEcore Conference Installation and Configuration Guide for information on rebuilding the installer. See the ICEcore Conference Package Kit for information on how to rebuild the Windows installer with this setting.</p>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the
+  <span class="literal"> ...generic LDAP server </span>comment so that it follows the
+  <span class="literal">&lt;/attributes&gt; </span>tag under the eDirectory section:
+ </p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server  
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+      --&gt;
+</pre>
+<p class="para">ActiveDirectory Section:</p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+	--&gt;
+</pre>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the 
+  <span class="literal">&lt;/attributes&gt; </span>tag so that it follows the 
+  <span class="literal">configuration for ActiveDirectory </span>comment:
+ </p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre>
 <h4 class="bridgehead" id="bbkky1t"> ICEcore Conference Field Names</h4>
 
 <p class="para">Use these names to configure the mapping of LDAP attributes to ICEcore Conference contact fields:</p>
 <p class="para">“screenname” - “title” - “firstname” - “middlename” - “lastname” - “suffix” - “company” - “jobtitle” - “address1” - “address2” - “state” - “country” - “postalcode” - “aimname” - “email” - “email2” - “email3” - “busphone” - “homephone” - “mobilephone” - “otherphone” - “extension” - “msnscreen” - “yahooscreen” - “aimscreen” - “user1” - “user2” - “defphone”</p>
-<h4 class="bridgehead" id="bbklhf4"> Notes:</h4>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For eDirectory, the
+   <span class="literal"> uid </span>attribute is mapped to the ICEcore Conference
+   <span class="literal"> screenname </span>by default. If you want to use the
+   <span class="literal"> cn </span>LDAP attribute instead of the
+   <span class="literal"> uid </span>attribute, you can change this mapping to map the
+   <span class="literal"> cn </span>attribute to the ICEcore Conference
+   <span class="literal"> screenname</span>.
+  </p></div>
 
-<div class="itemizedlist">
-<ul class="listbullet">
-<li class="listitem">
-<p class="listitem">There is no way to map a single LDAP field with a user’s full name into the separate ICEcore Conference contact fields (e.g. first name, last name, title). This will be added in a subsequent release. For now, map the LDAP name attribute to the ICEcore Conference first name field.</p></li>
-<li class="listitem">
-<p class="listitem">If using LDAP over SSL, the server name in the certificate must match the server name configured in
-    <span class="literal"> jabber.xml</span>.
-   </p></li>
-<li class="listitem">
-<p class="listitem">The password for
-    <span class="literal"> admin </span>always comes from the ICEcore Conference internal database so that an administrator is able to log on even if directory servers are not available.
-   </p></li>
-<li class="listitem">
-<p class="listitem">Because the password must be passed over the network in plain text, we recommend deployment using SSL.</p></li>
-<li class="listitem">
-<p class="listitem">
-    <span class="literal">&lt;cacertdir&gt;path&lt;/cacertdir&gt; </span>can be used in addition to or instead of
-    <span class="literal">&lt;cacertfile&gt;</span>. This directory must contain certificate files with names specially hashed as described by the documentation for option
-    <span class="literal"> -CApath </span>from
-    <span class="literal"> man verify</span>.
-   </p></li></ul></div>
+<h4 class="bridgehead" id="bbkkx32"> Address Book Configuration (Synchronization)</h4>
 
+<p class="para">Execute
+  <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the initial synchronization. 
+ </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After starting the server, wait 20 seconds or so before executing this command; if you do not get an XML message back, you probably did not wait long enough.</p></div>
+
+<p class="para">This script displays an XML message if it fails (the fault message is clearly visible); if it succeeds, the XML data contains a single number that is the number of users actually synchronized. You can run this script manually as needed, or configured to run periodically using
+  <span class="literal"> cron</span> (the default setting is for it to run daily).
+ </p>
 </div>
 
 <div class="appendix singlefile"  id="bbj1ywi">
