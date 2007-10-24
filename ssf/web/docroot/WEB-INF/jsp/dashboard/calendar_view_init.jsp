@@ -33,6 +33,10 @@
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="prefix" value="${ssComponentId}${renderResponse.namespace}" />
+	<script type="text/javascript">
+		<% //needs its own script section to endure loaded before accessed below %>
+ 		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
+	</script>
 
 <script type="text/javascript">
 
@@ -50,7 +54,6 @@
 					<ssf:param name="operation" value="find_calendar_events" />
 		    	</ssf:url><c:if test="${!empty ssDashboard}">&ssDashboardRequest=true</c:if>";
 		    	
-	var ss_viewEventUrl = ss_viewEntryURL;
 				
 	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
 		    	adapter="true" 

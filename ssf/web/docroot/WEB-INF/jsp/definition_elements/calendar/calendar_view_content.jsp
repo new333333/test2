@@ -32,7 +32,10 @@
 
 <c:if test="${empty isDashboard}">
 	<script type="text/javascript">
-		var ss_viewEventUrl = ss_viewEntryURL;
+		<% //needs its own script section to endure loaded before accessed below %>
+ 		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
+	</script>
+	<script type="text/javascript">
 					
 		var ss_stickyCalendarDisplaySettings =  "<ssf:url 
 			    	adapter="true" 

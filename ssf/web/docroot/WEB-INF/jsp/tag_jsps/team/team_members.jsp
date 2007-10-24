@@ -42,7 +42,11 @@
 <c:set var="appendAll" value="<%= appendAll %>"/>
 <c:set var="checkOnLoad" value="<%= checkOnLoad %>"/>
 <c:set var="prefix" value="${iCount}" />
-
+<script type="text/javascript">
+	// Setup text strings for team_members.js
+	// Team memmbers text
+	ss_noTeamMembersText = "<ssf:nlt tag="teamMembers.noUsers"/>";
+</script>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/team/team_members.js"></script>
 
 <div class="ss_teamMembersPane">

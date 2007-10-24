@@ -452,7 +452,7 @@ public class ViewEntryController extends  SAbstractController {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\'");
 						qualifiers = new HashMap();
-						qualifiers.put("onClick", "if (ss_confirmStopWorkflow) {return ss_confirmStopWorkflow('"+wfTitle1+"')} else {return false}");
+						qualifiers.put("onClick", "if (ss_confirm) {return ss_confirm('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"')} else {return false}");
 						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
 						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -471,7 +471,7 @@ public class ViewEntryController extends  SAbstractController {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\'");
 						qualifiers = new HashMap();
-						qualifiers.put("onClick", "if (ss_confirmStartWorkflow) {return ss_confirmStartWorkflow('"+wfTitle1+"')} else {return false}");
+						qualifiers.put("onClick", "if (ss_confirm) {return ss_confirm('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"')} else {return false}");
 						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
 						url.setParameter(WebKeys.URL_BINDER_ID, folderId);

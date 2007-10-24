@@ -41,12 +41,10 @@
 		var completedStatusDivs = new Object();
 			
 		this.changeStatus = function ( entryId, newStatus) {
-			var url = ss_AjaxBaseUrl + "&operation=update_task";
-			url += "\&binderId=" + binderId;
-			url += "\&entryId=" + entryId;
-			url += "\&ssTaskStatus=" + newStatus;
-			url += "\&randomNumber=" + ss_random++;
-				
+			var urlParams = {operation:"update_task", binderId:binderId,
+							entryId:entryId, ssTaskStatus:newStatus, randomNumber:ss_random++};
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+		
 			var bindArgs = {
 		    	url: url,
 				error: function(type, data, evt) {
@@ -70,11 +68,9 @@
 		}
 	
 		this.changePriority = function (entryId, newPriority) {
-			var url = ss_AjaxBaseUrl + "&operation=update_task";
-			url += "\&binderId=" + binderId;
-			url += "\&entryId=" + entryId;
-			url += "\&ssTaskPriority=" + newPriority;
-			url += "\&randomNumber=" + ss_random++;
+			var urlParams = {operation:"update_task", binderId:binderId,
+							entryId:entryId, ssTaskPriority:newPriority, randomNumber:ss_random++};
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 				
 			var bindArgs = {
 		    	url: url,
@@ -99,11 +95,13 @@
 		}
 		
 		this.changeCompleted = function (entryId, newCompleted) {
-			var url = ss_AjaxBaseUrl + "&operation=update_task";
-			url += "\&binderId=" + binderId;
-			url += "\&entryId=" + entryId;
-			url += "\&ssTaskCompleted=" + newCompleted;
-			url += "\&randomNumber=" + ss_random++;
+			var urlParams = new Object();
+			urlParams.operation="update_task";
+			urlParams.binderId=binderId;
+			urlParams.entryId=entryId;
+			urlParams.ssTaskCompleted=newCompleted;
+			urlParams.randomNumber=ss_random++;
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 				
 			var bindArgs = {
 		    	url: url,
@@ -441,8 +439,7 @@ try {
 		}
 		
 		this.viewTask = function(entryId) {
-			var url = ss_viewEntryURL + "&binderId=" + binderId;
-			url += "&entryId=" + entryId;
+			var url = ss_getViewFolderEntryUrl(binderId, entryId);
 			ss_loadEntryUrl(url, entryId);
 		}
 	

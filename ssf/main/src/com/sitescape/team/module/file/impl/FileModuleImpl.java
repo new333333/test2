@@ -267,6 +267,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			errors = new FilesErrors();
 		
 		Collection<FileAttachment> fAtts = entry.getFileAttachments();
+		if (fAtts.isEmpty()) return errors;
 		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
 		boolean updateMetadata = deleteAttachment;
 		for(FileAttachment fAtt :fAtts) {

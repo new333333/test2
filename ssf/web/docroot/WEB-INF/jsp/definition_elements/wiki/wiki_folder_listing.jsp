@@ -32,8 +32,7 @@
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 	boolean useAdaptor = true;
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
 		useAdaptor = false;
 	}
 %>

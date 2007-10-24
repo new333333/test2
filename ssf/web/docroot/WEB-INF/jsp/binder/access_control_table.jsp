@@ -39,13 +39,13 @@
   <ssf:nlt tag="access.roles"/>
 </c:if>
 <c:if test="${!ssBinder.functionMembershipInherited}">
-  <c:if test="${ssUser.displayStyle != 'accessible'}" >
+  <ssf:ifnotaccessible>
   <a href="javascript:;" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
   ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
-  </c:if>
+  </ssf:ifnotaccessible>
   
-  <c:if test="${ssUser.displayStyle == 'accessible'}" >
+  <ssf:ifaccessible>
   <select name="roleIds" onChange="ss_selectRole${ss_namespace}();">
     <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole" /></option>
     <c:forEach var="function" items="${ssFunctions}">
@@ -62,7 +62,7 @@
   </select>
     <input type="submit" class="ss_submit" name="addRoleBtn"
       value="<ssf:nlt tag="button.add" />">
-  </c:if>
+  </ssf:ifaccessible>
 </c:if>
   </TH>
 </TR>
@@ -162,16 +162,16 @@
 	  <ssf:nlt tag="access.groups"/>
 	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
-	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
+	  <ssf:ifnotaccessible>
 	    <a href="javascript:;" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
 	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
-	  </c:if>
+	  </ssf:ifnotaccessible>
   
-      <c:if test="${ssUser.displayStyle == 'accessible'}" >
+      <ssf:ifaccessible>
         <ssf:nlt tag="access.groups"/>
-      </c:if>
+      </ssf:ifaccessible>
     </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
@@ -240,15 +240,15 @@
 	  <ssf:nlt tag="access.users"/>
 	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
-	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
+	  <ssf:ifnotaccessible>
 	    <a href="javascript:;" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
 	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
-	  </c:if>
+	  </ssf:ifnotaccessible>
   
-      <c:if test="${ssUser.displayStyle == 'accessible'}" >
+      <ssf:ifaccessible>
         <ssf:nlt tag="access.users"/>
-      </c:if>
+      </ssf:ifaccessible>
     </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>

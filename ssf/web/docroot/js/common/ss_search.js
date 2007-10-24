@@ -124,7 +124,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
-	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_workflows_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
+	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflows_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
@@ -152,7 +152,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_entries_options').appendChild(div);
 
-	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&operation=get_entry_types_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&operation=get_entry_fields_widget&randomNumber="+ss_random++, widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
@@ -179,7 +179,7 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	div.appendChild(pDiv);
 	document.getElementById('ss_tags_options').appendChild(div);
 	
-	var url = ss_AjaxBaseUrl + "&operation=get_tags_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
+	var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_tags_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
 	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", 
 								id:"searchCommunityTags"+orderNo+"", 
 								dataUrl:url+"&findType=communityTags", 								
@@ -215,7 +215,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	div.appendChild(aDiv);
 	document.getElementById('ss_authors_options').appendChild(div);
 	
-	var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
+	var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
 	var props = {name : "searchAuthors"+orderNo+"", 
 					id : "searchAuthors"+orderNo+"", 
 					dataUrl:url,
@@ -440,11 +440,8 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 		ss_hideDiv(errMsgBoxId);
 	}
 	if (!ss_nameAlreadyInUse(queryName) || (ss_overwrite(queryName))) {
-	
-		var url = ss_AjaxBaseUrl;
-		url += "&operation=save_search_query";
-		url += "&queryName=" + queryName;
-		url += "&tabId=" + ss_currentTabId;
+		var urlParams = {operation:"save_search_query", queryName:queryName, tabId:ss_currentTabId};
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 		
 		var bindArgs = {
 	    	url: url,
@@ -518,10 +515,8 @@ function ss_removeSavedSearchQuery(queryName, errMsgBoxId, objToRemove) {
 	if (!queryName) {
 		return;
 	}
-	var url = ss_AjaxBaseUrl;
-	url += "&operation=remove_search_query";
-	url += "&queryName=" + queryName;
-	url += "&tabId=" + ss_currentTabId;
+	var urlParams = {operation:"remove_search_query", queryName:queryName, tabId:ss_currentTabId};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	
 	var bindArgs = {
     	url: url,

@@ -33,6 +33,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <xsl:template match="mailConfiguration">
 	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/mailConfiguration/property/@name)]"/>
+	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/account"/>
 	<xsl:choose>
 		<xsl:when test="$doc2/zoneConfiguration/mailConfiguration/notify">
 				<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/notify"/>

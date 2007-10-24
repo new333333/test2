@@ -167,7 +167,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					def.setName(name);
 					def.setTitle(caption);
 					def.setType(Integer.parseInt(type));
-					def.setInternalId(internalId);	
+					def.setInternalId(internalId);
+					//make sure databaseId reflects current copy
+					root.addAttribute("databaseId", def.getId().toString());
 					setDefinition(def, doc);
 					return def;
 				}

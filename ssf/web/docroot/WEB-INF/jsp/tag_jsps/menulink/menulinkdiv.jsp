@@ -41,15 +41,12 @@ String linkMenuObj = "ss_linkMenu_arr['"+ linkMenuIdx +"']";
 String namespace = ParamUtil.get(request, "namespace", "");
 String dashboardType = ParamUtil.get(request, "dashboardType", "");
 
-String displayStyle = ssUser.getDisplayStyle();
-if (displayStyle == null) displayStyle = "";
-
 String strShowEntry = "showEntry()";
 String strNewWindowFunction = "newWindow()";
 
 if (dashboardType.equals("portlet")) {
 	strNewWindowFunction = "newWindowForPortlet()";
-	if (displayStyle.equals("popup")) {
+	if ("popup".equals(ssUser.getDisplayStyle())) {
 		strShowEntry = "newWindowForPortlet()";
 	}
 }

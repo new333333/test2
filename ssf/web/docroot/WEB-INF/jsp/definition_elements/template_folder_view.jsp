@@ -49,24 +49,20 @@
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 
 <%
-	String displayStyle = ssUser.getDisplayStyle();
-	if (displayStyle == null) displayStyle = "";
 	
 	String slidingTableStyle = "sliding";
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(ssUser.getDisplayStyle())) {
 		slidingTableStyle = "sliding_scrolled";
 	}
 	boolean useAdaptor = true;
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
 		useAdaptor = false;
 	}
 	String ssFolderTableHeight = "400";
 			
 %>
 <script type="text/javascript">
-var ss_displayStyle = "<%= displayStyle %>";
+
 var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="view_folder_listing"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/><portlet:param 

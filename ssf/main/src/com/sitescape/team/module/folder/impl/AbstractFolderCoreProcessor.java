@@ -260,23 +260,35 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
 
     //***********************************************************************************************************
-    //inside write transaction    
+    //no write transaction    
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
     	if (ctx == null) ctx = new HashMap();
-    	return super.deleteEntry_setCtx(entry, ctx);
+      	FolderEntry fEntry = (FolderEntry)entry;
+      	//save top cause remove of reply sets it to null
+       	ctx.put("this.topEntry", fEntry.getTopEntry());
+    	//pass replies along as context so we can delete them all at once
+     	//load in reverse hkey order so foreign keys constraints are handled correctly
+     	List<FolderEntry> replies= getFolderDao().loadEntryDescendants((FolderEntry)fEntry);
+        ctx.put("this.replies", replies);
+        return super.deleteEntry_setCtx(entry, ctx);
     }
+    //no transaction
+   	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
+   		super.deleteEntry_processChangeLogs(parentBinder, entry, ctx, changeLogs);
+   		//create history prior to delete.
+     	List<FolderEntry> replies= (List)ctx.get("this.replies");
+     	for (FolderEntry reply:replies) {
+     		super.deleteEntry_processChangeLogs(parentBinder, reply, ctx, changeLogs);
+     	}
+   	}
     //inside write transaction
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
         Statistics statistics = getFolderStatistics((Folder)parentBinder);        
         statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
-      	//pass replies along as context so we can delete them all at once
-     	//load in reverse hkey order so foreign keys constraints are handled correctly
        	FolderEntry fEntry = (FolderEntry)entry;
-       	FolderEntry top = fEntry.getTopEntry();
-       	ctx.put("this.topEntry", top);
-     	List<FolderEntry> replies= getFolderDao().loadEntryDescendants(fEntry);
+     	List<FolderEntry> replies= (List)ctx.get("this.replies");
       	//repeat pre-delete for each reply
       	for (int i=0; i<replies.size(); ++i) {
       		FolderEntry reply = (FolderEntry)replies.get(i);
@@ -286,18 +298,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
         setFolderStatistics((Folder)parentBinder, statistics);
-        ctx.put("this.replies", replies);
       	
     }
     //inside write transaction    
     protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
     	//folder Dao will handle
     }
-    //inside write transaction    
+    //no write transaction    
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
-    	List replies = (List)ctx.get("this.replies");
-       	for (int i=0; i<replies.size(); ++i) {
-    		super.deleteEntry_processFiles(parentBinder, (FolderEntry)replies.get(i), deleteMirroredSource, null);
+    	List<FolderEntry> replies = (List)ctx.get("this.replies");
+     	for (FolderEntry reply: replies) {
+     		super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
     	}
        	super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
     }
@@ -315,14 +326,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	}
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
     }
-    //inside write transaction    
+    //no transaction    
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
        	if (parentBinder.isDeleted());  //will handle in bulk way
-        List replies = (List)ctx.get("this.replies");
-      	if (replies != null) {
-      		for (int i=0; i<replies.size(); ++i) {
-      			super.deleteEntry_indexDel(parentBinder, (FolderEntry)replies.get(i), null);
-      		}
+        List<FolderEntry> replies = (List)ctx.get("this.replies");
+      	for (FolderEntry reply: replies) {
+      		super.deleteEntry_indexDel(parentBinder, reply, null);
     	}
 		super.deleteEntry_indexDel(parentBinder, entry, null);
 		FolderEntry top = (FolderEntry)ctx.get("this.topEntry");
@@ -379,7 +388,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction    
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
        	if (binder.equals(destination)) return;
-       	Folder from = (Folder)binder;
+    	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
     		throw new NotSupportedException("errorcode.notsupported.moveEntryDestination", new String[] {destination.getPathName()});
     	Folder to = (Folder)destination;

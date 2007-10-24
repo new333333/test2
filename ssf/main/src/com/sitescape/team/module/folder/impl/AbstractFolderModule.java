@@ -668,11 +668,11 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         AccessUtils.readCheck(entry);
        return processor.getEntryTree(folder, entry);   	
     }
-    //inside write transaction        
+    //no transaction        
     public void deleteEntry(Long parentFolderId, Long entryId) {
     	deleteEntry(parentFolderId, entryId, true);
     }
-    //inside write transaction    
+    //no transaction    
     public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) {
     	deCount.incrementAndGet();
 

@@ -45,13 +45,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 		document.getElementById("<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_count_<c:out value="${binder.id}"/>").style.color = "silver";
 	  </c:if>
 	</c:forEach>
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="unseen_counts" />
-    	</ssf:url>"
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"unseen_counts"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_unseenCountForm")
 	//ajaxRequest.setEchoDebugInfo();

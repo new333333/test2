@@ -191,15 +191,15 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 		
 	--%></div><%--
 
-	--%><div id="ss_div_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_border_light" style="visibility:hidden;display:none;"><%--
+	--%><div id="ss_div_folder_dropbox${ssFolder.id}${renderResponse.namespace}" class="ss_border_light" style="visibility:hidden;display:none;"><%--
 		
 		--%><div align="right"><%--
-			--%><a onClick="ss_hideFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(); return false;"><img <%--
+			--%><a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;"><img <%--
 				--%> <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/><%--
 			--%></a><%--
 		--%></div><%--
 	
-		--%><iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="80%" width="100%">xxx</iframe><%--
+		--%><iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" height="80%" width="100%">xxx</iframe><%--
 	
 	--%></div><%--
 
@@ -208,48 +208,18 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 --%></ssf:skipLink><%--
 
 --%><script type="text/javascript">
-var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = "false"
-function getWindowBgColor() {
-	return "#ffffff";
-}
-function ss_showFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="binderId" value="${ssFolder.id}" />
-		<ssf:param name="operation" value="add_folder_attachment_options" />
-		<ssf:param name="namespace" value="${renderResponse.namespace}" />
-		<ssf:param name="library" value="${ssFolder.library}" />
-    	</ssf:url>"
-
-	var divId = 'ss_div_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>';
-	var divObj = document.getElementById(divId);
+<c:if test="${!empty ssFooterToolbar.RSS.url}">
+	//Add the rss feed info
+	var linkEle = document.createElement("link");
+	linkEle.setAttribute("rel", "alternate");
+	linkEle.setAttribute("type", "application/rss+xml");
+	linkEle.setAttribute("title", "RSS feed");
+	linkEle.setAttribute("href", "${ssFooterToolbar.RSS.url}");
+	document.getElementsByTagName("head")[0].appendChild(linkEle);
+</c:if>
 	
-	var frameId = 'ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>';	
-	var frameObj = document.getElementById(frameId);
-	
-	ss_showDiv(divId);
-	frameObj.style.visibility = "visible";
+var iFrameFolderAttachmentInvokedOnce${ssFolder.id}${renderResponse.namespace} = "false"
 
-	if (iFrameFolderAttachmentInvokedOnce${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> == "false") {
-		frameObj.src = url;
-		iFrameFolderAttachmentInvokedOnce${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter> = "true";
-	}
-
-	divObj.style.width = "400px";
-	divObj.style.height = "180px";
-
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-}
-
-function ss_hideFolderAddAttachmentDropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	var divId = 'ss_div_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>';
-	var divObj = document.getElementById(divId);
-	divObj.style.display = "none";
-	ss_hideDiv(divId);
-}
 </script>
 <ssf:ifnotadapter><div align="right" style="padding-top:20px;"><a target="_blank" 
   href="http://www.icecore.org"><span class="ss_smallprint ss_light">Powered by ICEcore</span></a></div></ssf:ifnotadapter>

@@ -138,27 +138,6 @@ public class ModifyEntryController extends SAbstractController {
 				
 				setupReloadOpener(response, folderId, entryId);
 				
-				//See what type of view the folder is using
-				Binder binder = null;
-				try {
-					binder = getBinderModule().getBinder(folderId);
-				} catch(NoBinderByTheIdException e) {}
-				if (binder != null) {
-			        User user = RequestContextHolder.getRequestContext().getUser();
-			        UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), folderId);
-					Map model = new HashMap();
-					DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
-					String viewType = "";
-					Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-					if (configElement != null) {
-						viewType = DefinitionUtils.getPropertyValue(configElement, "type");
-						if (viewType == null) viewType = "";
-					}
-					if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-						//In calendar view, we want to refresh the folder, too
-//						setupReloadOpenerParent(response, folderId, entryId);
-					}
-				}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
 				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");

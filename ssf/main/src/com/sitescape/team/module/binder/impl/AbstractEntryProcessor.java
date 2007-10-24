@@ -366,6 +366,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		getCoreDao().save(obj);
         }
         EntryBuilder.buildEntry(entry, entryData);
+        
     }
 
     //inside write transaction
@@ -413,6 +414,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
  	
     //***********************************************************************************************************
+    //no transaction expected
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
@@ -603,6 +605,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         
         EntryBuilder.updateEntry(entry, entryData);
+ 
     }
     //inside write transaction
     protected void modifyEntry_startWorkflow(Entry entry, Map ctx) {
@@ -638,51 +641,76 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     }
     //***********************************************************************************************************   
-    public void deleteEntry(Binder parentBinder, Entry entry, boolean deleteMirroredSource) {
-    	Map ctx = deleteEntry_setCtx(entry, null);
-    	SimpleProfiler.startProfiler("deleteEntry_preDelete");
-        deleteEntry_preDelete(parentBinder, entry, ctx);
-        SimpleProfiler.stopProfiler("deleteEntry_preDelete");
+    //no transaction expected
+    public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource) {
+    	final Map ctx = deleteEntry_setCtx(entry, null);
+    	final List<ChangeLog> changeLogs = new ArrayList();
+    	//setup change logs, so have a complete picture of the entry.
+    	//don't commit until transaction
+    	deleteEntry_processChangeLogs(parentBinder, entry, ctx, changeLogs);
+		SimpleProfiler.startProfiler("deleteEntry_processFiles");
+		//do outside transation cause archiveing takes a long time
+		deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
+		SimpleProfiler.stopProfiler("deleteEntry_processFiles");
+		//	may have taken awhile to remove attachments	
+		SimpleProfiler.startProfiler("deleteEntry_transactionExecute");
+		getCoreDao().refresh(parentBinder);
+		getTransactionTemplate().execute(new TransactionCallback() {
+    		public Object doInTransaction(TransactionStatus status) {
+    			SimpleProfiler.startProfiler("deleteEntry_preDelete");
+    			deleteEntry_preDelete(parentBinder, entry, ctx);
+    			SimpleProfiler.stopProfiler("deleteEntry_preDelete");
         
-        SimpleProfiler.startProfiler("deleteEntry_workflow");
-        deleteEntry_workflow(parentBinder, entry, ctx);
-        SimpleProfiler.stopProfiler("deleteEntry_workflow");
+    			SimpleProfiler.startProfiler("deleteEntry_workflow");
+    			deleteEntry_workflow(parentBinder, entry, ctx);
+    			SimpleProfiler.stopProfiler("deleteEntry_workflow");
+                 
+    			SimpleProfiler.startProfiler("deleteEntry_delete");
+    			deleteEntry_delete(parentBinder, entry, ctx);
+    			SimpleProfiler.stopProfiler("deleteEntry_delete");
         
-        SimpleProfiler.startProfiler("deleteEntry_processFiles");
-        deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
-        SimpleProfiler.stopProfiler("deleteEntry_processFiles");
-         
-        SimpleProfiler.startProfiler("deleteEntry_delete");
-        deleteEntry_delete(parentBinder, entry, ctx);
-        SimpleProfiler.stopProfiler("deleteEntry_delete");
+    			SimpleProfiler.startProfiler("deleteEntry_postDelete");
+    			deleteEntry_postDelete(parentBinder, entry, ctx);
+    			SimpleProfiler.stopProfiler("deleteEntry_postDelete");
+    			for (ChangeLog changeLog:changeLogs) {
+    				getCoreDao().save(changeLog);
+    			}
         
-        SimpleProfiler.startProfiler("deleteEntry_postDelete");
-        deleteEntry_postDelete(parentBinder, entry, ctx);
-        SimpleProfiler.stopProfiler("deleteEntry_postDelete");
-        
-        SimpleProfiler.startProfiler("deleteEntry_indexDel");
-        deleteEntry_indexDel(parentBinder, entry, ctx);
-        SimpleProfiler.stopProfiler("deleteEntry_indexDel");
-    }
+    			return null;
+    		}});
+    	SimpleProfiler.stopProfiler("deleteEntry_transactionExecute");
+    	SimpleProfiler.startProfiler("deleteEntry_indexDel");
+    	deleteEntry_indexDel(parentBinder, entry, ctx);
+    	SimpleProfiler.stopProfiler("deleteEntry_indexDel");
+   }
+    //no transaction
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	return ctx;
     }
+    //no transaction
+   	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
+   		//create history prior to delete.
+   		User user = RequestContextHolder.getRequestContext().getUser();
+   		entry.setModification(new HistoryStamp(user));
+   		entry.incrLogVersion();
+   		//record current state of object, but don't save until in transaction
+   		//this is setup here so the deleteFiles logs have the correct version/date
+   		changeLogs.add(processChangeLog(entry, ChangeLog.DELETEENTRY, false));
+   	}
+    //inside write transaction
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
    		if (entry.isTop() && parentBinder.isUniqueTitles()) 
    			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
-    	//create history - using timestamp and version from fillIn
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setModification(new HistoryStamp(user));
-        entry.incrLogVersion();
-        processChangeLog(entry, ChangeLog.DELETEENTRY);
     	getReportModule().addAuditTrail(AuditType.delete, entry);
     }
         
+    //inside write transaction
     protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
     	if (entry instanceof WorkflowSupport)
     		getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
     }
     
+    //no transaction
     protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
     	//attachment meta-data not deleted.  Done in optimized delete entry
     	if(deleteMirroredSource && parentBinder.isMirrored()) {
@@ -695,14 +723,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
     	getFileModule().deleteFiles(parentBinder, entry, deleteMirroredSource, null);
     }
-    
+    //inside write transaction    
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
     	getCoreDao().delete(entry);   
     }
+    //inside write transaction
     protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
    }
-
+    //no transaction
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
@@ -1201,10 +1230,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         fillInIndexDocWithCommonPart(indexDoc, binder, entry, fieldsOnly);
     }
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+		return processChangeLog(entry, operation, true);
+	}
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean saveIt) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
 		ChangeLog changes = new ChangeLog(entry, operation);
 		ChangeLogUtils.buildLog(changes, entry);
-		getCoreDao().save(changes);
+		if (saveIt) getCoreDao().save(changes);
 		return changes;
 	}
 

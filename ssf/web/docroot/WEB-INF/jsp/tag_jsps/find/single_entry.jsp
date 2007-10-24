@@ -135,18 +135,13 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
-	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+	if (ss_userDisplayStyle == 'accessible') {
 		ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEntriesType, crFound);
 		ss_findEntriesSearchInProgress = 0;
 		return;
 	}
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="operation" value="find_entries_search" />
-    	</ssf:url>"
+	
+ 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"find_entries_search"},  "__ajax_find");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
@@ -330,16 +325,10 @@ function ss_findEntrySearchAccessible_${prefix}(searchText, elementName, findEnt
 	}
 	ss_showDiv("ss_findEntriesIframeDiv");
 	
-	var url = ss_AjaxBaseUrl;
-	url = ss_replaceSubStrAll(url, "&amp;", "&");
-	url += "&operation=find_user_search";
-	url += "&searchText=" + searchText;
-	url += "&binderId=" + "<%= findEntriesBinderId %>";
-	url += "&maxEntries=" + "10";
-	url += "&pageNumber=" + ss_findEntries_pageNumber;
-	url += "&findType=" + findEntriesType;
-	url += "&listDivId=" + "available_"+elementName+"_${prefix}";
-	url += "&namespace=" + "<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>";
+	var urlParams = {operation:"find_user_search",  searchText:searchText, binderId: "<%= findEntriesBinderId %>",
+					maxEntries:"10", pageNumber:ss_findEntries_pageNumber, findType:findEntriesType,
+					listDivId:"available_"+elementName+"_${prefix}", namespace:"${renderResponse.namespace}"};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_find");
 	
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;

@@ -92,10 +92,7 @@ public class UpdatePresenceController  extends SAbstractController {
 		} else {
 			//refresh call
 			Set p = LongIdUtil.getIdsAsLongSet(request.getParameterValues("userList"));
-			model.put(WebKeys.USERS, getProfileModule().getUsers(p));
-			p = LongIdUtil.getIdsAsLongSet(request.getParameterValues("groupList"));
-			model.put(WebKeys.GROUPS, getProfileModule().getGroups(p));
-			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(p));
 			return new ModelAndView("dashboard/buddy_list_view2", model);
 		}
 	}

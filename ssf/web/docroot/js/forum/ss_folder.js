@@ -29,7 +29,7 @@
 //Routines used by folder views
 
 function ss_highlightLineById(id) {
-	if (ss_displayStyle == "accessible") {return;}
+	if (ss_userDisplayStyle == "accessible") {return;}
     if (id == "") {return;}
     var obj = self.document.getElementById(id)
     if (obj == null) {
@@ -325,4 +325,38 @@ function ss_showSearchResults(type) {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+function getWindowBgColor() {
+	return "#ffffff";
+}
+function ss_showFolderAddAttachmentDropbox(namespace, binderId, isLibrary) {
+ 	var urlParams = {operation:"add_folder_attachment_options", binderId:binderId,
+					namespace:namespace, library:isLibrary};
+	
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+ 
+	var divId = 'ss_div_folder_dropbox' +  binderId + namespace;
+	var divObj = document.getElementById(divId);
+	
+	var frameId = 'ss_iframe_folder_dropbox' +  binderId + namespace;	
+	var frameObj = document.getElementById(frameId);
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
 
+	if (eval("iFrameFolderAttachmentInvokedOnce" +  binderId + namespace + " == 'false'")) {
+		frameObj.src = url;
+		eval("iFrameFolderAttachmentInvokedOnce" +  binderId + namespace + "= 'true'");
+	}
+
+	divObj.style.width = "400px";
+	divObj.style.height = "180px";
+
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+}
+
+function ss_hideFolderAddAttachmentDropbox(namespace, binderId) {
+	var divId = 'ss_div_folder_dropbox' +  binderId + namespace;
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}

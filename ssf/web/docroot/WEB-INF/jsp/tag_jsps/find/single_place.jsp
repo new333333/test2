@@ -134,18 +134,12 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
-	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+	if (ss_userDisplayStyle == 'accessible') {
 		ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPlacesType, crFound);
 		ss_findPlacesSearchInProgress = 0;
 		return;
 	}
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="operation" value="find_places_search" />
-    	</ssf:url>"
+ 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"find_places_search"}, "__ajax_find");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
@@ -323,15 +317,11 @@ function ss_findPlaceSearchAccessible_${prefix}(searchText, elementName, findPla
 	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_findPlacesIframeDiv");
-	var url = ss_AjaxBaseUrl;
-	url = ss_replaceSubStrAll(url, "&amp;", "&");
-	url += "&operation=find_user_search";
-	url += "&searchText=" + searchText;
-	url += "&maxEntries=" + "10";
-	url += "&pageNumber=" + ss_findPlaces_pageNumber;
-	url += "&findType=" + findPlacesType;
-	url += "&listDivId=" + "available_"+elementName+"_${prefix}";
-	url += "&namespace=" + "${prefix}";
+	var urlParams = {operation:"find_user_search", searchText:searchText,
+					maxEntries:"10", pageNumber:ss_findPlaces_pageNumber,
+					findType:findPlacesType, listDivId:"available_"+elementName+"_${prefix}",
+					namespace:"${prefix}"};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_find");
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {

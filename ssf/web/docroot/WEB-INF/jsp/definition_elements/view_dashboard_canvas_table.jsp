@@ -150,7 +150,7 @@
 <form name="ss_dashboard_layout_form" id="ss_dashboard_layout_form" 
   style="display:inline;">
 <input type="hidden" name="binderId" value="${ssBinder.id}"/>
-<input type="hidden" name="scope" value="${ss_dashboard_table_scope}"/>
+<input type="hidden" name="_scope" value="${ss_dashboard_table_scope}"/>
 <input type="hidden" name="dashboard_layout"/>
 </form>
 
@@ -164,14 +164,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 //leave this until peter fixes the dojo stuff?? to user namespaces
 	ss_dashboardInitialization('ss_dashboardTable');
 }
-//this needs to be changed for multiple portlets also
-var ss_saveDashboardLayoutUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="save_dashboard_layout" />
-	</ssf:url>";
+
 
 </script>
 

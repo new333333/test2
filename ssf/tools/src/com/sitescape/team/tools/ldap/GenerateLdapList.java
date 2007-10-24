@@ -65,12 +65,9 @@ public class GenerateLdapList {
 			return;
 		}
 		else if (args.length == 3) {
-			if (args[2].equalsIgnoreCase("nogroups")) {
-				System.out.println("java GenerateCreateTablesUnconstrained " + args[0] + " " + args[1]);
-			} else {
-				System.out.println("usage: java GenerateLdapList <outputFile [nogroups]>");
-				return;
-					
+			if (!args[2].equalsIgnoreCase("nogroups")) {
+				System.out.println("usage: java GenerateLdapList <configFile outputFile [nogroups]>");
+				return;					
 			}
 		} 
 		

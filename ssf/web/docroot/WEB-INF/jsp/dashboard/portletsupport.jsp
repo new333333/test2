@@ -55,30 +55,10 @@ request.setAttribute("ss_entryWindowTop", new Integer(entryWindowTop));
 request.setAttribute("ss_entryWindowLeft", new Integer(entryWindowLeft));
 request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 
-String displayStyle = ssUser.getDisplayStyle();
-if (displayStyle == null) displayStyle = "";
 %>
 
 <script type="text/javascript">
-//generic url for ajax
-	var ss_dashboardAjaxUrl = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true"/>";
-    	
-var ss_dashboardViewEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-var ss_dashboardViewBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-
-var ss_displayStyle = "<%= displayStyle %>";		
-		
+    			
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 function ss_showForumEntryInPopupWindowForPortlet(definitionType) {

@@ -1638,9 +1638,7 @@ function ss_calendar(prefix) {
 	    var eHtml = "";
 	   	
 	   	if (event) {
-		   	var viewHref = ss_viewEventUrl;
-	    	viewHref += "&entryId=" + event.entryId;
-	    	viewHref += "&binderId=" + event.binderId;
+		   	var viewHref = ss_getViewFolderEntryUrl(event.binderId, event.entryId);
 			eHtml += '<a href="'+viewHref+'" onClick="try {' + event.viewOnClick + ';} catch(e) {return true;} return false;">'+(event.title?event.title:'--no title--')+'</a>';
 	   	} else {
 	   		// new event creation
@@ -1721,9 +1719,7 @@ function ss_calendar(prefix) {
 	        ebox.style.height = ((eventHeight/heightFactor) * 100) + "%";
 	        var e = ss_cal_Events.eventData[eventList[i]];
 	        ebox.style.backgroundColor = ss_cal_CalData.box(e.binderId);
-			var viewHref = ss_viewEventUrl;
-	    	viewHref += "&entryId=" + e.entryId;
-	    	viewHref += "&binderId=" + e.binderId;
+			var viewHref = ss_getViewFolderEntryUrl(e.binderId, e.entryId);
 			ebox.innerHTML = '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + ';} catch(e) {return true;} return false;">'+(e.title?e.title:'--no title--')+'</a>';
 	        container.appendChild(ebox);
 	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        
@@ -1805,7 +1801,7 @@ function ss_calendar(prefix) {
 var ss_calendar_import = {
 	divId : "ss_calendar_import_div",
 	
-	importForm : function(forumId, namespace) {
+	importForm : function(forumId, namespace, title) {
 		
 		// Build the import form
 		var calImportDiv = document.getElementById(this.divId);
@@ -1828,7 +1824,7 @@ var ss_calendar_import = {
 		// Link into the document tree
 		document.getElementsByTagName("body").item(0).appendChild(calImportDiv);
 		
-		dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(ss_calendarTitleText));
+		dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(title));
 
 		dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
 			ss_calendar_import.cancel();
@@ -1847,8 +1843,7 @@ var ss_calendar_import = {
 	},
 	
 	uploadFile : function (prefix) {
-		var url = ss_musterUrl;
-		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "uploadICalendarFile");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
 		dojo.debug("uploadFile");
 		dojo.io.bind({
 	    	url: url,

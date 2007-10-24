@@ -142,7 +142,7 @@ function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
-	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+	if (ss_userDisplayStyle == 'accessible') {
 		ss_findTagSearchAccessible(prefix, searchText, elementName, findTagType, crFound);
 		ss_findTagSearchInProgress[prefix] = 0;
 		return;
@@ -334,15 +334,10 @@ function ss_findTagSearchAccessible(prefix, searchText, elementName, findTagType
 	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_findTagIframeDiv");
-	var url = ss_AjaxBaseUrl;
-	url = ss_replaceSubStrAll(url, "&amp;", "&");
-	url += "&operation=find_user_search";
-	url += "&searchText=" + searchText;
-	url += "&maxEntries=" + "10";
-	url += "&pageNumber=" + ss_findTag_pageNumber[prefix];
-	url += "&findType=" + findTagType;
-	url += "&listDivId=" + "available_" + prefix;
-	url += "&namespace=" + prefix;
+	var urlParams = {operation:"find_user_search", searchText:searchText, maxEntries:"10",
+					pageNumber:ss_findTag_pageNumber[prefix], findType:findTagType, 
+					listDivId:"available_" + prefix, namespace:prefix};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_find");
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {

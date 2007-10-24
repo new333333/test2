@@ -39,7 +39,12 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 boolean isAppletSupported = SsfsUtil.supportApplets();
 %>
-
+<script type="text/javascript">
+var ss_labelButtonOK = "<ssf:nlt tag="button.ok"/>";
+var ss_labelButtonCancel = "<ssf:nlt tag="button.cancel"/>";
+var ss_labelEntryChooseFileWarning = "<ssf:nlt tag="entry.chooseFileWarningMessage"/>";
+var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>";
+</script>
 <div class="ss_entryContent">
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">

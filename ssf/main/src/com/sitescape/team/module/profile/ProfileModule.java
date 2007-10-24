@@ -93,7 +93,6 @@ public interface ProfileModule {
 	public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, Map options);
     public SortedSet<User> getUsers(Collection<Long> userIds);
-    public String getUserIds(SortedSet<User> users, String strSeparator);
     
 	/**
 	 * Return a collection of user ids  They are either in the principal list
@@ -118,8 +117,10 @@ public interface ProfileModule {
 	 * @param updates
 	 */
 	public void modifyUserFromPortal(User user, Map updates);       
-    public UserProperties setUserProperty(Long userId, Long folderId, String property, Object value);
+    public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value);
     public UserProperties setUserProperty(Long userId, String property, Object value);
+    public UserProperties setUserProperties(Long userId, Map<String, Object> values);
+    public UserProperties setUserProperties(Long userId, Long binderId, Map<String, Object> values);
     public void setSeen(Long userId, Entry entry);
     public void setSeen(Long userId, Collection<Entry> entries);
 	public boolean testAccess(ProfileBinder binder, ProfileOperation operation);
