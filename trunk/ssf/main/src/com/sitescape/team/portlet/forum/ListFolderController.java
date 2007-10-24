@@ -181,8 +181,6 @@ public static final String[] monthNamesShort = {
 						columns.put(colName, "on");
 					}
 				}
-				getProfileModule().setUserProperty(user.getId(), binderId, 
-						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
 				
 				//See if this request was to set the folder default
 				if (formData.containsKey("setFolderDefaultColumns")) {
@@ -192,16 +190,20 @@ public static final String[] monthNamesShort = {
 					}
 				}
 				
+				Map values = new HashMap();
+				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
 				//Reset the column positions to the default
-			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
+			   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
+				getProfileModule().setUserProperties(user.getId(), binderId, values);
 			} else if (formData.containsKey("defaultBtn")) {
-				getProfileModule().setUserProperty(user.getId(), binderId, 
-						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
+				Map values = new HashMap();
+				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
 				//Reset the column positions to the default
-			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
+				values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				//Reset the Sort Order information in the User Properties
-				getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), ObjectKeys.SEARCH_SORT_BY, "");
-				getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), ObjectKeys.SEARCH_SORT_DESCEND, "");
+				values.put(ObjectKeys.SEARCH_SORT_BY, "");
+				values.put(ObjectKeys.SEARCH_SORT_DESCEND, "");
+				getProfileModule().setUserProperties(user.getId(), binderId, values);
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
@@ -225,8 +227,10 @@ public static final String[] monthNamesShort = {
 			String folderSortDescend = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_DESCEND, "");
 			
 			//Saving the Sort Order information in the User Properties
-			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.SEARCH_SORT_BY, folderSortBy);
-			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.SEARCH_SORT_DESCEND, folderSortDescend);
+			Map values = new HashMap();
+			values.put(ObjectKeys.SEARCH_SORT_BY, folderSortBy);
+			values.put(ObjectKeys.SEARCH_SORT_DESCEND, folderSortDescend);
+			getProfileModule().setUserProperties(user.getId(), binderId, values);
 
 			//Saving the Sort Order information in the Tab - Reason for doing it here is because if the Tab Sort Order has
 			//already been set and if the user changes the sort order, you want the new Sort Order to take precendence over the
@@ -1768,10 +1772,13 @@ public static final String[] monthNamesShort = {
 						viewType.equals(Definition.VIEW_STYLE_TASK))) {
 			
 			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "');return false;");
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
+						NLT.get("calendar.import.window.title") + "');return false;");
 				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
 			} else {
+				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
+						NLT.get("task.import.window.title") + "');return false;");
 				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.taskImport"), "#", qualifiers);
 			}
 		}
@@ -1859,7 +1866,7 @@ public static final String[] monthNamesShort = {
 		
 		if (isAppletSupported && getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
 			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
+			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		}
 		

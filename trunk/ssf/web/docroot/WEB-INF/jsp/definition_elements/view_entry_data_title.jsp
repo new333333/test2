@@ -30,16 +30,8 @@
 %>
 <% //Title view %>
 
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <c:set var="ss_title_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_title_namespace" value="${ss_namespace}"/></c:if>
-
-<%
-String displayStyle = ssUser.getDisplayStyle();
-if (displayStyle == null || displayStyle.equals("")) {
-	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-}
-%>
 
 <div class="ss_entryContent">
 
@@ -119,8 +111,6 @@ ${nextEntry.docNumber}.
 </ssf:menuLink>
 
 <script type="text/javascript">
-var ss_displayStyle = "<%= displayStyle %>";
-
 if (!ss_baseEntryUrl || !ss_baseBinderUrl) {
 	var ss_baseEntryUrl = '';
 	var ss_baseBinderUrl = '';

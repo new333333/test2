@@ -33,9 +33,9 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.team.domain;
+import java.io.Serializable;
 import java.sql.Clob;
 import java.sql.SQLException;
-import java.io.Serializable;
 /**
  * Hide a clob string and lazy load the value.
  * This is an immutable object.  Its value cannot be changed.  This allows
@@ -61,12 +61,26 @@ public class SSClobString implements Serializable {
             if (clob == null) {return "";}
  
             value = clob.getSubString(1, (int) clob.length());
-            return value;
+            if (value != null) return value;
+            return "";
         } catch (SQLException ex) {
             return "";
         }
 
     }
+	public boolean equals(Object obj) {
+		//Normally == would be enough of a test because this object is immutable.
+		//In most cases that will be enough.  But if the owning object is
+		//refreshed, == will fail when compared to the 'deepCopy' and the object
+		// will appear dirty.  So - to catch this and avoid unnecessary updates, 
+		// compare values - at this point the clob will have been read anyway.
+		if (this == obj) return true;
+		if (obj==null) return false;
+		if (!(obj instanceof SSClobString)) return false;
+		SSClobString y = (SSClobString)obj;
+		return getText().equals(y.getText());
+	}
+
     public String toString() {
         return getText();
     }

@@ -117,7 +117,6 @@ function ss_showForumEntryInPopupWindow(definitionType) {
 var ss_reloadUrl = "${ss_reloadUrl}";
 var ssLoadEntryUrl = "<%= ssLoadEntryUrl %>";
 var autoScroll = "<%= autoScroll %>";
-var ss_displayStyle = "<%= displayStyle %>";
 <%
 	if (!ssLoadEntryUrl.equals("")) {
 %>
@@ -187,7 +186,7 @@ function ss_loadBinder(obj,id, entityType) {
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
-	if (ss_displayStyle == "accessible") {
+	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
@@ -215,7 +214,7 @@ function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
 }
 
 function ss_loadEntryUrl(url,id) {
-	if (ss_displayStyle == "accessible") {
+	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = url;
 		return false;
 	}
@@ -287,7 +286,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 		<ssf:tree treeName="sidebarWsTree" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_tree_showId"
+		  showIdRoutine="ss_treeShowId"
 		  rootOpen="true"
 		  nowrap="true"/>
 		</c:if>
@@ -320,8 +319,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 
 <%
 	//See if this is the Popup view
-	if (ssUser.getDisplayStyle() != null && 
-	    ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_POPUP.equals(ssUser.getDisplayStyle())) {
 %>
 <script type="text/javascript">
 var ss_viewEntryResizeHappened = 0;

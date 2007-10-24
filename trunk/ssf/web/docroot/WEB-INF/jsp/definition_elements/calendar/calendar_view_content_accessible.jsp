@@ -32,7 +32,6 @@
 <%@ page import="java.util.HashMap" %>
 <script type="text/javascript">
 
-	var ss_viewEventUrl = ss_viewEntryURL;
 				
 	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
 		    	adapter="true" 

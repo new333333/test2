@@ -470,13 +470,15 @@
 
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
 		<property name="target"><ref bean="folderModuleTarget"/></property>
-		<!-- addEntry, addFolder, addReply,addVote, modifyEntry provide transaction semantics at a finer
+		<!-- addEntry, addFolder, addReply,addVote, modifyEntry, deleteEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
 				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>

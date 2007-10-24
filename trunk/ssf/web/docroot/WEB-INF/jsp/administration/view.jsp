@@ -65,17 +65,17 @@
 			<tr>
 				<td>
 					<div>
-						<c:if test="${ssUser.displayStyle != 'accessible'}" >
+						<ssf:ifnotaccessible>
 						  <ssf:tree treeName="${adminTreeName}" 
 						    treeDocument="${ssAdminDomTree}" 
 						    rootOpen="true" />
-						</c:if>
-						<c:if test="${ssUser.displayStyle == 'accessible'}" >
+						</ssf:ifnotaccessible>
+						<ssf:ifaccessible>
 						<ssf:tree treeName="${adminTreeName}" 
 						  treeDocument="${ssAdminDomTree}" 
 						  flat="true"
 						  rootOpen="true" />
-						</c:if>
+						</ssf:ifaccessible>
 					</div>
 				</td>
 			</tr>

@@ -39,7 +39,7 @@
   <tr>
   <td style="padding-bottom:10px;">
   <a class="ss_linkButton ss_bold ss_smallprint" href=""
-    onClick="if (${ss_namespace}_${componentId}_getPresence) {${ss_namespace}_${componentId}_getPresence('')};return false;"
+    onClick="if (${ss_namespace}_${componentId}_presence) {${ss_namespace}_${componentId}_presence.getPresence()};return false;"
   ><ssf:nlt tag="general.Refresh"/></a>
   </td>
   <td align="right">

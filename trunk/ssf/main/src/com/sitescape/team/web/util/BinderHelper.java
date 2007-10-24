@@ -185,13 +185,11 @@ public class BinderHelper {
  			//This is the portlet view; get the configured list of principals to show
  			SortedSet users = bs.getProfileModule().getUsersFromPrincipals(ids);
  			model.put(WebKeys.USERS, users);
- 			String strUsers = bs.getProfileModule().getUserIds(users, LongIdUtil.DEFAULT_SEPARATOR);
  			//if we list groups, then we have issues when a user appears in multiple groups??
  			//how do we update the correct divs??
  			//so, explode the groups and just show members
   			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
-  			//model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
-  			model.put(WebKeys.USER_LIST, strUsers);
+  			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
   			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
 			Workspace binder = bs.getWorkspaceModule().getWorkspace();
@@ -1398,8 +1396,8 @@ public class BinderHelper {
 	
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-						response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
-						binder.getId().toString()+"');return false;");
+						response.getNamespace() + "_dashboardComponentCanvas', '" +
+						binder.getId()+"');return false;");
 				
 				if (DashboardHelper.checkIfShowingAllComponents(binder)) {
 					qualifiers.put("icon", "dashboard_hide.gif");

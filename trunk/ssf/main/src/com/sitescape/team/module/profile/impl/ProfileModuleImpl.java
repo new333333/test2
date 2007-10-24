@@ -234,6 +234,20 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		uProps.setProperty(property, value); 	
   		return uProps;
    }
+    //RW transaction
+	public UserProperties setUserProperties(Long userId, Long binderId, Map<String, Object> values) {
+   		User currentUser = RequestContextHolder.getRequestContext().getUser();
+   		User user;
+		if (userId == null) user = currentUser;
+		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
+		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
+ 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId(), binderId);
+ 		for (Map.Entry<String, Object> me: values.entrySet()) {
+ 			uProps.setProperty(me.getKey(), me.getValue()); 
+ 		}
+  		return uProps;		   
+	}
+	   
 	//RO transaction
    public UserProperties getUserProperties(Long userId, Long binderId) {
    		UserProperties uProps=null;
@@ -256,6 +270,20 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		uProps.setProperty(property, value); 	
 		return uProps;
     }
+   //RW transaction
+   public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+   		User user;
+		if (userId == null) user = currentUser;
+		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
+		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
+ 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId());
+ 		for (Map.Entry<String, Object> me: values.entrySet()) {
+ 			uProps.setProperty(me.getKey(), me.getValue()); 
+ 		}
+		return uProps;
+	  
+   }
 	//RO transaction
    public UserProperties getUserProperties(Long userId) {
    		UserProperties uProps=null;
@@ -688,19 +716,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
  		return result;
 	}
-	
-	public String getUserIds(SortedSet<User> users, String strSeparator) {
-		StringBuffer buf = new StringBuffer();
-		if (users == null) return "";
-		for (Iterator iter=users.iterator(); iter.hasNext();) {
-			User user = (User) iter.next();
-			Long lngUserId = user.getId();
-			buf.append(lngUserId.toString());
-			buf.append(strSeparator);
-		}
-		return buf.toString();
-	}
-   
+	  
 	//RO transaction
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {
 		//does read check

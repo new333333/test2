@@ -37,9 +37,9 @@
 
 	<script type="text/javascript">
 	
-	<c:if test="${!empty ssWorkflowDefinitionMap}">
 		var ss_searchWorkflows = new Array();
 		var ss_searchSteps = new Array();
+	<c:if test="${!empty ssWorkflowDefinitionMap}">
 		<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
 			ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
 			<c:forEach var="step" items="${wf.steps}">

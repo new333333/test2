@@ -38,8 +38,7 @@
 
 <%
 	String slidingTableStyle = "sliding";
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(ssUser.getDisplayStyle())) {
 		slidingTableStyle = "sliding_scrolled";
 	}
 	String ssFolderTableHeight = "";

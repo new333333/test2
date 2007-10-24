@@ -145,7 +145,7 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	}
-	if (ss_userDisplayStyle && ss_userDisplayStyle == 'accessible') {
+	if (ss_userDisplayStyle == 'accessible') {
 		ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGroupType, crFound);
 		ss_findUserSearchInProgress[prefix] = 0;
 		return;
@@ -345,15 +345,11 @@ function ss_findUserSearchAccessible(prefix, searchText, elementName, findUserGr
 	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_findIframeDiv");
-	var url = ss_AjaxBaseUrl;
-	url = ss_replaceSubStrAll(url, "&amp;", "&");
-	url += "&operation=find_user_search";
-	url += "&searchText=" + searchText;
-	url += "&maxEntries=" + "10";
-	url += "&pageNumber=" + ss_findUser_pageNumber[prefix];
-	url += "&findType=" + findUserGroupType;
-	url += "&listDivId=" + "available_" + prefix;
-	url += "&namespace=" + prefix;
+	var urlParams = {operation:"find_user_search", searchText:searchText,
+					maxEntries:"10", pageNumber:ss_findUser_pageNumber[prefix],
+					findType:findUserGroupType, listDivId:"available_" + prefix,
+					namespace:prefix};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_find");
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {

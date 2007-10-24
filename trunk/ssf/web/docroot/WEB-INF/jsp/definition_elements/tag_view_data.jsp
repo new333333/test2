@@ -42,14 +42,14 @@
     <c:when test="${ssTagsType == 'c'}">
     <ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">    
     <a href="javascript:;"
-      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntry.entityType}', '${ssEntry.id}');return false;"
+      onClick="ss_tagDelete('${ss_tagViewNamespace}', '${ptag.id}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ssEntry.entityType}', '${ssEntry.id}');return false;"
     ><img border="0" src="<html:imagesPath/>pics/1pix.gif" class="ss_generic_close"/></a>
     </ssf:ifAccessAllowed>
     </c:when>
     
     <c:otherwise>    
     <a href="javascript:;"
-      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntry.entityType}', '${ssEntry.id}');return false;"
+      onClick="ss_tagDelete('${ss_tagViewNamespace}', '${ptag.id}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ssEntry.entityType}', '${ssEntry.id}');return false;"
     ><img border="0" src="<html:imagesPath/>pics/1pix.gif" class="ss_generic_close"/></a>
     </c:otherwise>     
     </c:choose>

@@ -70,13 +70,7 @@ function ss_loadTargetUrl() {
 
  	//Check to see if the user is logged in yet
 	ss_setupStatusMessageDiv()
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="operation" value="check_if_logged_in" />
-    	</ssf:url>"
+ 	var url = url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"check_if_logged_in"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postCheckIfLoggedIn);

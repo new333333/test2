@@ -34,18 +34,8 @@
 function ss_saveChangeLogBinderId(id) {
 	var formObj = document.getElementById('ss_changeLogForm')
 	formObj['binderId'].value = id;
-
-	var url = "<ssf:url 
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="get_change_log_entry_form" />
-		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
-		<ssf:param name="random" value="ssRandomPlaceHolder" />
-		</ssf:url>";
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssRandomPlaceHolder", ss_random++);
+	var urlParams = {operation:"get_change_log_entry_form", binderId:id, random=ss_random++};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	ifObj = document.getElementById('ss_changeLogIframe');
 	ifObj.src = url;
 }

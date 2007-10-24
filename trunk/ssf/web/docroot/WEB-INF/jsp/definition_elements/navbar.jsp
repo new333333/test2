@@ -50,6 +50,7 @@ function ss_turnOffDebugMode() {
 	self.location.href = url;
 }
 var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 
 </script>
     </td>
@@ -233,7 +234,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  </ssHelpSpot>
 				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
-				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"><img 
+				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>',
+				  '<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				  name="action" value="advanced_search"/><portlet:param 
+				  name="newTab" value="1"/></portlet:actionURL>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
 				<div id="ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_navbarPopupPane"></div>
 			</form>
@@ -749,54 +753,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
 
-<script type="text/javascript">
-var ss_addFavoriteBinderUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="add_favorite_binder" />
-	<ssf:param name="binderId" value="${ssBinder.id}" />
-	<ssf:param name="viewAction" value="${action}" />
-	</ssf:url>"
-
-var ss_addFavoritesCategoryUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="add_favorites_category" />
-	</ssf:url>";
-
-var ss_saveFavoritesUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="save_favorites" />
-	</ssf:url>";
-
-var ss_getFavoritesTreeUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="get_favorites_tree" />
-	</ssf:url>";
-
-var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>";
-
-var ss_AdvancedSearch = "<ssf:url 
-		adapter="false" 
-		portletName="ss_forum" 
-		action="advanced_search" 
-		actionUrl="true" ><ssf:param
-		name="newTab" value="1" /></ssf:url>";
-</script>
-
 <div id="ss_navbar_bottom<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"></div>
 
 </c:if>
@@ -809,7 +765,6 @@ var ss_AdvancedSearch = "<ssf:url
       closeScript="ss_hideFavoritesPane('${renderResponse.namespace}');return false;">
 
 
-
 <div style="padding: 5px 10px 5px 10px;">
 
 <!-- Only show add a place in maximized view  -->
@@ -817,7 +772,11 @@ var ss_AdvancedSearch = "<ssf:url
   <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
   	<div class="ss_style_trans">
 		<a href="javascript: ;" 
-		 onClick="ss_addBinderToFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
+		 onClick="ss_addBinderToFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>',
+		 '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
+			<ssf:param name="operation" value="add_favorite_binder" />
+			<ssf:param name="binderId" value="${ssBinder.id}" />
+			<ssf:param name="viewAction" value="${action}" /></ssf:url>');return false;"
 		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>

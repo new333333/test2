@@ -93,9 +93,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
         return this.description;
     }
     public void setDescription(Description description) {
-        if (this.description != null)
-        	// try to avoid unecessary updates
-        	if (this.description.equals(description)) return;
     	this.description = description; 
     }
   

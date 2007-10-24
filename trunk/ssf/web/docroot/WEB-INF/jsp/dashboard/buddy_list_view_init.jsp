@@ -34,19 +34,27 @@
 //How long to sleep between auto refresh; 
 //  set this to 0 for no auto refresh (defaulted to 0 to keep iChain session timeouts from being voided)
 //  set to 300000 for 5 minutes between refreshes
-var ss_presenceTimeoutTimeToSleep = 0;
+var ss_presenceTimeoutTimeToSleep = 60000;
 
-function ${ss_namespace}_${componentId}_getPresence(timeout) {
-//alert("1");
-//	var myDiv = document.getElementById('${ss_divId}');
-//	if (myDiv == null) return;
-//alert("2");
-	ss_setupStatusMessageDiv();
-	if (${ss_namespace}_${componentId}_presenceTimer != null) {
-		clearTimeout(${ss_namespace}_${componentId}_presenceTimer);
-		${ss_namespace}_${componentId}_presenceTimer = null;
+function ss_presenceObj(url, divId, name) {
+	this.url = url;
+	this.divId = divId;
+	this.timeout = '';
+	this.name=name;
+	this.getPresence=function() {
+		ss_setupStatusMessageDiv();
+		if (this.timeout != '') {
+			clearTimeout(this.timeout);
+			this.timeout = null;
+		}
+		ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
+		if (ss_presenceTimeoutTimeToSleep > 0) {
+			this.timeout = setTimeout(name + ".getPresence()", ss_presenceTimeoutTimeToSleep);
+		}
 	}
-	var url = "<ssf:url 
+}
+
+var ${ss_namespace}_${componentId}_presence = new ss_presenceObj("<ssf:url 
     	adapter="true" 
     	portletName="ss_forum" 
     	action="__view_presence" 
@@ -55,19 +63,8 @@ function ${ss_namespace}_${componentId}_getPresence(timeout) {
     	<ssf:param name="namespace" value="${ss_namespace}"/>
     	<ssf:param name="operation2" value="${componentId}"/>
     	<ssf:param name="userList" value="${ss_userList}"/>
-    	</ssf:url>"
-	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, '${ss_divId}');
-	if (ss_presenceTimeoutTimeToSleep > 0) {
-		${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", ss_presenceTimeoutTimeToSleep);
-	}
-}
-
-var ${ss_namespace}_${componentId}_presenceTimer = null;
-function ${ss_namespace}_${componentId}_presenceTimout() {
-	${ss_namespace}_${componentId}_getPresence("timeout");
-}	
-
+    	</ssf:url>", '${ss_divId}', '${ss_namespace}_${componentId}_presence');
 if (ss_presenceTimeoutTimeToSleep > 0) {
-	${ss_namespace}_${componentId}_presenceTimer = setTimeout("${ss_namespace}_${componentId}_presenceTimout()", ss_presenceTimeoutTimeToSleep);
+	${ss_namespace}_${componentId}_presence.timeout = setTimeout("${ss_namespace}_${componentId}_presence.getPresence()", ss_presenceTimeoutTimeToSleep);
 }
 </script>

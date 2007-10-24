@@ -48,17 +48,17 @@ function ss_selectPrincipals<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 	}
 
 	formObj.btnClicked.value = "addPrincipal";
-<c:if test="${ssUser.displayStyle == 'accessible'}" >
+<ssf:ifaccessible>
 	ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-</c:if>
-<c:if test="${ssUser.displayStyle != 'accessible'}" >
+</ssf:ifaccessible>
+<ssf:ifnotaccessible>
 	if (ss_isIE) {
 		//IE does not display the table right, so repaint the screen
 		ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
 	} else {
 		ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
 	}
-</c:if>
+</ssf:ifnotaccessible>
 }
 
 function ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
@@ -68,33 +68,27 @@ function ss_addAccessControlRole<ssf:ifadapter><portletadapter:namespace/></ssf:
 	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
 	formObj.btnClicked.value = "addRole";
 	formObj.roleIdToAdd.value = id;
-<c:if test="${ssUser.displayStyle == 'accessible'}" >
+<ssf:ifaccessible>
 	ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-</c:if>
-<c:if test="${ssUser.displayStyle != 'accessible'}" >
+</ssf:ifaccessible>
+<ssf:ifnotaccessible>
 	if (ss_isIE) {
 		//IE does not display the table right, so repaint the screen
 		ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
 	} else {
 		ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
 	}
-</c:if>
+</ssf:ifnotaccessible>
 	ss_hideDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
 }
 
 function ss_selectOwnerAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(ownerId) {
 	ss_setupStatusMessageDiv()
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="binderId" value="${ssBinder.id}" />
-		<ssf:param name="operation" value="set_binder_owner_id" />
-    	</ssf:url>"
+ 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("namespace", "${renderResponse.namespace}");
 	ajaxRequest.addKeyValue("ownerId", ownerId);
+	ajaxRequest.addKeyValue("binderId", "${ssBinder.id}");
 	//ajaxRequest.addKeyValue("random", ss_random++);
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postSelectOwner<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
@@ -112,16 +106,10 @@ function ss_postSelectOwner<ssf:ifadapter><portletadapter:namespace/></ssf:ifada
 
 function ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
 	ss_setupStatusMessageDiv()
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="binderId" value="${ssBinder.id}" />
-		<ssf:param name="operation" value="get_access_control_table" />
-    	</ssf:url>"
+ 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_access_control_table"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("namespace", "${renderResponse.namespace}");
+	ajaxRequest.addKeyValue("binderId", "${ssBinder.id}");
 	//ajaxRequest.addKeyValue("random", ss_random++);
 	ajaxRequest.addFormElements("${renderResponse.namespace}rolesForm");
 	//ajaxRequest.setEchoDebugInfo();
@@ -221,7 +209,7 @@ function ss_showAddUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 }
 
 function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>";
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"});
 	url += "\&randomNumber="+ss_random++;
 	var bindArgs = {
     	url: url,
@@ -437,7 +425,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 
 <span class="ss_bold"><a href="javascript: ss_addClipboardUsersToAccessControlList${ss_namespace}();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
 
-  <c:if test="${ssUser.displayStyle != 'accessible'}" >
+  <ssf:ifnotaccessible>
   
 	<div id="ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_actions_bar2 ss_actions_bar_submenu" >
 		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
@@ -464,7 +452,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 	    </c:forEach>
 		</ul>
 	</div>
-  </c:if>
+  </ssf:ifnotaccessible>
   
 </c:if>
 

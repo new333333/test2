@@ -89,13 +89,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 		}
  	}
  	ss_debug("//"+text+"//")
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="operation" value="find_user_search" />
-    	</ssf:url>"
+ 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"find_user_search"}, "__ajax_find");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";

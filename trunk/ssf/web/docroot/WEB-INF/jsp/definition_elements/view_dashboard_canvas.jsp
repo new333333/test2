@@ -79,15 +79,6 @@ var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:if
 	var ss_entryWindowLeft = -1;
 </c:if>
 
-var ss_displayStyle = "<%= displayStyle %>";
-
-var ss_saveEntryWidthUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="save_entry_width" />
-	</ssf:url>"
 
 var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
 <c:if test="${empty ss_entryWindowWidth}">
@@ -98,19 +89,8 @@ var ss_entryWindowWidth = "${ss_entryWindowWidth}";
 </c:if>
 var ss_entryBackgroundColor = "${ss_style_background_color}";
 
-var ss_dashboardViewEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-var ss_dashboardViewBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-
-
 function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
-	if (ss_displayStyle == "accessible") {
+	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}

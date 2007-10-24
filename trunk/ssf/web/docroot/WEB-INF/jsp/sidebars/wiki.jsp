@@ -37,10 +37,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 	boolean useAdaptor = true;
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
 		useAdaptor = false;
 	}
+
 %>
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />

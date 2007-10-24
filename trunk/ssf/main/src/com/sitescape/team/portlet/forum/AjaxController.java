@@ -29,10 +29,8 @@
 package com.sitescape.team.portlet.forum;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +53,6 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -72,7 +69,6 @@ import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
@@ -91,14 +87,12 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.ic.DocumentDownload;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.ic.RecordType;
-import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
@@ -112,12 +106,10 @@ import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
-import com.sitescape.team.survey.Answer;
 import com.sitescape.team.survey.Question;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.survey.SurveyModel;
 import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -130,7 +122,6 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.Clipboard;
-import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -145,7 +136,6 @@ import com.sitescape.util.Validator;
  */
 public class AjaxController  extends SAbstractControllerRetry {
 	
-	static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");
 	
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
@@ -164,15 +154,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSaveFavorites(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
 				ajaxSaveRating(request, response);
-			} else if (op.equals(WebKeys.OPERATION_SAVE_DASHBOARD_LAYOUT)) {
-				ajaxSaveDashboardLayout(request, response);
-			} else if (op.equals(WebKeys.OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) || 
-					op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
-				ajaxShowHideAllDashboardComponents(request, response);
-			} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
-					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-				ajaxChangeDashboardComponent(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) {
 				ajaxShowHideHelpControlPanel(request, response);
@@ -226,13 +207,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 
 			//Check for calls from "ss_fetch_url" (which don't output in xml format)
-			if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
-					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT) || 
-					op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE) || 
-					op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE)) {
-				return new ModelAndView("forum/fetch_url_return", model);
-			} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
+			if (op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS) ||
 					op.equals(WebKeys.OPERATION_SUBSCRIBE) || op.equals(WebKeys.OPERATION_ENTRY_SUBSCRIBE)) {
@@ -318,51 +293,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_TAGS)) {
 			return ajaxShowTags(request, response);
 
-		} else if (op.equals(WebKeys.OPERATION_USER_LIST_SEARCH)) {
-			return ajaxUserListSearch(request, response);
-
-		} else if (op.equals(WebKeys.OPERATION_FIND_USER_SEARCH) ||
-				op.equals(WebKeys.OPERATION_FIND_PLACES_SEARCH) || 
-				op.equals(WebKeys.OPERATION_FIND_ENTRIES_SEARCH) || 
-				op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
-			return ajaxFindUserSearch(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_TAG_WIDGET)) {
-			return ajaxGetTags(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_WORKFLOWS_WIDGET)) {
-			return ajaxGetWorkflows(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_WORKFLOW_STEP_WIDGET)) {
-			return ajaxGetWorkflowSteps(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_TYPES_WIDGET)) {
-			return ajaxGetEntryTypes(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FIELDS_WIDGET)) {
-			return ajaxGetEntryFields(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_USERS_WIDGET)) {
-			return ajaxGetUsers(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
-				op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
-				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA) || 
-				op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
-			return ajaxGetFilterData(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS) || 
-				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
-				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
-			return ajaxGetConditionData(request, response);
 
 		} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 			return ajaxGetWorkspaceTree(request, response);
-
-		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-				op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) || 
-				op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-			return ajaxGetDashboardComponent(request, response);
-
-		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE)) {
-			return ajaxGetDashboardSearchMore(request, response);
-			
-		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE)) {
-			return ajaxGetDashboardTeamMore(request, response);
 
 		} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
 			return ajaxGetMyTeams(request, response);
@@ -438,218 +371,22 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetChangeLogEntryForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_MEETING_RECORDS)) {
 			return ajaxGetMeetingRecords(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
+				op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
+				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA) || 
+				op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
+			return ajaxGetFilterData(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_USER_LIST_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
+			return ajaxGetConditionData(request, response);
 		}
-		
 		return ajaxReturn(request, response);
 	} 
 
-	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
-		Map model = new HashMap();
-		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		String search = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
 
-		List users = new ArrayList();
-		if (WebHelper.isUserLoggedIn(request)) {
-				
-			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
-			
-			int startPageNo = 1;
-			int endPageNo = 10;
-			if (!pagerText.equals("")) {
-				String[] pagesNos = pagerText.split(";");
-				startPageNo = Integer.parseInt(pagesNos[0]);
-				endPageNo = Integer.parseInt(pagesNos[1]);
-			}
-	
-			options.put(ObjectKeys.SEARCH_MAX_HITS, (endPageNo - startPageNo) + 1);
-			options.put(ObjectKeys.SEARCH_OFFSET, startPageNo - 1);
-			
-			if (!search.equals("")) {
-				SearchFilter searchTermFilter = new SearchFilter();
-				search += "*";
-				
-				searchTermFilter.addTitleFilter(search);
-				searchTermFilter.addLoginNameFilter(search);
-							
-				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-			}
-			
-			Map entries = getProfileModule().getUsers(currentUser.getParentBinder().getId(), options);
-			users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
-		
-			
-			int searchCountTotal = ((Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-			int totalSearchRecordsReturned = ((Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).intValue();
-			
-			
-			if (startPageNo + totalSearchRecordsReturned < searchCountTotal) {
-				Map next = new HashMap();
-				next.put("start", startPageNo + totalSearchRecordsReturned);
-				if (startPageNo + totalSearchRecordsReturned + 10 < searchCountTotal) {
-					next.put("end",  startPageNo + totalSearchRecordsReturned + 10);
-				} else {
-					next.put("end",  searchCountTotal);
-				}
-				model.put(WebKeys.PAGE_NEXT, next);
-			}
-	
-			if (startPageNo > 1) {
-				Map prev = new HashMap();
-				prev.put("start", startPageNo - 10);
-				prev.put("end", startPageNo - 1);
-				model.put(WebKeys.PAGE_PREVIOUS, prev);
-			}
-			if (startPageNo == 1 && (search.equals("") || search.equals("*"))) {
-				// add relative option "current user" and "me"
-				Map currentUserPlaceholder = new HashMap();
-				currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
-				currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
-				
-				
-				Map mePlaceholder = new HashMap();
-				mePlaceholder.put("title", NLT.get("searchForm.meTitle") + " (" + currentUser.getTitle() + ")");
-				mePlaceholder.put("_docId", currentUser.getId());
-				
-				
-				users.add(0, mePlaceholder);
-				users.add(0, currentUserPlaceholder);
-			} 
-		}
-
-		model.put(WebKeys.USERS, users);
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/find_users_widget", model);
-	}
-	private ModelAndView ajaxGetEntryTypes(RenderRequest request, RenderResponse response) {
-		
-		Map model = new HashMap();
-		List entryTypes = new ArrayList();
-		if (WebHelper.isUserLoggedIn(request)) {
-			entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
-		}
-		model.put(WebKeys.ENTRY, entryTypes);
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/find_entry_types_widget", model);
-	}
-	
-	private ModelAndView ajaxGetEntryFields(RenderRequest request, RenderResponse response) {
-		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
-		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
-		
-		
-		Map model = new HashMap();
-		response.setContentType("text/json");
-		
-		Map fieldsData = new HashMap();
-		if (WebHelper.isUserLoggedIn(request)) {
-			fieldsData = getDefinitionModule().getEntryDefinitionElements(entryTypeId);
-		}
-	
-		if (entryField.equals("")) {
-			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
-			return new ModelAndView("forum/json/find_entry_fields_widget", model);
-		} else {
-			Map valuesData = new HashMap();
-			if (WebHelper.isUserLoggedIn(request)) {
-				Map entryFieldMap = (Map) fieldsData.get(entryField); 
-				if (entryFieldMap != null) {
-					valuesData = (Map) entryFieldMap.get("values");
-					String fieldType = (String)entryFieldMap.get("type");
-					if (valuesData == null && "checkbox".equals(fieldType)) {
-						valuesData = new HashMap();
-						valuesData.put(Boolean.TRUE.toString(), NLT.get("searchForm.checkbox.selected"));
-						valuesData.put(Boolean.FALSE.toString(), NLT.get("searchForm.checkbox.unselected"));
-					}
-				}
-			}
-			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
-			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
-		}
- 	}
-
-	private ModelAndView ajaxGetWorkflowSteps(RenderRequest request, RenderResponse response) {
-		String workflowId = PortletRequestUtils.getStringParameter(request, "workflowId", "");
-		Map model = new HashMap();
-		
-		Map stateData = new HashMap();
-		if (WebHelper.isUserLoggedIn(request)) {
-			stateData = getDefinitionModule().getWorkflowDefinitionStates(workflowId);
-		}
-		model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
-		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/find_workflow_steps_widget", model);
-	}
-	private ModelAndView ajaxGetTags(RenderRequest request, RenderResponse response) {
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		String findType = PortletRequestUtils.getStringParameter(request, "findType", "tags");
-		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
-		
-		Map model = new HashMap();
-		List tags = new ArrayList();
-			
-		if (WebHelper.isUserLoggedIn(request)) {
-			int startPageNo = 1;
-			int endPageNo = 10;
-			if (!pagerText.equals("")) {
-				String[] pagesNos = pagerText.split(";");
-				startPageNo = Integer.parseInt(pagesNos[0]);
-				endPageNo = Integer.parseInt(pagesNos[1]);
-			}
-			
-			String wordRoot = searchText;
-			int i = wordRoot.indexOf("*");
-			if (i > 0) wordRoot = wordRoot.substring(0, i);
-			
-			tags = getBinderModule().getSearchTags(wordRoot, findType);
-			int searchCountTotal = tags.size();
-			
-			if (tags.size() > startPageNo) {
-				if (tags.size() < endPageNo) endPageNo = tags.size();
-				tags = tags.subList(startPageNo - 1, endPageNo);
-			}
-			
-			if (endPageNo < searchCountTotal) {
-				Map next = new HashMap();
-				next.put("start", endPageNo + 1);
-				if (endPageNo + 10 < searchCountTotal) {
-					next.put("end",  endPageNo + 10);
-				} else {
-					next.put("end",  searchCountTotal);
-				}
-				model.put(WebKeys.PAGE_NEXT, next);
-			}
-	
-			if (startPageNo > 1) {
-				Map prev = new HashMap();
-				prev.put("start", startPageNo - 10);
-				prev.put("end", startPageNo - 1);
-				model.put(WebKeys.PAGE_PREVIOUS, prev);
-			}
-		
-		}
-		model.put(WebKeys.TAGS, tags);
-		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/find_tags_widget", model);
-	}
-	
-	private ModelAndView ajaxGetWorkflows(RenderRequest request, RenderResponse response) {
-		
-		List workflows = new ArrayList();
-		if (WebHelper.isUserLoggedIn(request)) {
-			workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
-		}
-		
-		Map model = new HashMap();
-		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, workflows);
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/find_workflows_widget", model);
-	}
-	
 	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) throws Exception {
 		Long binderId = null;
 		try {
@@ -818,25 +555,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 
 
-	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
-			ActionResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		Boolean showAllComponents = Boolean.TRUE;
-		if (op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) showAllComponents = Boolean.FALSE;
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, showAllComponents);
-	}
-	private void ajaxSaveDashboardLayout(ActionRequest request, 
-			ActionResponse response) throws Exception {
-		//Save the order of the dashboard components
-		String layout = PortletRequestUtils.getStringParameter(request, "dashboard_layout", "");
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-		Binder binder = getBinderModule().getBinder(binderId);
-		String scope = PortletRequestUtils.getStringParameter(request, "scope", DashboardHelper.Local);
-		DashboardHelper.saveComponentOrder(layout, binder, scope);
-	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
 							RenderResponse response) throws Exception {
@@ -982,11 +700,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String entryHeight = PortletRequestUtils.getStringParameter(request, "entry_height");
 		String entryTop = PortletRequestUtils.getStringParameter(request, "entry_top");
 		String entryLeft = PortletRequestUtils.getStringParameter(request, "entry_left");
-		
-		if (Validator.isNotNull(entryWidth)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
-		if (Validator.isNotNull(entryHeight)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
-		if (Validator.isNotNull(entryTop)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_TOP, entryTop);
-		if (Validator.isNotNull(entryLeft)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
+
+		Map values = new HashMap();
+		if (Validator.isNotNull(entryWidth)) values.put(WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
+		if (Validator.isNotNull(entryHeight)) values.put(WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		if (Validator.isNotNull(entryTop)) values.put(WebKeys.FOLDER_ENTRY_TOP, entryTop);
+		if (Validator.isNotNull(entryLeft)) values.put(WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
+		getProfileModule().setUserProperties(null, values);
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/save_entry_width_return", model);
@@ -1047,257 +767,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("definition_elements/tag_view_ajax", model);
 	}
 
-	private ModelAndView ajaxUserListSearch(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();;
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
-		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
-		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
-		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "");
-		String[] idsToSkip = PortletRequestUtils.getStringParameter(request, "idsToSkip", "").split(" ");
-		
-		Map userIdsToSkip = new HashMap();
-		for (int i = 0; i < idsToSkip.length; i++) {
-			if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
-		}
-		
-		String nameType = ProfileIndexUtils.LASTNAME_FIELD;
-		if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
-		if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
-		if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
-		if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
-		    	     	
-		//Build the search query
-		Document searchFilter = DocumentHelper.createDocument();
-		Element sfRoot = searchFilter.addElement(SearchFilterKeys.FilterRootName);
-		Element filterTerms = sfRoot.addElement(SearchFilterKeys.FilterTerms);
-		Element filterTerm = filterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, nameType);
-		if (searchText.length() > 0) {
-			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
-			filterTermValueEle.setText(searchText);
-		}
-	   	
-		// check to see if the user has the right to see all users, just users in their community,
-		// or no users.
-/* Need a beter implemenation - disable for now
-		if (!getProfileModule().checkUserSeeAll()) {
-			Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
-			if (getProfileModule().checkUserSeeCommunity())
-	    	{
-	    		// Add the group visibility element to the filter terms document
-				field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-	    	} else {
-	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-	    	}
-		}
-*/	   	
-		//Do a search to find the first few users who match the search text
-		User u = RequestContextHolder.getRequestContext().getUser();
-		Map users = new HashMap();
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
-			users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
-		} else {
-			users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
-		}
-		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
-		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
-		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, findType);
-		model.put(WebKeys.DIV_ID, listDivId);
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/user_list_search", model);
-	}
-	
-	private boolean ajaxCheckCurrentTag(String newTag){
-		if (Validator.isNull(newTag)) return false;
-		 
-		newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
-		String[] newTags = newTag.split(" ");
-		if (newTags.length == 0) return false;
-		
-	   	String tagName = newTags[newTags.length - 1].trim();
-	   	if (tagName.length() > ObjectKeys.MAX_TAG_LENGTH) {
-	   		return true;
-	   	}
-	   		
-	   	return false;
-	}
-	
-	private ModelAndView ajaxFindUserSearch(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
-		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
-		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
-		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
-		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
-		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
-		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
-		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
-		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
-		Integer maxEntriesTags = Integer.valueOf(200);
 
-		User u = RequestContextHolder.getRequestContext().getUser();
-		Map options = new HashMap();
-		String view, viewAccessible;
-		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
-		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
-		
-		model.put(WebKeys.DIV_ID, listDivId);
-		
-		if(op.equals("find_tag_search")) {
-		
-			boolean result = ajaxCheckCurrentTag(searchText);
-		
-			if(result) {
-				List thelist = null;
-				view = "forum/find_tag_search";
-				viewAccessible = "forum/find_tag_search_accessible";
-				
-				model.put(WebKeys.TAG_LENGTH_WARNING, NLT.get("tags.maxLengthWarning"));
-				model.put(WebKeys.TAGS, thelist);
-				
-				if (u.getDisplayStyle() != null && 
-						u.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-					view = viewAccessible;
-				} else {
-					response.setContentType("text/xml");
-				}
-				return new ModelAndView(view, model);	
-			}
-		}
-		
-		//Build the search query
-		SearchFilter searchTermFilter = new SearchFilter();
-		
-		String newStr = searchText;
-		Matcher matcher = replacePtrn.matcher(newStr);
-		while (matcher.find()) {
-			newStr = matcher.replaceFirst(" ");
-			matcher = replacePtrn.matcher(newStr);
-		}
-		newStr = newStr.replaceAll(" \\*", "\\*");
-		
-	    searchText = newStr;
-	     
-		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
-			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));
-
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
-			//Add the title term
-			if (searchText.length()>0)
-			searchTermFilter.addTitleFilter(searchText);
-
-			List searchTerms = new ArrayList();
-			searchTerms.add(EntityIdentifier.EntityType.folderEntry.name());
-			searchTermFilter.addAndNestedTerms(SearchFilterKeys.FilterTypeEntityTypes, SearchFilterKeys.FilterEntityType, searchTerms);
-			
-			searchTermFilter.addAndFilter(SearchFilterKeys.FilterTypeTopEntry);
-			
-			//Add terms to search this folder
-			if (!binderId.equals("")) {
-				
-				searchTermFilter.addAndFolderId(binderId);
-				
-				//TODO Need to implement "searchSubFolders"
-			}
-			
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
-			// this has been replaced by a getTags method in the search engine.
-			// searchTermFilter.addTagsFilter(FilterHelper.FilterTypeTags, searchText);
-		} else {
-			//Add the login name term
-			if (searchText.length()>0) {
-				searchTermFilter.addTitleFilter(searchText);
-				searchTermFilter.addLoginNameFilter(searchText);
-			}
-			// check to see if the user has the right to see all users, just users in their community,
-			// or no users.
-/* Need a beter implemenation - disable for now
- * 			if (!getProfileModule().checkUserSeeAll()) {
-				if (getProfileModule().checkUserSeeCommunity())	{
-		    		searchTermFilter.addTerm(QueryBuilder.GROUP_VISIBILITY_ELEMENT, QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-		    	} else {
-		    		searchTermFilter.addTerm(QueryBuilder.GROUP_VISIBILITY_ELEMENT, QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-		    	}
-			}
-*/
-			}
-	   	
-		//Do a search to find the first few items that match the search text
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
-			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_places_search";
-			viewAccessible = "forum/find_places_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
-			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_entries_search";
-			viewAccessible = "forum/find_entries_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
-			
-			String wordRoot = searchText;
-			int i = wordRoot.indexOf("*");
-			if (i > 0) wordRoot = wordRoot.substring(0, i);
-			
-			List tags = getBinderModule().getSearchTags(wordRoot, findType);
-			
-			List tagsPage = new ArrayList();
-			
-			// Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			// List tags = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
-			
-			if (tags.size() > startingCount.intValue()) {
-				int endTag = startingCount.intValue() + Integer.valueOf(maxEntries);
-				if (tags.size() < endTag) endTag = tags.size();
-				tagsPage = tags.subList(startingCount.intValue(), endTag);
-			}
-			model.put(WebKeys.TAGS, tagsPage);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
-			view = "forum/find_tag_search";
-			viewAccessible = "forum/find_tag_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
-			Map entries = getProfileModule().getGroups(u.getParentBinder().getId(), options);
-			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
-			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_user_search";
-			viewAccessible = "forum/find_user_search_accessible";
-		} else {
-			Map entries = getProfileModule().getUsers(u.getParentBinder().getId(), options);
-			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
-			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_user_search";
-			viewAccessible = "forum/find_user_search_accessible";
-		}
-		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, findType);
-		model.put(WebKeys.PAGE_SIZE, maxEntries);
-		model.put(WebKeys.PAGE_NUMBER, pageNumber);
-		
-		model.put(WebKeys.NAMESPACE, namespace);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		if (user.getDisplayStyle() != null && 
-				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-			view = viewAccessible;
-		} else {
-			response.setContentType("text/xml");
-		}
-		return new ModelAndView(view, model);
-	}
 
 	private ModelAndView ajaxGetFilterData(RenderRequest request, 
 				RenderResponse response) throws Exception {
@@ -1487,24 +957,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView(view, model);
 	}
 	
-	private void ajaxChangeDashboardComponent(ActionRequest request, 
-			ActionResponse response) throws Exception {
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String componentId = op2;
-		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
-		if (scope.equals("")) scope = DashboardHelper.Local;
-	
-		if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
-			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
-		} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
-			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
-		} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-			DashboardHelper.deleteComponent(request, binder, componentId, scope);
-		}
-	}
 	
 	private void ajaxUploadImageFile(ActionRequest request, 
 			ActionResponse response) throws Exception {
@@ -1681,121 +1133,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
 	}
 	
-	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
-				RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
-		String componentId = op2;
-		model.put(WebKeys.NAMESPACE, namespace);
 
-		if (op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
-			if (!componentId.equals("")) {
-				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-				Binder binder = getBinderModule().getBinder(binderId);
-				model.put(WebKeys.BINDER, binder);
-				String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
-				if (scope.equals("")) scope = DashboardHelper.Local;
-				User user = RequestContextHolder.getRequestContext().getUser();
-				DashboardHelper.getDashboardMap(binder, 
-					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, scope, componentId, false);
-			}
-		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) ||
-				op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-			return new ModelAndView("forum/fetch_url_return", model);
-		}
-		return new ModelAndView("definition_elements/view_dashboard_component", model);
-	}
-	
-	private ModelAndView ajaxGetDashboardSearchMore(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String componentId = op2;
-		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
-		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
-		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
-		model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, ""));
-		model.put(WebKeys.DASHBOARD_COMPONENT_ID, op2);
-	
-		if (Validator.isNotNull(componentId)) {
-			String scope = PortletRequestUtils.getStringParameter(request, "_scope", null);
-			if (Validator.isNull(scope)) {
-				if (componentId.contains("_")) scope = componentId.split("_")[0];
-			}
-			if (!DashboardHelper.Portlet.equals(scope)) {
-				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-				Binder binder = getBinderModule().getBinder(binderId);
-				model.put(WebKeys.BINDER, binder);
-				User user = RequestContextHolder.getRequestContext().getUser();
-				if (Validator.isNull(scope)) scope = DashboardHelper.Local;
-				DashboardHelper.getDashboardMap(binder, 
-					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, scope, componentId, false);
-			} else {
-				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID);				
-				DashboardPortlet dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);
-				model.put(WebKeys.DASHBOARD_PORTLET, dashboard);
-				User user = RequestContextHolder.getRequestContext().getUser();
-				DashboardHelper.getDashboardMap(dashboard, 
-					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, false);
-				
-			}
-		}
-		String view = "dashboard/search_view2";
-		String displayType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DISPLAY_TYPE, "search");
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_SEARCH)) view = "dashboard/search_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_GALLERY)) view = "dashboard/gallery_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_BLOG)) view = "dashboard/blog_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_TASK)) view = "dashboard/task_view2";
-		if (displayType.equals("comments")) view = "dashboard/comments_view2";
-		return new ModelAndView(view, model);
-	}
-	
-	private ModelAndView ajaxGetDashboardTeamMore(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String componentId = op2;
-		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
-		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
-		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
-		model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, ""));
-		model.put(WebKeys.DASHBOARD_COMPONENT_ID, op2);
-	
-		if (Validator.isNotNull(componentId)) {
-			String scope = PortletRequestUtils.getStringParameter(request, "_scope", null);
-			if (Validator.isNull(scope)) {
-				if (componentId.contains("_")) scope = componentId.split("_")[0];
-			}
-			if (!DashboardHelper.Portlet.equals(scope)) {
-				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-				Binder binder = getBinderModule().getBinder(binderId);
-				model.put(WebKeys.BINDER, binder);
-				User user = RequestContextHolder.getRequestContext().getUser();
-				if (Validator.isNull(scope)) scope = DashboardHelper.Local;
-				DashboardHelper.getDashboardMap(binder, 
-					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, scope, componentId, false);
-			} else {
-				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID);				
-				DashboardPortlet dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);
-				model.put(WebKeys.DASHBOARD_PORTLET, dashboard);
-				User user = RequestContextHolder.getRequestContext().getUser();
-				DashboardHelper.getDashboardMap(dashboard, 
-					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, false);
-				
-			}
-		}
-		String view = "dashboard/team_members_list_view";
-		return new ModelAndView(view, model);
-	}
-	
 	public HashMap getEntryAccessMap(Map model, FolderEntry entry) {
 		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
 		HashMap entryAccessMap = new HashMap();

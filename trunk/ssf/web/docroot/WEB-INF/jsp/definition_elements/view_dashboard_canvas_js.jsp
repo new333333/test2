@@ -49,11 +49,6 @@ if (!ss_dbrn) {
 	var ss_dashboardConfirmDeleteBinder = "<ssf:nlt tag="dashboard.confirmDeleteBinder"/>";
 	var ss_dashboardConfirmDeleteUnknown = "<ssf:nlt tag="dashboard.confirmDeleteUnknown"/>";
 
-	var ss_dashboardAjaxUrl = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true"/>";
 
 }
 var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_count = 0;

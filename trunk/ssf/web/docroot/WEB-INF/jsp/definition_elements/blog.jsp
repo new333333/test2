@@ -67,21 +67,14 @@ function ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifada
 			targetDiv.innerHTML = "<ssf:nlt tag="Loading"/><br/>";
 			targetDiv.style.visibility = 'visible';
 			targetDiv.style.display = 'block';
-			url = "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-				<ssf:param name="binderId" value="${ssBinder.id}" />
-				<ssf:param name="operation" value="show_blog_replies" />
-		    	</ssf:url>"
-			url += "\&entryId=" + id
+			var urlParams = {binderId : "${ssBinder.id}", operation:"show_blog_replies", entryId:id};
 			
 			if (blogNamespace && blogNamespace != '') {
-				url += "\&namespace=" + blogNamespace
+				urlParams.namespace=blogNamespace
 			}
 			
-			url += "\&rn=" + rn++
+			urlParams.rn=rn++;
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 			ss_fetch_url(url, ss_showBlogRepliesCallback<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>, id);
 		}
 	}

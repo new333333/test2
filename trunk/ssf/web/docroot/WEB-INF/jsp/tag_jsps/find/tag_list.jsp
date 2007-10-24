@@ -85,13 +85,7 @@ function ss_userListSearch(text, elementName, userGroupType) {
 		addedIds += items[i].id + " ";
 	}
  	
- 	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="false" >
-		<ssf:param name="operation" value="user_list_search" />
-    	</ssf:url>"
+ 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"user_list_search"}, "__ajax_find");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";

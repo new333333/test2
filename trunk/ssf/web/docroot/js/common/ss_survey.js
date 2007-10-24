@@ -313,10 +313,9 @@ ssSurvey.prepareSubmit = function(formObj) {
 }
 
 ssSurvey.vote = function(formId, binderId, entryId) {
-	var url = ss_AjaxBaseUrl + "&operation=vote_survey";
-	url += "\&binderId=" + binderId;
-	url += "\&entryId=" + entryId;
-	
+	var urlParams = {operation:"vote_survey", binderId:binderId, entryId:entryId};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+
 	dojo.io.bind({
     	url: url,
 		error: function(type, data, evt) {

@@ -160,7 +160,26 @@ if (!ss_onLoadRoutineLoaded) {
 	ss_savedOnLoadRoutine = window.onload;
 	window.onload = ss_onLoadInit;
 }
+function ss_buildAdapterUrl(base, paramMap, action) {
+	var url = base;
+	if (action && action != "") {
+		url += "\&action=" + action;
+	} else {
+		url += "\&action=__ajax_request";
+	}	
+	for (var i in paramMap) {
+		url += "\&" + i + "=" + paramMap[i];
+	}
 
+	return url;
+}
+
+function ss_getViewFolderEntryUrl(binderId, entryId) {
+	var url = ss_AjaxBaseUrl + "\&action=view_folder_entry";
+	url += "\&binderId="+binderId;
+	url += "\&entryId="+entryId;
+	return url;
+}
 //Routine to go to a permalink without actually using the permalink
 function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, useParentOrOpener) {
 
@@ -318,16 +337,25 @@ function ss_showPermalink(obj) {
 		divObj.style.left = x + "px";
 	}
 }
+//Routine to go to a binder when it is clicked
+// id can be a number or a string ending in "_1234" where 1234 is the id
+function ss_treeShowId(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
 
-//Routine to show a tree id
-function ss_tree_showId(id, obj, action) {
 	//Build a url to go to
 	var url = ss_baseBinderUrl;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	//console.log(url);
 	self.location.href = url;
 	return false;
 }
+
 
 //Routine to fetch a url in a iframe window (for accessibility mode)
 function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
@@ -612,17 +640,17 @@ function ss_showHideRatingBox(id, imgObj) {
 	}
 }
 function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
-	var recordUrl;
+	var urlParams = {id:id};
 	ss_showHide(divId);
 	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
 		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
-		recordUrl = ss_hideSidebarPanelUrl;
+		urlParams.operation = "show_sidebar_panel";
 	} else {
 		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
-		recordUrl = ss_showSidebarPanelUrl;
+		urlParams.operation="hide_sidebar_panel";
 	}
 	if (sticky) {
-		recordUrl += "&id=" + id;
+		var recordUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 		var bindArgs = {
 	    	url: recordUrl,
 			error: function(type, data, evt) {
@@ -640,16 +668,18 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 
 
 function ss_showHideBusinessCard(op, scope) {
+	var urlParams = {scope:scope};
 	if (op == "show") {
 		dojo.html.hide("ss_smallBusinessCard");
 		dojo.html.show("ss_largeBusinessCard");
-		recordUrl = ss_showBusinessCardUrl;
+		urlParams.operation="show_business_card";
 	} else {
 		dojo.html.hide("ss_largeBusinessCard");
 		dojo.html.show("ss_smallBusinessCard");
-		recordUrl = ss_hideBusinessCardUrl;
+		urlParams.operation="hide_business_card";
 	}
-	recordUrl += "&scope=" + scope;
+
+	var recordUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	var bindArgs = {
     	url: recordUrl,
 		error: function(type, data, evt) {
@@ -2004,8 +2034,9 @@ var ss_helpSystem = {
 	    lightBox.onclick = function(e) {if (ss_helpSystem) ss_helpSystem.hide();};
 	    
 		ss_moveDivToBody('ss_help_welcome');
+		var helpUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_help_panel", operation2:"welcome_panel"});
 		var bindArgs = {
-	    	url: ss_helpSystemWelcomePanelUrl,
+	    	url: helpUrl,
 			error: function(type, data, evt) {
 				alert(ss_not_logged_in);
 			},
@@ -2426,10 +2457,11 @@ var ss_helpSystem = {
 	},
 
 	recordShowHelpCPanel : function (visible) {
-
-		var url = ss_helpSystemHideCPanelUrl;
+		var url;	
 		if (visible == "visible") {
-			url = ss_helpSystemShowCPanelUrl;
+			url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_help_cpanel"});
+		} else {
+			url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"hide_help_cpanel"});
 		}
 		var bindArgs = {
 	    	url: url,
@@ -2490,14 +2522,13 @@ var ss_helpSystem = {
 			if (pObj.style && pObj.style.visibility) 
 					startVisibility = pObj.style.visibility;
 		}
-		var url = ss_helpSystemUrl;
+		
 		var orgHelpId = id;
 		//See if this is the actual name of the help panel
 		var i1 = id.indexOf("___");
 		if (i1 >= 0) orgHelpId = id.substr(id.indexOf("___") + 3);
-		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  orgHelpId);
-		url = ss_replaceSubStr(url, "ss_help_panel_tag_id_place_holder",  tagId);
-
+		var urlParams = {operation:"show_help_panel", operation2:orgHelpId, tagId:tagId}; 
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.setData("id", id)
 		ajaxRequest.setData("panelId", panelId)
@@ -2732,24 +2763,24 @@ function ss_addDashboardComponents(divId) {
 	ss_activateMenuLayer(divId, null, null, null, "popup")
 }
 
-function ss_showHideAllDashboardComponents(obj, divId, idStr) {
+function ss_showHideAllDashboardComponents(obj, divId, binderId) {
 	var formObj = ss_getContainingForm(obj)
-	var url = "";
+	var urlParams = {binderId:binderId};
 	var canvas = document.getElementById(divId);
 	if (canvas && canvas.style && canvas.style.visibility == 'visible') {
-		url = ss_dashboardAjaxUrl + "\&operation=hide_all_dashboard_components\&" + idStr;
+		urlParams.operation="hide_all_dashboard_components";
 	    obj.innerHTML = "<span><img src='"+ss_imagesPath+"/icons/dashboard_show.gif' title='"+ss_componentTextShow+"'></span>";
 		canvas.style.visibility = 'hidden';
 		canvas.style.display = 'none';
 	} else if (canvas && canvas.style) { 
-		url = ss_dashboardAjaxUrl + "\&operation=show_all_dashboard_components\&" + idStr;
+		urlParams.operation="show_all_dashboard_components";
 	    obj.innerHTML = "<span><img src='"+ss_imagesPath+"icons/dashboard_hide.gif' title='"+ss_componentTextHide+"'></span>";
 		canvas.style.visibility = 'visible';
 		canvas.style.display = 'block';
 	}
 	
-	ss_setupStatusMessageDiv()
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ss_setupStatusMessageDiv();
+	var ajaxRequest = new ss_AjaxRequest(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard")); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -2867,19 +2898,20 @@ function ss_callDashboardEvent(componentId,
 
 function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace) {
 	//ss_debug(obj.alt + ",    " + obj.src)
-	var formObj = ss_getContainingForm(obj)
-	var url = ss_dashboardAjaxUrl;
-	if (componentId != "") {url += "\&operation2=" + componentId;}
+	var formObj = ss_getContainingForm(obj);
+	var urlParams = {namespace:namespace,rn:ss_dbrn++};
+	
+	if (componentId != "") {urlParams.operation2=componentId;}
 	if (formObj._dashboardList && formObj._dashboardList.value != "") {
-		url += "\&_dashboardList=" + formObj._dashboardList.value;
+		urlParams._dashboardList=formObj._dashboardList.value;
 	}
 	if (formObj._scope && formObj._scope.value != "") {
-		url += "\&_scope=" + formObj._scope.value;
+		urlParams._scope=formObj._scope.value;
 	}
 	var callbackRoutine = ""
 	var imgObj = obj.getElementsByTagName('img').item(0);
 	if (imgObj.src.match(/accessory_show.gif/)) {
-		url += "\&operation=show_component";
+		urlParams.operation="show_component";
 	    callbackRoutine = ss_showComponentCallback;
 	    imgObj.src = ss_componentSrcHide;
 	    imgObj.alt = ss_componentAltHide;
@@ -2890,7 +2922,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 		}
 	    ss_callDashboardEvent(componentId, "onBeforeShow");
 	} else if (imgObj.src.match(/accessory_hide.gif/)) {
-		url += "\&operation=hide_component";
+		urlParams.operation="hide_component";
 	    callbackRoutine = ss_hideComponentCallback;
 	    imgObj.src = ss_componentSrcShow;
 	    imgObj.alt = ss_componentAltShow;
@@ -2906,7 +2938,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 		}
 		ss_callDashboardEvent(componentId, "onBeforeHide");
 	} else if (imgObj.className.match(/ss_accessory_delete/)) {
-		url += "\&operation=delete_component";
+		urlParams.operation="delete_component";
 	    callbackRoutine = ss_hideComponentCallback;
 		var targetDiv = document.getElementById(divId);
 		if (targetDiv) {
@@ -2918,9 +2950,8 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 		}
 		ss_callDashboardEvent(componentId, "onBeforeHide");
 	}
-	url += "\&namespace="+namespace;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard");
 	url += "\&" + idStr;
-	url += "\&rn=" + ss_dbrn++;
 	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, {"divId" : divId, "componentId" : componentId});
 }
 function ss_showComponentCallback(s, data) {
@@ -2984,16 +3015,9 @@ function ss_hideDashboardMenu(obj) {
 }
 
 function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, namespace, divId, componentId, displayType) {
-	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
-	url += "\&operation=search_more";
-	url += "\&operation2="+componentId;
-	url += "\&divId="+divId;
-	url += "\&namespace="+namespace;	
-	url += "\&pageNumber="+pageNumber;
-	url += "\&pageSize="+pageSize;
-	url += "\&displayType="+displayType;
-	url += "\&randomNumber="+ss_random++;
-	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
+	var urlParams = {binderId:binderId, operation:"search_more", operation2:componentId, divId:divId, namespace:namespace,
+						pageNumber:pageNumber, pageSize:pageSize, displayType:displayType, randomNumber:ss_random++};
+	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"), ss_moreDashboardSearchResultsCallback, divId);
 }
 
 function ss_moreDashboardSearchResultsCallback(s, divId) {
@@ -3005,15 +3029,9 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 }
 
 function ss_moreTeamMembers(binderId, pageNumber, pageSize, namespace, divId, componentId) {
-	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
-	url += "\&operation=team_more";
-	url += "\&operation2="+componentId;
-	url += "\&divId="+divId;
-	url += "\&namespace="+namespace;
-	url += "\&pageNumber="+pageNumber;
-	url += "\&pageSize="+pageSize;
-	url += "\&randomNumber="+ss_random++;
-	ss_fetch_url(url, ss_moreTeamMembersCallback, divId);
+	var urlParams = {binderId:binderId, operation:"team_more", operation2:componentId, divId:divId, namespace:namespace, pageNumber:pageNumber,
+					pageSize:pageSize, randomNumber:ss_random++};
+	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"), ss_moreTeamMembersCallback, divId);
 }
 
 function ss_moreTeamMembersCallback(s, divId) {
@@ -3034,14 +3052,10 @@ var browseHideAttachmentAndAjax = "";
 
 
 function setURLInIFrame(binderId, entryId, namespace) {
-	var url = ss_baseAppletFileUploadURL;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-
-	browseURL = url;
+	var urlParams = {operation:"add_files_by_browse_for_entry", binderId:binderId, entryId:entryId};
+	browseURL = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "add_entry_attachment");
 	browseHideAttachment = "ss_hideAddAttachmentBrowse('"+ entryId + "', '" + namespace + "')";
 	browseHideAttachmentAndAjax = 'ss_hideAddAttachmentBrowseAndAJAXCall("'+ binderId +'", "'+ entryId + '", "' + namespace + '", "strErrorMessage")';
-	//this.frames['ss_iframe_browse'+ entryId + namespace].setURL(url, ss_labelButtonOK, ss_labelButtonCancel, ss_labelEntryChooseFileWarning, "ss_hideAddAttachmentBrowse('"+ entryId + "', '" + namespace + "')", "ss_hideAddAttachmentBrowseAndAJAXCall('"+ binderId +"', '"+ entryId + "', '" + namespace + "')", ss_labelEntryBrowseAddAttachmentHelpText);
 }
 
 function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
@@ -3060,7 +3074,7 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	
 	//alert("ss_showAddAttachmentBrowse: frameObj.src: "+frameObj.src);
 	
-	frameObj.src = ss_htmlRootPath + "js/attachments/entry_attachment_browse.html";
+	frameObj.src = ss_rootPath + "js/attachments/entry_attachment_browse.html";
 	
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
@@ -3091,12 +3105,7 @@ function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, str
 function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
 	ss_setupStatusMessageDiv();
 	
-	var url = ss_baseAjaxRequest;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "reload_entry_attachments");
-	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
-
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:entryId, operation:"reload_entry_attachments", namespace:namespace});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 
 	//These two values have been set to identify the entryid and namespace combination for which we need to throw the sucess/failure message
@@ -3141,11 +3150,9 @@ function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
 function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	ss_hideAddAttachmentBrowse(entryId, namespace);
 	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
-	var url = ss_baseAjaxRequest;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "add_attachment_options");
-	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
+
+	var urlParams = {binderId:binderId, entryId:entryId, operation:"add_attachment_options", namespace:namespace};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	
 	var divId = 'ss_div_dropbox' + entryId + namespace;
 	var divObj = document.getElementById(divId);
@@ -3182,17 +3189,13 @@ function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
 	ss_toggleAjaxLoadingIndicator(contentDivId);
 
 	// contentDivObj.style.height = "120px";
-	
-	var url = ss_musterUrl;
-	url = ss_replaceSubStr(url, "ss_operation_place_holder",  "get_meeting_records");
-	url += "\&recordsDivId=" + contentDivId;
-	url += "\&binderId=" + binderId;
-	url += "\&entryId=" + entryId;
+	var urlParams = {operation:"get_meeting_records", recordsDivId:contentDivId, 
+					binderId:binderId, entryId:entryId,
+					ssNamespace:namespace, randomNumber:ss_random++};
 	if (held) {
-		url += "\&ssHeld=" + held;
+		urlParams.ssHeld=held;
 	}
-	url += "\&ssNamespace=" + namespace;
-	url += "\&randomNumber="+ss_random++;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.sendRequest();  //Send the request
 	
@@ -3208,8 +3211,7 @@ function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
 }
 
 function ss_attacheMeetingRecords(formId, binderId, entryId, namespace) {
-	var url = ss_musterUrl;
-	url = ss_replaceSubStr(url, "ss_operation_place_holder",  "attache_meeting_records");
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"attache_meeting_records"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formId);
 	ajaxRequest.setUsePOST();
@@ -3241,13 +3243,9 @@ function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue)
 	var escapedURL = escapeAppletFileURL(strURLValue);
 	escapedURL = ss_replaceSubStrAll(escapedURL, "+", "%2B");
 
-	var url = ss_baseAjaxRequestWithOS;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "open_webdav_file");
-	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
-	url = ss_replaceSubStr(url, "ssOSPlaceHolder", OSInfo);
-    url = url + "&ssEntryAttachmentURL="+escapedURL;
+	var urlParams ={binderId:binderId, entryId:entryId, operation:"open_webdav_file",
+						namespace:namespace, ssOSInfo:OSInfo, ssEntryAttachmentURL:escapedURL};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
 	var divId = "ss_div_fileopen" + entryId + namespace;
 	var divObj = document.getElementById(divId);
@@ -3267,13 +3265,9 @@ function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue)
 }
 
 function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
-	var url = ss_baseAjaxRequestWithOS;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "open_webdav_file_by_fileid");
-	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
-	url = ss_replaceSubStr(url, "ssOSPlaceHolder", OSInfo);
-    url = url + "&fileId="+fileId;
+	var urlParams ={binderId:binderId, entryId:entryId, operation:"open_webdav_file_by_fileid",
+						namespace:namespace, ssOSInfo:OSInfo, fileId:fileId};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
     
 	var divId = "ss_div_fileopen" + entryId + namespace;
 	var divObj = document.getElementById(divId);
@@ -3328,16 +3322,6 @@ function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
 function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard, namespace) {
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 
-	var url = ss_dashboardViewEntryUrl;
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", "view_folder_entry");
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", id);
-
-	if (ss_displayStyle == "accessible") {
-		self.location.href = url;
-		return false;
-	}
-
 	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the entry
 		if (binderId != null && binderId != "") linkMenuObj.binderId = binderId;
@@ -3357,7 +3341,7 @@ function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityTy
 		}
 	}
 	
-	if (ss_displayStyle && ss_displayStyle == "popup") {
+	if (ss_userDisplayStyle == "popup") {
 		ss_showForumEntryInPopupWindowForPortlet(entityType);
 	} else {
 		ss_showPortletEntryInIframe(obj.href, entityType, namespace);	
@@ -3419,7 +3403,7 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 	//var linkMenuObj = eval(linkMenu+"");
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 
-	if (ss_displayStyle == "accessible") {
+	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
@@ -3632,30 +3616,13 @@ function ss_saveDragId(id) {
     return false;
 }
 
-//Routine to go to a binder when it is clicked
-// id can be a number or a string ending in "_1234" where 1234 is the id
-function ss_treeShowId(id, obj, action) {
-	var binderId = id;
-	//See if the id is formatted (e.g., "ss_favorites_xxx")
-	if (binderId.indexOf("_") >= 0) {
-		var binderData = id.substr(13).split("_");
-		binderId = binderData[binderData.length - 1];
-	}
-
-	//Build a url to go to
-	var url = ss_treeShowIdUrl;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	//console.log(url);
-	self.location.href = url;
-	return false;
-}
 
 // Favorites Management
 
 var ss_deletedFavorites = new Array();
 
-function ss_showFavoritesPane(namespace) {
+function ss_showFavoritesPane(namespace) {	
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_favorites_tree"});
 	ss_setupStatusMessageDiv()
 	var fObj = self.document.getElementById("ss_favorites_pane" + namespace);
 	ss_moveObjectToBody(fObj);
@@ -3673,7 +3640,7 @@ function ss_showFavoritesPane(namespace) {
     dojo.html.setVisibility(fObj, "visible");
     dojo.html.setOpacity(fObj,0);
     dojo.lfx.html.fadeIn(fObj, 100).play();
-	ss_loadFavorites(namespace, ss_getFavoritesTreeUrl);
+	ss_loadFavorites(namespace, url);
 }
 
 function ss_loadFavorites(namespace, url) {
@@ -3724,7 +3691,7 @@ function ss_setFavoritesList(favList, namespace) {
 
 
 function ss_saveFavorites(namespace) {
-	var url = ss_saveFavoritesUrl;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_favorites_category"});
 	var saveArgs = new Array();
 	saveArgs["deletedIds"] = ss_deletedFavorites.join(" ");
 	saveArgs["favorites"] = ss_readFavoriteList(namespace);
@@ -3748,8 +3715,8 @@ function ss_saveFavorites(namespace) {
 	dojo.io.bind(bindArgs);
 }
 
-function ss_addBinderToFavorites(namespace) {
-	ss_loadFavorites(namespace, ss_addFavoriteBinderUrl);
+function ss_addBinderToFavorites(namespace, favoriteBinderUrl) {
+	ss_loadFavorites(namespace, favoriteBinderUrl);
 }
 
 function ss_showhideFavoritesEditor(namespace) {
@@ -4145,8 +4112,8 @@ function ss_savePenletLayout() {
 	dashboardLayoutForm.dashboard_layout.value = layout;
 
 	ss_setupStatusMessageDiv()
-
-	var url = ss_saveDashboardLayoutUrl;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_dashboard_layout"}, "__ajax_dashboard");
+	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_dashboard_layout_form");
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
@@ -4625,11 +4592,9 @@ function ss_linkMenuObj() {
 			url = this.entryUrl;
 		}
 		
-		if (!url && ss_fallBackPermaLinkURL) {
-			url = ss_fallBackPermaLinkURL;
-			url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
-			url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
-			url = ss_replaceSubStr(url, "ssEntityTypePlaceHolder", this.currentDefinitionType);
+		if (!url && ss_AjaxBaseUrl) {
+			var	urlParams = {binderId:this.currentBinderId, entryId:this.currentId, entityType:this.currentDefinitionType};
+			url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_permalink");
 		}
 		else {
 			url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
@@ -4864,9 +4829,7 @@ function ss_Clipboard () {
 		if (!divObj)
 			return;
 		ss_toggleAjaxLoadingIndicator(divObj, true);
-		var url = ss_musterUrl;
-		var url = ss_replaceSubStr(url, "ss_operation_place_holder",  "get_clipboard_users");
-		url += "\&randomNumber="+ss_random++;
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users", randomNumber:ss_random++});
 		
 		var bindArgs = {
 	    	url: url,
@@ -4982,10 +4945,8 @@ function ss_Clipboard () {
 	 */	
 	this.addTeamMembersToClipboard = function (afterPostRoutine) {
 		ss_setupStatusMessageDiv()
-		var url = ss_musterUrl;
-		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "add_to_clipboard");
-		url += "&add_team_members=true";
-		url += "&binderId=" + sBinderId;
+		var urlParams = {operation:"add_to_clipboard", add_team_members:"true", binderId:sBinderId};
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object		
 		//ajaxRequest.setEchoDebugInfo();
@@ -5002,11 +4963,7 @@ function ss_Clipboard () {
 	 */
 	this.addUsersToClipboard = function (userIds, afterPostRoutine) {
 		ss_setupStatusMessageDiv()
-		var url = ss_musterUrl;
-		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "add_to_clipboard");
-		
-		
-		url += "&muster_class=ss_muster_users";
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users"});
 		for (var i = 0; i < userIds.length; i++) {
 			url += "&muster_ids=" + userIds[i];
 		}
@@ -5032,8 +4989,8 @@ function ss_Clipboard () {
 	
 	this.removeFromClipboard = function (formName) {
 		ss_setupStatusMessageDiv();
-		var url = ss_musterUrl;
-		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "remove_from_clipboard");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"remove_from_clipboard"});
+		
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		//ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.addFormElements(formName);
@@ -5390,28 +5347,10 @@ function ss_date_validator(id, obj)
 	return isDate(month+"/"+day+"/"+year, "M/d/y");
 }
 
-function ss_confirmDeleteFolder() {
-	if (confirm(ss_confirmDeleteFolderText)) {
-		return true
-	} else {
-		return false
-	}
-}
-
-function ss_confirmStartWorkflow(text) {
+function ss_confirm(label, text) {
 	if (text == null) text = "";
 	if (text != "") text = " " + text;
-	if (confirm(ss_confirmStartWorkflowText + text)) {
-		return true
-	} else {
-		return false
-	}
-}
-
-function ss_confirmStopWorkflow(text) {
-	if (text == null) text = "";
-	if (text != "") text = " " + text;
-	if (confirm(ss_confirmStopWorkflowText + text)) {
+	if (confirm(label + text)) {
 		return true
 	} else {
 		return false
@@ -5450,14 +5389,15 @@ function ss_stopSpinner()
 
 dojo.require("dojo.html.iframe");
 
-function ss_showSavedQueriesList(relObj, divId) {
-	var url = ss_musterUrl;
-	url = ss_replaceSubStr(url, "ss_operation_place_holder",  "list_saved_queries");
+function ss_showSavedQueriesList(relObj, divId, resultUrl) {
+
 	if (dojo.html.isDisplayed(divId)) {
 		dojo.lfx.html.fadeHide(divId, 100).play();
 		//dojo.html.hide(divId);
 		return false;
 	}
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"list_saved_queries"});
+	
 	var bindArgs = {
     	url: url,
 		error: function(type, data, evt) {
@@ -5474,7 +5414,7 @@ function ss_showSavedQueriesList(relObj, divId) {
 				txt += '<img src="' + ss_imagesPath + 'pics/sym_s_delete.gif" border="0"/></a></div>'
 				txt += "<h1>" + ss_savedSearchTitle + "</h1><ul>";
 				for (var queryNo = 0; queryNo < data.length; queryNo++) {
-					txt += "<li><a href=\"" + ss_AdvancedSearch + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
+					txt += "<li><a href=\"" + resultUrl + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\">"+data[queryNo]+"</a></li>";
 				}
 				txt += "</ul>";
 				divObj.innerHTML = txt;
@@ -5545,9 +5485,8 @@ function ss_changeUITheme(idListText, nameListText) {
 }
 
 function ss_changeUIThemeRequest(themeId) {
-    var setUrl = ss_AjaxBaseUrl;
-    setUrl +=  "&operation=set_ui_theme";
-    setUrl +=  "&theme=" + themeId;
+	var setUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_ui_theme", theme:themeId});
+
 	var bindArgs = {
     	url: setUrl,
 		error: function(type, data, evt) {

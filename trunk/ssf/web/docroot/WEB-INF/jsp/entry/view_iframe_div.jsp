@@ -48,13 +48,6 @@
 		var ss_entryWindowLeft = -1;
 	</c:if>
 	
-	var ss_saveEntryWidthUrl = "<ssf:url 
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="save_entry_width" />
-		</ssf:url>"
 	
 	var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
 	<c:if test="${empty ss_entryWindowWidth}">

@@ -30,14 +30,7 @@
 %>
 <% //View dashboard canvas component %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-<%
-String displayStyle = ssUser.getDisplayStyle();
-if (displayStyle == null || displayStyle.equals("")) {
-	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-}
-%>
-<c:set var="ss_displayStyle" value="<%= displayStyle %>"/>
+
 <c:set var="hideDashboardControls" value="false"/>
 <c:if test="${ssDashboard.dashboard.components[ssComponentId].displayStyle == 'none'}">
   <c:set var="hideDashboardControls" value="true"/>
@@ -86,7 +79,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 	  <input type="hidden" name="_operation" value=""/>
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
-			  <c:if test="${ss_displayStyle == 'accessible'}">
+			  <ssf:ifaccessible>
 				<li><a href="javascript:;"
 				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_up.gif" 
@@ -95,7 +88,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
-			  </c:if>
+			  </ssf:ifaccessible>
 			  
 			  <c:if test="${ss_dashboard_componentScope == 'local' || ss_dashboard_componentScope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="javascript:;" 

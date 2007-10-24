@@ -339,7 +339,8 @@ function ss_saveEntryWidth(entryWidth, entryTop, entryLeft) {
     self.document.forms['ss_saveEntryWidthForm'].entry_width.value = entryWidth;
     self.document.forms['ss_saveEntryWidthForm'].entry_top.value = entryTop;
     self.document.forms['ss_saveEntryWidthForm'].entry_left.value = entryLeft;
-	var url = ss_saveEntryWidthUrl;
+ 	    
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_entry_width"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_saveEntryWidthForm")
 	//ajaxRequest.setEchoDebugInfo();

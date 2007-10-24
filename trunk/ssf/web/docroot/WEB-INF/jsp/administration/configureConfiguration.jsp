@@ -243,7 +243,7 @@ function ss_confirmDeleteConfig() {
 		<ssf:tree treeName="sidebarWsTree" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_tree_showId"
+		  showIdRoutine="ss_treeShowId"
 		  rootOpen="true"
 		  nowrap="true"/>
 		</c:if>

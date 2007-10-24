@@ -74,7 +74,7 @@
 		<ssf:tree treeName="sidebarWsTree" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_tree_showId"
+		  showIdRoutine="ss_treeShowId"
 		  rootOpen="true"
 		  nowrap="true"/>
 		</c:if>
@@ -126,16 +126,16 @@
 				  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-17" 
                   offsetY="-12" title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
 				  </ssHelpSpot>
-				<c:if test="${ss_displayStyle == 'accessible'}">
+				<ssf:ifaccessible>
 				  <a href="${ss_accessibleUrl}">
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>
 				  </a>
-				</c:if>
-				<c:if test="${ss_displayStyle != 'accessible'}">
+				</ssf:ifaccessible>
+				<ssf:ifnotaccessible>
 				  <a href="${ss_accessibleUrl}">
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 				  </a>
-				</c:if>
+				</ssf:ifnotaccessible>
 				</div>
 			</c:if>
 
