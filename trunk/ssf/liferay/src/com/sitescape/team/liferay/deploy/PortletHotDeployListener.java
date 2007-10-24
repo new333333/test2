@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.deploy.hot;
+package com.sitescape.team.liferay.deploy;
 
 import com.liferay.portal.apache.bridges.struts.LiferayServletContextProvider;
 import com.liferay.portal.job.Scheduler;
@@ -41,7 +41,7 @@ import com.liferay.portal.model.PortletCategory;
 import com.liferay.portal.security.permission.ResourceActionsUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.servlet.PortletContextPool;
-import com.liferay.portal.servlet.PortletContextWrapper;
+import com.sitescape.team.liferay.servlet.PortletContextWrapper;
 import com.liferay.portal.smtp.SMTPServerUtil;
 import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.PortalUtil;
@@ -243,7 +243,7 @@ public class PortletHotDeployListener implements HotDeployListener {
 									portletClassLoader);
 
 							resourceBundles.put(
-								locale.getLanguage(), resourceBundle);
+								locale.toString(), resourceBundle);
 						}
 						catch (MissingResourceException mre) {
 							_log.warn(mre.getMessage());
