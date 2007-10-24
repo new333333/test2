@@ -51,6 +51,7 @@ Lucene 1.9.1+indexupdater
 md5crypt.jar
 mysql-connector-java-5.0.4-bin.jar
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
+Portals Bridges 1.0
 Portlet 1.0
 Quartz 1.4.5
 SAAJ 1.2
