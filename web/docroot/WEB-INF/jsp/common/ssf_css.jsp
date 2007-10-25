@@ -374,7 +374,6 @@ div.ss_global_toolbar_quick input {
 
 
 fieldset.ss_fieldset {
-  -moz-border-radius: 5px; 
   margin-top: 6px;
   margin-bottom: 4px;
   border: 1px solid ${ss_style_border_color_light};
