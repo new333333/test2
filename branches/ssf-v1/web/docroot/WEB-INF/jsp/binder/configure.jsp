@@ -228,7 +228,7 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 </c:if>
   </fieldset>
   <br>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.AdvancedWorkflow">
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
   
   <% //only display if have workflows - which covers the case where workflow is not supported %>
 <c:if test="${!empty ssPublicWorkflowDefinitions}">

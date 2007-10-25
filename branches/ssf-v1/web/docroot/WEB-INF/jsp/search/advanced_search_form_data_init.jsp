@@ -66,7 +66,7 @@ function ss_initSearchOptions() {
 				ss_addInitializedModificationDate("${block.startDate}", "${block.endDate}");
 			</c:forEach>
 		</c:if>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.AdvancedWorkflow">
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
 				<c:forEach var="step" items="${block.filterWorkflowStateName}">
@@ -84,7 +84,7 @@ function ss_initSearchOptions() {
 			</c:forEach>
 		</c:if>
 		
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.AdvancedWorkflow">
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 		<c:if test="${empty ss_filterMap.additionalFilters.workflow}">
 			ss_addOption('workflow');
 		</c:if>
@@ -113,7 +113,7 @@ function ss_initSearchOptions() {
 		ss_addOption('creation_date');
 		ss_addOption('modification_date');
 		ss_addOption('tag');
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.AdvancedWorkflow">
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 		ss_addOption('workflow');
 </ssf:ifAuthorizedByLicense>
 		ss_addOption('creator_by_id');
