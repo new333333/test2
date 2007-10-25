@@ -78,7 +78,7 @@ var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param
    <div id="ss_report_activityFlavorOptions" style="margin-left:20px;">
    <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label"><ssf:nlt tag="administration.report.label.breakDown"/></label>
    </div>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.AdvancedWorkflow">
+<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
    <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.workflow"/></label>
    <div id="ss_report_workflowFlavorOptions" style="margin-left:20px;">
      <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" checked="checked"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
