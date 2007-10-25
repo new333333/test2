@@ -34,15 +34,13 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
-<div class="formBreak">
+<div class="ss_entryContent" style="padding-top:3px;">
 <fieldset class="ss_fieldset">
 <c:if test="${!empty property_legend}">
 <legend class="ss_legend"><ssf:nlt tag="${property_legend}" checkIfTag="true"/></legend>
 </c:if>
-<table>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
-</table>
 </fieldset>
 </div>
