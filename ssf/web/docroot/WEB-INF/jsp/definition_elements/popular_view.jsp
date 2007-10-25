@@ -34,13 +34,7 @@ var ss_ratingImages = new Array();
 var ss_ratingRedStar = "<html:imagesPath/>pics/star_red.gif";
 var ss_ratings_info = new Array();
 var ss_currentRatingInfoId = "";
-var ss_saveRatingUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="save_rating" />
-	</ssf:url>";
+
 var ss_binderId = "${ssBinder.id}";
 var ss_confirmDeleteEntryText = "<ssf:nlt tag="entry.confirmDeleteEntry"/>";
 var ss_confirmUnlockEntryText = "<ssf:nlt tag="entry.confirmUnlockEntry"/>";

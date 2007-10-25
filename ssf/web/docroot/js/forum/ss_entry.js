@@ -31,7 +31,7 @@
 function ss_saveRating(rating, id) {
 	ss_setupStatusMessageDiv()
 	var ratingDiv = "ss_rating_div_" + id
-	var url = ss_saveRatingUrl;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_rating"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("rating", rating)
 	ajaxRequest.addKeyValue("ratingDivId", ratingDiv)
