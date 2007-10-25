@@ -1,0 +1,676 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Thursday, October 25, 2007" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<style type="text/css">
+body { 
+		margin-left: .2in;
+		padding:0;
+		font-family:arial, helvetica, sans-serif;
+		font-size: 75%;
+		font-weight: normal;
+		color: #000000;
+		background-color: #ffffff;
+}
+
+/* headings */
+	h1 {font-size: 125%; font-weight: bold; color: #000000;}
+	h2,h3,h4,h5,h6 {font-size: 100%; font-weight: bold; color: #000000; margin-bottom:-6px;}
+
+	/* single file heading adjustments */
+	.singlefile h1 {font-size: 185%; color: #CC0000; margin-top:10px;}
+	.singlefile h2 {font-size: 140%; margin-top:35px;}
+	.singlefile h3 {font-size: 125%; margin-top:25px;}
+
+/* sections */
+	div.sect1 { margin-bottom: 10pt; }
+	div.sect2 { }
+	div.sect3, div.sect4, div.sect5, div.sect6 {margin-left:18px;}
+	
+/* msgset */
+	div.msgexplan {margin: 0px 0px 7px 0px;}
+	div.msgexplan span.title {margin: 0px 7px 0px 0px; font-size: 100%; font-weight: bold; color: #000000;}
+	div.msgtext p.para {margin: 4px 0px 16px 0px; font-size: 100%; font-weight: bold; color: #b00000;}
+
+/* links */
+	a {color:#0000cc;}
+	a:hover {color:#3366ff;}
+	a:visited {color:#993333;}
+	li.listitem a:hover {color:#3366ff;}
+	a.ulink a:hover {text-decoration:none; color:#3366ff;}
+
+	a.nav:link,
+	a.nav:visited,
+	a.nav:active { vertical-align: middle; font-weight: bold; color: gray; text-decoration: none; font-size: 100%;}
+	a.nav:hover { vertical-align: middle; font-weight: bold; color: #999999; text-decoration: none; font-size: 100%;}  
+
+/* paragraphs */	
+	p.para {font-weight: normal; color: #000000;}
+/*	p.title {margin:10px 0 4px 0;} */
+	p.msgtext {font-style: italic; font-weight: normal}
+	p.trademark {font-size: 75%; font-weight: normal; font-style: italic;}
+	/*p.entry {font-size: 95%; font-weight: normal; color: #000000; margin-top: -5px;}
+	p.table {font-weight: bold;}*/
+	pre.screen {font-family: monospace; margin: 10px 5px 10px 0px; padding: 1px 0px 3px 5px;font-size: 110%;color: #000000;}
+	p.glossterm {font-weight: bold;}
+	div.glossdef {margin:-10pt 0 0 0;}
+	
+/* admonitions */	
+	div.note,
+	div.tip,
+	div.warning,
+	div.important {margin: 12px 0px 5px 0px; padding: 0px 15px 0px 15px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+
+	div.note p em.title,
+	div.tip p em.title,
+	div.warning p em.title,
+	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;font-size:95%;}
+	div.warning em.title {color: #cc0000}
+
+/* figures and images */	
+	img.inline {vertical-align: middle;}
+	img {line-height: normal;}
+	br.img {line-height: normal;}
+	div.figure em.figure {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:5px 5px 0 0;}
+	div.figure em.title {font-family: times, serif; font-size: 95%; font-style: italic; font-weight: normal; color: #000000;}
+	div.figure p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.informalfigure {margin:15px 0px 10px 0px;}
+	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
+	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
+	
+/* tables */
+	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	td {font-size: 95%; font-weight: normal; color: #000000;}
+	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.formalpara table.topbot-lines {margin:0px 0 16px 0;}
+	div.informaltable table.topbot-lines {margin:10px 0 7px 0;}
+
+	table.topbot-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.topbot-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.topbot-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.topbot-lines tr.evenrow {background-color: white}
+	table.topbot-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.topbot-lines tr.oddrow {background-color: #f8f8f8}
+	table.topbot-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.all-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.all-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.all-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.all-lines tr.evenrow {background-color: white}
+	table.all-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.all-lines tr.oddrow {background-color: #f8f8f8}
+	table.all-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.no-lines tr.headerrow {background-color: white }
+	table.no-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; color: #404040; margin:1pt 0 0 0; background-color: white }
+	table.no-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white }
+	table.no-lines tr.evenrow td {background-color: white}
+	table.no-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white}
+	table.no-lines tr.oddrow td {background-color: white}
+	
+	table.calloutlist td {margin:0px; padding: 0px 6px 0px 0px;}
+	table.calloutlist p {margin: 5px 0px 5px 0px; padding: 0px;}
+	
+/* variablelists */
+	dt.term {font-style: normal; font-weight: bold; color: #000000;}
+	dd.listitem {margin-left: 22px; font-weight: normal;}
+	dt.refclass .application {font-size: 90%; font-style: normal; font-weight: bold; color: #000000; padding: 0px 20px 2px 0px;}
+	
+/* lists,procedures */
+	div.itemizedlist, div.orderedlist, div.procedure, div.substeps {margin-bottom:15px; font-weight: normal;}
+	ul.listbullet,ul.listcheck,ol {margin-left: 28px; padding-left: 0pt;}
+	ul.listcheck  {list-style-image : url("images/checkbox.gif"); list-style-type: square;}
+	ul.listbullet {list-style-type: disc; list-style-image : none;}
+	ul.simplelist {margin-left: 0px; list-style-type: none; list-style-image : none;padding-left: 0pt;}
+	div.orderedlist div.orderedlist > ol {list-style-type: lower-alpha;}
+	div.orderedlist div.orderedlist div.orderedlist > ol {list-style-type: lower-roman;}
+	div.substeps div.substeps div.substeps > ol {list-style-type:lower-alpha;}
+	div.substeps div.substeps > ol {list-style-type: decimal;}
+	div.substeps > ol {list-style-type: lower-alpha;}
+	li {margin: 5px 0 4px 0;}
+	li.member {margin:3px 0px 0px 10px;text-indent:-10px; font-weight: normal;}
+	li.step {font-weight: bold;color: #000000;}
+	div.procedure h1.title {font-weight: bold; color: #000000; margin-top: 22px; margin-bottom: -4pt;}
+
+/* bold inlines */	
+	em.refclass,em.glossterm,em.option {font-weight: bold; font-style: normal}
+
+/* italic inlines */	
+	em.diskname,em.emphasis,em.variable,em.versionvariable {font-style: italic; font-weight: normal}
+	span.citetitle,span.guimenu,span.replaceable {font-style: italic;}
+	tt,span.command,span.literal,span.filename {font-family: monospace; font-size: 130%;}
+	
+/* other inlines */	
+	em.msgtext {font-weight: bold; font-style: italic}
+	span.emphasis {font-weight: bold;}
+
+/* superscript and subscript */	
+	span.subscript,span.superscript {font-size: 80%;}
+
+/* single file toc elements */
+	div.toc {line-height: 11.5pt; background-color: #EEEEEE;  margin: 20px 0px 24px 0px; padding: 1px 0px 5px 0px}
+	div.toc h2 {margin-left: 5px}
+	div.toc div.toc1 {font-weight: normal; margin: 15px 10px 6px 5px}
+	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
+	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
+	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+	
+</style>
+
+<title>ICEcore Conference Quick Start Guide</title>
+</head>
+<body>
+
+<div class="chapter singlefile"  id="quickstart">
+
+<h1 class="title"> ICEcore Conference Quick Start Guide</h1>
+
+<p class="para">ICEcore Conference</p>
+<p class="para">1.0</p>
+<p class="para">September, 2007</p>
+<div class="sect1 singlefile"  id="b20g4u4">
+
+<h2 class="title"><span class="number">1.0</span> ICEcore Conference</h2>
+
+<p class="para">This guide is intended to get you started on ICEcore Conference. The term “ICEcore Conference” on this sheet applies to all versions of ICEcore Conference unless otherwise noted. For more information about ICEcore Conference features, refer to the ICEcore Conference User Guide and Online Help.</p>
+<div class="sect2 singlefile"  id="baq6f78">
+
+<h3 class="title"><span class="number">1.1</span> Start the ICEcore Conference Client:</h3>
+
+<p class="para">In Linux and Windows, double-click the ICEcore Conference desktop icon (placed on the desktop during install).</p>
+<p class="para">If you do not see the desktop icon, perform the following:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">In Windows, select the 
+      <span class="guimenu">Start &gt; All Programs &gt; ICEcore Conference &gt; ICEcore Conference</span> menu item.
+     </p></li>
+<li class="listitem">
+<p class="listitem">In Linux, select 
+      <span class="guimenu">Computer</span>, click 
+      <span class="guimenu">More Applications</span>, and then select the ICEcore Conference icon under 
+      <span class="guimenu">New Applications</span> or 
+      <span class="guimenu">Communicate</span>.
+     </p></li></ul></div>
+
+<p class="para">The ICEcore Conference client appears and you are now ready to sign on.</p>
+</div>
+
+<div class="sect2 singlefile"  id="baq6h99">
+
+<h3 class="title"><span class="number">1.2</span> Sign On:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6htg">
+<p class="para">Open your client.</p></li>
+<li class="step" id="baq6hze">
+<p class="para">In the 
+      <span class="guimenu">Screen Name</span> field, type your screen name or select it from the menu. 
+     </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Your screen name is your unique registered username. </p></li>
+<li class="listitem">
+<p class="listitem">Screen names are how ICEcore Conference and users recognize you.</p></li>
+<li class="listitem">
+<p class="listitem">Screen names are case sensitive and should not contain spaces.</p></li>
+<li class="listitem">
+<p class="listitem">Screen names should be alpha-numeric only and should not contain non-ASCII characters. (For example: bathgate222 or gbookworm is accepted, but bathgate 222 or gbook~worm is not accepted.)</p></li></ul></div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After the your initial login, your screen name appears in the 
+       <span class="guimenu">Screen Name</span> menu.
+      </p></div>
+</li>
+<li class="step" id="baq6j5p">
+<p class="para">In the 
+      <span class="guimenu">Password</span> field, type your password.
+     </p></li>
+<li class="step" id="baq6k0g">
+<p class="para">Optional Settings:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">To sign on and join a meeting at the same time, type a meeting PIN or the meeting ID into the 
+        <span class="guimenu">Meeting Pin</span> field.
+       </p></li>
+<li class="listitem">
+<p class="listitem">To save your password, select the 
+        <span class="guimenu">Save Password</span> option. (If your administrator does not give you the right to use this option, it is not visible.)
+       </p></li>
+<li class="listitem">
+<p class="listitem">To sign on automatically when ICEcore Conference starts, select the 
+        <span class="guimenu">Auto Sign On</span> option (recommended).
+       </p></li>
+<li class="listitem">
+<p class="listitem">To reconnect your client when there is no network connection present, select the 
+        <span class="guimenu">Keep Trying if No Connection</span> option (recommended).
+       </p></li></ul></div>
+</li>
+<li class="step" id="baq6l52">
+<p class="para">Click 
+      <span class="guimenu">Sign On</span> to log in.
+     </p>
+<p class="para">The ICEcore Conference Main window appears with your meeting list.</p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq6nma">
+
+<h3 class="title"><span class="number">1.3</span> Set Up Your Contact Information:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6ook">
+<p class="para">From the main window, select the 
+      <span class="guimenu">Options &gt; Edit My Contact Info... </span>menu item.
+     </p>
+<p class="para">The 
+      <span class="guimenu">Edit User</span> window appears.
+     </p></li>
+<li class="step" id="baq6osr">
+<p class="para">Edit your personal information (see the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed descriptions for these fields). </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq6pi9">
+
+<h3 class="title"><span class="number">1.4</span> Add Your Buddies:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6prv">
+<p class="para">Select the 
+      <span class="guimenu">Contacts &gt; Manage Contacts and Buddies</span> menu item.
+     </p></li>
+<li class="step" id="baq6qmc">
+<p class="para">Select one or more contacts from any group under the 
+      <span class="guimenu">Community Address Book</span> in the 
+      <span class="guimenu">Contact</span> Window (use the CTRL or SHIFT key to select multiple contacts). If you do not see the 
+      <span class="guimenu">Community Address Book</span>, your administrator did not give you permission to view it. Instead, use 
+      <span class="guimenu">Search</span> to locate potential buddies.
+     </p></li>
+<li class="step" id="baq6qxy">
+<p class="para">Right-click on one of the selected contacts and select the
+      <span class="guimenu"> Add to Personal Buddies</span> menu item. (You can view all your Personal Buddies under the 
+      <span class="guimenu">Personal Address Book</span>.)
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq6rli">
+
+<h3 class="title"><span class="number">1.5</span> Add a Non-Community User to Your Personal Buddy List:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6rqs">
+<p class="para">Select the 
+      <span class="guimenu">Contacts &gt; Manage Contacts and Buddies</span> menu item. 
+     </p></li>
+<li class="step" id="baq6rza">
+<p class="para">Right-click on the 
+      <span class="guimenu">Personal Address Book </span>and select the 
+      <span class="guimenu">Add Buddy By Screen Name...</span> menu item.
+     </p></li>
+<li class="step" id="baq6rzc">
+<p class="para">Type the contacts screen name into the dialog and click 
+      <span class="guimenu">OK</span>.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq6sa8">
+
+<h3 class="title"><span class="number">1.6</span> Edit a Contact’s Information:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6sqx">
+<p class="para">Select the
+      <span class="guimenu"> Contacts &gt; Manage Contact and Buddies... </span>menu item.
+     </p></li>
+<li class="step" id="baq6szk">
+<p class="para">In the Manage Contacts window, select the contact you want to edit.</p></li>
+<li class="step" id="baq6szm">
+<p class="para">Click 
+      <span class="guimenu">Edit</span>.
+     </p>
+<p class="para">The 
+      <span class="guimenu">Edit User</span> window appears.
+     </p></li>
+<li class="step" id="baq6szp">
+<p class="para">Edit the contacts information (see the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed descriptions for these fields). </p></li>
+<li class="step" id="baq6szs">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq6tyk">
+
+<h3 class="title"><span class="number">1.7</span> Start an Instant Meeting:</h3>
+
+<p class="para">Start your Instant Meeting at the time you want to hold the meeting (has no pre-defined participants or scheduled starting time).</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6vmg">
+<p class="para">In the meeting list, select 
+      <span class="guimenu">My Meeting</span> under 
+      <span class="guimenu">My Instant Meeting</span>.
+     </p></li>
+<li class="step" id="baq6vpo">
+<p class="para">Click 
+      <span class="guimenu">Start</span>.
+     </p>
+<p class="para">The 
+      <span class="guimenu">Meeting Setup</span> window appears.
+     </p></li>
+<li class="step" id="baq6vpq">
+<p class="para">Add your contacts, see Add Meeting Invitees below.</p></li>
+<li class="step" id="baq6vps">
+<p class="para">Configure the meeting options (see the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed descriptions of the Meeting Options).</p></li>
+<li class="step" id="baq6vpv">
+<p class="para">Click 
+      <span class="guimenu">Start Meeting</span>.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq75i3">
+
+<h3 class="title"><span class="number">1.8</span> Join a Meeting:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq75li">
+<p class="para">Select the meeting you want to join. </p></li>
+<li class="step" id="baq75or">
+<p class="para">Click 
+      <span class="guimenu">Join</span>. 
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq6xij">
+
+<h3 class="title"><span class="number">1.9</span> Create a New Scheduled Meeting:</h3>
+
+<p class="para">A Scheduled Meeting is a meeting that can have pre-defined participants and an optional scheduled starting time. If you create a Scheduled Meeting with a schedule time, the time is placed in e-mail invitations that go out to meeting participants. You can start a Scheduled Meeting at any time, regardless of the time its scheduled.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you make an invitee a moderator to a Scheduled Meeting, the invitee becomes a persistent moderator who can start, but not edit, your Scheduled Meetings.</p></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq6xkx">
+<p class="para">Click 
+      <span class="guimenu">Schedule New</span>. The 
+      <span class="guimenu">Meeting Setup</span> window appears.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The Meeting ID and Meeting PIN remain blank until the meeting is scheduled.</p></div>
+</li>
+<li class="step" id="baq6ykx">
+<p class="para">Add your contacts, see Add Meeting Invitees below.</p></li>
+<li class="step" id="baq6z77">
+<p class="para">Configure the meeting options (see the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed descriptions of the Meeting Options).</p></li>
+<li class="step" id="baq6z7a">
+<p class="para">Click 
+      <span class="guimenu">Schedule Meeting</span>.
+     </p></li>
+<li class="step" id="baq6zjn">
+<p class="para">If you selected e-mail notifications, a dialog appears for pre-sending meeting invitations:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Select 
+        <span class="guimenu">Send Emails to All Meeting Invitees</span> to send invitations to everyone invited, even if they have previously received e-mail invitations.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Select 
+        <span class="guimenu">Send Emails to New Invitees Only</span> to only send invitations to invitees you just added. With a new meeting, all invitees are new, so invitations go to everyone.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Select 
+        <span class="guimenu">Do Not Send Emails</span> if you do not want any e-mail notifications sent.
+       </p></li></ul></div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq70m7">
+
+<h3 class="title"><span class="number">1.10</span> Add Meeting Invitees:</h3>
+
+<p class="para">To add contacts to a meeting, you have to open the 
+    <span class="guimenu">Select Contacts</span> window from the 
+    <span class="guimenu">Meeting Setup</span> window and add all the contacts and groups you want to invite to the meeting. You can also add someone who is not a contact from the 
+    <span class="guimenu">Meeting Setup</span> window, see 
+    <a href="#baq738b">Invite Someone Who is Not a Contact</a> below.
+   </p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq71x1">
+<p class="para">From the 
+      <span class="guimenu">Meeting Setup</span> window, select 
+      <span class="guimenu">Show Contacts...</span>
+     </p></li>
+<li class="step" id="baq720t">
+<p class="para">In the 
+      <span class="guimenu">Select Contacts</span> window, select the contacts and groups you want to invite to your meeting (use the Ctrl + Shift keys to select multiple contacts and groups).
+     </p></li>
+<li class="step" id="baq720v">
+<p class="para">Click 
+      <span class="guimenu">Invite to Meeting</span>.
+     </p>
+<p class="para">The 
+      <span class="guimenu">Select Contacts</span> window closes, and the contacts and groups you selected appear in the 
+      <span class="guimenu">Invitees</span> list of the 
+      <span class="guimenu">Meeting Setup</span> window.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq738b">
+
+<h3 class="title"><span class="number">1.11</span> Invite Someone Who is Not a Contact:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq73je">
+<p class="para">From the 
+      <span class="guimenu">Meeting Setup</span> window, select 
+      <span class="guimenu">Invite New...</span>
+     </p>
+<p class="para">A blank contact-information window appears.</p></li>
+<li class="step" id="baq73n4">
+<p class="para">Fill out the new contacts information (see 
+      <span class="guimenu">Editing a Contact's</span> Information).
+     </p></li>
+<li class="step" id="baq73n6">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p>
+<p class="para">The contact information window closes and the new contact appears in the Invitees list of the 
+      <span class="guimenu">Meeting Setup</span> window.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq70g2">
+
+<h3 class="title"><span class="number">1.12</span> Start a Scheduled Meeting:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq74gs">
+<p class="para">Select one of your Scheduled Meetings or a meeting where you are a designated moderator.</p></li>
+<li class="step" id="baq74ru">
+<p class="para">Click 
+      <span class="guimenu">Start</span>. The 
+      <span class="guimenu">Meeting Setup</span> window appears.
+     </p></li>
+<li class="step" id="baq74lu">
+<p class="para">Add any additional contacts you want to invite to the meeting.</p></li>
+<li class="step" id="baq74lw">
+<p class="para">If necessary, edit the meeting options (see the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed descriptions of the Meeting Options).</p></li>
+<li class="step" id="baq74lx">
+<p class="para">Click 
+      <span class="guimenu">Start Meeting</span> at the bottom of the window.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq79ni">
+
+<h3 class="title"><span class="number">1.13</span> Search the Community Meetings:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq79r6">
+<p class="para">Click 
+      <span class="guimenu">Find... </span>in the 
+      <span class="guimenu">Meetings List</span> window. The 
+      <span class="guimenu">Meeting Search</span> window appears.
+     </p></li>
+<li class="step" id="baq79z8">
+<p class="para">To save the search, click 
+      <span class="guimenu">Save As...</span>, type in a name for your search, and then click 
+      <span class="guimenu">OK</span>. (Saved searches appear in the 
+      <span class="guimenu">Search Name</span> drop-down list.)
+     </p></li>
+<li class="step" id="baq7ago">
+<p class="para">Select a 
+      <span class="guimenu">Date Range</span>.
+     </p></li>
+<li class="step" id="barpq5z">
+<p class="para">Select the 
+      <span class="guimenu">Search Criteria</span> for your search (you can select multiple options to narrow your search down). See the ICEcore Conference Online Help or ICEcore Conference User Guide for details on these criteria.
+     </p></li>
+<li class="step" id="baq7atv">
+<p class="para">To configure the number of results you want to retrieve for this search, type a number into the Number of Results field (default is 100).</p></li>
+<li class="step" id="baq7dn5">
+<p class="para">Click 
+      <span class="guimenu">Search Now</span>.
+     </p>
+<p class="para">The results for the search are displayed in a group under 
+      <span class="guimenu">Community Search Results</span>. If there are additional search results beyond the limit you specified, right-click on the search results group and select the 
+      <span class="guimenu">Find More</span> menu item.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baq768h">
+
+<h3 class="title"><span class="number">1.14</span> Join a Meeting by Meeting ID or PIN:</h3>
+
+<p class="para">The Meeting PIN is a personal identifier that the meeting server uses to represent a specific attendee in a specific meeting. The Meeting ID is a generic identifier that represents a specific meeting only (does not identify a specific attendee).</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baq76bq">
+<p class="para">Select the 
+      <span class="guimenu">Meetings &gt; Join by Meeting ID or PIN... </span>menu item.
+     </p>
+<p class="para">The 
+      <span class="guimenu">Join Meeting</span> dialog appears.
+     </p></li>
+<li class="step" id="baq76eq">
+<p class="para">Type the 
+      <span class="guimenu">Meeting ID</span> or 
+      <span class="guimenu">PIN</span> number into the field in the 
+      <span class="guimenu">Join Meeting</span> dialog. Use the Meeting PIN to join meetings whenever possible so that the meeting server can identify you. You need to use the Meeting PIN to join any meeting where you plan to act as a moderator.
+     </p></li>
+<li class="step" id="baq76et">
+<p class="para">Click 
+      <span class="guimenu">OK</span>.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bata1vm">
+
+<h3 class="title"><span class="number">1.15</span> Share Your Desktop or an Application In a Meeting:</h3>
+
+<p class="para">When you are in a meeting, you can share your desktop or an application with everyone in the meeting. You can also grant other participants remote control of your desktop or the shared application (see the next procedure).</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">To share your desktop, select the 
+      <span class="guimenu">Sharing &gt; Share Desktop</span> menu item.
+     </p></li>
+<li class="listitem">
+<p class="listitem">To share an application, select the 
+      <span class="guimenu">Sharing &gt; Share Application</span> menu item, select an application from the 
+      <span class="guimenu">Share Applications </span>window, and then click 
+      <span class="guimenu">OK</span>.
+     </p></li></ul></div>
+
+<p class="para">The share session opens and everyone can view the shared desktop or application under the 
+    <span class="guimenu">Application Share</span> tab in the 
+    <span class="guimenu">Meeting</span> window. The 
+    <span class="guimenu">Share Control Panel</span> floats in the upper-right section of your window. To close the share session, click 
+    <span class="guimenu">Stop Sharing</span> in the 
+    <span class="guimenu">Share Control Panel</span>.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="bata8cb">
+
+<h3 class="title"><span class="number">1.16</span> Grant Participants Remote Control:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bata8se">
+<p class="para">Select one or more participants.</p></li>
+<li class="step" id="bata9bd">
+<p class="para">Select the 
+      <span class="guimenu">Participants &gt; Grant Remote Control</span> menu item to grant the participants remote control rights over your share session (
+      <span class="guimenu">[Remote Ctl]</span> appears next to the participants' names).
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>A participant clicks in the share window to take remote control of the share session. If you click your mouse or hit a key on your keyboard you automatically take back control of the share session.</p></div>
+</li></ol>
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b20g58r">
+
+<h2 class="title"><span class="number">2.0</span> Legal Notice</h2>
+
+<p class="para">Copyright © 2007 SiteScape, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher. All third-party trademarks are the property of their respective owners. A trademark symbol (®, TM, etc.) denotes a SiteScape trademark; an asterisk (*) denotes a third-party trademark.</p>
+</div>
+
+</div>
+
+</body>
+</html>
