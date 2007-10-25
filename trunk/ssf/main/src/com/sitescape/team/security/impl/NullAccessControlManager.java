@@ -46,7 +46,6 @@ import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.SpringContextUtil;
 /**
  *
  * @author Jong Kim
@@ -54,12 +53,19 @@ import com.sitescape.team.util.SpringContextUtil;
 public class NullAccessControlManager implements AccessControlManager {
 	private static Set groups;
 	private Boolean lock = new Boolean(true);
+	private ProfileDao profileDao;
+	
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
 	
 	public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		if (groups == null) {
 			synchronized (lock) {
 				if (groups == null) {
-					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
 					List result = profileDao.loadGroups(new FilterControls(), RequestContextHolder.getRequestContext().getZoneId());
 					groups = new HashSet();
 					for (int i=0; i<result.size(); ++i) {

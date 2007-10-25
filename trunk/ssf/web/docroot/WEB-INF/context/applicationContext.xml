@@ -346,6 +346,7 @@
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 	</bean>
 	<!--<bean id="accessControlManager" class="com.sitescape.team.security.impl.NullAccessControlManager">
+		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	-->
 	
@@ -408,6 +409,7 @@
 		<property name="fileModule"><ref local="fileModule"/></property>
 		<property name="reportModule"><ref local="reportModule"/></property>
 		<property name="rssModule"><ref local="rssModule"/></property>
+		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 	</bean>
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">

@@ -40,8 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.domain.Definition;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.util.Validator;
@@ -49,10 +47,17 @@ public abstract class ZipDownloadController extends  SAbstractController {
 	
 	protected abstract String getFilename();
 	protected abstract NamedDocument getDocumentForId(String defId);
+	private FileTypeMap mimeTypes;
+	
+	protected FileTypeMap getFileTypeMap() {
+		return mimeTypes;
+	}
+	public void setFileTypeMap(FileTypeMap mimeTypes) {
+		this.mimeTypes = mimeTypes;
+	}
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
-		FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 		String filename = getFilename();
 		response.setContentType(mimeTypes.getContentType(filename));
 		response.setHeader("Cache-Control", "private");

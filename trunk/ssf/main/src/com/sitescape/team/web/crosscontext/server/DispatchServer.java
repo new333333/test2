@@ -44,12 +44,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
-import com.sitescape.team.security.authentication.AuthenticationManager;
+import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.crosscontext.CrossContextConstants;
 
@@ -95,7 +94,7 @@ public class DispatchServer extends GenericServlet {
 					SPropsUtil.getBoolean("portal.password.ignore", false);
 				boolean createUser = 
 					SPropsUtil.getBoolean("portal.user.auto.create", false);
-				getAuthenticationManager().authenticate(zoneName, userName, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticator);
+				AuthenticationManagerUtil.authenticate(zoneName, userName, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticator);
 			}
 			catch(UserDoesNotExistException e) {
 				logger.warn(e.getLocalizedMessage(), e);
@@ -138,8 +137,5 @@ public class DispatchServer extends GenericServlet {
 			logger.error("Unrecognized operation [" + operation + "]");
 		}
 	}
-	
-	private AuthenticationManager getAuthenticationManager() {
-		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-	}
+
 }

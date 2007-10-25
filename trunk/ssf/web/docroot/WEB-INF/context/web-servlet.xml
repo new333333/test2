@@ -97,7 +97,9 @@
 
 	<!-- Controllers -->
 
-	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
+	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
 	<bean id="rssFeed" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewRssController">
 		<property name="rssModule"><ref bean="rssModule"/></property>
 	</bean>
@@ -108,7 +110,9 @@
 	<bean id="viewCss" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewCssController"/>
 	<bean id="viewDefinitionXml" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.definition.ViewDefinitionXmlController"/>
 	<bean id="viewFragment" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.widget_test.FragmentController"/>
-	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ReportDownloadController"/>
+	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ReportDownloadController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
 	<bean id="definitionDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ExportDefinitionDownloadController"/>
 	<bean id="templateDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.TemplateDownloadController"/>
 	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>

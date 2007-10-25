@@ -105,7 +105,6 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
@@ -173,6 +172,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		this.transactionTemplate = transactionTemplate;
 	}
 	
+    private ITextConverterManager textConverterManager;
+    protected ITextConverterManager getTextConverterManager() {
+    	return textConverterManager;
+    }
+    public void setTextConverterManager(ITextConverterManager textConverterManager) {
+    	this.textConverterManager = textConverterManager;
+    }
+
 	//***********************************************************************************************************	
     //no transaction    
     public Binder addBinder(final Binder parent, Definition def, Class clazz, 
@@ -1451,13 +1458,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      */
     protected void buildIndexDocumentFromFile
     	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, List tags) {
-    	ITextConverterManager textConverterManager = null;
     	TextConverter converter = null;
 		String text = "";
 		
 		// Get the Text converter from manager
-		// Abstract Class can not use Spring Injection mechanism
-		textConverterManager = (ITextConverterManager)SpringContextUtil.getBean("textConverterManager");
 		converter = textConverterManager.getConverter();
 		
 		try
