@@ -58,7 +58,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -67,6 +66,8 @@ import com.sitescape.team.module.workflow.WorkflowUtils;
 
 public class ReportDownloadController extends  SAbstractController {
 	
+	private FileTypeMap mimeTypes;
+
 	static HashMap<String, String> columnNames = null;
 	
 	static {
@@ -94,6 +95,13 @@ public class ReportDownloadController extends  SAbstractController {
 		return column.equals(ReportModule.USER_ID);
 	}
 	
+	protected FileTypeMap getFileTypeMap() {
+		return mimeTypes;
+	}
+	public void setFileTypeMap(FileTypeMap mimeTypes) {
+		this.mimeTypes = mimeTypes;
+	}
+	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
@@ -108,7 +116,6 @@ public class ReportDownloadController extends  SAbstractController {
 			endDate = cal.getTime();
 		}
 		if (formData.containsKey("forumOkBtn")) {
-			FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 			response.setContentType(mimeTypes.getContentType("report.csv"));
 			response.setHeader("Cache-Control", "private");
 			response.setHeader("Pragma", "no-cache");

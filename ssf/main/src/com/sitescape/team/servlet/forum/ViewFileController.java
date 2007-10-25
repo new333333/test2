@@ -51,7 +51,6 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -62,6 +61,15 @@ import com.sitescape.util.FileUtil;
 import com.sitescape.util.Validator;
 
 public class ViewFileController extends SAbstractController {
+	
+	private FileTypeMap mimeTypes;
+
+	protected FileTypeMap getFileTypeMap() {
+		return mimeTypes;
+	}
+	public void setFileTypeMap(FileTypeMap mimeTypes) {
+		this.mimeTypes = mimeTypes;
+	}
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
@@ -77,7 +85,6 @@ public class ViewFileController extends SAbstractController {
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE)) {
 			//This is a request to view a recently uploaded file in the temp area
 			String shortFileName = WebHelper.getFileName(fileId);	
-			FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 			response.setContentType(mimeTypes.getContentType(shortFileName));
 			response.setHeader("Cache-Control", "private");
 			response.setHeader("Pragma", "no-cache");
@@ -212,7 +219,6 @@ public class ViewFileController extends SAbstractController {
 			else
 			if (fa != null) {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 				response.setContentType(mimeTypes.getContentType(shortFileName));
 				if (fileTime.equals("") || 
 						!fileTime.equals(String.valueOf(fa.getModification().getDate().getTime()))) {
