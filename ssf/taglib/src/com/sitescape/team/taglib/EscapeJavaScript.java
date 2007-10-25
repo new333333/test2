@@ -30,45 +30,53 @@ package com.sitescape.team.taglib;
 
 import java.io.IOException;
 
-import javax.portlet.RenderResponse;
-
-import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.sitescape.team.portletadapter.taglib.PortletURLTag;
-import com.sitescape.team.web.WebKeys;
 
 /**
  * 
  * Escapes JavaScript characters from given string value and outputs to page.
  * 
  */
-public class EscapeJavaScript extends TagSupport {
+public class EscapeJavaScript extends BodyTagSupport {
 
 	protected static final Log logger = LogFactory.getLog(EscapeJavaScript.class);
 
-	private String value;
-
+	private String value=null;
+	private String cachedBody=null;
 	public int doStartTag() throws JspTagException {
 		try {
 			if (value != null)
 				pageContext.getOut().print(
 						StringEscapeUtils.escapeJavaScript(value));
+			return EVAL_BODY_BUFFERED;
 		} catch (IOException e) {
 			logger.error(e.getLocalizedMessage(), e);
 		} finally {
 			this.value = null;
+			this.cachedBody=null;
 		}
 
 		return SKIP_BODY;
 	}
+	public int doAfterBody() {
+		cachedBody = getBodyContent().getString();
+		return SKIP_BODY;
+	}
 
-	public int doEndTag() {
+	public int doEndTag() throws JspTagException {
+		try {
+			if (cachedBody != null) pageContext.getOut().print(StringEscapeUtils.escapeJavaScript(cachedBody));
+		} catch (Exception e) {
+			throw new JspTagException(e.getLocalizedMessage());
+		} finally {
+			release();
+		}
+
 		return EVAL_PAGE;
 	}
 
