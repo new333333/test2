@@ -340,4 +340,16 @@ public class RepositoryUtil {
 		// VM wide.
 		return UUID.randomUUID().toString();		
 	}
+	
+	public static long getContentLengthUnversioned(String repositoryName, Binder binder, 
+				DefinableEntity entity, String relativeFilePath) 
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
+
+		try {
+			return session.getContentLengthUnversioned(binder, entity, relativeFilePath);
+		} finally {
+			session.close();
+		}
+	}
 }

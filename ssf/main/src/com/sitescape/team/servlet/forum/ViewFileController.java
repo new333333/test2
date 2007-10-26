@@ -44,12 +44,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
@@ -254,7 +256,7 @@ public class ViewFileController extends SAbstractController {
 					}
 				} else {
 					try {
-						response.setHeader("Content-Length", String.valueOf(fa.getFileItem().getLength()));
+						response.setHeader("Content-Length", String.valueOf(getLength(parent, entity, fa)));
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 						getReportModule().addFileInfo(AuditType.download, fa);
 					}
@@ -270,6 +272,15 @@ public class ViewFileController extends SAbstractController {
 			}
 		}
 		return null;
+	}
+	
+	private long getLength(Binder binder, DefinableEntity entity, FileAttachment fa) {
+		if(ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) {
+			return RepositoryUtil.getContentLengthUnversioned(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
+		}
+		else {
+			return fa.getFileItem().getLength();
+		}
 	}
 	
 	private void streamZipFile(HttpServletRequest request,
