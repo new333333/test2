@@ -94,9 +94,9 @@
 
  <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.7"> <text>Running the Installer</text> </target>
 
- <target id="bbikzkn" pid="b9vchna" name="Procedure" level="2" number="1"> <text>Run the installer (on Linux, do a chmod +x -liferay.linux to make the installer executable).</text> </target>
+ <target id="bbikzkn" pid="b9vchna" name="Procedure" level="2" number="1"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable).</text> </target>
 
- <target id="bbil5vv" pid="b9vchna" name="Step" level="3" number="1"> <text>Run the installer (on Linux, do a chmod +x -liferay.linux to make the installer executable).</text> </target>
+ <target id="bbil5vv" pid="b9vchna" name="Step" level="3" number="1"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable).</text> </target>
 
  <target id="bbikzko" pid="b9vchna" name="Step" level="3" number="2"> <text>Answer Yes to the license agreement:</text> </target>
 
@@ -138,9 +138,9 @@
 
  <target id="bbptbit" pid="b9vchnb" name="Step" level="5" number="2d"> <text>Set your firewall to allow port 8080.</text> </target>
 
- <target id="bant6o3" pid="b9vchnb" name="Procedure" level="2" number="1"> <text>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore /etc/init.d</text> </target>
+ <target id="bant6o3" pid="b9vchnb" name="Procedure" level="2" number="1"> <text>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore   /etc/init.d</text> </target>
 
- <target id="bant6vx" pid="b9vchnb" name="Step" level="3" number="1"> <text>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore /etc/init.d</text> </target>
+ <target id="bant6vx" pid="b9vchnb" name="Step" level="3" number="1"> <text>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore   /etc/init.d</text> </target>
 
  <target id="bant6wo" pid="b9vchnb" name="Step" level="3" number="2"> <text>chkconfig --add icecore </text> </target>
 
