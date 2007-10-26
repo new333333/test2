@@ -898,6 +898,8 @@ public class LocalLuceneSession implements LuceneSession {
 			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(BasicIndexUtils.FOLDER_ACL_FIELD, new SsfIndexAnalyzer());
 			retAnalyzer.addAnalyzer(BasicIndexUtils.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(BasicIndexUtils.BINDER_OWNER_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(BasicIndexUtils.TEAM_ACL_FIELD, new SsfIndexAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;
