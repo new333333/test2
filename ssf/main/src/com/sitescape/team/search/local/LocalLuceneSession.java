@@ -132,7 +132,9 @@ public class LocalLuceneSession implements LuceneSession {
 			} finally {
 				try {
 					indexWriter.flush();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					logger.warn(e);
+				}
 				/* try {
 					indexWriter.close();
 				} catch (IOException e) {
@@ -188,7 +190,9 @@ public class LocalLuceneSession implements LuceneSession {
 			} finally {
 				try {
 					indexWriter.flush();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					logger.warn(e);
+				}
 
 				/* 
 				 try {
@@ -240,7 +244,9 @@ public class LocalLuceneSession implements LuceneSession {
 			} finally {
 				try {
 					indexWriter.flush();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					logger.warn(e);
+				}
 				/*
 				try {
 					indexReader.close();
@@ -525,7 +531,7 @@ public class LocalLuceneSession implements LuceneSession {
 						} while (enumerator.next());
 					}
 				} catch (Exception e) {
-					System.out.println(e.toString());
+					logger.warn(e);
 				}
 
 				Iterator iter = results.iterator();
@@ -726,6 +732,7 @@ public class LocalLuceneSession implements LuceneSession {
 				if (updater != null)
 					updater.close();
 			} catch (Exception e) {
+				logger.warn(e);
 			}
 		}
 		
@@ -830,7 +837,7 @@ public class LocalLuceneSession implements LuceneSession {
 						}
 
 				} catch (Exception e) {
-					System.out.println(e.toString());
+					logger.warn(e);
 				}
 
 				Iterator iter = titles.iterator();
