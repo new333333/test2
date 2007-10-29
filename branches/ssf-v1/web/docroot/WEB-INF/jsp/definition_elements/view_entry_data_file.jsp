@@ -54,17 +54,6 @@ if (isIECheck) strBrowserType = "ie";
     <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
     </ssf:fileurl>"><c:out value="${selection.fileItem.name}"/>
 </a>
-<c:if test="${ssConfigJspStyle != 'mail'}">
-<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
-<a 
-	href="<ssf:ssfsInternalFileUrl 
-		binder="${ssDefinitionEntry.parentBinder}"
-		entity="${ssDefinitionEntry}"
-		elemName="${property_name}"
-		fileAttachment="${selection}"/>"><b><font color="#FF0000">Edit</font></b>
-</a>
-</ssf:ifSupportsEditInPlace>
-</c:if>
 <br>
 </c:forEach>
 </span>
