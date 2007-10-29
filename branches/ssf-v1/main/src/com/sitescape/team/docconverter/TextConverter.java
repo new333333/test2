@@ -94,6 +94,8 @@ public abstract class TextConverter extends Converter<String>
 		try {
 			super.createCachedFile(intermediateFile, binder, entry, fa, filePath, relativeFilePath, parameters);
 			getTextFromXML(intermediateFile, getNullTransformFile(), new FileOutputStream(convertedFile));
+		} catch (DocumentException de) {
+			logger.warn("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName());
 		}
 		finally
 		{
@@ -103,24 +105,19 @@ public abstract class TextConverter extends Converter<String>
 		}
 	}
 	
-	protected org.dom4j.Document getDomDocument(File textFile) {
+	protected org.dom4j.Document getDomDocument(File textFile) throws DocumentException {
     	// open the file with an xml reader
 		SAXReader reader = new SAXReader();
-		try {
-			return reader.read(textFile);
-		} catch (DocumentException e) {
-			logger.error(e.getLocalizedMessage(), e);
-			return null;
-		}	
+		return reader.read(textFile);	
 	}
 	
-	protected void getTextFromXML(File ofile, File transformFile, OutputStream out)
+	protected void getTextFromXML(File ofile, File transformFile, OutputStream out) throws DocumentException
     {	
     	Locale l = Locale.getDefault();
 		Templates trans;
 		Transformer tranny = null;
 		org.dom4j.Document tempfile = null;
-		if(ofile.exists()) {
+		if(ofile.exists()) { 
 			tempfile = getDomDocument(ofile);
 		}
 		if(tempfile != null) {
