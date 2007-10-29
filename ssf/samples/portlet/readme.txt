@@ -56,7 +56,6 @@ following two sections in appropriate places in the file:
 		<url-pattern>/ss_sample/*</url-pattern>
 	</servlet-mapping>
 
-
 6. (Optional) Edit <icecore installation>/webapps/ssf/WEB-INF/context/adapter-servlet.xml
 and add the following line to the <list> element of the "adaptedPortlets" bean
 definition. This step is necessary ONLY IF the new portlet is to plug into the
