@@ -354,7 +354,7 @@ public class BinderHelper {
 	//  This routine is callable only from a portlet controller
 	static public void setBinderPermaLink(AllModulesInjected bs, 
 			RenderRequest request, RenderResponse response) {
-		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
+		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs).equals("")) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			PortletURL url = response.createRenderURL();
 			try {url.setWindowState(WindowState.MAXIMIZED);} catch(Exception e) {};
