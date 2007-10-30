@@ -271,7 +271,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 			//sb.append("self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
 			sb.append("idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\'").replaceAll("&", "&amp;")+"';\n");
+			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\\\\'").replaceAll("&", "&amp;")+"';\n");
 		}
 
 	}
