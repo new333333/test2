@@ -2119,7 +2119,7 @@
 		</options>
 	</item>
 	
-	<item name="transitions" caption="__transitions" canBeDeleted="false" unique="./item[@name='transitions']">
+	<item name="transitions" caption="__transitions" canBeDeleted="true" unique="./item[@name='transitions']">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
