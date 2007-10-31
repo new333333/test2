@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Tuesday, October 23, 2007" />
+<meta name="Generation-Date" content="Wednesday, October 31, 2007" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2007" />
 
 <style type="text/css">
@@ -575,6 +575,7 @@ body {
 <li class="listitem">
 <p class="listitem">Connections to the web portal should be sticky. For example, if a host is assigned to a web portal IP address, that host should continue to access the assigned web portal IP address.</p></li></ul></div>
 
+<p class="para"></p>
 </div>
 
 </div>
@@ -589,25 +590,9 @@ body {
 
 <h4 class="bridgehead" id="bbtc4b8"> Enabling SSL</h4>
 
+<p class="para">If you are using LDAP synchronization, we recommend that you enable SSL on your server. The ICEcore Conference Client auti\omatically detects when you have SSL enabled on your server.</p>
 <div class="note">
 <p class="para"><em class="title">NOTE:</em>The communication channel between the recording server and the Conferencing server is not encrypted.</p></div>
-
-<p class="para">To ensure the security of your ICEcore Conference services, you need to enable SSL, which is not enabled by default. You can enable this in the client 
-   <span class="guimenu">Sign On</span> window under 
-   <span class="guimenu">Advanced Settings</span>.
-  </p>
-<div class="informalfigure">
-            <img src="./enable-ssl_a.png" alt="Advanced Settings" />
-          </div>
-
-<p class="para">For Pidgin, select the 
-   <span class="guimenu">Enable SSL</span> option under the 
-   <span class="guimenu">Advanced</span> tab in the 
-   <span class="guimenu">Modify Account</span> window.
-  </p>
-<div class="informalfigure">
-            <img src="./pidgin-ssl_a.png" alt="Pidgin Modify account advanced" />
-          </div>
 
 </div>
 
@@ -2935,9 +2920,376 @@ db_netmask=( 255.255.255.0 )
  </p>
 </div>
 
+<div class="appendix singlefile"  id="bcfyy50">
+
+<h1 class="title"><span class="number">F.0</span> NMS Board Installation</h1>
+
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>The CG 6565 and CG 6060 board is shipped in a protective anti-static container. Leave the board in its container until you are ready to install it. Handle the board carefully and hold it only by its edges and avoid touching its circuitry. NMS recommends that you wear an anti-static wrist strap connected to a good earth ground whenever you handle the board.</p></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bcfz3k4">
+<p class="para">Ensure that your computer meets the systems requirement below:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">A chassis with an available PCI bus slot with 5.0 V and 3.3 V of supplied power.</p></li>
+<li class="listitem">
+<p class="listitem">32 bit SUSE Linux 10 SP1 kernel version 2.6.16.46-0.12</p></li></ul></div>
+</li>
+<li class="step" id="bcfz43a">
+<p class="para">Power down the chassis and disconnect it from the power source.</p></li>
+<li class="step" id="bcfz43s">
+<p class="para">Remove the cover and set it aside.</p></li>
+<li class="step" id="bcfz43v">
+<p class="para"> If you are installing more than one board, configure the two boards that are at the ends for H.100 bus termination. This is also a good time to configure the board(s) for PCI mode or PCI-X mode. This depends on the PCI slots in your chassis. Detailed instructions for both 
+    <a href="#bcfz7ez">H.100 termination</a> and 
+    <a href="#bcfzadi">PCI, PCI-X mode configurations</a> are provided below.
+   </p></li>
+<li class="step" id="bcfz43x">
+<p class="para">Arrange the CG board(s) in adjacent PCI bus slots. Make sure each board's PCI bus connector is seated securely in a slot. The picture below shows a CG board seated securely in a PCI slot.</p>
+<div class="informalfigure">
+              <img src="./nms_01_a.png" alt="" />
+            </div>
+</li>
+<li class="step" id="bcfz43z">
+<p class="para">Secure the end bracket on the board(s) to the chassis.</p></li>
+<li class="step" id="bcfz441">
+<p class="para">If you have multiple CG boards, connect the H.100 bus cable to each of the CG boards.</p>
+<div class="informalfigure">
+              <img src="./nms_02_a.png" alt="" />
+            </div>
+</li>
+<li class="step" id="bcfz442">
+<p class="para">Replace the cover and connect the computer to its power source.</p></li>
+<li class="step" id="bcfz444">
+<p class="para">Skip this step if your conference bridge only supports IP clients. If you have installed CG6565/64, now is the time to connect the mini RJ21 cable to the back of the CG6565/64 and the other end to the SEP panel to gain access to the 8 T1 or E1 trunks. </p></li>
+<li class="step" id="bcfz446">
+<p class="para">Run the ICEcore Conference installation script to install the software. If the ICEcore Conference software is already on the system, run “nmsconfig” at the command prompt to configure all the boards in the system. Refer to the 
+    <a href="#bcfzgxl">nmsconfig section</a> below for more information on nmsconfig.
+   </p></li></ol>
+</div>
+
+<div class="sect1 singlefile"  id="bcfz7ez">
+
+<h2 class="title"><span class="number">F.1</span> Configuring H.100 Bus Termination</h2>
+
+<p class="para">H.100 boards are connected to one another with an H.100 bus cable. The two boards located at either end of the H.100 bus must have bus termination enabled, as shown in the following illustration. Bus termination is controlled by a DIP switch as explained below.</p>
+<div class="informalfigure">
+            <img src="./nms_03_a.png" alt="" />
+          </div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bcfz993">
+
+<h2 class="title"><span class="number">F.2</span> Configuring the DIP Switches</h2>
+
+<p class="para">The CG 6565 DIP switches are located on the board, as shown in the following illustration:</p>
+<div class="informalfigure">
+            <img src="./nms_04_a.png" alt="" />
+          </div>
+
+<div class="sect2 singlefile"  id="bcfz9s5">
+
+<h3 class="title"><span class="number">F.2.1</span> S3 DIP Switch</h3>
+
+<p class="para">The S3 DIP switch controls the H.100 bus termination. By default, all S3 switches are set to OFF (H.100 bus termination disabled). Setting all S3 switches to ON enables H.100 bus termination. Set all S3 switches to ON only for the boards that are on the ends of the H.100 bus.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The switches in the S3 DIP switch must be set to either all ON or all OFF.</p></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bcfza6z">
+
+<h3 class="title"><span class="number">F.2.2</span> S2 DIP Switch</h3>
+
+<p class="para">Switch 5 in the S2 DIP switch allows you to control if the board LEDs can be off or on. (This is known as the dark office feature.) By default, switch 5 is set to OFF (all LEDs can be on). Setting switch 5 to ON turns off all LEDs on the board unless there is an error.</p>
+</div>
+
+<div class="sect2 singlefile"  id="bcfzadi">
+
+<h3 class="title"><span class="number">F.2.3</span> S1 DIP Switch</h3>
+
+<p class="para">The S1 DIP switch sets the mode of the board. By default, the switches set the board to the PCI mode.</p>
+<div class="informaltable">
+<table class="topbot-lines">
+              
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="bcfzaxe"></a>
+<p class="para">Mode</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Settings</p></th>
+</tr>
+            
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bcfzaxf"></a>
+<p class="para">PCI</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Switch 1 is set to ON.</p>
+<p class="para">Switch 2 is set to OFF.</p>
+<p class="para">Switch 3 is set to ON for 33 MHz or to OFF for 66 MHz.</p>
+<p class="para">Switch 4 is set to ON.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bcfzaxg"></a>
+<p class="para">PCI-X</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Switch 1 is set to OFF.</p>
+<p class="para">Switch 2 is set to ON for 66 MHz or to OFF for 100-133 MHz.</p>
+<p class="para">Switch 3 is set to OFF.</p>
+<p class="para">Switch 4 is set to ON.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bcfzgxl">
+
+<h2 class="title"><span class="number">F.3</span> nmsconfig - Board Configuration Utility</h2>
+
+<p class="para">nmsconfig is a board configuration utility that detects the CG boards in the chassis and asks you a series of questions to configure the boards properly.</p>
+<p class="para">Fill out this worksheet below before running the install script.</p>
+<h4 class="bridgehead" id="bcfzn8d"> nmsconfig Worksheet</h4>
+
+<p class="para">Print out one worksheet for each board you install in the chassis.</p>
+<p class="para">________________________________________________________________________________</p>
+<p class="para">Board IP address: _________________</p>
+<p class="para">Board Subnet mask: _________________</p>
+<p class="para">Board Gateway address: _________________</p>
+<p class="para">Circle the number that best describes the conference bridge:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">The bridge will only support IP clients</p></li>
+        
+<li class="listitem">
+<p class="listitem">The bridge will support both IP and PSTN clients</p></li>
+      </ol></div>
+
+<p class="para">If 1 is circled above the worksheet is done for this board otherwise continue to fill out the rest of the worksheet.</p>
+<p class="para">Circle the type of trunks that will be used on the board:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">T1</p></li>
+        
+<li class="listitem">
+<p class="listitem">E1</p></li>
+      </ol></div>
+
+<p class="para">Circle the type of signaling that will be used:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">CAS (Channel Associated Signaling, i.e. wink start, ground start etc.)</p></li>
+        
+<li class="listitem">
+<p class="listitem"> ISDN</p></li>
+      </ol></div>
+
+<p class="para">If you circled T1 and CAS for the last two questions go to the T1 CAS section.</p>
+<p class="para">If you circled T1 and ISDN then go to the T1 ISDN section of the worksheet.</p>
+<p class="para">If you circled E1 and CAS then go to the E1 CAS section of the worksheet.</p>
+<p class="para">If you circled E1 and ISDN then go to the E1 ISDN section of the worksheet.</p>
+<h4 class="bridgehead" id="bcfzqzx"> T1 CAS Section</h4>
+
+<p class="para">Circle the trunk frame type:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">D4 (Superframe Formatting)</p></li>
+        
+<li class="listitem">
+<p class="listitem">ESF (Extended Superframe Formatting)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">B8ZS (Binary 8-Zero code Suppression)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI (Alternate Mark Inversion)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression Bell Ver.</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with zero data byte replaced with 1001 1000</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 8 zero code suppression</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk protocol:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Wink start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Ground start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem"> Loop Start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Feature group D protocol </p></li>
+        
+<li class="listitem">
+<p class="listitem">Off-premises station protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Multi-frequency R2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">European Digital CAS protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Australian P2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">NEC PBX protocol</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is done for this board.</p>
+<h4 class="bridgehead" id="bcfzvst"> T1 ISDN Section</h4>
+
+<p class="para">Circle the trunk frame type:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">D4 (Superframe Formatting)</p></li>
+        
+<li class="listitem">
+<p class="listitem"> ESF (Extended Superframe Formatting)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Binary 8-zero code suppression (B8ZS)</p></li>
+        
+<li class="listitem">
+<p class="listitem">Alternate mark inversion (AMI)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression Bell Ver.</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with zero data byte replaced with 1001 1000</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 8 zero code suppression</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is done for this board.</p>
+<h4 class="bridgehead" id="bcfzvsu"> E1 CAS Section</h4>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">HDB3 (High Density Bipolar 3 code)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI (Alternate Mark Inversion)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk impedance:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem"> G.703 - standard 75 ohm cables</p></li>
+        
+<li class="listitem">
+<p class="listitem">G.703 - standard 120 ohm cables</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk protocol:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Wink start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Ground start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem"> Loop Start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Feature group D protocol </p></li>
+        
+<li class="listitem">
+<p class="listitem">Off-premises station protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Multi-frequency R2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">European Digital CAS protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Australian P2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">NEC PBX protocol</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is done for this board.</p>
+<h4 class="bridgehead" id="bcg03jc"> E1 ISDN Section</h4>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">HDB3 (High Density Bipolar 3 code)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI (Alternate Mark Inversion)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk impedance:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">G.703-standard 75 ohm cables</p></li>
+        
+<li class="listitem">
+<p class="listitem">G.703-standard 120 ohm cables</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is now done for this board.</p>
+</div>
+
+</div>
+
 <div class="appendix singlefile"  id="legal">
 
-<h1 class="title"><span class="number">F.0</span> Legal Notices</h1>
+<h1 class="title"><span class="number">G.0</span> Legal Notices</h1>
 <div class="legalnotice" id="legalnotices">
       
       
