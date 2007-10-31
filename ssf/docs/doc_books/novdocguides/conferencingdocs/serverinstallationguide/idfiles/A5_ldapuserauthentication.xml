@@ -6,7 +6,7 @@
 
  <target id="bcbugrb" pid="b9varpy" name="BridgeHead" level="1"> <text>LDAP User Authentication Input File</text> </target>
 
- <target id="bbkky1t" pid="b9varpy" name="BridgeHead" level="1"> <text>Conferencing Field Names</text> </target>
+ <target id="bbkky1t" pid="b9varpy" name="BridgeHead" level="1"> <text>ICEcore Conference Field Names</text> </target>
 
  <target id="bbkkx32" pid="b9varpy" name="BridgeHead" level="1"> <text>Address Book Configuration (Synchronization)</text> </target>
 

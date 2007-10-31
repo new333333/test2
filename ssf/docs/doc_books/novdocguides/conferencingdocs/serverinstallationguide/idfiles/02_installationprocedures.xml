@@ -6,7 +6,7 @@
 
  <target id="b9xzzfu" pid="b9xzzfu" name="Sect1" level="1" number="2.1"> <text>Installation Prerequisites</text> </target>
 
- <target id="b9y02nm" pid="b9xzzfu" name="Sect2" level="2" number="2.1.1"> <text>Conferencing Server Requirements</text> </target>
+ <target id="b9y02nm" pid="b9xzzfu" name="Sect2" level="2" number="2.1.1"> <text>ICEcore Conference Server Requirements</text> </target>
 
  <target id="b9y03ko" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>SUSE Enterprise Server 10 or Red Hat Enterprise Server 4</text> </target>
 
@@ -62,9 +62,9 @@
 
  <target id="b9y00b7" pid="b9y00b7" name="Sect1" level="1" number="2.3"> <text>Installation Overview</text> </target>
 
- <target id="b9y00qs" pid="b9y00b7" name="Sect2" level="2" number="2.3.1"> <text>Conferencing Cluster Components</text> </target>
+ <target id="b9y00qs" pid="b9y00b7" name="Sect2" level="2" number="2.3.1"> <text>ICEcore Conference Cluster Components</text> </target>
 
- <target id="b9y020c" pid="b9y00b7" name="Sect2" level="2" number="2.3.2"> <text>Conferencing Client Components</text> </target>
+ <target id="b9y020c" pid="b9y00b7" name="Sect2" level="2" number="2.3.2"> <text>ICEcore Conference Client Components</text> </target>
 
  <target id="b9y00b8" pid="b9y00b8" name="Sect1" level="1" number="2.4"> <text>Preparing for Installation</text> </target>
 
@@ -76,7 +76,7 @@
 
  <target id="b9y0c5v" pid="b9y00b8" name="BridgeHead" level="2"> <text>Backup the Directory</text> </target>
 
- <target id="b9y0d1l" pid="b9y0d1l" name="Sect1" level="1" number="2.5"> <text>Installing the Conferencing Server </text> </target>
+ <target id="b9y0d1l" pid="b9y0d1l" name="Sect1" level="1" number="2.5"> <text>Installing the ICEcore Conference Server </text> </target>
 
  <target id="bc22n2u" pid="b9y0d1l" name="BridgeHead" level="2"> <text>Running the Installer on SLES:</text> </target>
 
@@ -178,13 +178,13 @@
 
  <target id="bcbv5sq" pid="b9y0d1l" name="BridgeHead" level="2"> <text>Initial Address Book Configuration (Synchronization)</text> </target>
 
- <target id="b9y00b9" pid="b9y00b9" name="Sect1" level="1" number="2.6"> <text>Review the Conferencing Cluster Components Installation Process</text> </target>
+ <target id="b9y00b9" pid="b9y00b9" name="Sect1" level="1" number="2.6"> <text>Review the ICEcore Conference Cluster Components Installation Process</text> </target>
 
  <target id="b9y0hd9" pid="b9y00b9" name="Sect2" level="2" number="2.6.1"> <text>Initial Installation</text> </target>
 
- <target id="b9y0fb1" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Create and name a new Conferencing installation.</text> </target>
+ <target id="b9y0fb1" pid="b9y00b9" name="Procedure" level="3" number="1"> <text>Create and name a new ICEcore Conference installation.</text> </target>
 
- <target id="bbprvys" pid="b9y00b9" name="Step" level="4" number="1"> <text>Create and name a new Conferencing installation.</text> </target>
+ <target id="bbprvys" pid="b9y00b9" name="Step" level="4" number="1"> <text>Create and name a new ICEcore Conference installation.</text> </target>
 
  <target id="b9y0fcg" pid="b9y00b9" name="Step" level="4" number="2"> <text> Initialize the PostgreSQL database.</text> </target>
 
@@ -192,7 +192,7 @@
 
  <target id="b9y0fde" pid="b9y00b9" name="Step" level="4" number="4"> <text>Provide the IPs and the hostnames for the XML Router, Web Portal and Desktop/App Server.</text> </target>
 
- <target id="b9y0fdj" pid="b9y00b9" name="Step" level="4" number="5"> <text>Install a Conferencing Voice Bridge (optional).</text> </target>
+ <target id="b9y0fdj" pid="b9y00b9" name="Step" level="4" number="5"> <text>Install a ICEcore Conference Voice Bridge (optional).</text> </target>
 
  <target id="b9y0his" pid="b9y00b9" name="Sect2" level="2" number="2.6.2"> <text>System Administration E-mail Configuration (Optional)</text> </target>
 
@@ -228,7 +228,7 @@
 
  <target id="bcbsj8v" pid="b9y00b9" name="Step" level="4" number="14"> <text>When you are finished listing LDAP servers, type q for Quit, then press Enter.</text> </target>
 
- <target id="bcbsji6" pid="b9y00b9" name="Step" level="4" number="15"> <text>Continue as usual with the Conferencing installation.</text> </target>
+ <target id="bcbsji6" pid="b9y00b9" name="Step" level="4" number="15"> <text>Continue as usual with the ICEcore Conference installation.</text> </target>
 
  <target id="b9y0kfb" pid="b9y00b9" name="Sect2" level="2" number="2.6.4"> <text>Mailer Configuration (Optional)</text> </target>
 
@@ -278,29 +278,29 @@
 
  <target id="bc53gyw" pid="bc53gyw" name="Sect1" level="1" number="2.7"> <text>Starting and Stopping the Cluster</text> </target>
 
- <target id="b9y00ba" pid="b9y00ba" name="Sect1" level="1" number="2.8"> <text>Conferencing Administration Console</text> </target>
+ <target id="b9y00ba" pid="b9y00ba" name="Sect1" level="1" number="2.8"> <text>ICEcore Conference Administration Console</text> </target>
 
  <target id="b9y18eq" pid="b9y00ba" name="BridgeHead" level="2"> <text>Logging on to the Administration Console</text> </target>
 
- <target id="b9y18ff" pid="b9y00ba" name="BridgeHead" level="2"> <text>Creating Conferencing Communities</text> </target>
+ <target id="b9y18ff" pid="b9y00ba" name="BridgeHead" level="2"> <text>Creating ICEcore Conference Communities</text> </target>
 
- <target id="b9y19ck" pid="b9y19ck" name="Sect1" level="1" number="2.9"> <text>Conferencing Client Installation</text> </target>
+ <target id="b9y19ck" pid="b9y19ck" name="Sect1" level="1" number="2.9"> <text>ICEcore Conference Client Installation</text> </target>
 
- <target id="bauddzz" pid="b9y19ck" name="Sect2" level="2" number="2.9.1"> <text>Building the Conferencing Client RPM</text> </target>
+ <target id="bauddzz" pid="b9y19ck" name="Sect2" level="2" number="2.9.1"> <text>Building the ICEcore Conference Client RPM</text> </target>
 
- <target id="baudegu" pid="b9y19ck" name="Procedure" level="3" number="1"> <text> Untar the Conferencing client package from root directory:</text> </target>
+ <target id="baudegu" pid="b9y19ck" name="Procedure" level="3" number="1"> <text> Untar the ICEcore Conference client package from root directory:</text> </target>
 
- <target id="baudegv" pid="b9y19ck" name="Step" level="4" number="1"> <text> Untar the Conferencing client package from root directory:</text> </target>
+ <target id="baudegv" pid="b9y19ck" name="Step" level="4" number="1"> <text> Untar the ICEcore Conference client package from root directory:</text> </target>
 
- <target id="bawyu60" pid="b9y19ck" name="Step" level="4" number="2"> <text>Build the Conferencing Client Install RPM (specify yes or no for the "use-ssl" parameter below):</text> </target>
+ <target id="bawyu60" pid="b9y19ck" name="Step" level="4" number="2"> <text>Build the ICEcore Conference Client Install RPM (specify yes or no for the "use-ssl" parameter below):</text> </target>
 
- <target id="baudem6" pid="b9y19ck" name="Step" level="4" number="3"> <text>If generated on the Conferencing server, the RPM is automatically copied to the web download directory. Otherwise, copy the generated RPM manually to the Conferencing server:</text> </target>
+ <target id="baudem6" pid="b9y19ck" name="Step" level="4" number="3"> <text>If generated on the ICEcore Conference server, the RPM is automatically copied to the web download directory. Otherwise, copy the generated RPM manually to the ICEcore Conference server:</text> </target>
 
- <target id="baudo10" pid="b9y19ck" name="Sect2" level="2" number="2.9.2"> <text>Installing the Conferencing Client</text> </target>
+ <target id="baudo10" pid="b9y19ck" name="Sect2" level="2" number="2.9.2"> <text>Installing the ICEcore Conference Client</text> </target>
 
- <target id="baudj98" pid="b9y19ck" name="Procedure" level="3" number="1"> <text>After installing the Conferencing server, you can download the Conferencing client from the following URLs:</text> </target>
+ <target id="baudj98" pid="b9y19ck" name="Procedure" level="3" number="1"> <text>After installing the ICEcore Conference server, you can download the ICEcore Conference client from the following URLs:</text> </target>
 
- <target id="baudj99" pid="b9y19ck" name="Step" level="4" number="1"> <text>After installing the Conferencing server, you can download the Conferencing client from the following URLs:</text> </target>
+ <target id="baudj99" pid="b9y19ck" name="Step" level="4" number="1"> <text>After installing the ICEcore Conference server, you can download the ICEcore Conference client from the following URLs:</text> </target>
 
  <target id="baudmhm" pid="b9y19ck" name="Step" level="4" number="2"> <text>Select Open or Run to invoke the installer after the download completes.</text> </target>
 

@@ -2042,7 +2042,7 @@
    <String `Graphic Report for serverinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/23/2007 2:22:17 PM'>
+   <String `10/31/2007 3:39:55 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2070,7 +2070,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `enable-ssl_a.png'>
+   <String `nms_01_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2078,7 +2078,23 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `pidgin-ssl_a.png'>
+   <String `nms_02_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `nms_03_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `nms_04_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2092,7 +2108,19 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `No unreferenced graphics in the /graphics directory are referenced by the book.'>
+   <String `Unused Graphics in Book Directory'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `enable-ssl_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `pidgin-ssl_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2143,7 +2171,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `enable-ssl_a.png'>
+   <String `nms_01_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2156,33 +2184,27 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\02_installationprocedures.fm|1075198'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1035931'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `enable-ssl_a.png'>
+   <String `nms_01_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in 02_installationprocedures.fm'>
+   <String ` in A6_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 35%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Advanced Settings\q'>
+   <String `Width: 95%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `pidgin-ssl_a.png'>
+   <String `nms_02_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2195,27 +2217,87 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\02_installationprocedures.fm|1076459'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1036148'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `pidgin-ssl_a.png'>
+   <String `nms_02_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in 02_installationprocedures.fm'>
+   <String ` in A6_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 42%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `nms_03_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1036364'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `nms_03_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in A6_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Pidgin Modify account advanced\q'>
+   <String `Width: 53%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `nms_04_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1036443'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `nms_04_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in A6_nms_board_install.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 97%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow

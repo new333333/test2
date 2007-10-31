@@ -10,13 +10,13 @@
 
  <target id="b9ye7p0" pid="b9ye6xq" name="BridgeHead" level="2"> <text>Restoring the Database</text> </target>
 
- <target id="b9ye7fk" pid="b9ye7fk" name="Sect1" level="1" number="3.2"> <text>Reconfiguring Conferencing Hosts</text> </target>
+ <target id="b9ye7fk" pid="b9ye7fk" name="Sect1" level="1" number="3.2"> <text>Reconfiguring ICEcore Conference Hosts</text> </target>
 
- <target id="b9ye7fl" pid="b9ye7fl" name="Sect1" level="1" number="3.3"> <text>Upgrading the Conferencing Client</text> </target>
+ <target id="b9ye7fl" pid="b9ye7fl" name="Sect1" level="1" number="3.3"> <text>Upgrading the ICEcore Conference Client</text> </target>
 
- <target id="b9yeaid" pid="b9yeaid" name="Sect1" level="1" number="3.4"> <text>Upgrading the Conferencing Servers</text> </target>
+ <target id="b9yeaid" pid="b9yeaid" name="Sect1" level="1" number="3.4"> <text>Upgrading the ICEcore Conference Servers</text> </target>
 
- <target id="b9ye7fm" pid="b9ye7fm" name="Sect1" level="1" number="3.5"> <text>Starting and Stopping Conferencing Services</text> </target>
+ <target id="b9ye7fm" pid="b9ye7fm" name="Sect1" level="1" number="3.5"> <text>Starting and Stopping ICEcore Conference Services</text> </target>
 
  <target id="bbj228h" pid="b9ye7fm" name="BridgeHead" level="2"> <text>Starting and Stopping the Cluster</text> </target>
 
