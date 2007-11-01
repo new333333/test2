@@ -41,13 +41,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.AclUpdater;
 import org.apache.lucene.index.DocumentSelection;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexUpdater;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
@@ -67,6 +65,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.ChineseAnalyzer;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.lucene.LuceneHelper;
+import com.sitescape.team.lucene.NullAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -132,7 +131,9 @@ public class LocalLuceneSession implements LuceneSession {
 			} finally {
 				try {
 					indexWriter.flush();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					logger.warn(e);
+				}
 				/* try {
 					indexWriter.close();
 				} catch (IOException e) {
@@ -188,7 +189,9 @@ public class LocalLuceneSession implements LuceneSession {
 			} finally {
 				try {
 					indexWriter.flush();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					logger.warn(e);
+				}
 
 				/* 
 				 try {
@@ -240,7 +243,9 @@ public class LocalLuceneSession implements LuceneSession {
 			} finally {
 				try {
 					indexWriter.flush();
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					logger.warn(e);
+				}
 				/*
 				try {
 					indexReader.close();
@@ -525,7 +530,7 @@ public class LocalLuceneSession implements LuceneSession {
 						} while (enumerator.next());
 					}
 				} catch (Exception e) {
-					System.out.println(e.toString());
+					logger.warn(e);
 				}
 
 				Iterator iter = results.iterator();
@@ -726,6 +731,7 @@ public class LocalLuceneSession implements LuceneSession {
 				if (updater != null)
 					updater.close();
 			} catch (Exception e) {
+				logger.warn(e);
 			}
 		}
 		
@@ -830,7 +836,7 @@ public class LocalLuceneSession implements LuceneSession {
 						}
 
 				} catch (Exception e) {
-					System.out.println(e.toString());
+					logger.warn(e);
 				}
 
 				Iterator iter = titles.iterator();
@@ -900,6 +906,8 @@ public class LocalLuceneSession implements LuceneSession {
 			retAnalyzer.addAnalyzer(BasicIndexUtils.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
 			retAnalyzer.addAnalyzer(BasicIndexUtils.BINDER_OWNER_ACL_FIELD, new SsfIndexAnalyzer());
 			retAnalyzer.addAnalyzer(BasicIndexUtils.TEAM_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(BasicIndexUtils.ACL_TAG_FIELD, new NullAnalyzer());
+			retAnalyzer.addAnalyzer(BasicIndexUtils.TAG_FIELD, new NullAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;
