@@ -21,7 +21,7 @@ var TinyMCE_ssWikiLinkPlugin = {
 	},
 
 	/**
-	 * Returns the HTML contents of the emotions control.
+	 * Returns the HTML contents of the wikilink control.
 	 */
 	getControlHTML : function(cn) {
 		switch (cn) {
