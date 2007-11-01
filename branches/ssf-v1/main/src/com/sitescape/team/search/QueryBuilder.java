@@ -161,6 +161,7 @@ public class QueryBuilder {
 	private String parseElement(Element element, String op, SearchObject so) {
 
 		String qString = "";
+		String resString = "";
 
 		String operator = element.getName();
 
@@ -174,8 +175,9 @@ public class QueryBuilder {
 				for (int j = 0; j < elemCount; j++) {
 					Node node = (Node) elements.get(j);
 					if (node instanceof Element) {
-						qString += parseElement((Element) node, operator, so);
-						if (j < (elemCount - 1)) {
+						resString = parseElement((Element) node, operator, so);
+						qString += resString;
+						if (j < (elemCount - 1) && (resString != "")) {
 							qString += " " + operator + " ";
 						}
 					} else {
