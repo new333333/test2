@@ -211,7 +211,7 @@ public class EntityIndexUtils {
    	
     }
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.TOKENIZED);
        	doc.add(eField);
     }
     public static void addDefinitionType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
