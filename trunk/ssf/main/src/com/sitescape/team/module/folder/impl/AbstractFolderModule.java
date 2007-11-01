@@ -30,6 +30,7 @@ package com.sitescape.team.module.folder.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -81,6 +82,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.FillEmailSubscription;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -730,10 +732,16 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	
     //inside write transaction    
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
+		ArrayList newTags = new ArrayList();
 		if (Validator.isNull(newtag)) return;
-		newtag = newtag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
-		String[] newTags = newtag.split(" ");
-		if (newTags.length == 0) return;
+		String lang = LanguageTaster.taste(newtag.toCharArray());
+		if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
+			newTags.add(newtag);
+		} else {
+			newtag = newtag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
+			newTags = new ArrayList(Arrays.asList(newtag.split(" ")));
+		}
+		if (newTags.size() == 0) return;
 		List tags = new ArrayList();
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
@@ -741,13 +749,13 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier eei = entry.getEntityIdentifier();
-		for (int i = 0; i < newTags.length; i++) {
+		for (int i = 0; i < newTags.size(); i++) {
 			Tag tag = new Tag();
 			//community tags belong to the binder - don't care who created it
 		   	if (!community) tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(eei);
 		    tag.setPublic(community);
-		   	tag.setName(newTags[i]);
+		   	tag.setName((String)newTags.get(i));
 		   	tags.add(tag);
 	   	}
 		coreDao.save(tags);
