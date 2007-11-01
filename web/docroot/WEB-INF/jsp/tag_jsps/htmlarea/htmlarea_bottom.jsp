@@ -27,8 +27,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
-<% // htmlarea editor bottom
+%><% // htmlarea editor bottom
 %><%@ include file="/WEB-INF/jsp/common/include.jsp" 
 %></textarea>
 </div><%--
