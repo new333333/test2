@@ -113,8 +113,12 @@
 	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ReportDownloadController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="definitionDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ExportDefinitionDownloadController"/>
-	<bean id="templateDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.TemplateDownloadController"/>
+	<bean id="definitionDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ExportDefinitionDownloadController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="templateDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.TemplateDownloadController">
+		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
 	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>
 
 </beans>
