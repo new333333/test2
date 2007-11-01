@@ -31,6 +31,7 @@ package com.sitescape.team.search;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
@@ -40,6 +41,8 @@ import org.apache.lucene.search.SortField;
 
 import com.sitescape.team.lucene.ChineseAnalyzer;
 import com.sitescape.team.lucene.LanguageTaster;
+import com.sitescape.team.lucene.NullAnalyzer;
+import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
@@ -117,7 +120,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new ChineseAnalyzer());
+				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, getCJKAnalyzer());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
@@ -184,5 +187,11 @@ public class SearchObject {
 			return new BooleanQuery();}
 	}
 
+	private Analyzer getCJKAnalyzer() {
+		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
+		retAnalyzer.addAnalyzer(BasicIndexUtils.ACL_TAG_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(BasicIndexUtils.TAG_FIELD, new NullAnalyzer());
+		return retAnalyzer;
+	}
 }
 
