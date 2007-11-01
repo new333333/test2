@@ -29,6 +29,7 @@
 package com.sitescape.team.module.binder.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,6 +87,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -543,18 +545,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
     //inside write transaction    
 	public void setTag(Long binderId, String newTag, boolean community) {
+		ArrayList newTags = new ArrayList();
 		if (Validator.isNull(newTag)) return;
 		Binder binder = loadBinder(binderId);
 		if (community) checkAccess(binder, BinderOperation.manageTag); 
-		newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
-		String[] newTags = newTag.split(" ");
-		if (newTags.length == 0) return;
+		String lang = LanguageTaster.taste(newTag.toCharArray());
+		if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
+			newTags.add(newTag);
+		} else {
+			newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
+			newTags = new ArrayList(Arrays.asList(newTag.split(" ")));
+		}
+		if (newTags.size() == 0) return;
 		List tags = new ArrayList();
 		User user = RequestContextHolder.getRequestContext().getUser();
 	   	EntityIdentifier uei = user.getEntityIdentifier();
 	   	EntityIdentifier bei = binder.getEntityIdentifier();
-	   	for (int i = 0; i < newTags.length; i++) {
-	   		String tagName = newTags[i].trim();
+	   	for (int i = 0; i < newTags.size(); i++) {
+	   		String tagName = ((String)newTags.get(i)).trim();
 	   		if (tagName.length() > ObjectKeys.MAX_TAG_LENGTH) {
 	   			//Truncate the tag so it fits in the database field
 	   			tagName = tagName.substring(0, ObjectKeys.MAX_TAG_LENGTH);
