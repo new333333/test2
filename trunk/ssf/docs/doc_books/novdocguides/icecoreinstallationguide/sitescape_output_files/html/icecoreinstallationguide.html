@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Tuesday, October 09, 2007" />
+<meta name="Generation-Date" content="Wednesday, October 31, 2007" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2007" />
 
 <style type="text/css">
@@ -910,7 +910,7 @@ work/Catalina/localhost/_/org/apache/jsp/html/portal/login_jsp.*
 <ol class="steps">
 <li class="step" id="bbil5vv">
 <p class="para">Run the installer (on Linux, do a 
-     <span class="literal">chmod +x -liferay.linux</span> to make the installer executable).
+     <span class="literal">chmod +x installer-liferay.linux</span> to make the installer executable).
     </p>
 <p class="para">The installer is named one of the following according to your operating system and portal server:</p>
 <div class="itemizedlist">
@@ -1099,7 +1099,7 @@ About to create the databases for ICEcore:
 <p class="para">
      <span class="literal">cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore</span>
      <span class="literal"></span>
-     <span class="literal">/etc/init.d</span>
+     <span class="literal"> /etc/init.d</span>
     </p></li>
 <li class="step" id="bant6wo">
 <p class="para">
@@ -1748,8 +1748,13 @@ class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" /&gt;--&gt;
 <div class="procedure">
 <ol class="steps">
 <li class="step" id="b9vdg1t">
-<p class="para">Type the ICEcore URL for your company into the browser window:</p><pre class="screen">
-http://&lt;yourCompany.com&gt;/portal/portal/default
+<p class="para">Type your company’s fully qualified hostname for ICEcore into the browser window and press Enter.</p>
+<p class="para">For example,</p><pre class="screen">
+http://myhost
+</pre><pre class="screen">
+http://myhost.mycompany.com
+</pre><pre class="screen">
+http://somehost.foo.com:8080
 </pre>
 <p class="para">The 
       <span class="guimenu">Sign In</span> page appears.
