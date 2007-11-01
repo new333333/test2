@@ -1297,11 +1297,15 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   }
 	   List<ChangeLog> result = new ArrayList();
 	   for (ChangeLog log: changeLogs) {
-		   Document doc = log.getDocument();
-		   if (doc == null) continue;
-		   Element root = doc.getRootElement();
-		   if (root == null) continue;
-		   if (AccessUtils.checkAccess(root, userStringIds)) result.add(log);
+		   try {
+			   Document doc = log.getDocument();
+			   if (doc == null) continue;
+			   Element root = doc.getRootElement();
+			   if (root == null) continue;
+			   if (AccessUtils.checkAccess(root, userStringIds)) result.add(log);
+		   } catch (Exception ex) {
+			   logger.error("Error processing change log: " + log.getId() + " " + ex.getLocalizedMessage());
+		   }
 	   }
 	   return result;
 
