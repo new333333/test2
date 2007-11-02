@@ -645,7 +645,7 @@ function ss_saveUserGroupResults(s) {
 		<td width="50%" valign="top">
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
-			<div id="displaydiv0" style="display:inline; visibility:hidden;">
+			<div id="displaydiv0" style="display:inline; visibility:hidden; z-index:100;">
 			<form class="ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
 				name="action" value="definition_builder" /><portlet:param 
 				name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>" 
