@@ -60,7 +60,6 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -150,22 +149,22 @@ public static final String[] monthNamesShort = {
 		Map formData = request.getParameterMap();
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		
+		response.setRenderParameters(request.getParameterMap());
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
-		
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
-		
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
 				Map columns = new LinkedHashMap();
@@ -195,6 +194,7 @@ public static final String[] monthNamesShort = {
 				//Reset the column positions to the default
 			   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				getProfileModule().setUserProperties(user.getId(), binderId, values);
+				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 			} else if (formData.containsKey("defaultBtn")) {
 				Map values = new HashMap();
 				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
@@ -204,6 +204,7 @@ public static final String[] monthNamesShort = {
 				values.put(ObjectKeys.SEARCH_SORT_BY, "");
 				values.put(ObjectKeys.SEARCH_SORT_DESCEND, "");
 				getProfileModule().setUserProperties(user.getId(), binderId, values);
+				response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
@@ -220,6 +221,7 @@ public static final String[] monthNamesShort = {
 					else getFolderModule().addSubscription(binderId, Long.valueOf(entryId), style.intValue());
 				}
 			}
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO)) {
 			//Saves the folder sort information
 
@@ -231,44 +233,29 @@ public static final String[] monthNamesShort = {
 			values.put(ObjectKeys.SEARCH_SORT_BY, folderSortBy);
 			values.put(ObjectKeys.SEARCH_SORT_DESCEND, folderSortDescend);
 			getProfileModule().setUserProperties(user.getId(), binderId, values);
-
-			//Saving the Sort Order information in the Tab - Reason for doing it here is because if the Tab Sort Order has
-			//already been set and if the user changes the sort order, you want the new Sort Order to take precendence over the
-			//sort order set in the tab. So setting the tab sort order here will take care of the correct sort order being chosen 
-			Tabs tabs = new Tabs(request);
-			Map tab = tabs.getTab(tabs.getCurrentTab());
-			tab.put(Tabs.SORTBY, new String(folderSortBy));
-			tab.put(Tabs.SORTDESCEND, new String(folderSortDescend));
-			//When the column is sorted, the page number need not be retained, the user can be taken to page number 1
-			tab.put(Tabs.PAGE, new Integer(0));
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
-			//Saves the folder page informaton when the user clicks on the page link
-			
+			//Saves the folder page informaton when the user clicks on the page link			
 			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
-			Tabs tabs = new Tabs(request);
-			
-			Binder binder = getBinderModule().getBinder(binderId);
-			Map options = new HashMap();
-			options.put(Tabs.PAGE, new Integer(pageStartIndex));
-			
-			tabs.setTab(binder, options);
+			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
+			Map tabData = tab.getData();
+			tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
+			tab.setData(tabData);
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
 			//Saves the folder page informaton when the user enters the page number in the go to page field
 			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
 			
-			Tabs tabs = new Tabs(request);
-			Map tab = tabs.getTab(tabs.getCurrentTab());
-			Integer recordsPerPage = (Integer) tab.get(Tabs.RECORDS_IN_PAGE);
+			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
+			Map tabData = tab.getData();
+			Integer recordsPerPage = (Integer) tabData.get(Tabs.RECORDS_IN_PAGE);
 					
 			int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
 			int intRecordsPerPage = recordsPerPage.intValue();
 			int intPageStartIndex = (intGoToPageIndex - 1) * intRecordsPerPage;
-			
-			Binder binder = getBinderModule().getBinder(binderId);
-			Map options = new HashMap();
-			options.put(Tabs.PAGE, new Integer(intPageStartIndex));
-			
-			tabs.setTab(binder, options);
+			tabData.put(Tabs.PAGE, new Integer(intPageStartIndex));			
+			tab.setData(tabData);
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
 			//Changes the number or records to be displayed in a page
 			//Getting the new entries per page
@@ -277,13 +264,9 @@ public static final String[] monthNamesShort = {
 			//Changing the user folder paging information from folder/binder level to the user level 
 			//getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
-		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
-			//Set the id of the wiki homepage
-			Long entryId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.ENTRY_ID);
-			//TODO finish this code
-		}
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+		} 
 
-		response.setRenderParameters(request.getParameterMap());
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -381,16 +364,16 @@ public static final String[] monthNamesShort = {
 			//See if the user has selected a specific view to use
 			DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
 		}
-		Tabs tabs = BinderHelper.initTabs(request, binder);
-		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
-		model.put(WebKeys.TABS, tabs.getTabs());		
 
-		Map options = new HashMap();		
+		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
+		model.put(WebKeys.TABS, tab.getTabs());		
+		//check tabs based on operation
 		
+		Map options = new HashMap();				
 		options.putAll(getSearchFilter(request, userFolderProperties));
 		
 		//determine page starts/ counts
-		initPageCounts(request, userProperties, tabOptions, options);
+		initPageCounts(request, userProperties, tab, options);
 
 		String viewType = "";
 		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
@@ -417,10 +400,9 @@ public static final String[] monthNamesShort = {
 		}
 
 		//Checking the Sort Order that has been set. If not using the Default Sort Order
-		initSortOrder(request, userFolderProperties, tabOptions, options, viewType);
+		initSortOrder(request, userFolderProperties, tab, options, viewType);
 
-		setupUrlCalendar(request, tabOptions, options, model);
-		setupUrlTags(request, tabOptions, options, model);
+		setupUrlOptions(request, tab, options, model);
 
 		String view = null;
 		if(binder== null) {
@@ -434,8 +416,7 @@ public static final String[] monthNamesShort = {
 			view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
 		}
 		
-		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
-		model.put(WebKeys.URL_TAB_ID, currentTabId);
+		model.put(WebKeys.URL_TAB_ID, String.valueOf(tab.getTabId()));
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 
@@ -471,8 +452,7 @@ public static final String[] monthNamesShort = {
 		
 		return result;
 	}
-	
-	protected void initSortOrder(RenderRequest request, UserProperties userFolderProperties, Map tabOptions, Map options, String viewType) {
+	protected void initSortOrder(RenderRequest request, UserProperties userFolderProperties, Tabs.TabEntry tab, Map options, String viewType) {
 		//Start - Determine the Sort Order
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, set the default sort order
@@ -480,17 +460,11 @@ public static final String[] monthNamesShort = {
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 
 		} else {
-
-			//First Check the Tab Object, see if it has the Sort Order Information
-			//	If it is not there, Check the User Folder Properties for the Sort Order Information
-			//Get Sort Informtion from Tab Level
-			String searchSortBy  = (String) tabOptions.get(Tabs.SORTBY);
-			String searchSortDescend  = (String) tabOptions.get(Tabs.SORTDESCEND);
-			//Trying to get Sort Information from the User Folder Properties, since Sort information is not available at Tab Level 
-			if (Validator.isNull(searchSortBy)) {
-				searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
-				searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
-			}
+			//since one one tab/folder, no use in saving info in tabs
+			//Trying to get Sort Information from the User Folder Properties
+			String	searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+			String	searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+			
 			//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
 			//If not, go with the Default Sort Properties 
 			if (Validator.isNotNull(searchSortBy)) {
@@ -507,14 +481,11 @@ public static final String[] monthNamesShort = {
 			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 		}
-
-		//Saving the Sort Option in the Tab
-		tabOptions.put(Tabs.SORTBY, (String) options.get(ObjectKeys.SEARCH_SORT_BY));
-		tabOptions.put(Tabs.SORTDESCEND, options.get(ObjectKeys.SEARCH_SORT_DESCEND).toString());
 		//End - Determine the Sort Order
 		
 	}
-	protected void initPageCounts(RenderRequest request, Map userProperties, Map tabOptions, Map options) {
+	protected void initPageCounts(RenderRequest request, Map userProperties, Tabs.TabEntry tab, Map options) {
+		Map tabOptions = tab.getData();
 		//Determine the Records Per Page
 		//Getting the entries per page from the user properties
 		//String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
@@ -563,109 +534,75 @@ public static final String[] monthNamesShort = {
 		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
 		if (tabPageNumber == null) tabPageNumber = Integer.valueOf(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
-		
+		tab.setData(tabOptions); //use synchronzied method
 		
 	}
 	
-	protected void setupUrlCalendar(RenderRequest request, Map tabOptions, Map options, Map model) {
-		// TODO: is this in use?
-		
+	protected void setupUrlOptions(RenderRequest request, Tabs.TabEntry tab, Map options, Map model) {
+		Map tabOptions = tab.getData();
 		//See if the url contains an ending date
-		Calendar cal = Calendar.getInstance(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
 		String day = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_DAY, "");
 		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
 		String year = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_YEAR, "");
+		String strDate=null;
 		if (!day.equals("") || !month.equals("") || !year.equals("")) {
-			String strDate = DateHelper.getDateStringFromDMY(day, month, year);
-			options.put(ObjectKeys.SEARCH_END_DATE, strDate);
-			tabOptions.put(Tabs.END_DATE, strDate);
-			tabOptions.put(Tabs.YEAR_MONTH, "");
-			tabOptions.put(Tabs.TAG_COMMUNITY, "");
-			tabOptions.put(Tabs.TAG_PERSONAL, "");	
-			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
-			model.put(WebKeys.URL_DATE_DAY, day);
-			model.put(WebKeys.URL_DATE_MONTH, month);
-			model.put(WebKeys.URL_DATE_YEAR, year);
+			strDate = DateHelper.getDateStringFromDMY(day, month, year);
+		} else{
+			strDate = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_END, null);
+			if (Validator.isNull(strDate)) 	strDate = (String) tabOptions.get(Tabs.END_DATE);
 		}
-		else if (tabOptions.containsKey(Tabs.END_DATE)) {
-			String strEndDate = (String) tabOptions.get(Tabs.END_DATE);
-			if (strEndDate != null && !"".equals(strEndDate)) {
-				options.put(ObjectKeys.SEARCH_END_DATE, strEndDate);
-				model.put(WebKeys.URL_DATE_DAY, day);
-				model.put(WebKeys.URL_DATE_MONTH, month);
-				model.put(WebKeys.URL_DATE_YEAR, year);
-			}
+		if (Validator.isNotNull(strDate)) {
+			options.put(ObjectKeys.SEARCH_END_DATE, strDate);
+			model.put(WebKeys.FOLDER_END_DATE, strDate);
+			model.put(WebKeys.URL_DATE_END, strDate);
+			tabOptions.put(Tabs.END_DATE, strDate);
+			tabOptions.remove(Tabs.YEAR_MONTH);
+			tabOptions.remove(Tabs.TAG_COMMUNITY);
+			tabOptions.remove(Tabs.TAG_PERSONAL);	
+		} else {
+			Calendar cal = Calendar.getInstance(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+			model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
 		}
 		
 		//See if this is a request for a specific year/month
-		String yearMonth = PortletRequestUtils.getStringParameter(request, WebKeys.URL_YEAR_MONTH, "");
-		if (!yearMonth.equals("")) {
+		String yearMonth = PortletRequestUtils.getStringParameter(request, WebKeys.URL_YEAR_MONTH, null);
+		if (Validator.isNull(yearMonth)) yearMonth = (String) tabOptions.get(Tabs.YEAR_MONTH);
+		if (Validator.isNotNull(yearMonth)) {
 			options.put(ObjectKeys.SEARCH_YEAR_MONTH, yearMonth);
-			tabOptions.put(Tabs.END_DATE, "");
-			tabOptions.put(Tabs.YEAR_MONTH, yearMonth);
-			tabOptions.put(Tabs.TAG_COMMUNITY, "");
-			tabOptions.put(Tabs.TAG_PERSONAL, "");	
 			model.put(WebKeys.URL_YEAR_MONTH, yearMonth);
-
 			String strYear = yearMonth.substring(0, 4);
 			String strMonth = yearMonth.substring(4, 6);
 			int intMonth = Integer.parseInt(strMonth);
-			String strMonthName = NLT.get(monthNames[intMonth-1]);
-			
+			String strMonthName = NLT.get(monthNames[intMonth-1]);				
 			model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
-		}
-		else if (tabOptions.containsKey(Tabs.YEAR_MONTH)) {
-			String strYearMonth = (String) tabOptions.get(Tabs.YEAR_MONTH);
-			if (strYearMonth != null && !"".equals(strYearMonth)) {
-				options.put(ObjectKeys.SEARCH_YEAR_MONTH, strYearMonth);
-				model.put(WebKeys.URL_YEAR_MONTH, strYearMonth);
-				String strYear = strYearMonth.substring(0, 4);
-				String strMonth = strYearMonth.substring(4, 6);
-				int intMonth = Integer.parseInt(strMonth);
-				String strMonthName = NLT.get(monthNames[intMonth-1]);
-				
-				model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
-			}
-		}
+			tabOptions.put(Tabs.YEAR_MONTH, yearMonth);
+			tabOptions.remove(Tabs.END_DATE);
+			tabOptions.remove(Tabs.TAG_COMMUNITY);
+			tabOptions.remove(Tabs.TAG_PERSONAL);				
+		} 
 		
-	}
-	protected void setupUrlTags(RenderRequest request, Map tabOptions, Map options, Map model) {
-		//See if the url has tags 
-		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, "");
-		if (!cTag.equals("")) {
+		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, null);
+		if (Validator.isNull(cTag)) cTag = (String) tabOptions.get(Tabs.TAG_COMMUNITY);
+		if 	(Validator.isNotNull(cTag)) {
 			options.put(ObjectKeys.SEARCH_COMMUNITY_TAG, cTag);
-			tabOptions.put(Tabs.END_DATE, "");
-			tabOptions.put(Tabs.YEAR_MONTH, "");
-			tabOptions.put(Tabs.TAG_COMMUNITY, cTag);
-			tabOptions.put(Tabs.TAG_PERSONAL, "");	
 			model.put(WebKeys.URL_TAG_COMMUNITY, cTag);
-		}
-		else if (tabOptions.containsKey(Tabs.TAG_COMMUNITY)) {
-			String strCommunityTag = (String) tabOptions.get(Tabs.TAG_COMMUNITY);
-			if (strCommunityTag != null && !"".equals(strCommunityTag)) {
-				options.put(ObjectKeys.SEARCH_COMMUNITY_TAG, strCommunityTag);
-				model.put(WebKeys.URL_TAG_COMMUNITY, strCommunityTag);
-			}
+			tabOptions.put(Tabs.TAG_COMMUNITY, cTag);
+			tabOptions.remove(Tabs.END_DATE);
+			tabOptions.remove(Tabs.YEAR_MONTH);
+			tabOptions.remove(Tabs.TAG_PERSONAL);	
 		}
 
 		String pTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_PERSONAL, "");
-		if (!pTag.equals("")) {
+		if (Validator.isNull(pTag)) pTag = (String) tabOptions.get(Tabs.TAG_PERSONAL);
+		if (Validator.isNotNull(pTag)) {
 			options.put(ObjectKeys.SEARCH_PERSONAL_TAG, pTag);
-			tabOptions.put(Tabs.END_DATE, "");
-			tabOptions.put(Tabs.YEAR_MONTH, "");
-			tabOptions.put(Tabs.TAG_COMMUNITY, "");
-			tabOptions.put(Tabs.TAG_PERSONAL, pTag);	
 			model.put(WebKeys.URL_TAG_PERSONAL, pTag);
+			tabOptions.put(Tabs.TAG_PERSONAL, pTag);	
+			tabOptions.remove(Tabs.END_DATE);
+			tabOptions.remove(Tabs.YEAR_MONTH);
+			tabOptions.remove(Tabs.TAG_COMMUNITY);
 		}
-		else if (tabOptions.containsKey(Tabs.TAG_PERSONAL)) {
-			String strPersonalTag = (String) tabOptions.get(Tabs.TAG_PERSONAL);
-			if (strPersonalTag != null && !"".equals(strPersonalTag)) {
-				options.put(ObjectKeys.SEARCH_PERSONAL_TAG, strPersonalTag);
-				model.put(WebKeys.URL_TAG_PERSONAL, strPersonalTag);
-			}
-		}
-
+		tab.setData(tabOptions);
 	}
 	
 	protected void setupViewBinder(ActionResponse response, Long binderId) {

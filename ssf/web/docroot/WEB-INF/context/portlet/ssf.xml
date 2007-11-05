@@ -52,6 +52,7 @@
 	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.QuotaReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
 	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
+	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ClipboardController" />
 
 	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AjaxController" />
 	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.DashboardAjaxController" />
@@ -75,6 +76,7 @@
 						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
 						<entry key="reload_opener_parent"><ref bean="reloadOpenerController"/></entry>
 						<entry key="advanced_search"><ref bean="advancedSearchController"/></entry>
+						<entry key="clipboard"><ref bean="clipboardController"/></entry>
 												
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
 						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>

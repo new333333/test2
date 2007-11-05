@@ -34,7 +34,7 @@
 function ss_saveChangeLogBinderId(id) {
 	var formObj = document.getElementById('ss_changeLogForm')
 	formObj['binderId'].value = id;
-	var urlParams = {operation:"get_change_log_entry_form", binderId:id, random=ss_random++};
+	var urlParams = {operation:"get_change_log_entry_form", binderId:id, random:ss_random++};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 	ifObj = document.getElementById('ss_changeLogIframe');
 	ifObj.src = url;

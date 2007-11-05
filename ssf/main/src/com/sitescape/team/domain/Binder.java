@@ -230,10 +230,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setName(String name) {
        this.name = name;
     }
-    public String getFullName() {
-    	if (isRoot()) return name;
-    	return getParentBinder().getFullName() + "." + name;
-    }
     /** 
      * @hibernate.property 
      * @return

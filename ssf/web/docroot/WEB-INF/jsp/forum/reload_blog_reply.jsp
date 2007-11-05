@@ -31,8 +31,8 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 
-if (self.parent.ss_hideBlogReplyIframe${ss_namespace}) {
-	self.parent.ss_hideBlogReplyIframe${ss_namespace}('${ssEntryId}', '${ssBlogReplyCount}')
+if (self.parent.ss_hideBlogReplyIframe) {
+	self.parent.ss_hideBlogReplyIframe('${ss_namespace}', '${ssBinderId}', '${ssEntryId}', '${ssBlogReplyCount}')
 	self.parent.focus();
 }
 

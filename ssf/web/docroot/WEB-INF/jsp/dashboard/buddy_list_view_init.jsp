@@ -34,7 +34,7 @@
 //How long to sleep between auto refresh; 
 //  set this to 0 for no auto refresh (defaulted to 0 to keep iChain session timeouts from being voided)
 //  set to 300000 for 5 minutes between refreshes
-var ss_presenceTimeoutTimeToSleep = 60000;
+var ss_presenceTimeoutTimeToSleep = 0;
 
 function ss_presenceObj(url, divId, name) {
 	this.url = url;
@@ -47,7 +47,7 @@ function ss_presenceObj(url, divId, name) {
 			clearTimeout(this.timeout);
 			this.timeout = null;
 		}
-		ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
+		ss_fetch_div(url, divId, "false");
 		if (ss_presenceTimeoutTimeToSleep > 0) {
 			this.timeout = setTimeout(name + ".getPresence()", ss_presenceTimeoutTimeToSleep);
 		}

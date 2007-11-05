@@ -70,7 +70,7 @@
 
 	</td>
 	<td valign="top" class="ss_view_info">
-	    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+	    <div class="ss_style_color" >
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 		

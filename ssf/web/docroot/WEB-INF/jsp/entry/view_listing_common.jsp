@@ -294,7 +294,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 
 	</td>
 	<td valign="top" class="ss_view_info">
-	    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+	    <div class="ss_style_color">
 </ssf:ifnotadapter>
 
 
@@ -353,7 +353,7 @@ function ss_viewEntrySaveSize() {
 		ajaxRequest.addKeyValue("entry_width", ss_getWindowWidth())
 		//ajaxRequest.setEchoDebugInfo();
 		//ajaxRequest.setPreRequest(ss_preRequest);
-		//ajaxRequest.setPostRequest(ss_postRequest);
+		//ajaxRequest.setPostRequest(ss_postRequestAlertError);
 		ajaxRequest.setUseGET();
 		ajaxRequest.sendRequest();  //Send the request
 	}

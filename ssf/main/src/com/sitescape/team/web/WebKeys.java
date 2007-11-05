@@ -106,6 +106,7 @@ public class WebKeys {
 	public static final String URL_DATE_YEAR="year";
 	public static final String URL_DATE_TIME="time";
 	public static final String URL_DATE_TIME_DURATION="duration";
+	public static final String URL_DATE_END="endDate";
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DELETE_SOURCE="deleteSource";
 	public static final String URL_DISPLAY_TYPE="displayType";
@@ -195,6 +196,7 @@ public class WebKeys {
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
+    public static final String ACTION_CLIPBOARD = "clipboard";
     public static final String ACTION_CONFIG_EMAIL="config_email";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
  	public static final String ACTION_ADD_ENTRY_ATTACHMENT = "add_entry_attachment";
@@ -271,7 +273,6 @@ public class WebKeys {
     public static final String OPERATION_ADD_FOLDER_FILES_FROM_APPLET="add_folder_files_from_applet";
     public static final String OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY="add_files_by_browse_for_entry";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
-    public static final String OPERATION_ADD_TAB="add_tab";
     public static final String OPERATION_MODIFY_TAGS="modify_tags";
     public static final String OPERATION_CHECK_BINDER_TITLE="check_binder_title";
     public static final String OPERATION_CHECK_STATUS="check_status";
@@ -281,7 +282,6 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
     public static final String OPERATION_DASHBOARD_TEAM_MORE="team_more";
-    public static final String OPERATION_DELETE_TAB="delete_tab";
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
 	public static final String OPERATION_FIND_ENTRY_TYPES_WIDGET = "get_entry_types_widget";
 	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
@@ -334,7 +334,6 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String OPERATION_SAVE_FOLDER_COLUMNS = "save_folder_columns";
 	public static final String OPERATION_SAVE_RATING = "save_rating";
-    public static final String OPERATION_SET_CURRENT_TAB="set_current_tab";
 	public static final String OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String OPERATION_START_MEETING = "start_meeting";

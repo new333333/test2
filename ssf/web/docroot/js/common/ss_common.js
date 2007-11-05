@@ -160,6 +160,68 @@ if (!ss_onLoadRoutineLoaded) {
 	ss_savedOnLoadRoutine = window.onload;
 	window.onload = ss_onLoadInit;
 }
+//Routines to support getting stuff from the server without reloading the page
+function ss_fetch_div(url, divId, signal) {
+	var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+	  		  try {
+	  		  	dojo.byId(divId).innerHTML = data;
+				//Signal that the layout changed
+				if (signal) ssf_onLayoutChange();
+		      } catch (e) {alert(e);}
+			},
+			preventCache: true,				
+	};   
+	dojo.io.bind(bindArgs);
+}
+
+function ss_fetch_url(url, callbackRoutine, callbackData) {
+	ss_fetch_url_debug("Request to fetch url: " + url)
+	var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(data.message);
+			},
+			load: function(type, data, evt) {
+			    try {
+					ss_fetch_url_debug("received " + data);
+					if (callbackRoutine) callbackRoutine(data, callbackData);
+				} catch (e) {alert(e);}
+			},
+			preventCache: true,				
+	};   
+	dojo.io.bind(bindArgs);
+
+}                
+
+function ss_fetch_url_debug(str) {
+    //ss_debug(str);
+}
+
+function ss_post(url, formId, callBackRoutine, callbackData) {
+	var bindArgs = {
+    	url: url,
+    	formNode: dojo.byId(formId),
+		error: function(type, data, evt) {
+			alert(data.error);
+		},
+		load: function(type, data, evt) {
+			if (data.failure) {
+				alert(data.failure);
+			} else { 
+				if (callBackRoutine) callBackRoutine(data, callbackData);
+			}
+		},
+		preventCache: true,				
+		mimetype: "text/json",
+		method: "post"
+	};   
+	dojo.io.bind(bindArgs);
+}     
 function ss_buildAdapterUrl(base, paramMap, action) {
 	var url = base;
 	if (action && action != "") {
@@ -650,19 +712,7 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 		urlParams.operation="hide_sidebar_panel";
 	}
 	if (sticky) {
-		var recordUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-		var bindArgs = {
-	    	url: recordUrl,
-			error: function(type, data, evt) {
-				alert(ss_not_logged_in);
-			},
-			load: function(type, data, evt) {
-			},
-			preventCache: true,				
-			mimetype: "text/xml",
-			method: "get"
-		};   
-		dojo.io.bind(bindArgs);
+		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 	}
 }
 
@@ -678,20 +728,7 @@ function ss_showHideBusinessCard(op, scope) {
 		dojo.html.show("ss_smallBusinessCard");
 		urlParams.operation="hide_business_card";
 	}
-
-	var recordUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-	var bindArgs = {
-    	url: recordUrl,
-		error: function(type, data, evt) {
-			alert(ss_not_logged_in);
-		},
-		load: function(type, data, evt) {
-		},
-		preventCache: true,				
-		mimetype: "text/xml",
-		method: "get"
-	};   
-	dojo.io.bind(bindArgs);
+	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 }
 
 
@@ -1865,47 +1902,6 @@ function setWindowHighWaterMark(divName) {
 	ss_showDiv(divName)
 }
 
-//Routines to support getting stuff from the server without reloading the page
-function ss_getXMLObj() {
-	var req;
-    // branch for native XMLHttpRequest object
-    if (window.XMLHttpRequest) {
-        req = new XMLHttpRequest();
-    // branch for IE/Windows ActiveX version
-    } else if (window.ActiveXObject) {
-        req = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    return req;
-}
-
-function ss_fetch_url(url, callbackRoutine, callbackData) {
-	if (url == undefined) {return}
-	if (callbackData == undefined) callbackData = "";
-	ss_fetch_url_debug("Request to fetch url: " + url)
-	var x;
-	x = ss_getXMLObj();
-	x.open("GET", url, true);
-	x.onreadystatechange = function() {
-		if (x.readyState != 4) {
-			return;
-		}
-		ss_fetch_url_debug("status: " + x.status + ", received " + x.responseText);
-		ss_fetch_url_debug("callbackRoutine " + callbackRoutine);
-        if (x.status == 200) {
-        	callbackRoutine(x.responseText, callbackData) 
-        } else {
-        	alert(x.status + "  \n" + x.statusText)
-        	callbackRoutine(x.statusText)
-        }
-	}
-	x.send(null);
-	ss_fetch_url_debug(" waiting... url = " + url);
-	delete x;
-}                
-
-function ss_fetch_url_debug(str) {
-    //ss_debug(str);
-}
 
 //Routines to replace substrings in a string
 function ss_replaceSubStr(str, subStr, newSubStrVal) {
@@ -1947,7 +1943,13 @@ function ss_setupStatusMessageDiv() {
     	document.getElementsByTagName("body").item(0).appendChild(smDiv);
 	}
 }
-
+//common processing for callback after ajax call
+function ss_postRequestAlertError(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+}
 //Routine to write text to the debug window
 function ss_debug(text) {
 	if (typeof ss_debugTextareaId == "undefined") return;
@@ -1962,17 +1964,7 @@ function ss_debug(text) {
 		debugTextarea.scrollTop = 1000;
 	}
 }
-//common processing for callback after ajax call
-function ss_postRequest(obj) {
-	// alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (obj.getData('timeout') != "timeout") {
-			//This call wasn't made from a timeout. So, give error message
-			ss_showNotLoggedInMsg();
-		}
-	}
-}
+
 function ss_showNotLoggedInMsg() {
 	alert(ss_not_logged_in);
 }
@@ -2035,21 +2027,7 @@ var ss_helpSystem = {
 	    
 		ss_moveDivToBody('ss_help_welcome');
 		var helpUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_help_panel", operation2:"welcome_panel"});
-		var bindArgs = {
-	    	url: helpUrl,
-			error: function(type, data, evt) {
-				alert(ss_not_logged_in);
-			},
-			load: function(type, data, evt) {
-	  		  try {
-	  		  	dojo.byId("ss_help_welcome").innerHTML = data;
-		      } catch (e) {alert(e);}
-			},
-			preventCache: true,				
-			mimetype: "text/plain",
-			method: "get"
-		};   
-		dojo.io.bind(bindArgs);
+		ss_fetch_div(helpUrl, "ss_help_welcome", false);
 		var welcomeDiv = document.getElementById('ss_help_welcome');
 		var helpMenuAnchorDiv = document.getElementById('ss_helpMenuAnchor');
 		if (welcomeDiv) {
@@ -2463,19 +2441,7 @@ var ss_helpSystem = {
 		} else {
 			url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"hide_help_cpanel"});
 		}
-		var bindArgs = {
-	    	url: url,
-			error: function(type, data, evt) {
-				alert(ss_not_logged_in);
-			},
-			load: function(type, data, evt) {
-			},
-			preventCache: true,				
-			mimetype: "text/xml",
-			method: "get"
-		};   
-		dojo.io.bind(bindArgs);
-	
+		ss_fetch_url(url);	
 	
 	},
 	
@@ -2529,16 +2495,9 @@ var ss_helpSystem = {
 		if (i1 >= 0) orgHelpId = id.substr(id.indexOf("___") + 3);
 		var urlParams = {operation:"show_help_panel", operation2:orgHelpId, tagId:tagId}; 
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.setData("id", id)
-		ajaxRequest.setData("panelId", panelId)
-		ajaxRequest.setData("x", x)
-		ajaxRequest.setData("y", y)
-		ajaxRequest.setData("xAlignment", xAlignment)
-		ajaxRequest.setData("yAlignment", yAlignment)
-		ajaxRequest.setData("startTop", startTop)
-		ajaxRequest.setData("startLeft", startLeft)
-		ajaxRequest.setData("startVisibility", startVisibility)
+		var callbackParams = {id: id, panelId:panelId, x:x, y:y, xAlignment:xAlignment,
+								yAlignment:yAlignment, startTop:startTop, startLeft:startLeft,
+								startVisibility: startVisibility};
 
 		var bindArgs = {
 	    	url: url,
@@ -2548,7 +2507,7 @@ var ss_helpSystem = {
 			load: function(type, data, evt) {
 	  		  try {
 	  		  	dojo.byId(panelId).innerHTML = data;
-	  		    ss_helpSystem.postShowPanel(ajaxRequest);
+	  		    ss_helpSystem.postShowPanel(callbackParams);
 		      } catch (e) {alert(e);}
 			},
 			preventCache: true,				
@@ -2559,24 +2518,19 @@ var ss_helpSystem = {
 
 	},
 	
-	postShowPanel : function(obj) {
-		//See if there was an error
-		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-			alert(ss_not_logged_in);
-		}
-		var panelId = obj.getData("panelId");
-		var pObj = self.document.getElementById(panelId);
-		pObj.setAttribute("helpId", obj.getData("id"));
+	postShowPanel : function(data) {
+		var pObj = self.document.getElementById(data.panelId);
+		pObj.setAttribute("helpId", data.id);
 		pObj.style.display = "block"
 		var width = parseInt(dojo.html.getMarginBox(pObj).width);
 		var height = parseInt(dojo.html.getMarginBox(pObj).height);
-		var x = obj.getData("x");
-		var y = obj.getData("y");
-		var xAlignment = obj.getData("xAlignment");
-		var yAlignment = obj.getData("yAlignment");
-		var startTop = obj.getData("startTop");
-		var startLeft = obj.getData("startLeft");
-		var startVisibility = obj.getData("startVisibility");
+		var x = data.x;
+		var y = data.y;
+		var xAlignment = data.xAlignment;
+		var yAlignment = data.yAlignment;
+		var startTop = data.startTop;
+		var startLeft = data.startLeft;
+		var startVisibility = data.startVisibility;
 		var top = 0;
 		var left = 0;
 		if (!isNaN(parseInt(x)) && !isNaN(parseInt(y))) {
@@ -2778,15 +2732,10 @@ function ss_showHideAllDashboardComponents(obj, divId, binderId) {
 		canvas.style.visibility = 'visible';
 		canvas.style.display = 'block';
 	}
-	
-	ss_setupStatusMessageDiv();
-	var ajaxRequest = new ss_AjaxRequest(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard")); //Create AjaxRequest object
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
-
+	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"));
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	
 }
 
 function ss_toggle_dashboard_toolbars(prefix) {
@@ -2952,7 +2901,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	}
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard");
 	url += "\&" + idStr;
-	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, {"divId" : divId, "componentId" : componentId});
+	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, {divId:divId, componentId:componentId});
 }
 function ss_showComponentCallback(s, data) {
 	// data = {"divId" : divId, "componentId" : componentId}
@@ -3016,30 +2965,16 @@ function ss_hideDashboardMenu(obj) {
 
 function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, namespace, divId, componentId, displayType) {
 	var urlParams = {binderId:binderId, operation:"search_more", operation2:componentId, divId:divId, namespace:namespace,
-						pageNumber:pageNumber, pageSize:pageSize, displayType:displayType, randomNumber:ss_random++};
-	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"), ss_moreDashboardSearchResultsCallback, divId);
-}
-
-function ss_moreDashboardSearchResultsCallback(s, divId) {
-	var divObj = document.getElementById(divId);
-	if (divObj == null) return;
-	divObj.innerHTML = s;
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
+						pageNumber:pageNumber, pageSize:pageSize, displayType:displayType};
+	ss_fetch_div(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"), divId, "true");
 }
 
 function ss_moreTeamMembers(binderId, pageNumber, pageSize, namespace, divId, componentId) {
 	var urlParams = {binderId:binderId, operation:"team_more", operation2:componentId, divId:divId, namespace:namespace, pageNumber:pageNumber,
-					pageSize:pageSize, randomNumber:ss_random++};
-	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"), ss_moreTeamMembersCallback, divId);
+					pageSize:pageSize};
+	ss_fetch_div(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"), divId, "true");
 }
 
-function ss_moreTeamMembersCallback(s, divId) {
-	var divObj = document.getElementById(divId);
-	divObj.innerHTML = s;
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-}
 
 //Start: Add Attachment Related Functions
 
@@ -3107,32 +3042,10 @@ function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
 	
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:entryId, operation:"reload_entry_attachments", namespace:namespace});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-
-	//These two values have been set to identify the entryid and namespace combination for which we need to throw the sucess/failure message
-	ajaxRequest.setData("ss_IDF_entryId", entryId);
-	ajaxRequest.setData("ss_IDF_namespace", namespace);
-
-	ajaxRequest.setPostRequest(ss_postSelectEntryAttachment);
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setUsePOST();
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.sendRequest();  //Send the request
 }
 
-function ss_postSelectEntryAttachment(obj) {
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert(ss_not_logged_in);
-	}
-	
-	//the objReturned is nothing but the ajaxRequest object
-	//we are getting the entryId and namespace we set to idenity the correct
-	//object to throw the correct success/failure message
-	var entryId = obj.getData("ss_IDF_entryId");
-	var namespace = obj.getData("ss_IDF_namespace");
-	
-	var divObj = document.getElementById('ss_divAttachmentList' + entryId + namespace);
-	var s = divObj.innerHTML;
-}
 
 //Dropbox Functionality
 function ss_hideAddAttachmentDropbox(entryId, namespace) {
@@ -3175,8 +3088,6 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 }
 
 function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
-	//alert("Inside ss_showAddAttachmentBrowse...");
-
 	ss_hideAddAttachmentDropbox(entryId, namespace);
 	ss_hideAddAttachmentBrowse(entryId, namespace);
 	
@@ -3606,8 +3517,9 @@ function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab)
 
 	if (useNewTab && useNewTab == "yes") {
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
+	} else {
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
 	}
-
 	return url;
 }
 
@@ -3843,8 +3755,7 @@ function ss_hideFavoritesPane(namespace) {
 
 
 
-function ss_showMyTeamsPane(namespace, url) {
-	ss_setupStatusMessageDiv()
+function ss_showMyTeamsPane(namespace) {
 	var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
 	ss_moveObjectToBody(fObj);
 	fObj.style.zIndex = ssMenuZ;
@@ -3860,30 +3771,11 @@ function ss_showMyTeamsPane(namespace, url) {
     dojo.html.setVisibility(fObj, "visible");
     dojo.html.setOpacity(fObj,0);
     dojo.lfx.html.fadeIn(fObj, 100).play();
-	ss_loadMyTeams(namespace, url);
-}
-
-function ss_loadMyTeams(namespace, url) {
-	var postArgs = new Array();
-	postArgs["IEcacheBuster"] = Math.random();
-	var bindArgs = {
-    	url: url,
-		content: postArgs,
-		error: function(type, data, evt) {
-			alert(ss_not_logged_in);
-		},
-		load: function(type, data, evt) {
-  		  try {
-			ss_hideDiv("ss_myteams_loading" + namespace);
-			var d = dojo.byId("ss_myteams_list" + namespace);
-			d.innerHTML = data;
-	      } catch (e) {alert(e);}
-		},
-		preventCache: true,				
-		mimetype: "text/html",
-		method: "post"
-	};   
-	dojo.io.bind(bindArgs);
+    ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}), function(data, args) {
+				ss_hideDiv("ss_myteams_loading" + namespace);
+				var d = dojo.byId("ss_myteams_list" + namespace);
+				d.innerHTML = data;
+				});    
 }
 
 function ss_hideMyTeamsPane(namespace) {
@@ -4113,20 +4005,10 @@ function ss_savePenletLayout() {
 
 	ss_setupStatusMessageDiv()
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_dashboard_layout"}, "__ajax_dashboard");
-	
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addFormElements("ss_dashboard_layout_form");
-	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+	ss_post(url, "ss_dashboard_layout_form");
 }
 
-function ss_postRequestAlertError(obj) {
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert(ss_not_logged_in);
-	}
-}
+
 
 //Presence support
 function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
@@ -4194,16 +4076,18 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
             }
             m += '</tr>';
         }
+        var schedule_meeting_url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"schedule_meeting", users:userId});
+        
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimtg'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '">'+ss_ostatus_startIm+'</a></td></tr>';
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgsched'+ssNamespace+'"></td>';
-        m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_ostatus_schedule_meeting_url + '&users=' + userId + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
+        m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + schedule_meeting_url + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
         m += '<tr>';
         if (ssPresenceZonBridge == 'enabled') {
         	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgphone'+ssNamespace+'"></td>';
-        	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_ostatus_schedule_meeting_url + '&users=' + userId + '\');">'+ss_ostatus_call+'</a></td></tr>';
+        	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + schedule_meeting_url + '\');">'+ss_ostatus_call+'</a></td></tr>';
         }
 	}
 	if (userId != '' && current == '') {
@@ -4829,7 +4713,7 @@ function ss_Clipboard () {
 		if (!divObj)
 			return;
 		ss_toggleAjaxLoadingIndicator(divObj, true);
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users", randomNumber:ss_random++});
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users", randomNumber:ss_random++}, "clipboard");
 		
 		var bindArgs = {
 	    	url: url,
@@ -4944,69 +4828,63 @@ function ss_Clipboard () {
 	 * afterPostRoutine - optional
 	 */	
 	this.addTeamMembersToClipboard = function (afterPostRoutine) {
-		ss_setupStatusMessageDiv()
 		var urlParams = {operation:"add_to_clipboard", add_team_members:"true", binderId:sBinderId};
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-	
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object		
-		//ajaxRequest.setEchoDebugInfo();
-		if (afterPostRoutine)
-			ajaxRequest.setPostRequest(afterPostRoutine);
-		else
-			ajaxRequest.setPostRequest(postAddToClipboard);
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
+		if (afterPostRoutine) updateClipboard(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "clipboard"), afterPostRoutine);
+		else updateClipboard(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "clipboard"), loadUsers, $("ss_muster_list_container"));
 	}
 	
 	/*
 	 * afterPostRoutine - optional
 	 */
 	this.addUsersToClipboard = function (userIds, afterPostRoutine) {
-		ss_setupStatusMessageDiv()
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users"});
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users"}, "clipboard");
 		for (var i = 0; i < userIds.length; i++) {
 			url += "&muster_ids=" + userIds[i];
 		}
-
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object		
-		//ajaxRequest.setEchoDebugInfo();
-		if (afterPostRoutine)
-			ajaxRequest.setPostRequest(afterPostRoutine);
-		else
-			ajaxRequest.setPostRequest(postAddToClipboard);			
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
-	}
-	
-	function postAddToClipboard (obj) {
-		//See if there was an error
-		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-			alert(ss_not_logged_in);
-		} else {
-			loadUsers ($("ss_muster_list_container"));
-		}
-	}
-	
-	this.removeFromClipboard = function (formName) {
-		ss_setupStatusMessageDiv();
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"remove_from_clipboard"});
-		
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		//ajaxRequest.setEchoDebugInfo();
-		ajaxRequest.addFormElements(formName);
-		ajaxRequest.setPostRequest(postRemoveFromClipboard);
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
-	}
-	
-	function postRemoveFromClipboard (obj) {
-		//See if there was an error
-		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-			alert(ss_not_logged_in);
-		}
-		ss_cancelPopupDiv('ss_muster_div');
+		updateClipboard(url, afterPostRoutine);
+		if (afterPostRoutine) updateClipboard(url, afterPostRoutine);
+		else updateClipboard(url, loadUsers, $("ss_muster_list_container"));
 	}
 
+	function updateClipboard(url, afterPostRoutine, args) {
+			var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				alert(data.message);
+			},
+			load: function(type, data, evt) {
+				if (data.failure) {
+					alert(data.failure);
+				} else { 
+					afterPostRoutine(args);
+				}
+			},
+			preventCache: true,				
+			mimetype: "text/json",
+		};   
+		dojo.io.bind(bindArgs);	
+	}
+	
+	this.removeFromClipboard = function (formId) {
+		var bindArgs = {
+	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"remove_from_clipboard"}, "clipboard"),
+	    	formNode: dojo.byId(formId),	    	
+			error: function(type, data, evt) {
+				alert(data.message);
+			},
+			load: function(type, data, evt) {
+				if (data.failure) {
+					alert(data.failure);
+				} else { 
+					ss_cancelPopupDiv('ss_muster_div');
+				}
+			},
+			preventCache: true,				
+			mimetype: "text/json",
+			method: "post"			
+		};   
+		dojo.io.bind(bindArgs);	
+	}
 }
 
 var ss_muster = new ss_Clipboard();
@@ -5556,9 +5434,9 @@ function ss_buddyPhotoLoadError (imgObj, src) {
 function ss_tagSearchObj(obj) {
     var tag = dojo.dom.textContent(obj);
 	var searchUrl = "";
-   	try { searchUrl = ss_tagSearchResultUrl; } catch(e) {}
-	if (searchUrl == "") { try { searchUrl = self.parent.ss_tagSearchResultUrl } catch(e) {} }
-	if (searchUrl == "") { try { searchUrl = self.opener.ss_tagSearchResultUrl } catch(e) {} }
+   	try { searchUrl = ss_tagSearchResultUrl; } catch(e) {searchUrl=""}
+	if (searchUrl == "") { try { searchUrl = self.parent.ss_tagSearchResultUrl } catch(e) {searchUrl=""} }
+	if (searchUrl == "") { try { searchUrl = self.opener.ss_tagSearchResultUrl } catch(e) {searchUrl=""} }
 	var url = ss_replaceSubStrAll(searchUrl, 'ss_tagPlaceHolder', tag);
 	if (ss_openUrlInPortlet(url)) {
 		self.location.href = url;

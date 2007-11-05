@@ -127,6 +127,7 @@ public class AddEntryController extends SAbstractController {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 					response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
 					response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getParentEntry().getTotalReplyCount()));
+					response.setRenderParameter(WebKeys.BINDER_ID, folderId.toString());
 				}
 			}
 			//See if the user wants to send mail

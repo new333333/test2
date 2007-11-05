@@ -39,8 +39,8 @@
 	<taconite-replace contextNodeID="ss_tabs_variables" 
 	parseInBrowser="true"><div id="ss_tabs_variables" style="display:none;">
 <script type="text/javascript">
-var ss_currentTab = "${ss_tabs.current_tab}";
-var ss_nextTabNumber = "${ss_tabs.next_tab_id}";
+var ss_currentTab = "${ss_tabs.currentTabId}";
+var ss_nextTabNumber = "${ss_tabs.nextTabId}";
 </script>
 </div>
 	</taconite-replace>

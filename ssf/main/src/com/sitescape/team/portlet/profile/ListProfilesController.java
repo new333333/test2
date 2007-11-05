@@ -72,48 +72,45 @@ public class ListProfilesController extends   SAbstractController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
         User user = RequestContextHolder.getRequestContext().getUser();
+		response.setRenderParameters(request.getParameterMap());
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
 						PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
+				response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
-			//Saves the folder page informaton when the user clicks on the page link
-			
+			//Saves the folder page informaton when the user clicks on the page link			
 			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
-			Tabs tabs = new Tabs(request);
-			
-			Binder binder = getBinderModule().getBinder(binderId);
-			Map options = new HashMap();
-			options.put(Tabs.PAGE, new Integer(pageStartIndex));
-			
-			tabs.setTab(binder, options);
+			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
+			Map tabData = tab.getData();
+			tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
+			tab.setData(tabData);
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
 			//Saves the folder page informaton when the user enters the page number in the go to page field
 			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
 			
-			Tabs tabs = new Tabs(request);
-			Map tab = tabs.getTab(tabs.getCurrentTab());
-			Integer recordsPerPage = (Integer) tab.get(Tabs.RECORDS_IN_PAGE);
+			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
+			Map tabData = tab.getData();
+			Integer recordsPerPage = (Integer) tabData.get(Tabs.RECORDS_IN_PAGE);
 					
 			int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
 			int intRecordsPerPage = recordsPerPage.intValue();
 			int intPageStartIndex = (intGoToPageIndex - 1) * intRecordsPerPage;
-			
-			Binder binder = getBinderModule().getBinder(binderId);
-			Map options = new HashMap();
-			options.put(Tabs.PAGE, new Integer(intPageStartIndex));
-			
-			tabs.setTab(binder, options);
+			tabData.put(Tabs.PAGE, new Integer(intPageStartIndex));			
+			tab.setData(tabData);
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
 			//Changes the number or records to be displayed in a page
 			//Getting the new entries per page
 			String newEntriesPerPage = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_ENTRIES_PER_PAGE, "");
 			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		}
-		response.setRenderParameters(request.getParameterMap());
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -170,12 +167,11 @@ public class ListProfilesController extends   SAbstractController {
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 
 		//initializing tabs
-		Tabs tabs = BinderHelper.initTabs(request, binderObj);
-		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
-		model.put(WebKeys.TABS, tabs.getTabs());
+		Tabs.TabEntry tab = BinderHelper.initTabs(request, binderObj);
+		model.put(WebKeys.TABS, tab.getTabs());
 		
 		//determine page starts/ counts
-		initPageCounts(request, userProperties, tabOptions, options);
+		initPageCounts(request, userProperties, tab, options);
 		
 		if (!Validator.isNull(searchFilterName)) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
@@ -196,8 +192,7 @@ public class ListProfilesController extends   SAbstractController {
 		
 		model.putAll(getSearchAndPagingModels(users, options));		
 
-		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
-		model.put(WebKeys.URL_TAB_ID, currentTabId);
+		model.put(WebKeys.URL_TAB_ID, String.valueOf(tab.getTabId()));
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 		
@@ -221,7 +216,8 @@ public class ListProfilesController extends   SAbstractController {
 		return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)), model);
 	}
 
-	protected void initPageCounts(RenderRequest request, Map userProperties, Map tabOptions, Map options) {
+	protected void initPageCounts(RenderRequest request, Map userProperties, Tabs.TabEntry tab, Map options) {
+		Map tabOptions = tab.getData();
 		//Determine the Records Per Page
 		//Getting the entries per page from the user properties
 		//String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
@@ -270,6 +266,7 @@ public class ListProfilesController extends   SAbstractController {
 		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
 		if (tabPageNumber == null) tabPageNumber = Integer.valueOf(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
+		tab.setData(tabOptions); //use synchronzied method
 	}		
 
 	protected Map getSearchAndPagingModels(Map userEntries, Map options) {

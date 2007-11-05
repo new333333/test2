@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.portlet.workspaceTree;
 
-import java.util.Collections;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,13 +44,11 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.NoBinderByTheIdException;
@@ -60,13 +57,13 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
-import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
@@ -240,8 +237,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
 
-		Tabs tabs = BinderHelper.initTabs(request, binder);
-		model.put(WebKeys.TABS, tabs.getTabs());		
+		Tabs.TabEntry tab = BinderHelper.initTabs(request, binder);
+		model.put(WebKeys.TABS, tab.getTabs());		
 
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();

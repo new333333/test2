@@ -45,10 +45,10 @@
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
 <ssf:ifnotaccessible>
-  onClick="return ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', '1')"
+  onClick="return ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', 'yes')"
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-  onClick="return parent.ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', '1')"
+  onClick="return parent.ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', 'yes')"
 </ssf:ifaccessible>
 >${binder.title}</a><br/>
 </c:forEach>

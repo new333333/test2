@@ -85,10 +85,16 @@ public class DashboardAjaxController extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT) || 
 					op.equals(WebKeys.OPERATION_DASHBOARD_SEARCH_MORE) || 
-					op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE)) {
+					op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE) ||
+					op.equals(WebKeys.OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) ||
+					op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} 
-			
+			if (op.equals(WebKeys.OPERATION_SAVE_DASHBOARD_LAYOUT)) {
+				response.setContentType("text/json");
+				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
+				return new ModelAndView("common/json_ajax_return", model);
+			}
 			response.setContentType("text/xml");			
 			return new ModelAndView("forum/ajax_return", model);
 		}
@@ -100,10 +106,14 @@ public class DashboardAjaxController extends SAbstractControllerRetry {
 			return ajaxGetDashboardSearchMore(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_TEAM_MORE)) {
 			return ajaxGetDashboardTeamMore(request, response);
-		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) ||
+					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT) ||
+					op.equals(WebKeys.OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) ||
+					op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
 			return new ModelAndView("forum/fetch_url_return");
-		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-			return new ModelAndView("forum/fetch_url_return");
+		} else if (op.equals(WebKeys.OPERATION_SAVE_DASHBOARD_LAYOUT)) {						
+			response.setContentType("text/json");
+			return new ModelAndView("common/json_ajax_return");			
 		} else {
 			response.setContentType("text/xml");
 			return new ModelAndView("forum/ajax_return");

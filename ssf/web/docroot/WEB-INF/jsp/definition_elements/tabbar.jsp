@@ -36,8 +36,8 @@
 <c:set var="numTabs" value="0"/>
 <ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="true" sticky="true">
 <ul style="padding-top: 2px; padding-left: 5px;">
-<c:forEach var="tab" items="${ss_tabs.tablist}">
-<jsp:useBean id="tab" type="java.util.HashMap" />
+<c:forEach var="tab" items="${ss_tabs.tabList}">
+<jsp:useBean id="tab" type="com.sitescape.team.web.util.Tabs.TabEntry" />
   <c:set var="numTabs" value="${numTabs + 1}"/>
   <c:if test="${numTabs < 6}">
   <li>
@@ -47,7 +47,7 @@
   				folderId="${tab.binderId}" 
   				action="view_folder_listing">
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'workspace'}">
@@ -55,7 +55,7 @@
   				folderId="${tab.binderId}" 
   				action="view_ws_listing">
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'entry'}">
@@ -65,7 +65,7 @@
   				action="view_folder_entry">
    				<ssf:param name="entryId" value="${tab.entryId}"/>
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'user'}">
@@ -83,24 +83,17 @@
   				folderId="${tab.binderId}" 
   				action="view_profile_listing">
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
-  				</ssf:url>" 
-		  </c:if>
-		  <c:if test="${tab.type == 'query'}">
-		    href="<ssf:url 
-  				action="advanced_search">
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
-  				<ssf:param name="operation" value="viewPage"/>
+   				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'search'}">
 		    href="<ssf:url 
   				action="advanced_search">
   				<ssf:param name="tabId" value="${tab.tabId}"/>
-  				<ssf:param name="operation" value="searchForm"/>  				
+  				<ssf:param name="operation" value="viewPage"/>
   				</ssf:url>" 
 		  </c:if>
-		title="${tab.title}" >
+		title="${tab.data.title}" >
 <%
 	// Truncate long tab titles to 30 characters
 	int maxTitle = 30;
@@ -110,7 +103,7 @@
 	} catch (PropertyNotFoundException e) {
 	}
 
-	String tabTitle = (String) tab.get("title");
+	String tabTitle = (String)tab.getData().get("title");
 	if (tabTitle.length() > maxTitle) {
 		tabTitle = tabTitle.substring(0, maxTitle) + "...";
 	}
